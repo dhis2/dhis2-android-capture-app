@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="C:\Users\ppajuelo\Documents\GitHub\Dhis2\data\src\main\assets"/><source path="C:\Users\ppajuelo\Documents\GitHub\Dhis2\data\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="C:\Users\ppajuelo\Documents\GitHub\Dhis2\data\src\debug\assets"/></dataSet></merger>
