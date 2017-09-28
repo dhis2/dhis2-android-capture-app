@@ -1,0 +1,8 @@
+apply plugin: "hu.supercluster.paperwork"
+
+paperwork {
+    set = [
+            gitSha   : gitSha(),
+            buildDate: buildTime("yyyy-MM-dd HH:mm:ss")
+    ]
+}

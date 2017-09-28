@@ -1,5 +1,20 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply from: rootProject.file("plugins/android-paperwork.gradle")
+
+def libraries = rootProject.ext.libraries
+
+repositories {
+    // required by crashlytics
+    maven {
+        url("https://maven.fabric.io/public")
+    }
+
+    // used by sdk
+    maven {
+        url("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
 
 android {
     compileSdkVersion 26
@@ -12,10 +27,48 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    packagingOptions {
+        // excluding duplicate license files
+        // from jackson modules
+        exclude "META-INF/LICENSE"
+
+        // excluding duplicate rxjava properties file
+        // see https://github.com/ReactiveX/RxJava/issues/4445#issuecomment-243591879
+        exclude 'META-INF/rxjava.properties'
+    }
+
     buildTypes {
+        debug {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".debug"
+
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = false
+
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+        }
+        alpha {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".alpha"
+
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+        }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ext.enableCrashlytics = true
         }
     }
 
@@ -39,10 +92,29 @@ android {
 }
 
 dependencies {
+
+    compile project(':data')
+
+    compile "hu.supercluster:paperwork:${libraries.paperwork}"
+
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.0.0'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.android.support:design:26.0.0'
+
+    // ReactiveX
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+
+    // Google dagger
+    compile "com.google.dagger:dagger:${libraries.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
+
 }
