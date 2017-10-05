@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.HttpUrl;
 
 public class LoginPresenter implements LoginContracts.Presenter {
 
@@ -44,12 +45,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
             return;
         }
 
-        disposable.add(configurationRepository.configure(baseUrl)
+        /*disposable.add(configurationRepository.configure(baseUrl)
                 .map((config) -> componentsHandler.createServerComponent(config).userManager())
                 .switchMap((userManager) -> userManager.logIn(userName.get(), userPass.get()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(LoginPresenter.this::handleResponse, LoginPresenter.this::handleError));
+                .subscribe(LoginPresenter.this::handleResponse, LoginPresenter.this::handleError));*/
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {
