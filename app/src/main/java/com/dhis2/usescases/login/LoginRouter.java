@@ -1,13 +1,17 @@
 package com.dhis2.usescases.login;
 
-public class LoginRouter implements LoginContracts.Router {
+import com.dhis2.usescases.main.MainActivity;
 
-    private LoginContracts.View view;
-    private LoginContracts.Interactor interactor;
+public class LoginRouter implements LoginContractsModule.Router {
 
-    LoginRouter(LoginContracts.View view) {
+    private LoginContractsModule.View view;
+
+    LoginRouter(LoginContractsModule.View view) {
         this.view = view;
-        this.interactor = new LoginInteractor(view);
     }
 
+    @Override
+    public void navigateToHome() {
+        view.startActivity(MainActivity.class, null, true, true, null);
+    }
 }

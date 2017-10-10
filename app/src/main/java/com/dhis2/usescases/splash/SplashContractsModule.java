@@ -2,21 +2,37 @@ package com.dhis2.usescases.splash;
 
 import android.support.annotation.UiThread;
 
+import com.data.server.UserManager;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-public class SplashContracts {
+import dagger.Module;
+import dagger.Provides;
+
+@Module
+public class SplashContractsModule {
+
+    @Provides
+    View provideView(SplashActivity splashActivity){
+        return splashActivity;
+    }
+
+    @Provides
+    Presenter providePresenter(View view) {
+        return new SplashPresenter(view);
+    }
 
     interface View extends AbstractActivityContracts.View {
 
     }
 
     interface Presenter {
-        @UiThread
-        void isUserLoggedIn();
+
     }
 
     interface Interactor {
-
+        @UiThread
+        void isUserLoggedIn();
+        void destroy();
     }
 
     interface Router {

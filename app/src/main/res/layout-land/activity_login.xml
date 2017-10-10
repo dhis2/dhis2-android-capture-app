@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -11,112 +13,127 @@
 
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         android:focusableInTouchMode="true">
 
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3"
+            tools:layout_editor_absoluteX="178dp"
+            tools:layout_editor_absoluteY="25dp" />
+
         <ImageView
             android:layout_width="180dp"
             android:layout_height="100dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:scaleX="3.5"
             android:scaleY="9"
-            android:src="@drawable/shape_circle" />
+            android:src="@drawable/shape_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <RelativeLayout
-            android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="30dp"
-            android:transitionName="logo">
+            android:transitionName="logo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="21dp">
 
             <include layout="@layout/logo_dhis" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/logo"
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
-            android:gravity="center_vertical"
+            android:hint="Username"
+            android:textColorHint="@color/colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent">
 
-            >
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/server_url"
+            <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Server url"
-                android:textColorHint="@color/colorPrimary"
-                android:theme="@style/loginInputText">
+                android:layout_height="50dp"
+                android:inputType="textPersonName"
+                android:onTextChanged="@{presenter::onTextChanged}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="17sp" />
 
-                <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:inputType="textUri"
-                    android:onTextChanged="@{presenter::onTextChanged}"
-                    android:padding="5dp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="17sp" />
 
-            </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/user_name"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/server_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:hint="Server url"
+            android:textColorHint="@color/colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintBottom_toTopOf="@id/user_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/server_url"
-                android:layout_centerInParent="true"
-                android:hint="Username"
-                android:textColorHint="@color/colorPrimary"
-                android:theme="@style/loginInputText">
+                android:layout_height="50dp"
+                android:inputType="textUri"
+                android:onTextChanged="@{presenter::onTextChanged}"
+                android:padding="5dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="17sp" />
 
-                <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textPersonName"
-                    android:onTextChanged="@{presenter::onTextChanged}"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="17sp" />
+        </android.support.design.widget.TextInputLayout>
 
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_pass"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:hint="Password"
+            android:textColorHint="@color/colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/user_name">
 
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/user_pass"
+            <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/user_name"
-                android:layout_centerInParent="true"
-                android:hint="Password"
+                android:layout_height="50dp"
+                android:inputType="textPassword"
+                android:onTextChanged="@{presenter::onTextChanged}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="17sp" />
 
-                android:textColorHint="@color/colorPrimary"
-                android:theme="@style/loginInputText">
-
-                <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textPassword"
-                    android:onTextChanged="@{presenter::onTextChanged}"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="17sp" />
-
-            </android.support.design.widget.TextInputLayout>
-        </RelativeLayout>
+        </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:background="@color/colorPrimary"
             android:text="Log In"
             android:textColor="@color/colorAccent"
-            android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
+            android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
 
-    </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
 </layout>

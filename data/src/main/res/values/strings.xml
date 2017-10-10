@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">data</string>
+
+    <!-- SyncService strings: -->
+    <string name="sync_now">Synchronise now</string>
+    <string name="sync_text">Synchronising with server</string>
+    <string name="sync_title">Syncing now</string>
+
+    <string name="sync_complete_title">Finished</string>
+    <string name="sync_complete_text">Sync complete</string>
+
+    <string name="sync_error_title">Sync Error</string>
+    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
 </resources>

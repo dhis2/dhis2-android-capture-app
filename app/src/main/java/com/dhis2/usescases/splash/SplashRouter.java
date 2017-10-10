@@ -1,22 +1,23 @@
 package com.dhis2.usescases.splash;
 
-public class SplashRouter implements SplashContracts.Router {
+import com.dhis2.usescases.login.LoginActivity;
+import com.dhis2.usescases.main.MainActivity;
 
-    private SplashContracts.View view;
-    private SplashContracts.Interactor interactor;
+public class SplashRouter implements SplashContractsModule.Router {
 
-    SplashRouter(SplashContracts.View view) {
+    private SplashContractsModule.View view;
+
+    SplashRouter(SplashContractsModule.View view) {
         this.view = view;
-        this.interactor = new SplashInteractor(view);
     }
 
     @Override
     public void navigateToLoginView() {
-
+        view.startActivity(LoginActivity.class, null, true, true, null);
     }
 
     @Override
     public void navigateToHomeView() {
-
+        view.startActivity(MainActivity.class, null, true, true, null);
     }
 }

@@ -96,16 +96,21 @@ dependencies {
     compile project(':data')
 
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
+
     })
     compile 'com.android.support:appcompat-v7:26.0.0'
+    compile 'com.android.support:design:26.0.0'
+    compile 'com.android.support:cardview-v7:26.0.0'
+
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:design:26.0.0'
 
     // ReactiveX
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
@@ -113,8 +118,15 @@ dependencies {
     compile "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
 
     // Google dagger
-    compile "com.google.dagger:dagger:${libraries.dagger}"
-    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    compile 'com.google.dagger:dagger:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    compile 'com.google.dagger:dagger-android-support:2.11'
+
+    // Google's auto-value. Annotations are used only during compilation time, as well as
+    // annotation processor which hoops up into compilation process
+    provided "com.google.auto.value:auto-value:${libraries.autovalue}"
+    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
 
 
 }

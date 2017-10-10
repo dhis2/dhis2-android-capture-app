@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
 def libraries = rootProject.ext.libraries
 repositories {
     jcenter()
@@ -58,6 +59,7 @@ dependencies {
     //RXJAVA
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'io.reactivex.rxjava2:rxjava:2.0.8'
+    compile "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
 
 
     // Core module of the DHIS 2 Android SDK
@@ -71,11 +73,14 @@ dependencies {
     }
 
     // Google dagger
-    compile "com.google.dagger:dagger:${libraries.dagger}"
-    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    compile 'com.google.dagger:dagger:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    compile 'com.google.dagger:dagger-android-support:2.11'
 
     //square
-    compile "com.squareup.sqlbrite:sqlbrite:${libraries.sqlbrite}"
+    compile "com.squareup.sqlbrite2:sqlbrite:${libraries.sqlbrite}"
+    compile 'com.squareup.sqlbrite2:sqlbrite-interop:2.0.0'
 
     //timber
     compile "com.jakewharton.timber:timber:${libraries.timber}"

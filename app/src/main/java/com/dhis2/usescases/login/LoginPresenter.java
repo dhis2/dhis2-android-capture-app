@@ -1,33 +1,25 @@
 package com.dhis2.usescases.login;
 
 import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+
+import com.data.server.ConfigurationRepository;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.HttpUrl;
+public class LoginPresenter implements LoginContractsModule.Presenter {
 
-public class LoginPresenter implements LoginContracts.Presenter {
+    private LoginContractsModule.View view;
+    private LoginContractsModule.Interactor interactor;
 
-    private LoginContracts.View view;
-    private LoginContracts.Interactor interactor;
-
-    @NonNull
-    private final CompositeDisposable disposable;
 
     public ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
 
     @Inject
-    LoginPresenter(LoginContracts.View view) {
+    LoginPresenter(LoginContractsModule.View view, ConfigurationRepository configurationRepository) {
         this.view = view;
-        this.interactor = new LoginInteractor(view);
-        this.disposable = new CompositeDisposable();
+        this.interactor = new LoginInteractor(view,configurationRepository);
     }
 
     @Override
@@ -37,23 +29,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
         isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
     }
 
-    @UiThread
     @Override
-    public void validateCredentials() {
-        HttpUrl baseUrl = HttpUrl.parse(canonizeUrl(view.getBinding().serverUrl.getEditText().toString()));
-        if (baseUrl == null) {
-            return;
-        }
-
-        /*disposable.add(configurationRepository.configure(baseUrl)
-                .map((config) -> componentsHandler.createServerComponent(config).userManager())
-                .switchMap((userManager) -> userManager.logIn(userName.get(), userPass.get()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(LoginPresenter.this::handleResponse, LoginPresenter.this::handleError));*/
+    public void onButtonClick() {
+        interactor.validateCredentials(view.getBinding().serverUrl.getEditText().getText().toString(),
+                view.getBinding().userName.getEditText().getText().toString(),
+                view.getBinding().userPass.getEditText().getText().toString());
     }
 
-    private String canonizeUrl(@NonNull String serverUrl) {
-        return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-    }
+
 }

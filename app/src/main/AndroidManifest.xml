@@ -21,7 +21,9 @@
 
         <activity
             android:name=".usescases.login.LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".usescases.main.MainActivity"/>
 
     </application>
 

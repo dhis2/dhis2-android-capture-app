@@ -2,7 +2,6 @@ package com.dhis2.usescases.general;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +18,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
     }
 
@@ -33,14 +31,19 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity {
 
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
 //        NavigationController.startActivity(ActivityGlobalAbstract.this, destination, bundle, finishCurrent, finishAll, transition);
-        if(finishCurrent)
+        if (finishCurrent)
             finish();
-        ContextCompat.startActivity(this, new Intent(this, destination), transition.toBundle());
+        if(transition!=null)
+            ContextCompat.startActivity(this, new Intent(this, destination), transition.toBundle());
+        else
+            ContextCompat.startActivity(this, new Intent(this,destination),null);
     }
 
     public void back() {
         finish();
     }
+
+
 
 
 }

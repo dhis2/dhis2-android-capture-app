@@ -1,20 +1,22 @@
 package com.dhis2.usescases.splash;
 
-public class SplashPresenter implements SplashContracts.Presenter {
+import com.data.server.UserManager;
 
-    private SplashContracts.View view;
-    private SplashContracts.Interactor interactor;
+import javax.inject.Inject;
 
+public class SplashPresenter implements SplashContractsModule.Presenter {
 
-    SplashPresenter(SplashContracts.View view) {
+    private SplashContractsModule.View view;
+    private SplashContractsModule.Interactor interactor;
+
+    @Inject
+    SplashPresenter(SplashContractsModule.View view) {
         this.view = view;
         this.interactor = new SplashInteractor(view);
     }
 
-    @Override
-    public void isUserLoggedIn() {
-
+    public void destroy() {
+        interactor.destroy();
     }
-
 
 }

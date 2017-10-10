@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Dhis2</string>
+
+    <!-- Warnings and error messages -->
+    <string name="error">Error</string>
+    <string name="error_wrong_server_url">Wrong server url</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="error_unexpected_error">Unexpected error</string>
+    <string name="error_internal_server_error">Internal server error</string>
 </resources>

@@ -111,6 +111,7 @@
 
         </android.support.design.widget.TextInputLayout>
 
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,7 +119,19 @@
             android:background="@color/colorPrimary"
             android:text="Log In"
             android:textColor="@color/colorAccent"
+            android:onClick="@{()-> presenter.onButtonClick()}"
             android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/primaryAlpha"
+            android:id="@+id/progress"
+            android:visibility="gone">
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"/>
+        </RelativeLayout>
     </RelativeLayout>
 </layout>
