@@ -2,7 +2,6 @@ package com.dhis2.usescases.splash;
 
 import android.support.annotation.UiThread;
 
-import com.data.server.UserManager;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import dagger.Module;

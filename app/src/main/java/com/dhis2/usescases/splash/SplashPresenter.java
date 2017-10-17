@@ -1,6 +1,5 @@
 package com.dhis2.usescases.splash;
 
-import com.data.server.UserManager;
 
 import javax.inject.Inject;
 

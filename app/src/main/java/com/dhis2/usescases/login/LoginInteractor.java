@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import com.data.server.ConfigurationRepository;
-import com.dhis2.service.SyncService;
 import com.dhis2.App;
+import com.dhis2.data.server.ConfigurationRepository;
+import com.dhis2.data.service.SyncService;
 
 import org.hisp.dhis.android.core.user.User;
 
@@ -55,7 +55,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
     @Override
     public void sync() {
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(),SyncService.class));
+        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
     }
 
     @Override
@@ -63,6 +63,8 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
         Timber.d("Authentication response code: %s", userResponse.code());
         if (userResponse.isSuccessful()) {
+            ((App) view.getContext().getApplicationContext()).createUserComponent();
+            sync();
             router.navigateToHome();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             view.hideProgress();

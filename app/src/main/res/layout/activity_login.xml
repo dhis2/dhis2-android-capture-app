@@ -111,6 +111,13 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_pass"
+            android:text="TEST"
+            android:onClick="@{()->presenter.onTestClick()}"/>
+
 
         <Button
             android:layout_width="match_parent"

@@ -2,6 +2,7 @@ package com.dhis2;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Service;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,11 +11,11 @@ import com.data.dagger.PerUser;
 import com.data.database.DbModule;
 import com.data.schedulers.SchedulerModule;
 import com.data.schedulers.SchedulersProviderImpl;
-import com.data.server.ServerComponent;
-import com.data.server.ServerModule;
-import com.data.server.UserManager;
-import com.data.user.UserComponent;
-import com.data.user.UserModule;
+import com.dhis2.data.server.ServerComponent;
+import com.dhis2.data.server.ServerModule;
+import com.dhis2.data.server.UserManager;
+import com.dhis2.data.user.UserComponent;
+import com.dhis2.data.user.UserModule;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -24,18 +25,22 @@ import javax.inject.Singleton;
 
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import dagger.android.HasServiceInjector;
 
 /**
  * Created by ppajuelo on 27/09/2017.
  */
 
-public class App extends Application implements HasActivityInjector {
+public class App extends Application implements HasActivityInjector, HasServiceInjector {
     private static final String DATABASE_NAME = "dhis.db";
 
     private static App instance;
 
     @Inject
     DispatchingAndroidInjector<Activity> activityDispatchingAndroidInjector;
+
+    @Inject
+    DispatchingAndroidInjector<Service> serviceDispatchingAndroidInjector;
 
     @Inject
     ConfigurationManager configurationManager;
@@ -73,6 +78,7 @@ public class App extends Application implements HasActivityInjector {
                 .scheduler(new SchedulerModule(new SchedulersProviderImpl()))
                 .build();
         appComponent.inject(this);
+
     }
 
     private void setUpServerComponent() {
@@ -82,6 +88,7 @@ public class App extends Application implements HasActivityInjector {
         }
     }
 
+
     private void setUpUserComponent() {
         UserManager userManager = serverComponent == null
                 ? null : serverComponent.userManager();
@@ -90,21 +97,43 @@ public class App extends Application implements HasActivityInjector {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////
+    // App component
+    ////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Server component
+    ////////////////////////////////////////////////////////////////////////
+
+    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
+        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
+    }
+
     public ServerComponent getServerComponent() {
         return serverComponent;
     }
 
-    public UserComponent getUserComponent(){
+    ////////////////////////////////////////////////////////////////////////
+    // User component
+    ////////////////////////////////////////////////////////////////////////
+
+
+    public UserComponent createUserComponent() {
+        return (userComponent = serverComponent.plus(new UserModule()));
+    }
+
+    public UserComponent getUserComponent() {
+//        if (userComponent == null)
+//            createUserComponent();
         return userComponent;
     }
 
-    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration){
-        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
-    }
 
-    public UserComponent createUserComponent(){
-        return (userComponent = serverComponent.plus(new UserModule()));
-    }
+    ////////////////////////////////////////////////////////////////////////
+    // AndroidInjector
+    ////////////////////////////////////////////////////////////////////////
+
 
     @Override
     public DispatchingAndroidInjector<Activity> activityInjector() {
@@ -113,7 +142,14 @@ public class App extends Application implements HasActivityInjector {
 
     }
 
-    public static App getInstance(){
+    @Override
+    public DispatchingAndroidInjector<Service> serviceInjector() {
+
+        return serviceDispatchingAndroidInjector;
+
+    }
+
+    public static App getInstance() {
         return instance;
     }
 

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.MainPresenter" />
+            type="com.dhis2.usescases.main.MainContractsModule.Presenter" />
     </data>
 
     <RelativeLayout
@@ -30,12 +29,16 @@
 
         </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_below="@id/toolbar"
-            android:id="@+id/program_recycler"
+        <TextView
+            android:id="@+id/text"
+            android:layout_centerInParent="true"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:initGrid="@{true}"/>
+            android:layout_height="wrap_content"/>
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
@@ -44,8 +47,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="25dp"
             android:backgroundTint="@color/colorPrimary"
-            />
-
+            android:onClick="@{() -> presenter.logOut()}" />
 
     </RelativeLayout>
 

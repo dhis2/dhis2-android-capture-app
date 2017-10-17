@@ -26,9 +26,5 @@ public class SchedulersProviderImpl implements SchedulerProvider {
         return AndroidSchedulers.mainThread();
     }
 
-    @NonNull
-    @Override
-    public rx.Scheduler legacyIo() {
-        return rx.schedulers.Schedulers.io();
-    }
+
 }

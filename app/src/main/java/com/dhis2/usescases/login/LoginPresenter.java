@@ -2,7 +2,8 @@ package com.dhis2.usescases.login;
 
 import android.databinding.ObservableField;
 
-import com.data.server.ConfigurationRepository;
+
+import com.dhis2.data.server.ConfigurationRepository;
 
 import javax.inject.Inject;
 
@@ -36,5 +37,10 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
                 view.getBinding().userPass.getEditText().getText().toString());
     }
 
+    public void onTestClick(){
+        view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/demo");
+        view.getBinding().userName.getEditText().setText("admin");
+        view.getBinding().userPass.getEditText().setText("district");
+    }
 
 }

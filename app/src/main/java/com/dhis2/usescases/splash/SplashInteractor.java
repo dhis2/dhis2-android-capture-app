@@ -2,8 +2,8 @@ package com.dhis2.usescases.splash;
 
 import android.support.annotation.NonNull;
 
-import com.data.server.UserManager;
 import com.dhis2.App;
+import com.dhis2.data.server.UserManager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

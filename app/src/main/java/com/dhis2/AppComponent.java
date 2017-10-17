@@ -4,8 +4,8 @@ import android.app.Application;
 
 import com.data.database.DbModule;
 import com.data.schedulers.SchedulerModule;
-import com.data.server.ServerComponent;
-import com.data.server.ServerModule;
+import com.dhis2.data.server.ServerComponent;
+import com.dhis2.data.server.ServerModule;
 
 import javax.inject.Singleton;
 

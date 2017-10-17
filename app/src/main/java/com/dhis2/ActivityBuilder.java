@@ -1,5 +1,6 @@
 package com.dhis2;
 
+import com.dhis2.data.server.ServerComponent;
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.login.LoginContractsModule;
 import com.dhis2.usescases.main.MainActivity;
@@ -29,7 +30,7 @@ public abstract class ActivityBuilder {
     @ContributesAndroidInjector(modules = LoginContractsModule.class)
     abstract LoginActivity bindLoginActivity();
 
-    @ContributesAndroidInjector(modules = MainContractsModule.class)
+   /* @ContributesAndroidInjector(modules = {MainContractsModule.class})
     abstract MainActivity bindMainActivity();
-
+*/
 }

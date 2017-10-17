@@ -4,7 +4,7 @@ package com.dhis2.usescases.login;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import com.data.server.ConfigurationRepository;
+import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 

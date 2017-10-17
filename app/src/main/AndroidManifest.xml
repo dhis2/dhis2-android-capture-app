@@ -25,6 +25,8 @@
 
         <activity android:name=".usescases.main.MainActivity"/>
 
+        <service android:name=".data.service.SyncService"/>
+
     </application>
 
 </manifest>
