@@ -3,25 +3,30 @@ package com.dhis2.usescases.main;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-
-import java.util.List;
+import com.dhis2.usescases.main.program.ProgramFragment;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, HasSupportFragmentInjector {
 
     ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
+
+    @Inject
+    DispatchingAndroidInjector<android.support.v4.app.Fragment> dispatchingAndroidInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+        changeFragment();
     }
 
     @Override
@@ -47,13 +53,13 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @NonNull
     @Override
     public Consumer<String> renderUsername() {
-        return username1 -> binding.text.setText(username1);
+        return username1 -> Log.d("dhis", username1);
     }
 
     @NonNull
     @Override
     public Consumer<String> renderUserInfo() {
-        return (userInitials) -> binding.text.append(userInitials);
+        return (userInitials) -> Log.d("dhis", userInitials);
     }
 
     @NonNull
@@ -62,19 +68,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Consumer<List<HomeViewModel>> swapData() {
 
-        return homeEntities -> binding.text.append(" list size : " + homeEntities.size());
+    private void changeFragment() {
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProgramFragment(), "HOME").commit();
     }
 
     @Override
-    public void renderError(String message) {
-        new AlertDialog.Builder(getActivity())
-                .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getString(R.string.error))
-                .setMessage(message)
-                .show();
+    public AndroidInjector<android.support.v4.app.Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
     }
-
 }

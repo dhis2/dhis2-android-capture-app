@@ -11,13 +11,13 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import dagger.android.AndroidInjectionModule;
+import dagger.android.support.AndroidSupportInjectionModule;
 
 /**
  * Created by ppajuelo on 10/10/2017.
  */
 @Singleton
-@Component(modules = {AndroidInjectionModule.class,
+@Component(modules = {AndroidSupportInjectionModule.class,
         AppModule.class,
         DbModule.class,
         SchedulerModule.class,

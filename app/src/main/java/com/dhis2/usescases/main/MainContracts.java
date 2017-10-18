@@ -6,8 +6,6 @@ import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-import java.util.List;
-
 import io.reactivex.functions.Consumer;
 
 public final class MainContracts {
@@ -26,15 +24,13 @@ public final class MainContracts {
         @UiThread
         Consumer<String> renderUserInitials();
 
-        Consumer<List<HomeViewModel>> swapData();
-
-        @UiThread
-        void renderError(String message);
     }
 
     public interface Presenter {
         void init(View view);
+
         void onDetach();
+
         public void logOut();
     }
 

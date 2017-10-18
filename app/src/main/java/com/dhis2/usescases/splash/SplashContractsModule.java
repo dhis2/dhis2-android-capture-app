@@ -1,10 +1,7 @@
 package com.dhis2.usescases.splash;
 
-import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
-import com.dhis2.data.server.ServerComponent;
-import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import dagger.Module;
@@ -20,13 +17,18 @@ public class SplashContractsModule {
     }*/
 
     @Provides
-    View provideView(SplashActivity splashActivity){
+    View provideView(SplashActivity splashActivity) {
         return splashActivity;
     }
 
     @Provides
-    Presenter providePresenter(View view) {
-        return new SplashPresenter(view);
+    Interactor provideInteractor(View view) {
+        return new SplashInteractor(view);
+    }
+
+    @Provides
+    Presenter providePresenter(View view, Interactor interactor) {
+        return new SplashPresenter(view, interactor);
     }
 
     interface View extends AbstractActivityContracts.View {
@@ -40,6 +42,7 @@ public class SplashContractsModule {
     interface Interactor {
         @UiThread
         void isUserLoggedIn();
+
         void destroy();
     }
 

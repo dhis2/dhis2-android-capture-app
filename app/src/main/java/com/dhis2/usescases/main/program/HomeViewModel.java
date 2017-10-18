@@ -1,4 +1,4 @@
-package com.dhis2.usescases.main;
+package com.dhis2.usescases.main.program;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -8,7 +8,7 @@ import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-abstract class HomeViewModel {
+public abstract class HomeViewModel {
 
     static class Columns {
         static final String UID = "uid";

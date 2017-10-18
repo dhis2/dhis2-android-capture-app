@@ -10,4 +10,10 @@
     <color name="defaultColor_2">#a2dec2</color>
     <color name="defaultColor_3">#d6dda1</color>
     <color name="defaultColor_4">#dca0d5</color>
+
+    <color name="icon_color">#787878</color>
+    <color name="black_de0">#de000000</color>
+    <color name="white_faf">#fafafa</color>
+    <color name="white_dfd">#dfdfdf</color>
+    <color name="gray_666">#666666</color>
 </resources>

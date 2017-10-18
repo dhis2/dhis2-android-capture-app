@@ -9,9 +9,9 @@ public class SplashPresenter implements SplashContractsModule.Presenter {
     private SplashContractsModule.Interactor interactor;
 
     @Inject
-    SplashPresenter(SplashContractsModule.View view) {
+    SplashPresenter(SplashContractsModule.View view, SplashContractsModule.Interactor interactor) {
         this.view = view;
-        this.interactor = new SplashInteractor(view);
+        this.interactor = interactor;
     }
 
     public void destroy() {

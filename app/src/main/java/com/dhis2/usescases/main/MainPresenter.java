@@ -22,18 +22,13 @@ final class MainPresenter implements MainContracts.Presenter {
     private MainContracts.View view;
     private final UserRepository userRepository;
     private final CompositeDisposable compositeDisposable;
-    private final CompositeDisposable compositeDisposableDb;
     private final D2 d2;
-    private final HomeRepository homeRepository;
 
     MainPresenter(@NonNull D2 d2,
-                  @NonNull UserRepository userRepository,
-                  @NonNull HomeRepository homeRepository) {
+                  @NonNull UserRepository userRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
         this.compositeDisposable = new CompositeDisposable();
-        this.compositeDisposableDb = new CompositeDisposable();
-        this.homeRepository = homeRepository;
     }
 
     @Override
@@ -53,11 +48,6 @@ final class MainPresenter implements MainContracts.Presenter {
 
         compositeDisposable.add(userObservable.connect());
 
-        compositeDisposableDb.add(homeRepository.homeViewModels()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view.swapData(), throwable ->
-                        view.renderError(throwable.getMessage())));
 
     }
 
@@ -95,6 +85,5 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void onDetach() {
         compositeDisposable.clear();
-        compositeDisposableDb.clear();
     }
 }
