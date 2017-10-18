@@ -4,16 +4,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.data.dagger.PerServer;
-import com.data.dagger.PerService;
-import com.data.schedulers.SchedulerProvider;
+import com.dhis2.data.dagger.PerService;
+import com.dhis2.data.schedulers.SchedulerProvider;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
 
 @Module
 @PerService

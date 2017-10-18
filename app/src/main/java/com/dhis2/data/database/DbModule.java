@@ -1,10 +1,9 @@
-package com.data.database;
+package com.dhis2.data.database;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-
-import com.data.schedulers.SchedulerProvider;
+import com.dhis2.data.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;
 

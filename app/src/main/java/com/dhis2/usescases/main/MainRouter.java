@@ -1,10 +1,10 @@
 package com.dhis2.usescases.main;
 
-public class MainRouter implements MainContractsModule.Router {
+public class MainRouter implements MainContracts.Router {
 
-    private MainContractsModule.View view;
+    private MainContracts.View view;
 
-    MainRouter(MainContractsModule.View view) {
+    MainRouter(MainContracts.View view) {
         this.view = view;
     }
 

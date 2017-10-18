@@ -1,6 +1,7 @@
 package com.dhis2.data.user;
 
-import com.data.dagger.PerUser;
+
+import com.dhis2.data.dagger.PerUser;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main;
 
-import com.data.dagger.PerActivity;
+
+import com.dhis2.data.dagger.PerActivity;
 
 import dagger.Subcomponent;
 

@@ -2,7 +2,6 @@ package com.dhis2;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.ConfigurationRepositoryImpl;
@@ -21,7 +20,6 @@ import dagger.Provides;
  */
 @Module
 public class AppModule {
-
     @Provides
     @Singleton
     Context provideContext(Application application) {
@@ -40,9 +38,4 @@ public class AppModule {
         return ConfigurationManagerFactory.create(databaseAdapter);
     }
 
-    /*@Provides
-    @Singleton
-    UserRepository provideUserRepository(BriteDatabase briteDatabase) {
-        return new UserRepositoryImpl(briteDatabase);
-    }*/
 }

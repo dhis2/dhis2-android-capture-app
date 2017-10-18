@@ -6,6 +6,7 @@ import android.support.annotation.UiThread;
 
 import com.dhis2.App;
 import com.dhis2.data.server.ConfigurationRepository;
+import com.dhis2.data.server.UserManager;
 import com.dhis2.data.service.SyncService;
 
 import org.hisp.dhis.android.core.user.User;
@@ -34,6 +35,24 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         this.router = new LoginRouter(view);
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
+        init();
+    }
+
+    private void init(){
+        UserManager userManager = null;
+        if(((App)view.getContext().getApplicationContext()).getServerComponent()!=null)
+            userManager = ((App)view.getContext().getApplicationContext()).getServerComponent().userManager();
+
+        if (userManager != null) {
+            disposable.add(userManager.isUserLoggedIn()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe((isUserLoggedIn) -> {
+                        if (isUserLoggedIn) {
+                            router.navigateToHome();
+                        }
+                    }, Timber::e));
+        }
     }
 
     @UiThread

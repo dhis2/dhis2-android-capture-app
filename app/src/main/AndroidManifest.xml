@@ -25,7 +25,9 @@
 
         <activity android:name=".usescases.main.MainActivity"/>
 
-        <service android:name=".data.service.SyncService"/>
+        <service android:name=".data.service.SyncService"
+            android:enabled="true"
+            android:exported="false"/>
 
     </application>
 

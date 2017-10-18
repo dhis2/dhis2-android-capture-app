@@ -1,4 +1,4 @@
-package com.data.schedulers;
+package com.dhis2.data.schedulers;
 
 import android.support.annotation.NonNull;
 

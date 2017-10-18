@@ -93,24 +93,26 @@ android {
 
 dependencies {
 
-    compile project(':data')
 
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
+
+    //Support libraries
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+    compile "com.android.support:multidex:${libraries.multidex}"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs'
-
-    })
-    compile 'com.android.support:appcompat-v7:26.0.0'
-    compile 'com.android.support:design:26.0.0'
-    compile 'com.android.support:cardview-v7:26.0.0'
-
-    testCompile 'junit:junit:4.12'
-
+    // Core module of the DHIS 2 Android SDK
+    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
+    // RuleEngine module of the DHIS 2 Android SDK
+    compile("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
+        exclude group: "com.google.code.findbugs", module: "jsr305"
+    }
+    compile("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
+        exclude group: "com.google.code.findbugs", module: "jsr305"
+    }
 
     // ReactiveX
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
@@ -128,5 +130,29 @@ dependencies {
     provided "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
 
+    // Extension which generates mappers for work with cursors
+    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
 
+    //square
+    compile "com.squareup.sqlbrite2:sqlbrite:${libraries.sqlbrite}"
+    compile "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
+
+    // Jake Wharton libraries
+        //timber
+    compile "com.jakewharton.timber:timber:${libraries.timber}"
+        //rxbinding
+    compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+
+    //Test
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
+
+    })
+
+    testCompile 'junit:junit:4.12'
 }

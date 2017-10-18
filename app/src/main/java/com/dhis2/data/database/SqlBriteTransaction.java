@@ -1,4 +1,4 @@
-package com.data.database;
+package com.dhis2.data.database;
 
 
 import com.squareup.sqlbrite2.BriteDatabase;

@@ -1,10 +1,10 @@
 package com.dhis2.usescases.main;
 
-public class MainInteractor implements MainContractsModule.Interactor {
+public class MainInteractor implements MainContracts.Interactor {
 
-    private MainContractsModule.View view;
+    private MainContracts.View view;
 
-    MainInteractor(MainContractsModule.View view) {
+    MainInteractor(MainContracts.View view) {
         this.view = view;
     }
 

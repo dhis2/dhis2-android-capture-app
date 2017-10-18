@@ -5,12 +5,9 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.service.SyncService;
 import com.dhis2.data.user.UserRepository;
-import com.dhis2.usescases.main.home.HomeRepository;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -20,13 +17,14 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
-final class MainPresenter implements MainContractsModule.Presenter {
+final class MainPresenter implements MainContracts.Presenter {
 
-    private MainContractsModule.View view;
+    private MainContracts.View view;
     private final UserRepository userRepository;
-    private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
+    private final CompositeDisposable compositeDisposableDb;
     private final D2 d2;
+    private final HomeRepository homeRepository;
 
     MainPresenter(@NonNull D2 d2,
                   @NonNull UserRepository userRepository,
@@ -34,12 +32,14 @@ final class MainPresenter implements MainContractsModule.Presenter {
         this.d2 = d2;
         this.userRepository = userRepository;
         this.compositeDisposable = new CompositeDisposable();
+        this.compositeDisposableDb = new CompositeDisposable();
         this.homeRepository = homeRepository;
     }
 
-    public void init(MainContractsModule.View view) {
+    @Override
+    public void init(MainContracts.View view) {
         this.view = view;
-
+        sync();
         ConnectableFlowable<UserModel> userObservable = userRepository.me()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -53,9 +53,15 @@ final class MainPresenter implements MainContractsModule.Presenter {
 
         compositeDisposable.add(userObservable.connect());
 
+        compositeDisposableDb.add(homeRepository.homeViewModels()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view.swapData(), throwable ->
+                        view.renderError(throwable.getMessage())));
+
     }
 
-    public void logout() {
+    public void sync() {
         view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
     }
 
@@ -80,9 +86,15 @@ final class MainPresenter implements MainContractsModule.Presenter {
     @Override
     public void logOut() {
         try {
-//            d2.logOut().call();
+            d2.logOut().call();
         } catch (Exception e) {
             Timber.e(e);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        compositeDisposable.clear();
+        compositeDisposableDb.clear();
     }
 }

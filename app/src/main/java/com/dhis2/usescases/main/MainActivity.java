@@ -3,27 +3,25 @@ package com.dhis2.usescases.main;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContractsModule.View {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
     ActivityMainBinding binding;
     @Inject
-    MainContractsModule.Presenter presenter;
+    MainContracts.Presenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +36,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
+    }
+
+    @Override
+    protected void onPause() {
+        presenter.onDetach();
+        super.onPause();
     }
 
     @NonNull
@@ -58,4 +62,19 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         throw new UnsupportedOperationException();
     }
 
-   }
+    @Override
+    public Consumer<List<HomeViewModel>> swapData() {
+
+        return homeEntities -> binding.text.append(" list size : " + homeEntities.size());
+    }
+
+    @Override
+    public void renderError(String message) {
+        new AlertDialog.Builder(getActivity())
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(getString(R.string.error))
+                .setMessage(message)
+                .show();
+    }
+
+}

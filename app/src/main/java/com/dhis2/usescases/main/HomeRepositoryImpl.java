@@ -1,8 +1,8 @@
-package com.dhis2.usescases.main.home;
+package com.dhis2.usescases.main;
 
 import android.support.annotation.NonNull;
 
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -14,10 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
 
-public class HomeRepositoryImpl implements HomeRepository {
+class HomeRepositoryImpl implements HomeRepository {
 
     /*
      SELECT * FROM
@@ -44,15 +43,14 @@ public class HomeRepositoryImpl implements HomeRepository {
 
     private final BriteDatabase briteDatabase;
 
-    public HomeRepositoryImpl(BriteDatabase briteDatabase) {
+    HomeRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
     @NonNull
     @Override
     public Observable<List<HomeViewModel>> homeViewModels() {
-        return RxJavaInterop.toV2Observable(
-                briteDatabase.createQuery(TABLE_SET, SELECT_HOME_VIEW_MODELS)
-                        .mapToList(HomeViewModel::fromCursor));
+        return briteDatabase.createQuery(TABLE_SET, SELECT_HOME_VIEW_MODELS)
+                .mapToList(HomeViewModel::fromCursor);
     }
 }

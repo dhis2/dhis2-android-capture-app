@@ -2,7 +2,7 @@ package com.dhis2.data.user;
 
 import android.support.annotation.NonNull;
 
-import com.data.dagger.PerUser;
+import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.main.MainComponent;

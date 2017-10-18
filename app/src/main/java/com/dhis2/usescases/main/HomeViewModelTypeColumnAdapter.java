@@ -1,4 +1,4 @@
-package com.dhis2.usescases.main.home;
+package com.dhis2.usescases.main;
 
 import org.hisp.dhis.android.core.data.database.EnumColumnAdapter;
 

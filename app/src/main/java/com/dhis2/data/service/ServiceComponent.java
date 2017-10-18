@@ -2,7 +2,7 @@ package com.dhis2.data.service;
 
 import android.support.annotation.NonNull;
 
-import com.data.dagger.PerService;
+import com.dhis2.data.dagger.PerService;
 
 import dagger.Subcomponent;
 

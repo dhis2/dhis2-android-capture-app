@@ -3,13 +3,15 @@ package com.dhis2.data.service;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.data.schedulers.SchedulerProvider;
+import com.dhis2.data.schedulers.SchedulerProvider;
 
 import org.hisp.dhis.android.core.D2;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 import rx.exceptions.OnErrorNotImplementedException;
 
@@ -36,15 +38,15 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void onAttach(@NonNull SyncView view) {
 
-        syncView = (SyncView) view;
+        syncView = view;
 
     }
 
     @Override
     public void sync() {
         disposable.add(metadata()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(response -> SyncResult.success())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))

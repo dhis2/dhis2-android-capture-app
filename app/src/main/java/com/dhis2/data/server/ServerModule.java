@@ -2,7 +2,8 @@ package com.dhis2.data.server;
 
 import android.support.annotation.NonNull;
 
-import com.data.dagger.PerServer;
+
+import com.dhis2.data.dagger.PerServer;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;

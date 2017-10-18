@@ -2,15 +2,14 @@ package com.dhis2;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Service;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.data.dagger.PerServer;
-import com.data.dagger.PerUser;
-import com.data.database.DbModule;
-import com.data.schedulers.SchedulerModule;
-import com.data.schedulers.SchedulersProviderImpl;
+import com.dhis2.data.dagger.PerServer;
+import com.dhis2.data.dagger.PerUser;
+import com.dhis2.data.database.DbModule;
+import com.dhis2.data.schedulers.SchedulerModule;
+import com.dhis2.data.schedulers.SchedulersProviderImpl;
 import com.dhis2.data.server.ServerComponent;
 import com.dhis2.data.server.ServerModule;
 import com.dhis2.data.server.UserManager;
@@ -23,24 +22,21 @@ import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
-import dagger.android.HasServiceInjector;
 
 /**
  * Created by ppajuelo on 27/09/2017.
  */
 
-public class App extends Application implements HasActivityInjector, HasServiceInjector {
+public class App extends Application implements HasActivityInjector {
     private static final String DATABASE_NAME = "dhis.db";
 
     private static App instance;
-
     @Inject
     DispatchingAndroidInjector<Activity> activityDispatchingAndroidInjector;
 
-    @Inject
-    DispatchingAndroidInjector<Service> serviceDispatchingAndroidInjector;
 
     @Inject
     ConfigurationManager configurationManager;
@@ -100,7 +96,9 @@ public class App extends Application implements HasActivityInjector, HasServiceI
     ////////////////////////////////////////////////////////////////////////
     // App component
     ////////////////////////////////////////////////////////////////////////
-
+    public AppComponent appComponent() {
+        return appComponent;
+    }
 
     ////////////////////////////////////////////////////////////////////////
     // Server component
@@ -135,22 +133,12 @@ public class App extends Application implements HasActivityInjector, HasServiceI
     ////////////////////////////////////////////////////////////////////////
 
 
-    @Override
-    public DispatchingAndroidInjector<Activity> activityInjector() {
-
-        return activityDispatchingAndroidInjector;
-
-    }
-
-    @Override
-    public DispatchingAndroidInjector<Service> serviceInjector() {
-
-        return serviceDispatchingAndroidInjector;
-
-    }
-
     public static App getInstance() {
         return instance;
     }
 
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return activityDispatchingAndroidInjector;
+    }
 }

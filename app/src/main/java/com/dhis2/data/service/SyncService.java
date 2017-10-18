@@ -9,8 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.data.R;
 import com.dhis2.App;
+import com.dhis2.R;
 
 import javax.inject.Inject;
 

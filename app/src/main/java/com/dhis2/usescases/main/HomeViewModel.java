@@ -1,4 +1,4 @@
-package com.dhis2.usescases.main.home;
+package com.dhis2.usescases.main;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
