@@ -38,6 +38,15 @@ class HomeRepositoryImpl implements HomeRepository {
             ProgramModel.TABLE, ProgramModel.Columns.PROGRAM_TYPE, ProgramType.WITHOUT_REGISTRATION.name(),
             HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE);
 
+    private final static String SELECT_PROGRAMS_VIEW_MODELS = String.format(Locale.US,
+            "SELECT * FROM " +
+                    "(SELECT %s,%s,%s,'%s' AS %s FROM %s WHERE %s.%s = '%s') " +
+                    "ORDER BY %s DESC",
+            ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME,ProgramModel.Columns.LAST_UPDATED,
+            HomeViewModel.Type.PROGRAM.name(), HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE, ProgramModel.TABLE,
+            ProgramModel.TABLE, ProgramModel.Columns.PROGRAM_TYPE, ProgramType.WITHOUT_REGISTRATION.name(),
+            HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE);
+
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityModel.TABLE, ProgramModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
@@ -50,7 +59,7 @@ class HomeRepositoryImpl implements HomeRepository {
     @NonNull
     @Override
     public Observable<List<HomeViewModel>> homeViewModels() {
-        return briteDatabase.createQuery(TABLE_SET, SELECT_HOME_VIEW_MODELS)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAMS_VIEW_MODELS)
                 .mapToList(HomeViewModel::fromCursor);
     }
 }

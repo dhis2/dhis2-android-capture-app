@@ -12,9 +12,13 @@ import android.support.v4.app.ActivityOptionsCompat;
 
 public class AbstractActivityContracts {
 
-    public interface View{
+    public interface View {
         Context getContext();
+
+        ActivityGlobalAbstract getAbstracContext();
+
         void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition);
     }
+
 
 }

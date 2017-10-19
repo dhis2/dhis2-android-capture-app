@@ -10,4 +10,5 @@ interface HomeRepository {
 
     @NonNull
     Observable<List<HomeViewModel>> homeViewModels();
+
 }

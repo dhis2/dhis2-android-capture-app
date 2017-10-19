@@ -1,9 +1,9 @@
 package com.dhis2.usescases.main.program;
 
+import android.app.FragmentManager;
 import android.support.annotation.UiThread;
 
-import com.dhis2.data.dagger.PerActivity;
-import com.dhis2.data.dagger.PerFragment;
+import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.List;
@@ -33,7 +33,9 @@ public class ProgramContractModule {
         return new HomeRepositoryImpl(briteDatabase);
     }
 
-    interface View {
+    interface View extends AbstractActivityContracts.View {
+
+        void showRageDatePicker();
 
         void setUpRecycler();
 
@@ -45,6 +47,14 @@ public class ProgramContractModule {
 
     public interface Presenter {
         void onItemClick(HomeViewModel homeViewModel);
+
+        void onOrgUnitButtonClick();
+
+        void onDateRangeButtonClick();
+
+        void onTimeButtonClick();
+
+        void onCatComboButtonClick();
     }
 
     interface Interactor {

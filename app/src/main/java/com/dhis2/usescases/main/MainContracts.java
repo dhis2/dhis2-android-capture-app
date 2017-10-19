@@ -5,8 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.unnamed.b.atv.model.TreeNode;
+
+import org.hisp.dhis.android.core.common.Payload;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+
+import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import retrofit2.Call;
 
 public final class MainContracts {
 
@@ -24,6 +32,18 @@ public final class MainContracts {
         @UiThread
         Consumer<String> renderUserInitials();
 
+        void openDrawer(int gravity);
+
+        @NonNull
+        @UiThread
+        Consumer<List<OrganisationUnitModel>> setOrgUnitTree();
+
+        @NonNull
+        @UiThread
+        Consumer<Payload<OrganisationUnit>> initOrgUnitTree();
+
+        void addTree(TreeNode treeNode);
+
     }
 
     public interface Presenter {
@@ -31,10 +51,17 @@ public final class MainContracts {
 
         void onDetach();
 
-        public void logOut();
+        void onMenuClick();
+
+        void sync();
+
+        void logOut();
+
+        void blockSession();
     }
 
     interface Interactor {
+        Call<Payload<OrganisationUnit>> getOrgUnits();
     }
 
     interface Router {

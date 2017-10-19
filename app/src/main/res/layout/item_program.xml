@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -17,13 +18,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:paddingBottom="10dp">
 
             <ImageView
+                android:id="@+id/program_image"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
                 app:randomColor="@{true}" />
@@ -32,8 +33,9 @@
                 android:id="@+id/program_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5.4dp"
+                android:layout_below="@id/program_image"
                 android:layout_marginStart="7.8dp"
+                android:layout_marginTop="5.4dp"
                 android:text="@{program.title(), default=name}"
                 android:textColor="@color/gray_666"
                 android:textSize="14sp" />
@@ -42,12 +44,16 @@
                 android:id="@+id/program_last_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5.4dp"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/program_name"
                 android:layout_marginStart="7.8dp"
-                android:text="date"
-                android:textSize="14sp" />
+                android:layout_marginTop="5.4dp"
+                android:gravity="bottom"
+                android:textSize="14sp"
+                app:date="@{program.lastUpdated()}"
+                tools:text="date" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 </layout>

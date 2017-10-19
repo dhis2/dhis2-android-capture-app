@@ -2,6 +2,8 @@ package com.dhis2;
 
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.login.LoginContractsModule;
+import com.dhis2.usescases.main.MainActivity;
+import com.dhis2.usescases.main.MainContractsModule;
 import com.dhis2.usescases.main.program.ProgramContractModule;
 import com.dhis2.usescases.main.program.ProgramFragment;
 import com.dhis2.usescases.splash.SplashActivity;
@@ -31,8 +33,4 @@ abstract class BindingModule {
 
     @ContributesAndroidInjector(modules = ProgramContractModule.class)
     abstract ProgramFragment programFragment();
-
-   /* @ContributesAndroidInjector(modules = {MainContractsModule.class})
-    abstract MainActivity bindMainActivity();
-*/
 }

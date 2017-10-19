@@ -22,8 +22,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="7dp">
 
+
             <Button
-                android:id="@+id/button_date_range"
+                android:id="@+id/button_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
@@ -31,24 +32,28 @@
                 android:background="@drawable/selector_white_button"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minHeight="40dp"
+                android:onClick="@{()->presenter.onTimeButtonClick()}"
                 android:paddingStart="15dp"
-                android:text="Date Range"
+                android:text="Time"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
                 android:textColor="@color/black_de0"
                 android:textSize="15sp" />
 
+
             <Button
-                android:id="@+id/button_time"
+                android:id="@+id/button_date_range"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/selector_white_button"
-                android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                android:drawableEnd="@drawable/ic_date_range"
                 android:minHeight="40dp"
+                android:onClick="@{()->presenter.onDateRangeButtonClick()}"
+                android:paddingEnd="5dp"
                 android:paddingStart="15dp"
-                android:text="Time"
+                android:text="Date Range"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
                 android:textColor="@color/black_de0"
@@ -73,6 +78,7 @@
                 android:background="@drawable/selector_white_button"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minHeight="40dp"
+                android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                 android:paddingStart="15dp"
                 android:text="Org Unit"
                 android:textAlignment="textStart"
@@ -89,6 +95,7 @@
                 android:background="@drawable/selector_white_button"
                 android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                 android:minHeight="40dp"
+                android:onClick="@{()->presenter.onCatComboButtonClick()}"
                 android:paddingStart="15dp"
                 android:text="Cat Combo"
                 android:textAlignment="textStart"

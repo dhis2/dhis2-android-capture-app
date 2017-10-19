@@ -5,14 +5,35 @@ import android.graphics.Color;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
+
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 28/09/2017.
  */
 
 public class Bindings {
+
+    @BindingAdapter("date")
+    public static void setDate(TextView textView, String date) {
+        SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat formatOut = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date dateIn = formatIn.parse(date);
+            String dateOut = formatOut.format(dateIn);
+            textView.setText(dateOut);
+        } catch (ParseException e) {
+            Timber.e(e);
+        }
+
+    }
 
     @BindingAdapter("initGrid")
     public static void setLayoutManager(RecyclerView recyclerView, boolean addLayout) {

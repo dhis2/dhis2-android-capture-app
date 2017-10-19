@@ -26,6 +26,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     packagingOptions {
@@ -114,6 +115,12 @@ dependencies {
         exclude group: "com.google.code.findbugs", module: "jsr305"
     }
 
+    //TreeView
+    compile 'com.github.bmelnychuk:atv:1.2.+'
+
+    //DateRangePicker
+    compile 'com.borax12.materialdaterangepicker:library:1.9'
+
     // ReactiveX
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
@@ -139,9 +146,9 @@ dependencies {
     compile "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
 
     // Jake Wharton libraries
-        //timber
+    //timber
     compile "com.jakewharton.timber:timber:${libraries.timber}"
-        //rxbinding
+    //rxbinding
     compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 

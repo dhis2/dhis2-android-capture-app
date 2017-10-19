@@ -13,6 +13,7 @@ public abstract class HomeViewModel {
     static class Columns {
         static final String UID = "uid";
         static final String DISPLAY_NAME = "displayName";
+        static final String LAST_UPDATED = "lastUpdated";
         static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
     }
 
@@ -25,14 +26,18 @@ public abstract class HomeViewModel {
     public abstract String title();
 
     @NonNull
+    @ColumnName(Columns.LAST_UPDATED)
+    public abstract String lastUpdated();
+
+    @NonNull
     @ColumnName(Columns.HOME_VIEW_MODEL_TYPE)
     @ColumnAdapter(HomeViewModelTypeColumnAdapter.class)
     public abstract Type type();
 
     @NonNull
-    public static HomeViewModel create(@NonNull String id, @NonNull String title,
+    public static HomeViewModel create(@NonNull String id, @NonNull String title, @NonNull String lastUpdated,
                                        @NonNull Type type) {
-        return new AutoValue_HomeViewModel(id, title, type);
+        return new AutoValue_HomeViewModel(id, title, lastUpdated, type);
     }
 
     public static HomeViewModel fromCursor(Cursor cursor) {

@@ -1,5 +1,9 @@
 package com.dhis2.usescases.main.program;
 
+import android.view.Gravity;
+
+import com.dhis2.usescases.main.MainActivity;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,6 +38,27 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     @Override
     public void onItemClick(HomeViewModel homeViewModel) {
+
+    }
+
+    @Override
+    public void onOrgUnitButtonClick() {
+        ((MainActivity) view.getAbstracContext()).openDrawer(Gravity.END);
+    }
+
+    @Override
+    public void onDateRangeButtonClick() {
+        view.showRageDatePicker();
+    }
+
+
+    @Override
+    public void onTimeButtonClick() {
+
+    }
+
+    @Override
+    public void onCatComboButtonClick() {
 
     }
 }

@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +27,7 @@ import io.reactivex.functions.Consumer;
  * Created by ppajuelo on 18/10/2017.
  */
 
-public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View {
+public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View, DatePickerDialog.OnDateSetListener {
 
 
     FragmentProgramBinding binding;
@@ -39,6 +41,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
         return binding.getRoot();
+    }
+
+    @Override
+    public void showRageDatePicker() {
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+        dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
     }
 
     @Override
@@ -63,10 +77,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void renderError(String message) {
-        new AlertDialog.Builder(getActivity())
+        new AlertDialog.Builder(getContext())
                 .setPositiveButton(android.R.string.ok, null)
                 .setTitle(getString(R.string.error))
                 .setMessage(message)
                 .show();
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+
     }
 }
