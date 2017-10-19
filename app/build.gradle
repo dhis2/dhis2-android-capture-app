@@ -145,6 +145,9 @@ dependencies {
     compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 
+    //TableView
+    compile 'com.evrencoskun.library:tableview:0.6.1'
+
     //Test
 
     compile fileTree(dir: 'libs', include: ['*.jar'])

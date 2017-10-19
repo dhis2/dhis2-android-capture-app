@@ -16,4 +16,9 @@
     <color name="white_faf">#fafafa</color>
     <color name="white_dfd">#dfdfdf</color>
     <color name="gray_666">#666666</color>
+
+    <color name="table_header">#ffffff</color>
+    <color name="table_row_white">#ffffff</color>
+    <color name="table_row_gray">#979797</color>
+    <color name="table_divider">#979797</color>
 </resources>

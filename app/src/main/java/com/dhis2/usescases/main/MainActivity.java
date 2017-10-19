@@ -10,6 +10,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
+import com.dhis2.usescases.main.trackentitylist.TrackEntityListFragment;
 
 import javax.inject.Inject;
 
@@ -71,7 +72,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     private void changeFragment() {
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProgramFragment(), "HOME").commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TrackEntityListFragment(), "HOME").commit();
     }
 
     @Override
