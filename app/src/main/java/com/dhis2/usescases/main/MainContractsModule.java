@@ -23,15 +23,15 @@ public final class MainContractsModule {
     @Provides
     @PerActivity
     MainContracts.Presenter homePresenter(D2 d2,
-                                          @NonNull UserRepository userRepository,
                                           MainContracts.Interactor interactor) {
-        return new MainPresenter(d2, userRepository, interactor);
+        return new MainPresenter(d2, interactor);
     }
 
     @Provides
     @PerActivity
-    MainContracts.Interactor homeInteractor(D2 d2) {
-        return new MainInteractor(d2);
+    MainContracts.Interactor homeInteractor(D2 d2,
+                                            @NonNull UserRepository userRepository) {
+        return new MainInteractor(d2, userRepository);
     }
 
 

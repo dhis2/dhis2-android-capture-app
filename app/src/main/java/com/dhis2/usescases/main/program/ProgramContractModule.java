@@ -1,10 +1,14 @@
 package com.dhis2.usescases.main.program;
 
-import android.app.FragmentManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.squareup.sqlbrite2.BriteDatabase;
+import com.unnamed.b.atv.model.TreeNode;
+
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
@@ -37,12 +41,22 @@ public class ProgramContractModule {
 
         void showRageDatePicker();
 
+        void showTimeUnitPicker();
+
         void setUpRecycler();
 
         Consumer<List<HomeViewModel>> swapData();
 
         @UiThread
         void renderError(String message);
+
+        @NonNull
+        @UiThread
+        void addTree(TreeNode treeNode);
+
+        void setOrgUnits(List<OrganisationUnitModel> orgUnits);
+
+        void openDrawer();
     }
 
     public interface Presenter {
@@ -55,10 +69,16 @@ public class ProgramContractModule {
         void onTimeButtonClick();
 
         void onCatComboButtonClick();
+
+        void getOrgUnits(List<OrganisationUnitModel> orgs);
+
     }
 
     interface Interactor {
         void getPrograms();
+
+        void getOrgUnits(List<OrganisationUnitModel> orgs);
+
     }
 
     interface Router {

@@ -21,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_USER_CREDENTIALS = "SELECT * FROM " +
             UserCredentialsModel.TABLE + " LIMIT 1";
     private static final String SELECT_USER_ORG_UNITS = "SELECT * FROM " +
-            OrganisationUnitModel.TABLE + " LIMIT 1";
+            OrganisationUnitModel.TABLE;
 
     private final BriteDatabase briteDatabase;
 

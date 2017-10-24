@@ -1,9 +1,11 @@
 package com.dhis2.usescases.login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.ObservableField;
 
-
 import com.dhis2.data.server.ConfigurationRepository;
+import com.dhis2.usescases.main.MainActivity;
 
 import javax.inject.Inject;
 
@@ -20,7 +22,7 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
     @Inject
     LoginPresenter(LoginContractsModule.View view, ConfigurationRepository configurationRepository) {
         this.view = view;
-        this.interactor = new LoginInteractor(view,configurationRepository);
+        this.interactor = new LoginInteractor(view, configurationRepository);
     }
 
     @Override
@@ -37,10 +39,17 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
                 view.getBinding().userPass.getEditText().getText().toString());
     }
 
-    public void onTestClick(){
-        view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/demo");
-        view.getBinding().userName.getEditText().setText("admin");
-        view.getBinding().userPass.getEditText().setText("district");
+    public void onTestClick() {
+        view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
+        view.getBinding().userName.getEditText().setText("android");
+        view.getBinding().userPass.getEditText().setText("Android123");
+    }
+
+    public void unlockSession() {
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("SessionLocked", false).apply();
+        view.startActivity(MainActivity.class, null, true, true, null);
     }
 
 }

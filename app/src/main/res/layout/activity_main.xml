@@ -101,16 +101,16 @@
                     android:layout_height="48dp"
                     android:layout_gravity="bottom"
                     android:background="@color/colorPrimaryDark"
-                    android:onClick="@{() -> presenter.logOut()}"
+                    android:onClick="@{() -> presenter.blockSession()}"
                     android:text="Block Session"
-                    android:layout_above="@id/logout_button"
                     android:textColor="@color/white_faf"
-                    android:layout_marginBottom="1dp"/>
+                    android:layout_above="@+id/logout_button"
+                    android:layout_alignParentStart="true" />
             </RelativeLayout>
 
         </android.support.design.widget.NavigationView>
 
-        <android.support.design.widget.NavigationView
+      <!--  <android.support.design.widget.NavigationView
             android:id="@+id/org_unit_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -126,7 +126,7 @@
                 android:paddingStart="20dp"
                 android:paddingTop="40dp"/>
 
-        </android.support.design.widget.NavigationView>
+        </android.support.design.widget.NavigationView>-->
 
     </android.support.v4.widget.DrawerLayout>
 

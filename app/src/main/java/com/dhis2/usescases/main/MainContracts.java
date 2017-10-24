@@ -34,15 +34,9 @@ public final class MainContracts {
 
         void openDrawer(int gravity);
 
-        @NonNull
+     /*   @NonNull
         @UiThread
-        Consumer<List<OrganisationUnitModel>> setOrgUnitTree();
-
-        @NonNull
-        @UiThread
-        Consumer<Payload<OrganisationUnit>> initOrgUnitTree();
-
-        void addTree(TreeNode treeNode);
+        void addTree(TreeNode treeNode);*/
 
     }
 
@@ -60,8 +54,10 @@ public final class MainContracts {
         void blockSession();
     }
 
-    interface Interactor {
-        Call<Payload<OrganisationUnit>> getOrgUnits();
+    interface Interactor extends AbstractActivityContracts.Interactor {
+
+        void init(View view);
+
     }
 
     interface Router {

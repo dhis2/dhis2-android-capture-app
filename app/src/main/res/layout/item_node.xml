@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:textColor="@color/gray_444"
+        android:textColor="@color/gray_814"
         tools:text="Sierra Leona" />
 
 </LinearLayout>

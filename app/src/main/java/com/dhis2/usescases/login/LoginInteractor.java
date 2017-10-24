@@ -1,8 +1,11 @@
 package com.dhis2.usescases.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.data.server.ConfigurationRepository;
@@ -38,19 +41,24 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         init();
     }
 
-    private void init(){
+    private void init() {
         UserManager userManager = null;
-        if(((App)view.getContext().getApplicationContext()).getServerComponent()!=null)
-            userManager = ((App)view.getContext().getApplicationContext()).getServerComponent().userManager();
+        if (((App) view.getContext().getApplicationContext()).getServerComponent() != null)
+            userManager = ((App) view.getContext().getApplicationContext()).getServerComponent().userManager();
 
         if (userManager != null) {
             disposable.add(userManager.isUserLoggedIn()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe((isUserLoggedIn) -> {
-                        if (isUserLoggedIn) {
+                        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                "com.dhis2", Context.MODE_PRIVATE);
+                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             router.navigateToHome();
+                        }else if(prefs.getBoolean("SessionLocked", false)){
+                            view.getBinding().unlock.setVisibility(View.VISIBLE);
                         }
+
                     }, Timber::e));
         }
     }

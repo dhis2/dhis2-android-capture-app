@@ -20,5 +20,13 @@ public class AbstractActivityContracts {
         void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition);
     }
 
+    public interface Presenter {
+        void onDettach();
+    }
+
+    public interface Interactor {
+        void onDettach();
+    }
+
 
 }

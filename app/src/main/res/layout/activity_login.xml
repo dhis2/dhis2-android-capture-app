@@ -112,11 +112,22 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
+            android:id="@+id/test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/user_pass"
-            android:text="TEST"
-            android:onClick="@{()->presenter.onTestClick()}"/>
+            android:onClick="@{()->presenter.onTestClick()}"
+            android:text="TEST" />
+
+        <Button
+            android:id="@+id/unlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_pass"
+            android:layout_toEndOf="@id/test"
+            android:onClick="@{()-> presenter.unlockSession()}"
+            android:text="Unlock session"
+            android:visibility="gone" />
 
 
         <Button
@@ -124,21 +135,22 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/colorPrimary"
+            android:onClick="@{()-> presenter.onButtonClick()}"
             android:text="Log In"
             android:textColor="@color/colorAccent"
-            android:onClick="@{()-> presenter.onButtonClick()}"
             android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
 
         <RelativeLayout
+            android:id="@+id/progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/primaryAlpha"
-            android:id="@+id/progress"
             android:visibility="gone">
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"/>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
         </RelativeLayout>
     </RelativeLayout>
 </layout>

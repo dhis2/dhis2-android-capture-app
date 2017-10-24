@@ -3,7 +3,7 @@
     <color name="colorPrimary">#215e8c</color>
     <color name="colorPrimaryDark">#175482</color>
     <color name="colorAccent">#ffffff</color>
-
+    <color name="yellow_fdd">#fdd35d</color>
     <color name="primaryAlpha">#ba215e8c</color>
 
     <color name="defaultColor_1">#a3c5df</color>
@@ -17,4 +17,5 @@
     <color name="white_dfd">#dfdfdf</color>
     <color name="gray_666">#666666</color>
     <color name="gray_444">#444444</color>
+    <color name="gray_814">#81444444</color>
 </resources>

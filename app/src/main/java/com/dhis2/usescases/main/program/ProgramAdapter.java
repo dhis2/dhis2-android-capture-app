@@ -8,8 +8,16 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramBinding;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 18/10/2017.
@@ -41,6 +49,22 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     public void setData(List<HomeViewModel> program) {
         this.itemList.clear();
         this.itemList.addAll(program);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        Collections.sort(this.itemList, (ob1, ob2) -> {
+            Date date1 = calendar.getTime();
+            Date date2 = calendar.getTime();
+            try {
+                calendar.setTime(format.parse(ob1.lastUpdated()));
+                date1 = calendar.getTime();
+                calendar.setTime(format.parse(ob2.lastUpdated()));
+                date2 = calendar.getTime();
+            } catch (ParseException e) {
+                Timber.e(e);
+            }
+
+            return date2.compareTo(date1);
+        });
         notifyDataSetChanged();
     }
 
