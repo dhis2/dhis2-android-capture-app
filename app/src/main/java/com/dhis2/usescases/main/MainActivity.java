@@ -1,5 +1,6 @@
 package com.dhis2.usescases.main;
 
+import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,6 +35,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onCreate(Bundle savedInstanceState) {
 //        AndroidInjection.inject(this);
         ((App) getApplicationContext()).getUserComponent().plus(new MainContractsModule()).inject(this);
+        if (getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        else
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);

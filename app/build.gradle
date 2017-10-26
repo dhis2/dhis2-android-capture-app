@@ -31,6 +31,9 @@ android {
 
     }
 
+    configurations.all*.exclude module: 'jsr305'
+
+
     packagingOptions {
         // excluding duplicate license files
         // from jackson modules

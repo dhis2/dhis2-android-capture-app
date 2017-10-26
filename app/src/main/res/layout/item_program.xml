@@ -16,7 +16,8 @@
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,7 +28,7 @@
                 android:id="@+id/program_image"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
-                app:randomColor="@{true}" />
+                app:randomColor="@{program.id()}" />
 
             <TextView
                 android:id="@+id/program_name"

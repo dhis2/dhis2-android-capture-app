@@ -67,17 +67,6 @@
                     android:textColor="@color/black_de0"
                     android:textSize="15sp" />
 
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp"
-                android:gravity="end|center_vertical"
-
-                >
-
                 <Button
                     android:id="@+id/button_org_unit"
                     android:layout_width="0dp"
@@ -85,6 +74,7 @@
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
+                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                     android:paddingStart="15dp"
@@ -92,8 +82,7 @@
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
                     android:textColor="@color/black_de0"
-                    android:textSize="15sp"
-                    android:maxLines="1"/>
+                    android:textSize="15sp" />
 
                 <Button
                     android:id="@+id/button_cat_combo"
@@ -111,33 +100,19 @@
                     android:textAllCaps="false"
                     android:textColor="@color/black_de0"
                     android:textSize="15sp" />
+
             </LinearLayout>
 
-            <RelativeLayout
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/program_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/program_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:initGrid="@{false}"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    tools:listitem="@layout/item_program"/>
-
-                <ProgressBar
-                    android:id="@+id/program_progress"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_centerInParent="true"
-                    app:progressColor="@{@color/colorPrimary}"
-                    />
-
-            </RelativeLayout>
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                tools:listitem="@layout/item_program"
+                app:initGrid="@{true}"/>
 
         </LinearLayout>
-
-
 
         <android.support.design.widget.NavigationView
             android:id="@+id/org_unit_view"

@@ -33,7 +33,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void init(MainContracts.View view) {
         this.view = view;
-        sync();
+//        sync();
         interactor.init(view);
     }
 

@@ -4,8 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -113,8 +111,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false);
-        binding.programRecycler.setLayoutManager(gridLayoutManager);
+
         binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
         presenter.init();
     }
@@ -128,16 +125,20 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public Consumer<List<HomeViewModel>> swapData() {
 
-        return homeEntities -> ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(homeEntities);
+        return homeEntities -> {
+            binding.programProgress.setVisibility(View.GONE);
+            ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(homeEntities);
+        };
     }
 
     @Override
     public void renderError(String message) {
-        new AlertDialog.Builder(getActivity())
-                .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getString(R.string.error))
-                .setMessage(message)
-                .show();
+        if (getActivity() != null)
+            new AlertDialog.Builder(getActivity())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setTitle(getString(R.string.error))
+                    .setMessage(message)
+                    .show();
     }
 
     @Override
@@ -160,6 +161,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.setDefaultNodeLongClickListener(new TreeNode.TreeNodeLongClickListener() {
             @Override
             public boolean onLongClick(TreeNode node, Object value) {
+                node.setSelected(!node.isSelected());
                 ArrayList<String> childIds = new ArrayList<String>();
                 childIds.add(((OrganisationUnitModel) value).uid());
                 for (TreeNode childNode : node.getChildren()) {
@@ -171,6 +173,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         }
                     }
                 }
+                binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+                binding.drawerLayout.closeDrawers();
                 presenter.searchProgramByOrgUnit(childIds);
                 return true;
             }

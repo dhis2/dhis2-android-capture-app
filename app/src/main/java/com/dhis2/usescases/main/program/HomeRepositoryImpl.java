@@ -53,7 +53,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT uid, displayName, lastUpdated, '" + HomeViewModel.Type.PROGRAM.name() + "' AS homeViewModelType FROM " +
                     "Program" +
                     " INNER JOIN OrganisationUnitProgramLink ON Program.uid = OrganisationUnitProgramLink.program" +
-                    " WHERE OrganisationUnitProgramLink.organisationUnit IN (";
+                    " WHERE OrganisationUnitProgramLink.organisationUnit IN (%s) GROUP BY Program.uid";
 
 
     private final static String SELECT_ORG_UNITS =
@@ -88,9 +88,8 @@ class HomeRepositoryImpl implements HomeRepository {
             else
                 queary = queary.concat(String.format(Locale.US, ", '%s'", id));
         }
-        queary = queary.concat(")");
 
-        return briteDatabase.createQuery(TABLE_SET_2, SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT + queary)
+        return briteDatabase.createQuery(TABLE_SET_2, String.format(Locale.US,SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT ,queary))
                 .mapToList(HomeViewModel::fromCursor);
     }
 
