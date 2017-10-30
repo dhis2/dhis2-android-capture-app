@@ -4,10 +4,12 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.ArrayList;
@@ -59,6 +61,9 @@ class HomeRepositoryImpl implements HomeRepository {
     private final static String SELECT_ORG_UNITS =
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
 
+    private final static String SELECT_TRACK_ENTITIES =
+            "SELECT * FROM "+TrackedEntityInstanceModel.TABLE;
+
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityModel.TABLE, ProgramModel.TABLE};
     private static final String[] TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
@@ -89,7 +94,7 @@ class HomeRepositoryImpl implements HomeRepository {
                 queary = queary.concat(String.format(Locale.US, ", '%s'", id));
         }
 
-        return briteDatabase.createQuery(TABLE_SET_2, String.format(Locale.US,SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT ,queary))
+        return briteDatabase.createQuery(TABLE_SET_2, String.format(Locale.US, SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT, queary))
                 .mapToList(HomeViewModel::fromCursor);
     }
 
@@ -98,5 +103,11 @@ class HomeRepositoryImpl implements HomeRepository {
     public Observable<List<OrganisationUnitModel>> orgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public Observable<List<TrackedEntityInstanceModel>> trackedEntities() {
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TRACK_ENTITIES)
+                .mapToList(TrackedEntityInstanceModel::create);
     }
 }

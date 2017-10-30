@@ -1,5 +1,7 @@
 package com.dhis2.usescases.main.program;
 
+import android.util.Log;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -89,6 +91,15 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                         this::renderTree,
                         throwable -> view.renderError(throwable.getMessage())
                 ));
+
+        compositeDisposable.add(homeRepository.trackedEntities()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        trackEntities -> Log.d("TEST", "Numero total de track entities = " + trackEntities.size()),
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
+
     }
 
     private void renderTree(List<OrganisationUnitModel> myOrgs) {
