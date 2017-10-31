@@ -82,7 +82,7 @@ public class ProgramContractModule {
     }
 
     interface Router {
-        void goToProgramDetail();
+        void goToProgramDetail(HomeViewModel homeViewModel);
     }
 
 

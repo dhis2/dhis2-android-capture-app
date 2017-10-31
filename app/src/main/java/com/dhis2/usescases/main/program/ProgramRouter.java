@@ -1,5 +1,7 @@
 package com.dhis2.usescases.main.program;
 
+import android.os.Bundle;
+
 import com.dhis2.usescases.programDetail.ProgramDetailActivity;
 
 /**
@@ -15,7 +17,9 @@ public class ProgramRouter implements ProgramContractModule.Router {
     }
 
     @Override
-    public void goToProgramDetail() {
-        view.startActivity(ProgramDetailActivity.class, null, false, false, null);
+    public void goToProgramDetail(HomeViewModel homeViewModel) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("PROGRAM", homeViewModel);
+        view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
     }
 }

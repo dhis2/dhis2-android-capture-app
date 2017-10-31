@@ -1,9 +1,6 @@
 package com.dhis2.usescases.programDetail;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -28,11 +25,11 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     }
 
     @Override
-    public void getData() {
-        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances("DiszpKrYNg8", ouMode, "IpHINAT79UW").enqueue(new Callback<TrackedEntityObject>() {
+    public void getData(String programId, ProgramDetailContractModule.View view) {
+        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances("DiszpKrYNg8", ouMode, programId).enqueue(new Callback<TrackedEntityObject>() {
             @Override
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-
+                view.swapData(response.body().getTrackedEntityInstances());
             }
 
             @Override

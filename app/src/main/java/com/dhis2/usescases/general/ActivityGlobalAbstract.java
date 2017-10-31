@@ -33,10 +33,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity {
 //        NavigationController.startActivity(ActivityGlobalAbstract.this, destination, bundle, finishCurrent, finishAll, transition);
         if (finishCurrent)
             finish();
+        Intent intent = new Intent(this, destination);
+        if (bundle != null)
+            intent.putExtras(bundle);
         if (transition != null)
-            ContextCompat.startActivity(this, new Intent(this, destination), transition.toBundle());
+            ContextCompat.startActivity(this, intent, transition.toBundle());
         else
-            ContextCompat.startActivity(this, new Intent(this, destination), null);
+            ContextCompat.startActivity(this, intent, null);
     }
 
     public ActivityGlobalAbstract getAbstracContext() {

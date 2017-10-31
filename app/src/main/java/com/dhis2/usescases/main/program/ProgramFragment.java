@@ -158,26 +158,23 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.treeViewContainer.addView(treeView.getView());
         treeView.expandAll();
 
-        treeView.setDefaultNodeLongClickListener(new TreeNode.TreeNodeLongClickListener() {
-            @Override
-            public boolean onLongClick(TreeNode node, Object value) {
-                node.setSelected(!node.isSelected());
-                ArrayList<String> childIds = new ArrayList<String>();
-                childIds.add(((OrganisationUnitModel) value).uid());
-                for (TreeNode childNode : node.getChildren()) {
-                    childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
-                    for (TreeNode childNode2 : childNode.getChildren()) {
-                        childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
-                        for (TreeNode childNode3 : childNode2.getChildren()) {
-                            childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
-                        }
+        treeView.setDefaultNodeLongClickListener((node, value) -> {
+            node.setSelected(!node.isSelected());
+            ArrayList<String> childIds = new ArrayList<String>();
+            childIds.add(((OrganisationUnitModel) value).uid());
+            for (TreeNode childNode : node.getChildren()) {
+                childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
+                for (TreeNode childNode2 : childNode.getChildren()) {
+                    childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
+                    for (TreeNode childNode3 : childNode2.getChildren()) {
+                        childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
                     }
                 }
-                binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
-                binding.drawerLayout.closeDrawers();
-                presenter.searchProgramByOrgUnit(childIds);
-                return true;
             }
+            binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+            binding.drawerLayout.closeDrawers();
+            presenter.searchProgramByOrgUnit(childIds);
+            return true;
         });
 
     }

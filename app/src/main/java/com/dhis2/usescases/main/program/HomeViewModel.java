@@ -1,14 +1,17 @@
 package com.dhis2.usescases.main.program;
 
 import android.database.Cursor;
+import android.databinding.BaseObservable;
 import android.support.annotation.NonNull;
 
 import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
+import java.io.Serializable;
+
 @AutoValue
-public abstract class HomeViewModel {
+public abstract class HomeViewModel extends BaseObservable implements Serializable {
 
     static class Columns {
         static final String UID = "uid";

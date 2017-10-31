@@ -59,7 +59,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     @Override
     public void onItemClick(HomeViewModel homeViewModel) {
-        router.goToProgramDetail();
+        router.goToProgramDetail(homeViewModel);
     }
 
     @Override

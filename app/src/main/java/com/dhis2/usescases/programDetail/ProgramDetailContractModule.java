@@ -1,6 +1,11 @@
 package com.dhis2.usescases.programDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.usescases.main.program.HomeViewModel;
+
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+
+import java.util.ArrayList;
 
 /**
  * Created by ppajuelo on 31/10/2017.
@@ -29,15 +34,28 @@ public class ProgramDetailContractModule {
     }*/
 
     public interface View extends AbstractActivityContracts.View {
-
+        void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances);
     }
 
     public interface Presenter {
-        void init();
+        void init(HomeViewModel program);
+
+        void onTimeButtonClick();
+
+        void onDateRangeButtonClick();
+
+        void onOrgUnitButtonClick();
+
+        void onCatComboButtonClick();
+
+        HomeViewModel getCurrentProgram();
+
     }
 
     public interface Interactor {
-        void getData();
+        void getData(String programId, View view);
+
+
     }
 
     public interface Router {
