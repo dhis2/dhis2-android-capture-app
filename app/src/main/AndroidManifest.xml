@@ -21,13 +21,16 @@
 
         <activity
             android:name=".usescases.login.LoginActivity"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".usescases.main.MainActivity"/>
+        <activity android:name=".usescases.main.MainActivity" />
 
-        <service android:name=".data.service.SyncService"
+        <activity android:name=".usescases.programDetail.ProgramDetailActivity" />
+
+        <service
+            android:name=".data.service.SyncService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
     </application>
 

@@ -22,12 +22,14 @@ import io.reactivex.schedulers.Schedulers;
 public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     ProgramContractModule.View view;
+    ProgramContractModule.Router router;
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
     @Inject
     ProgramPresenter(ProgramContractModule.View view, HomeRepository homeRepository) {
         this.view = view;
+        this.router = new ProgramRouter(view);
         this.homeRepository = homeRepository;
         this.compositeDisposable = new CompositeDisposable();
     }
@@ -57,7 +59,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     @Override
     public void onItemClick(HomeViewModel homeViewModel) {
-
+        router.goToProgramDetail();
     }
 
     @Override

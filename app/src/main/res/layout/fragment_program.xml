@@ -85,6 +85,7 @@
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
+                    android:maxLines="1"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                     android:paddingStart="15dp"
@@ -92,8 +93,7 @@
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
                     android:textColor="@color/black_de0"
-                    android:textSize="15sp"
-                    android:maxLines="1"/>
+                    android:textSize="15sp" />
 
                 <Button
                     android:id="@+id/button_cat_combo"
@@ -123,20 +123,18 @@
                     android:layout_height="match_parent"
                     app:initGrid="@{false}"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    tools:listitem="@layout/item_program"/>
+                    tools:listitem="@layout/item_program" />
 
                 <ProgressBar
                     android:id="@+id/program_progress"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_centerInParent="true"
-                    app:progressColor="@{@color/colorPrimary}"
-                    />
+                    app:progressColor="@{@color/colorPrimary}" />
 
             </RelativeLayout>
 
         </LinearLayout>
-
 
 
         <android.support.design.widget.NavigationView
