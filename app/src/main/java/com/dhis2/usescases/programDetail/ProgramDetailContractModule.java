@@ -2,6 +2,7 @@ package com.dhis2.usescases.programDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -35,10 +36,12 @@ public class ProgramDetailContractModule {
 
     public interface View extends AbstractActivityContracts.View {
         void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances);
+
+        void addTree(TreeNode treeNode);
     }
 
     public interface Presenter {
-        void init(HomeViewModel program);
+        void init(View view, HomeViewModel program);
 
         void onTimeButtonClick();
 
@@ -53,9 +56,11 @@ public class ProgramDetailContractModule {
     }
 
     public interface Interactor {
-        void getData(String programId, View view);
+        void init(View view, String programId);
 
+        void getOrgUnits();
 
+        void getData();
     }
 
     public interface Router {

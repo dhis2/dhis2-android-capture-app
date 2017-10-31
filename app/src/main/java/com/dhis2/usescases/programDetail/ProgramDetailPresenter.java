@@ -8,6 +8,7 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 
 public class ProgramDetailPresenter implements ProgramDetailContractModule.Presenter {
 
+    private ProgramDetailContractModule.View view;
     private final ProgramDetailContractModule.Interactor interactor;
     public HomeViewModel program;
 
@@ -16,9 +17,11 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public void init(HomeViewModel program) {
+    public void init(ProgramDetailContractModule.View view, HomeViewModel program) {
         this.program = program;
-        interactor.getData(program.id());
+        this.view = view;
+        interactor.init(view, program.id());
+
     }
 
     @Override

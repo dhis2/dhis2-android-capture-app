@@ -1,6 +1,9 @@
 package com.dhis2.usescases.programDetail;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.user.UserRepository;
 
 import org.hisp.dhis.android.core.D2;
 
@@ -27,8 +30,8 @@ public class ProgramDetailModule {
 
     @Provides
     @PerActivity
-    ProgramDetailContractModule.Interactor provideInteractor(D2 d2) {
-        return new ProgramDetailInteractor(d2);
+    ProgramDetailContractModule.Interactor provideInteractor(D2 d2, @NonNull UserRepository userRepository) {
+        return new ProgramDetailInteractor(d2, userRepository);
     }
 /*
     interface View extends AbstractActivityContracts.View {

@@ -9,7 +9,10 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
@@ -37,12 +40,45 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
 
-        presenter.init(homeViewModel);
+        presenter.init(this, homeViewModel);
 
     }
 
     @Override
     public void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances) {
-        binding.recycler.setAdapter(); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+        binding.recycler.setAdapter(null); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+    }
+
+    @Override
+    public void addTree(TreeNode treeNode) {
+
+
+        binding.treeViewContainer.removeAllViews();
+
+        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
+
+        treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
+        treeView.setSelectionModeEnabled(true);
+
+        binding.treeViewContainer.addView(treeView.getView());
+        treeView.expandAll();
+
+        treeView.setDefaultNodeLongClickListener((node, value) -> {
+            node.setSelected(!node.isSelected());
+            ArrayList<String> childIds = new ArrayList<String>();
+            childIds.add(((OrganisationUnitModel) value).uid());
+            for (TreeNode childNode : node.getChildren()) {
+                childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
+                for (TreeNode childNode2 : childNode.getChildren()) {
+                    childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
+                    for (TreeNode childNode3 : childNode2.getChildren()) {
+                        childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
+                    }
+                }
+            }
+            binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+            binding.drawerLayout.closeDrawers();
+            return true;
+        });
     }
 }
