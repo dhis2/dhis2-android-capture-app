@@ -6,6 +6,10 @@ import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.user.UserRepository;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
@@ -32,6 +36,12 @@ public class ProgramDetailModule {
     @PerActivity
     ProgramDetailContractModule.Interactor provideInteractor(D2 d2, @NonNull UserRepository userRepository) {
         return new ProgramDetailInteractor(d2, userRepository);
+    }
+
+    @Provides
+    @PerActivity
+    ProgramDetailAdapter provideProgramDetailAdapter(ProgramDetailPresenter presenter){
+        return new ProgramDetailAdapter(presenter);
     }
 /*
     interface View extends AbstractActivityContracts.View {
