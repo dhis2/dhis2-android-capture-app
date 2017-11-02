@@ -2,6 +2,8 @@ package com.dhis2.usescases.programDetail;
 
 import com.dhis2.usescases.main.program.HomeViewModel;
 
+import javax.inject.Inject;
+
 /**
  * Created by ppajuelo on 31/10/2017.
  */
@@ -12,6 +14,7 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     private final ProgramDetailContractModule.Interactor interactor;
     public HomeViewModel program;
 
+    @Inject
     ProgramDetailPresenter(ProgramDetailContractModule.Interactor interactor) {
         this.interactor = interactor;
     }
@@ -21,7 +24,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
         this.program = program;
         this.view = view;
         interactor.init(view, program.id());
-
     }
 
     @Override

@@ -150,7 +150,6 @@
                         android:id="@+id/recycler"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:initGrid="@{false}"
                         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                         tools:listitem="@layout/item_program" />
 

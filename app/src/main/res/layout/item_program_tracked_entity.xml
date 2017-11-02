@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.programDetail.ProgramDetailContractModule.Presenter" />
+
+        <variable
+            name="program"
+            type="com.dhis2.usescases.main.program.HomeViewModel" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+    </data>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <ImageView
+            android:id="@+id/program_image"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            app:randomColor="@{program.id()}" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/photo_temp" />
+
+            <TextView
+                android:id="@+id/entity_attribute_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{trackEntity.trackedEntityAttributeValues().size()>0 ? trackEntity.trackedEntityAttributeValues().get(0).value() : "" , default="attribute 1"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{trackEntity.trackedEntityAttributeValues().size()>0?View.VISIBLE:View.GONE}' />
+
+            <TextView
+                android:id="@+id/entity_attribute_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_1"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{trackEntity.trackedEntityAttributeValues().size() > 1 ? trackEntity.trackedEntityAttributeValues().get(1).value() : "" , default="attribute 2"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{trackEntity.trackedEntityAttributeValues().size() > 1 ? View.VISIBLE : View.GONE}' />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_2"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{trackEntity.trackedEntityAttributeValues().size() > 2 ? trackEntity.trackedEntityAttributeValues().get(2).value() : "", default="attribute 3"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{trackEntity.trackedEntityAttributeValues().size() > 2 ? View.VISIBLE : View.GONE}' />
+
+            <TextView
+                android:id="@+id/program_org_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_3"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{ trackEntity.organisationUnit(), default="Org Unit" }'
+                android:textColor="@color/black_de0"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/program_attribute_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/program_org_unit"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text="CHW 1"
+                android:textColor="@color/black_de0"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/divisor"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/program_attribute_2"
+                android:layout_marginEnd="25dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/gray_dfe"
+                tools:ignore="InvalidId" />
+
+            <LinearLayout
+                android:id="@+id/icons_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/divisor"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/status_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:layout_marginTop="7dp"
+                    android:background="@drawable/ic_lock_open_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="9dp"
+                    android:text="Open"
+                    tools:text="Open" />
+
+                <ImageView
+                    android:id="@+id/sync_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="7dp"
+                    android:background="@drawable/ic_sync_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="9dp"
+                    android:text="Sync"
+                    tools:text="Sync" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

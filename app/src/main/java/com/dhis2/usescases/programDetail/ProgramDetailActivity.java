@@ -29,6 +29,8 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     @Inject
     ProgramDetailContractModule.Presenter presenter;
     HomeViewModel homeViewModel;
+    @Inject
+    ProgramDetailAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
+        adapter.setProgram(homeViewModel);
 
         presenter.init(this, homeViewModel);
 
@@ -46,7 +49,9 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
     @Override
     public void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances) {
-        binding.recycler.setAdapter(null); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+        binding.recycler.setAdapter(adapter); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+        adapter.addItems(trackedEntityInstances);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
