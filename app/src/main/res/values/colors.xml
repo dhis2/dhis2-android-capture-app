@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <resources>
+        <color name="colorPrimary">#215e8c</color>
+        <color name="colorPrimaryDark">#175482</color>
+        <color name="colorAccent">#ffffff</color>
+        <color name="yellow_fdd">#fdd35d</color>
+        <color name="primaryAlpha">#ba215e8c</color>
+
+        <color name="defaultColor_1">#a3c5df</color>
+        <color name="defaultColor_2">#a2dec2</color>
+        <color name="defaultColor_3">#d6dda1</color>
+        <color name="defaultColor_4">#dca0d5</color>
+
+        <color name="icon_color">#787878</color>
+        <color name="black_de0">#de000000</color>
+        <color name="white_faf">#fafafa</color>
+        <color name="white_dfd">#dfdfdf</color>
+        <color name="gray_666">#666666</color>
+        <color name="gray_444">#444444</color>
+        <color name="gray_814">#81444444</color>
+        <color name="gray_b2b">#b2b2b2</color>
+        <color name="gray_dfe">#dfe0df</color>
+        <color name="green_7ed">#7ed321</color>
+    </resources>
