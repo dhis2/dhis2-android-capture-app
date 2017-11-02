@@ -9,6 +9,8 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
+import java.util.List;
+
 /**
  * Created by frodriguez on 10/31/2017.
  */
@@ -24,10 +26,12 @@ public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(ProgramDetailPresenter presenter,
                      HomeViewModel program,
-                     TrackedEntityInstance bindableObject){
+                     String orgUnit,
+                     List<String> attributes){
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, program);
-        binding.setVariable(BR.trackEntity, bindableObject);
+        binding.setVariable(BR.orgUnit, orgUnit);
+        binding.setVariable(BR.attribute, attributes);
         binding.executePendingBindings();
     }
 

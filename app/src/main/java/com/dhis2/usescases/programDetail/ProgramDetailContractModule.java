@@ -4,6 +4,11 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.main.program.HomeViewModel;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+
+import java.util.List;
+
 /**
  * Created by ppajuelo on 31/10/2017.
  */
@@ -13,6 +18,10 @@ public class ProgramDetailContractModule {
         void swapData(TrackedEntityObject trackedEntityObject);
 
         void addTree(TreeNode treeNode);
+
+        void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes);
+
+        void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits);
     }
 
     public interface Presenter {

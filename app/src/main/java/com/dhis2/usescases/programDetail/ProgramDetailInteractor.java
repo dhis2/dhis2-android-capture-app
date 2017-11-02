@@ -8,6 +8,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +36,15 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private String ouMode = "DESCENDANTS";
     private String programId;
     private UserRepository userRepository;
+    private ProgramRepository programRepository;
     private CompositeDisposable compositeDisposable;
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
 
     @Inject
-    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository) {
+    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
+        this.programRepository = programRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -58,10 +61,25 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this::renderTree,
+                        orgsUnits -> {
+                            renderTree(orgsUnits);
+                            view.setOrgUnitNames(orgsUnits);
+                        },
+                        Timber::d)
+        );
+        compositeDisposable.add(programRepository.programAttributes(programId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::show,
                         Timber::d)
         );
     }
+
+    private void show(List<ProgramTrackedEntityAttributeModel> programAttributes) {
+        view.setAttributeOrder(programAttributes);
+    }
+
 
     @Override
     public void getData(int page) {

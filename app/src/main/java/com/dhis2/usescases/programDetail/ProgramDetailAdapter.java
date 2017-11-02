@@ -9,25 +9,27 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramTrackedEntityBinding;
 import com.dhis2.usescases.main.program.HomeViewModel;
 
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 /**
  * Created by frodriguez on 11/2/2017.
  */
 
-public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailViewHolder>{
+public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailViewHolder> {
 
     private ProgramDetailPresenter presenter;
     private List<TrackedEntityInstance> trackedEntityInstances;
+    private List<ProgramTrackedEntityAttributeModel> attributesToShow;
     private HomeViewModel program;
+    private List<OrganisationUnitModel> orgUnits;
 
     @Inject
     public ProgramDetailAdapter(ProgramDetailPresenter presenter) {
@@ -44,7 +46,24 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
 
     @Override
     public void onBindViewHolder(ProgramDetailViewHolder holder, int position) {
-        holder.bind(presenter, program, trackedEntityInstances.get(position));
+
+        TrackedEntityInstance entityInstance = trackedEntityInstances.get(position);
+
+        ArrayList<String> attributes = new ArrayList<>();
+        for (ProgramTrackedEntityAttributeModel programAttributes : attributesToShow) {
+            for (TrackedEntityAttributeValue value : entityInstance.trackedEntityAttributeValues()) {
+                if (value.trackedEntityAttribute().equals(programAttributes.trackedEntityAttribute()))
+                    attributes.add(value.value());
+            }
+        }
+
+        String orgUnit = "";
+        for (OrganisationUnitModel orgUnitModel : orgUnits) {
+            if (orgUnitModel.uid().equals(entityInstance.organisationUnit()))
+                orgUnit = orgUnitModel.displayShortName();
+        }
+
+        holder.bind(presenter, program, orgUnit, attributes);
     }
 
     @Override
@@ -52,13 +71,25 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
         return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
     }
 
-    public void addItems(List<TrackedEntityInstance> trackedEntityInstances){
-        if(trackedEntityInstances.size() > 0){
+    public void addItems(List<TrackedEntityInstance> trackedEntityInstances) {
+        if (trackedEntityInstances.size() > 0) {
             this.trackedEntityInstances.addAll(trackedEntityInstances);
         }
+        if (attributesToShow != null)
+            notifyDataSetChanged();
     }
 
-    public void setProgram(HomeViewModel program){
+    public void setAttributesToShow(List<ProgramTrackedEntityAttributeModel> attributesToShow) {
+        this.attributesToShow = attributesToShow;
+        notifyDataSetChanged();
+    }
+
+    public void setProgram(HomeViewModel program) {
         this.program = program;
+    }
+
+    public void setOrgUnits(List<OrganisationUnitModel> orgUnits) {
+        this.orgUnits = orgUnits;
+        notifyDataSetChanged();
     }
 }

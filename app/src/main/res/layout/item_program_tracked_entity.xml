@@ -5,7 +5,7 @@
     <data>
 
         <import type="android.view.View" />
-
+        <import type="java.lang.String"/>
         <variable
             name="presenter"
             type="com.dhis2.usescases.programDetail.ProgramDetailContractModule.Presenter" />
@@ -15,8 +15,12 @@
             type="com.dhis2.usescases.main.program.HomeViewModel" />
 
         <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+            name="orgUnit"
+            type="java.lang.String" />
+
+        <variable
+            name="attribute"
+            type="java.util.List&lt;String&gt;" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,11 +53,11 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="14dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{trackEntity.trackedEntityAttributeValues().size()>0 ? trackEntity.trackedEntityAttributeValues().get(0).value() : "" , default="attribute 1"}'
+                android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{trackEntity.trackedEntityAttributeValues().size()>0?View.VISIBLE:View.GONE}' />
+                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
 
             <TextView
                 android:id="@+id/entity_attribute_2"
@@ -63,11 +67,11 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{trackEntity.trackedEntityAttributeValues().size() > 1 ? trackEntity.trackedEntityAttributeValues().get(1).value() : "" , default="attribute 2"}'
+                android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{trackEntity.trackedEntityAttributeValues().size() > 1 ? View.VISIBLE : View.GONE}' />
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
 
             <TextView
                 android:id="@+id/entity_attribute_3"
@@ -77,11 +81,11 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{trackEntity.trackedEntityAttributeValues().size() > 2 ? trackEntity.trackedEntityAttributeValues().get(2).value() : "", default="attribute 3"}'
+                android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{trackEntity.trackedEntityAttributeValues().size() > 2 ? View.VISIBLE : View.GONE}' />
+                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
 
             <TextView
                 android:id="@+id/program_org_unit"
@@ -91,7 +95,7 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{ trackEntity.organisationUnit(), default="Org Unit" }'
+                android:text='@{orgUnit, default="Org Unit" }'
                 android:textColor="@color/black_de0"
                 android:textSize="16sp" />
 
@@ -103,7 +107,7 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text="CHW 1"
+                android:text="PROGRAM STAGE"
                 android:textColor="@color/black_de0"
                 android:textSize="16sp" />
 

@@ -8,7 +8,10 @@ import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+
 import java.io.Serializable;
+import java.util.List;
 
 @AutoValue
 public abstract class HomeViewModel extends BaseObservable implements Serializable {
@@ -18,6 +21,7 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
         static final String DISPLAY_NAME = "displayName";
         static final String LAST_UPDATED = "lastUpdated";
         static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
+        static final String PROGRAM_ATTRIBUTES = "programTrackedEntityAttributes";
     }
 
     @NonNull
@@ -36,6 +40,10 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
     @ColumnName(Columns.HOME_VIEW_MODEL_TYPE)
     @ColumnAdapter(HomeViewModelTypeColumnAdapter.class)
     public abstract Type type();
+
+   /* @NonNull
+    @ColumnName(Columns.PROGRAM_ATTRIBUTES)
+    public abstract List<ProgramTrackedEntityAttributeModel> programAttributes();*/
 
     @NonNull
     public static HomeViewModel create(@NonNull String id, @NonNull String title, @NonNull String lastUpdated,

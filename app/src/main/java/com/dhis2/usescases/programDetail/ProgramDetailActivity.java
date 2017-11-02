@@ -3,19 +3,22 @@ package com.dhis2.usescases.programDetail;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,13 +44,12 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
-
         presenter.init(this, homeViewModel);
 
         binding.recycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager()) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                presenter.nextPageForApi(page);
+                presenter.nextPageForApi(page + 1);
             }
         });
 
@@ -55,10 +57,27 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
     @Override
     public void swapData(TrackedEntityObject response) {
-        if (binding.recycler.getAdapter() == null)
-            binding.recycler.setAdapter(null); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
-        /*else
-            binding.recycler.getAdapter().addItems(response.getTrackedEntityInstances());*/
+        if (binding.recycler.getAdapter() == null) {
+            adapter.setProgram(homeViewModel);
+            binding.recycler.setAdapter(adapter);
+        }
+
+        adapter.addItems(response.getTrackedEntityInstances());
+    }
+
+    @Override
+    public void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes) {
+        if (binding.recycler.getAdapter() == null) {
+            adapter.setProgram(homeViewModel);
+            binding.recycler.setAdapter(adapter);
+        }
+
+        adapter.setAttributesToShow(programAttributes);
+    }
+
+    @Override
+    public void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits) {
+        adapter.setOrgUnits(orgsUnits);
     }
 
     @Override
@@ -93,4 +112,6 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
             return true;
         });
     }
+
+
 }
