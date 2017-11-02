@@ -48,4 +48,14 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     public HomeViewModel getCurrentProgram() {
         return program;
     }
+
+    @Override
+    public void nextPageForApi(int page) {
+        interactor.getData(page);
+    }
+
+    @Override
+    public void onSearchClick() {
+
+    }
 }

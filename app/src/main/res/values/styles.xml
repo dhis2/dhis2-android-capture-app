@@ -23,4 +23,9 @@
         <item name="android:colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="checkBox" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item> <!-- for check state -->
+    </style>
+
 </resources>

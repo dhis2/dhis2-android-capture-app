@@ -3,17 +3,18 @@ package com.dhis2.usescases.programDetail;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
 
@@ -42,11 +43,21 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
         presenter.init(this, homeViewModel);
 
+        binding.recycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager()) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                presenter.nextPageForApi(page);
+            }
+        });
+
     }
 
     @Override
-    public void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances) {
-        binding.recycler.setAdapter(null); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+    public void swapData(TrackedEntityObject response) {
+        if (binding.recycler.getAdapter() == null)
+            binding.recycler.setAdapter(null); //TODO: NEW ADAPTER! SI QUIERES PUEDES INTENTAR METERLO POR DAGGER
+        /*else
+            binding.recycler.getAdapter().addItems(response.getTrackedEntityInstances());*/
     }
 
     @Override

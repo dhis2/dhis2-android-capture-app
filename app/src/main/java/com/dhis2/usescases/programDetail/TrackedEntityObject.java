@@ -1,6 +1,6 @@
 package com.dhis2.usescases.programDetail;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntity;
+import org.hisp.dhis.android.core.common.Pager;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
@@ -11,9 +11,14 @@ import java.util.ArrayList;
 
 public class TrackedEntityObject {
 
+    private Pager pager;
     private ArrayList<TrackedEntityInstance> trackedEntityInstances;
 
     public ArrayList<TrackedEntityInstance> getTrackedEntityInstances() {
         return trackedEntityInstances;
+    }
+
+    public Pager getPager() {
+        return pager;
     }
 }

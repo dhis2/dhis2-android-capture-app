@@ -4,6 +4,8 @@ import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.login.LoginContractsModule;
 import com.dhis2.usescases.main.program.ProgramContractModule;
 import com.dhis2.usescases.main.program.ProgramFragment;
+import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
+import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.usescases.splash.SplashActivity;
 import com.dhis2.usescases.splash.SplashContractsModule;
 
@@ -16,7 +18,7 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 abstract class BindingModule {
 
-    /*All activities must be declare in the ActivityBuilder following this pattern:
+    /*All activities must be declare in the BindingModule following this pattern:
     *
     * @ContriburesAndroidInjector(modules = ACTIVITYMODULE.class)
     * abstract ACTIVITY bindNAMEActivity();
@@ -31,4 +33,7 @@ abstract class BindingModule {
 
     @ContributesAndroidInjector(modules = ProgramContractModule.class)
     abstract ProgramFragment programFragment();
+
+    @ContributesAndroidInjector(modules = SearchTEContractsModule.class)
+    abstract SearchTEActivity searchTEActivity();
 }

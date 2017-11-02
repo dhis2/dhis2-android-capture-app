@@ -15,10 +15,17 @@
 
     <TextView
         android:id="@+id/org_unit_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:textColor="@color/gray_814"
+        android:textColor="@color/gray_444"
         tools:text="Sierra Leona" />
+
+    <CheckBox
+        android:theme="@style/checkBox"
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

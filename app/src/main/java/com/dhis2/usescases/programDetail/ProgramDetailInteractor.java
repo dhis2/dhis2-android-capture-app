@@ -64,7 +64,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     }
 
     @Override
-    public void getData() {
+    public void getData(int page) {
         String orgQuey = "";
         for (int i = 0; i < selectedOrgUnits.size(); i++) {
             orgQuey = orgQuey.concat(selectedOrgUnits.get(i).uid());
@@ -72,10 +72,10 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 orgQuey = orgQuey.concat(",");
         }
 
-        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(orgQuey, ouMode, programId).enqueue(new Callback<TrackedEntityObject>() {
+        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(orgQuey, ouMode, programId, true, page).enqueue(new Callback<TrackedEntityObject>() {
             @Override
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                view.swapData(response.body().getTrackedEntityInstances());
+                view.swapData(response.body());
             }
 
             @Override
@@ -90,86 +90,37 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
 
         selectedOrgUnits.addAll(myOrgs);
 
-        getData();
-
-        List<OrganisationUnitModel> totalOrgs = new ArrayList<>();
-        List<OrganisationUnitModel> toRemove = new ArrayList<>();
-
-        totalOrgs.addAll(myOrgs);
+        getData(1);
 
         TreeNode root = TreeNode.root();
+        ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
+        ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
 
         int maxLevel = -1;
         int minLevel = 999;
         for (OrganisationUnitModel orgUnit : myOrgs) {
             maxLevel = orgUnit.level() > maxLevel ? orgUnit.level() : maxLevel;
             minLevel = orgUnit.level() < minLevel ? orgUnit.level() : minLevel;
+            allTreeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
         }
 
-        ArrayList<TreeNode> treeNodes;
-        for (int i = minLevel; i < maxLevel + 1; i++) {
-            treeNodes = new ArrayList<>();
-            for (OrganisationUnitModel orgUnit : myOrgs) {
-                if (orgUnit.level() == i) {
-                    treeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                }
-            }
+        for (TreeNode treeNodeParent : allTreeNodes) {
+            for (TreeNode treeNodeChild : allTreeNodes) {
+                OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
+                OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
 
-            if (i == minLevel)
-                root.addChildren(treeNodes);
-
-        }
-/*
-        //LEVEL 1
-        for (OrganisationUnitModel orgUnit : totalOrgs) {
-            if (orgUnit.level() == 1) {
-                root.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                toRemove.add(orgUnit);
-            }
-        }
-
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
-
-
-        //LEVEL 2
-        for (TreeNode level1 : root.getChildren()) {
-            for (OrganisationUnitModel orgUnit : totalOrgs) {
-                if (orgUnit.level() == 2 && ((OrganisationUnitModel) level1.getValue()).uid().equals(orgUnit.parent())) {
-                    level1.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
+                if (childOU.parent().equals(parentOU.uid())) {
+                    treeNodeParent.addChildren(treeNodeChild);
+                    treeNodesToRemove.add(treeNodeChild);
                 }
             }
         }
 
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
+        allTreeNodes.remove(treeNodesToRemove);
 
-        //LEVEL 3
-        for (TreeNode level1 : root.getChildren()) {
-            for (TreeNode level2 : level1.getChildren()) {
-                for (OrganisationUnitModel orgUnit : totalOrgs) {
-                    if (orgUnit.level() == 3 && ((OrganisationUnitModel) level2.getValue()).uid().equals(orgUnit.parent())) {
-                        level2.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                    }
-                }
-            }
+        for (TreeNode treeNode : allTreeNodes) {
+            root.addChild(treeNode);
         }
-
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
-
-        //LEVEL 4
-        for (TreeNode level1 : root.getChildren()) {
-            for (TreeNode level2 : level1.getChildren()) {
-                for (TreeNode level3 : level2.getChildren()) {
-                    for (OrganisationUnitModel orgUnit : totalOrgs) {
-                        if (orgUnit.level() == 4 && ((OrganisationUnitModel) level3.getValue()).uid().equals(orgUnit.parent())) {
-                            level3.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                        }
-                    }
-                }
-            }
-        }*/
 
 
         view.addTree(root);
@@ -177,6 +128,10 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
 
     private interface TrackedEntityInstanceService {
         @GET("28/trackedEntityInstances")
-        Call<TrackedEntityObject> trackEntityInstances(@Query("ou") String orgUnits, @Query("ouMode") String ouMode, @Query("program") String programId);
+        Call<TrackedEntityObject> trackEntityInstances(@Query("ou") String orgUnits,
+                                                       @Query("ouMode") String ouMode,
+                                                       @Query("program") String programId,
+                                                       @Query("totalPages") boolean showPager,
+                                                       @Query("page") int page);
     }
 }

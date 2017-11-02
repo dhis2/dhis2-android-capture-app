@@ -106,63 +106,34 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     private void renderTree(List<OrganisationUnitModel> myOrgs) {
 
-        List<OrganisationUnitModel> totalOrgs = new ArrayList<>();
-        List<OrganisationUnitModel> toRemove = new ArrayList<>();
-
-        totalOrgs.addAll(myOrgs);
-
         TreeNode root = TreeNode.root();
+        ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
+        ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
 
-
-        //LEVEL 1
-        for (OrganisationUnitModel orgUnit : totalOrgs) {
-            if (orgUnit.level() == 1) {
-                root.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                toRemove.add(orgUnit);
-            }
+        int maxLevel = -1;
+        int minLevel = 999;
+        for (OrganisationUnitModel orgUnit : myOrgs) {
+            maxLevel = orgUnit.level() > maxLevel ? orgUnit.level() : maxLevel;
+            minLevel = orgUnit.level() < minLevel ? orgUnit.level() : minLevel;
+            allTreeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
         }
 
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
+        for (TreeNode treeNodeParent : allTreeNodes) {
+            for (TreeNode treeNodeChild : allTreeNodes) {
+                OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
+                OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
 
-
-        //LEVEL 2
-        for (TreeNode level1 : root.getChildren()) {
-            for (OrganisationUnitModel orgUnit : totalOrgs) {
-                if (orgUnit.level() == 2 && ((OrganisationUnitModel) level1.getValue()).uid().equals(orgUnit.parent())) {
-                    level1.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
+                if (childOU.parent().equals(parentOU.uid())) {
+                    treeNodeParent.addChildren(treeNodeChild);
+                    treeNodesToRemove.add(treeNodeChild);
                 }
             }
         }
 
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
+        allTreeNodes.remove(treeNodesToRemove);
 
-        //LEVEL 3
-        for (TreeNode level1 : root.getChildren()) {
-            for (TreeNode level2 : level1.getChildren()) {
-                for (OrganisationUnitModel orgUnit : totalOrgs) {
-                    if (orgUnit.level() == 3 && ((OrganisationUnitModel) level2.getValue()).uid().equals(orgUnit.parent())) {
-                        level2.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                    }
-                }
-            }
-        }
-
-        totalOrgs.removeAll(toRemove);
-        toRemove.clear();
-
-        //LEVEL 4
-        for (TreeNode level1 : root.getChildren()) {
-            for (TreeNode level2 : level1.getChildren()) {
-                for (TreeNode level3 : level2.getChildren()) {
-                    for (OrganisationUnitModel orgUnit : totalOrgs) {
-                        if (orgUnit.level() == 4 && ((OrganisationUnitModel) level3.getValue()).uid().equals(orgUnit.parent())) {
-                            level3.addChild(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-                        }
-                    }
-                }
-            }
+        for (TreeNode treeNode : allTreeNodes) {
+            root.addChild(treeNode);
         }
 
 

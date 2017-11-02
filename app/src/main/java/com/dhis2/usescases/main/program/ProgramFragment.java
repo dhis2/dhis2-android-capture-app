@@ -158,7 +158,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.treeViewContainer.addView(treeView.getView());
         treeView.expandAll();
 
-        treeView.setDefaultNodeLongClickListener((node, value) -> {
+        treeView.setDefaultNodeClickListener((node, value) -> {
             node.setSelected(!node.isSelected());
             ArrayList<String> childIds = new ArrayList<String>();
             childIds.add(((OrganisationUnitModel) value).uid());
@@ -174,7 +174,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
             binding.drawerLayout.closeDrawers();
             presenter.searchProgramByOrgUnit(childIds);
-            return true;
         });
 
     }

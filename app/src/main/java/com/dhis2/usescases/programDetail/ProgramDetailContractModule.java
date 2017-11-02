@@ -4,38 +4,13 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.main.program.HomeViewModel;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import java.util.ArrayList;
-
 /**
  * Created by ppajuelo on 31/10/2017.
  */
 public class ProgramDetailContractModule {
 
-
- /*   @Provides
-    @PerActivity
-    View provideView(ProgramDetailActivity activity) {
-        return activity;
-    }
-
-    @Provides
-    @PerActivity
-    Presenter providesPresenter(View view,
-                                ProgramDetailInteractor interactor) {
-        return new ProgramDetailPresenter(view, interactor);
-    }
-
-    @Provides
-    @PerActivity
-    Interactor provideInteractor(D2 d2,
-                                 View view) {
-        return new ProgramDetailInteractor(d2, view);
-    }*/
-
     public interface View extends AbstractActivityContracts.View {
-        void swapData(ArrayList<TrackedEntityInstance> trackedEntityInstances);
+        void swapData(TrackedEntityObject trackedEntityObject);
 
         void addTree(TreeNode treeNode);
     }
@@ -53,6 +28,10 @@ public class ProgramDetailContractModule {
 
         HomeViewModel getCurrentProgram();
 
+        void nextPageForApi(int page);
+
+        void onSearchClick();
+
     }
 
     public interface Interactor {
@@ -60,11 +39,11 @@ public class ProgramDetailContractModule {
 
         void getOrgUnits();
 
-        void getData();
+        void getData(int page);
     }
 
     public interface Router {
-
+        void goToSearchTE();
     }
 
 }
