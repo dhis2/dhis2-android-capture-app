@@ -1,5 +1,8 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.app.DatePickerDialog;
+import android.support.annotation.Nullable;
+
 import javax.inject.Inject;
 
 /**
@@ -20,5 +23,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void init() {
         interactor.init(view);
+    }
+
+    @Override
+    public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {
+        view.showDateDialog(listener);
     }
 }

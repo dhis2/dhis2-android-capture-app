@@ -1,5 +1,8 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.app.DatePickerDialog;
+import android.support.annotation.Nullable;
+
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -33,6 +36,7 @@ public class SearchTEContractsModule {
     }
 
     @Provides
+    @PerActivity
     FormAdapter provideFormAdapter(Presenter presenter) {
         return new FormAdapter(presenter);
     }
@@ -45,11 +49,14 @@ public class SearchTEContractsModule {
     interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels);
 
+        void showDateDialog(DatePickerDialog.OnDateSetListener listener);
     }
 
-    interface Presenter {
+    public interface Presenter {
 
         void init();
+
+        void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
     }
 
     interface Interactor {

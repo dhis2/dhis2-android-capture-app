@@ -1,10 +1,20 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.dhis2.R;
+import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
+
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,11 +40,13 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
     @Override
     public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case EDITTEXT:
                 return null;
             case BUTTON:
-                return null;
+                ViewDataBinding bindingButton = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
+                return new ButtonFormHolder(bindingButton);
             case CHECKBOX:
                 return null;
             default:
@@ -44,7 +56,14 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
     @Override
     public void onBindViewHolder(FormViewHolder holder, int position) {
-        holder.bind(presenter, attributeList.get(position));
+        ((ButtonFormHolder) holder).bindData(presenter, attributeList.get(position));
+
+        ((ButtonFormHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                presenter.onDateClick(holder);
+            }
+        });
     }
 
     @Override
@@ -92,6 +111,12 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     }
 
     public void setList(List<TrackedEntityAttributeModel> modelList) {
+        ArrayList<TrackedEntityAttributeModel> toRemove = new ArrayList<>();
+        for (TrackedEntityAttributeModel trackedEntityAttributeModel : modelList) {
+            if (trackedEntityAttributeModel.valueType() != ValueType.DATE)
+                toRemove.add(trackedEntityAttributeModel);
+        }
+        modelList.removeAll(toRemove);
         this.attributeList = modelList;
         notifyDataSetChanged();
     }
