@@ -1,6 +1,7 @@
 package com.dhis2.usescases.programDetail;
 
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 
 import javax.inject.Inject;
 
@@ -58,6 +59,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     @Override
     public void onSearchClick() {
-
+        view.startActivity(SearchTEActivity.class, null, false, false, null);
     }
 }

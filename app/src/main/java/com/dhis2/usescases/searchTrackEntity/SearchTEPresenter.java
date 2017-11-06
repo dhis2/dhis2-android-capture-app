@@ -1,7 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import com.dhis2.usescases.splash.SplashContractsModule;
-
 import javax.inject.Inject;
 
 /**
@@ -11,9 +9,16 @@ import javax.inject.Inject;
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private SearchTEContractsModule.View view;
+    @Inject
+    SearchTEContractsModule.Interactor interactor;
 
     @Inject
     SearchTEPresenter(SearchTEContractsModule.View view) {
         this.view = view;
+    }
+
+    @Override
+    public void init() {
+        interactor.init(view);
     }
 }

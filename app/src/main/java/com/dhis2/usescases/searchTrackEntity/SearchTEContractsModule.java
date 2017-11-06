@@ -1,6 +1,12 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.squareup.sqlbrite2.BriteDatabase;
+
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+
+import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,15 +27,37 @@ public class SearchTEContractsModule {
         return new SearchTEPresenter(view);
     }
 
+    @Provides
+    Interactor provideInteractor(SearchRepository searchRepository) {
+        return new SearchTEInteractor(searchRepository);
+    }
+
+    @Provides
+    FormAdapter provideFormAdapter(Presenter presenter) {
+        return new FormAdapter(presenter);
+    }
+
+    @Provides
+    SearchRepository searchRepository(BriteDatabase briteDatabase) {
+        return new SearchRepositoryImpl(briteDatabase);
+    }
+
     interface View extends AbstractActivityContracts.View {
+        void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels);
 
     }
 
     interface Presenter {
 
+        void init();
     }
 
     interface Interactor {
+        void init(View view);
+
+        void getTrackedEntityAttributes();
+
+        void getProgramTrackedEntityAttributes();
 
     }
 

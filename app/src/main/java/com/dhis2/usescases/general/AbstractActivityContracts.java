@@ -6,6 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+
+import java.util.List;
+
 /**
  * Created by ppajuelo on 27/09/2017.
  */
@@ -18,6 +22,7 @@ public class AbstractActivityContracts {
         ActivityGlobalAbstract getAbstracContext();
 
         void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition);
+
     }
 
     public interface Presenter {
