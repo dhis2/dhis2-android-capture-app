@@ -16,6 +16,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
+        this.binding = binding;
     }
 
     public abstract void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject);

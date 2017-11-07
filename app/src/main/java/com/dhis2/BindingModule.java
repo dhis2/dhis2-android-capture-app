@@ -34,6 +34,4 @@ abstract class BindingModule {
     @ContributesAndroidInjector(modules = ProgramContractModule.class)
     abstract ProgramFragment programFragment();
 
-    @ContributesAndroidInjector(modules = SearchTEContractsModule.class)
-    abstract SearchTEActivity searchTEActivity();
 }

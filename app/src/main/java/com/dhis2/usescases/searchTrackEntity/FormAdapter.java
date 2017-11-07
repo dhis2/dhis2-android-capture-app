@@ -4,20 +4,17 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
 
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 06/11/2017.
@@ -33,7 +30,6 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     SearchTEContractsModule.Presenter presenter;
     List<TrackedEntityAttributeModel> attributeList;
 
-    @Inject
     public FormAdapter(SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
     }
@@ -41,29 +37,34 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     @Override
     public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ViewDataBinding binding = null;
+        FormViewHolder holder = null;
         switch (viewType) {
             case EDITTEXT:
-                return null;
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text, parent, false);
+                holder = new EditTextHolder(binding);
+                break;
             case BUTTON:
-                ViewDataBinding bindingButton = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
-                return new ButtonFormHolder(bindingButton);
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
+                holder = new ButtonFormHolder(binding);
+                break;
             case CHECKBOX:
-                return null;
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_check_box, parent, false);
+                holder = new EditTextHolder(binding);
+                break;
             default:
-                return null;
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
+                holder = new SpinnerHolder(binding);
+                break;
         }
+
+        return holder;
+
     }
 
     @Override
     public void onBindViewHolder(FormViewHolder holder, int position) {
-        ((ButtonFormHolder) holder).bindData(presenter, attributeList.get(position));
-
-        ((ButtonFormHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                presenter.onDateClick(holder);
-            }
-        });
+        holder.bind(presenter, attributeList.get(position));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     @Override
     public int getItemViewType(int position) {
         if (attributeList.get(position).optionSet() != null)
-            return 4;
+            return SPINNER;
         else
             switch (attributeList.get(position).valueType()) {
                 case AGE:
@@ -105,18 +106,12 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case UNIT_INTERVAL:
                 case ORGANISATION_UNIT:
                 default:
-                    return SPINNER;
+                    return EDITTEXT;
             }
 
     }
 
     public void setList(List<TrackedEntityAttributeModel> modelList) {
-        ArrayList<TrackedEntityAttributeModel> toRemove = new ArrayList<>();
-        for (TrackedEntityAttributeModel trackedEntityAttributeModel : modelList) {
-            if (trackedEntityAttributeModel.valueType() != ValueType.DATE)
-                toRemove.add(trackedEntityAttributeModel);
-        }
-        modelList.removeAll(toRemove);
         this.attributeList = modelList;
         notifyDataSetChanged();
     }

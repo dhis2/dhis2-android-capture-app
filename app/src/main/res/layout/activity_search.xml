@@ -40,23 +40,23 @@
                 android:id="@+id/collapsinglayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:padding="10dp"
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleGravity="top"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
                     android:orientation="vertical">
-
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/form_recycler"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:focusableInTouchMode="true"
                         app:initGrid="@{false}" />
 
                     <LinearLayout
@@ -66,10 +66,10 @@
                         android:padding="10dp">
 
                         <TextView
+                            android:id="@+id/object_counter"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="%s results found"
                             android:textColor="@color/yellow_fdd"
                             android:textSize="20sp" />
 
@@ -79,16 +79,12 @@
                             android:layout_weight="1"
                             android:background="@color/yellow_fdd"
                             android:text="ADD NEW"
-                            android:textColor="@color/colorPrimary"
-                            android:onClick="@{()->presenter.init()}"/>
+                            android:textColor="@color/colorPrimary" />
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <android.support.v7.widget.Toolbar
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_collapseMode="pin" />
+
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 

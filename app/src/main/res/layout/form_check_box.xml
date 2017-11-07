@@ -19,19 +19,15 @@
         android:layout_margin="5dp"
         tools:background="@color/colorPrimary">
 
-        <EditText
-            android:id="@+id/button_date"
+        <CheckBox
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:hint="@{attribute.displayShortName,default=text}"
+            android:layoutDirection="rtl"
+            android:text="@{attribute.displayShortName,default=text}"
             android:textAlignment="textStart"
-            android:textAllCaps="false"
             android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
-            android:textSize="16sp"
-            android:imeOptions="actionNext"
-            />
+            android:textSize="16sp" />
 
         <View
             android:layout_width="match_parent"

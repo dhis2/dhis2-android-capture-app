@@ -9,6 +9,8 @@ import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainContractsModule;
 import com.dhis2.usescases.programDetail.ProgramDetailComponent;
 import com.dhis2.usescases.programDetail.ProgramDetailModule;
+import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
+import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
 
 import dagger.Subcomponent;
 
@@ -21,6 +23,9 @@ public interface UserComponent {
 
     @NonNull
     ProgramDetailComponent plus(@NonNull ProgramDetailModule programDetailContractModule);
+
+    @NonNull
+    SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
 //    // Todo: remove this
 //    @NonNull

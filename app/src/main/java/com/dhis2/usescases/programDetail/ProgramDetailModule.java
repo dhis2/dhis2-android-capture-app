@@ -45,21 +45,4 @@ public class ProgramDetailModule {
     ProgramRepository homeRepository(BriteDatabase briteDatabase) {
         return new ProgramRepositoryImpl(briteDatabase);
     }
-/*
-    interface View extends AbstractActivityContracts.View {
-
-    }
-
-    interface Presenter {
-        void init();
-    }
-
-    interface Interactor {
-        void getData();
-    }
-
-    interface Router {
-
-    }*/
-
 }

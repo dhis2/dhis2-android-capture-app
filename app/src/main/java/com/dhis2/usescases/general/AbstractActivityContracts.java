@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 
+import com.dhis2.usescases.programDetail.TrackedEntityObject;
+
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
