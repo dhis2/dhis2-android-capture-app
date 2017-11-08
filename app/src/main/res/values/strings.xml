@@ -18,4 +18,6 @@
 
     <string name="sync_error_title">Sync Error</string>
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+
+    <string name="search_result_text">%s results found</string>
 </resources>

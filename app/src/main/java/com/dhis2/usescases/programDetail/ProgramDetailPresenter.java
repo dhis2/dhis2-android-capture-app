@@ -29,17 +29,17 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     @Override
     public void onTimeButtonClick() {
-
+        view.showTimeUnitPicker();
     }
 
     @Override
     public void onDateRangeButtonClick() {
-
+        view.showRageDatePicker();
     }
 
     @Override
     public void onOrgUnitButtonClick() {
-
+        view.openDrawer();
     }
 
     @Override
@@ -60,5 +60,15 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onSearchClick() {
         view.startActivity(SearchTEActivity.class, null, false, false, null);
+    }
+
+    @Override
+    public void onBackClick() {
+        view.back();
+    }
+
+    @Override
+    public void onDettach() {
+        interactor.onDettach();
     }
 }

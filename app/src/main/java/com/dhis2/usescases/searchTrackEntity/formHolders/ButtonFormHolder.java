@@ -2,6 +2,9 @@ package com.dhis2.usescases.searchTrackEntity.formHolders;
 
 import android.app.DatePickerDialog;
 import android.databinding.ViewDataBinding;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Bundle;
 import android.widget.DatePicker;
 
 import com.dhis2.BR;
@@ -16,10 +19,13 @@ import java.util.Locale;
  * Created by ppajuelo on 06/11/2017.
  */
 
-public class ButtonFormHolder extends FormViewHolder implements DatePickerDialog.OnDateSetListener {
+public class ButtonFormHolder extends FormViewHolder
+        implements DatePickerDialog.OnDateSetListener,
+        LocationListener {
 
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableOnject;
+    int programPosition;
 
     public ButtonFormHolder(ViewDataBinding binding) {
         super(binding);
@@ -34,9 +40,25 @@ public class ButtonFormHolder extends FormViewHolder implements DatePickerDialog
         binding.executePendingBindings();
 
         ((FormButtonTextBinding) binding).buttonDate.setOnFocusChangeListener((view, b) -> {
+            if (b) {
+                presenter.onDateClick(ButtonFormHolder.this);
+
+            }
+        });
+    }
+
+    public void bindProgramData(SearchTEContractsModule.Presenter presenter, String label, int position) {
+        this.presenter = presenter;
+        this.programPosition = position;
+        binding.setVariable(BR.presenter, presenter);
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
+
+        ((FormButtonTextBinding) binding).buttonDate.setOnFocusChangeListener((view, b) -> {
             if (b)
                 presenter.onDateClick(ButtonFormHolder.this);
         });
+
     }
 
     @Override
@@ -45,7 +67,33 @@ public class ButtonFormHolder extends FormViewHolder implements DatePickerDialog
         ((FormButtonTextBinding) binding).buttonDate.setText(date);
         ((FormButtonTextBinding) binding).buttonDate.clearFocus();
 
-        presenter.query(String.format("%s:EQ:%s", bindableOnject.uid(), date));
+        if (bindableOnject != null)
+            presenter.query(String.format("%s:GT:%s", bindableOnject.uid(), date), true);
+        else
+            presenter.query(programPosition == 0 ? "programEnrollmentStartDate=" + date : "programIncidentStartDate=" + date, false);
+
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        String coordinates = String.format(Locale.getDefault(), "%s, %s", location.getLatitude(), location.getLongitude());
+        ((FormButtonTextBinding) binding).buttonDate.setText(coordinates);
+        ((FormButtonTextBinding) binding).buttonDate.clearFocus();
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
 
     }
 }

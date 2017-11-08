@@ -12,6 +12,7 @@ import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
 
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
@@ -22,13 +23,15 @@ import java.util.List;
 
 public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
-    private final int EDITTEXT = 0;
-    private final int BUTTON = 1;
-    private final int CHECKBOX = 2;
-    private final int SPINNER = 3;
-
+    public final int EDITTEXT = 0;
+    public final int BUTTON = 1;
+    public final int CHECKBOX = 2;
+    public final int SPINNER = 3;
+    public final int COORDINATES = 4;
+    private int programData = 0;
     SearchTEContractsModule.Presenter presenter;
     List<TrackedEntityAttributeModel> attributeList;
+    ProgramModel programModel;
 
     public FormAdapter(SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
@@ -52,6 +55,14 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_check_box, parent, false);
                 holder = new EditTextHolder(binding);
                 break;
+            case SPINNER:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
+                holder = new SpinnerHolder(binding);
+                break;
+            case COORDINATES:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
+                holder = new ButtonFormHolder(binding);
+                break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
                 holder = new SpinnerHolder(binding);
@@ -64,20 +75,28 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
     @Override
     public void onBindViewHolder(FormViewHolder holder, int position) {
-        holder.bind(presenter, attributeList.get(position));
+        if (position < programData) {
+            ((ButtonFormHolder) holder).bindProgramData(presenter, position == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), position);
+        } else {
+            holder.bind(presenter, attributeList.get(position - programData));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return attributeList != null ? attributeList.size() : 0;
+        return attributeList != null ? attributeList.size() + programData : programData;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (attributeList.get(position).optionSet() != null)
+
+        if (position < programData)
+            return BUTTON;
+
+        if (attributeList.get(position - programData).optionSet() != null)
             return SPINNER;
         else
-            switch (attributeList.get(position).valueType()) {
+            switch (attributeList.get(position - programData).valueType()) {
                 case AGE:
                 case URL:
                 case TEXT:
@@ -96,9 +115,10 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case DATE:
                 case TIME:
                 case DATETIME:
-                case COORDINATE:
                 case FILE_RESOURCE:
                     return BUTTON;
+                case COORDINATE:
+                    return COORDINATES;
                 case BOOLEAN:
                     return CHECKBOX;
                 case TRUE_ONLY:
@@ -111,7 +131,16 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList) {
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel) {
+
+        if (programModel != null) {
+            this.programModel = programModel;
+            programData = programModel.displayIncidentDate() ? 2 : 1;
+        } else {
+            programData = 0;
+        }
+
+
         this.attributeList = modelList;
         notifyDataSetChanged();
     }

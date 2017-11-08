@@ -35,6 +35,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         super.onResume();
     }
 
+
+
     @Override
     public ActivityLoginBinding getBinding() {
         return binding;

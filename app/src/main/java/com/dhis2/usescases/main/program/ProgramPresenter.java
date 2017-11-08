@@ -59,7 +59,8 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
 
     @Override
     public void onItemClick(HomeViewModel homeViewModel) {
-        router.goToProgramDetail(homeViewModel);
+        if(homeViewModel.programType().equals("WITH_REGISTRATION"))
+            router.goToProgramDetail(homeViewModel);
     }
 
     @Override
@@ -123,7 +124,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
                 OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
 
-                if (childOU.parent().equals(parentOU.uid())) {
+                if (childOU.parent()!=null && childOU.parent().equals(parentOU.uid())) {
                     treeNodeParent.addChildren(treeNodeChild);
                     treeNodesToRemove.add(treeNodeChild);
                 }

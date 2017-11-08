@@ -25,12 +25,18 @@ import timber.log.Timber;
 
 public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemSelectedListener {
 
+    SearchTEContractsModule.Presenter presenter;
+    TrackedEntityAttributeModel bindableOnject;
+
     public SpinnerHolder(ViewDataBinding binding) {
         super(binding);
     }
 
     @Override
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
+        this.presenter = presenter;
+        this.bindableOnject = bindableOnject;
+
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.attribute, bindableOnject);
 
@@ -55,8 +61,11 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        if (position > 0)
+            presenter.query(String.format("%s:EQ:%s", bindableOnject.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName()), true);
+        else
+            presenter.clearFilter(bindableOnject.uid());
     }
 
     @Override

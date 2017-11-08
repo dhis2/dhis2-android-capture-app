@@ -2,6 +2,7 @@ package com.dhis2.usescases.programDetail;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
@@ -39,12 +40,14 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private ProgramRepository programRepository;
     private CompositeDisposable compositeDisposable;
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
+    private Call<TrackedEntityObject> currentCall;
 
     @Inject
     ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
         this.programRepository = programRepository;
+        Bindings.setProgramRepository(programRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -90,10 +93,19 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 orgQuey = orgQuey.concat(",");
         }
 
-        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(orgQuey, ouMode, programId, true, page).enqueue(new Callback<TrackedEntityObject>() {
+        currentCall = d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(
+                orgQuey,
+                ouMode,
+                programId,
+                true,
+                page,
+                "*,attributes[*],enrollments[enrollment,events[event,dueDate,programStage]]"
+        );
+        currentCall.enqueue(new Callback<TrackedEntityObject>() {
             @Override
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                view.swapData(response.body());
+                if (response.body() != null)
+                    view.swapData(response.body());
             }
 
             @Override
@@ -144,12 +156,19 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
         view.addTree(root);
     }
 
+    @Override
+    public void onDettach() {
+        currentCall.cancel();
+        compositeDisposable.dispose();
+    }
+
     private interface TrackedEntityInstanceService {
         @GET("28/trackedEntityInstances")
         Call<TrackedEntityObject> trackEntityInstances(@Query("ou") String orgUnits,
                                                        @Query("ouMode") String ouMode,
                                                        @Query("program") String programId,
                                                        @Query("totalPages") boolean showPager,
-                                                       @Query("page") int page);
+                                                       @Query("page") int page,
+                                                       @Query("fields") String fields);
     }
 }

@@ -1,12 +1,14 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.app.DatePickerDialog;
+import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;
 
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
@@ -19,12 +21,13 @@ import io.reactivex.Observable;
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
-        void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels);
+        void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program);
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 
         void swapData(TrackedEntityObject body);
 
+        void setPrograms(List<ProgramModel> programModels);
     }
 
     public interface Presenter {
@@ -35,7 +38,19 @@ public class SearchTEContractsModule {
 
         Observable<List<OptionModel>> getOptions(String s);
 
-        void query(String format);
+        void query(String format, boolean isAttribute);
+
+        void setProgram(ProgramModel programSelected);
+
+        void onBackClick();
+
+        void onClearClick();
+
+        void requestCoordinates(LocationListener locationListener);
+
+        void clearFilter(String uid);
+
+        void onEnrollClick(android.view.View view);
     }
 
     public interface Interactor {
@@ -48,6 +63,16 @@ public class SearchTEContractsModule {
         Observable<List<OptionModel>> getOptions(String optionSetId);
 
         void filterTrackEntities(String filter);
+
+        void setProgram(ProgramModel programSelected);
+
+        void addDateQuery(String filter);
+
+        void clear();
+
+        void clearFilter(String uid);
+
+        void enroll();
     }
 
     public interface Router {

@@ -9,12 +9,15 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramTrackedEntityBinding;
 import com.dhis2.usescases.main.program.HomeViewModel;
 
+import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -63,7 +66,19 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
                 orgUnit = orgUnitModel.displayShortName();
         }
 
-        holder.bind(presenter, program, orgUnit, attributes);
+        String stage = "";
+        if (entityInstance.enrollments() != null)
+            for (Enrollment enrollment : entityInstance.enrollments()) {
+                if (enrollment.events() != null) {
+                    List<Event> events = new ArrayList<>();
+                    events.addAll(enrollment.events());
+                    Collections.sort(events, (event, t1) -> event.dueDate().compareTo(t1.dueDate()));
+                    stage = events.get(0).programStage();
+                }
+
+            }
+
+        holder.bind(presenter, program, orgUnit, attributes, stage);
     }
 
     @Override

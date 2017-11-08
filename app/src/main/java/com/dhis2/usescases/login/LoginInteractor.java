@@ -121,6 +121,8 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         }
     }
 
+
+
     private String canonizeUrl(@NonNull String serverUrl) {
         return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }

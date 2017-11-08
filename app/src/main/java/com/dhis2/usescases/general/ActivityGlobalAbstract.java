@@ -8,12 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 /**
  * Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity {
         return this;
     }
 
-    public AppCompatActivity getActivity() {
+    public ActivityGlobalAbstract getActivity() {
         return ActivityGlobalAbstract.this;
     }
 
@@ -46,9 +47,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity {
         return this;
     }
 
+    public ActivityGlobalAbstract getAbstractActivity() {
+        return this;
+    }
+
     public void back() {
         finish();
     }
 
+    @Override
+    public void displayMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 
 }

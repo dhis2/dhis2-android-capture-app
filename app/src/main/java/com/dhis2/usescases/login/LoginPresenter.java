@@ -51,5 +51,4 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
         prefs.edit().putBoolean("SessionLocked", false).apply();
         view.startActivity(MainActivity.class, null, true, true, null);
     }
-
 }

@@ -18,7 +18,7 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 abstract class BindingModule {
 
-    /*All activities must be declare in the BindingModule following this pattern:
+    /*All activities must be declare in the BindingRepoModule following this pattern:
     *
     * @ContriburesAndroidInjector(modules = ACTIVITYMODULE.class)
     * abstract ACTIVITY bindNAMEActivity();

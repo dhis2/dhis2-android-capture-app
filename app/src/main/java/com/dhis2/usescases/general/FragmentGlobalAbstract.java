@@ -10,7 +10,7 @@ import android.support.v4.app.ActivityOptionsCompat;
  * Created by ppajuelo on 18/10/2017.
  */
 
-public class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
+public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
     public ViewDataBinding binding;
 
 
@@ -20,7 +20,22 @@ public class FragmentGlobalAbstract extends android.support.v4.app.Fragment impl
     }
 
     @Override
+    public ActivityGlobalAbstract getAbstractActivity() {
+        return (ActivityGlobalAbstract) getActivity();
+    }
+
+    @Override
+    public void back() {
+        getAbstracContext().back();
+    }
+
+    @Override
     public ActivityGlobalAbstract getAbstracContext() {
         return (ActivityGlobalAbstract) getActivity();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        getAbstractActivity().displayMessage(message);
     }
 }

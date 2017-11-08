@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#175482</color>
     <color name="colorAccent">#ffffff</color>
     <color name="yellow_fdd">#fdd35d</color>
+    <color name="yellow_fdd_alpha">#85fdd35d</color>
     <color name="primaryAlpha">#ba215e8c</color>
 
     <color name="defaultColor_1">#a3c5df</color>

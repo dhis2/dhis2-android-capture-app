@@ -26,7 +26,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="15dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                android:onClick="@{()->presenter.onBackClick()}"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -161,14 +162,16 @@
                         android:visibility="gone"
                         app:progressColor="@{@color/colorPrimary}" />
 
-                    <android.support.design.widget.FloatingActionButton
+                    <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="20dp"
+                        android:background="@drawable/ic_fab_bg"
                         android:onClick="@{()->presenter.onSearchClick()}"
-                        android:tint="@color/colorPrimary" />
+                        app:srcCompat="@drawable/ic_searchandnew"
+                        android:paddingBottom="7dp"/>
 
                 </RelativeLayout>
 

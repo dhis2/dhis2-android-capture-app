@@ -22,9 +22,15 @@ public class ProgramDetailContractModule {
         void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes);
 
         void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits);
+
+        void openDrawer();
+
+        void showTimeUnitPicker();
+
+        void showRageDatePicker();
     }
 
-    public interface Presenter {
+    public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view, HomeViewModel program);
 
         void onTimeButtonClick();
@@ -41,9 +47,11 @@ public class ProgramDetailContractModule {
 
         void onSearchClick();
 
+        void onBackClick();
+
     }
 
-    public interface Interactor {
+    public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId);
 
         void getOrgUnits();

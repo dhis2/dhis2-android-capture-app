@@ -20,4 +20,5 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public abstract void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject);
+
 }
