@@ -8,6 +8,7 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -103,9 +104,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         popupMenu.getMenu().add(1, 0, Menu.NONE, YEARLY);
         popupMenu.show();
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            binding.buttonTime.setText(item.getTitle());
-            return true;
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                binding.buttonTime.setText(item.getTitle());
+                return true;
+            }
         });
     }
 

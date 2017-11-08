@@ -1,5 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.util.Log;
+
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;
 
@@ -9,6 +11,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,6 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import timber.log.Timber;
 
 /**
@@ -200,12 +204,11 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                         view.swapData(response.body()); //TODO: Send attributeList to order data in recycler and program list
                     }
 
-                    @Override
-                    public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
-
-                    }
-                });
-    }
+            @Override
+            public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
+                Log.d("ONFAILURE", "onFailure: " + t.getMessage());
+            }
+        });
 
 
     @Override
@@ -221,7 +224,6 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
         }
 
     }
-
 
     private interface TrackedEntityInstanceService {
         @GET("28/trackedEntityInstances")

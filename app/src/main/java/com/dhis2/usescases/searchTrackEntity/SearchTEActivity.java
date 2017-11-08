@@ -4,8 +4,6 @@ import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -16,7 +14,9 @@ import com.dhis2.usescases.programDetail.TrackedEntityObject;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,6 +31,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ActivitySearchBinding binding;
     @Inject
     SearchTEPresenter presenter;
+
+    List<TrackedEntityInstance> trackedEntityInstanceList = new ArrayList<>();
+    private SearchTEAdapter searchTEAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,14 +88,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //Updates recycler when trackedEntityInstance list size < 4. Updates size counter
     @Override
     public void swapData(TrackedEntityObject body) {
-        if (body != null) {
-            binding.objectCounter.setVisibility(View.VISIBLE);
-            binding.objectCounter.setText(String.format("%s results found", body.getPager().total()));
-            binding.buttonAdd.setVisibility(body.getPager().total() < 4 ? View.VISIBLE : View.GONE);
-        } else {
-            binding.objectCounter.setVisibility(View.GONE);
-            binding.buttonAdd.setVisibility(View.GONE);
+        trackedEntityInstanceList.clear();
+
+        int counter = body.getPager().total();
+        binding.objectCounter.setText(String.format("%s results found", counter));
+
+        if(searchTEAdapter == null) {
+            searchTEAdapter = new SearchTEAdapter(presenter);
+            binding.scrollView.setAdapter(searchTEAdapter);
         }
+
+        if(counter > 0 && counter < 4) {
+            trackedEntityInstanceList.addAll(body.getTrackedEntityInstances());
+            searchTEAdapter.addItems(trackedEntityInstanceList);
+        } else{
+            searchTEAdapter.clear();
+        }
+
 
     }
 
@@ -112,4 +124,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
         });
     }
+
 }
