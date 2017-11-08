@@ -2,6 +2,7 @@ package com.dhis2.usescases.searchTrackEntity;
 
 import android.app.DatePickerDialog;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 

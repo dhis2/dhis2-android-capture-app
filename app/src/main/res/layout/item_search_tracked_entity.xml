@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
+
+        <variable
+            name="program"
+            type="com.dhis2.usescases.main.program.HomeViewModel" />
+
+        <variable
+            name="orgUnit"
+            type="java.lang.String" />
+
+        <variable
+            name="attribute"
+            type="java.util.List&lt;String&gt;" />
+
+        <variable
+            name="programString"
+            type="java.lang.String" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/tracked_entity_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/photo_temp" />
+
+            <TextView
+                android:id="@+id/entity_attribute_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
+
+            <TextView
+                android:id="@+id/entity_attribute_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_1"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_2"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+
+
+            <LinearLayout
+                android:id="@+id/linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_3"
+                android:layout_marginEnd="18dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <include
+                    layout="@layout/track_entity_programs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linear_layout"
+                android:gravity="center">
+
+
+                <ImageView
+                    android:id="@+id/add_program"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginStart="13.5dp"
+                    app:srcCompat="@drawable/ic_add_circle" />
+
+                <TextView
+                    android:id="@+id/view_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/add_program"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    android:text="View More"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="view more" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

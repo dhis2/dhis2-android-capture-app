@@ -1,5 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.util.Log;
+
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;
 
@@ -105,7 +107,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                 orgQuey = orgQuey.concat(",");
         }
 
-        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(orgQuey, ouMode, selectedProgramId, true, filterQuery).enqueue(new Callback<TrackedEntityObject>() {
+        d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(orgQuey, ouMode, selectedProgramId, true,"trackedEntityInstance,attributes[*],enrollments[enrollment,program,incidentDate]" , filterQuery).enqueue(new Callback<TrackedEntityObject>() {
             @Override
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
                 view.swapData(response.body());
@@ -113,7 +115,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
             @Override
             public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
-
+                Log.d("ONFAILURE", "onFailure: " + t.getMessage());
             }
         });
 
@@ -125,6 +127,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                                                        @Query("ouMode") String ouMode,
                                                        @Query("program") String programId,
                                                        @Query("totalPages") boolean showPager,
+                                                       @Query("fields") String fields,
                                                        @QueryMap HashMap<String, String> filterQuery);
     }
 }
