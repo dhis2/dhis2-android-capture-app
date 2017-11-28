@@ -92,6 +92,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             sync();
+            view.handleSync();
             router.navigateToHome();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             view.hideProgress();

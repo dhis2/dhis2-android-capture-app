@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="com.dhis2.R" />
+
         <variable
             name="presenter"
             type="com.dhis2.usescases.programDetail.ProgramDetailContractModule.Presenter" />
@@ -25,9 +27,9 @@
                 android:id="@+id/menu"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick="@{()->presenter.onBackClick()}"
                 android:padding="15dp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                android:onClick="@{()->presenter.onBackClick()}"/>
+                app:srcCompat="@drawable/ic_arrow_back" />
 
             <TextView
                 android:layout_width="0dp"
@@ -68,7 +70,7 @@
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/selector_white_button"
-                        android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                        android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
                         android:minHeight="40dp"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:paddingStart="15dp"
@@ -86,7 +88,7 @@
                         android:layout_marginStart="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/selector_white_button"
-                        android:drawableEnd="@drawable/ic_date_range"
+                        android:drawableEnd="@{@drawable/ic_date_range}"
                         android:minHeight="40dp"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:paddingEnd="5dp"
@@ -114,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
-                        android:background="@drawable/selector_white_button"
+                        android:background="@{@drawable/selector_white_button}"
                         android:maxLines="1"
                         android:minHeight="40dp"
                         android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
@@ -132,7 +134,7 @@
                         android:layout_marginStart="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/selector_white_button"
-                        android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                        android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
                         android:minHeight="40dp"
                         android:onClick="@{()->presenter.onCatComboButtonClick()}"
                         android:paddingStart="15dp"
@@ -163,15 +165,15 @@
                         app:progressColor="@{@color/colorPrimary}" />
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="20dp"
-                        android:background="@drawable/ic_fab_bg"
+                        android:background="@drawable/oval_23"
                         android:onClick="@{()->presenter.onSearchClick()}"
-                        app:srcCompat="@drawable/ic_searchandnew"
-                        android:paddingBottom="7dp"/>
+                        android:paddingBottom="7dp"
+                        app:srcCompat="@drawable/ic_searchandnew" />
 
                 </RelativeLayout>
 

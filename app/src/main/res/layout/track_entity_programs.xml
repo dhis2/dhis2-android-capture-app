@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -8,46 +9,50 @@
 
         <import type="java.lang.String" />
 
+        <import type="org.hisp.dhis.android.core.common.BaseNameableObjectModel" />
+
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.HomeViewModel" />
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
 
-        <variable
-            name="programString"
-            type="java.lang.String" />
     </data>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="60dp">
+        android:layout_height="60dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/program_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
-            android:textAllCaps="true"
-            android:textSize="16dp"
-            android:textStyle="bold"
-            android:text="@{ programString }"
-            tools:text="ANC" />
+            android:gravity="start">
 
+            <TextView
+                android:id="@+id/program_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{ program.displayShortName() }"
+                android:textAllCaps="true"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="ANC" />
 
-        <ImageView
-            android:id="@+id/program_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="14dp"
-            android:layout_toEndOf="@id/program_name"
-            android:src="@color/defaultColor_4"
-            tools:src="@drawable/program_shape" />
+            <ImageView
+                android:id="@+id/program_image"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_program"
+                app:tintRandomColor="@{program.uid()}" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/program_name"
             android:layout_marginBottom="8dp"
             android:orientation="horizontal">
 
@@ -55,7 +60,6 @@
                 android:id="@+id/program_last_update_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/program_name"
                 android:layout_marginStart="5dp"
                 android:text="Last Visit:"
                 android:textSize="14sp"
@@ -66,11 +70,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:text='@{ programString + "date" }'
-                android:textSize="14sp"
-                tools:text="2012-12-05" />
+                android:text="2012-12-05"
+                android:textSize="14sp" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </layout>

@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="theme"
+            type="android.content.res.Resources.Theme"/>
+
+        <variable
             name="userName"
             type="java.lang.String" />
 
@@ -31,7 +35,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/colorPrimary"
+                android:background="?colorPrimary"
                 android:gravity="center_vertical">
 
                 <ImageView
@@ -67,9 +71,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:fitsSystemWindows="false"
-            app:itemTextColor="@color/colorPrimary">
+            app:itemTextColor="?colorPrimary">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -90,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_gravity="bottom"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="?colorPrimaryDark"
                     android:onClick="@{() -> presenter.logOut()}"
                     android:text="Log Out"
                     android:textColor="@color/white_faf"
@@ -100,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_gravity="bottom"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="?colorPrimaryDark"
                     android:onClick="@{() -> presenter.blockSession()}"
                     android:text="Block Session"
                     android:textColor="@color/white_faf"

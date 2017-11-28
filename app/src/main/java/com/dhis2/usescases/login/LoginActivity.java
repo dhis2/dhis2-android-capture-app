@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.dhis2.R;
@@ -13,6 +14,8 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 
 public class LoginActivity extends ActivityGlobalAbstract implements LoginContractsModule.View {
@@ -34,7 +37,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     protected void onResume() {
         super.onResume();
     }
-
 
 
     @Override
@@ -73,6 +75,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     public void renderServerError() {
         Toast.makeText(this, getResources().getString(
                 R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void handleSync() {
+        binding.login.setVisibility(View.GONE);
+        ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+        params.height = MATCH_PARENT;
+        binding.logo.setLayoutParams(params);
     }
 
     @Override

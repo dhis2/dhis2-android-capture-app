@@ -3,9 +3,13 @@ package com.dhis2.Bindings;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -29,7 +31,7 @@ import timber.log.Timber;
 
 public class Bindings {
 
-    static ProgramRepository programRepository;
+    private static ProgramRepository programRepository;
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
@@ -59,10 +61,28 @@ public class Bindings {
 
     @BindingAdapter("randomColor")
     public static void setRandomColor(ImageView imageView, String textToColor) {
-
-        String color = String.format("#%X", textToColor.hashCode());
+        String color;
+        if (textToColor != null)
+            color = String.format("#%X", textToColor.hashCode());
+        else
+            color = "#FFFFFF";
 
         imageView.setBackgroundColor(Color.parseColor(color));
+    }
+
+    @BindingAdapter("tintRandomColor")
+    public static void setTintRandomColor(ImageView imageView, String textToColor) {
+        String color;
+        if (textToColor != null)
+            color = String.format("#%X", textToColor.hashCode());
+        else
+            color = "#FFFFFF";
+
+        Drawable original = imageView.getDrawable();
+        Drawable compat = DrawableCompat.wrap(original);
+        DrawableCompat.setTint(compat, Color.parseColor(color));
+
+        imageView.setImageDrawable(compat);
     }
 
     @BindingAdapter("progressColor")
@@ -85,4 +105,8 @@ public class Bindings {
         programRepository = mprogramRepository;
     }
 
+    @BindingAdapter("srcBackGround")
+    public static void setBackGroundCompat(View view, int drawableId) {
+        view.setBackground(ContextCompat.getDrawable(view.getContext(), drawableId));
+    }
 }

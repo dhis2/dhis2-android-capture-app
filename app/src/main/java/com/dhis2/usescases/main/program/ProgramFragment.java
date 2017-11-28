@@ -37,7 +37,6 @@ import io.reactivex.functions.Consumer;
 
 public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View, DatePickerDialog.OnDateSetListener {
 
-
     FragmentProgramBinding binding;
     @Inject
     ProgramPresenter presenter;

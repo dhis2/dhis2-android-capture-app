@@ -15,7 +15,7 @@
 
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.HomeViewModel" />
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
 
         <variable
             name="orgUnit"
@@ -38,63 +38,62 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/tracked_entity_image"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
                 android:src="@drawable/photo_temp" />
 
-            <TextView
-                android:id="@+id/entity_attribute_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="14dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:orientation="vertical"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
-                android:textColor="@color/black_de0"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
+                >
 
-            <TextView
-                android:id="@+id/entity_attribute_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/entity_attribute_1"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10.7dp"
-                android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
-                android:textColor="@color/black_de0"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
+                <TextView
+                    android:id="@+id/entity_attribute_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
 
-            <TextView
-                android:id="@+id/entity_attribute_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/entity_attribute_2"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10.7dp"
-                android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
-                android:textColor="@color/black_de0"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+                <TextView
+                    android:id="@+id/entity_attribute_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
 
+                <TextView
+                    android:id="@+id/entity_attribute_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/entity_attribute_3"
+                android:layout_below="@id/tracked_entity_image"
                 android:layout_marginEnd="18dp"
                 android:layout_marginStart="6dp"
                 android:layout_marginTop="5dp"
@@ -104,7 +103,15 @@
                     layout="@layout/track_entity_programs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    app:program="@{program}" />
+
+                <include
+                    layout="@layout/track_entity_programs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:program="@{program}" />
 
             </LinearLayout>
 
@@ -113,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear_layout"
-                android:gravity="center">
+                android:gravity="center_vertical">
 
 
                 <ImageView
@@ -121,7 +128,6 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_alignParentStart="true"
-                    android:layout_marginBottom="15dp"
                     android:layout_marginStart="13.5dp"
                     app:srcCompat="@drawable/ic_add_circle" />
 

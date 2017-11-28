@@ -25,7 +25,7 @@ public class SearchTEContractsModule {
 
         void showDateDialog(DatePickerDialog.OnDateSetListener listener);
 
-        void swapData(TrackedEntityObject body);
+        void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels);
 
         void setPrograms(List<ProgramModel> programModels);
     }

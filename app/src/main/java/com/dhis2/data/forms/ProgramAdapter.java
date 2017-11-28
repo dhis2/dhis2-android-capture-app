@@ -34,13 +34,16 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
-        if (position != 0)
-            binding.setProgram(options.get(position - 1));
-        binding.setProgramTitle("Programs");
-        binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
-        return binding.getRoot();
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
+            convertView = binding.getRoot();
+            if (position != 0)
+                binding.setProgram(options.get(position - 1));
+            binding.setProgramTitle("Programs");
+            binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
+        }
+        return convertView;
 
     }
 
@@ -59,4 +62,5 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
     public int getCount() {
         return super.getCount() + 1;
     }
+
 }

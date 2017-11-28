@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.dhis2.data.dagger.PerServer;
 import com.dhis2.data.dagger.PerUser;
@@ -31,6 +32,9 @@ import dagger.android.HasActivityInjector;
  */
 
 public class App extends MultiDexApplication implements HasActivityInjector {
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     private static final String DATABASE_NAME = "dhis.db";
 
     private static App instance;

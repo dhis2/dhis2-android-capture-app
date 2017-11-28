@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -63,19 +65,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
 
         formAdapter.setList(trackedEntityAttributeModels, program);
-
-        /*((GridLayoutManager) binding.formRecycler.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                switch (formAdapter.getItemViewType(position)) {
-                    case 4:
-                        return 2;
-                    default:
-                        return 1;
-                }
-            }
-        });*/
-
     }
 
     @Override
@@ -87,21 +76,22 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     //Updates recycler when trackedEntityInstance list size < 4. Updates size counter
     @Override
-    public void swapData(TrackedEntityObject body) {
+    public void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels) {
         trackedEntityInstanceList.clear();
 
-        int counter = body.getPager().total();
+        int counter = body != null ? body.getPager().total() : 0;
         binding.objectCounter.setText(String.format("%s results found", counter));
 
-        if(searchTEAdapter == null) {
+        if (searchTEAdapter == null) {
+            binding.scrollView.setNestedScrollingEnabled(false);
             searchTEAdapter = new SearchTEAdapter(presenter);
             binding.scrollView.setAdapter(searchTEAdapter);
         }
 
-        if(counter > 0 && counter < 4) {
+        if (counter > 0 && counter < 10000) {
             trackedEntityInstanceList.addAll(body.getTrackedEntityInstances());
-            searchTEAdapter.addItems(trackedEntityInstanceList);
-        } else{
+            searchTEAdapter.addItems(trackedEntityInstanceList, attributeModels, programModels);
+        } else {
             searchTEAdapter.clear();
         }
 

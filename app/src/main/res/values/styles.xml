@@ -28,4 +28,13 @@
         <item name="android:textColorSecondary">@color/colorPrimary</item> <!-- for check state -->
     </style>
 
+    <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimaryRed</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
 </resources>

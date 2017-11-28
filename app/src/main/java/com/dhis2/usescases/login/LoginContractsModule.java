@@ -48,6 +48,8 @@ public class LoginContractsModule {
         @UiThread
         void renderServerError();
 
+        @UiThread
+        void handleSync();
     }
 
     interface Presenter {

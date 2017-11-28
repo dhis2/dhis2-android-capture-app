@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.dhis2.R;
+
 /**
  * Created by Javi on 28/07/2017.
  */
@@ -18,6 +20,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.RedTheme);
         super.onCreate(savedInstanceState);
 
     }

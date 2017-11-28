@@ -38,7 +38,7 @@
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onTimeButtonClick()}"
                     android:paddingStart="15dp"
@@ -56,7 +56,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
-                    android:drawableEnd="@drawable/ic_date_range"
+                    android:drawableEnd="@{@drawable/ic_date_range}"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                     android:paddingEnd="5dp"
@@ -74,7 +74,7 @@
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                     android:paddingStart="15dp"
@@ -91,7 +91,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_white_button"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onCatComboButtonClick()}"
                     android:paddingStart="15dp"
@@ -108,9 +108,9 @@
                 android:id="@+id/program_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:initGrid="@{true}"
                 app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                tools:listitem="@layout/item_program"
-                app:initGrid="@{true}"/>
+                tools:listitem="@layout/item_program" />
 
         </LinearLayout>
 

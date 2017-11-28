@@ -11,7 +11,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorBackGround">
 
         <!--SCROLLING VIEW-->
 
@@ -22,43 +23,11 @@
             android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center_vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:id="@+id/object_counter"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="@color/yellow_fdd"
-                        android:textSize="20sp" />
-
-                    <Button
-                        android:id="@+id/button_add"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/selector_enroll_button"
-                        android:onClick="@{(view)->presenter.onEnrollClick(view)}"
-                        android:text="ADD NEW"
-                        android:textColor="@color/colorPrimary"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/scrollView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
         </android.support.v4.widget.NestedScrollView>
 
@@ -69,74 +38,88 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/collapsinglayout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                app:contentScrim="?attr/colorPrimary"
-                app:expandedTitleGravity="top"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusableInTouchMode="true"
-                    android:orientation="vertical">
+                    android:layout_height="?android:attr/actionBarSize">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="?android:attr/actionBarSize"
-                        app:layout_collapseMode="pin">
-
-                        <ImageButton
-                            android:id="@+id/back_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentStart="true"
-                            android:background="@android:color/transparent"
-                            android:onClick="@{()->presenter.onBackClick()}"
-                            android:padding="10dp"
-                            app:srcCompat="@drawable/ic_arrow_back" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_toEndOf="@id/back_button"
-                            android:gravity="center_vertical"
-                            android:text="Search"
-                            android:textColor="@color/white_faf"
-                            android:textSize="20sp" />
-
-                        <ImageView
-                            android:id="@+id/clear_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentEnd="true"
-                            android:onClick="@{()->presenter.onClearClick()}"
-                            android:padding="10dp"
-                            app:srcCompat="@drawable/ic_clear" />
-                    </RelativeLayout>
-
-                    <Spinner
-                        android:id="@+id/program_spinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="@android:color/transparent" />
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/form_recycler"
-                        android:layout_width="match_parent"
+                    <ImageButton
+                        android:id="@+id/back_button"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:focusableInTouchMode="true"
-                        app:initGrid="@{false}" />
+                        android:layout_alignParentStart="true"
+                        android:background="@android:color/transparent"
+                        android:onClick="@{()->presenter.onBackClick()}"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/ic_arrow_back" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@id/back_button"
+                        android:gravity="center_vertical"
+                        android:text="Search"
+                        android:textColor="@color/white_faf"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/clear_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:onClick="@{()->presenter.onClearClick()}"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/ic_clear" />
+                </RelativeLayout>
+
+                <Spinner
+                    android:id="@+id/program_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent" />
 
 
-                </LinearLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/form_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusableInTouchMode="true"
+                    app:initGrid="@{false}" />
 
+            </LinearLayout>
 
-            </android.support.design.widget.CollapsingToolbarLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:background="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/object_counter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/yellow_fdd"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/button_add"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_enroll_button"
+                    android:onClick="@{(view)->presenter.onEnrollClick(view)}"
+                    android:text="ADD NEW"
+                    android:textColor="@color/colorPrimary" />
+            </LinearLayout>
+
         </android.support.design.widget.AppBarLayout>
 
     </android.support.design.widget.CoordinatorLayout>

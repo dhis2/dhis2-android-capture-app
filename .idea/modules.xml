@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Dhis2.iml" filepath="$PROJECT_DIR$/Dhis2.iml" />
       <module fileurl="file://C:\Users\frodriguez\StudioProjects\dhis2-as\Dhis2.iml" filepath="C:\Users\frodriguez\StudioProjects\dhis2-as\Dhis2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dhis2-as.iml" filepath="$PROJECT_DIR$/dhis2-as.iml" />
+      <module fileurl="file://C:\Users\ppajuelo\Documents\GitHub\Dhis2\dhis2-as.iml" filepath="C:\Users\ppajuelo\Documents\GitHub\Dhis2\dhis2-as.iml" />
     </modules>
   </component>
 </project>

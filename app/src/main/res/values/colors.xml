@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--DEFAULT THEME-->
     <color name="colorPrimary">#215e8c</color>
     <color name="colorPrimaryDark">#175482</color>
     <color name="colorAccent">#ffffff</color>
+
+    <!--RED THEME-->
+    <color name="colorPrimaryRed">#8c2121</color>
+    <color name="colorPrimaryDarkRed">#821917</color>
+
+    <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_fdd_alpha">#85fdd35d</color>
     <color name="primaryAlpha">#ba215e8c</color>

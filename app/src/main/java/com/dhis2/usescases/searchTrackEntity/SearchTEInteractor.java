@@ -9,9 +9,9 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +25,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 import timber.log.Timber;
 
 /**
@@ -47,6 +46,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     private String enrollmentDate;
     private String incidentDate;
     private List<String> filters;
+    private List<TrackedEntityAttributeModel> attributeModelList;
 
 
     @Inject
@@ -70,6 +70,8 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
+                            attributeModelList = new ArrayList<>();
+                            attributeModelList.addAll(data);
                             view.setForm(data, selectedProgram);
                         },
                         Timber::d)
@@ -82,6 +84,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                         orgsUnits -> {
                             orgList = new ArrayList<>();
                             orgList.addAll(orgsUnits);
+                            call();
                         },
                         Timber::d)
         );
@@ -159,7 +162,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
         getTrackedEntityAttributes();
 
-        view.swapData(null);
+        view.swapData(null, null, null);
     }
 
     @Override
@@ -185,7 +188,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
         for (int i = 0; i < orgList.size(); i++) {
             orgQuey = orgQuey.concat(orgList.get(i).uid());
             if (i < orgList.size() - 1)
-                orgQuey = orgQuey.concat(",");
+                orgQuey = orgQuey.concat(";");
         }
 
         d2.retrofit().create(TrackedEntityInstanceService.class)
@@ -201,14 +204,15 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                 .enqueue(new Callback<TrackedEntityObject>() {
                     @Override
                     public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                        view.swapData(response.body()); //TODO: Send attributeList to order data in recycler and program list
+                        view.swapData(response.body(), attributeModelList, programModels); //TODO: Send attributeList to order data in recycler and program list
                     }
 
-            @Override
-            public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
-                Log.d("ONFAILURE", "onFailure: " + t.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
+                        Log.d("ONFAILURE", "onFailure: " + t.getMessage());
+                    }
+                });
+    }
 
 
     @Override

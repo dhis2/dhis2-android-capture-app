@@ -144,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="9dp"
                     android:layout_marginTop="7dp"
-                    android:background="@drawable/ic_lock_open_green" />
+                    app:srcCompat="@drawable/ic_lock_open_green" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -161,7 +161,7 @@
                     android:layout_marginBottom="9dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    android:background="@drawable/ic_sync_green" />
+                    app:srcCompat="@drawable/ic_sync_green" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -65,8 +65,8 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         orgsUnits -> {
-                            renderTree(orgsUnits);
                             view.setOrgUnitNames(orgsUnits);
+                            renderTree(orgsUnits);
                         },
                         Timber::d)
         );
@@ -90,7 +90,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
         for (int i = 0; i < selectedOrgUnits.size(); i++) {
             orgQuey = orgQuey.concat(selectedOrgUnits.get(i).uid());
             if (i < selectedOrgUnits.size() - 1)
-                orgQuey = orgQuey.concat(",");
+                orgQuey = orgQuey.concat(";");
         }
 
         currentCall = d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(

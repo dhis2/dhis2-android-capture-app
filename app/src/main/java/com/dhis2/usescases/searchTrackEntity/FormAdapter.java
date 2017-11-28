@@ -15,6 +15,7 @@ import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -138,6 +139,12 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
             programData = programModel.displayIncidentDate() ? 2 : 1;
         } else {
             programData = 0;
+            List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
+            for (TrackedEntityAttributeModel attributeModel : modelList) {
+                if (attributeModel.displayInListNoProgram())
+                    modelListnew.add(attributeModel);
+            }
+            modelList = new ArrayList<>(modelListnew);
         }
 
 
