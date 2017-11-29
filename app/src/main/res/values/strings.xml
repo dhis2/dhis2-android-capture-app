@@ -20,4 +20,5 @@
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
 
     <string name="search_result_text">%s results found</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
 </resources>

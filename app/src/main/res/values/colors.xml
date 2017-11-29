@@ -32,6 +32,13 @@
     <color name="gray_dfe">#dfe0df</color>
     <color name="green_7ed">#7ed321</color>
     <color name="red_060">#e06060</color>
+    <color name="red_a14">#a14545</color>
+
     <color name="yellow_ffd">#ffd55d</color>
+
+    <color name="event_green">#e9fdd2</color>
+    <color name="event_red">#fdc1c1</color>
+    <color name="event_yellow">#fceec4</color>
+    <color name="event_gray">#f8f9f9</color>
 
 </resources>
