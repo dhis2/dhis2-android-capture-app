@@ -3,11 +3,13 @@
     <!--DEFAULT THEME-->
     <color name="colorPrimary">#215e8c</color>
     <color name="colorPrimaryDark">#175482</color>
+    <color name="colorPrimaryLight">#7fcafe</color>
     <color name="colorAccent">#ffffff</color>
 
     <!--RED THEME-->
     <color name="colorPrimaryRed">#8c2121</color>
     <color name="colorPrimaryDarkRed">#821917</color>
+    <color name="colorPrimaryLightRed">#fe817f</color>
 
     <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
@@ -29,6 +31,7 @@
     <color name="gray_b2b">#b2b2b2</color>
     <color name="gray_dfe">#dfe0df</color>
     <color name="green_7ed">#7ed321</color>
+    <color name="red_060">#e06060</color>
     <color name="yellow_ffd">#ffd55d</color>
 
 </resources>

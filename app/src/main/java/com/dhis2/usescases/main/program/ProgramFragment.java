@@ -66,7 +66,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         );
         dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
 
-        dpd.setOnDateSetListener((view, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
+        /*dpd.setOnDateSetListener((view, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
             String fromDay = dayOfMonth < 10 ? "0" + dayOfMonth : "" + dayOfMonth;
             String fromMonth = monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : "" + (monthOfYear + 1);
             String fromYear = String.valueOf(year);
@@ -91,7 +91,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 to = toDay + "/" + toMonth;
             }
             binding.buttonDateRange.setText(from + "-" + to);
-        });
+        });*/
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                binding.buttonTime.setText(item.getTitle());
+//                binding.buttonTime.setText(item.getTitle());
                 return true;
             }
         });

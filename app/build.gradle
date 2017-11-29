@@ -157,6 +157,9 @@ dependencies {
     compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 
+    implementation 'com.github.dekoservidoni:omfm:1.0.3'
+
+
     //Test
 
     compile fileTree(dir: 'libs', include: ['*.jar'])

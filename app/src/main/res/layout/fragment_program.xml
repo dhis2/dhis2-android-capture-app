@@ -75,35 +75,6 @@
             </LinearLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp"
-                android:gravity="end|center_vertical"
-
-                >
-
-
-
-                <Button
-                    android:id="@+id/button_cat_combo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/selector_white_button"
-                    android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
-                    android:minHeight="40dp"
-                    android:onClick="@{()->presenter.onCatComboButtonClick()}"
-                    android:paddingStart="15dp"
-                    android:text="Cat Combo"
-                    android:textAlignment="textStart"
-                    android:textAllCaps="false"
-                    android:textColor="@color/black_de0"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
