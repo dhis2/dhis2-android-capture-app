@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -23,6 +26,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="10dp"
                 app:srcCompat="@drawable/ic_arrow_back" />
 
@@ -50,6 +54,7 @@
             app:layout_constraintGuide_percent=".58" />
 
         <FrameLayout
+            android:id="@+id/tei_main_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

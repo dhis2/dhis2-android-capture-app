@@ -8,12 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.databinding.FragmentTeiDataBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.ScheduleAdapter;
 
-import java.util.ArrayList;
-
-import dagger.android.support.AndroidSupportInjection;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -21,7 +19,10 @@ import dagger.android.support.AndroidSupportInjection;
 
 public class TEIDataFragment extends FragmentGlobalAbstract {
 
+    FragmentTeiDataBinding binding;
+
     static TEIDataFragment instance;
+    private TrackedEntityInstance trackedEntity;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -33,14 +34,26 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.setTrackEntity(trackedEntity);
+        binding.executePendingBindings();
     }
 
     @Override
     public void onDestroy() {
         instance = null;
         super.onDestroy();
+    }
+
+    public void setTrackedEntity(TrackedEntityInstance trackedEntity) {
+        this.trackedEntity = trackedEntity;
+        onResume();
+
     }
 }

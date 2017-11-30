@@ -1,4 +1,4 @@
-package com.dhis2.usescases.teiDashboard;
+package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
@@ -16,17 +16,17 @@ import java.util.List;
  * Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
+public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
     private List<EventModel> events;
 
-    public IndicatorsAdapter(List<EventModel> eventList) {
+    public ScheduleAdapter(List<EventModel> eventList) {
         this.events = eventList;
     }
 
     @Override
     public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemScheduleBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_indicator, parent, false);
+        ItemScheduleBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_schedule, parent, false);
         return new ScheduleViewHolder(binding);
     }
 

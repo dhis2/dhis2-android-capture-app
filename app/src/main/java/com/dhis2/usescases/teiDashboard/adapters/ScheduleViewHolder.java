@@ -1,4 +1,4 @@
-package com.dhis2.usescases.teiDashboard;
+package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.support.v7.widget.RecyclerView;
 

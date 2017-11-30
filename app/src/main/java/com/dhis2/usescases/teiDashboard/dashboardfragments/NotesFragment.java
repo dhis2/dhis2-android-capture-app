@@ -29,7 +29,6 @@ public class NotesFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false);
         return binding.getRoot();
     }

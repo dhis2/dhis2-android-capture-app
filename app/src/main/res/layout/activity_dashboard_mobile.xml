@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
+            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
     </data>
 
     <LinearLayout
@@ -24,7 +24,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                android:onClick='@{()->presenter.onBackPressed()}'/>
 
             <TextView
                 android:layout_width="0dp"

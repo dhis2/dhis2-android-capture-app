@@ -3,6 +3,7 @@ package com.dhis2.usescases.searchTrackEntity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
@@ -74,6 +75,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.addProgram.setOnClickListener(view -> menu.show());
 
         binding.executePendingBindings();
+
+        itemView.setOnClickListener(view -> presenter.onTEIClick(entityInstance.uid()));
 
     }
 

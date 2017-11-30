@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android'
 apply from: rootProject.file("plugins/android-paperwork.gradle")
 
 def libraries = rootProject.ext.libraries
@@ -14,6 +14,7 @@ repositories {
     maven {
         url("https://oss.sonatype.org/content/repositories/snapshots")
     }
+    mavenCentral()
 }
 
 android {
@@ -171,4 +172,5 @@ dependencies {
     })
 
     testCompile 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }

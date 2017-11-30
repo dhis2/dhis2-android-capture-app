@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.ScheduleAdapter;
+import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,6 @@ public class ScheduleFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
         binding.scheduleRecycler.setAdapter(new ScheduleAdapter(new ArrayList<>()));
         return binding.getRoot();

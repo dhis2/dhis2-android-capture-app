@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentIndicatorsBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.IndicatorsAdapter;
+import com.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,6 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
         binding.indicatorsRecycler.setAdapter(new IndicatorsAdapter(new ArrayList<>()));
         return binding.getRoot();

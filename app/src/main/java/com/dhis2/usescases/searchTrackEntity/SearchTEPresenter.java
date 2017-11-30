@@ -7,10 +7,15 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+
+import com.dhis2.R;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -102,5 +107,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             interactor.enroll();
         else
             this.view.displayMessage("Select a program to enable enrolling");
+    }
+
+    @Override
+    public void onTEIClick(String TEIuid) {
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", TEIuid);
+        if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
+            view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
+        else
+            view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+
+
     }
 }

@@ -5,6 +5,13 @@
 
     <data>
 
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -117,7 +124,8 @@
                             android:textSize="16sp"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Sarah Thompson" />
+                            tools:text="Sarah Thompson"
+                            android:text="@{trackEntity.uid()}"/>
 
                         <TextView
                             android:id="@+id/secundary_attribute"
@@ -151,7 +159,8 @@
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Date of diagnosis:" />
+                            tools:text="Date of diagnosis:"
+                            android:text="@{program.incidentDateLabel()}"/>
 
                         <TextView
                             android:id="@+id/enrollment_date_label"
@@ -161,7 +170,8 @@
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/incident_date_label"
-                            tools:text="Date of enrollment:" />
+                            tools:text="Date of enrollment:"
+                            android:text="@{program.enrollmentDateLabel()}"/>
 
                         <TextView
                             android:id="@+id/org_unit_label"

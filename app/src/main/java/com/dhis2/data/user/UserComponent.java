@@ -11,6 +11,8 @@ import com.dhis2.usescases.programDetail.ProgramDetailComponent;
 import com.dhis2.usescases.programDetail.ProgramDetailModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
+import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 
 import dagger.Subcomponent;
 
@@ -27,32 +29,10 @@ public interface UserComponent {
     @NonNull
     SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
-//    // Todo: remove this
-//    @NonNull
-//    HomeComponent plus(@NonNull HomeModule homeModule);
-
-//    @NonNull
-//    SearchComponent plus(@NonNull SearchModule searchModule);
-//
-//    @NonNull
-//    ReportsComponent plus(@NonNull ReportsModule reportsModule);
-//
+    @NonNull
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
-//
-//    @NonNull
-//    SelectionComponent plus(@NonNull SelectionModule selectionModule);
-//
-//    @NonNull
-//    OptionSelectionComponent plus(@NonNull OptionSelectionModule optionSelectionModule,
-//                                  @NonNull DataEntryStoreModule dataEntryStoreModule);
-//
-//    @NonNull
-//    FormComponent plus(@NonNull FormModule formModule);
-//
-//    @NonNull
-//    CreateItemsComponent plus(@NonNull CreateItemsModule createItemsModule);
-//
-//    NavigationComponent plus(@NonNull NavigationModule navigationModule);
+
 }

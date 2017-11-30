@@ -10,6 +10,7 @@ import com.dhis2.usescases.programDetail.TrackedEntityObject;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.List;
 
@@ -51,6 +52,8 @@ public class SearchTEContractsModule {
         void clearFilter(String uid);
 
         void onEnrollClick(android.view.View view);
+
+        void onTEIClick(String TEIuid);
     }
 
     public interface Interactor {

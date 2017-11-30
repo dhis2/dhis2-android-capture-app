@@ -8,11 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
-import com.dhis2.databinding.FragmentIndicatorsBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.IndicatorsAdapter;
-
-import java.util.ArrayList;
 
 import dagger.android.support.AndroidSupportInjection;
 
@@ -35,7 +31,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         return binding.getRoot();
     }
