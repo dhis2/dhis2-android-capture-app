@@ -1,12 +1,13 @@
 package com.dhis2.usescases.teiDashboard;
 
+import com.dhis2.data.metadata.MetadataRepository;
+
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -28,17 +29,21 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     private CompositeDisposable disposable;
     private TeiDashboardContracts.View view;
 
+    private TrackedEntityInstance trackedEntityInstance;
+    private String programUid;
+
     @Inject
-    public TeiDashboardInteractor(D2 d2, DashboardRepository dashboardRepository) {
+    public TeiDashboardInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         disposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(TeiDashboardContracts.View view, String teiUid) {
+    public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
         this.view = view;
         getTrackedEntityInstance(teiUid);
+        this.programUid = programUid;
     }
 
     @Override
@@ -47,7 +52,8 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
                 .enqueue(new Callback<TrackedEntityInstance>() {
                     @Override
                     public void onResponse(Call<TrackedEntityInstance> call, Response<TrackedEntityInstance> response) {
-                        view.setData(response.body());
+                        trackedEntityInstance = response.body();
+                        getProgramData(programUid);
                     }
 
                     @Override
@@ -55,6 +61,17 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
 
                     }
                 });
+
+    }
+
+    @Override
+    public void getProgramData(String programId) {
+
+        Observable.zip(dashboardRepository.getProgramData(programId), dashboardRepository.getProgramStages(programId),
+                DashboardProgramModel::new)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> view.setData(trackedEntityInstance, data));
 
     }
 

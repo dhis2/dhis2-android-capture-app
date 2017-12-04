@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatDelegate;
 import com.dhis2.data.dagger.PerServer;
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.database.DbModule;
+import com.dhis2.data.metadata.MetadataModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.schedulers.SchedulersProviderImpl;
 import com.dhis2.data.server.ServerComponent;
@@ -76,6 +77,7 @@ public class App extends MultiDexApplication implements HasActivityInjector {
                 .application(this)
                 .database(new DbModule(DATABASE_NAME))
                 .scheduler(new SchedulerModule(new SchedulersProviderImpl()))
+                .metadata(new MetadataModule())
                 .build();
         appComponent.inject(this);
 

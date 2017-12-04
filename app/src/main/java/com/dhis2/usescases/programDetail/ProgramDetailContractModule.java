@@ -58,9 +58,4 @@ public class ProgramDetailContractModule {
 
         void getData(int page);
     }
-
-    public interface Router {
-        void goToSearchTE();
-    }
-
 }

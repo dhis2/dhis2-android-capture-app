@@ -4,6 +4,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -33,6 +34,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
     );
 
+    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
+
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> ATTRIBUTE_TABLE_SET = new HashSet<>(Arrays.asList(ATTRUBUTE_TABLES));
 
@@ -59,5 +63,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId) {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitId + "'")
                 .mapToOne(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public Observable<List<ProgramStageModel>> getProgramStages(String programUid) {
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY + "'" + programUid + "'")
+                .mapToList(ProgramStageModel::create);
     }
 }

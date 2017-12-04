@@ -51,4 +51,27 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return isTablet ? 4 : 5;
     }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        String title;
+        switch (position){
+            default:
+                title = "Program";
+                break;
+            case 1:
+                title = "Relationships";
+                break;
+            case 2:
+                title = "Indicators";
+                break;
+            case 3:
+                title = "Schedule";
+                break;
+            case 4:
+                title = "Notes";
+                break;
+        }
+        return title;
+    }
 }

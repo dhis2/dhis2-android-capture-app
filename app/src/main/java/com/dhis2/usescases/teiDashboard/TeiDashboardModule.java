@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -29,8 +30,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Interactor provideInteractor(D2 d2, DashboardRepository dashboardRepository) {
-        return new TeiDashboardInteractor(d2, dashboardRepository);
+    TeiDashboardContracts.Interactor provideInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+        return new TeiDashboardInteractor(d2, dashboardRepository,metadataRepository);
     }
 
     @Provides

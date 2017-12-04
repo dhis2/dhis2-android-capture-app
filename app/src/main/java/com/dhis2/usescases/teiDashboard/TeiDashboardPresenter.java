@@ -21,9 +21,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void init(TeiDashboardContracts.View view, String teiUid) {
+    public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
         this.view = view;
-        interactor.init(view, teiUid);
+        interactor.init(view, teiUid, programUid);
     }
 
     @Override

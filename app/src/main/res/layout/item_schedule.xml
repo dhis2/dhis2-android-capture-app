@@ -9,7 +9,7 @@
 
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.EventModel" />
+            type="org.hisp.dhis.android.core.event.Event" />
 
         <variable
             name="isfirst"

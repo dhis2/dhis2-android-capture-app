@@ -23,7 +23,7 @@ import io.reactivex.Observable;
 public class SearchRepositoryImpl implements SearchRepository {
 
     private final BriteDatabase briteDatabase;
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION'";
+    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntity = ";
     private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
             " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
             " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID +" = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
@@ -60,8 +60,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Observable<List<ProgramModel>> programsWithRegistration() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION)
+    public Observable<List<ProgramModel>> programsWithRegistration(String programTypeId) {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION+"'"+programTypeId+"'")
                 .mapToList(ProgramModel::create);
     }
 }

@@ -10,7 +10,6 @@ import com.dhis2.usescases.programDetail.TrackedEntityObject;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.List;
 
@@ -29,11 +28,13 @@ public class SearchTEContractsModule {
         void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels);
 
         void setPrograms(List<ProgramModel> programModels);
+
+        void clearList();
     }
 
     public interface Presenter {
 
-        void init(SearchTEContractsModule.View view);
+        void init(SearchTEContractsModule.View view, String trackedEntityType);
 
         void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
 
@@ -57,7 +58,7 @@ public class SearchTEContractsModule {
     }
 
     public interface Interactor {
-        void init(View view);
+        void init(View view, String trackedEntityType);
 
         void getTrackedEntityAttributes();
 

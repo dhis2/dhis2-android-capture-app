@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="org.hisp.dhis.android.core.enrollment.Enrollment"/>
+
         <variable
             name="program"
             type="org.hisp.dhis.android.core.program.ProgramModel" />
@@ -46,7 +48,8 @@
                     android:layout_marginEnd="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_lock_open_green" />
+                    app:srcCompat="@drawable/ic_lock_open_green"
+                    app:enrolmentIcon='@{trackEntity.enrollments().get(0).enrollmentStatus()}'/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,7 +63,7 @@
                     app:layout_constraintEnd_toEndOf="@id/program_lock"
                     app:layout_constraintStart_toStartOf="@id/program_lock"
                     app:layout_constraintTop_toBottomOf="@id/program_lock"
-                    tools:text="Open" />
+                    app:enrolmentText='@{trackEntity.enrollments().get(0).enrollmentStatus()}'/>
 
 
                 <TextView
@@ -75,7 +78,7 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    tools:text="VIEW MORE" />
+                    android:text="VIEW MORE" />
 
                 <TextView
                     android:id="@+id/edit_tei"
@@ -89,7 +92,7 @@
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/view_tei"
-                    tools:text="EDIT" />
+                    android:text="EDIT" />
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/data_layout"
@@ -98,6 +101,7 @@
                     app:alignContent="stretch"
                     app:alignItems="stretch"
                     app:flexWrap="wrap"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/view_tei"
                     app:layout_constraintEnd_toStartOf="@id/program_lock"
                     app:layout_constraintStart_toStartOf="parent">
@@ -160,7 +164,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Date of diagnosis:"
-                            android:text="@{program.incidentDateLabel()}"/>
+                            android:text='@{program.incidentDateLabel(),default="Incident date"}'/>
 
                         <TextView
                             android:id="@+id/enrollment_date_label"
@@ -171,7 +175,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/incident_date_label"
                             tools:text="Date of enrollment:"
-                            android:text="@{program.enrollmentDateLabel()}"/>
+                            android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'/>
 
                         <TextView
                             android:id="@+id/org_unit_label"
@@ -181,7 +185,7 @@
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date_label"
-                            tools:text="Enrolling OU:" />
+                            android:text="Enrolling OU:" />
 
                         <TextView
                             android:id="@+id/incident_date"
@@ -193,7 +197,8 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/incident_date_label"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="DD/MM/YYYY" />
+                            tools:text="DD/MM/YYYY"
+                            app:date="@{trackEntity.enrollments().get(0).dateOfIncident()}"/>
 
                         <TextView
                             android:id="@+id/enrollment_date"
@@ -204,7 +209,9 @@
                             android:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="@id/incident_date"
                             app:layout_constraintTop_toBottomOf="@id/incident_date"
-                            tools:text="DD/MM/YYYY" />
+                            tools:text="DD/MM/YYYY"
+                            app:date="@{trackEntity.enrollments().get(0).dateOfEnrollment()}"/>
+
 
                         <TextView
                             android:id="@+id/org_unit"
@@ -215,7 +222,7 @@
                             android:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="@id/incident_date"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date"
-                            tools:text="Ngelehum CHC" />
+                            android:text="ORG UNIT" />
                     </android.support.constraint.ConstraintLayout>
                 </com.google.android.flexbox.FlexboxLayout>
 
@@ -230,6 +237,7 @@
             android:paddingStart="6dp"
             android:paddingTop="30dp"
             app:layout_constraintTop_toBottomOf="@id/tei_data"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/item_event" />
 
     </android.support.constraint.ConstraintLayout>

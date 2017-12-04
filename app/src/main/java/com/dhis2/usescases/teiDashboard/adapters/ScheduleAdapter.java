@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.ItemScheduleBinding;
 
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.List;
@@ -18,9 +19,9 @@ import java.util.List;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
-    private List<EventModel> events;
+    private List<Event> events;
 
-    public ScheduleAdapter(List<EventModel> eventList) {
+    public ScheduleAdapter(List<Event> eventList) {
         this.events = eventList;
     }
 

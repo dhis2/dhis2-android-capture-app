@@ -37,15 +37,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     SearchTEContractsModule.Interactor interactor;
 
     private LocationManager locationManager;
+    private String selectedProgram;
 
     @Inject
     SearchTEPresenter() {
     }
 
     @Override
-    public void init(SearchTEContractsModule.View view) {
+    public void init(SearchTEContractsModule.View view, String trackedEntityType) {
         this.view = view;
-        interactor.init(view);
+        interactor.init(view, trackedEntityType);
         locationManager = (LocationManager) view.getAbstracContext().getSystemService(Context.LOCATION_SERVICE);
     }
 
@@ -69,7 +70,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(ProgramModel programSelected) {
+        view.clearList();
         interactor.setProgram(programSelected);
+        selectedProgram = programSelected.uid();
     }
 
     @Override
@@ -113,6 +116,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void onTEIClick(String TEIuid) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);
+        bundle.putString("PROGRAM_UID", selectedProgram);
         if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
             view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
         else

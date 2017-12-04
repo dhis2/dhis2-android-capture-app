@@ -4,15 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="event"
+            type="org.hisp.dhis.android.core.event.Event"/>
+        <variable
+            name="stage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
     </data>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginBottom="10dp"
-        app:cardBackgroundColor="@color/event_green"
-        app:cardCornerRadius="2dp">
+        app:cardCornerRadius="2dp"
+        app:eventColor="@{event.status()}">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -31,13 +36,19 @@
 
             <TextView
                 android:id="@+id/event_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:fontFamily="sans-serif"
+                android:gravity="start"
+                android:maxLines="1"
+                android:text='@{stage.displayName,default="Stage Name"}'
                 android:textColor="#444444"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="ANC 4" />
 
@@ -63,7 +74,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/arrow_down"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Read only" />
+                tools:text="Read only"
+                app:eventText='@{event.status()}'/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -75,7 +87,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="03/10/2017" />
+                tools:text="03/10/2017"
+                app:date='@{event.eventDate}'/>
 
         </android.support.constraint.ConstraintLayout>
 

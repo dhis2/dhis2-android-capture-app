@@ -27,7 +27,7 @@ import retrofit2.http.Query;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 31/10/2017.
+ * Created by ppajuelo on 31/10/2017 .
  */
 
 public class ProgramDetailInteractor implements ProgramDetailContractModule.Interactor {

@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntity;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
@@ -45,14 +46,14 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final static String SELECT_PROGRAMS_VIEW_MODELS = String.format(Locale.US,
             "SELECT * FROM " +
-                    "(SELECT %s,%s,%s,%s,'%s' AS %s FROM %s) " +
+                    "(SELECT %s,%s,%s,%s,%s,'%s' AS %s FROM %s) " +
                     "ORDER BY %s DESC",
-            ProgramModel.Columns.PROGRAM_TYPE, ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, ProgramModel.Columns.LAST_UPDATED,
+            ProgramModel.Columns.TRACKED_ENTITY,ProgramModel.Columns.PROGRAM_TYPE, ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, ProgramModel.Columns.LAST_UPDATED,
             HomeViewModel.Type.PROGRAM.name(), HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE, ProgramModel.TABLE,
             HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE);
 
     public final static String SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT =
-            "SELECT uid, displayName, lastUpdated, '" + HomeViewModel.Type.PROGRAM.name() + "' AS homeViewModelType FROM " +
+            "SELECT trackedEntity, uid, displayName, lastUpdated, '" + HomeViewModel.Type.PROGRAM.name() + "' AS homeViewModelType FROM " +
                     "Program" +
                     " INNER JOIN OrganisationUnitProgramLink ON Program.uid = OrganisationUnitProgramLink.program" +
                     " WHERE OrganisationUnitProgramLink.organisationUnit IN (%s) GROUP BY Program.uid";

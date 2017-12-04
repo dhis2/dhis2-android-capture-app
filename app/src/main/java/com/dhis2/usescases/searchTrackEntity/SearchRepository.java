@@ -24,5 +24,5 @@ public interface SearchRepository {
 
     Observable<List<OptionModel>> optionSet(String optionSetId);
 
-    Observable<List<ProgramModel>> programsWithRegistration();
+    Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
 }

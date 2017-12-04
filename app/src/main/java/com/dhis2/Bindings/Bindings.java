@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +15,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dhis2.R;
 import com.dhis2.usescases.programDetail.ProgramRepository;
+
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventStatus;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,6 +48,16 @@ public class Bindings {
             textView.setText(dateOut);
         } catch (ParseException e) {
             Timber.e(e);
+        }
+
+    }
+
+    @BindingAdapter("date")
+    public static void parseDate(TextView textView, Date date) {
+        if (date != null) {
+            SimpleDateFormat formatOut = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String dateOut = formatOut.format(date);
+            textView.setText(dateOut);
         }
 
     }
@@ -109,4 +124,123 @@ public class Bindings {
     public static void setBackGroundCompat(View view, int drawableId) {
         view.setBackground(ContextCompat.getDrawable(view.getContext(), drawableId));
     }
+
+    @BindingAdapter("enrolmentIcon")
+    public static void setEnrolmentIcon(ImageView view, EnrollmentStatus status) {
+        Drawable lock;
+        if (status == null)
+            status = EnrollmentStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                break;
+            case COMPLETED:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                break;
+            case CANCELLED:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
+                break;
+            default:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
+                break;
+        }
+
+        view.setImageDrawable(lock);
+
+    }
+
+    @BindingAdapter("enrolmentText")
+    public static void setEnrolmentText(TextView view, EnrollmentStatus status) {
+        String text;
+        if (status == null)
+            status = EnrollmentStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                text = "Open";
+                break;
+            case COMPLETED:
+                text = "Completed";
+                break;
+            case CANCELLED:
+                text = "Cancelled";
+                break;
+            default:
+                text = "Read only";
+                break;
+        }
+
+        view.setText(text);
+    }
+
+    @BindingAdapter("eventIcon")
+    public static void setEventIcon(ImageView view, EnrollmentStatus status) {
+        Drawable lock;
+        if (status == null)
+            status = EnrollmentStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                break;
+            case COMPLETED:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                break;
+            case CANCELLED:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
+                break;
+            default:
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
+                break;
+        }
+
+        view.setImageDrawable(lock);
+
+    }
+
+    @BindingAdapter("eventText")//TODO: IT NEEDS ENROLLMENTSTATUS
+    public static void setEventText(TextView view, EventStatus status) {
+        String text;
+        if (status == null)
+            status = EventStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                text = "Open";
+                break;
+            case COMPLETED:
+                text = "Program completed";
+                break;
+            case SCHEDULE:
+                text = "Program inactive";
+                break;
+            default:
+                text = "Read only";
+                break;
+        }
+
+        view.setText(text);
+    }
+
+    @BindingAdapter("eventColor")
+    public static void setEventText(CardView view, EventStatus status) {
+        int eventColor;
+        if (status == null)
+            status = EventStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                eventColor = R.color.event_yellow;
+                break;
+            case COMPLETED:
+                eventColor = R.color.event_gray;
+                break;
+            case SCHEDULE:
+                eventColor = R.color.event_green;
+                break;
+            default:
+                eventColor = R.color.event_red;
+                break;
+        }
+
+        view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(),eventColor));
+    }
+
+
 }

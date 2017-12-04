@@ -3,6 +3,7 @@ package com.dhis2;
 import android.app.Application;
 
 import com.dhis2.data.database.DbModule;
+import com.dhis2.data.metadata.MetadataModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.server.ServerComponent;
 import com.dhis2.data.server.ServerModule;
@@ -20,6 +21,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Component(modules = {AndroidSupportInjectionModule.class,
         AppModule.class,
         DbModule.class,
+        MetadataModule.class,
         SchedulerModule.class,
         BindingModule.class})
 public interface AppComponent {
@@ -32,6 +34,8 @@ public interface AppComponent {
         Builder database(DbModule db);
 
         Builder scheduler(SchedulerModule schedulerModule);
+
+        Builder metadata(MetadataModule metadataModule);
 
         AppComponent build();
     }

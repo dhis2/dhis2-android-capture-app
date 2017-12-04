@@ -25,7 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * Created by ppajuelo on 02/11/2017 .
  */
 
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
@@ -50,8 +50,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
-
+        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
     }
 
     @Override
@@ -78,6 +77,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels) {
         trackedEntityInstanceList.clear();
+        binding.progress.setVisibility(View.GONE);
+        binding.objectCounter.setVisibility(View.VISIBLE);
 
         int counter = body != null ? body.getPager().total() : 0;
         binding.objectCounter.setText(String.format("%s results found", counter));
@@ -87,7 +88,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             searchTEAdapter = new SearchTEAdapter(presenter);
             binding.scrollView.setAdapter(searchTEAdapter);
         }
-
         if (counter > 0 && counter < 10000) {
             trackedEntityInstanceList.addAll(body.getTrackedEntityInstances());
             searchTEAdapter.addItems(trackedEntityInstanceList, attributeModels, programModels);
@@ -98,14 +98,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     }
 
+
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
         binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels));
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                if (pos > 0)
+                if (pos > 0) {
+                    binding.progress.setVisibility(View.VISIBLE);
+                    binding.progress.setVisibility(View.GONE);
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
+                }
             }
 
             @Override
@@ -113,6 +117,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             }
         });
+    }
+
+    @Override
+    public void clearList() {
+        searchTEAdapter.clear();
     }
 
 }

@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 /**
@@ -22,7 +25,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     FragmentTeiDataBinding binding;
 
     static TEIDataFragment instance;
-    private TrackedEntityInstance trackedEntity;
+    private static TrackedEntityInstance trackedEntity;
+    private static DashboardProgramModel program;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -41,8 +45,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        binding.setTrackEntity(trackedEntity);
-        binding.executePendingBindings();
+        if (trackedEntity != null && program != null) {
+            binding.setTrackEntity(trackedEntity);
+            binding.setProgram(program.getProgram());
+            binding.executePendingBindings();
+        }
     }
 
     @Override
@@ -51,9 +58,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         super.onDestroy();
     }
 
-    public void setTrackedEntity(TrackedEntityInstance trackedEntity) {
+    public void setData(TrackedEntityInstance trackedEntity, DashboardProgramModel program) {
         this.trackedEntity = trackedEntity;
+        this.program = program;
+        for (Enrollment enrollment : trackedEntity.enrollments())
+            if (enrollment.program().equals(program.getProgram().uid()))
+                binding.teiRecycler.setAdapter(new EventAdapter(program.getProgramStages(), enrollment.events()));
         onResume();
-
     }
+
 }

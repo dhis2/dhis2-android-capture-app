@@ -3,6 +3,7 @@ package com.dhis2.usescases.main.program;
 import android.database.Cursor;
 import android.databinding.BaseObservable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
@@ -20,6 +21,7 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
         static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
         static final String PROGRAM_TYPE = "programType";
         static final String PROGRAM_ATTRIBUTES = "programTrackedEntityAttributes";
+        static final String TRACKED_ENTITY = "trackedEntity";
     }
 
     @NonNull
@@ -43,14 +45,18 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
     @ColumnName(Columns.PROGRAM_TYPE)
     public abstract String programType();
 
+    @Nullable
+    @ColumnName(Columns.TRACKED_ENTITY)
+    public abstract String trackedEntityType();
+
    /* @NonNull
     @ColumnName(Columns.PROGRAM_ATTRIBUTES)
     public abstract List<ProgramTrackedEntityAttributeModel> programAttributes();*/
 
     @NonNull
     public static HomeViewModel create(@NonNull String id, @NonNull String title, @NonNull String lastUpdated,
-                                       @NonNull Type type, @NonNull String programType) {
-        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType);
+                                       @NonNull Type type, @NonNull String programType, @Nullable String trackedEntityType) {
+        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType, trackedEntityType);
     }
 
     public static HomeViewModel fromCursor(Cursor cursor) {

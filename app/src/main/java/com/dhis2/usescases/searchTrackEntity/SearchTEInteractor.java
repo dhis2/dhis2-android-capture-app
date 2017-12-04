@@ -47,7 +47,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     private String incidentDate;
     private List<String> filters;
     private List<TrackedEntityAttributeModel> attributeModelList;
-
+    private String trackedEntityType;
 
     @Inject
     public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository) {
@@ -57,10 +57,11 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     }
 
     @Override
-    public void init(SearchTEContractsModule.View view) {
+    public void init(SearchTEContractsModule.View view,String trackedEntityType) {
         this.view = view;
-        getTrackedEntityAttributes();
+        this.trackedEntityType = trackedEntityType;
         filters = new ArrayList<>();
+        getTrackedEntityAttributes();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                         Timber::d)
         );
 
-        compositeDisposable.add(searchRepository.programsWithRegistration()
+        compositeDisposable.add(searchRepository.programsWithRegistration(trackedEntityType)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -219,7 +220,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     public void setProgram(ProgramModel programSelected) {
         if (programSelected != null) {
             for (ProgramModel programModel : programModels)
-                if (programModel.uid() == programSelected.uid())
+                if (programModel.uid().equals(programSelected.uid()))
                     this.selectedProgram = programSelected;
             getProgramTrackedEntityAttributes();
         } else {

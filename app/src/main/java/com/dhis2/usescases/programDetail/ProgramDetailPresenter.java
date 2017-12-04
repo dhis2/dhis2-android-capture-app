@@ -1,5 +1,7 @@
 package com.dhis2.usescases.programDetail;
 
+import android.os.Bundle;
+
 import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 
@@ -59,7 +61,9 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     @Override
     public void onSearchClick() {
-        view.startActivity(SearchTEActivity.class, null, false, false, null);
+        Bundle bundle = new Bundle();
+        bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
+        view.startActivity(SearchTEActivity.class, bundle, false, false, null);
     }
 
     @Override
