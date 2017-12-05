@@ -26,9 +26,12 @@
             android:paddingTop="10dp">
 
             <LinearLayout
+                android:id="@+id/filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp">
+                android:layout_marginBottom="7dp"
+                android:visibility="visible"
+                android:gravity="end">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -41,7 +44,7 @@
                         android:background="@drawable/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
-                        app:srcCompat="@drawable/ic_view_week" />
+                        app:srcCompat="@drawable/ic_view_day" />
 
                     <TextView
                         android:id="@+id/button_date_range"
@@ -57,11 +60,10 @@
 
                 <Button
                     android:id="@+id/button_org_unit"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/selector_white_button"
+                    android:background="@drawable/selector_button_round_20"
                     android:maxLines="1"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
@@ -69,8 +71,10 @@
                     android:text="Org Unit"
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
-                    android:textColor="@color/black_de0"
-                    android:textSize="15sp" />
+                    android:textColor="?colorAccent"
+                    android:textSize="15sp"
+                    android:layout_marginStart="15dp"
+                    />
 
             </LinearLayout>
 
@@ -106,7 +110,8 @@
             android:layout_gravity="end"
             android:background="@color/white_faf"
             android:fitsSystemWindows="false"
-            app:itemTextColor="@color/colorPrimary">
+            app:itemTextColor="@color/colorPrimary"
+            android:visibility="gone">
 
             <RelativeLayout
                 android:id="@+id/tree_view_container"

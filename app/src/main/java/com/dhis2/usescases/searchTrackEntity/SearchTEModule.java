@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -28,8 +29,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Interactor provideInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository) {
-        return new SearchTEInteractor(d2, searchRepository, userRepository);
+    SearchTEContractsModule.Interactor provideInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+        return new SearchTEInteractor(d2, searchRepository, userRepository, metadataRepository);
     }
 
     @Provides

@@ -2,6 +2,7 @@ package com.dhis2.usescases.searchTrackEntity;
 
 import android.util.Log;
 
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;
 
@@ -10,6 +11,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
     private final SearchRepository searchRepository;
     private final UserRepository userRepository;
+    private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.View view;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private D2 d2;
@@ -48,16 +51,18 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     private List<String> filters;
     private List<TrackedEntityAttributeModel> attributeModelList;
     private String trackedEntityType;
+    private TrackedEntityModel trackedEntity;
 
     @Inject
-    public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository) {
+    public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.searchRepository = searchRepository;
         this.userRepository = userRepository;
+        this.metadataRepository = metadataRepository;
         this.d2 = d2;
     }
 
     @Override
-    public void init(SearchTEContractsModule.View view,String trackedEntityType) {
+    public void init(SearchTEContractsModule.View view, String trackedEntityType) {
         this.view = view;
         this.trackedEntityType = trackedEntityType;
         filters = new ArrayList<>();
@@ -66,6 +71,13 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
     @Override
     public void getTrackedEntityAttributes() {
+
+        compositeDisposable.add(metadataRepository.getTrackedEntity(trackedEntityType)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> this.trackedEntity = data));
+
+
         compositeDisposable.add(searchRepository.programAttributes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -182,6 +194,11 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     @Override
     public void enroll() {
 
+    }
+
+    @Override
+    public TrackedEntityModel getTrackedEntity() {
+        return trackedEntity;
     }
 
     private void call() {

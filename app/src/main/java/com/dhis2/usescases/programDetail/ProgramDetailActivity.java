@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.Menu;
 
-import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
@@ -22,7 +21,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,7 +29,7 @@ import javax.inject.Inject;
  * Created by ppajuelo on 31/10/2017.
  */
 
-public class ProgramDetailActivity extends ActivityGlobalAbstract implements ProgramDetailContractModule.View, DatePickerDialog.OnDateSetListener {
+public class ProgramDetailActivity extends ActivityGlobalAbstract implements ProgramDetailContractModule.View {
     private final String DAILY = "Daily";
     private final String WEEKLY = "Weekly";
     private final String MONTHLY = "Monthly";
@@ -104,7 +102,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
     @Override
     public void showRageDatePicker() {
-        Calendar now = Calendar.getInstance();
+      /*  Calendar now = Calendar.getInstance();
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 this,
                 now.get(Calendar.YEAR),
@@ -138,7 +136,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
                 to = toDay + "/" + toMonth;
             }
             binding.buttonDateRange.setText(from + "-" + to);
-        });
+        });*/
     }
 
     @Override
@@ -189,9 +187,9 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         });
     }
 
-
+/*
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
 
-    }
+    }*/
 }

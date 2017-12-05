@@ -19,6 +19,7 @@ import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.List;
 
@@ -123,5 +124,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
 
 
+    }
+
+    public TrackedEntityModel getTrackedEntityName() {
+        return interactor.getTrackedEntity();
     }
 }

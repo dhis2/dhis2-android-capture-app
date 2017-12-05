@@ -55,6 +55,14 @@
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
 
+                <ImageView
+                    android:id="@+id/filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:onClick="@{()->presenter.showFilter()}"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/ic_filter_list" />
+
             </LinearLayout>
 
             <FrameLayout

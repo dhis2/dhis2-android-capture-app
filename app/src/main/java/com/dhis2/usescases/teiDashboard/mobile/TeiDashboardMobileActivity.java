@@ -14,6 +14,8 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -49,6 +51,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel program) {
         TEIDataFragment.getInstance().setData(trackedEntityModel, program);
+        RelationshipFragment.getInstance().setData(trackedEntityModel.relationships());
+        ScheduleFragment.getInstance().setData(trackedEntityModel, program);
     }
 
 }

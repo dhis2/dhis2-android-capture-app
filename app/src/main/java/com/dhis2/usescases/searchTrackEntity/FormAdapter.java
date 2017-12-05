@@ -24,25 +24,25 @@ import java.util.List;
 
 public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
 
-    public final int EDITTEXT = 0;
-    public final int BUTTON = 1;
-    public final int CHECKBOX = 2;
-    public final int SPINNER = 3;
-    public final int COORDINATES = 4;
+    private final int EDITTEXT = 0;
+    private final int BUTTON = 1;
+    private final int CHECKBOX = 2;
+    private final int SPINNER = 3;
+    private final int COORDINATES = 4;
     private int programData = 0;
-    SearchTEContractsModule.Presenter presenter;
-    List<TrackedEntityAttributeModel> attributeList;
-    ProgramModel programModel;
+    private SearchTEContractsModule.Presenter presenter;
+    private List<TrackedEntityAttributeModel> attributeList;
+    private ProgramModel programModel;
 
-    public FormAdapter(SearchTEContractsModule.Presenter presenter) {
+    FormAdapter(SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
     }
 
     @Override
     public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ViewDataBinding binding = null;
-        FormViewHolder holder = null;
+        ViewDataBinding binding;
+        FormViewHolder holder;
         switch (viewType) {
             case EDITTEXT:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text, parent, false);

@@ -18,6 +18,9 @@
         <variable
             name="islast"
             type="java.lang.Boolean" />
+        <variable
+            name="stage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -62,7 +65,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/schedule_circle_green" />
+            app:srcCompat="@drawable/schedule_circle_green"
+            app:scheduleColor="@{event.status()}"/>
 
         <TextView
             android:id="@+id/event_name"
@@ -74,7 +78,9 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toTopOf="@id/event_status"
-            tools:text="ANC4" />
+            tools:text="ANC4"
+            android:text='@{stage.displayName,default="Stage Name"}'
+            />
 
         <TextView
             android:id="@+id/event_date"
@@ -87,7 +93,9 @@
             app:layout_constraintBottom_toBottomOf="@id/event_status"
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toBottomOf="@id/event_name"
-            tools:text="03/10/2017 " />
+            tools:text="03/10/2017 "
+            app:date='@{event.eventDate}'
+            />
 
 
     </android.support.constraint.ConstraintLayout>

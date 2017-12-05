@@ -124,9 +124,6 @@ dependencies {
     //TreeView
     compile 'com.github.bmelnychuk:atv:1.2.+'
 
-    //DateRangePicker
-    compile 'com.borax12.materialdaterangepicker:library:1.9'
-
     // ReactiveX
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"

@@ -24,8 +24,10 @@
                 android:layout_marginTop="30dp"
                 android:gravity="start"
                 android:hint="Write new note"
+                android:padding="16dp"
                 android:maxHeight="195dp"
                 android:textColor="@color/gray_444"
+                android:background="@drawable/gray_border_box"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +44,8 @@
                 android:text="delete"
                 android:textColor="?colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
+                app:layout_constraintTop_toBottomOf="@id/edit_note"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/button_add"
@@ -57,7 +60,8 @@
                 android:textColor="?colorAccent"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/button_delete"
-                app:layout_constraintTop_toBottomOf="@id/edit_note" />
+                app:layout_constraintTop_toBottomOf="@id/edit_note"
+                />
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="0dp"
@@ -66,8 +70,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_delete"
-                tools:listitem="@layout/item_notes" />
+                app:layout_constraintTop_toBottomOf="@id/button_add"
+                tools:listitem="@layout/item_notes"
+                android:background="@android:color/white"/>
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>

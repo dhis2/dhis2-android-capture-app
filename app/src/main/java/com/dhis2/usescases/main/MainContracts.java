@@ -5,16 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.unnamed.b.atv.model.TreeNode;
-
-import org.hisp.dhis.android.core.common.Payload;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-
-import java.util.List;
 
 import io.reactivex.functions.Consumer;
-import retrofit2.Call;
 
 public final class MainContracts {
 
@@ -34,6 +26,8 @@ public final class MainContracts {
 
         void openDrawer(int gravity);
 
+        void showHideFilter();
+
      /*   @NonNull
         @UiThread
         void addTree(TreeNode treeNode);*/
@@ -52,6 +46,8 @@ public final class MainContracts {
         void logOut();
 
         void blockSession();
+
+        void showFilter();
     }
 
     interface Interactor extends AbstractActivityContracts.Interactor {

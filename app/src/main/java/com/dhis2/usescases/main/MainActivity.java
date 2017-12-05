@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -25,9 +26,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
-
     @Inject
     DispatchingAndroidInjector<android.support.v4.app.Fragment> dispatchingAndroidInjector;
+    private ProgramFragment programFragment;
 
     /*Lifecycle methods*/
 
@@ -93,10 +94,16 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             binding.drawerLayout.closeDrawer(gravity);
     }
 
+    @Override
+    public void showHideFilter() {
+
+        programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+    }
+
 
     private void changeFragment() {
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProgramFragment(), "HOME").commit();
+        programFragment = new ProgramFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, programFragment, "HOME").commit();
     }
 
     @Override

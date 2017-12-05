@@ -17,17 +17,19 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
-/**
- * Created by ppajuelo on 07/11/2017.
+/**x
+ * Created by ppajuelo on 07/11/2017-sdfghsdfh .
  */
 
 public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
 
-    List<ProgramModel> options;
+    private List<ProgramModel> options;
+    private String trackedEntityName;
 
-    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<ProgramModel> objects) {
+    public ProgramAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<ProgramModel> objects, String trackedEntityName) {
         super(context, resource, textViewResourceId, objects);
         this.options = objects;
+        this.trackedEntityName = trackedEntityName;
     }
 
     @NonNull
@@ -40,7 +42,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
             convertView = binding.getRoot();
             if (position != 0)
                 binding.setProgram(options.get(position - 1));
-            binding.setProgramTitle("Programs");
+            binding.setProgramTitle("All "+trackedEntityName);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
         }
         return convertView;
@@ -54,7 +56,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
         if (position != 0)
             binding.setProgram(options.get(position - 1));
 
-        binding.setProgramTitle("Programs");
+        binding.setProgramTitle(trackedEntityName);
         return binding.getRoot();
     }
 

@@ -239,7 +239,24 @@ public class Bindings {
                 break;
         }
 
-        view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(),eventColor));
+        view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
+    }
+
+    @BindingAdapter("scheduleColor")
+    public static void setScheduleColor(ImageView view, EventStatus status) {
+        int drawable;
+        if (status == null)
+            status = EventStatus.ACTIVE;
+        switch (status) {
+            case SCHEDULE:
+                drawable = R.drawable.schedule_circle_green;
+                break;
+            default:
+                drawable = R.drawable.schedule_circle_red;
+                break;
+        }
+
+        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
     }
 
 

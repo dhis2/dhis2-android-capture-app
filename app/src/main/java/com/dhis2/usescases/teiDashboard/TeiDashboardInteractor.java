@@ -17,6 +17,7 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -25,6 +26,7 @@ import retrofit2.http.Query;
 public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor {
 
     private final DashboardRepository dashboardRepository;
+    private final MetadataRepository metadataRepository;
     private D2 d2;
     private CompositeDisposable disposable;
     private TeiDashboardContracts.View view;
@@ -36,6 +38,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     public TeiDashboardInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
+        this.metadataRepository = metadataRepository;
         disposable = new CompositeDisposable();
     }
 
@@ -67,11 +70,13 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     @Override
     public void getProgramData(String programId) {
 
-        Observable.zip(dashboardRepository.getProgramData(programId), dashboardRepository.getProgramStages(programId),
+        Observable.zip(dashboardRepository.getProgramData(programId), dashboardRepository.getProgramStages(programId), metadataRepository.getProgramTrackedEntityAttributes(programId),
                 DashboardProgramModel::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> view.setData(trackedEntityInstance, data));
+                .subscribe(
+                        data -> view.setData(trackedEntityInstance, data),
+                        Timber::e);
 
     }
 

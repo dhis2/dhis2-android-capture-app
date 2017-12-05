@@ -48,6 +48,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         if (trackedEntity != null && program != null) {
             binding.setTrackEntity(trackedEntity);
             binding.setProgram(program.getProgram());
+            binding.setDashboardModel(program);
             binding.executePendingBindings();
         }
     }

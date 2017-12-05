@@ -61,6 +61,11 @@ final class MainPresenter implements MainContracts.Presenter {
     }
 
     @Override
+    public void showFilter() {
+        view.showHideFilter();
+    }
+
+    @Override
     public void onDetach() {
         interactor.onDettach();
     }
