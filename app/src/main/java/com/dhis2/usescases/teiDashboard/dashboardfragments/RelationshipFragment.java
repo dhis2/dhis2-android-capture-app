@@ -13,6 +13,7 @@ import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 
 import java.util.List;
 
@@ -49,7 +50,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         super.onDestroy();
     }
 
-    public void setData(List<Relationship> relationships) {
+    public void setData(List<Relationship> relationships, RelationshipTypeModel relationshipTypeModel) {
+        binding.setRelationshipType(relationshipTypeModel.bIsToA());
         relationshipAdapter.addItems(relationships);
     }
 }
