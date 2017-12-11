@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        tools:background="@color/colorPrimary">
+        tools:background="?colorPrimary">
 
         <EditText
             android:id="@+id/form_edittext"

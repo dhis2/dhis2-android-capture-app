@@ -122,7 +122,7 @@
                     android:background="@drawable/selector_enroll_button"
                     android:onClick="@{(view)->presenter.onEnrollClick(view)}"
                     android:text="ADD NEW"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="?colorPrimary" />
             </LinearLayout>
 
         </android.support.design.widget.AppBarLayout>

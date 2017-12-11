@@ -226,7 +226,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                         enrollmentDate,
                         incidentDate,
                         filters,
-                        "trackedEntityInstance,attributes[*],enrollments[enrollment,trackedEntity,orgUnit,program,trackedEntityInstance,incidentDate]",
+                        "trackedEntityInstance,attributes[*],enrollments[status,enrollment,trackedEntity,orgUnit,program,trackedEntityInstance,incidentDate]",
                         currentPage)
                 .enqueue(new Callback<TrackedEntityObject>() {
                     @Override
@@ -253,6 +253,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
             this.selectedProgram = null;
             getTrackedEntityAttributes();
         }
+        currentPage = 0;
         call();
 
     }

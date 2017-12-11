@@ -39,13 +39,12 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:programName="@{enrollment.program()}"
-                tools:text="ANCAAfffffffggggffffffff" />
+                tools:text="ANCAAfffffffggggffffffff"/>
 
             <ImageView
                 android:id="@+id/program_image"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                app:srcCompat="@drawable/ic_program"
                 app:tintRandomColor="@{enrollment.program()}" />
         </LinearLayout>
 

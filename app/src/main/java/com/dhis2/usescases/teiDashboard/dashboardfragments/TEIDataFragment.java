@@ -46,6 +46,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     public void onResume() {
         super.onResume();
         if (trackedEntity != null && program != null) {
+
+            for (Enrollment enrollment : trackedEntity.enrollments())
+                if (enrollment.program().equals(program.getProgram().uid()))
+                    binding.teiRecycler.setAdapter(new EventAdapter(program.getProgramStages(), enrollment.events()));
+
             binding.setTrackEntity(trackedEntity);
             binding.setProgram(program.getProgram());
             binding.setDashboardModel(program);
@@ -62,9 +67,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     public void setData(TrackedEntityInstance trackedEntity, DashboardProgramModel program) {
         this.trackedEntity = trackedEntity;
         this.program = program;
-        for (Enrollment enrollment : trackedEntity.enrollments())
-            if (enrollment.program().equals(program.getProgram().uid()))
-                binding.teiRecycler.setAdapter(new EventAdapter(program.getProgramStages(), enrollment.events()));
         onResume();
     }
 

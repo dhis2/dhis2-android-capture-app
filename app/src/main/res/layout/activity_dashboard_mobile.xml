@@ -8,6 +8,15 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+
+        <variable
+            name="dashboardModel"
+            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
     </data>
 
     <LinearLayout
@@ -23,15 +32,17 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                android:onClick='@{()->presenter.onBackPressed()}'/>
+                app:srcCompat="@drawable/ic_arrow_back" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:textSize="20sp"
+                android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
                 android:textColor="?colorAccent"
                 tools:text="TEI NAME" />
 
@@ -39,9 +50,9 @@
                 android:id="@+id/program_selector_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_program_border"
-                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"/>
+                app:srcCompat="@drawable/ic_program_border" />
 
         </LinearLayout>
 
@@ -52,8 +63,8 @@
             android:background="?colorPrimary"
             app:tabBackground="?colorPrimary"
             app:tabIndicatorColor="?colorAccent"
-            app:tabTextColor="?colorAccent"
-            app:tabSelectedTextColor="?colorAccent"/>
+            app:tabSelectedTextColor="?colorAccent"
+            app:tabTextColor="?colorAccent" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/tei_pager"

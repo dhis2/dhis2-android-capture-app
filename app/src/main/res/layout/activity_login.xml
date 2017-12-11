@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:gravity="center"
             android:padding="20dp">
 
@@ -36,7 +36,7 @@
             android:layout_centerInParent="true"
             android:layout_marginStart="50dp"
             android:hint="Server url"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
@@ -45,7 +45,7 @@
                 android:inputType="textUri"
                 android:onTextChanged="@{presenter::onTextChanged}"
                 android:padding="5dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -58,7 +58,7 @@
             android:layout_centerInParent="true"
             android:layout_marginStart="50dp"
             android:hint="Username"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
@@ -66,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:inputType="textPersonName"
                 android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
 
@@ -80,7 +80,7 @@
             android:layout_centerInParent="true"
             android:layout_marginStart="50dp"
             android:hint="Password"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
@@ -88,7 +88,7 @@
                 android:layout_height="match_parent"
                 android:inputType="textPassword"
                 android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -118,10 +118,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:onClick="@{()-> presenter.onButtonClick()}"
             android:text="Log In"
-            android:textColor="@color/colorAccent"
+            android:textColor="?colorAccent"
             android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
 
         <RelativeLayout

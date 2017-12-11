@@ -57,9 +57,8 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     }
 
     public void addItems(List<TrackedEntityInstance> trackedEntityInstances, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels) {
-        if (trackedEntityInstances.size() > 0) {
-            this.trackedEntityInstances.addAll(trackedEntityInstances);
-        }
+
+        this.trackedEntityInstances.addAll(trackedEntityInstances);
 
         this.attributeModels = attributeModels;
         this.programModels = programModels;

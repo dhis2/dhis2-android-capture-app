@@ -11,6 +11,11 @@
     <color name="colorPrimaryDarkRed">#821917</color>
     <color name="colorPrimaryLightRed">#fe817f</color>
 
+    <!--GREEN THEME-->
+    <color name="colorPrimaryGreen">#218c51</color>
+    <color name="colorPrimaryDarkGreen">#178259</color>
+    <color name="colorPrimaryLightGreen">#7ffe9b</color>
+
     <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_fdd_alpha">#85fdd35d</color>

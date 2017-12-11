@@ -12,26 +12,35 @@
     </style>
 
     <style name="loginInputText" parent="TextAppearance.AppCompat">
-        <item name="android:textColorHint">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="colorControlNormal">@color/colorPrimary</item>
-        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="android:textColorHint">?colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
+        <item name="colorControlNormal">?colorPrimary</item>
+        <item name="colorControlActivated">?colorPrimary</item>
     </style>
 
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
+        <item name="android:colorAccent">?colorPrimary</item>
     </style>
 
     <style name="checkBox" parent="Base.Theme.AppCompat">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:textColorSecondary">@color/colorPrimary</item> <!-- for check state -->
+        <item name="colorAccent">?colorPrimary</item>
+        <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
     </style>
 
     <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <style name="GreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
         <item name="android:windowContentTransitions">true</item>

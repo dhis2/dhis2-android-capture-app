@@ -101,25 +101,6 @@
                 app:flexWrap="wrap"
                 app:justifyContent="space_between">
 
-                <!--<include
-                    layout="@layout/track_entity_programs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:program="@{program}" />
-
-                <include
-                    layout="@layout/track_entity_programs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:program="@{program}" />
-                <include
-                    layout="@layout/track_entity_programs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:program="@{program}" />-->
-
             </com.google.android.flexbox.FlexboxLayout>
 
             <RelativeLayout
@@ -148,7 +129,7 @@
                     android:layout_marginEnd="10dp"
                     android:text="View More"
                     android:textAllCaps="true"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="?colorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="view more" />

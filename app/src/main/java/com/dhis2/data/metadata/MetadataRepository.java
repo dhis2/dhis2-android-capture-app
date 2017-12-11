@@ -18,16 +18,29 @@ import io.reactivex.Observable;
 
 public interface MetadataRepository {
 
-    Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
-
-    Observable<OrganisationUnitModel> getOrganisatuibUnit(String orgUnitUid);
-
-    Observable<List<ProgramTrackedEntityAttributeModel>> getProgramTrackedEntityAttributes(String programUid);
-
-    Observable<RelationshipTypeModel> getRelationshipType(String programUid);
-
+    /*PROGRAMS*/
     Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments);
 
     Observable<ProgramModel> getProgramWithId(String programUid);
+
+    /*TRACKED ENTITY*/
+
+    Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
+
+    /*ORG UNIT*/
+
+    Observable<OrganisationUnitModel> getOrganisatuibUnit(String orgUnitUid);
+
+    /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
+
+    Observable<List<ProgramTrackedEntityAttributeModel>> getProgramTrackedEntityAttributes(String programUid);
+
+    /*RELATIONSHIPS*/
+
+    Observable<RelationshipTypeModel> getRelationshipType(String programUid);
+
+    Observable<List<RelationshipTypeModel>> getRelationshipTypeList();
+
+
 
 }

@@ -105,6 +105,14 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         else{
             //TODO: NO SE HA SELECCIONADO PROGRAMA
+            Observable.zip(metadataRepository.getOrganisatuibUnit(trackedEntityInstance.organisationUnit()),
+                    metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),
+                    DashboardProgramModel::new)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> view.setDataWithOutProgram(trackedEntityInstance, data),
+                            throwable -> Log.d("ERROR", throwable.getMessage()));
         }
 
     }

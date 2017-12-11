@@ -63,6 +63,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel program) {
+        binding.setDashboardModel(program);
+        binding.setTrackEntity(trackedEntityModel);
+        binding.executePendingBindings();
         this.programModel = program;
         this.trackedEntityInstance = trackedEntityModel;
         TEIDataFragment.getInstance().setData(trackedEntityModel, program);
@@ -71,13 +74,21 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel) {
+        binding.setDashboardModel(programModel);
+        binding.setTrackEntity(trackedEntityInstance);
+        binding.executePendingBindings();
+    }
+
+    @Override
     public void showEnrollmentList(List<Enrollment> enrollments) {
         PopupMenu menu = new PopupMenu(this, binding.programSelectorButton);
+        int cont = 0;
         for (ProgramModel program : programModel.getEnrollmentProgramModels()) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, program.displayShortName());
+            menu.getMenu().add(Menu.NONE, cont++, Menu.NONE, program.displayShortName());
         }
         menu.setOnMenuItemClickListener(item -> {
-            init(trackedEntityInstance.uid(),programModel.getEnrollmentProgramModels().get(item.getOrder()).uid());
+            init(trackedEntityInstance.uid(),programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
             return true;
         });
         menu.show();

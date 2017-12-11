@@ -22,6 +22,8 @@ public class TeiDashboardContracts {
 
         void setData(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel program);
 
+        void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel);
+
         void showEnrollmentList(List<Enrollment> enrollments);
     }
 

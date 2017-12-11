@@ -122,8 +122,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
         else
             view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
-
-
     }
 
     @Override

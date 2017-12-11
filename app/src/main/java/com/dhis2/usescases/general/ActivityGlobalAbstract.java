@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.dhis2.R;
 
+import java.util.Random;
+
 /**
  * Created by Javi on 28/07/2017.
  */
@@ -20,7 +22,20 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.RedTheme);
+        Random r = new Random();
+
+        switch (r.nextInt(3)) {
+            case 0:
+                setTheme(R.style.RedTheme);
+                break;
+            case 1:
+                setTheme(R.style.GreenTheme);
+                break;
+            default:
+                setTheme(R.style.AppTheme);
+                break;
+        }
+
         super.onCreate(savedInstanceState);
 
     }

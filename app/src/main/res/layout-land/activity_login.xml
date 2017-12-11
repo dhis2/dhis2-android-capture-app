@@ -40,7 +40,7 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:gravity="center"
             android:transitionName="logo"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,7 +59,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Username"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +72,7 @@
                 android:layout_height="50dp"
                 android:inputType="textPersonName"
                 android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
 
@@ -83,7 +83,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Server url"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText"
             app:layout_constraintBottom_toTopOf="@+id/user_name"
             app:layout_constraintEnd_toEndOf="parent"
@@ -96,7 +96,7 @@
                 android:inputType="textUri"
                 android:onTextChanged="@{presenter::onTextChanged}"
                 android:padding="5dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -106,7 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Password"
-            android:textColorHint="@color/colorPrimary"
+            android:textColorHint="?colorPrimary"
             android:theme="@style/loginInputText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
@@ -118,7 +118,7 @@
                 android:layout_height="50dp"
                 android:inputType="textPassword"
                 android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?colorPrimaryDark"
                 android:textSize="17sp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -126,9 +126,9 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="?colorPrimary"
             android:text="Log In"
-            android:textColor="@color/colorAccent"
+            android:textColor="?colorAccent"
             android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

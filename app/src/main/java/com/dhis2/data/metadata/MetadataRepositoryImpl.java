@@ -40,11 +40,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
 
     private final String RELATIONSHIP_TYPE_QUERY = String.format("SELECT %s.* FROM %s " +
-                    "INNER JOIN %s ON %s.%s=%s.%s  " +
+                    "INNER JOIN %s ON %s.%s = %s.%s  " +
                     "WHERE %s.%s = ",
             RelationshipTypeModel.TABLE, RelationshipTypeModel.TABLE,
             ProgramModel.TABLE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE,
             ProgramModel.TABLE, ProgramModel.Columns.UID);
+
+    private final String RELATIONSHIP_TYPE_LIST_QUERY = String.format("SELECT * FROM %s ",
+            RelationshipTypeModel.TABLE);
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
 
@@ -84,6 +87,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<List<RelationshipTypeModel>> getRelationshipTypeList() {
+        return briteDatabase
+                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_LIST_QUERY)
+                .mapToList(RelationshipTypeModel::create);
+    }
+
+    @Override
     public Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments) {
         String query = "";
         for (Enrollment enrollment : enrollments) {
@@ -101,7 +111,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<ProgramModel> getProgramWithId(String programUid) {
         return briteDatabase
-                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY +"'"+programUid+"'")
+                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + programUid + "'")
                 .mapToOne(ProgramModel::create);
     }
 }

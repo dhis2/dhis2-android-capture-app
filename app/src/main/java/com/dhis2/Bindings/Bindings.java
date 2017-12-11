@@ -1,5 +1,6 @@
 package com.dhis2.Bindings;
 
+import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -9,6 +10,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -86,6 +88,7 @@ public class Bindings {
         imageView.setBackgroundColor(Color.parseColor(color));
     }
 
+
     @BindingAdapter("tintRandomColor")
     public static void setTintRandomColor(ImageView imageView, String textToColor) {
         String color;
@@ -94,8 +97,8 @@ public class Bindings {
         else
             color = "#FFFFFF";
 
-        Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program);
-        drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
+        Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program).mutate();
+        drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN);
         imageView.setImageDrawable(drawable);
     }
 
@@ -111,6 +114,10 @@ public class Bindings {
 
     @BindingAdapter("progressColor")
     public static void setProgressColor(ProgressBar progressBar, int color) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = progressBar.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        color = a.getColor(0, 0);
+        a.recycle();
         progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 

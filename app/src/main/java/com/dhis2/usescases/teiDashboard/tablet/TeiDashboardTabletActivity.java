@@ -50,6 +50,11 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel) {
+
+    }
+
+    @Override
     public void showEnrollmentList(List<Enrollment> enrollments) {
 
     }

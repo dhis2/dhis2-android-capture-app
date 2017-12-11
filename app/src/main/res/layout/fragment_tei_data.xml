@@ -101,13 +101,15 @@
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/view_tei"
+                    app:layout_constraintTop_toTopOf="@id/view_tei"
                     app:layout_constraintEnd_toStartOf="@id/view_tei" />
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/data_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
                     app:alignContent="stretch"
                     app:alignItems="stretch"
                     app:flexWrap="wrap"
@@ -119,7 +121,8 @@
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="5dp">
+                        android:padding="5dp"
+                        >
 
                         <ImageView
                             android:id="@+id/tei_image"
@@ -237,14 +240,17 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/tei_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:paddingEnd="6dp"
             android:paddingStart="6dp"
             android:paddingTop="30dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/tei_data"
-            tools:listitem="@layout/item_event" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:listitem="@layout/item_event"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

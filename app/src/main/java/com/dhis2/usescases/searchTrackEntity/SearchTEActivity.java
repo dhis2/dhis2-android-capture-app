@@ -47,10 +47,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
-        binding.scrollView.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 40) {
+        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
+
+        binding.scrollView.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager()) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                presenter.getNextPage(page);
+//                presenter.getNextPage(page);TODO: FIX THIS. VIEWHOLDERS DATA SWAPS INCORRECTLY
             }
         });
     }
@@ -58,7 +60,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
     }
 
     @Override
@@ -115,7 +116,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
                     binding.progress.setVisibility(View.VISIBLE);
-                    binding.progress.setVisibility(View.GONE);
+                    binding.objectCounter.setVisibility(View.GONE);
+                    searchTEAdapter.clear();
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                 }
             }

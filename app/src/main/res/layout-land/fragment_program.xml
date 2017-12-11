@@ -72,7 +72,7 @@
             android:layout_gravity="end"
             android:background="@color/white_faf"
             android:fitsSystemWindows="false"
-            app:itemTextColor="@color/colorPrimary">
+            app:itemTextColor="?colorPrimary">
 
             <RelativeLayout
                 android:id="@+id/tree_view_container"

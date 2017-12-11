@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DashboardProgramModel extends BaseObservable {
 
-    private final List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
+    private List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
     private ProgramModel program;
     private RelationshipTypeModel relationshipTypeModel;
     private List<ProgramStageModel> programStages;
@@ -49,6 +49,11 @@ public class DashboardProgramModel extends BaseObservable {
         this.enrollmentProgramModels = enrollmentProgramModels;
     }
 
+    public DashboardProgramModel(OrganisationUnitModel orgnUnit, List<ProgramModel> enrollmentProgramModels) {
+        this.orgnUnit = orgnUnit;
+        this.enrollmentProgramModels = enrollmentProgramModels;
+    }
+
     public ProgramModel getProgram() {
         return program;
     }
@@ -70,7 +75,7 @@ public class DashboardProgramModel extends BaseObservable {
         sortOrder--;
 
         for (TrackedEntityAttributeValue attribute : attributeValues)
-            if (attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+            if (trackedEntityAttributesModel!=null && attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
                 attributeValue = attribute;
 
 
