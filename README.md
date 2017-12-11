@@ -29,5 +29,5 @@ https://app.zeplin.io/project/59ca63b5ea4b4d9705f9666a
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* ppajuelo@quadram.mobi
+* jorge@quadram.mobi
