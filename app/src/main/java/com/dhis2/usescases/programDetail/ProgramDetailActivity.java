@@ -1,18 +1,22 @@
 package com.dhis2.usescases.programDetail;
 
+import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.PopupMenu;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.Menu;
+import android.widget.Toast;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
+import com.dhis2.utils.CustomViews.DateAdapter;
+import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -21,6 +25,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,10 +45,10 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     HomeViewModel homeViewModel;
     @Inject
     ProgramDetailAdapter adapter;
+    private DateAdapter.Period currentPeriod = DateAdapter.Period.DAILY;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-//        AndroidInjection.inject(this);
         ((App) getApplicationContext()).getUserComponent().plus(new ProgramDetailModule()).inject(this);
 
         super.onCreate(savedInstanceState);
@@ -102,56 +107,49 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
     @Override
     public void showRageDatePicker() {
-      /*  Calendar now = Calendar.getInstance();
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                this,
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH)
-        );
-        dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
 
-        dpd.setOnDateSetListener((view, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
-            String fromDay = dayOfMonth < 10 ? "0" + dayOfMonth : "" + dayOfMonth;
-            String fromMonth = monthOfYear + 1 < 10 ? "0" + (monthOfYear + 1) : "" + (monthOfYear + 1);
-            String fromYear = String.valueOf(year);
-            String toDay = dayOfMonthEnd < 10 ? "0" + dayOfMonthEnd : "" + dayOfMonthEnd;
-            String toMonth = monthOfYearEnd + 1 < 10 ? "0" + (monthOfYearEnd + 1) : "" + (monthOfYearEnd + 1);
-            String toYear = String.valueOf(yearEnd);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setMinimalDaysInFirstWeek(7);
+        if (currentPeriod != DateAdapter.Period.DAILY) {
+            DateDialog dialog = DateDialog.newInstace(currentPeriod);
+            dialog.setCancelable(true);
+            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
+        } else {
+            DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
 
-            String from;
-            String to;
-
-            if (binding.buttonTime.getText().equals(WEEKLY)) {
-                from = "week";
-                to = "week";
-            } else if (binding.buttonTime.getText().equals(MONTHLY)) {
-                from = fromMonth + "/" + fromYear;
-                to = toMonth + "/" + toYear;
-            } else if (binding.buttonTime.getText().equals(YEARLY)) {
-                from = fromYear;
-                to = toYear;
-            } else {
-                from = fromDay + "/" + fromMonth;
-                to = toDay + "/" + toMonth;
-            }
-            binding.buttonDateRange.setText(from + "-" + to);
-        });*/
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            pickerDialog.show();
+        }
     }
 
     @Override
     public void showTimeUnitPicker() {
-        PopupMenu popupMenu = new PopupMenu(getContext(), binding.buttonTime);
-        popupMenu.getMenu().add(1, 0, Menu.NONE, DAILY);
-        popupMenu.getMenu().add(1, 0, Menu.NONE, WEEKLY);
-        popupMenu.getMenu().add(1, 0, Menu.NONE, MONTHLY);
-        popupMenu.getMenu().add(1, 0, Menu.NONE, YEARLY);
-        popupMenu.show();
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            binding.buttonTime.setText(item.getTitle());
-            return true;
-        });
+        Drawable drawable = null;
+        String period = null;
+        switch (currentPeriod) {
+            case DAILY:
+                currentPeriod = DateAdapter.Period.WEEKLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                period = WEEKLY;
+                break;
+            case WEEKLY:
+                currentPeriod = DateAdapter.Period.MONTHLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                period = MONTHLY;
+                break;
+            case MONTHLY:
+                currentPeriod = DateAdapter.Period.YEARLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                period = YEARLY;
+                break;
+            case YEARLY:
+                currentPeriod = DateAdapter.Period.DAILY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                period = DAILY;
+                break;
+        }
+        binding.buttonTime.setImageDrawable(drawable);
+        Toast.makeText(getContext(), String.format("Period filter set to %s", period), Toast.LENGTH_LONG).show();
     }
 
     @Override

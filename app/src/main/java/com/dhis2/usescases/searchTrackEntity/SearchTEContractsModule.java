@@ -56,6 +56,8 @@ public class SearchTEContractsModule {
         void onEnrollClick(android.view.View view);
 
         void onTEIClick(String TEIuid);
+
+        void getNextPage(int page);
     }
 
     public interface Interactor {
@@ -80,6 +82,8 @@ public class SearchTEContractsModule {
         void enroll();
 
         TrackedEntityModel getTrackedEntity();
+
+        void getNextPage(int page);
     }
 
     public interface Router {

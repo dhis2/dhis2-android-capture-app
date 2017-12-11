@@ -5,6 +5,11 @@
 
     <data>
 
+        <import type="java.lang.String" />
+
+        <variable
+            name="relationshipType"
+            type="java.lang.String" />
     </data>
 
     <android.support.v4.widget.NestedScrollView
@@ -19,16 +24,16 @@
                 android:id="@+id/relationship_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/item_relationship"/>
+                tools:listitem="@layout/item_relationship" />
 
             <ImageView
                 android:id="@+id/button_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="60dp"
                 android:layout_marginTop="9dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/relationship_recycler"
-                android:layout_marginEnd="60dp"
                 app:srcCompat="@drawable/ic_add_circle" />
 
             <TextView
@@ -36,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
                 android:fontFamily="sans-serif"
+                android:text='@{String.format("Add %s",relationshipType), default="Add new relationship"}'
                 android:textColor="#444444"
                 android:textSize="13.3sp"
                 android:textStyle="normal"

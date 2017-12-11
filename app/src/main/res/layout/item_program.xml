@@ -29,16 +29,9 @@
                 android:id="@+id/program_image"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
-                app:randomColor="@{program.id()}" />
+                app:randomColor="@{program.id()}"
+                app:programTypeIcon='@{program.programType()}'/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="135dp"
-                android:padding="5dp"
-                android:gravity="center"
-                android:textColor="?colorAccent"
-                app:autoSizeTextType="uniform"
-                android:text='@{program.programType().replace("_","\n")}'/>
 
             <TextView
                 android:id="@+id/program_name"

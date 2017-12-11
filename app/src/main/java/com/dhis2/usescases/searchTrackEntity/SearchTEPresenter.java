@@ -71,9 +71,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void setProgram(ProgramModel programSelected) {
-        view.clearList();
         interactor.setProgram(programSelected);
         selectedProgram = programSelected.uid();
+        view.clearList();
     }
 
     @Override
@@ -124,6 +124,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
 
 
+    }
+
+    @Override
+    public void getNextPage(int page) {
+        interactor.getNextPage(page);
     }
 
     public TrackedEntityModel getTrackedEntityName() {

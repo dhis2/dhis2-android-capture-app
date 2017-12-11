@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dhis2.R;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -37,6 +37,7 @@ import timber.log.Timber;
 public class Bindings {
 
     private static ProgramRepository programRepository;
+    private static MetadataRepository metadataRepository;
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
@@ -93,12 +94,20 @@ public class Bindings {
         else
             color = "#FFFFFF";
 
-        Drawable original = imageView.getDrawable();
-        Drawable compat = DrawableCompat.wrap(original);
-        DrawableCompat.setTint(compat, Color.parseColor(color));
-
-        imageView.setImageDrawable(compat);
+        Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program);
+        drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY);
+        imageView.setImageDrawable(drawable);
     }
+
+    @BindingAdapter("programTypeIcon")
+    public static void setProgramIcon(ImageView view, String programType) {
+        if (programType.equals("WITH_REGISTRATION"))
+            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_with_registration));
+        else
+            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_without_reg));
+
+    }
+
 
     @BindingAdapter("progressColor")
     public static void setProgressColor(ProgressBar progressBar, int color) {
@@ -173,22 +182,16 @@ public class Bindings {
     }
 
     @BindingAdapter("eventIcon")
-    public static void setEventIcon(ImageView view, EnrollmentStatus status) {
+    public static void setEventIcon(ImageView view, EventStatus status) {
         Drawable lock;
         if (status == null)
-            status = EnrollmentStatus.ACTIVE;
+            status = EventStatus.ACTIVE;
         switch (status) {
-            case ACTIVE:
+            default:
                 lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
                 break;
             case COMPLETED:
                 lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
-                break;
-            case CANCELLED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_inactive);
-                break;
-            default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_read_only);
                 break;
         }
 
@@ -259,5 +262,19 @@ public class Bindings {
         view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
     }
 
+    @BindingAdapter("programName")
+    public static void setProgramName(TextView textView, String programUid) {
+        metadataRepository.getProgramWithId(programUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programModel -> textView.setText(programModel.displayShortName()),
+                        Timber::d
+                );
+    }
 
+
+    public static void setMetadataRepository(MetadataRepository metadata) {
+        metadataRepository = metadata;
+    }
 }

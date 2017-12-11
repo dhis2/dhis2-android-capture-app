@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:gravity="end">
 
                 <LinearLayout
@@ -110,8 +110,7 @@
             android:layout_gravity="end"
             android:background="@color/white_faf"
             android:fitsSystemWindows="false"
-            app:itemTextColor="@color/colorPrimary"
-            android:visibility="gone">
+            app:itemTextColor="@color/colorPrimary">
 
             <RelativeLayout
                 android:id="@+id/tree_view_container"

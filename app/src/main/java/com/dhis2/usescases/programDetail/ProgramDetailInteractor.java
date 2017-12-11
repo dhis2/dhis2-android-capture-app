@@ -3,6 +3,7 @@ package com.dhis2.usescases.programDetail;
 import android.support.annotation.NonNull;
 
 import com.dhis2.Bindings.Bindings;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
@@ -32,6 +33,7 @@ import timber.log.Timber;
 
 public class ProgramDetailInteractor implements ProgramDetailContractModule.Interactor {
 
+    private final MetadataRepository metadataRepository;
     ProgramDetailContractModule.View view;
     private D2 d2;
     private String ouMode = "DESCENDANTS";
@@ -43,10 +45,12 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private Call<TrackedEntityObject> currentCall;
 
     @Inject
-    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository) {
+    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
         this.programRepository = programRepository;
+        this.metadataRepository = metadataRepository;
+        Bindings.setMetadataRepository(metadataRepository);
         Bindings.setProgramRepository(programRepository);
         compositeDisposable = new CompositeDisposable();
     }
@@ -70,7 +74,8 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                         },
                         Timber::d)
         );
-        compositeDisposable.add(programRepository.programAttributes(programId)
+
+        compositeDisposable.add(metadataRepository.getProgramTrackedEntityAttributes(programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -82,7 +87,6 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private void show(List<ProgramTrackedEntityAttributeModel> programAttributes) {
         view.setAttributeOrder(programAttributes);
     }
-
 
     @Override
     public void getData(int page) {
@@ -104,8 +108,9 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
         currentCall.enqueue(new Callback<TrackedEntityObject>() {
             @Override
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                if (response.body() != null)
+                if (response.body() != null) {
                     view.swapData(response.body());
+                }
             }
 
             @Override

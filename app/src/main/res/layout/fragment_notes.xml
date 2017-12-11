@@ -41,11 +41,10 @@
                 android:background="@drawable/button_delete_selector"
                 android:paddingEnd="23dp"
                 android:paddingStart="23dp"
-                android:text="delete"
+                android:text="clear"
                 android:textColor="?colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_note"
-                android:visibility="gone"/>
+                app:layout_constraintTop_toBottomOf="@id/edit_note"/>
 
             <Button
                 android:id="@+id/button_add"

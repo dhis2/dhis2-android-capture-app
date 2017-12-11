@@ -12,8 +12,8 @@
         <import type="org.hisp.dhis.android.core.common.BaseNameableObjectModel" />
 
         <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
 
     </data>
 
@@ -31,23 +31,22 @@
 
             <TextView
                 android:id="@+id/program_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{ program.displayShortName() }"
                 android:textAllCaps="true"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                tools:text="ANC" />
+                app:programName="@{enrollment.program()}"
+                tools:text="ANCAAfffffffggggffffffff" />
 
             <ImageView
                 android:id="@+id/program_image"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:layout_weight="1"
                 app:srcCompat="@drawable/ic_program"
-                app:tintRandomColor="@{program.uid()}" />
+                app:tintRandomColor="@{enrollment.program()}" />
         </LinearLayout>
 
         <LinearLayout

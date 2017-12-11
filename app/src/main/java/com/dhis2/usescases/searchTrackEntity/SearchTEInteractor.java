@@ -53,6 +53,8 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
     private String trackedEntityType;
     private TrackedEntityModel trackedEntity;
 
+    private int currentPage = 0;
+
     @Inject
     public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.searchRepository = searchRepository;
@@ -201,6 +203,12 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
         return trackedEntity;
     }
 
+    @Override
+    public void getNextPage(int page) {
+        currentPage = page;
+        call();
+    }
+
     private void call() {
         String orgQuey = "";
         for (int i = 0; i < orgList.size(); i++) {
@@ -218,7 +226,8 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                         enrollmentDate,
                         incidentDate,
                         filters,
-                        "trackedEntityInstance,attributes[*],enrollments[enrollment,trackedEntity,orgUnit,program,trackedEntityInstance,incidentDate]")
+                        "trackedEntityInstance,attributes[*],enrollments[enrollment,trackedEntity,orgUnit,program,trackedEntityInstance,incidentDate]",
+                        currentPage)
                 .enqueue(new Callback<TrackedEntityObject>() {
                     @Override
                     public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
@@ -244,6 +253,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
             this.selectedProgram = null;
             getTrackedEntityAttributes();
         }
+        call();
 
     }
 
@@ -256,6 +266,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                                                        @Query("programEnrollmentStartDate") String enrollmentStartDate,
                                                        @Query("programIncidentStartDate") String incientStartDate,
                                                        @Query("filter") List<String> filter,
-                                                       @Query("fields") String fields);
+                                                       @Query("fields") String fields,
+                                                       @Query("page") int page);
     }
 }

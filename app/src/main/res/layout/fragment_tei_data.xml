@@ -17,11 +17,12 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.TeiDashboardPresenter"/>
+            type="com.dhis2.usescases.teiDashboard.TeiDashboardPresenter" />
 
         <variable
             name="dashboardModel"
-            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel"/>
+            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -86,7 +87,8 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/data_layout" />
 
                 <TextView
                     android:id="@+id/edit_tei"
@@ -137,20 +139,19 @@
                             android:textSize="16sp"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Sarah Thompson"/>
+                            tools:text="Sarah Thompson" />
 
                         <TextView
                             android:id="@+id/secundary_attribute"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),3)}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
                             app:layout_constraintTop_toBottomOf="@id/main_attributes"
-                            tools:text="26dp"
-                            android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),3)}'
-                            />
+                            tools:text="26dp" />
                     </android.support.constraint.ConstraintLayout>
 
                     <android.support.constraint.ConstraintLayout
@@ -217,13 +218,13 @@
                             app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                             tools:text="DD/MM/YYYY" />
 
-
                         <TextView
                             android:id="@+id/org_unit"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:gravity="end"
+                            android:text='@{dashboardModel.getOrgUnit().displayShortName(),default="OrgUnit"}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="parent"

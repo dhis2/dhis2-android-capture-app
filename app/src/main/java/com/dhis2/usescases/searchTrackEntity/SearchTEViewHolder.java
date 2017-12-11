@@ -1,12 +1,17 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.databinding.DataBindingUtil;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.dhis2.R;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
+import com.dhis2.databinding.TrackEntityProgramsBinding;
 
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -52,15 +57,21 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     if (programModel.uid().equals(enrollment.program()))
                         programsEnrolled.add(programModel);
                 }
+
+                TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
+                        LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
+                );
+                programsBinding.setEnrollment(enrollment);
+                programsBinding.executePendingBindings();
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
+                binding.linearLayout.invalidate();
+
             }
 
             programsNotEnrolled.removeAll(programsEnrolled);
 
         }
-
-        if (!programsEnrolled.isEmpty())
-            binding.setProgram(programsEnrolled.get(0));
-
 
         menu = new PopupMenu(binding.addProgram.getContext(), binding.addProgram);
         for (ProgramModel program :

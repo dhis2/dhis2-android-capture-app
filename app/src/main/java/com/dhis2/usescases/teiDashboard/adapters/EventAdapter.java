@@ -9,8 +9,10 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemEventBinding;
 
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +25,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     private List<Event> events;
 
     public EventAdapter(List<ProgramStageModel> programStageList, List<Event> eventList) {
-        this.events = eventList;
+        this.events = new ArrayList<>();
+        for (Event event : eventList)
+            if (event.status() == EventStatus.ACTIVE || event.status() == EventStatus.COMPLETED)
+                this.events.add(event);
+
         this.programStageList = programStageList;
     }
 

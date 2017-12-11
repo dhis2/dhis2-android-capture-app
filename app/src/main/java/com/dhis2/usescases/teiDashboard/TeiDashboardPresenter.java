@@ -14,6 +14,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Inject
     TeiDashboardInteractor interactor;
+    private String teUid;
 
     @Inject
     public TeiDashboardPresenter() {
@@ -23,6 +24,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
         this.view = view;
+        this.teUid = teiUid;
         interactor.init(view, teiUid, programUid);
     }
 
@@ -34,6 +36,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onProgramSelected() {
 
+    }
+
+    @Override
+    public void onEnrollmentSelectorClick() {
+        interactor.getEnrollments(teUid);
     }
 
     @Override

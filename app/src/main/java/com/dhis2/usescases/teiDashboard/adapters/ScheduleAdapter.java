@@ -9,10 +9,12 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -34,9 +36,24 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
         this.programStageList = programStageList;
 
         this.events = new ArrayList<>();
-        this.events.addAll(eventList);
+        for (Event event : eventList)
+            if (event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.SKIPPED)
+                this.events.add(event);
 
-        Collections.sort(events, (eventA, eventB) -> eventB.eventDate().compareTo(eventA.eventDate()));
+        Collections.sort(events, new Comparator<Event>() {
+            @Override
+            public int compare(Event eventA, Event eventB) {
+
+                if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SCHEDULE)
+                    return eventB.eventDate().compareTo(eventA.eventDate());
+                if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SKIPPED)
+                    return eventB.dueDate().compareTo(eventA.eventDate());
+                if (eventA.status() == EventStatus.SKIPPED && eventB.status() == EventStatus.SCHEDULE)
+                    return eventB.eventDate().compareTo(eventA.dueDate());
+                else
+                    return eventB.dueDate().compareTo(eventA.dueDate());
+            }
+        });
 
     }
 

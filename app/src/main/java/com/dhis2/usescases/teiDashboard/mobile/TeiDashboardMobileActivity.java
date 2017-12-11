@@ -4,6 +4,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -18,8 +20,11 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
+import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,15 +38,16 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Inject
     TeiDashboardPresenter presenter;
 
+    DashboardProgramModel programModel;
+    TrackedEntityInstance trackedEntityInstance;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).getUserComponent().plus(new TeiDashboardModule()).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
-        presenter.init(this,
-                getIntent().getStringExtra("TEI_UID"),
-                getIntent().getStringExtra("PROGRAM_UID"));
+        init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
         binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), false));
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -49,10 +55,32 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
 
     @Override
+    public void init(String teiUid, String programUid) {
+        presenter.init(this,
+                teiUid,
+                programUid);
+    }
+
+    @Override
     public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel program) {
+        this.programModel = program;
+        this.trackedEntityInstance = trackedEntityModel;
         TEIDataFragment.getInstance().setData(trackedEntityModel, program);
-        RelationshipFragment.getInstance().setData(trackedEntityModel.relationships());
+        RelationshipFragment.getInstance().setData(trackedEntityModel.relationships(), program.getRelationshipTypeModel());
         ScheduleFragment.getInstance().setData(trackedEntityModel, program);
+    }
+
+    @Override
+    public void showEnrollmentList(List<Enrollment> enrollments) {
+        PopupMenu menu = new PopupMenu(this, binding.programSelectorButton);
+        for (ProgramModel program : programModel.getEnrollmentProgramModels()) {
+            menu.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, program.displayShortName());
+        }
+        menu.setOnMenuItemClickListener(item -> {
+            init(trackedEntityInstance.uid(),programModel.getEnrollmentProgramModels().get(item.getOrder()).uid());
+            return true;
+        });
+        menu.show();
     }
 
 }

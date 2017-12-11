@@ -6,7 +6,7 @@
     <data>
 
         <import type="android.view.View" />
-
+        <import type="org.hisp.dhis.android.core.event.EventStatus"/>
         <variable
             name="event"
             type="org.hisp.dhis.android.core.event.Event" />
@@ -94,7 +94,7 @@
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toBottomOf="@id/event_name"
             tools:text="03/10/2017 "
-            app:date='@{event.eventDate}'
+            app:date='@{event.status==EventStatus.SCHEDULE ? event.eventDate : event.dueDate}'
             />
 
 

@@ -36,10 +36,12 @@
                 tools:text="TEI NAME" />
 
             <ImageView
+                android:id="@+id/program_selector_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_program_border" />
+                app:srcCompat="@drawable/ic_program_border"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"/>
 
         </LinearLayout>
 

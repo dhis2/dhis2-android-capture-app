@@ -89,7 +89,7 @@
                     android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
             </LinearLayout>
 
-            <LinearLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,23 +97,30 @@
                 android:layout_marginEnd="18dp"
                 android:layout_marginStart="6dp"
                 android:layout_marginTop="5dp"
-                android:orientation="horizontal">
+                app:alignItems="flex_end"
+                app:flexWrap="wrap"
+                app:justifyContent="space_between">
 
-                <include
+                <!--<include
                     layout="@layout/track_entity_programs"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     app:program="@{program}" />
 
                 <include
                     layout="@layout/track_entity_programs"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:program="@{program}" />
+                <include
+                    layout="@layout/track_entity_programs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:program="@{program}" />-->
 
-            </LinearLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
             <RelativeLayout
                 android:id="@+id/buttons_layout"
