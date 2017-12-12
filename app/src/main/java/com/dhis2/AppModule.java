@@ -37,5 +37,4 @@ public class AppModule {
     ConfigurationManager configurationManager(DatabaseAdapter databaseAdapter) {
         return ConfigurationManagerFactory.create(databaseAdapter);
     }
-
 }

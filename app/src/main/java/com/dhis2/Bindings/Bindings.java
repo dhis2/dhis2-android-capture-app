@@ -123,7 +123,7 @@ public class Bindings {
 
     @BindingAdapter("programStage")
     public static void getStageName(TextView textView, String stageId) {
-        programRepository.programStage(stageId)
+        metadataRepository.programStage(stageId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

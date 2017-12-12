@@ -13,9 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
-import com.dhis2.R;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -118,10 +116,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);
         bundle.putString("PROGRAM_UID", selectedProgram);
-        if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
+       /* if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
             view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
-        else
-            view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+        else*/
+        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 
     @Override

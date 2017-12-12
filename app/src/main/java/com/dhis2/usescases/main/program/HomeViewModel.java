@@ -22,6 +22,7 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
         static final String PROGRAM_TYPE = "programType";
         static final String PROGRAM_ATTRIBUTES = "programTrackedEntityAttributes";
         static final String TRACKED_ENTITY = "trackedEntity";
+        static final String DISPLAY_FRONT_PAGE_LIST = "displayFrontPageList";
     }
 
     @NonNull
@@ -49,14 +50,18 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
     @ColumnName(Columns.TRACKED_ENTITY)
     public abstract String trackedEntityType();
 
+    @Nullable
+    @ColumnName(Columns.DISPLAY_FRONT_PAGE_LIST)
+    public abstract String displayFrontPageList();
+
    /* @NonNull
     @ColumnName(Columns.PROGRAM_ATTRIBUTES)
     public abstract List<ProgramTrackedEntityAttributeModel> programAttributes();*/
 
     @NonNull
     public static HomeViewModel create(@NonNull String id, @NonNull String title, @NonNull String lastUpdated,
-                                       @NonNull Type type, @NonNull String programType, @Nullable String trackedEntityType) {
-        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType, trackedEntityType);
+                                       @NonNull Type type, @NonNull String programType, @Nullable String trackedEntityType, @Nullable String displayFrontPageList) {
+        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType, trackedEntityType,displayFrontPageList);
     }
 
     public static HomeViewModel fromCursor(Cursor cursor) {

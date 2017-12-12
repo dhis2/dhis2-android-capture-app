@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.mobile;
 
+import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,11 +45,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).getUserComponent().plus(new TeiDashboardModule()).inject(this);
+        if (getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        else
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), false));
+        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), getResources().getBoolean(R.bool.is_tablet)));
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     }

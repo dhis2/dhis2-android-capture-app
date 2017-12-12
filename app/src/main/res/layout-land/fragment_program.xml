@@ -26,42 +26,76 @@
             android:paddingTop="10dp">
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp">
+                android:layout_marginBottom="7dp"
+                android:gravity="end"
+                android:visibility="gone">
 
-                <ImageView
-                    android:id="@+id/button_time"
-                    android:layout_width="56dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/period_button"
-                    android:onClick="@{()->presenter.onTimeButtonClick()}"
-                    android:padding="7dp"
-                    app:srcCompat="@drawable/ic_view_week" />
-
-                <TextView
-                    android:id="@+id/button_date_range"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/period_time_button"
-                    android:gravity="center"
-                    android:onClick="@{()->presenter.onDateRangeButtonClick()}"
-                    android:padding="7dp"
-                    android:text="DD/MM/YYYY"
-                    android:textColor="?colorAccent" />
+                    android:layout_height="40dp">
 
+                    <ImageView
+                        android:id="@+id/button_time"
+                        android:layout_width="56dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/period_button"
+                        android:onClick="@{()->presenter.onTimeButtonClick()}"
+                        android:padding="7dp"
+                        app:srcCompat="@drawable/ic_view_week" />
+
+                    <TextView
+                        android:id="@+id/button_date_range"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/period_time_button"
+                        android:gravity="center"
+                        android:onClick="@{()->presenter.onDateRangeButtonClick()}"
+                        android:padding="7dp"
+                        android:text="DD/MM/YYYY"
+                        android:textColor="?colorAccent" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/button_org_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/selector_button_round_20"
+                    android:maxLines="1"
+                    android:minHeight="40dp"
+                    android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
+                    android:paddingStart="15dp"
+                    android:text="Org Unit"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="?colorAccent"
+                    android:textSize="15sp" />
             </LinearLayout>
 
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/program_recycler"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:initGrid="@{true}"
-                app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                tools:listitem="@layout/item_program" />
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/program_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:initGrid="@{true}"
+                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                    tools:listitem="@layout/item_program" />
+
+                <ProgressBar
+                    android:id="@+id/program_progress"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    app:progressColor="@{@color/colorPrimary}" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 

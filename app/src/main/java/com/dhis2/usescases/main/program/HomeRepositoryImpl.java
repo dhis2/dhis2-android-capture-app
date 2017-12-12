@@ -46,9 +46,9 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final static String SELECT_PROGRAMS_VIEW_MODELS = String.format(Locale.US,
             "SELECT * FROM " +
-                    "(SELECT %s,%s,%s,%s,%s,'%s' AS %s FROM %s) " +
+                    "(SELECT %s,%s,%s,%s,%s,%s,'%s' AS %s FROM %s) " +
                     "ORDER BY %s DESC",
-            ProgramModel.Columns.TRACKED_ENTITY,ProgramModel.Columns.PROGRAM_TYPE, ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, ProgramModel.Columns.LAST_UPDATED,
+            ProgramModel.Columns.DISPLAY_FRONT_PAGE_LIST,ProgramModel.Columns.TRACKED_ENTITY,ProgramModel.Columns.PROGRAM_TYPE, ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, ProgramModel.Columns.LAST_UPDATED,
             HomeViewModel.Type.PROGRAM.name(), HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE, ProgramModel.TABLE,
             HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE);
 

@@ -134,7 +134,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     }
 
 
-    private interface TrackedEntityInstanceService {
+    public interface TrackedEntityInstanceService {
         @GET("28/trackedEntityInstances/{uid}")
         Call<TrackedEntityInstance> trackEntityInstances(@Path("uid") String teiUid,
                                                          @Query("program") String programUid,

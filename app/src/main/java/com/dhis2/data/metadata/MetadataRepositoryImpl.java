@@ -7,6 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
@@ -51,6 +52,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
 
+    private final String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.TABLE + "." + ProgramStageModel.Columns.UID + " = '%s'";
+
+
     private final BriteDatabase briteDatabase;
 
     public MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
@@ -91,6 +95,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_LIST_QUERY)
                 .mapToList(RelationshipTypeModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<ProgramStageModel> programStage(String programStageId) {
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, String.format(SELECT_PROGRAM_STAGE, programStageId))
+                .mapToOne(ProgramStageModel::create);
     }
 
     @Override

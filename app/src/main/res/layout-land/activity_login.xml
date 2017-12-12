@@ -127,6 +127,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?colorPrimary"
+            android:onClick="@{()->presenter.onButtonClick()}"
             android:text="Log In"
             android:textColor="?colorAccent"
             android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}"

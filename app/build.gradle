@@ -158,6 +158,8 @@ dependencies {
     implementation 'com.github.dekoservidoni:omfm:1.0.3'
     implementation 'com.google.android:flexbox:0.3.1'
 
+    //TABLEVIEW
+    implementation 'com.evrencoskun.library:tableview:0.8.3'
 
     //Test
 
