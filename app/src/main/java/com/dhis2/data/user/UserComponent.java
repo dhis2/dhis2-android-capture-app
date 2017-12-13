@@ -15,6 +15,8 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
+import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 
 import dagger.Subcomponent;
 
@@ -39,5 +41,8 @@ public interface UserComponent {
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);
 
 }

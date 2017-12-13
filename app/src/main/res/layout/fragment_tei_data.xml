@@ -39,7 +39,8 @@
             app:cardCornerRadius="1.8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -47,7 +48,8 @@
                 android:paddingBottom="7dp"
                 android:paddingEnd="12dp"
                 android:paddingStart="12dp"
-                android:paddingTop="7dp">
+                android:paddingTop="7dp"
+                android:focusableInTouchMode="true">
 
 
                 <ImageView
@@ -86,6 +88,7 @@
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:onClick="@{() -> presenter.editTei(false)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/data_layout" />
@@ -101,6 +104,7 @@
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:onClick="@{() -> presenter.editTei(true)}"
                     app:layout_constraintBottom_toBottomOf="@id/view_tei"
                     app:layout_constraintTop_toTopOf="@id/view_tei"
                     app:layout_constraintEnd_toStartOf="@id/view_tei" />

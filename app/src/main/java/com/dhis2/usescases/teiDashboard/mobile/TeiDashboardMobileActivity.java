@@ -99,4 +99,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         menu.show();
     }
 
+    public TeiDashboardPresenter getPresenter(){
+        return presenter;
+    }
+
 }

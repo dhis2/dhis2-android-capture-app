@@ -43,7 +43,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final BriteDatabase briteDatabase;
 
-    DashboardRepositoryImpl(BriteDatabase briteDatabase) {
+    public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 

@@ -1,5 +1,9 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.os.Bundle;
+
+import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
+
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import javax.inject.Inject;
@@ -15,6 +19,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Inject
     TeiDashboardInteractor interactor;
     private String teUid;
+    private String programUid;
 
     @Inject
     public TeiDashboardPresenter() {
@@ -25,6 +30,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void init(TeiDashboardContracts.View view, String teiUid, String programUid) {
         this.view = view;
         this.teUid = teiUid;
+        this.programUid = programUid;
         interactor.init(view, teiUid, programUid);
     }
 
@@ -45,5 +51,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void setProgram(ProgramModel program) {
+    }
+
+    @Override
+    public void editTei(boolean isEditable) {
+        Bundle extras = new Bundle();
+        extras.putString("TEI_UID", teUid);
+        extras.putString("PROGRAM_UID", programUid);
+        extras.putBoolean("IS_EDITABLE", isEditable);
+        view.startActivity(TeiDataDetailActivity.class, extras, false, false, null);
     }
 }

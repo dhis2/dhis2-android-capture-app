@@ -38,6 +38,8 @@ public class TeiDashboardContracts {
 
         void setProgram(ProgramModel program);
 
+        void editTei(boolean isEditable);
+
     }
 
     public interface Interactor {
