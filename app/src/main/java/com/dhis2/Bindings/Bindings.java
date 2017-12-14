@@ -165,6 +165,28 @@ public class Bindings {
 
     }
 
+    @BindingAdapter("enrolmentAction")
+    public static void setEnrolmentAction(TextView textView, EnrollmentStatus status) {
+        String action;
+        if (status == null)
+            status = EnrollmentStatus.ACTIVE;
+        switch (status) {
+            case ACTIVE:
+                action = "Complete";
+                break;
+            case COMPLETED:
+                action = "re-open";
+                break;
+            case CANCELLED:
+                action = "activate";
+                break;
+            default:
+                action = "";
+                break;
+        }
+        textView.setText(action);
+    }
+
     @BindingAdapter("enrolmentText")
     public static void setEnrolmentText(TextView view, EnrollmentStatus status) {
         String text;

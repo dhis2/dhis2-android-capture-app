@@ -14,13 +14,9 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
-import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailPresenter;
 
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -46,7 +42,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
-        presenter = ((TeiDashboardMobileActivity)getActivity()).getPresenter();
+        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         return binding.getRoot();
     }

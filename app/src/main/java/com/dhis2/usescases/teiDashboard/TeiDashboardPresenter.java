@@ -1,6 +1,8 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.view.View;
 
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
@@ -54,11 +56,12 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void editTei(boolean isEditable) {
+    public void editTei(boolean isEditable, View sharedView) {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
         extras.putBoolean("IS_EDITABLE", isEditable);
-        view.startActivity(TeiDataDetailActivity.class, extras, false, false, null);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(),sharedView,"user_info");
+        view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
     }
 }

@@ -30,6 +30,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onBackPressed() {
-        view.back();
+        view.getAbstracContext().onBackPressed();
     }
 }
