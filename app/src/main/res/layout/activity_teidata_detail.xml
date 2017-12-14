@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+
+        <variable
+            name="dashboardModel"
+            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailPresenter" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="@{()->presenter.onBackPressed()}"
+                android:padding="15dp"
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="20sp"
+                android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
+                android:textColor="?colorAccent"
+                tools:text="TEI NAME" />
+
+        </LinearLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="7dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <ImageView
+                android:id="@+id/program_lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                app:enrolmentIcon='@{trackEntity.enrollments().get(0).enrollmentStatus()}'
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_lock_open_green" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:gravity="center_horizontal"
+                android:maxWidth="60dp"
+                android:textColor="#787878"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                app:enrolmentText='@{trackEntity.enrollments().get(0).enrollmentStatus()}'
+                app:layout_constraintEnd_toEndOf="@id/program_lock"
+                app:layout_constraintStart_toStartOf="@id/program_lock"
+                app:layout_constraintTop_toBottomOf="@id/program_lock" />
+
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/data_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap"
+                app:layout_constraintBottom_toTopOf="@id/view_tei"
+                app:layout_constraintEnd_toStartOf="@id/program_lock"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/tei_image"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:srcCompat="@drawable/photo_temp" />
+
+
+                    <TextView
+                        android:id="@+id/main_attributes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
+                        android:textColor="@color/gray_444"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toEndOf="@id/tei_image"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Sarah Thompson" />
+
+                    <TextView
+                        android:id="@+id/secundary_attribute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),3)}'
+                        android:textColor="@color/gray_444"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@id/tei_image"
+                        app:layout_constraintTop_toBottomOf="@id/main_attributes"
+                        tools:text="26dp" />
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/incident_date_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text='@{program.incidentDateLabel(),default="Incident date"}'
+                        android:textColor="@color/icon_color"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Date of diagnosis:" />
+
+                    <TextView
+                        android:id="@+id/enrollment_date_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'
+                        android:textColor="@color/icon_color"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toBottomOf="@id/incident_date_label"
+                        tools:text="Date of enrollment:" />
+
+                    <TextView
+                        android:id="@+id/org_unit_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Enrolling OU:"
+                        android:textColor="@color/icon_color"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />
+
+                    <TextView
+                        android:id="@+id/incident_date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:gravity="end"
+                        android:textColor="@color/gray_444"
+                        android:textSize="14sp"
+                        app:date="@{trackEntity.enrollments().get(0).dateOfIncident()}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/incident_date_label"
+                        app:layout_constraintTop_toTopOf="@id/incident_date_label"
+                        tools:text="DD/MM/YYYY" />
+
+                    <TextView
+                        android:id="@+id/enrollment_date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:gravity="end"
+                        android:textColor="@color/gray_444"
+                        android:textSize="14sp"
+                        app:date="@{trackEntity.enrollments().get(0).dateOfEnrollment()}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
+                        tools:text="DD/MM/YYYY" />
+
+                    <TextView
+                        android:id="@+id/org_unit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:gravity="end"
+                        android:text='@{dashboardModel.getOrgUnit().displayShortName(),default="OrgUnit"}'
+                        android:textColor="@color/gray_444"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/org_unit_label" />
+                </android.support.constraint.ConstraintLayout>
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/teidetail_recyclerview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="17dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/data_layout" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</layout>
