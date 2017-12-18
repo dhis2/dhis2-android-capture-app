@@ -19,13 +19,12 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * -Created by ppajuelo on 29/11/2017.
  */
 
 public class TEIDataFragment extends FragmentGlobalAbstract {
 
     FragmentTeiDataBinding binding;
-    private TeiDashboardPresenter presenter;
 
     static TEIDataFragment instance;
     private static TrackedEntityInstance trackedEntity;
@@ -42,7 +41,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
-        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+        TeiDashboardPresenter presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         return binding.getRoot();
     }
@@ -59,19 +58,25 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
             binding.setTrackEntity(trackedEntity);
             binding.setProgram(program.getProgram());
             binding.setDashboardModel(program);
-            binding.executePendingBindings();
+        }else{
+            binding.setTrackEntity(trackedEntity);
         }
+
+        binding.executePendingBindings();
     }
 
     @Override
     public void onDestroy() {
         instance = null;
+        trackedEntity = null;
+        program = null;
+
         super.onDestroy();
     }
 
-    public void setData(TrackedEntityInstance trackedEntity, DashboardProgramModel program) {
-        this.trackedEntity = trackedEntity;
-        this.program = program;
+    public void setData(TrackedEntityInstance ntrackedEntity, DashboardProgramModel nprogram) {
+        trackedEntity = ntrackedEntity;
+        program = nprogram;
         onResume();
     }
 

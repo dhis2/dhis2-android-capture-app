@@ -22,12 +22,12 @@
                 android:layout_marginEnd="9dp"
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="30dp"
+                android:background="@drawable/gray_border_box"
                 android:gravity="start"
                 android:hint="Write new note"
-                android:padding="16dp"
                 android:maxHeight="195dp"
+                android:padding="16dp"
                 android:textColor="@color/gray_444"
-                android:background="@drawable/gray_border_box"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +44,7 @@
                 android:text="clear"
                 android:textColor="?colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_note"/>
+                app:layout_constraintTop_toBottomOf="@id/edit_note" />
 
             <Button
                 android:id="@+id/button_add"
@@ -59,19 +59,20 @@
                 android:textColor="?colorAccent"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/button_delete"
-                app:layout_constraintTop_toBottomOf="@id/edit_note"
-                />
+                app:layout_constraintTop_toBottomOf="@id/edit_note" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/notes_recycler"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:background="@android:color/white"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/button_add"
-                tools:listitem="@layout/item_notes"
-                android:background="@android:color/white"/>
+                tools:listitem="@layout/item_notes" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>

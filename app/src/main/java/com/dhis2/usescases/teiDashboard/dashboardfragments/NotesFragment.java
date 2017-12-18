@@ -8,15 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.databinding.FragmentNotesBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-
-import dagger.android.support.AndroidSupportInjection;
+import com.dhis2.usescases.teiDashboard.adapters.NotesAdapter;
 
 /**
  * Created by ppajuelo on 29/11/2017.
  */
 
 public class NotesFragment extends FragmentGlobalAbstract {
+    FragmentNotesBinding binding;
     static NotesFragment instance;
 
     static public NotesFragment getInstance() {
@@ -30,6 +31,9 @@ public class NotesFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false);
+        binding.notesRecycler.setAdapter(new NotesAdapter());
+        binding.buttonAdd.setOnClickListener(this::addNote);
+        binding.buttonDelete.setOnClickListener(this::clearNote);
         return binding.getRoot();
     }
 
@@ -38,4 +42,14 @@ public class NotesFragment extends FragmentGlobalAbstract {
         instance = null;
         super.onDestroy();
     }
+
+    public void addNote(View view) {
+        ((NotesAdapter) binding.notesRecycler.getAdapter()).addNote(binding.editNote.getText().toString());
+        clearNote(view);
+    }
+
+    public void clearNote(View view) {
+        binding.editNote.getText().clear();
+    }
+
 }

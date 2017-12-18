@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -82,7 +83,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     public void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel) {
         binding.setDashboardModel(programModel);
         binding.setTrackEntity(trackedEntityInstance);
+        binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
+        TEIDataFragment.getInstance().setData(trackedEntityInstance, null);
     }
 
     @Override
@@ -93,13 +96,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             menu.getMenu().add(Menu.NONE, cont++, Menu.NONE, program.displayShortName());
         }
         menu.setOnMenuItemClickListener(item -> {
-            init(trackedEntityInstance.uid(),programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
+            init(trackedEntityInstance.uid(), programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
             return true;
         });
         menu.show();
     }
 
-    public TeiDashboardPresenter getPresenter(){
+    public TeiDashboardPresenter getPresenter() {
         return presenter;
     }
 

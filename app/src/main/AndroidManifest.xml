@@ -35,6 +35,7 @@
         <activity android:name=".usescases.teiDashboard.tablet.TeiDashboardTabletActivity" />
         <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
+        <activity android:name=".usescases.eventDetail.EventDetailActivity" />
 
         <service
             android:name=".data.service.SyncService"

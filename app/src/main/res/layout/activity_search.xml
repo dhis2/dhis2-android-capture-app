@@ -116,9 +116,8 @@
 
                 <Button
                     android:id="@+id/button_add"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:layout_weight="1"
                     android:background="@drawable/selector_enroll_button"
                     android:onClick="@{(view)->presenter.onEnrollClick(view)}"
                     android:text="ADD NEW"

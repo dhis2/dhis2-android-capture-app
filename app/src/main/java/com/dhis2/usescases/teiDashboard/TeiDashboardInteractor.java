@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.service.SyncService;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.dataelement.CategoryCombo;
@@ -131,6 +132,8 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
 
                     }
                 });
+
+
     }
 
 
