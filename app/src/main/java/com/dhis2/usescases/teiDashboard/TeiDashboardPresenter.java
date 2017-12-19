@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
+import com.dhis2.usescases.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -61,7 +62,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
         extras.putBoolean("IS_EDITABLE", isEditable);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(),sharedView,"user_info");
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
+    }
+
+    @Override
+    public void onEventSelected(String uid, View sharedView) {
+        Bundle extras = new Bundle();
+        extras.putString("EVENT_UID", uid);
+        extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
+        view.startActivity(EventDetailActivity.class, extras, false, false, options);
     }
 }

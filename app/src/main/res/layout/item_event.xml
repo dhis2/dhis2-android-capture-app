@@ -20,6 +20,8 @@
         app:eventColor="@{event.status()}">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/shared_view"
+            android:transitionName="shared_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"

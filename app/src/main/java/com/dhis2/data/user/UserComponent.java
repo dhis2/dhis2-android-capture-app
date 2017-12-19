@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
+import com.dhis2.usescases.eventDetail.EventDetailComponent;
+import com.dhis2.usescases.eventDetail.EventDetailModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainContractsModule;
 import com.dhis2.usescases.programDetail.ProgramDetailComponent;
@@ -44,5 +46,8 @@ public interface UserComponent {
 
     @NonNull
     TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);
+
+    @NonNull
+    EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
 
 }

@@ -117,7 +117,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (pos > 0) {
                     binding.progress.setVisibility(View.VISIBLE);
                     binding.objectCounter.setVisibility(View.GONE);
-                    searchTEAdapter.clear();
+                    if (searchTEAdapter != null)
+                        searchTEAdapter.clear();
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                 }
             }

@@ -59,4 +59,9 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
 
     }
 
+    @Override
+    public String getToolbarTitle() {
+        return binding.toolbarTitle.getText().toString();
+    }
+
 }

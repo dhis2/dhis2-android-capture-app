@@ -4,10 +4,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.BR;
 import com.dhis2.databinding.ItemEventBinding;
-import com.dhis2.databinding.ItemScheduleBinding;
+import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 
 import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 /**
@@ -22,8 +21,11 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(Event eventModel, ProgramStageModel programStage) {
+    public void bind(TeiDashboardPresenter presenter, Event eventModel, ProgramStageModel programStage) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
+        binding.executePendingBindings();
+
+        itemView.setOnClickListener(view -> presenter.onEventSelected(eventModel.uid(), binding.sharedView));
     }
 }

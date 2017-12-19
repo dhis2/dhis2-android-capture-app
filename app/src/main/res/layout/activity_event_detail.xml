@@ -8,28 +8,27 @@
         <import type="android.view.View" />
 
         <variable
-            name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
-
-        <variable
-            name="dashboardModel"
-            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+            name="presenter"
+            type="com.dhis2.usescases.eventDetail.EventDetailPresenter" />
 
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.Event"/>
+            type="org.hisp.dhis.android.core.event.EventModel" />
+
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
+            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
         <variable
             name="isEditable"
             type="Boolean" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/toolbar"
@@ -44,107 +43,146 @@
                 app:srcCompat="@drawable/ic_arrow_back" />
 
             <TextView
+                android:id="@id/toolbar_title"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
                 tools:text="TEI NAME" />
 
         </LinearLayout>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.35" />
-
-
-        <TextView
-            android:id="@+id/event_name"
-            android:layout_width="0dp"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif"
-            android:gravity="start"
-            android:maxLines="1"
-            android:text='@{stage.displayName,default="Stage Name"}'
-            android:textColor="#444444"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            tools:text="ANC 4" />
+            android:transitionName="shared_view">
 
-        <RelativeLayout
-            android:id="@+id/icon_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.35" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/edit_mode_"
+            <TextView
+                android:id="@+id/event_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:gravity="start"
+                android:maxLines="1"
+                app:programStage="@{event.programStage()}"
+                android:textColor="#444444"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="ANC 4"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"/>
+
+            <RelativeLayout
+                android:id="@+id/icon_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="@{isEditable ? View.VISIBLE : View.GONE}"
-                app:srcCompat="@drawable/ic_edit" />
-        </RelativeLayout>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/event_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Event date"
-            android:inputType="date"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/icon_container" />
-
-        <EditText
-            android:id="@+id/due_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Due date"
-            android:inputType="date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintTop_toBottomOf="@+id/icon_container" />
-
-        <EditText
-            android:id="@+id/category_combo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Cat combo"
-            android:inputType="date"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/event_date" />
-
-        <EditText
-            android:id="@+id/org_unit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Org Unit"
-            android:inputType="date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintTop_toBottomOf="@+id/due_date" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/edit_mode_"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{isEditable ? View.VISIBLE : View.INVISIBLE}"
+                    app:srcCompat="@drawable/ic_edit" />
+            </RelativeLayout>
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/stage_values_recycler"
-            android:layout_width="0dp"
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/event_data_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/icon_container">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Event date"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/event_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:inputType="date"
+                        android:text="@{event.eventDate().toLocaleString()}" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Due date"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/due_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"
+                        android:text="@{event.dueDate().toLocaleString()}" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Cat combo"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
+
+                    <EditText
+                        android:id="@+id/category_combo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Org Unit"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
+
+                    <EditText
+                        android:id="@+id/org_unit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"
+                        android:text="@{event.organisationUnit()}" />
+                </android.support.design.widget.TextInputLayout>
+            </com.google.android.flexbox.FlexboxLayout>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/data_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/org_unit"
-            />
-
-
-    </android.support.constraint.ConstraintLayout>
+            android:layout_marginTop="20dp"
+            app:alignContent="stretch"
+            app:alignItems="stretch"
+            app:flexWrap="wrap"/>
+    </LinearLayout>
 </layout>

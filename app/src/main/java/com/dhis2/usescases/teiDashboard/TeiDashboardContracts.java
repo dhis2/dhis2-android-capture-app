@@ -1,7 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
@@ -26,6 +25,8 @@ public class TeiDashboardContracts {
         void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel);
 
         void showEnrollmentList(List<Enrollment> enrollments);
+
+        String getToolbarTitle();
     }
 
     public interface Presenter {
@@ -41,6 +42,7 @@ public class TeiDashboardContracts {
 
         void editTei(boolean isEditable, android.view.View view);
 
+        void onEventSelected(String uid, android.view.View view);
     }
 
     public interface Interactor {

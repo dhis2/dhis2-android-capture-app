@@ -74,9 +74,13 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
         this.trackedEntityInstance = trackedEntityModel;
-        TEIDataFragment.getInstance().setData(trackedEntityModel, program);
+        setDataFragment();
         RelationshipFragment.getInstance().setData(trackedEntityModel.relationships(), program.getRelationshipTypeModel());
         ScheduleFragment.getInstance().setData(trackedEntityModel, program);
+    }
+
+    public void setDataFragment() {
+        TEIDataFragment.getInstance().setData(trackedEntityInstance, programModel);
     }
 
     @Override
@@ -100,6 +104,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             return true;
         });
         menu.show();
+    }
+
+    @Override
+    public String getToolbarTitle() {
+        return binding.toolbarTitle.getText().toString();
     }
 
     public TeiDashboardPresenter getPresenter() {

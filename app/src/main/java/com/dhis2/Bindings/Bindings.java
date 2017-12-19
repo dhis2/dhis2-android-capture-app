@@ -5,6 +5,7 @@ import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -305,5 +306,16 @@ public class Bindings {
 
     public static void setMetadataRepository(MetadataRepository metadata) {
         metadataRepository = metadata;
+    }
+
+    @BindingAdapter("dataElementHint")
+    public static void setDataElementName(TextInputLayout view, String dataElementUid) {
+        metadataRepository.getDataElement(dataElementUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        dataModel -> view.setHint(dataModel.displayShortName()),
+                        Timber::d
+                );
     }
 }

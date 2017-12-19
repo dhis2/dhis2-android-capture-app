@@ -29,6 +29,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     static TEIDataFragment instance;
     private static TrackedEntityInstance trackedEntity;
     private static DashboardProgramModel program;
+    TeiDashboardPresenter presenter;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -41,7 +42,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
-        TeiDashboardPresenter presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         return binding.getRoot();
     }
@@ -53,14 +54,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
 
             for (Enrollment enrollment : trackedEntity.enrollments())
                 if (enrollment.program().equals(program.getProgram().uid()))
-                    binding.teiRecycler.setAdapter(new EventAdapter(program.getProgramStages(), enrollment.events()));
+                    binding.teiRecycler.setAdapter(new EventAdapter(presenter,program.getProgramStages(), enrollment.events()));
 
             binding.setTrackEntity(trackedEntity);
             binding.setProgram(program.getProgram());
             binding.setDashboardModel(program);
-        }else{
+        } else {
             binding.setTrackEntity(trackedEntity);
-        }
+    }
 
         binding.executePendingBindings();
     }

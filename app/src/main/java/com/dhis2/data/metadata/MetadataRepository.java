@@ -2,6 +2,7 @@ package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -49,4 +50,5 @@ public interface MetadataRepository {
     @NonNull
     Observable<ProgramStageModel> programStage(String programStageId);
 
+    Observable<DataElementModel> getDataElement(String dataElementUid);
 }

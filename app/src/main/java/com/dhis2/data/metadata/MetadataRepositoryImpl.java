@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -49,6 +50,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private final String RELATIONSHIP_TYPE_LIST_QUERY = String.format("SELECT * FROM %s ",
             RelationshipTypeModel.TABLE);
+
+    private final String DATA_ELEMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            DataElementModel.TABLE, DataElementModel.TABLE, DataElementModel.Columns.UID);
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
 
@@ -102,6 +106,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     public Observable<ProgramStageModel> programStage(String programStageId) {
         return briteDatabase.createQuery(ProgramStageModel.TABLE, String.format(SELECT_PROGRAM_STAGE, programStageId))
                 .mapToOne(ProgramStageModel::create);
+    }
+
+    @Override
+    public Observable<DataElementModel> getDataElement(String dataElementUid) {
+        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'"+ dataElementUid+"'")
+                .mapToOne(DataElementModel::create);
     }
 
     @Override

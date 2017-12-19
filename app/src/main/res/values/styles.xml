@@ -18,6 +18,13 @@
         <item name="colorControlActivated">?colorPrimary</item>
     </style>
 
+    <style name="dataInputText" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">?colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
+        <!--<item name="colorControlNormal">?colorPrimary</item>-->
+        <item name="colorControlActivated">?colorPrimary</item>
+    </style>
+
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">?colorPrimary</item>
         <item name="android:colorAccent">?colorPrimary</item>
