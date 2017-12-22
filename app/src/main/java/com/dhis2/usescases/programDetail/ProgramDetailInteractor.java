@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +111,12 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
             public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
                 if (response.body() != null) {
                     view.swapData(response.body());
+                } else if (response.errorBody() != null) {
+                    try {
+                        Timber.d(response.errorBody().string());
+                    } catch (IOException e) {
+                        Timber.e(e);
+                    }
                 }
             }
 

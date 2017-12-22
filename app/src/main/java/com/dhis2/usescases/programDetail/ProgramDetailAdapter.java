@@ -78,7 +78,7 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
 
             }
 
-        holder.bind(presenter, program, orgUnit, attributes, stage);
+        holder.bind(presenter, program, orgUnit, attributes, stage, entityInstance.uid());
     }
 
     @Override

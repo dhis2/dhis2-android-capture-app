@@ -25,13 +25,16 @@ public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
                      HomeViewModel program,
                      String orgUnit,
                      List<String> attributes,
-                     String stage) {
+                     String stage,
+                     String uid) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, program);
         binding.setVariable(BR.orgUnit, orgUnit);
         binding.setVariable(BR.attribute, attributes);
         binding.setVariable(BR.stage, stage);
         binding.executePendingBindings();
+
+        itemView.setOnClickListener(view -> presenter.onTEIClick(uid, program.id()));
     }
 
 

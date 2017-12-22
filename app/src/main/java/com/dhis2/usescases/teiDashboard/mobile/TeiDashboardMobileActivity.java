@@ -77,6 +77,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         setDataFragment();
         RelationshipFragment.getInstance().setData(trackedEntityModel.relationships(), program.getRelationshipTypeModel());
         ScheduleFragment.getInstance().setData(trackedEntityModel, program);
+        binding.teiPager.setOffscreenPageLimit(6);
     }
 
     public void setDataFragment() {

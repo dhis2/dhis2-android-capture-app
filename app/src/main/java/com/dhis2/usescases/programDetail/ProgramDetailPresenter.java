@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import javax.inject.Inject;
 
@@ -13,7 +14,7 @@ import javax.inject.Inject;
 
 public class ProgramDetailPresenter implements ProgramDetailContractModule.Presenter {
 
-    private ProgramDetailContractModule.View view;
+    static private ProgramDetailContractModule.View view;
     private final ProgramDetailContractModule.Interactor interactor;
     public HomeViewModel program;
 
@@ -23,9 +24,9 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public void init(ProgramDetailContractModule.View view, HomeViewModel program) {
+    public void init(ProgramDetailContractModule.View mview, HomeViewModel program) {
         this.program = program;
-        this.view = view;
+        view = mview;
         interactor.init(view, program.id());
     }
 
@@ -74,5 +75,13 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void onTEIClick(String TEIuid, String programUid) {
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", TEIuid);
+        bundle.putString("PROGRAM_UID", programUid);
+        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 }

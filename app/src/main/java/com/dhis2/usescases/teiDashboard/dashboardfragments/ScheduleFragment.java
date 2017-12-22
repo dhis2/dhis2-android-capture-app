@@ -8,12 +8,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
@@ -46,9 +44,10 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
-        for (Enrollment enrollment : trackedEntity.enrollments())
-            if (enrollment.program().equals(program.getProgram().uid()))
-                binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), enrollment.events()));
+        if (trackedEntity != null)
+            for (Enrollment enrollment : trackedEntity.enrollments())
+                if (enrollment.program().equals(program.getProgram().uid()))
+                    binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), enrollment.events()));
         onResume();
         binding.scheduleFilter.setOnClickListener(this);
         return binding.getRoot();
@@ -88,7 +87,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
                 a.recycle();
                 break;
         }
-        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN ));
+        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         binding.scheduleFilter.setImageDrawable(drawable);
     }
 }

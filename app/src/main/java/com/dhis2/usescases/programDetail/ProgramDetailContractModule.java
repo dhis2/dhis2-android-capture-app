@@ -49,6 +49,8 @@ public class ProgramDetailContractModule {
 
         void onBackClick();
 
+        void onTEIClick(String TEIuid,String programUid);
+
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
