@@ -62,7 +62,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         } else {
             binding.setTrackEntity(trackedEntity);
     }
-
         binding.executePendingBindings();
     }
 

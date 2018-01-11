@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -83,6 +84,29 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
         params.height = MATCH_PARENT;
         binding.logo.setLayoutParams(params);
+    }
+
+    @Override
+    public void onUnlockClick(View android) {
+        binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
+        binding.pinLockView.setPinLockListener(new PinLockListener() {
+            @Override
+            public void onComplete(String pin) {
+                presenter.unlockSession(pin);
+            }
+
+            @Override
+            public void onEmpty() {
+
+            }
+
+            @Override
+            public void onPinChange(int pinLength, String intermediatePin) {
+
+            }
+        });
+        binding.pinLayout.setVisibility(View.VISIBLE);
+
     }
 
     @Override

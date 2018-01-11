@@ -1,5 +1,7 @@
 package com.dhis2.usescases.main;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
+import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
@@ -44,6 +47,24 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
+
+        binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
+        binding.pinLockView.setPinLockListener(new PinLockListener() {
+            @Override
+            public void onComplete(String pin) {
+                presenter.blockSession(pin);
+            }
+
+            @Override
+            public void onEmpty() {
+
+            }
+
+            @Override
+            public void onPinChange(int pinLength, String intermediatePin) {
+
+            }
+        });
     }
 
     @Override
@@ -98,6 +119,18 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void showHideFilter() {
 
         programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onLockClick(android.view.View view) {
+        binding.drawerLayout.closeDrawers();
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        if (prefs.getString("pin", null) == null)
+            binding.pinLayout.setVisibility(View.VISIBLE);
+        else
+            presenter.blockSession(null);
+
     }
 
 

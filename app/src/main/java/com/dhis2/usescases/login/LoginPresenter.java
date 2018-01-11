@@ -45,10 +45,12 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
         view.getBinding().userPass.getEditText().setText("Android123");
     }
 
-    public void unlockSession() {
+    public void unlockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("SessionLocked", false).apply();
-        view.startActivity(MainActivity.class, null, true, true, null);
+        if (prefs.getString("pin", "").equals(pin)) {
+            prefs.edit().putBoolean("SessionLocked", false).apply();
+            view.startActivity(MainActivity.class, null, true, true, null);
+        }
     }
 }

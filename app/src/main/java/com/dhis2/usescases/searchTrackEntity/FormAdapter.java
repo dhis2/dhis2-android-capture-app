@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
@@ -61,8 +62,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 holder = new SpinnerHolder(binding);
                 break;
             case COORDINATES:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
-                holder = new ButtonFormHolder(binding);
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, parent, false);
+                holder = new CoordinatesFormHolder(binding);
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);

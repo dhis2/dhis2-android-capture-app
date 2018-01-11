@@ -3,6 +3,7 @@ package com.dhis2.usescases.login;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.view.View;
 
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.databinding.ActivityLoginBinding;
@@ -50,6 +51,9 @@ public class LoginContractsModule {
 
         @UiThread
         void handleSync();
+
+        @UiThread
+        void onUnlockClick(android.view.View android);
     }
 
     interface Presenter {

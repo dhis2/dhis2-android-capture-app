@@ -78,6 +78,18 @@ public class Bindings {
 
     }
 
+    @BindingAdapter("spanSize")
+    public static void setSpanSize(RecyclerView recyclerView, boolean setSpanSize) {
+        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    return recyclerView.getAdapter().getItemViewType(position) == 4 ? 2 : 1;
+                }
+            });
+        }
+    }
+
     @BindingAdapter("randomColor")
     public static void setRandomColor(ImageView imageView, String textToColor) {
         String color;

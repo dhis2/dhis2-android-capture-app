@@ -28,6 +28,8 @@ public final class MainContracts {
 
         void showHideFilter();
 
+        void onLockClick(android.view.View view);
+
      /*   @NonNull
         @UiThread
         void addTree(TreeNode treeNode);*/
@@ -45,7 +47,7 @@ public final class MainContracts {
 
         void logOut();
 
-        void blockSession();
+        void blockSession(String pin);
 
         void showFilter();
     }

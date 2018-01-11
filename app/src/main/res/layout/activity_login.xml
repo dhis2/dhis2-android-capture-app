@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -16,113 +17,123 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true">
 
-
-        <RelativeLayout
-            android:id="@+id/logo"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:background="?colorPrimary"
-            android:gravity="center"
-            android:padding="20dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <include layout="@layout/logo_dhis" />
-        </RelativeLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/server_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="50dp"
-            android:hint="Server url"
-            android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText">
-
-            <android.support.design.widget.TextInputEditText
+            <RelativeLayout
+                android:id="@+id/logo"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:inputType="textUri"
-                android:onTextChanged="@{presenter::onTextChanged}"
-                android:padding="5dp"
-                android:textColor="?colorPrimaryDark"
-                android:textSize="17sp" />
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="?colorPrimary"
+                android:gravity="center"
+                android:padding="20dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <include layout="@layout/logo_dhis" />
+            </RelativeLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/user_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/server_url"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="50dp"
-            android:hint="Username"
-            android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText">
-
-            <android.support.design.widget.TextInputEditText
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textPersonName"
-                android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="?colorPrimaryDark"
-                android:textSize="17sp" />
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/server_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:hint="Server url"
+                    android:textColorHint="?colorPrimary"
+                    android:theme="@style/loginInputText">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:inputType="textUri"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:padding="5dp"
+                        android:textColor="?colorPrimaryDark"
+                        android:textSize="17sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/server_url"
+                    android:layout_centerInParent="true"
+                    android:hint="Username"
+                    android:textColorHint="?colorPrimary"
+                    android:theme="@style/loginInputText">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="textPersonName"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:textColor="?colorPrimaryDark"
+                        android:textSize="17sp" />
 
 
-        </android.support.design.widget.TextInputLayout>
+                </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/user_pass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_name"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="50dp"
-            android:hint="Password"
-            android:textColorHint="?colorPrimary"
-            android:theme="@style/loginInputText">
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/user_pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_name"
+                    android:layout_centerInParent="true"
+                    android:hint="Password"
+                    android:textColorHint="?colorPrimary"
+                    android:theme="@style/loginInputText">
 
-            <android.support.design.widget.TextInputEditText
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="textPassword"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:textColor="?colorPrimaryDark"
+                        android:textSize="17sp" />
+
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_pass"
+                android:onClick="@{()->presenter.onTestClick()}"
+                android:text="TEST"
+                android:visibility="gone" />
+
+
+            <Button
+                android:id="@+id/login"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textPassword"
-                android:onTextChanged="@{presenter::onTextChanged}"
-                android:textColor="?colorPrimaryDark"
-                android:textSize="17sp" />
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:onClick="@{()-> presenter.onButtonClick()}"
+                android:text="Log In"
+                android:textColor="?colorAccent"
+                android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_pass"
-            android:onClick="@{()->presenter.onTestClick()}"
-            android:text="TEST"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/unlock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_pass"
-            android:layout_toEndOf="@id/test"
-            android:onClick="@{()-> presenter.unlockSession()}"
-            android:text="Unlock session"
-            android:visibility="gone" />
-
-
-        <Button
-            android:id="@+id/login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="?colorPrimary"
-            android:onClick="@{()-> presenter.onButtonClick()}"
-            android:text="Log In"
-            android:textColor="?colorAccent"
-            android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
+            <Button
+                android:id="@+id/unlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:onClick="onUnlockClick"
+                android:text="Unlock session"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/progress"
@@ -135,6 +146,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/pin_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?colorPrimary"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <com.andrognito.pinlockview.IndicatorDots
+                android:id="@+id/indicator_dots"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+
+                />
+
+            <com.andrognito.pinlockview.PinLockView
+                android:id="@+id/pin_lock_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/indicator_dots"
+                app:keypadButtonSize="72dp"
+                app:keypadDeleteButtonSize="24dp"
+                app:keypadHorizontalSpacing="36dp"
+                app:keypadShowDeleteButton="true"
+                app:keypadTextColor="?colorAccent"
+                app:keypadVerticalSpacing="24dp"
+                app:pinLength="4"
+                app:indicatorType="fillWithAnimation"/>
         </RelativeLayout>
     </RelativeLayout>
 </layout>

@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
             }
         });
+
     }
 
     interface EventService {

@@ -3,7 +3,6 @@ package com.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 
@@ -53,10 +52,14 @@ final class MainPresenter implements MainContracts.Presenter {
     }
 
     @Override
-    public void blockSession() {
+    public void blockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
         prefs.edit().putBoolean("SessionLocked", true).apply();
+        if (pin != null) {
+
+            prefs.edit().putString("pin", pin).apply();
+        }
         view.startActivity(LoginActivity.class, null, true, true, null);
     }
 

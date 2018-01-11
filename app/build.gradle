@@ -161,6 +161,10 @@ dependencies {
     //TABLEVIEW
     implementation 'com.evrencoskun.library:tableview:0.8.3'
 
+    //PIN LOCK
+    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+
+
     //Test
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
