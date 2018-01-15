@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:gravity="end"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -47,14 +47,18 @@
                         app:srcCompat="@drawable/ic_view_day" />
 
                     <TextView
-                        android:id="@+id/button_date_range"
+                        android:id="@+id/button_period_text"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:minWidth="70dp"
+                        android:maxWidth="140dp"
                         android:background="@drawable/period_time_button"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         android:gravity="center"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:padding="7dp"
-                        android:text="DD/MM/YYYY"
+                        android:text="Daily"
                         android:textColor="?colorAccent" />
                 </LinearLayout>
 

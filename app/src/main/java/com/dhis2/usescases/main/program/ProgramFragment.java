@@ -7,18 +7,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.CustomViews.DateAdapter;
-import com.dhis2.utils.CustomViews.DateDialog;
+import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -43,13 +43,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Inject
     ProgramPresenter presenter;
 
-    private final String DAILY = "daily";
-    private final String WEEKLY = "weekly";
-    private final String MONTHLY = "monthly";
-    private final String YEARLY = "yearly";
+    private final String DAILY = "Daily";
+    private final String WEEKLY = "Weekly";
+    private final String MONTHLY = "Monthly";
+    private final String YEARLY = "Yearly";
 
     private DateAdapter.Period currentPeriod = DateAdapter.Period.DAILY;
-
+    private String period;
 
     @Nullable
     @Override
@@ -66,9 +66,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
         if (currentPeriod != DateAdapter.Period.DAILY) {
-            DateDialog dialog = DateDialog.newInstace(currentPeriod);
+           /* DateDialog dialog = DateDialog.newInstace(currentPeriod);
             dialog.setCancelable(true);
-            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
+            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();*/
+            new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
+                if (!selectedDates.isEmpty() && selectedDates.size() == 1)
+                    binding.buttonPeriodText.setText(DateUtils.formatDateTime(getContext(), selectedDates.get(0).getTime(), 0));
+                else if (!selectedDates.isEmpty())
+                    binding.buttonPeriodText.setText(DateUtils.formatDateTime(getContext(), selectedDates.get(0).getTime(), 0) +
+                            DateUtils.formatDateTime(getContext(), selectedDates.get(1).getTime(), 0));
+                else
+                    binding.buttonPeriodText.setText(period);
+            });
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
 
@@ -81,7 +90,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void showTimeUnitPicker() {
 
         Drawable drawable = null;
-        String period = null;
+
         switch (currentPeriod) {
             case DAILY:
                 currentPeriod = DateAdapter.Period.WEEKLY;
@@ -105,7 +114,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        Toast.makeText(getContext(), String.format("Period filter set to %s", period), Toast.LENGTH_LONG).show();
+        binding.buttonPeriodText.setText(period);
     }
 
     @Override

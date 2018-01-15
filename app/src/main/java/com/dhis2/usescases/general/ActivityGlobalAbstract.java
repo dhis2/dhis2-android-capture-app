@@ -16,15 +16,27 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Javi on 28/07/2017.
  */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View {
+
+    private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
+
+    public enum Status {
+        ON_PAUSE,
+        ON_RESUME
+    }
+
+    //****************
+    //LIFECYCLE REGION
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +57,22 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         super.onCreate(savedInstanceState);
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        lifeCycleObservable.onNext(Status.ON_RESUME);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        lifeCycleObservable.onNext(Status.ON_PAUSE);
+    }
+
+
+    //****************
+    //PUBLIC METHOD REGION
 
     public Context getContext() {
         return this;
@@ -95,10 +123,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public <T> List<T> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
+        String json = getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
         Type type = new TypeToken<List<T>>() {
         }.getType();
 
         return gson.fromJson(json, type);
+    }
+
+    public Observable<Status> observableLifeCycle() {
+        return lifeCycleObservable;
     }
 }
