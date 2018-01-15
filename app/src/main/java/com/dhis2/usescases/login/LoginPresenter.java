@@ -1,11 +1,15 @@
 package com.dhis2.usescases.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.ObservableField;
+import android.view.View;
 
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.usescases.main.MainActivity;
+import com.dhis2.usescases.qrScanner.QRActivity;
+import com.dhis2.utils.Constants;
 
 import javax.inject.Inject;
 
@@ -39,10 +43,10 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
                 view.getBinding().userPass.getEditText().getText().toString());
     }
 
-    public void onTestClick() {
-        view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
-        view.getBinding().userName.getEditText().setText("android");
-        view.getBinding().userPass.getEditText().setText("Android123");
+    @Override
+    public void onQRClick(View v) {
+        Intent intent = new Intent(view.getContext(), QRActivity.class);
+        view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_QR_SCANNER);
     }
 
     public void unlockSession(String pin) {

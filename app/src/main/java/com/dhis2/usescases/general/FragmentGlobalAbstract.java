@@ -6,6 +6,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 
+import com.dhis2.utils.Constants;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by ppajuelo on 18/10/2017.
  */
@@ -37,5 +47,23 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     @Override
     public void displayMessage(String message) {
         getAbstractActivity().displayMessage(message);
+    }
+
+    @Override
+    public <T> void saveListToPreference(String key, List<T> list) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+
+        getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+    }
+
+    @Override
+    public <T> List<T> getListFromPreference(String key) {
+        Gson gson = new Gson();
+        String json = getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
+        Type type = new TypeToken<List<T>>() {
+        }.getType();
+
+        return gson.fromJson(json, type);
     }
 }

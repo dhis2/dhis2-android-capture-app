@@ -11,7 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.dhis2.R;
+import com.dhis2.utils.Constants;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -78,4 +84,21 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public <T> void saveListToPreference(String key, List<T> list) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+
+        getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+    }
+
+    @Override
+    public <T> List<T> getListFromPreference(String key) {
+        Gson gson = new Gson();
+        String json = getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, null);
+        Type type = new TypeToken<List<T>>() {
+        }.getType();
+
+        return gson.fromJson(json, type);
+    }
 }

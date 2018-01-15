@@ -3,7 +3,13 @@
     package="com.dhis2">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
 
     <application
         android:name=".App"
@@ -36,6 +42,7 @@
         <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.eventDetail.EventDetailActivity" />
+        <activity android:name=".usescases.qrScanner.QRActivity" />
 
         <service
             android:name=".data.service.SyncService"

@@ -21,4 +21,11 @@
 
     <string name="search_result_text">%s results found</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
+
+    <!-- Login -->
+    <string name="url_hint">Server url</string>
+    <string name="user_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="log_in_button">Log In</string>
+    <string name="unlock_button">Unlock session</string>
 </resources>

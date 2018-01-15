@@ -54,27 +54,30 @@ public class LoginContractsModule {
 
         @UiThread
         void onUnlockClick(android.view.View android);
+
+        @UiThread
+        void setAutocompleteAdapters();
+
+        @UiThread
+        void saveUsersData();
     }
 
     interface Presenter {
         void onTextChanged(CharSequence s, int start, int before, int count);
 
         void onButtonClick();
+
+        void onQRClick(android.view.View v);
     }
 
     interface Interactor {
         void validateCredentials(@NonNull String serverUrl,
                                  @NonNull String username, @NonNull String password);
-
         void sync();
 
         void handleResponse(@NonNull Response<User> userResponse);
 
         void handleError(@NonNull Throwable throwable);
-    }
-
-    interface Router {
-        void navigateToHome();
     }
 
 }

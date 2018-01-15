@@ -164,6 +164,14 @@ dependencies {
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
 
+    //VISION (QR SCANNER)
+    implementation ("com.google.android.gms:play-services-vision:${libraries.gmsVersion}"){
+        force = true
+    }
+
+    //GSON
+    implementation 'com.google.code.gson:gson:2.8.2'
+
 
     //Test
 

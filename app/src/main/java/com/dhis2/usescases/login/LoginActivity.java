@@ -1,22 +1,28 @@
 package com.dhis2.usescases.login;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.Constants;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
 public class LoginActivity extends ActivityGlobalAbstract implements LoginContractsModule.View {
@@ -26,12 +32,16 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Inject
     LoginPresenter presenter;
 
+    List<String> users;
+    List<String> urls;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
+        setAutocompleteAdapters();
     }
 
     @Override
@@ -88,8 +98,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void onUnlockClick(View android) {
-        binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
-        binding.pinLockView.setPinLockListener(new PinLockListener() {
+        binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
+        binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
             public void onComplete(String pin) {
                 presenter.unlockSession(pin);
@@ -105,8 +115,33 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
             }
         });
-        binding.pinLayout.setVisibility(View.VISIBLE);
+        binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
 
+    }
+
+    @Override
+    public void setAutocompleteAdapters() {
+
+        urls = getListFromPreference(Constants.PREFS_URLS);
+        users = getListFromPreference(Constants.PREFS_USERS);
+
+        ArrayAdapter<String> urlAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, urls);
+        ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, users);
+
+        binding.serverUrlEdit.setAdapter(urlAdapter);
+        binding.userNameEdit.setAdapter(userAdapter);
+    }
+
+    @Override
+    public void saveUsersData() {
+        if (!urls.contains(binding.serverUrlEdit.getText().toString())) {
+            urls.add(binding.serverUrlEdit.getText().toString());
+            saveListToPreference(Constants.PREFS_URLS, urls);
+        }
+        if (!users.contains(binding.userNameEdit.getText().toString())) {
+            users.add(binding.userNameEdit.getText().toString());
+            saveListToPreference(Constants.PREFS_URLS, users);
+        }
     }
 
     @Override
@@ -123,5 +158,12 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RQ_QR_SCANNER && resultCode == RESULT_OK) {
+            binding.serverUrlEdit.setText(data.getStringExtra(Constants.EXTRA_DATA));
+        }
     }
 }

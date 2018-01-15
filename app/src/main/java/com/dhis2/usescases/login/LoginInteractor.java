@@ -11,6 +11,7 @@ import com.dhis2.App;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.data.service.SyncService;
+import com.dhis2.usescases.main.MainActivity;
 
 import org.hisp.dhis.android.core.user.User;
 
@@ -27,7 +28,6 @@ import timber.log.Timber;
 public class LoginInteractor implements LoginContractsModule.Interactor {
 
     private LoginContractsModule.View view;
-    private LoginContractsModule.Router router;
     private ConfigurationRepository configurationRepository;
 
     @NonNull
@@ -35,7 +35,6 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
     LoginInteractor(LoginContractsModule.View view, ConfigurationRepository configurationRepository) {
         this.view = view;
-        this.router = new LoginRouter(view);
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
         init();
@@ -54,7 +53,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
                         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                 "com.dhis2", Context.MODE_PRIVATE);
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
-                            router.navigateToHome();
+                            view.startActivity(MainActivity.class, null, true, true, null);
                         }else if(prefs.getBoolean("SessionLocked", false)){
                             view.getBinding().unlock.setVisibility(View.VISIBLE);
                         }
@@ -92,8 +91,9 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             sync();
+            view.saveUsersData();
             view.handleSync();
-            router.navigateToHome();
+            view.startActivity(MainActivity.class, null, true, true, null);
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             view.hideProgress();
             view.renderInvalidCredentialsError();
