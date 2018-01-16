@@ -14,15 +14,28 @@ import android.view.Window;
 import com.dhis2.R;
 import com.dhis2.databinding.DialogDateBinding;
 
+import java.util.Date;
+import java.util.List;
+
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+
 /**
  * Created by ppajuelo on 05/12/2017.
  */
 
 public class DateDialog extends DialogFragment {
 
+    static private ActionTrigger<DateDialog> dialogActionTrigger;
+    public SingleEmitter<List<Date>> callback;
+
     static DateDialog instace;
     static DateAdapter.Period period = DateAdapter.Period.WEEKLY;
     static DateAdapter adapter;
+
+    View.OnClickListener possitiveListener;
+    View.OnClickListener negativeListener;
+
     public static DateDialog newInstace(DateAdapter.Period mPeriod) {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
@@ -32,8 +45,29 @@ public class DateDialog extends DialogFragment {
         return instace;
     }
 
+    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, DateAdapter.Period mPeriod) {
+        if (period != mPeriod || instace == null) {
+            period = mPeriod;
+            dialogActionTrigger = mActionTrigger;
+            instace = new DateDialog();
+            adapter = new DateAdapter(period);
+        }
+        return instace;
+    }
+
     public DateDialog() {
 
+    }
+
+
+    public DateDialog setPossitiveListener(View.OnClickListener listener) {
+        this.possitiveListener = listener;
+        return this;
+    }
+
+    public DateDialog setNegativeListener(View.OnClickListener listener) {
+        this.negativeListener = listener;
+        return this;
     }
 
     @NonNull
@@ -54,11 +88,28 @@ public class DateDialog extends DialogFragment {
 
         binding.setTitleText("Select dates to filter");
 
-        binding.acceptButton.setOnClickListener(view -> {
-            dismiss();
-        });
+        binding.acceptButton.setOnClickListener(possitiveListener);
+        binding.acceptButton.setOnClickListener(possitiveListener);
+        binding.clearButton.setOnClickListener(negativeListener);
 
 
         return binding.getRoot();
+    }
+
+    private DateDialog withEmitter(final SingleEmitter<List<Date>> emitter) {
+        this.callback = emitter;
+        return this;
+    }
+
+    public Single<List<Date>> show() {
+        return Single.create(emitter -> dialogActionTrigger.trigger(withEmitter(emitter)));
+    }
+
+    public List<Date> getFilters() {
+        return adapter.getSelectedDates();
+    }
+
+    public List<Date> clearFilters() {
+        return adapter.clearFilters();
     }
 }

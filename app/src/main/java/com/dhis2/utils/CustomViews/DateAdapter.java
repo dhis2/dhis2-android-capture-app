@@ -26,7 +26,9 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private List<Date> dates = new ArrayList<>();
     private List<Date> selectedDates = new ArrayList<>();
     private Period currentPeriod = Period.WEEKLY;
-    private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w 'of' yyyy", Locale.getDefault());
+    private SimpleDateFormat dayFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    private SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+    private String weeklyFormatWithDates = "%s, %s / %s";
     private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
@@ -43,8 +45,19 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
             switch (period) {
                 case WEEKLY:
-                    date = weeklyFormat.format(calendar.getTime());
-                    datesNames.add(date);
+                    date = weeklyFormat.format(calendar.getTime()); //Get current week
+
+                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek()); //set calendar to firstday of the week
+                    String firstDay = dayFormat.format(calendar.getTime());
+
+                    calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
+                    calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
+                    String lastDay = dayFormat.format(calendar.getTime());
+
+                    calendar.add(Calendar.DAY_OF_MONTH, 1); //Move back to current date
+                    calendar.add(Calendar.WEEK_OF_YEAR, -1);
+
+                    datesNames.add(String.format(weeklyFormatWithDates, date, firstDay, lastDay));
                     dates.add(calendar.getTime());
                     calendar.add(Calendar.WEEK_OF_YEAR, -1);
                     break;
@@ -96,5 +109,14 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     @Override
     public int getItemCount() {
         return datesNames != null ? datesNames.size() : 0;
+    }
+
+    public List<Date> clearFilters() {
+        selectedDates.clear();
+        return selectedDates;
+    }
+
+    public List<Date> getSelectedDates() {
+        return selectedDates;
     }
 }

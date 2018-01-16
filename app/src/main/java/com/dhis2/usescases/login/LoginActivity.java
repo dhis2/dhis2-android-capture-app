@@ -134,11 +134,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void saveUsersData() {
-        if (!urls.contains(binding.serverUrlEdit.getText().toString())) {
+        if (urls != null && !urls.contains(binding.serverUrlEdit.getText().toString())) {
             urls.add(binding.serverUrlEdit.getText().toString());
             saveListToPreference(Constants.PREFS_URLS, urls);
         }
-        if (!users.contains(binding.userNameEdit.getText().toString())) {
+        if (users != null && !users.contains(binding.userNameEdit.getText().toString())) {
             users.add(binding.userNameEdit.getText().toString());
             saveListToPreference(Constants.PREFS_URLS, users);
         }
