@@ -7,13 +7,15 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -45,7 +47,7 @@ public class ProgramContractModule {
 
         void setUpRecycler();
 
-        Consumer<List<HomeViewModel>> swapData();
+        Consumer<List<ProgramModel>> swapProgramData();
 
         @UiThread
         void renderError(String message);
@@ -60,7 +62,7 @@ public class ProgramContractModule {
     }
 
     public interface Presenter {
-        void onItemClick(HomeViewModel homeViewModel);
+        void onItemClick(ProgramModel homeViewModel);
 
         void onOrgUnitButtonClick();
 
@@ -68,21 +70,10 @@ public class ProgramContractModule {
 
         void onTimeButtonClick();
 
-        void onCatComboButtonClick();
+        void getOrgUnits();
 
-        void getOrgUnits(List<OrganisationUnitModel> orgs);
+        Observable<List<EventModel>> getEvents(ProgramModel programModel);
 
-    }
-
-    interface Interactor {
-        void getPrograms();
-
-        void getOrgUnits(List<OrganisationUnitModel> orgs);
-
-    }
-
-    interface Router {
-        void goToProgramDetail(HomeViewModel homeViewModel);
     }
 
 

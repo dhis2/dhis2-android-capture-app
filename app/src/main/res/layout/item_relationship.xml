@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
-            android:text="@{relationship.relationshipType().bIsToA()}"
+            android:text="@{relationship.displayName()}"
             android:textColor="#787878"
             android:textSize="14.2sp"
             android:textStyle="bold"

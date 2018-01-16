@@ -37,8 +37,8 @@
         <ImageView
             android:id="@+id/program_image"
             android:layout_width="8dp"
-            android:layout_height="match_parent"
-            app:randomColor="@{program.id()}" />
+            android:layout_height="match_parent"/>
+             <!--/>app:randomColor="@{program.id()}"-->
 
         <RelativeLayout
             android:layout_width="match_parent"

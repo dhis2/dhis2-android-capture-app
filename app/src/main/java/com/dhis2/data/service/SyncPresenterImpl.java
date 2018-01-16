@@ -45,6 +45,8 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void sync() {
         disposable.add(metadata()
+                .flatMap(response -> events())
+                .flatMap(response -> trackerData())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(response -> SyncResult.success())
@@ -54,6 +56,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribe(update(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
+
     }
 
     @Override
@@ -66,6 +69,18 @@ final class SyncPresenterImpl implements SyncPresenter {
     private Observable<Response> metadata() {
         return Observable.defer(() -> Observable.fromCallable(d2.syncMetaData()));
     }
+
+    @NonNull
+    private Observable<Response> trackerData() {
+        return Observable.defer(() -> Observable.fromCallable(d2.syncTrackerData()));
+    }
+
+    @NonNull
+    private Observable<Response> events() {
+        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(300)));
+    }
+
+
 
     @NonNull
     private Consumer<SyncResult> update() {

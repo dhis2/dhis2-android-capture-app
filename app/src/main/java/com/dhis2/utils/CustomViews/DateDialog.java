@@ -13,6 +13,7 @@ import android.view.Window;
 
 import com.dhis2.R;
 import com.dhis2.databinding.DialogDateBinding;
+import com.dhis2.utils.Period;
 
 import java.util.Date;
 import java.util.List;
@@ -30,13 +31,13 @@ public class DateDialog extends DialogFragment {
     public SingleEmitter<List<Date>> callback;
 
     static DateDialog instace;
-    static DateAdapter.Period period = DateAdapter.Period.WEEKLY;
+    static Period period = Period.WEEKLY;
     static DateAdapter adapter;
 
     View.OnClickListener possitiveListener;
     View.OnClickListener negativeListener;
 
-    public static DateDialog newInstace(DateAdapter.Period mPeriod) {
+    public static DateDialog newInstace(Period mPeriod) {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
             instace = new DateDialog();
@@ -45,7 +46,7 @@ public class DateDialog extends DialogFragment {
         return instace;
     }
 
-    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, DateAdapter.Period mPeriod) {
+    public static DateDialog newInstace(ActionTrigger<DateDialog> mActionTrigger, Period mPeriod) {
         if (period != mPeriod || instace == null) {
             period = mPeriod;
             dialogActionTrigger = mActionTrigger;

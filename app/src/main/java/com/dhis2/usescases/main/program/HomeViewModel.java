@@ -9,7 +9,11 @@ import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
+
 import java.io.Serializable;
+import java.util.List;
 
 @AutoValue
 public abstract class HomeViewModel extends BaseObservable implements Serializable {
@@ -20,9 +24,9 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
         static final String LAST_UPDATED = "lastUpdated";
         static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
         static final String PROGRAM_TYPE = "programType";
-        static final String PROGRAM_ATTRIBUTES = "programTrackedEntityAttributes";
         static final String TRACKED_ENTITY = "trackedEntity";
         static final String DISPLAY_FRONT_PAGE_LIST = "displayFrontPageList";
+        static final String CATEGORY_COMBO = "categoryCombo";
     }
 
     @NonNull
@@ -54,14 +58,15 @@ public abstract class HomeViewModel extends BaseObservable implements Serializab
     @ColumnName(Columns.DISPLAY_FRONT_PAGE_LIST)
     public abstract String displayFrontPageList();
 
-   /* @NonNull
-    @ColumnName(Columns.PROGRAM_ATTRIBUTES)
-    public abstract List<ProgramTrackedEntityAttributeModel> programAttributes();*/
+    @Nullable
+    @ColumnName(Columns.CATEGORY_COMBO)
+    public abstract String categoryCombo();
 
     @NonNull
     public static HomeViewModel create(@NonNull String id, @NonNull String title, @NonNull String lastUpdated,
-                                       @NonNull Type type, @NonNull String programType, @Nullable String trackedEntityType, @Nullable String displayFrontPageList) {
-        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType, trackedEntityType,displayFrontPageList);
+                                       @NonNull Type type, @NonNull String programType, @Nullable String trackedEntityType, @Nullable String displayFrontPageList,
+                                       @Nullable String categoryCombo) {
+        return new AutoValue_HomeViewModel(id, title, lastUpdated, type, programType, trackedEntityType, displayFrontPageList, categoryCombo);
     }
 
     public static HomeViewModel fromCursor(Cursor cursor) {

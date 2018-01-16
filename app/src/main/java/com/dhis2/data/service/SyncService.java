@@ -68,7 +68,7 @@ public class SyncService extends Service implements SyncView {
             syncResult = result;
 
             if (result.inProgress()) {
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification =new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getString(R.string.sync_title))
                         .setContentText(getString(R.string.sync_text))

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemDateBinding;
+import com.dhis2.utils.Period;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,9 +33,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
-    public enum Period {
-        DAILY, WEEKLY, MONTHLY, YEARLY
-    }
+
 
     public DateAdapter(Period period) {
         currentPeriod = period;

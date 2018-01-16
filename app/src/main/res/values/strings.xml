@@ -28,4 +28,10 @@
     <string name="password_hint">Password</string>
     <string name="log_in_button">Log In</string>
     <string name="unlock_button">Unlock session</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Daily</string>
+    <string name="WEEKLY">Weekly</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
 </resources>

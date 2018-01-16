@@ -22,13 +22,17 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -66,6 +70,16 @@ public class Bindings {
 
     }
 
+    @BindingAdapter("lastEventDate")
+    public static void setLastEventDate(TextView textView, Observable<List<EventModel>> listObservable) {
+        listObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> textView.setText(data.get(0).lastUpdatedAtClient()),
+                        Timber::d);
+    }
+
     @BindingAdapter("initGrid")
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
         RecyclerView.LayoutManager recyclerLayout;
@@ -91,14 +105,16 @@ public class Bindings {
     }
 
     @BindingAdapter("randomColor")
-    public static void setRandomColor(ImageView imageView, String textToColor) {
+    public static void setRandomColor(ImageView imageView, Long textToColor) {
         String color;
         if (textToColor != null)
-            color = String.format("#%X", textToColor.hashCode());
+            color = String.format("#%X", String.valueOf(textToColor).hashCode());
         else
             color = "#FFFFFF";
 
-        imageView.setBackgroundColor(Color.parseColor(color));
+        String hexColor = String.format("#%06X", (0xFFFFFF & textToColor));
+
+        imageView.setBackgroundColor(Color.parseColor(hexColor));
     }
 
 
@@ -116,8 +132,8 @@ public class Bindings {
     }
 
     @BindingAdapter("programTypeIcon")
-    public static void setProgramIcon(ImageView view, String programType) {
-        if (programType.equals("WITH_REGISTRATION"))
+    public static void setProgramIcon(ImageView view, ProgramType programType) {
+        if (programType.equals(ProgramType.WITH_REGISTRATION))
             view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_with_registration));
         else
             view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_without_reg));

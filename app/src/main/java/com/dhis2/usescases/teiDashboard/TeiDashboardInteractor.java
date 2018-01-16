@@ -3,10 +3,8 @@ package com.dhis2.usescases.teiDashboard;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.data.service.SyncService;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.dataelement.CategoryCombo;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -104,7 +102,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
                     .subscribe(
                             data -> view.setData(trackedEntityInstance, data),
                             throwable -> Log.d("ERROR", throwable.getMessage()));
-        else{
+        else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(metadataRepository.getOrganisatuibUnit(trackedEntityInstance.organisationUnit()),
                     metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),

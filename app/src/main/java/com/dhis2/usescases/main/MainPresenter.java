@@ -44,7 +44,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void logOut() {
         try {
-            d2.logOut().call();
+            d2.logout().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
             Timber.e(e);
