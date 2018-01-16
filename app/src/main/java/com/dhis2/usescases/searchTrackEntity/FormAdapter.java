@@ -5,6 +5,7 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.dhis2.R;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
@@ -12,6 +13,7 @@ import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.TimeFormHolder;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -30,6 +32,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private final int CHECKBOX = 2;
     private final int SPINNER = 3;
     private final int COORDINATES = 4;
+    private final int TIME = 5;
     private int programData = 0;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityAttributeModel> attributeList;
@@ -65,6 +68,10 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, parent, false);
                 holder = new CoordinatesFormHolder(binding);
                 break;
+            case TIME:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_time_text, parent, false);
+                holder = new TimeFormHolder(binding);
+                break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
                 holder = new SpinnerHolder(binding);
@@ -98,7 +105,9 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
         if (attributeList.get(position - programData).optionSet() != null)
             return SPINNER;
         else
-            switch (attributeList.get(position - programData).valueType()) {
+            return TIME;
+
+           /* switch (attributeList.get(position - programData).valueType()) {
                 case AGE:
                 case URL:
                 case TEXT:
@@ -114,8 +123,9 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case INTEGER_POSITIVE:
                 case INTEGER_ZERO_OR_POSITIVE:
                     return EDITTEXT;
-                case DATE:
                 case TIME:
+                    return TIME;
+                case DATE:
                 case DATETIME:
                 case FILE_RESOURCE:
                     return BUTTON;
@@ -128,8 +138,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case UNIT_INTERVAL:
                 case ORGANISATION_UNIT:
                 default:
-                    return EDITTEXT;
-            }
+                    return TIME;
+            }*/
 
     }
 

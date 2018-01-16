@@ -1,6 +1,5 @@
 package com.dhis2.utils.CustomViews;
 
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.text.format.DateFormat;
@@ -11,7 +10,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.dhis2.R;
-import com.dhis2.databinding.TimeViewBinding;
+import com.dhis2.databinding.DateTimeViewBinding;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -25,7 +24,7 @@ import java.util.Calendar;
 public class TimeView extends RelativeLayout implements View.OnClickListener {
 
     private EditText time;
-    private TimeViewBinding binding;
+    private DateTimeViewBinding binding;
 
     public TimeView(Context context) {
         super(context);
@@ -44,7 +43,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
 
     private void init(Context context){
         LayoutInflater inflater = LayoutInflater.from(context);
-        binding = TimeViewBinding.inflate(inflater, this, true);
+        binding = DateTimeViewBinding.inflate(inflater, this, true);
         time = findViewById(R.id.button);
         time.setOnFocusChangeListener(this::onFocusChanged);
         time.setOnClickListener(this::onClick);
