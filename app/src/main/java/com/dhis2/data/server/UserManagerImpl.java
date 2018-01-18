@@ -26,4 +26,9 @@ public class UserManagerImpl implements UserManager {
     public Observable<Boolean> isUserLoggedIn() {
         return Observable.defer(() -> Observable.fromCallable(d2.isUserLoggedIn()));
     }
+
+    @Override
+    public D2 getD2(){
+        return d2;
+    }
 }

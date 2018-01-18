@@ -45,11 +45,9 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void sync() {
         disposable.add(metadata()
-                .flatMap(response -> events())
-                .flatMap(response -> trackerData())
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
@@ -57,6 +55,27 @@ final class SyncPresenterImpl implements SyncPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
+        disposable.add(events()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
     }
 
     @Override
@@ -79,7 +98,6 @@ final class SyncPresenterImpl implements SyncPresenter {
     private Observable<Response> events() {
         return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(300)));
     }
-
 
 
     @NonNull

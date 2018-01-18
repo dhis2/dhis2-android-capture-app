@@ -76,16 +76,17 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         if (currentPeriod != Period.DAILY) {
 
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
-                if (!selectedDates.isEmpty() && selectedDates.size() == 1) {
-                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(selectedDates.get(0)));
-                    presenter.getProgramsWithDates(selectedDates, currentPeriod);
-                } else if (!selectedDates.isEmpty()) {
-                    String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0)) + " " +
-                            DateUtils.getInstance().formatDate(selectedDates.get(1));
+                if (!selectedDates.isEmpty()) {
+                    String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
+                    if (selectedDates.size() > 1)
+                        textToShow += " " + DateUtils.getInstance().formatDate(selectedDates.get(1));
                     binding.buttonPeriodText.setText(textToShow);
                     presenter.getProgramsWithDates(selectedDates, currentPeriod);
-                } else
+                } else {
                     binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+                    Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+                    presenter.getPrograms(dates[0], dates[1]);
+                }
             });
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {

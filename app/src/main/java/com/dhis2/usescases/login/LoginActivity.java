@@ -140,7 +140,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         }
         if (users != null && !users.contains(binding.userNameEdit.getText().toString())) {
             users.add(binding.userNameEdit.getText().toString());
-            saveListToPreference(Constants.PREFS_URLS, users);
+            saveListToPreference(Constants.PREFS_USERS, users);
         }
     }
 

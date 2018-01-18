@@ -11,25 +11,48 @@ import com.dhis2.App;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.data.service.SyncService;
+import com.dhis2.domain.responses.TEIResponse;
+import com.dhis2.domain.responses.TrackedEntityInstance;
 import com.dhis2.usescases.main.MainActivity;
 
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
+import org.hisp.dhis.android.core.data.database.Transaction;
+import org.hisp.dhis.android.core.enrollment.EnrollmentHandler;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStoreImpl;
+import org.hisp.dhis.android.core.event.EventHandler;
+import org.hisp.dhis.android.core.event.EventStoreImpl;
+import org.hisp.dhis.android.core.resource.ResourceHandler;
+import org.hisp.dhis.android.core.resource.ResourceStoreImpl;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueHandler;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueStoreImpl;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueHandler;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueStoreImpl;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceEndPointCall;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceHandler;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceService;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceStoreImpl;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Calendar;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.GET;
 import timber.log.Timber;
 
 public class LoginInteractor implements LoginContractsModule.Interactor {
 
     private LoginContractsModule.View view;
     private ConfigurationRepository configurationRepository;
-
+    private UserManager userManager;
     @NonNull
     private final CompositeDisposable disposable;
 
@@ -41,7 +64,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
     }
 
     private void init() {
-        UserManager userManager = null;
+        userManager = null;
         if (((App) view.getContext().getApplicationContext()).getServerComponent() != null)
             userManager = ((App) view.getContext().getApplicationContext()).getServerComponent().userManager();
 
@@ -54,7 +77,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
                                 "com.dhis2", Context.MODE_PRIVATE);
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
-                        }else if(prefs.getBoolean("SessionLocked", false)){
+                        } else if (prefs.getBoolean("SessionLocked", false)) {
                             view.getBinding().unlock.setVisibility(View.VISIBLE);
                         }
 
@@ -73,15 +96,81 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
         disposable.add(configurationRepository.configure(baseUrl)
                 .map((config) -> ((App) view.getContext().getApplicationContext()).createServerComponent(config).userManager())
-                .switchMap((userManager) -> userManager.logIn(username, password))
+                .switchMap((userManager) -> {
+                    this.userManager = userManager;
+                    return userManager.logIn(username, password);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(LoginInteractor.this::handleResponse, LoginInteractor.this::handleError));
+                .subscribe(
+                        LoginInteractor.this::handleResponse
+                        , LoginInteractor.this::handleError));
     }
 
     @Override
     public void sync() {
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+        //TODO: TEI sync not working. Get all TEI uids and call external method before SyncService starts
+        userManager.getD2().retrofit().create(TESTTrackedEntityInstanceService.class).trackEntityInstances().enqueue(new Callback<TEIResponse>() {
+            @Override
+            public void onResponse(Call<TEIResponse> call, Response<TEIResponse> response) {
+                try {
+                    saveTEI(response.body().getTrackedEntityInstances());
+
+                } catch (Exception e) {
+                } finally {
+                    view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+                    view.startActivity(MainActivity.class, null, true, true, null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TEIResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void saveTEI(List<TrackedEntityInstance> trackedEntityInstances) throws Exception {
+
+        DatabaseAdapter databaseAdapter = userManager.getD2().databaseAdapter();
+
+        TrackedEntityInstanceStoreImpl trackedEntityInstanceStore =
+                new TrackedEntityInstanceStoreImpl(databaseAdapter);
+
+
+        TrackedEntityAttributeValueHandler trackedEntityAttributeValueHandler =
+                new TrackedEntityAttributeValueHandler(new TrackedEntityAttributeValueStoreImpl(databaseAdapter));
+
+        TrackedEntityDataValueHandler trackedEntityDataValueHandler =
+                new TrackedEntityDataValueHandler(new TrackedEntityDataValueStoreImpl(databaseAdapter));
+
+        EnrollmentHandler enrollmentHandler = new EnrollmentHandler(new EnrollmentStoreImpl(databaseAdapter), new EventHandler(new EventStoreImpl(databaseAdapter), trackedEntityDataValueHandler));
+
+        TrackedEntityInstanceHandler trackedEntityInstanceHandler =
+                new TrackedEntityInstanceHandler(
+                        trackedEntityInstanceStore,
+                        trackedEntityAttributeValueHandler,
+                        enrollmentHandler);
+
+        ResourceHandler resourceHandler = new ResourceHandler(new ResourceStoreImpl(databaseAdapter));
+        Transaction transaction = databaseAdapter.beginNewTransaction();
+        try {
+            for (TrackedEntityInstance trackedEntityInstance : trackedEntityInstances) {
+
+                Response response = new TrackedEntityInstanceEndPointCall(
+                        userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
+                        databaseAdapter,
+                        trackedEntityInstanceHandler,
+                        resourceHandler,
+                        Calendar.getInstance().getTime(),
+                        trackedEntityInstance.getTrackedEntityInstance()
+                ).call();
+            }
+            transaction.setSuccessful();
+
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -93,7 +182,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
             sync();
             view.saveUsersData();
             view.handleSync();
-            view.startActivity(MainActivity.class, null, true, true, null);
+//            view.startActivity(MainActivity.class, null, true, true, null);
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             view.hideProgress();
             view.renderInvalidCredentialsError();
@@ -123,9 +212,13 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
     }
 
 
-
     private String canonizeUrl(@NonNull String serverUrl) {
         return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }
 
+
+    public interface TESTTrackedEntityInstanceService {
+        @GET("28/trackedEntityInstances?ou=ImspTQPwCqd&ouMode=DESCENDANTS&fields=trackedEntityInstance")
+        Call<TEIResponse> trackEntityInstances();
+    }
 }

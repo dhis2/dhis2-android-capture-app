@@ -69,11 +69,25 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> Log.d("DATA", "myData"),
+                        data -> Log.d("DATA", "events size: " + data.size()),
+                        throwable -> view.renderError(throwable.getMessage())));
+
+        compositeDisposable.add(homeRepository.trackedEntities()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> Log.d("DATA", "tracked size: " + data.size()),
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
     public void getProgramsWithDates(List<Date> dates, Period period) {
+
+        compositeDisposable.add(homeRepository.eventModels(null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> Log.d("DATA", "events size: " + data.size()),
+                        throwable -> view.renderError(throwable.getMessage())));
 
         compositeDisposable.add(homeRepository.programs(dates, period)
                 .subscribeOn(Schedulers.io())
@@ -119,14 +133,6 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         this::renderTree,
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
-
-        compositeDisposable.add(homeRepository.trackedEntities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        trackEntities -> Log.d("TEST", "Numero total de track entities = " + trackEntities.size()),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
