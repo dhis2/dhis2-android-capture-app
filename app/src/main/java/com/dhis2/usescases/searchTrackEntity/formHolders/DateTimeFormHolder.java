@@ -12,12 +12,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
  * Created by frodriguez on 16/01/2018.
  */
 
-public class TimeFormHolder extends FormViewHolder{
+public class DateTimeFormHolder extends FormViewHolder{
 
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableObject;
 
-    public TimeFormHolder(ViewDataBinding binding) {
+    public DateTimeFormHolder(ViewDataBinding binding) {
         super(binding);
     }
 
@@ -26,6 +26,14 @@ public class TimeFormHolder extends FormViewHolder{
         this.bindableObject = bindableObject;
         binding.setVariable(BR.attribute, bindableObject);
         binding.executePendingBindings();
+    }
+
+    public void bindProgramData(SearchTEContractsModule.Presenter presenter, String label, int position) {
+        this.presenter = presenter;
+        binding.setVariable(BR.presenter, presenter);
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
+
     }
 
 }

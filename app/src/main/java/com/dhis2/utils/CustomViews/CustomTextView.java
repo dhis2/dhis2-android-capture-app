@@ -2,6 +2,7 @@ package com.dhis2.utils.CustomViews;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -60,11 +61,11 @@ public class CustomTextView extends RelativeLayout{
                 return;
             case EMAIL:
                 editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
-                        InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
+                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 return;
             case TEXT:
-                editText.setMaxLines(1);
+                editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                editText.setLines(1);
                 editText.setEllipsize(TextUtils.TruncateAt.END);
                 return;
             case LETTER:

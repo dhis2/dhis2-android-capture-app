@@ -5,15 +5,15 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.dhis2.R;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.TimeFormHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.DateTimeFormHolder;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -33,6 +33,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private final int SPINNER = 3;
     private final int COORDINATES = 4;
     private final int TIME = 5;
+    private final int DATE = 6;
+    private final int DATETIME = 7;
     private int programData = 0;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityAttributeModel> attributeList;
@@ -48,9 +50,17 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
         ViewDataBinding binding;
         FormViewHolder holder;
         switch (viewType) {
+            case DATE:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_text, parent, false);
+                holder = new DateTimeFormHolder(binding);
+                break;
+            case DATETIME:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_time_text, parent, false);
+                holder = new DateTimeFormHolder(binding);
+                break;
             case EDITTEXT:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text, parent, false);
-                holder = new EditTextHolder(binding);
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
+                holder = new EditTextFormHolder(binding);
                 break;
             case BUTTON:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
@@ -69,8 +79,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 holder = new CoordinatesFormHolder(binding);
                 break;
             case TIME:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_time_text, parent, false);
-                holder = new TimeFormHolder(binding);
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
+                holder = new DateTimeFormHolder(binding);
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
@@ -85,7 +95,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     @Override
     public void onBindViewHolder(FormViewHolder holder, int position) {
         if (position < programData) {
-            ((ButtonFormHolder) holder).bindProgramData(presenter, position == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), position);
+            ((DateTimeFormHolder) holder).bindProgramData(presenter, position == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), position);
         } else {
             holder.bind(presenter, attributeList.get(position - programData));
         }
@@ -100,16 +110,13 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     public int getItemViewType(int position) {
 
         if (position < programData)
-            return BUTTON;
+            return DATE;
 
         if (attributeList.get(position - programData).optionSet() != null)
             return SPINNER;
-        else
-            return TIME;
-
-           /* switch (attributeList.get(position - programData).valueType()) {
+        else {
+            switch (attributeList.get(position - programData).valueType()) {
                 case AGE:
-                case URL:
                 case TEXT:
                 case EMAIL:
                 case LETTER:
@@ -122,11 +129,14 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case INTEGER_NEGATIVE:
                 case INTEGER_POSITIVE:
                 case INTEGER_ZERO_OR_POSITIVE:
+                case UNIT_INTERVAL:
                     return EDITTEXT;
                 case TIME:
                     return TIME;
                 case DATE:
+                    return DATE;
                 case DATETIME:
+                    return DATETIME;
                 case FILE_RESOURCE:
                     return BUTTON;
                 case COORDINATE:
@@ -135,11 +145,12 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                     return CHECKBOX;
                 case TRUE_ONLY:
                 case TRACKER_ASSOCIATE:
-                case UNIT_INTERVAL:
                 case ORGANISATION_UNIT:
+                case URL:
                 default:
-                    return TIME;
-            }*/
+                    return EDITTEXT;
+            }
+        }
 
     }
 

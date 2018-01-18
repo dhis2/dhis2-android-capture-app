@@ -8,16 +8,13 @@
             name="attribute"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
 
-        <variable
-            name="valueType"
-            type="org.hisp.dhis.android.core.common.ValueType" />
     </data>
 
     <com.dhis2.utils.CustomViews.CustomTextView
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:attribute="@{ attribute }"
-        app:valueType="@{ valueType }"
+        app:valueType="@{ attribute.valueType }"
         />
 
 </layout>
