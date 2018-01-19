@@ -10,12 +10,10 @@
 
     </data>
 
-    <com.dhis2.utils.CustomViews.CustomTextView
-        android:id="@+id/custom_edittext"
+    <com.dhis2.utils.CustomViews.AgeView
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:attribute="@{ attribute }"
-        app:valueType="@{ attribute.valueType }"
         />
 
 </layout>

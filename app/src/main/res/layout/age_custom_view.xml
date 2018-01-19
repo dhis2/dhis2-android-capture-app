@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="attribute"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        tools:background="?colorPrimary">
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/date_picker"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:background="@android:color/transparent"
+                android:hint='@{attribute.displayShortName,default=text}'
+                android:imeOptions="actionNext"
+                android:textAlignment="textStart"
+                android:paddingStart="5dp"
+                android:textAllCaps="false"
+                android:textColor="@color/white_faf"
+                android:textColorHint="@color/white_faf"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/white_faf" />
+        </LinearLayout>
+
+
+
+        <TextView
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:gravity="center|bottom"
+            android:text=" " />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_days"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@color/white_faf"
+            android:textSize="16sp"
+            android:layout_weight="1">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:textColor="@color/white_faf"
+                android:hint="dd" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:gravity="center|bottom"
+            android:text=" " />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_month"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@color/white_faf"
+            android:textSize="16sp"
+            android:layout_weight="1">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:textColor="@color/white_faf"
+                android:hint="mm" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:gravity="center|bottom"
+            android:text=" " />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_year"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@color/white_faf"
+            android:textSize="16sp"
+            android:layout_weight="1">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:textColor="@color/white_faf"
+                android:hint="yyyy" />
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+</layout>

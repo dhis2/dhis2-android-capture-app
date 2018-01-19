@@ -35,6 +35,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private final int TIME = 5;
     private final int DATE = 6;
     private final int DATETIME = 7;
+    private final int AGEVIEW = 8;
     private int programData = 0;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityAttributeModel> attributeList;
@@ -82,6 +83,10 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
                 holder = new DateTimeFormHolder(binding);
                 break;
+            case AGEVIEW:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_age_custom, parent, false);
+                holder = new EditTextFormHolder(binding);
+                break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
                 holder = new SpinnerHolder(binding);
@@ -117,6 +122,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
         else {
             switch (attributeList.get(position - programData).valueType()) {
                 case AGE:
+                    return AGEVIEW;
                 case TEXT:
                 case EMAIL:
                 case LETTER:
