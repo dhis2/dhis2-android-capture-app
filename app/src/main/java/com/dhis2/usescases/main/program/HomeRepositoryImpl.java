@@ -26,27 +26,13 @@ import io.reactivex.Observable;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-    /*
-     SELECT * FROM
-     (SELECT uid,displayName,'TRACKED_ENTITY' AS homeViewModelType FROM TrackedEntity
-     UNION SELECT
-     uid,displayName,'PROGRAM_NO_REG' AS homeViewModelType FROM Program WHERE Program.programType =
-     'WITHOUT_REGISTRATION')
-     ORDER BY homeViewModelType DESC
-     */
+    /*private final static String SELECT_EVENTS = String.format(Locale.US,
+            "SELECT * FROM %s WHERE %s.%s = 'programUid' ORDER BY %s.%s DESC",
+            EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM, EventModel.TABLE, EventModel.Columns.LAST_UPDATED);*/
+
     private final static String SELECT_EVENTS = String.format(Locale.US,
-            "SELECT * FROM %s", EventModel.TABLE);
-    private final static String SELECT_HOME_VIEW_MODELS = String.format(Locale.US,
-            "SELECT * FROM " +
-                    "(SELECT %s,%s,'%s' AS %s FROM %s " +
-                    "UNION SELECT %s,%s,'%s' AS %s FROM %s WHERE %s.%s = '%s') " +
-                    "ORDER BY %s DESC",
-            TrackedEntityModel.Columns.UID, TrackedEntityModel.Columns.DISPLAY_NAME,
-            HomeViewModel.Type.TRACKED_ENTITY.name(), HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE,
-            TrackedEntityModel.TABLE, ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME,
-            HomeViewModel.Type.PROGRAM.name(), HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE, ProgramModel.TABLE,
-            ProgramModel.TABLE, ProgramModel.Columns.PROGRAM_TYPE, ProgramType.WITHOUT_REGISTRATION.name(),
-            HomeViewModel.Columns.HOME_VIEW_MODEL_TYPE);
+            "SELECT * FROM %s WHERE %s.%s = 'programUid'",
+            EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM);
 
     private final static String SELECT_PROGRAMS_VIEW_MODELS = String.format(Locale.US,
             "SELECT * FROM " +
@@ -59,7 +45,7 @@ class HomeRepositoryImpl implements HomeRepository {
     private final static String PROGRAMS_EVENT_DATES = "" +
             "SELECT * FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid " +
-            "WHERE Program.lastUpdated BETWEEN '%s' AND '%s' " +
+            "WHERE Event.lastUpdated BETWEEN '%s' AND '%s' " +
             "GROUP BY Program.uid";
 
     private final static String PROGRAMS_EVENT_DATES_2 = "" +
@@ -93,12 +79,6 @@ class HomeRepositoryImpl implements HomeRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    @NonNull
-    @Override
-    public Observable<List<HomeViewModel>> homeViewModels() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAMS_VIEW_MODELS)
-                .mapToList(HomeViewModel::fromCursor);
-    }
 
     @NonNull
     @Override
@@ -115,7 +95,7 @@ class HomeRepositoryImpl implements HomeRepository {
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Program.lastUpdated",  DateUtils.getInstance().formatDate(datesToQuery[0]),  DateUtils.getInstance().formatDate(datesToQuery[1])));
+            dateQuery.append(String.format(queryFormat, "Program.lastUpdated", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
@@ -128,24 +108,8 @@ class HomeRepositoryImpl implements HomeRepository {
     @NonNull
     @Override
     public Observable<List<EventModel>> eventModels(String programUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENTS)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENTS.replace("programUid",programUid))
                 .mapToList(EventModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<HomeViewModel>> homeViewModels(ArrayList<String> orgUnitIds) {
-
-        String queary = "";
-        for (String id : orgUnitIds) {
-            if (queary.isEmpty())
-                queary = String.format(Locale.US, "'%s'", id);
-            else
-                queary = queary.concat(String.format(Locale.US, ", '%s'", id));
-        }
-
-        return briteDatabase.createQuery(TABLE_SET_2, String.format(Locale.US, SELECT_PROGRAMS_VIEW_MODELS_ORG_UNIT, queary))
-                .mapToList(HomeViewModel::fromCursor);
     }
 
     @NonNull
@@ -155,9 +119,4 @@ class HomeRepositoryImpl implements HomeRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    @Override
-    public Observable<List<TrackedEntityInstanceModel>> trackedEntities() {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TRACK_ENTITIES)
-                .mapToList(TrackedEntityInstanceModel::create);
-    }
 }

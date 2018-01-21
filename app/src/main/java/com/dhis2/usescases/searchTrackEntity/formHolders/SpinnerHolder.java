@@ -11,6 +11,7 @@ import com.dhis2.databinding.FormSpinnerBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.program.ProgramRuleHandler;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
@@ -70,6 +71,5 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 }

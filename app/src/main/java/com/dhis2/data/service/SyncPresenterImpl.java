@@ -55,6 +55,10 @@ final class SyncPresenterImpl implements SyncPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
+    }
+
+    @Override
+    public void syncEvents() {
         disposable.add(events()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
@@ -65,7 +69,10 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribe(update(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
+    }
 
+    @Override
+    public void syncTrackedEntities() {
         disposable.add(trackerData()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())

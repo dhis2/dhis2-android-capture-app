@@ -1,8 +1,5 @@
 package com.dhis2.utils;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,7 +15,7 @@ public class DateUtils {
         return new DateUtils();
     }
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public Date[] getDateFromPeriod(Period period) {
         switch (period) {
@@ -44,7 +41,7 @@ public class DateUtils {
                 return new Date[]{getFirstDayOfWeek(date), getLastDayOfWeek(date)};
             case DAILY:
             default:
-                return new Date[]{getDate(date), getDate(date)};
+                return new Date[]{getDate(date), getNextDate(date)};
         }
     }
 
@@ -55,9 +52,10 @@ public class DateUtils {
         return Calendar.getInstance().getTime();
     }
 
-    public Date getFirstDayOfCurrentWeek() {
 
-        Calendar calendar = Calendar.getInstance();
+    private Date getFirstDayOfCurrentWeek() {
+
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
         return calendar.getTime();
@@ -65,7 +63,7 @@ public class DateUtils {
 
     public Date getLastDayOfCurrentWeek() {
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
         calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
@@ -74,13 +72,13 @@ public class DateUtils {
     }
 
     public Date getFirstDayOfurrentMonth() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
 
     public Date getLastDayOfurrentMonth() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.add(Calendar.MONTH, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -88,13 +86,13 @@ public class DateUtils {
     }
 
     public Date getFirstDayOfCurrentYear() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         return calendar.getTime();
     }
 
     public Date getLastDayOfCurrentYear() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         calendar.add(Calendar.YEAR, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -105,14 +103,23 @@ public class DateUtils {
      SELECTED PEDIOD REGION*/
 
     public Date getDate(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
+
         calendar.setTime(date);
         return calendar.getTime();
     }
 
+    public Date getNextDate(Date date) {
+        Calendar calendar = getCalendar();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
+
     public Date getFirstDayOfWeek(Date date) {
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
@@ -121,7 +128,7 @@ public class DateUtils {
 
     public Date getLastDayOfWeek(Date date) {
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
@@ -131,13 +138,13 @@ public class DateUtils {
     }
 
     public Date getFirstDayOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
 
     public Date getLastDayOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.add(Calendar.MONTH, 1);
@@ -146,14 +153,14 @@ public class DateUtils {
     }
 
     public Date getFirstDayOfYear(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         return calendar.getTime();
     }
 
     public Date getLastDayOfYear(Date date) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         calendar.add(Calendar.YEAR, 1);
@@ -165,6 +172,15 @@ public class DateUtils {
      FORMAT REGION*/
     public String formatDate(Date dateToFormat) {
         return dateFormat.format(dateToFormat);
+    }
+
+    public Calendar getCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
     }
 
 }

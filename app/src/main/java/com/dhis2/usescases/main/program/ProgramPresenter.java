@@ -1,7 +1,11 @@
 package com.dhis2.usescases.main.program;
 
+import android.os.Bundle;
 import android.util.Log;
 
+import com.dhis2.R;
+import com.dhis2.usescases.programDetail.ProgramDetailActivity;
+import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
@@ -64,30 +68,9 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 .subscribe(
                         view.swapProgramData(),
                         throwable -> view.renderError(throwable.getMessage())));
-
-        compositeDisposable.add(homeRepository.eventModels(null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("DATA", "events size: " + data.size()),
-                        throwable -> view.renderError(throwable.getMessage())));
-
-        compositeDisposable.add(homeRepository.trackedEntities()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("DATA", "tracked size: " + data.size()),
-                        throwable -> view.renderError(throwable.getMessage())));
     }
 
     public void getProgramsWithDates(List<Date> dates, Period period) {
-
-        compositeDisposable.add(homeRepository.eventModels(null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("DATA", "events size: " + data.size()),
-                        throwable -> view.renderError(throwable.getMessage())));
 
         compositeDisposable.add(homeRepository.programs(dates, period)
                 .subscribeOn(Schedulers.io())
@@ -98,14 +81,14 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     }
 
     @Override
-    public void onItemClick(ProgramModel homeViewModel) {
-        if (homeViewModel.programType() == ProgramType.WITH_REGISTRATION) {
-          /*  Bundle bundle = new Bundle();
-            bundle.putSerializable("PROGRAM", homeViewModel);
+    public void onItemClick(ProgramModel programModel) {
+        if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+            Bundle bundle = new Bundle();
+            bundle.putString("PROGRAM_UID", programModel.uid());
             if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
                 view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
             else
-                view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);*/
+                view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
         }
     }
 

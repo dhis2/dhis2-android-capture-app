@@ -13,6 +13,10 @@
     <string name="sync_text">Synchronising with server</string>
     <string name="sync_title">Syncing now</string>
 
+    <string name="sync_metadata">Synchronising metadata</string>
+    <string name="sync_events">Synchronising events</string>
+    <string name="sync_tei">Synchronising tracked entities</string>
+
     <string name="sync_complete_title">Finished</string>
     <string name="sync_complete_text">Sync complete</string>
 

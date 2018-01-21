@@ -84,13 +84,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     presenter.getProgramsWithDates(selectedDates, currentPeriod);
                 } else {
                     binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
-                    Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+                    Date[] dates = DateUtils.getInstance().getDateFromPeriod(currentPeriod);
                     presenter.getPrograms(dates[0], dates[1]);
                 }
             });
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-
+                calendar.set(year, monthOfYear, dayOfMonth);
+                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                presenter.getPrograms(dates[0], dates[1]);
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
         }

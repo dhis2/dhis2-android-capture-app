@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
+import com.dhis2.utils.DateUtils;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -76,7 +77,8 @@ public class Bindings {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> textView.setText(data.get(0).lastUpdatedAtClient()),
+                        data -> textView.setText("events = "+data.size()),
+//                        data -> textView.setText(DateUtils.getInstance().formatDate(data.get(0).lastUpdated())),
                         Timber::d);
     }
 
@@ -105,16 +107,14 @@ public class Bindings {
     }
 
     @BindingAdapter("randomColor")
-    public static void setRandomColor(ImageView imageView, Long textToColor) {
+    public static void setRandomColor(ImageView imageView, String textToColor) {
         String color;
         if (textToColor != null)
             color = String.format("#%X", String.valueOf(textToColor).hashCode());
         else
             color = "#FFFFFF";
 
-        String hexColor = String.format("#%06X", (0xFFFFFF & textToColor));
-
-        imageView.setBackgroundColor(Color.parseColor(hexColor));
+        imageView.setBackgroundColor(Color.parseColor(color));
     }
 
 

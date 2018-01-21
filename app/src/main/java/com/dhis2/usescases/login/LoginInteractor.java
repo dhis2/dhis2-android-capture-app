@@ -3,8 +3,10 @@ package com.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.util.Log;
 import android.view.View;
 
 import com.dhis2.App;
@@ -23,6 +25,10 @@ import org.hisp.dhis.android.core.event.EventHandler;
 import org.hisp.dhis.android.core.event.EventStoreImpl;
 import org.hisp.dhis.android.core.resource.ResourceHandler;
 import org.hisp.dhis.android.core.resource.ResourceStoreImpl;
+import org.hisp.dhis.android.core.systeminfo.SystemInfo;
+import org.hisp.dhis.android.core.systeminfo.SystemInfoCall;
+import org.hisp.dhis.android.core.systeminfo.SystemInfoService;
+import org.hisp.dhis.android.core.systeminfo.SystemInfoStoreImpl;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueHandler;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueStoreImpl;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueHandler;
@@ -35,7 +41,7 @@ import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -113,14 +119,8 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         userManager.getD2().retrofit().create(TESTTrackedEntityInstanceService.class).trackEntityInstances().enqueue(new Callback<TEIResponse>() {
             @Override
             public void onResponse(Call<TEIResponse> call, Response<TEIResponse> response) {
-                try {
-                    saveTEI(response.body().getTrackedEntityInstances());
+                new TEIAsync(response.body().getTrackedEntityInstances()).execute();
 
-                } catch (Exception e) {
-                } finally {
-                    view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
-                    view.startActivity(MainActivity.class, null, true, true, null);
-                }
             }
 
             @Override
@@ -144,7 +144,9 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         TrackedEntityDataValueHandler trackedEntityDataValueHandler =
                 new TrackedEntityDataValueHandler(new TrackedEntityDataValueStoreImpl(databaseAdapter));
 
-        EnrollmentHandler enrollmentHandler = new EnrollmentHandler(new EnrollmentStoreImpl(databaseAdapter), new EventHandler(new EventStoreImpl(databaseAdapter), trackedEntityDataValueHandler));
+        EnrollmentHandler enrollmentHandler = new EnrollmentHandler(
+                new EnrollmentStoreImpl(databaseAdapter), new EventHandler(
+                new EventStoreImpl(databaseAdapter), trackedEntityDataValueHandler));
 
         TrackedEntityInstanceHandler trackedEntityInstanceHandler =
                 new TrackedEntityInstanceHandler(
@@ -154,22 +156,41 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
         ResourceHandler resourceHandler = new ResourceHandler(new ResourceStoreImpl(databaseAdapter));
         Transaction transaction = databaseAdapter.beginNewTransaction();
+        Response response = null;
         try {
-            for (TrackedEntityInstance trackedEntityInstance : trackedEntityInstances) {
 
-                Response response = new TrackedEntityInstanceEndPointCall(
+            response = new SystemInfoCall(
+                    databaseAdapter,
+                    new SystemInfoStoreImpl(databaseAdapter),
+                    userManager.getD2().retrofit().create(SystemInfoService.class),
+                    new ResourceStoreImpl(databaseAdapter)
+            ).call();
+
+            if (!response.isSuccessful()) {
+                return;
+            }
+
+            SystemInfo systemInfo = (SystemInfo) response.body();
+            Date serverDate = systemInfo.serverDate();
+
+            for (int i=0;i<1;i++) {
+
+                response = new TrackedEntityInstanceEndPointCall(
                         userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
                         databaseAdapter,
                         trackedEntityInstanceHandler,
                         resourceHandler,
-                        Calendar.getInstance().getTime(),
-                        trackedEntityInstance.getTrackedEntityInstance()
+                        serverDate,
+                        trackedEntityInstances.get(0).getTrackedEntityInstance()
                 ).call();
             }
             transaction.setSuccessful();
 
         } finally {
+            String data = response != null ? String.valueOf(response.isSuccessful()) : "false";
+            Log.d("TEI RESPONSE", "IS SUCCSESS? = " + data);
             transaction.end();
+
         }
     }
 
@@ -221,4 +242,30 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
         @GET("28/trackedEntityInstances?ou=ImspTQPwCqd&ouMode=DESCENDANTS&fields=trackedEntityInstance")
         Call<TEIResponse> trackEntityInstances();
     }
+
+    class TEIAsync extends AsyncTask<String, String, Void> {
+
+        private List<TrackedEntityInstance> list;
+
+        public TEIAsync(List<TrackedEntityInstance> trackedEntityInstances) {
+            this.list = trackedEntityInstances;
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                saveTEI(list);
+            } catch (Exception e) {
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+            view.startActivity(MainActivity.class, null, true, true, null);
+        }
+    }
+
 }

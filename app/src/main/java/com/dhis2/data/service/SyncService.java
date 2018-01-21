@@ -28,6 +28,12 @@ public class SyncService extends Service implements SyncView {
     // @NonNull
     SyncResult syncResult;
 
+    enum SyncState{
+        METADATA, EVENTS, TEI
+    }
+
+    SyncState currentSyncState;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,6 +54,7 @@ public class SyncService extends Service implements SyncView {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (!syncResult.inProgress()) {
+            currentSyncState = SyncState.METADATA;
             syncPresenter.sync();
         }
 
@@ -70,18 +77,21 @@ public class SyncService extends Service implements SyncView {
             if (result.inProgress()) {
                 notification =new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
-                        .setContentTitle(getString(R.string.sync_title))
+//                        .setContentTitle(getString(R.string.sync_title))
+                        .setContentTitle(getTextForNotification())
                         .setContentText(getString(R.string.sync_text))
                         .setProgress(0, 0, true)
                         .setOngoing(true)
                         .build();
             } else if (result.isSuccess()) {
+                nextSync();
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
+                nextSync();
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getString(R.string.sync_error_title))
@@ -92,5 +102,31 @@ public class SyncService extends Service implements SyncView {
             }
             notificationManager.notify(NOTIFICATION_ID, notification);
         };
+    }
+
+    public String getTextForNotification(){
+        switch (currentSyncState){
+            case METADATA:
+                return getString(R.string.sync_metadata);
+            case EVENTS:
+                return getString(R.string.sync_events);
+            default:
+                return getString(R.string.sync_tei);
+        }
+    }
+
+    private void nextSync(){
+        switch (currentSyncState){
+            case METADATA:
+                currentSyncState = SyncState.EVENTS;
+                syncPresenter.syncEvents();
+                break;
+            case EVENTS:
+                currentSyncState = SyncState.TEI;
+                syncPresenter.syncTrackedEntities();
+                break;
+            case TEI:
+                break;
+        }
     }
 }

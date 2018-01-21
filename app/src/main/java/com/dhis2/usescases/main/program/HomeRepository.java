@@ -18,9 +18,6 @@ import io.reactivex.Observable;
 interface HomeRepository {
 
     @NonNull
-    Observable<List<HomeViewModel>> homeViewModels();
-
-    @NonNull
     Observable<List<ProgramModel>> programs(String fromDate, String toDate);
 
     @NonNull
@@ -30,12 +27,6 @@ interface HomeRepository {
     Observable<List<EventModel>> eventModels(String programUid);
 
     @NonNull
-    Observable<List<HomeViewModel>> homeViewModels(ArrayList<String> query);
-
-    @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits();
-
-    @NonNull
-    Observable<List<TrackedEntityInstanceModel>> trackedEntities();
 
 }
