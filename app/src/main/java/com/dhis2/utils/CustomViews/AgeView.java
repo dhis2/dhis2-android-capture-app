@@ -3,8 +3,9 @@ package com.dhis2.utils.CustomViews;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.dhis2.R;
 import com.dhis2.databinding.AgeCustomViewBinding;
+import com.dhis2.utils.TextChangedListener;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -23,7 +25,7 @@ import java.util.Calendar;
  * Created by frodriguez on 1/15/2018.
  */
 
-public class AgeView extends RelativeLayout implements View.OnClickListener {
+public class AgeView extends RelativeLayout implements View.OnClickListener, TextWatcher {
 
     private EditText date;
     private TextInputEditText day;
@@ -33,6 +35,8 @@ public class AgeView extends RelativeLayout implements View.OnClickListener {
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
+
+    private TextChangedListener listener;
 
     public AgeView(Context context) {
         super(context);
@@ -65,6 +69,10 @@ public class AgeView extends RelativeLayout implements View.OnClickListener {
         month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
         year.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
+        date.addTextChangedListener(this);
+        month.addTextChangedListener(this);
+        year.addTextChangedListener(this);
+
     }
 
     public void setAttribute(TrackedEntityAttributeModel attribute){
@@ -95,5 +103,27 @@ public class AgeView extends RelativeLayout implements View.OnClickListener {
                 month,
                 day);
         dateDialog.show();
+    }
+
+    public void setTextChangedListener(TextChangedListener listener){
+        this.listener = listener;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+        if(listener != null)
+            listener.beforeTextChanged(charSequence, start, count, after);
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+        if(listener != null)
+            listener.onTextChanged(charSequence, start, before, count);
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        if(listener != null)
+            listener.afterTextChanged(editable);
     }
 }
