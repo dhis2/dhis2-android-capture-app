@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
         <item name="android:windowContentTransitions">true</item>
 
     </style>
@@ -17,6 +18,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
 
@@ -26,6 +28,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerThemeGreen</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
 
@@ -40,6 +43,21 @@
     </style>
 
     <style name="DatePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimaryGreen</item>
+        <item name="android:colorAccent">@color/colorPrimaryGreen</item>
+    </style>
+
+    <style name="TimePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="TimePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/red_060</item>
+        <item name="android:colorAccent">@color/red_060</item>
+    </style>
+
+    <style name="TimePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorPrimaryGreen</item>
         <item name="android:colorAccent">@color/colorPrimaryGreen</item>
     </style>

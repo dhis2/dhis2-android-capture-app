@@ -100,7 +100,8 @@ public class Bindings {
             ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    return recyclerView.getAdapter().getItemViewType(position) == 4 ? 2 : 1;
+                    int itemViewType = recyclerView.getAdapter().getItemViewType(position);
+                    return (itemViewType == 4 || itemViewType == 8) ? 2 : 1;
                 }
             });
         }
