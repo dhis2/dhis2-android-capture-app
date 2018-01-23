@@ -173,7 +173,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
             SystemInfo systemInfo = (SystemInfo) response.body();
             Date serverDate = systemInfo.serverDate();
 
-            for (int i=0;i<1;i++) {
+            for (int i = 0; i < 1; i++) {
 
                 response = new TrackedEntityInstanceEndPointCall(
                         userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
@@ -238,8 +238,9 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
     }
 
 
+    //TODO: Currentl, SDK not providing TEI sync. This call is used for user android in android-current
     public interface TESTTrackedEntityInstanceService {
-        @GET("28/trackedEntityInstances?ou=ImspTQPwCqd&ouMode=DESCENDANTS&fields=trackedEntityInstance")
+        @GET("28/trackedEntityInstances?ou=DiszpKrYNg8&paging=false&fields=trackedEntityInstance")
         Call<TEIResponse> trackEntityInstances();
     }
 
