@@ -1,4 +1,4 @@
-package com.dhis2.data.forms;
+package com.dhis2.data.forms.dataentry;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
