@@ -12,6 +12,7 @@ import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
+import com.dhis2.usescases.searchTrackEntity.formHolders.RadioGroupFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.DateTimeFormHolder;
 
@@ -36,6 +37,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private final int DATE = 6;
     private final int DATETIME = 7;
     private final int AGEVIEW = 8;
+    private final int YES_NO = 9;
     private int programData = 0;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityAttributeModel> attributeList;
@@ -86,6 +88,10 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
             case AGEVIEW:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_age_custom, parent, false);
                 holder = new EditTextFormHolder(binding);
+                break;
+            case YES_NO:
+                binding = DataBindingUtil.inflate(inflater, R.layout.form_yes_no, parent, false);
+                holder = new RadioGroupFormHolder(binding);
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
@@ -148,8 +154,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 case COORDINATE:
                     return COORDINATES;
                 case BOOLEAN:
-                    return CHECKBOX;
                 case TRUE_ONLY:
+                    return YES_NO;
                 case TRACKER_ASSOCIATE:
                 case ORGANISATION_UNIT:
                 case URL:

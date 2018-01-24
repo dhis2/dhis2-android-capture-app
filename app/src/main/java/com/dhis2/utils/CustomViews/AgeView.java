@@ -94,6 +94,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener {
                 year,
                 month,
                 day);
+        dateDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         dateDialog.show();
     }
 }
