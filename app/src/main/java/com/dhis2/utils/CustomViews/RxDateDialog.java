@@ -3,6 +3,7 @@ package com.dhis2.utils.CustomViews;
 import android.app.AlertDialog;
 
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.Period;
 
 import java.util.Date;
 import java.util.List;
@@ -21,9 +22,9 @@ public class RxDateDialog {
     private final ActionTrigger<DateDialog> actionTrigger = ActionTrigger.create();
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final ActivityGlobalAbstract activity;
-    private final DateAdapter.Period period;
+    private final Period period;
 
-    public RxDateDialog(final ActivityGlobalAbstract activity, DateAdapter.Period mPeriod) {
+    public RxDateDialog(final ActivityGlobalAbstract activity, Period mPeriod) {
         this.activity = activity;
         this.period = mPeriod;
 

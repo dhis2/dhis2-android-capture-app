@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.data.forms.ProgramAdapter;
+import com.dhis2.data.forms.dataentry.ProgramAdapter;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;

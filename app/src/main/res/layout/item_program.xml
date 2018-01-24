@@ -10,15 +10,14 @@
 
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.HomeViewModel" />
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:onClick="@{()->presenter.onItemClick(program)}"
-        >
+        android:onClick="@{()->presenter.onItemClick(program)}">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,8 +28,8 @@
                 android:id="@+id/program_image"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
-                app:randomColor="@{program.id()}"
-                app:programTypeIcon='@{program.programType()}'/>
+                app:programTypeIcon='@{program.programType()}'
+                app:randomColor="@{program.uid()}" />
 
 
             <TextView
@@ -40,7 +39,7 @@
                 android:layout_below="@id/program_image"
                 android:layout_marginStart="7.8dp"
                 android:layout_marginTop="5.4dp"
-                android:text="@{program.title(), default=name}"
+                android:text="@{program.shortName(), default=name}"
                 android:textColor="@color/gray_666"
                 android:textSize="14sp" />
 
@@ -51,10 +50,11 @@
                 android:layout_alignParentBottom="true"
                 android:layout_below="@id/program_name"
                 android:layout_marginStart="7.8dp"
+                android:textColor="@color/gray_9b9"
                 android:layout_marginTop="5.4dp"
                 android:gravity="bottom"
                 android:textSize="14sp"
-                app:date="@{program.lastUpdated()}"
+                app:lastEventDate="@{presenter.getEvents(program)}"
                 tools:text="date" />
 
         </RelativeLayout>

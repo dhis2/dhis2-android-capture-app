@@ -97,4 +97,8 @@ public class TrackedEntityInstance implements Parcelable {
     public List<Attribute> getAttributes() {
         return attributes;
     }
+
+    public TrackedEntityInstance(){
+
+    }
 }

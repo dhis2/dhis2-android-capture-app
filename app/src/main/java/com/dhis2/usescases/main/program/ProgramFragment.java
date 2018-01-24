@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +16,18 @@ import android.widget.TextView;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.utils.CustomViews.DateAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
+import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +36,7 @@ import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by ppajuelo on 18/10/2017.
+ * Created by ppajuelo on 18/10/2017.f
  */
 
 public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View {
@@ -43,13 +45,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Inject
     ProgramPresenter presenter;
 
-    private final String DAILY = "Daily";
-    private final String WEEKLY = "Weekly";
-    private final String MONTHLY = "Monthly";
-    private final String YEARLY = "Yearly";
+    private Period currentPeriod = Period.DAILY;
 
-    private DateAdapter.Period currentPeriod = DateAdapter.Period.DAILY;
-    private String period;
+    /****************************
+     **REGION LIFECYCLE*/
 
     @Nullable
     @Override
@@ -61,26 +60,39 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setUpRecycler();
+    }
+
+    /****************************
+     **REGION LIFECYCLE*/
+
+    @Override
     public void showRageDatePicker() {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
-        if (currentPeriod != DateAdapter.Period.DAILY) {
-           /* DateDialog dialog = DateDialog.newInstace(currentPeriod);
-            dialog.setCancelable(true);
-            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();*/
+        if (currentPeriod != Period.DAILY) {
+
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
-                if (!selectedDates.isEmpty() && selectedDates.size() == 1)
-                    binding.buttonPeriodText.setText(DateUtils.formatDateTime(getContext(), selectedDates.get(0).getTime(), 0));
-                else if (!selectedDates.isEmpty())
-                    binding.buttonPeriodText.setText(DateUtils.formatDateTime(getContext(), selectedDates.get(0).getTime(), 0) +
-                            DateUtils.formatDateTime(getContext(), selectedDates.get(1).getTime(), 0));
-                else
-                    binding.buttonPeriodText.setText(period);
+                if (!selectedDates.isEmpty()) {
+                    String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
+                    if (selectedDates.size() > 1)
+                        textToShow += " " + DateUtils.getInstance().formatDate(selectedDates.get(1));
+                    binding.buttonPeriodText.setText(textToShow);
+                    presenter.getProgramsWithDates(selectedDates, currentPeriod);
+                } else {
+                    binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+                    Date[] dates = DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+                    presenter.getPrograms(dates[0], dates[1]);
+                }
             });
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-
+                calendar.set(year, monthOfYear, dayOfMonth);
+                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                presenter.getPrograms(dates[0], dates[1]);
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
         }
@@ -93,28 +105,26 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
         switch (currentPeriod) {
             case DAILY:
-                currentPeriod = DateAdapter.Period.WEEKLY;
+                currentPeriod = Period.WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
-                period = WEEKLY;
                 break;
             case WEEKLY:
-                currentPeriod = DateAdapter.Period.MONTHLY;
+                currentPeriod = Period.MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
-                period = MONTHLY;
                 break;
             case MONTHLY:
-                currentPeriod = DateAdapter.Period.YEARLY;
+                currentPeriod = Period.YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
-                period = YEARLY;
                 break;
             case YEARLY:
-                currentPeriod = DateAdapter.Period.DAILY;
+                currentPeriod = Period.DAILY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
-                period = DAILY;
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        binding.buttonPeriodText.setText(period);
+        binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+        Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+        presenter.getPrograms(dates[0], dates[1]);
     }
 
     @Override
@@ -125,17 +135,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        setUpRecycler();
-    }
-
-    @Override
-    public Consumer<List<HomeViewModel>> swapData() {
-
-        return homeEntities -> {
+    public Consumer<List<ProgramModel>> swapProgramData() {
+        return programs -> {
             binding.programProgress.setVisibility(View.GONE);
-            ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(homeEntities);
+            ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
         };
     }
 
@@ -148,11 +151,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     .setMessage(message)
                     .show();
     }
-/*
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-
-    }*/
 
     @Override
     public void addTree(TreeNode treeNode) {
@@ -168,7 +166,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             node.setSelected(!node.isSelected());
-            ArrayList<String> childIds = new ArrayList<String>();
+            ArrayList<String> childIds = new ArrayList<>();
             childIds.add(((OrganisationUnitModel) value).uid());
             for (TreeNode childNode : node.getChildren()) {
                 childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());

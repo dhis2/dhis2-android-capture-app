@@ -6,7 +6,7 @@ import android.widget.AdapterView;
 
 import com.dhis2.BR;
 import com.dhis2.R;
-import com.dhis2.data.forms.OptionAdapter;
+import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.databinding.FormSpinnerBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
@@ -70,6 +70,5 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 }

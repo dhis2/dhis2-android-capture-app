@@ -6,6 +6,10 @@ import android.support.annotation.UiThread;
 interface SyncPresenter {
     void sync();
 
+    void syncEvents();
+
+    void syncTrackedEntities();
+
     @UiThread
     void onAttach(@NonNull SyncView view);
 

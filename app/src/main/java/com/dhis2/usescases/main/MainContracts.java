@@ -57,9 +57,4 @@ public final class MainContracts {
         void init(View view);
 
     }
-
-    interface Router {
-
-    }
-
 }

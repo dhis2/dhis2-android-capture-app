@@ -46,8 +46,37 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void sync() {
         disposable.add(metadata()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+    }
+
+    @Override
+    public void syncEvents() {
+        disposable.add(events()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+    }
+
+    @Override
+    public void syncTrackedEntities() {
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
@@ -66,6 +95,17 @@ final class SyncPresenterImpl implements SyncPresenter {
     private Observable<Response> metadata() {
         return Observable.defer(() -> Observable.fromCallable(d2.syncMetaData()));
     }
+
+    @NonNull
+    private Observable<Response> trackerData() {
+        return Observable.defer(() -> Observable.fromCallable(d2.syncTrackerData()));
+    }
+
+    @NonNull
+    private Observable<Response> events() {
+        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(1000)));
+    }
+
 
     @NonNull
     private Consumer<SyncResult> update() {

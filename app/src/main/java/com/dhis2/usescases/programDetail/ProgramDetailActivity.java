@@ -18,6 +18,7 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.utils.CustomViews.DateAdapter;
 import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -45,7 +46,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     HomeViewModel homeViewModel;
     @Inject
     ProgramDetailAdapter adapter;
-    private DateAdapter.Period currentPeriod = DateAdapter.Period.DAILY;
+    private Period currentPeriod = Period.DAILY;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +111,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
-        if (currentPeriod != DateAdapter.Period.DAILY) {
+        if (currentPeriod != Period.DAILY) {
             DateDialog dialog = DateDialog.newInstace(currentPeriod);
             dialog.setCancelable(true);
             getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
@@ -128,22 +129,22 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         String period = null;
         switch (currentPeriod) {
             case DAILY:
-                currentPeriod = DateAdapter.Period.WEEKLY;
+                currentPeriod = Period.WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
                 period = WEEKLY;
                 break;
             case WEEKLY:
-                currentPeriod = DateAdapter.Period.MONTHLY;
+                currentPeriod = Period.MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
                 period = MONTHLY;
                 break;
             case MONTHLY:
-                currentPeriod = DateAdapter.Period.YEARLY;
+                currentPeriod = Period.YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
                 period = YEARLY;
                 break;
             case YEARLY:
-                currentPeriod = DateAdapter.Period.DAILY;
+                currentPeriod = Period.DAILY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 period = DAILY;
                 break;

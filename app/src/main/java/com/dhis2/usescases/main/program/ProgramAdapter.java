@@ -8,16 +8,11 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramBinding;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
-import timber.log.Timber;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by ppajuelo on 18/10/2017.
@@ -25,12 +20,12 @@ import timber.log.Timber;
 
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
-    List<HomeViewModel> itemList;
-    ProgramPresenter presenter;
+    private List<ProgramModel> programList;
+    private ProgramPresenter presenter;
 
     public ProgramAdapter(ProgramPresenter presenter) {
         this.presenter = presenter;
-        this.itemList = new ArrayList<>();
+        this.programList = new ArrayList<>();
     }
 
     @Override
@@ -46,34 +41,20 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     }
 
-    public void setData(List<HomeViewModel> program) {
-        this.itemList.clear();
-        this.itemList.addAll(program);
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        Collections.sort(this.itemList, (ob1, ob2) -> {
-            Date date1 = calendar.getTime();
-            Date date2 = calendar.getTime();
-            try {
-                calendar.setTime(format.parse(ob1.lastUpdated()));
-                date1 = calendar.getTime();
-                calendar.setTime(format.parse(ob2.lastUpdated()));
-                date2 = calendar.getTime();
-            } catch (ParseException e) {
-                Timber.e(e);
-            }
+    public void setData(List<ProgramModel> program) {
+        this.programList.clear();
+        this.programList.addAll(program);
 
-            return date2.compareTo(date1);
-        });
+        Collections.sort(this.programList, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
         notifyDataSetChanged();
     }
 
-    private HomeViewModel getItemAt(int position) {
-        return itemList.get(position);
+    private ProgramModel getItemAt(int position) {
+        return programList.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return itemList != null ? itemList.size() : 0;
+        return programList != null ? programList.size() : 0;
     }
 }
