@@ -1,57 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="attribute"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
+    <com.dhis2.utils.CustomViews.CoordinateView
+        android:id="@+id/custom_coordinate_view"
         android:layout_height="wrap_content"
-        android:padding="3dp">
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_latitude"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="latitude" />
-        </android.support.design.widget.TextInputLayout>
-
-        <TextView
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:gravity="center|bottom"
-            android:text="," />
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_longitude"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="longitude" />
-        </android.support.design.widget.TextInputLayout>
-
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_my_location" />
-
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_map" />
-
-    </LinearLayout>
+        android:layout_width="wrap_content"
+        app:attribute="@{ attribute }"
+        />
 </layout>
