@@ -4,13 +4,9 @@ import android.databinding.ViewDataBinding;
 
 import com.dhis2.BR;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-
-import io.reactivex.processors.FlowableProcessor;
 
 
 /**
@@ -22,7 +18,8 @@ public class DateTimeHolder extends FormViewHolder {
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableObject;
 
-    public DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+
+    public DateTimeHolder(ViewDataBinding binding) {
         super(binding);
     }
 

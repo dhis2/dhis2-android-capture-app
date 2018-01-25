@@ -21,7 +21,7 @@ import java.util.Calendar;
  * Created by frodriguez on 1/15/2018.
  */
 
-public class DateTimeView extends RelativeLayout implements View.OnClickListener {
+public class DateTimeView extends RelativeLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private EditText dateTime;
     private DateTimeViewBinding binding;
@@ -50,8 +50,8 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         dateTime = findViewById(R.id.button);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        dateTime.setOnFocusChangeListener(this::onFocusChanged);
-        dateTime.setOnClickListener(this::onClick);
+        dateTime.setOnFocusChangeListener(this);
+        dateTime.setOnClickListener(this);
 
     }
 
@@ -63,8 +63,9 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         binding.setLabel(label);
     }
 
-    private void onFocusChanged(View view, boolean b) {
-        if(b)
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        if(hasFocus)
             onClick(view);
     }
 

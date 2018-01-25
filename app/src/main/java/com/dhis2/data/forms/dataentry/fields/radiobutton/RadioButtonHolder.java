@@ -1,4 +1,4 @@
-package com.dhis2.data.forms.dataentry.fields;
+package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.databinding.ViewDataBinding;
 
@@ -13,12 +13,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
  * Created by frodriguez on 18/01/2018.
  */
 
-public class RadioGroupFormHolder extends FormViewHolder {
+public class RadioButtonHolder extends FormViewHolder {
 
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableObject;
 
-    public RadioGroupFormHolder(ViewDataBinding binding) {
+    public RadioButtonHolder(ViewDataBinding binding) {
         super(binding);
     }
 
