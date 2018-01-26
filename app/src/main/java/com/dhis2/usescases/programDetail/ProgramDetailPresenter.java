@@ -6,6 +6,8 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
+import org.hisp.dhis.android.core.program.ProgramModel;
+
 import javax.inject.Inject;
 
 /**
@@ -16,7 +18,8 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     static private ProgramDetailContractModule.View view;
     private final ProgramDetailContractModule.Interactor interactor;
-    public HomeViewModel program;
+    private String programId;
+    public ProgramModel program;
 
     @Inject
     ProgramDetailPresenter(ProgramDetailContractModule.Interactor interactor) {
@@ -24,10 +27,10 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public void init(ProgramDetailContractModule.View mview, HomeViewModel program) {
-        this.program = program;
+    public void init(ProgramDetailContractModule.View mview, String programId) {
+        this.programId = programId;
         view = mview;
-        interactor.init(view, program.id());
+        interactor.init(view, programId);
     }
 
     @Override
@@ -51,8 +54,13 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public HomeViewModel getCurrentProgram() {
+    public ProgramModel getCurrentProgram() {
         return program;
+    }
+
+    @Override
+    public void setProgram(ProgramModel program) {
+        this.program = program;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onSearchClick() {
         Bundle bundle = new Bundle();
-        bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
+        //bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
         view.startActivity(SearchTEActivity.class, bundle, false, false, null);
     }
 

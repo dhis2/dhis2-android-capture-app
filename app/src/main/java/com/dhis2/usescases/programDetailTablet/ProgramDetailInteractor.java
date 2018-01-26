@@ -58,7 +58,18 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     public void init(ProgramDetailContractModule.View view, String programId) {
         this.view = view;
         this.programId = programId;
+        getProgram();
         getOrgUnits();
+    }
+
+    private void getProgram() {
+        compositeDisposable.add(metadataRepository.getProgramWithId(programId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programModel -> view.setProgram(programModel),
+                        Timber::d)
+        );
     }
 
     @Override
