@@ -4,7 +4,8 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.dhis2.usescases.main.program.HomeViewModel;
+
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(ProgramDetailPresenter presenter,
-                     HomeViewModel program,
+                     ProgramModel program,
                      String orgUnit,
                      List<String> attributes,
                      String stage,
@@ -34,7 +35,7 @@ public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.stage, stage);
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(uid, program.id()));
+        itemView.setOnClickListener(view -> presenter.onTEIClick(uid, program.uid()));
     }
 
 

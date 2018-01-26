@@ -5,6 +5,7 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.List;
@@ -28,10 +29,12 @@ public class ProgramDetailContractModule {
         void showTimeUnitPicker();
 
         void showRageDatePicker();
+
+        void setProgram(ProgramModel programModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, HomeViewModel program);
+        void init(View view, String programId);
 
         void onTimeButtonClick();
 
@@ -41,7 +44,7 @@ public class ProgramDetailContractModule {
 
         void onCatComboButtonClick();
 
-        HomeViewModel getCurrentProgram();
+        ProgramModel getCurrentProgram();
 
         void nextPageForApi(int page);
 
@@ -51,6 +54,7 @@ public class ProgramDetailContractModule {
 
         void onTEIClick(String TEIuid,String programUid);
 
+        void setProgram(ProgramModel program);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

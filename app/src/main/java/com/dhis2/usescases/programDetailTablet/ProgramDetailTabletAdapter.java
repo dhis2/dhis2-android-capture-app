@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import com.dhis2.usescases.main.program.HomeViewModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
@@ -26,7 +26,7 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
 
     private List<ProgramTrackedEntityAttributeModel> attributesToShow;
     private List<OrganisationUnitModel> orgUnits;
-    private HomeViewModel program;
+    private ProgramModel program;
 
     public ProgramDetailTabletAdapter(Context p_jContext) {
         super(p_jContext);
@@ -63,7 +63,7 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
         this.orgUnits = orgUnits;
     }
 
-    public void setProgram(HomeViewModel program) {
+    public void setProgram(ProgramModel program) {
         this.program = program;
     }
 

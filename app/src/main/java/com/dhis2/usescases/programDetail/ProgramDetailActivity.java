@@ -15,7 +15,6 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
-import com.dhis2.utils.CustomViews.DateAdapter;
 import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.Period;
@@ -23,6 +22,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
@@ -43,7 +43,8 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     ActivityProgramDetailBinding binding;
     @Inject
     ProgramDetailContractModule.Presenter presenter;
-    HomeViewModel homeViewModel;
+    //HomeViewModel homeViewModel;
+    ProgramModel programModel;
     @Inject
     ProgramDetailAdapter adapter;
     private Period currentPeriod = Period.DAILY;
@@ -53,10 +54,11 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         ((App) getApplicationContext()).getUserComponent().plus(new ProgramDetailModule()).inject(this);
 
         super.onCreate(savedInstanceState);
-        homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
+//        homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
+        String programId = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
-        presenter.init(this, homeViewModel);
+        presenter.init(this, programId);
 
         binding.recycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager()) {
             @Override
@@ -76,7 +78,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     @Override
     public void swapData(TrackedEntityObject response) {
         if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(homeViewModel);
+            adapter.setProgram(programModel);
             binding.recycler.setAdapter(adapter);
         }
 
@@ -84,9 +86,16 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     }
 
     @Override
+    public void setProgram(ProgramModel program) {
+        this.programModel = program;
+        presenter.setProgram(program);
+        binding.setName(program.displayName());
+    }
+
+    @Override
     public void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes) {
         if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(homeViewModel);
+            adapter.setProgram(programModel);
             binding.recycler.setAdapter(adapter);
         }
 

@@ -14,13 +14,13 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailTabletBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.HomeViewModel;
-import com.dhis2.utils.CustomViews.DateAdapter;
 import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -42,7 +42,8 @@ public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implemen
     ActivityProgramDetailTabletBinding binding;
     @Inject
     ProgramDetailContractModule.Presenter presenter;
-    HomeViewModel homeViewModel;
+    //HomeViewModel homeViewModel;
+    ProgramModel programModel;
 
     ProgramDetailTabletAdapter adapter;
 
@@ -53,14 +54,15 @@ public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implemen
         ((App) getApplicationContext()).getUserComponent().plus(new ProgramDetailTabletModule()).inject(this);
 
         super.onCreate(savedInstanceState);
-        homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
+        //homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
+        String programId = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail_tablet);
         binding.setPresenter(presenter);
 
         adapter = new ProgramDetailTabletAdapter(this);
-        adapter.setProgram(homeViewModel);
+        //adapter.setProgram(homeViewModel);
         binding.tableLayout.setAdapter(adapter);
-        presenter.init(this, homeViewModel);
+        presenter.init(this, programId);
 
     }
 
@@ -84,6 +86,15 @@ public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implemen
         }
 
         adapter.setAllItems(response.getTrackedEntityInstances(), response.getProgramTrackedEntityAttributes(), matrix);
+    }
+
+    @Override
+    public void setProgram(ProgramModel program) {
+        this.programModel = program;
+        presenter.setProgram(program);
+        binding.setName(program.displayName());
+        adapter.setProgram(program);
+
     }
 
     @Override

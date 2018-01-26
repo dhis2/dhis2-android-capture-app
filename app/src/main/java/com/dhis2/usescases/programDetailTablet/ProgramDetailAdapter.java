@@ -12,6 +12,7 @@ import com.dhis2.usescases.main.program.HomeViewModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -31,7 +32,7 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
     private ProgramDetailPresenter presenter;
     private List<TrackedEntityInstance> trackedEntityInstances;
     private List<ProgramTrackedEntityAttributeModel> attributesToShow;
-    private HomeViewModel program;
+    private ProgramModel program;
     private List<OrganisationUnitModel> orgUnits;
 
     @Inject
@@ -99,7 +100,7 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
         notifyDataSetChanged();
     }
 
-    public void setProgram(HomeViewModel program) {
+    public void setProgram(ProgramModel program) {
         this.program = program;
     }
 
