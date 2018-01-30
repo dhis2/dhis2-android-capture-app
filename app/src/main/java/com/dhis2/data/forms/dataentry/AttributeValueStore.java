@@ -11,8 +11,8 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 import io.reactivex.Flowable;
@@ -50,17 +50,14 @@ final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement insertStatement;
 
-    @NonNull
-    private final CurrentDateProvider currentDateProvider;
 
     @NonNull
     private final String enrollment;
 
     AttributeValueStore(@NonNull BriteDatabase briteDatabase,
-                        @NonNull CurrentDateProvider currentDateProvider, @NonNull String enrollment) {
+                        @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
-        this.currentDateProvider = currentDateProvider;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);
@@ -86,7 +83,7 @@ final class AttributeValueStore implements DataEntryStore {
 
     private long update(@NonNull String attribute, @Nullable String value) {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
-                .format(currentDateProvider.currentDate()));
+                .format(Calendar.getInstance().getTime()));
         sqLiteBind(updateStatement, 2, value);
         sqLiteBind(updateStatement, 3, enrollment);
         sqLiteBind(updateStatement, 4, attribute);
@@ -100,7 +97,7 @@ final class AttributeValueStore implements DataEntryStore {
 
     private long insert(@NonNull String attribute, @NonNull String value) {
         String created = BaseIdentifiableObject.DATE_FORMAT
-                .format(currentDateProvider.currentDate());
+                .format(Calendar.getInstance().getTime());
 
         sqLiteBind(insertStatement, 1, created);
         sqLiteBind(insertStatement, 2, created);

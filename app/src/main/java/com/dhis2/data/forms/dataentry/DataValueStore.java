@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -27,8 +28,6 @@ final class DataValueStore implements DataEntryStore {
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    @NonNull
-    private final CurrentDateProvider currentDateProvider;
 
     @NonNull
     private final Flowable<UserCredentialsModel> userCredentials;
@@ -38,10 +37,8 @@ final class DataValueStore implements DataEntryStore {
 
     DataValueStore(@NonNull BriteDatabase briteDatabase,
             @NonNull UserRepository userRepository,
-            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
-        this.currentDateProvider = currentDateProvider;
         this.eventUid = eventUid;
 
         // we want to re-use results of the user credentials query
@@ -69,7 +66,7 @@ final class DataValueStore implements DataEntryStore {
 
         // renderSearchResults time stamp
         dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
+                BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
         if (value == null) {
             dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
         } else {
@@ -83,7 +80,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
-        Date created = currentDateProvider.currentDate();
+        Date created = Calendar.getInstance().getTime();
         TrackedEntityDataValueModel dataValueModel =
                 TrackedEntityDataValueModel.builder()
                         .created(created)

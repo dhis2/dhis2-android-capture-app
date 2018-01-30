@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.databinding.DataBindingUtil;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -42,11 +43,17 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     }
 
     public void setData(List<ProgramModel> program) {
-        this.programList.clear();
-        this.programList.addAll(program);
+//        this.programList.clear();
+//        this.programList.addAll(program);
 
         Collections.sort(this.programList, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
-        notifyDataSetChanged();
+        Collections.sort(program, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
+//        notifyDataSetChanged();
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
+        programList.clear();
+        programList.addAll(program);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     private ProgramModel getItemAt(int position) {

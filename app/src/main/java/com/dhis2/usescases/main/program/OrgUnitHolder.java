@@ -6,7 +6,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,10 +36,18 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         imageView = view.findViewById(R.id.org_unit_icon);
         int textSize = 21 - (value.level());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-        textView.setText(value.shortName());
+        textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
-        node.setSelectable(true);
         checkBox.setChecked(node.isSelected());
+
+        if (!node.isSelectable()) {
+            checkBox.setVisibility(View.GONE);
+            textView.setTextColor(ContextCompat.getColor(textView.getContext(),R.color.gray_814));
+        }else {
+            node.setSelected(true);
+            textView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+            checkBox.setChecked(true);
+        }
 
 
         if (node.getChildren() == null || node.getChildren().isEmpty())
@@ -48,15 +55,8 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             textView.setTextColor(b ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
+            node.setSelected(b);
         });
-
-       /* mNode.setClickListener((node1, value1) -> {
-            if (node1.isSelectable()) {
-                textView.setTextColor(node1.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
-                node1.setSelected(!node1.isSelected());
-                checkBox.setChecked(node.isSelected());
-            }
-        });*/
 
         return view;
     }

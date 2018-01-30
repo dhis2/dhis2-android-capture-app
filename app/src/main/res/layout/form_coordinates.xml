@@ -8,10 +8,11 @@
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
     </data>
 
-    <com.dhis2.utils.CustomViews.CoordinateView
+    <EditText
         android:id="@+id/custom_coordinate_view"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        app:attribute="@{ attribute }"
         />
+    <!--app:attribute="@{attribute}"-->
+
 </layout>

@@ -1,5 +1,5 @@
 package com.dhis2.data.forms;
 
 
-interface FormPresenter extends Presenter<FormView> {
+interface FormPresenter/* extends Presenter<FormView> */{
 }

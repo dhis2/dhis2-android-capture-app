@@ -11,10 +11,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntity;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +19,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -113,8 +109,6 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
             if (i < selectedOrgUnits.size() - 1)
                 orgQuey = orgQuey.concat(";");
         }
-
-        TrackedEntityInstance
 
         currentCall = d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(
                 orgQuey,

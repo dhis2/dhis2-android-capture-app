@@ -39,7 +39,7 @@ import io.reactivex.functions.Consumer;
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View {
+public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View, OrgUnitInterface {
 
     public FragmentProgramBinding binding;
     @Inject
@@ -47,8 +47,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     private Period currentPeriod = Period.DAILY;
 
-    /****************************
-     **REGION LIFECYCLE*/
+    private AndroidTreeView treeView;
+
+    //-------------------------------------------
+    //region LIFECYCLE
 
     @Nullable
     @Override
@@ -65,8 +67,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         setUpRecycler();
     }
 
-    /****************************
-     **REGION LIFECYCLE*/
+    //endregion
 
     @Override
     public void showRageDatePicker() {
@@ -155,8 +156,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void addTree(TreeNode treeNode) {
         binding.treeViewContainer.removeAllViews();
-
-        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
+        binding.orgUnitApply.setOnClickListener((View.OnClickListener) view -> apply());
+        treeView = new AndroidTreeView(getContext(), treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
@@ -165,23 +166,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            node.setSelected(!node.isSelected());
-            ArrayList<String> childIds = new ArrayList<>();
-            childIds.add(((OrganisationUnitModel) value).uid());
-            for (TreeNode childNode : node.getChildren()) {
-                childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
-                for (TreeNode childNode2 : childNode.getChildren()) {
-                    childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
-                    for (TreeNode childNode3 : childNode2.getChildren()) {
-                        childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
-                    }
-                }
+            ArrayList<String> selectedUids = new ArrayList<>();
+            for (TreeNode selectedOrgsTreeNode : treeView.getSelected()) {
+                selectedUids.add(((OrganisationUnitModel) selectedOrgsTreeNode.getValue()).uid());
             }
-            binding.buttonOrgUnit.setText(((OrganisationUnitModel) value).displayShortName());
-            binding.drawerLayout.closeDrawers();
-            presenter.searchProgramByOrgUnit(childIds);
+            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected()));
+//            binding.drawerLayout.closeDrawers();
         });
-
     }
 
     @Override
@@ -197,5 +188,21 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void openDrawer() {
         binding.drawerLayout.openDrawer(Gravity.END);
+    }
+
+    @Override
+    public void apply() {
+        binding.drawerLayout.closeDrawers();
+        StringBuilder orgUnitFilter = new StringBuilder();
+        for (int i = 0; i < treeView.getSelected().size(); i++) {
+            orgUnitFilter.append("'");
+            orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
+            orgUnitFilter.append("'");
+            if (i < treeView.getSelected().size() - 1)
+                orgUnitFilter.append(", ");
+        }
+
+        presenter.getProgramsOrgUnit(orgUnitFilter.toString());
+
     }
 }

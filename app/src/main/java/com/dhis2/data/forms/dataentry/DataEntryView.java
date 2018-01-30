@@ -11,7 +11,7 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
 
-interface DataEntryView extends View {
+interface DataEntryView /*extends View*/ {
 
     @NonNull
     Flowable<RowAction> rowActions();

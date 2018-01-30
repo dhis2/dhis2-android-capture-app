@@ -1,11 +1,8 @@
 package com.dhis2;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
 
 import com.dhis2.data.database.DbModule;
-import com.dhis2.data.forms.FormComponent;
-import com.dhis2.data.forms.FormModule;
 import com.dhis2.data.metadata.MetadataModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.server.ServerComponent;
@@ -47,6 +44,5 @@ public interface AppComponent {
 
     ServerComponent plus(ServerModule serverModule);
 
-    FormComponent createFormComponent(FormModule formModule);
 
 }

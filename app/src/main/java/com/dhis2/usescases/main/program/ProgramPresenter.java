@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dhis2.R;
@@ -17,6 +18,7 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,6 +38,10 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
+    private Date fromDate, toDate;
+    private List<Date> dates;
+    private Period period;
+
     @Inject
     ProgramPresenter(ProgramContractModule.View view, HomeRepository homeRepository) {
         this.view = view;
@@ -44,22 +50,22 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     }
 
     void init() {
-
         getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
         getOrgUnits();
+        compositeDisposable.add(homeRepository.eventModels()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> Log.d("EVENT DATA","events:"+data.size()),
+                        throwable -> view.renderError(throwable.getMessage())));
     }
 
-
-    void searchProgramByOrgUnit(ArrayList<String> ids) {
-//        compositeDisposable.add(homeRepository.homeViewModels(ids)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                        view.swapProgramData(),
-//                        throwable -> view.renderError(throwable.getMessage())));
-    }
 
     public void getPrograms(Date fromDate, Date toDate) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.dates = null;
+        this.period = null;
         compositeDisposable.add(homeRepository.programs(
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate))
@@ -71,13 +77,26 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     }
 
     public void getProgramsWithDates(List<Date> dates, Period period) {
-
+        this.fromDate = null;
+        this.toDate = null;
+        this.dates = dates;
+        this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.swapProgramData(),
                         throwable -> view.renderError(throwable.getMessage())));
+    }
+
+    public void getProgramsOrgUnit(String orgUnitQuery) {
+        compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view.swapProgramData(),
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
     }
 
     @Override
@@ -120,41 +139,52 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 ));
     }
 
-    private void renderTree(List<OrganisationUnitModel> myOrgs) {
 
-        TreeNode root = TreeNode.root();
-        ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
-        ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
+    private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
-        int maxLevel = -1;
-        int minLevel = 999;
-        for (OrganisationUnitModel orgUnit : myOrgs) {
-            maxLevel = orgUnit.level() > maxLevel ? orgUnit.level() : maxLevel;
-            minLevel = orgUnit.level() < minLevel ? orgUnit.level() : minLevel;
-            allTreeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
+        HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
+
+        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
+        allOrgs.addAll(myOrgs);
+        for (OrganisationUnitModel myorg : myOrgs) {
+            String[] path = myorg.path().split("/");
+            for (int i = myorg.level() - 1; i > 0; i--)
+                allOrgs.add(OrganisationUnitModel.builder()
+                        .uid(path[i])
+                        .level(i)
+                        .parent(path[i - 1])
+                        .name(path[i])
+                        .displayName(path[i])
+                        .displayShortName(path[i])
+                        .build());
         }
 
-        for (TreeNode treeNodeParent : allTreeNodes) {
-            for (TreeNode treeNodeChild : allTreeNodes) {
-                OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
-                OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
+        for (int i = 0; i < myOrgs.get(0).level(); i++) {
+            subLists.put(i + 1, new ArrayList<>());
+        }
 
-                if (childOU.parent() != null && childOU.parent().equals(parentOU.uid())) {
-                    treeNodeParent.addChildren(treeNodeChild);
-                    treeNodesToRemove.add(treeNodeChild);
+        //Separamos las orunits en listas por nivel
+        for (OrganisationUnitModel orgs : allOrgs) {
+            ArrayList<TreeNode> sublist = subLists.get(orgs.level());
+            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(view.getContext()));
+            treeNode.setSelectable(orgs.path() != null);
+            sublist.add(treeNode);
+            subLists.put(orgs.level(), sublist);
+        }
+
+        TreeNode root = TreeNode.root();
+        root.addChildren(subLists.get(1));
+
+        for (int level = myOrgs.get(0).level(); level > 1; level--) {
+            for (TreeNode treeNode : subLists.get(level - 1)) {
+                for (TreeNode treeNodeLevel : subLists.get(level)) {
+                    if (((OrganisationUnitModel) treeNodeLevel.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                        treeNode.addChild(treeNodeLevel);
                 }
             }
         }
 
-        allTreeNodes.remove(treeNodesToRemove);
-
-        for (TreeNode treeNode : allTreeNodes) {
-            root.addChild(treeNode);
-        }
-
-
         view.addTree(root);
-
 
     }
 

@@ -78,6 +78,7 @@
 
     <style name="checkBox" parent="Base.Theme.AppCompat">
         <item name="colorAccent">?colorPrimary</item>
+        <item name="android:colorAccent">?colorPrimary</item>
         <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
     </style>
 
