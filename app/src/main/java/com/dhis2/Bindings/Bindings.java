@@ -77,8 +77,7 @@ public class Bindings {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> textView.setText("events = "+data.size()),
-//                        data -> textView.setText(DateUtils.getInstance().formatDate(data.get(0).lastUpdated())),
+                        data -> textView.setText(DateUtils.getInstance().formatDate(data.get(0).lastUpdated())),
                         Timber::d);
     }
 

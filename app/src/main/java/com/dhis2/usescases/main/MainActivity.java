@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
@@ -13,6 +14,7 @@ import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
+import com.dhis2.usescases.appInfo.AppInfoFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
 
@@ -47,7 +49,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
-
+        binding.filter.setOnLongClickListener(view -> {
+            presenter.sync();
+            return true;
+        });
         binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
         binding.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
@@ -71,7 +76,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     protected void onResume() {
         super.onResume();
         presenter.init(this);
-        changeFragment();
+        changeFragment(R.id.menu_done_tasks);
     }
 
     @Override
@@ -133,10 +138,23 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     }
 
-
-    private void changeFragment() {
-        programFragment = new ProgramFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, programFragment, "HOME").commit();
+    @Override
+    public void changeFragment(int id) {
+        Fragment fragment = null;
+        String tag = null;
+        if (id == R.id.menu_done_tasks) {
+            fragment = new ProgramFragment();
+            programFragment = (ProgramFragment) fragment;
+            tag = "Done Task";
+            binding.filter.setVisibility(View.VISIBLE);
+        } else {
+            fragment = new AppInfoFragment();
+            tag = "Info";
+            binding.filter.setVisibility(View.GONE);
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
+        binding.title.setText(tag);
+        binding.drawerLayout.closeDrawers();
     }
 
     @Override

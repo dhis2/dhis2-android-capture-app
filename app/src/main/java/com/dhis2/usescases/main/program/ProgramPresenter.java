@@ -7,6 +7,7 @@ import android.util.Log;
 import com.dhis2.R;
 import com.dhis2.usescases.programDetail.ProgramDetailActivity;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
+import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
@@ -104,10 +105,13 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             Bundle bundle = new Bundle();
             bundle.putString("PROGRAM_UID", programModel.uid());
-            if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
-                view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
-            else
-                view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
+            if(programModel.displayFrontPageList()) {
+                if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
+                    view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
+                else
+                    view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
+            }else
+                view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         }
     }
 

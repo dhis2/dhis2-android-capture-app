@@ -25,24 +25,26 @@ import io.reactivex.Observable;
 class HomeRepositoryImpl implements HomeRepository {
 
     private final static String SELECT_EVENTS = String.format(Locale.US,
-            "SELECT * FROM %s WHERE %s.%s = 'programUid'",
+            "SELECT * FROM %s WHERE %s.%s = 'programUid' ORDER BY Event.lastUpdated DESC",
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM);
 
-    private final static String EVENT = "SELECT * FROM Event";
+    private final static String EVENT = "SELECT * FROM Event ORDER BY Event.lastUpdated DESC";
 
     private final static String PROGRAMS_EVENT_DATES = "" +
-            "SELECT * FROM Program " +
+            "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated " +
+            "FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid " +
-            "WHERE Event.lastUpdated BETWEEN '%s' AND '%s' " +
+            "WHERE event_updated BETWEEN '%s' AND '%s' " +
             "GROUP BY Program.uid";
 
     private final static String PROGRAMS_EVENT_DATES_2 = "" +
-            "SELECT * FROM Program " +
+            "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
+            "INNER JOIN Event ON Event.program = Program.uid "+
             "WHERE (%s) " +
             "GROUP BY Program.uid";
 
     private final static String SELECT =
-            "SELECT * FROM ((Program" +
+            "SELECT *, Program.uid, Event.uid AS event_uid FROM ((Program" +
                     " INNER JOIN Event ON Event.program = Program.uid)" +
                     " INNER JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid)" +
                     " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)";
@@ -55,7 +57,6 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final static String SELECT_ORG_UNITS =
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
-
 
     private final BriteDatabase briteDatabase;
 
@@ -79,12 +80,12 @@ class HomeRepositoryImpl implements HomeRepository {
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Program.lastUpdated", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            dateQuery.append(String.format(queryFormat, "event_updated", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
 
-        return briteDatabase.createQuery(ProgramModel.TABLE, String.format(PROGRAMS_EVENT_DATES_2, dateQuery))
+        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES_2, dateQuery))
                 .mapToList(ProgramModel::create);
     }
 
@@ -108,7 +109,8 @@ class HomeRepositoryImpl implements HomeRepository {
     @NonNull
     @Override
     public Observable<List<EventModel>> eventModels(String programUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENTS.replace("programUid", programUid))
+        String query = SELECT_EVENTS.replace("programUid", programUid);
+        return briteDatabase.createQuery(EventModel.TABLE, query)
                 .mapToList(EventModel::create);
     }
 

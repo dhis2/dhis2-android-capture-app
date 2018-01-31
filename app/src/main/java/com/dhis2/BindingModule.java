@@ -1,5 +1,7 @@
 package com.dhis2;
 
+import com.dhis2.usescases.appInfo.AppInfoFragment;
+import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.login.LoginContractsModule;
 import com.dhis2.usescases.main.program.ProgramContractModule;
@@ -33,5 +35,8 @@ abstract class BindingModule {
 
     @ContributesAndroidInjector(modules = ProgramContractModule.class)
     abstract ProgramFragment programFragment();
+
+    @ContributesAndroidInjector(modules = InfoModule.class)
+    abstract AppInfoFragment infoFragment();
 
 }

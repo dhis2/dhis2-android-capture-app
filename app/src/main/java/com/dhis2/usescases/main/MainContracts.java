@@ -30,6 +30,8 @@ public final class MainContracts {
 
         void onLockClick(android.view.View view);
 
+        void changeFragment(int id);
+
      /*   @NonNull
         @UiThread
         void addTree(TreeNode treeNode);*/
@@ -50,6 +52,8 @@ public final class MainContracts {
         void blockSession(String pin);
 
         void showFilter();
+
+        void changeFragment(int id);
     }
 
     interface Interactor extends AbstractActivityContracts.Interactor {

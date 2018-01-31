@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="com.dhis2.R"/>
         <variable
             name="theme"
             type="android.content.res.Resources.Theme" />
@@ -47,6 +47,7 @@
                     app:srcCompat="@drawable/ic_menu" />
 
                 <TextView
+                    android:id="@+id/title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -97,6 +98,34 @@
                     android:textColor="@color/white_dfd"
                     android:textSize="21sp" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/block_button"
+                    android:layout_below="@id/user_info"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/menu_done_tasks"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Done Tasks"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorAccent"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_done_tasks)}"/>
+
+                    <TextView
+                        android:id="@+id/menu_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="App Info"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorAccent"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"/>
+
+
+                </LinearLayout>
+
                 <Button
                     android:id="@+id/logout_button"
                     android:layout_width="match_parent"
@@ -109,6 +138,7 @@
                     android:textColor="@color/white_faf" />
 
                 <Button
+                    android:id="@+id/block_button"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_above="@+id/logout_button"
@@ -143,14 +173,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/indicator_dots"
+                app:indicatorType="fillWithAnimation"
                 app:keypadButtonSize="72dp"
                 app:keypadDeleteButtonSize="24dp"
                 app:keypadHorizontalSpacing="36dp"
                 app:keypadShowDeleteButton="true"
                 app:keypadTextColor="?colorAccent"
                 app:keypadVerticalSpacing="24dp"
-                app:pinLength="4"
-                app:indicatorType="fillWithAnimation"/>
+                app:pinLength="4" />
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>
 
