@@ -43,6 +43,7 @@
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
+        <activity android:name=".usescases.enrollment.EnrollmentActivity" />
 
         <service
             android:name=".data.service.SyncService"
