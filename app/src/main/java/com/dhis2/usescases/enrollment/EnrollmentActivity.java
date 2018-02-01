@@ -32,7 +32,7 @@ public class EnrollmentActivity extends ActivityGlobalAbstract implements Enroll
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init();
+        presenter.init(null);
     }
 
     @Override

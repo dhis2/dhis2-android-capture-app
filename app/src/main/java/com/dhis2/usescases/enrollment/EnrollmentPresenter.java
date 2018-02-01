@@ -27,7 +27,7 @@ public class EnrollmentPresenter implements EnrollmentContracts.Presenter {
     @Override
     public void init(String programUid) {
         Observable.zip(metadataRepository.getProgramTrackedEntityAttributes(programUid),
-                metadataRepository.getProgramWithId(programUid),EnrollmentZipData::new)
+                metadataRepository.getProgramWithId(programUid),EnrollmentZipData::createZipData)
                 .observeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe();
