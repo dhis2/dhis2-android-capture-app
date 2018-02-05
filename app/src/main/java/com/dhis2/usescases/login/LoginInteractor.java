@@ -3,6 +3,7 @@ package com.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -115,6 +116,9 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
     @Override
     public void sync() {
+
+//        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+
         //TODO: TEI sync not working. Get all TEI uids and call external method before SyncService starts
         userManager.getD2().retrofit().create(TESTTrackedEntityInstanceService.class).trackEntityInstances().enqueue(new Callback<TEIResponse>() {
             @Override
@@ -173,16 +177,19 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
             SystemInfo systemInfo = (SystemInfo) response.body();
             Date serverDate = systemInfo.serverDate();
 
-            for (int i = 0; i < 1; i++) {
-
-                response = new TrackedEntityInstanceEndPointCall(
-                        userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
-                        databaseAdapter,
-                        trackedEntityInstanceHandler,
-                        resourceHandler,
-                        serverDate,
-                        trackedEntityInstances.get(0).getTrackedEntityInstance()
-                ).call();
+            for (int i = 0; i < trackedEntityInstances.size(); i++) {
+                try {
+                    response = new TrackedEntityInstanceEndPointCall(
+                            userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
+                            databaseAdapter,
+                            trackedEntityInstanceHandler,
+                            resourceHandler,
+                            serverDate,
+                            trackedEntityInstances.get(i).getTrackedEntityInstance()
+                    ).call();
+                }catch (SQLiteConstraintException e){
+                    Log.d("TEI ERROR",e.getMessage());
+                }
             }
             transaction.setSuccessful();
 
@@ -240,7 +247,7 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
 
     //TODO: Currentl, SDK not providing TEI sync. This call is used for user android in android-current
     public interface TESTTrackedEntityInstanceService {
-        @GET("28/trackedEntityInstances?ou=DiszpKrYNg8&paging=false&fields=trackedEntityInstance")
+        @GET("28/trackedEntityInstances?ou=ImspTQPwCqd&ouMode=ACCESSIBLE&totalPages=true&paging=false&fields=trackedEntityInstance")
         Call<TEIResponse> trackEntityInstances();
     }
 

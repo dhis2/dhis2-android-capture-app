@@ -51,10 +51,9 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(), throwable -> {
+                .subscribe(update(SyncService.SyncState.METADATA), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
-
     }
 
     @Override
@@ -66,7 +65,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(), throwable -> {
+                .subscribe(update(SyncService.SyncState.EVENTS), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
     }
@@ -80,7 +79,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(), throwable -> {
+                .subscribe(update(SyncService.SyncState.TEI), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
     }
@@ -103,15 +102,15 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(750)));
+        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(600)));
     }
 
 
     @NonNull
-    private Consumer<SyncResult> update() {
+    private Consumer<SyncResult> update(SyncService.SyncState syncState) {
         return result -> {
             if (syncView != null) {
-                syncView.update().accept(result);
+                syncView.update(syncState).accept(result);
             }
         };
     }

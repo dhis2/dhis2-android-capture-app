@@ -18,6 +18,8 @@ import io.reactivex.functions.Consumer;
 
 public class SyncService extends Service implements SyncView {
     private final static int NOTIFICATION_ID = 0xdeadbeef;
+    private final static int NOTIFICATION_ID_EVENT = 0xDEADBEEE;
+    private final static int NOTIFICATION_ID_TEI = 0xDEADBEED;
 
     @Inject
     SyncPresenter syncPresenter;
@@ -31,8 +33,6 @@ public class SyncService extends Service implements SyncView {
     enum SyncState{
         METADATA, EVENTS, TEI
     }
-
-    SyncState currentSyncState;
 
     @Override
     public void onCreate() {
@@ -54,7 +54,6 @@ public class SyncService extends Service implements SyncView {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (!syncResult.inProgress()) {
-            currentSyncState = SyncState.METADATA;
             syncPresenter.sync();
         }
 
@@ -69,7 +68,7 @@ public class SyncService extends Service implements SyncView {
 
     @NonNull
     @Override
-    public Consumer<SyncResult> update() {
+    public Consumer<SyncResult> update(SyncState syncState) {
         return result -> {
             Notification notification;
             syncResult = result;
@@ -78,34 +77,45 @@ public class SyncService extends Service implements SyncView {
                 notification =new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
 //                        .setContentTitle(getString(R.string.sync_title))
-                        .setContentTitle(getTextForNotification())
+                        .setContentTitle(getTextForNotification(syncState))
                         .setContentText(getString(R.string.sync_text))
                         .setProgress(0, 0, true)
                         .setOngoing(true)
                         .build();
             } else if (result.isSuccess()) {
-                nextSync();
+                next(syncState);
                 notification = new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.ic_sync_black)
-                        .setContentTitle(getString(R.string.sync_complete_title))
+                        .setSmallIcon(R.drawable.ic_done_black)
+                        .setContentTitle(getTextForNotification(syncState)+" "+getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
-                nextSync();
+                next(syncState);
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_error_black)
-                        .setContentTitle(getString(R.string.sync_error_title))
+                        .setContentTitle(getTextForNotification(syncState)+" "+getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))
                         .build();
             } else {
                 throw new IllegalStateException();
             }
-            notificationManager.notify(NOTIFICATION_ID, notification);
+            notificationManager.notify(getNotId(syncState), notification);
         };
     }
 
-    public String getTextForNotification(){
-        switch (currentSyncState){
+    private void next(SyncState syncState) {
+        switch (syncState){
+            case METADATA:
+                syncPresenter.syncEvents();
+                break;
+            case EVENTS:
+                syncPresenter.syncTrackedEntities();
+                break;
+        }
+    }
+
+    public String getTextForNotification(SyncState syncState){
+        switch (syncState){
             case METADATA:
                 return getString(R.string.sync_metadata);
             case EVENTS:
@@ -115,18 +125,15 @@ public class SyncService extends Service implements SyncView {
         }
     }
 
-    private void nextSync(){
-        switch (currentSyncState){
+    public int getNotId(SyncState syncState){
+        switch (syncState){
             case METADATA:
-                currentSyncState = SyncState.EVENTS;
-                syncPresenter.syncEvents();
-                break;
+                return NOTIFICATION_ID;
             case EVENTS:
-                currentSyncState = SyncState.TEI;
-                syncPresenter.syncTrackedEntities();
-                break;
+                return NOTIFICATION_ID_EVENT;
             case TEI:
-                break;
+                return NOTIFICATION_ID_TEI;
         }
+        return -1;
     }
 }

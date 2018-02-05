@@ -8,5 +8,5 @@ import io.reactivex.functions.Consumer;
 interface SyncView{
 
     @NonNull
-    Consumer<SyncResult> update();
+    Consumer<SyncResult> update(SyncService.SyncState syncState);
 }

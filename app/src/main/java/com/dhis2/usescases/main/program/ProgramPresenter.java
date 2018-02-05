@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> Log.d("EVENT DATA","events:"+data.size()),
+                        data -> Log.d("EVENT DATA", "events:" + data.size()),
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
@@ -105,12 +106,12 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             Bundle bundle = new Bundle();
             bundle.putString("PROGRAM_UID", programModel.uid());
-            if(programModel.displayFrontPageList()) {
+            if (programModel.displayFrontPageList()) {
                 if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
                     view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
                 else
                     view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
-            }else
+            } else
                 view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         }
     }
@@ -152,16 +153,21 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
         allOrgs.addAll(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
             String[] path = myorg.path().split("/");
-            for (int i = myorg.level() - 1; i > 0; i--)
-                allOrgs.add(OrganisationUnitModel.builder()
+            for (int i = myorg.level() - 1; i > 0; i--) {
+                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
                         .uid(path[i])
                         .level(i)
                         .parent(path[i - 1])
                         .name(path[i])
                         .displayName(path[i])
                         .displayShortName(path[i])
-                        .build());
+                        .build();
+                if (!allOrgs.contains(orgToAdd))
+                    allOrgs.add(orgToAdd);
+            }
         }
+
+        Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
 
         for (int i = 0; i < myOrgs.get(0).level(); i++) {
             subLists.put(i + 1, new ArrayList<>());
