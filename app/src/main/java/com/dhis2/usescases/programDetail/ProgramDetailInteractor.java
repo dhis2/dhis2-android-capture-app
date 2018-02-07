@@ -46,7 +46,6 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
     private Call<TrackedEntityObject> currentCall;
 
-    @Inject
     ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;

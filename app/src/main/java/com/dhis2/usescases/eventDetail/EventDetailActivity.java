@@ -29,20 +29,19 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     ActivityEventDetailBinding binding;
     @Inject
-    EventDetailPresenter presenter;
+    EventDetailContracts.Presenter presenter;
 
     private String eventUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).getUserComponent().plus(new EventDetailModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new EventDetailModule()).inject(this);
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
         eventUid = getIntent().getStringExtra("EVENT_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_detail);
         binding.toolbarTitle.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
         binding.setPresenter(presenter);
-
     }
 
     @Override

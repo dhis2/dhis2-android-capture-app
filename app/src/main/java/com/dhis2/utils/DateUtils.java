@@ -1,5 +1,7 @@
 package com.dhis2.utils;
 
+import android.support.annotation.NonNull;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -167,6 +169,16 @@ public class DateUtils {
         calendar.add(Calendar.YEAR, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         return calendar.getTime();
+    }
+
+    @NonNull
+    public static SimpleDateFormat uiDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat databaseDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
     }
 
     /**********************

@@ -1,48 +1,46 @@
 package com.dhis2;
 
-import android.app.Application;
-
 import com.dhis2.data.database.DbModule;
 import com.dhis2.data.metadata.MetadataModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.server.ServerComponent;
 import com.dhis2.data.server.ServerModule;
+import com.dhis2.usescases.login.LoginComponent;
+import com.dhis2.usescases.login.LoginModule;
+import com.dhis2.usescases.splash.SplashComponent;
+import com.dhis2.usescases.splash.SplashModule;
+import com.dhis2.utils.UtilsModule;
 
 import javax.inject.Singleton;
 
-import dagger.BindsInstance;
 import dagger.Component;
-import dagger.android.support.AndroidSupportInjectionModule;
 
 /**
  * Created by ppajuelo on 10/10/2017.
  */
 @Singleton
-@Component(modules = {AndroidSupportInjectionModule.class,
-        AppModule.class,
-        DbModule.class,
-        MetadataModule.class,
-        SchedulerModule.class,
-        BindingModule.class})
+@Component(modules = {
+        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class, MetadataModule.class
+})
 public interface AppComponent {
 
     @Component.Builder
     interface Builder {
-        @BindsInstance
-        Builder application(Application application);
-
-        Builder database(DbModule db);
-
-        Builder scheduler(SchedulerModule schedulerModule);
-
-        Builder metadata(MetadataModule metadataModule);
-
+        Builder appModule(AppModule appModule);
+        Builder dbModule(DbModule dbModule);
+        Builder schedulerModule (SchedulerModule schedulerModule);
+        Builder utilModule(UtilsModule utilsModule);
+        Builder metadataModule(MetadataModule metadataModule);
         AppComponent build();
     }
 
+    //injection targets
     void inject(App app);
 
+    //sub-components
     ServerComponent plus(ServerModule serverModule);
 
+    SplashComponent plus(SplashModule module);
 
+    LoginComponent plus(LoginModule loginContractsModule);
 }

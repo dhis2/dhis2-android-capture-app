@@ -51,7 +51,7 @@ public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implemen
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).getUserComponent().plus(new ProgramDetailTabletModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramDetailTabletModule()).inject(this);
 
         super.onCreate(savedInstanceState);
         //homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");

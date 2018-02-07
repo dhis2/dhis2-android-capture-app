@@ -36,7 +36,6 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     private TrackedEntityInstance trackedEntityInstance;
     private String programUid;
 
-    @Inject
     public TeiDashboardInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;

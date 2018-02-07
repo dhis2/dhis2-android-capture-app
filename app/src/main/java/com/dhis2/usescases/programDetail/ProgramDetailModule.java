@@ -15,18 +15,20 @@ import dagger.Provides;
 /**
  * Created by ppajuelo on 31/10/2017.
  */
+@PerActivity
 @Module
 public class ProgramDetailModule {
 
 
     @Provides
+    @PerActivity
     ProgramDetailContractModule.View provideView(ProgramDetailActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    ProgramDetailContractModule.Presenter providesPresenter(ProgramDetailInteractor interactor) {
+    ProgramDetailContractModule.Presenter providesPresenter(ProgramDetailContractModule.Interactor interactor) {
         return new ProgramDetailPresenter(interactor);
     }
 
@@ -40,11 +42,12 @@ public class ProgramDetailModule {
 
     @Provides
     @PerActivity
-    ProgramDetailAdapter provideProgramDetailAdapter(ProgramDetailPresenter presenter) {
+    ProgramDetailAdapter provideProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter) {
         return new ProgramDetailAdapter(presenter);
     }
 
     @Provides
+    @PerActivity
     ProgramRepository homeRepository(BriteDatabase briteDatabase) {
         return new ProgramRepositoryImpl(briteDatabase);
     }

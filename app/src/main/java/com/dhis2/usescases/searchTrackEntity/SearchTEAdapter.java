@@ -22,12 +22,12 @@ import java.util.List;
 
 public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
 
-    private SearchTEPresenter presenter;
+    private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityInstance> trackedEntityInstances;
     private List<TrackedEntityAttributeModel> attributeModels;
     private List<ProgramModel> programModels;
 
-    public SearchTEAdapter(SearchTEPresenter presenter) {
+    public SearchTEAdapter(SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
         this.trackedEntityInstances = new ArrayList<>();
     }

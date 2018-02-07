@@ -24,7 +24,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private String teUid;
     private String programUid;
 
-    @Inject
     public TeiDashboardPresenter() {
 
     }

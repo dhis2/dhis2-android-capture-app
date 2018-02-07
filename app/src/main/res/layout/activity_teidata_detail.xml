@@ -22,7 +22,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailPresenter" />
+            type="com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailContracts.Presenter" />
     </data>
 
     <android.support.constraint.ConstraintLayout

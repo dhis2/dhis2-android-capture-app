@@ -1,5 +1,13 @@
 package com.dhis2.data.forms;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
-interface FormPresenter/* extends Presenter<FormView> */{
+interface FormPresenter {
+
+    @UiThread
+    void onAttach(@NonNull FormView view);
+
+    @UiThread
+    void onDetach();
 }

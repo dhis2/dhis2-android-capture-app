@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.login.LoginPresenter" />
+            type="com.dhis2.usescases.login.LoginContracts.Presenter" />
 
     </data>
 

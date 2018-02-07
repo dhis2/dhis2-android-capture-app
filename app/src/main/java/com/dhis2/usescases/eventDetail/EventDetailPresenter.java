@@ -30,7 +30,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private final D2 d2;
     private EventDetailContracts.View view;
 
-    @Inject
     public EventDetailPresenter(D2 d2, MetadataRepository metadataRepository) {
 
         this.d2 = d2;

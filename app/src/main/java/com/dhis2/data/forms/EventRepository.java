@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
@@ -89,7 +90,7 @@ class EventRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = eventProgram()
-                .switchMap(program -> Flowable.zip(rulesRepository.rules(program),
+                .switchMap(program -> Flowable.zip(rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program), (rules, variables) ->
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
@@ -108,37 +109,37 @@ class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<String> title() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(TITLE_TABLES, SELECT_TITLE, eventUid)
-                .mapToOne(cursor -> cursor.getString(0) + " - " + cursor.getString(1)))
+                .mapToOne(cursor -> cursor.getString(0) + " - " + cursor.getString(1)).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
     public Flowable<String> reportDate() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid)
-                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0)))
+                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(EventModel.TABLE, SELECT_EVENT_STATUS, eventUid)
-                .mapToOne(cursor -> ReportStatus.fromEventStatus(EventStatus.valueOf(cursor.getString(0)))))
+                .mapToOne(cursor -> ReportStatus.fromEventStatus(EventStatus.valueOf(cursor.getString(0)))).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid)
                 .mapToList(cursor -> mapToFormSectionViewModels(eventUid, cursor))
-                .distinctUntilChanged());
+                .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
@@ -174,8 +175,8 @@ class EventRepository implements FormRepository {
 
     @NonNull
     private Flowable<String> eventProgram() {
-        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
-                .mapToOne(cursor -> cursor.getString(0)));
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
+                .mapToOne(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

@@ -1,5 +1,6 @@
 package com.dhis2.usescases.appInfo;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,13 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentInfoBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -29,10 +30,17 @@ public class AppInfoFragment extends FragmentGlobalAbstract {
     @Inject
     InfoRepository infoRepository;
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((Components) getActivity().getApplicationContext()).userComponent()
+                .plus(new InfoModule()).inject(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_info, container, false);
         compositeDisposable = new CompositeDisposable();
         return binding.getRoot();

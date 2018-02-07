@@ -6,8 +6,6 @@ import android.app.AlertDialog;
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
-import javax.inject.Inject;
-
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.disposables.CompositeDisposable;
@@ -25,7 +23,6 @@ public class RxDialog {
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final Activity activity;
 
-    @Inject
     public RxDialog(final ActivityGlobalAbstract activity) {
         this.activity = activity;
 

@@ -14,7 +14,6 @@ import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.Period;
@@ -41,20 +40,20 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     private final String MONTHLY = "Monthly";
     private final String YEARLY = "Yearly";
     ActivityProgramDetailBinding binding;
+
     @Inject
     ProgramDetailContractModule.Presenter presenter;
-    //HomeViewModel homeViewModel;
-    ProgramModel programModel;
+
     @Inject
     ProgramDetailAdapter adapter;
     private Period currentPeriod = Period.DAILY;
+    ProgramModel programModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).getUserComponent().plus(new ProgramDetailModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramDetailModule()).inject(this);
 
         super.onCreate(savedInstanceState);
-//        homeViewModel = (HomeViewModel) getIntent().getSerializableExtra("PROGRAM");
         String programId = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);

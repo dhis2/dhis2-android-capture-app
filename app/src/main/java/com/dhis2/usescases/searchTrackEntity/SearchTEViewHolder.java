@@ -39,7 +39,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(SearchTEPresenter presenter,
+    public void bind(SearchTEContractsModule.Presenter presenter,
                      TrackedEntityInstance entityInstance,
                      List<String> attributes,
                      List<TrackedEntityAttributeModel> attributeModels,

@@ -34,7 +34,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     ActivitySearchBinding binding;
     @Inject
-    SearchTEPresenter presenter;
+    SearchTEContractsModule.Presenter presenter;
 
     List<TrackedEntityInstance> trackedEntityInstanceList = new ArrayList<>();
     private SearchTEAdapter searchTEAdapter;
@@ -42,7 +42,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        ((App) getApplicationContext()).getUserComponent().plus(new SearchTEModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule()).inject(this);
 
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);

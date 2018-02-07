@@ -58,6 +58,8 @@ public class SearchTEContractsModule {
         void onTEIClick(String TEIuid);
 
         void getNextPage(int page);
+
+        TrackedEntityModel getTrackedEntityName();
     }
 
     public interface Interactor {

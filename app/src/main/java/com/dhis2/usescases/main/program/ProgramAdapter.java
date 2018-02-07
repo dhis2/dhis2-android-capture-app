@@ -22,9 +22,9 @@ import java.util.List;
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     private List<ProgramModel> programList;
-    private ProgramPresenter presenter;
+    private ProgramContract.Presenter presenter;
 
-    public ProgramAdapter(ProgramPresenter presenter) {
+    public ProgramAdapter(ProgramContract.Presenter presenter) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
     }

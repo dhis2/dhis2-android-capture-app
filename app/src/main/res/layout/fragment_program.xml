@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.program.ProgramContractModule.Presenter" />
+            type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
 
     </data>
 

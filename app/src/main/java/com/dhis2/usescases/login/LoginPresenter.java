@@ -13,18 +13,23 @@ import com.dhis2.utils.Constants;
 
 import javax.inject.Inject;
 
-public class LoginPresenter implements LoginContractsModule.Presenter {
+public class LoginPresenter implements LoginContracts.Presenter {
 
-    private LoginContractsModule.View view;
-    private LoginContractsModule.Interactor interactor;
+    private final ConfigurationRepository configurationRepository;
+    private LoginContracts.View view;
+    private LoginContracts.Interactor interactor;
 
 
     public ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
 
-    @Inject
-    LoginPresenter(LoginContractsModule.View view, ConfigurationRepository configurationRepository) {
+    LoginPresenter(ConfigurationRepository configurationRepository) {
+      this.configurationRepository = configurationRepository;
+    }
+
+    @Override
+    public void init(LoginContracts.View view) {
         this.view = view;
         this.interactor = new LoginInteractor(view, configurationRepository);
     }
@@ -49,6 +54,22 @@ public class LoginPresenter implements LoginContractsModule.Presenter {
         view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_QR_SCANNER);
     }
 
+    @Override
+    public ObservableField<Boolean> isServerUrlSet() {
+        return isServerUrlSet;
+    }
+
+    @Override
+    public ObservableField<Boolean> isUserNameSet() {
+        return isUserNameSet;
+    }
+
+    @Override
+    public ObservableField<Boolean> isUserPassSet() {
+        return isServerUrlSet;
+    }
+
+    @Override
     public void unlockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);

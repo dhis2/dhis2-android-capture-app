@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.forms.FormRepository;
 import com.dhis2.utils.Result;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -82,7 +83,7 @@ final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private Flowable<RuleEnrollment> queryEnrollment(
             @NonNull List<RuleAttributeValue> attributeValues) {
-        return toV2Flowable(briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
                 .mapToOne(cursor -> {
                     Date enrollmentDate = parseDate(cursor.getString(2));
                     Date incidentDate = cursor.isNull(1) ?
@@ -92,16 +93,16 @@ final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
 
                     return RuleEnrollment.create(cursor.getString(0),
                             incidentDate, enrollmentDate, status, attributeValues);
-                }));
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
-        return toV2Flowable(briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
+        return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
                 TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
-                ));
+                ).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

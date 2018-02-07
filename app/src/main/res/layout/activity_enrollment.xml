@@ -3,9 +3,12 @@
 
     <data></data>
 
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/dashboard"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        tools:context="org.hisp.dhis.android.dataentry.form.FormActivity" />
 
-    </android.support.constraint.ConstraintLayout>
 </layout>

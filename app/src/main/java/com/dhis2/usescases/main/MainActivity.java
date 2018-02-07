@@ -20,27 +20,23 @@ import com.dhis2.usescases.main.program.ProgramFragment;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.functions.Consumer;
 
 
-public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View, HasSupportFragmentInjector {
+public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
     ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
-    @Inject
-    DispatchingAndroidInjector<android.support.v4.app.Fragment> dispatchingAndroidInjector;
+
     private ProgramFragment programFragment;
 
-    /*Lifecycle methods*/
+    //-------------------------------------
+    //region LIFECYCLE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        AndroidInjection.inject(this);
-        ((App) getApplicationContext()).getUserComponent().plus(new MainContractsModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
         if (getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         else
@@ -85,7 +81,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onPause();
     }
 
-    /*End of lifecycle methods*/
+    //endregion
 
     /*User info methods*/
 
@@ -155,11 +151,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
         binding.title.setText(tag);
         binding.drawerLayout.closeDrawers();
-    }
-
-    @Override
-    public AndroidInjector<android.support.v4.app.Fragment> supportFragmentInjector() {
-        return dispatchingAndroidInjector;
     }
 
 }

@@ -2,7 +2,6 @@ package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.view.ViewTreeObserver;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -11,7 +10,6 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import javax.inject.Inject;
 
@@ -19,12 +17,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     ActivityTeidataDetailBinding binding;
 
     @Inject
-    TeiDataDetailPresenter presenter;
+    TeiDataDetailContracts.Presenter presenter;
     private boolean isEditable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((App) getApplicationContext()).getUserComponent().plus(new TeiDataDetailModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new TeiDataDetailModule()).inject(this);
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_teidata_detail);

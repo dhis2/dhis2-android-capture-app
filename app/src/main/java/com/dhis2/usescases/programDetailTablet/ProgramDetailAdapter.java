@@ -29,14 +29,13 @@ import javax.inject.Inject;
 
 public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailViewHolder> {
 
-    private ProgramDetailPresenter presenter;
+    private ProgramDetailContractModule.Presenter presenter;
     private List<TrackedEntityInstance> trackedEntityInstances;
     private List<ProgramTrackedEntityAttributeModel> attributesToShow;
     private ProgramModel program;
     private List<OrganisationUnitModel> orgUnits;
 
-    @Inject
-    public ProgramDetailAdapter(ProgramDetailPresenter presenter) {
+    public ProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter) {
         this.presenter = presenter;
         this.trackedEntityInstances = new ArrayList<>();
     }

@@ -5,13 +5,14 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
@@ -68,9 +69,9 @@ final class EnrollmentRepository implements DataEntryRepository {
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
-                .mapToList(this::transform));
+                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

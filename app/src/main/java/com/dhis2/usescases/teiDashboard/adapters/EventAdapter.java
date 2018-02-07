@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemEventBinding;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 
 import org.hisp.dhis.android.core.event.Event;
@@ -23,10 +24,10 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
-    private final TeiDashboardPresenter presenter;
+    private final TeiDashboardContracts.Presenter presenter;
     private List<Event> events;
 
-    public EventAdapter(TeiDashboardPresenter presenter, List<ProgramStageModel> programStageList, List<Event> eventList) {
+    public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<Event> eventList) {
         this.events = new ArrayList<>();
         for (Event event : eventList)
             if (event.status() == EventStatus.ACTIVE || event.status() == EventStatus.COMPLETED)

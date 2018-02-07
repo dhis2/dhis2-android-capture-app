@@ -21,7 +21,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     private String programId;
     public ProgramModel program;
 
-    @Inject
     ProgramDetailPresenter(ProgramDetailContractModule.Interactor interactor) {
         this.interactor = interactor;
     }

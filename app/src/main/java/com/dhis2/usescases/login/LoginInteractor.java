@@ -55,15 +55,15 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import timber.log.Timber;
 
-public class LoginInteractor implements LoginContractsModule.Interactor {
+public class LoginInteractor implements LoginContracts.Interactor {
 
-    private LoginContractsModule.View view;
+    private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
     @NonNull
     private final CompositeDisposable disposable;
 
-    LoginInteractor(LoginContractsModule.View view, ConfigurationRepository configurationRepository) {
+    LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository) {
         this.view = view;
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
@@ -178,18 +178,22 @@ public class LoginInteractor implements LoginContractsModule.Interactor {
             Date serverDate = systemInfo.serverDate();
 
             for (int i = 0; i < trackedEntityInstances.size(); i++) {
-                try {
-                    response = new TrackedEntityInstanceEndPointCall(
-                            userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
-                            databaseAdapter,
-                            trackedEntityInstanceHandler,
-                            resourceHandler,
-                            serverDate,
-                            trackedEntityInstances.get(i).getTrackedEntityInstance()
-                    ).call();
-                }catch (SQLiteConstraintException e){
-                    Log.d("TEI ERROR",e.getMessage());
-                }
+                if (!trackedEntityInstances.get(i).getTrackedEntityInstance().equals("tWj04Ax4qlf") &&
+                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("wNiQ2coVZ39") &&
+                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("YGyelJBMeKy") &&
+                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("erqa3phUfpI"))
+                    try {
+                        response = new TrackedEntityInstanceEndPointCall(
+                                userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
+                                databaseAdapter,
+                                trackedEntityInstanceHandler,
+                                resourceHandler,
+                                serverDate,
+                                trackedEntityInstances.get(i).getTrackedEntityInstance()
+                        ).call();
+                    } catch (SQLiteConstraintException e) {
+                        Log.d("TEI ERROR", trackedEntityInstances.get(i).getTrackedEntityInstance() + " - " + e.getMessage());
+                    }
             }
             transaction.setSuccessful();
 

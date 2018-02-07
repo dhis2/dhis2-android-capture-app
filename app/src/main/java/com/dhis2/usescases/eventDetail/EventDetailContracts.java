@@ -19,7 +19,7 @@ public class EventDetailContracts {
         void setData(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList, MetadataRepository metadataRepository);
     }
 
-    interface Presenter {
+    public interface Presenter {
         void init(EventDetailContracts.View view);
 
         void getEventData(String eventUid);

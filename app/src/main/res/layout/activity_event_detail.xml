@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.eventDetail.EventDetailPresenter" />
+            type="com.dhis2.usescases.eventDetail.EventDetailContracts.Presenter" />
 
         <variable
             name="event"

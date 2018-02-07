@@ -38,14 +38,14 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     ActivityDashboardMobileBinding binding;
     @Inject
-    TeiDashboardPresenter presenter;
+    TeiDashboardContracts.Presenter presenter;
 
     DashboardProgramModel programModel;
     TrackedEntityInstance trackedEntityInstance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).getUserComponent().plus(new TeiDashboardModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule()).inject(this);
         if (getResources().getBoolean(R.bool.is_tablet))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         else
@@ -112,7 +112,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return binding.toolbarTitle.getText().toString();
     }
 
-    public TeiDashboardPresenter getPresenter() {
+    public TeiDashboardContracts.Presenter getPresenter() {
         return presenter;
     }
 

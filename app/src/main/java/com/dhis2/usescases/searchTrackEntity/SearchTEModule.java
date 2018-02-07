@@ -13,10 +13,12 @@ import dagger.Provides;
 /**
  * Created by ppajuelo on 02/11/2017.
  */
+@PerActivity
 @Module
 public class SearchTEModule {
 
     @Provides
+    @PerActivity
     SearchTEContractsModule.View provideView(SearchTEActivity searchTEActivity) {
         return searchTEActivity;
     }
@@ -34,6 +36,7 @@ public class SearchTEModule {
     }
 
     @Provides
+    @PerActivity
     SearchRepository searchRepository(BriteDatabase briteDatabase) {
         return new SearchRepositoryImpl(briteDatabase);
     }

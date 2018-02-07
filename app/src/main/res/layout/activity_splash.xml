@@ -3,9 +3,6 @@
 
     <data>
 
-        <variable
-            name="presenter"
-            type="com.dhis2.usescases.splash.SplashPresenter" />
     </data>
 
     <RelativeLayout
@@ -15,10 +12,11 @@
 
         <RelativeLayout
             android:id="@+id/logo"
-            android:transitionName="logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:transitionName="logo">
+
             <include layout="@layout/logo_dhis" />
         </RelativeLayout>
 

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.user.UserRepository;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -28,7 +29,9 @@ final class DataValueStore implements DataEntryStore {
     @NonNull
     private final BriteDatabase briteDatabase;
 
-
+   /* @NonNull
+    private final CurrentDateProvider currentDateProvider;
+*/
     @NonNull
     private final Flowable<UserCredentialsModel> userCredentials;
 
@@ -37,8 +40,10 @@ final class DataValueStore implements DataEntryStore {
 
     DataValueStore(@NonNull BriteDatabase briteDatabase,
             @NonNull UserRepository userRepository,
+//            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
+//        this.currentDateProvider = currentDateProvider;
         this.eventUid = eventUid;
 
         // we want to re-use results of the user credentials query
@@ -95,8 +100,8 @@ final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(cursor -> EventModel.create(cursor)).take(1))
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
+                .mapToOne(cursor -> EventModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
                             State.ERROR.equals(eventModel.state())) {

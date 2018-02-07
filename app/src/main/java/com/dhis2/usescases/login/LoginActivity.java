@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -19,25 +20,29 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
-public class LoginActivity extends ActivityGlobalAbstract implements LoginContractsModule.View {
+public class LoginActivity extends ActivityGlobalAbstract implements LoginContracts.View {
 
     ActivityLoginBinding binding;
 
     @Inject
-    LoginPresenter presenter;
+    LoginContracts.Presenter presenter;
 
     List<String> users;
     List<String> urls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
+        LoginComponent loginComponent = ((App) getApplicationContext()).loginComponent();
+        if (loginComponent == null) {
+            // in case if we don't have cached presenter
+            loginComponent = ((App) getApplicationContext()).createLoginComponent();
+        }
+        loginComponent.inject(this);
+
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
@@ -47,6 +52,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onResume() {
         super.onResume();
+        presenter.init(this);
     }
 
 

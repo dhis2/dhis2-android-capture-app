@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 
 import static com.dhis2.utils.Preconditions.isNull;
 
-
 /**
  * A TabLayout that automatically hides when the attached adapter has less than 2 elements
  */

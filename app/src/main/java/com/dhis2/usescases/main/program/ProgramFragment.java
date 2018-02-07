@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -32,18 +34,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContractModule.View, OrgUnitInterface {
+public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.View, OrgUnitInterface {
 
     public FragmentProgramBinding binding;
     @Inject
-    ProgramPresenter presenter;
+    ProgramContract.Presenter presenter;
 
     private Period currentPeriod = Period.DAILY;
 
@@ -52,10 +53,17 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     //-------------------------------------------
     //region LIFECYCLE
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((Components) getActivity().getApplicationContext()).userComponent()
+                .plus(new ProgramModule()).inject(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        AndroidSupportInjection.inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
         return binding.getRoot();
@@ -132,7 +140,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void setUpRecycler() {
 
         binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
-        presenter.init();
+        presenter.init(this);
     }
 
     @Override

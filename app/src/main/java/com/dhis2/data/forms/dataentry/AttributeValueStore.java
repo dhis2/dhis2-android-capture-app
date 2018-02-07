@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import java.util.Calendar;
 import java.util.Locale;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -50,14 +51,17 @@ final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement insertStatement;
 
+ /*   @NonNull
+    private final CurrentDateProvider currentDateProvider;*/
 
     @NonNull
     private final String enrollment;
 
-    AttributeValueStore(@NonNull BriteDatabase briteDatabase,
-                        @NonNull String enrollment) {
+    AttributeValueStore(@NonNull BriteDatabase briteDatabase
+                        /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
+//        this.currentDateProvider = currentDateProvider;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);
@@ -114,8 +118,8 @@ final class AttributeValueStore implements DataEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return toV2Flowable(briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1))
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {

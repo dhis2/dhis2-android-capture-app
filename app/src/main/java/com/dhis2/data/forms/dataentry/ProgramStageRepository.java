@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
@@ -79,9 +80,9 @@ final class ProgramStageRepository implements DataEntryRepository {
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
-        return toV2Flowable(briteDatabase
+        return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
-                .mapToList(this::transform));
+                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

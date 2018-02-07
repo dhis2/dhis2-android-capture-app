@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Quartet;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
@@ -33,12 +33,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import rx.Observable;
 
 import static android.text.TextUtils.isEmpty;
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+
 
 @SuppressWarnings("PMD")
 final class RulesRepository {
@@ -108,31 +110,44 @@ final class RulesRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    @NonNull
+   /* @NonNull
     Flowable<List<Rule>> rules(@NonNull String programUid) {
         return Flowable.combineLatest(queryRules(programUid),
                 queryRuleActions(programUid), RulesRepository::mapActionsToRules);
+    }*/
+
+    @NonNull
+    Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
+        return Flowable.combineLatest(queryRules(programUid),
+                queryRuleActionsList(programUid), RulesRepository::mapActionsToRulesNew);
     }
 
     @NonNull
     Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return toV2Flowable(briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
-                .mapToList(RulesRepository::mapToRuleVariable));
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
+                .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
-        return toV2Flowable(briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
-                .mapToList(RulesRepository::mapToQuartet));
+        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
+                .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    @NonNull
+   /* @NonNull
     private Flowable<Map<String, Collection<RuleAction>>> queryRuleActions(@NonNull String programUid) {
-        return toV2Flowable(briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
+        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
                 .mapToList(RulesRepository::mapToActionPairs)
-                .switchMap(pairs -> Observable.from(pairs)
-                        .toMultimap(Pair::val0, Pair::val1)));
+                .switchMap(pairs -> toV2Flowable(rx.Observable.from(pairs)
+                        .toMultimap(Pair::val0,
+                                Pair::val1)));
+    }*/
+
+    @NonNull
+    private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
+        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
+                .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
@@ -150,6 +165,31 @@ final class RulesRepository {
 
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
                     rawRule.val3(), new ArrayList<>(actions)));
+        }
+
+        return rules;
+    }
+
+    @NonNull
+    private static List<Rule> mapActionsToRulesNew(
+            @NonNull List<Quartet<String, String, Integer, String>> rawRules,
+            @NonNull List<Pair<String, RuleAction>> ruleActions) {
+        List<Rule> rules = new ArrayList<>();
+
+        for (Quartet<String, String, Integer, String> rawRule : rawRules) {
+
+            List<RuleAction> pairActions = new ArrayList<>();
+            for(Pair<String,RuleAction> pair : ruleActions){
+                if(Objects.equals(pair.val0(), rawRule.val0()))
+                    pairActions.add(pair.val1());
+            }
+
+            /*if (actions == null) {
+                actions = new ArrayList<>();
+            }*/
+
+            rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
+                    rawRule.val3(), new ArrayList<>(pairActions)));
         }
 
         return rules;

@@ -55,7 +55,6 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
     private int currentPage = 0;
 
-    @Inject
     public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.searchRepository = searchRepository;
         this.userRepository = userRepository;

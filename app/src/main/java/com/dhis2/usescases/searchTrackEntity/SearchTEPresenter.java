@@ -38,10 +38,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private LocationManager locationManager;
     private String selectedProgram;
 
-    @Inject
-    SearchTEPresenter() {
-    }
-
     @Override
     public void init(SearchTEContractsModule.View view, String trackedEntityType) {
         this.view = view;
@@ -127,6 +123,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         interactor.getNextPage(page);
     }
 
+    @Override
     public TrackedEntityModel getTrackedEntityName() {
         return interactor.getTrackedEntity();
     }

@@ -11,6 +11,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -29,7 +30,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     static TEIDataFragment instance;
     private static TrackedEntityInstance trackedEntity;
     private static DashboardProgramModel program;
-    TeiDashboardPresenter presenter;
+    TeiDashboardContracts.Presenter presenter;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)

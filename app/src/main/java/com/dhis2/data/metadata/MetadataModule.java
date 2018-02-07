@@ -20,5 +20,4 @@ public class MetadataModule {
         return new MetadataRepositoryImpl(briteDatabase);
     }
 
-
 }

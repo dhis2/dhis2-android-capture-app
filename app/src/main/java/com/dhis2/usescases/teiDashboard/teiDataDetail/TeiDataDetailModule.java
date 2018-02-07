@@ -14,10 +14,11 @@ import dagger.Provides;
 /**
  * Created by frodriguez on 12/13/2017.
  */
-
+@PerActivity
 @Module
 public class TeiDataDetailModule {
     @Provides
+    @PerActivity
     TeiDataDetailContracts.View provideView(TeiDataDetailActivity detailActivity) {
         return detailActivity;
     }
@@ -35,6 +36,7 @@ public class TeiDataDetailModule {
     }
 
     @Provides
+    @PerActivity
     DashboardRepository dashboardRepository(BriteDatabase briteDatabase) {
         return new DashboardRepositoryImpl(briteDatabase);
     }

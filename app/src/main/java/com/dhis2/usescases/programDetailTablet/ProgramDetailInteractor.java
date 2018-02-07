@@ -45,7 +45,6 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private Call<TrackedEntityObject> currentCall;
     private List<ProgramTrackedEntityAttributeModel> programAttributes;
 
-    @Inject
     ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;

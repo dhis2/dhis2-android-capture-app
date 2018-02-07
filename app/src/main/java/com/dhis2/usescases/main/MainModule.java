@@ -12,9 +12,10 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public final class MainContractsModule {
+public final class MainModule {
 
     @Provides
+    @PerActivity
     MainContracts.View homeView(MainActivity activity) {
         return activity;
     }
@@ -23,16 +24,8 @@ public final class MainContractsModule {
     @Provides
     @PerActivity
     MainContracts.Presenter homePresenter(D2 d2,
-                                          MainContracts.Interactor interactor) {
-        return new MainPresenter(d2, interactor);
+                                          @NonNull UserRepository userRepository) {
+        return new MainPresenter(d2, userRepository);
     }
-
-    @Provides
-    @PerActivity
-    MainContracts.Interactor homeInteractor(D2 d2,
-                                            @NonNull UserRepository userRepository) {
-        return new MainInteractor(d2, userRepository);
-    }
-
 
 }

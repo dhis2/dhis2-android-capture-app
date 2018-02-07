@@ -32,10 +32,6 @@ public final class MainContracts {
 
         void changeFragment(int id);
 
-     /*   @NonNull
-        @UiThread
-        void addTree(TreeNode treeNode);*/
-
     }
 
     public interface Presenter {
@@ -54,11 +50,7 @@ public final class MainContracts {
         void showFilter();
 
         void changeFragment(int id);
-    }
-
-    interface Interactor extends AbstractActivityContracts.Interactor {
-
-        void init(View view);
 
     }
+
 }

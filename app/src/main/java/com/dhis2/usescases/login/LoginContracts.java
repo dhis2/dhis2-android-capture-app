@@ -1,34 +1,20 @@
 package com.dhis2.usescases.login;
 
 
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.view.View;
 
-import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.user.User;
 
-import dagger.Module;
-import dagger.Provides;
 import retrofit2.Response;
 
-@Module
-public class LoginContractsModule {
+public class LoginContracts {
 
-    @Provides
-    View provideView(LoginActivity loginActivity) {
-        return loginActivity;
-    }
-
-    @Provides
-    Presenter providePresenter(View view, ConfigurationRepository configurationRepository) {
-        return new LoginPresenter(view, configurationRepository);
-    }
-
-    interface View extends AbstractActivityContracts.View {
+    public interface View extends AbstractActivityContracts.View {
         ActivityLoginBinding getBinding();
 
         @UiThread
@@ -62,17 +48,26 @@ public class LoginContractsModule {
         void saveUsersData();
     }
 
-    interface Presenter {
+    public interface Presenter {
+        void init(View view);
+
         void onTextChanged(CharSequence s, int start, int before, int count);
 
         void onButtonClick();
 
         void onQRClick(android.view.View v);
+
+        ObservableField<Boolean> isServerUrlSet();
+        ObservableField<Boolean> isUserNameSet();
+        ObservableField<Boolean> isUserPassSet();
+
+        void unlockSession(String pin);
     }
 
-    interface Interactor {
+    public interface Interactor {
         void validateCredentials(@NonNull String serverUrl,
                                  @NonNull String username, @NonNull String password);
+
         void sync();
 
         void handleResponse(@NonNull Response<User> userResponse);

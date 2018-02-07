@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -34,9 +32,9 @@ import io.reactivex.schedulers.Schedulers;
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramPresenter implements ProgramContractModule.Presenter {
+public class ProgramPresenter implements ProgramContract.Presenter {
 
-    private ProgramContractModule.View view;
+    private ProgramContract.View view;
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
@@ -44,14 +42,14 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     private List<Date> dates;
     private Period period;
 
-    @Inject
-    ProgramPresenter(ProgramContractModule.View view, HomeRepository homeRepository) {
-        this.view = view;
+    ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    void init() {
+    @Override
+    public void init(ProgramContract.View view) {
+        this.view = view;
         getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
         getOrgUnits();
         compositeDisposable.add(homeRepository.eventModels()
@@ -63,6 +61,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
     }
 
 
+    @Override
     public void getPrograms(Date fromDate, Date toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
@@ -78,6 +77,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
+    @Override
     public void getProgramsWithDates(List<Date> dates, Period period) {
         this.fromDate = null;
         this.toDate = null;
@@ -91,6 +91,7 @@ public class ProgramPresenter implements ProgramContractModule.Presenter {
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
+    @Override
     public void getProgramsOrgUnit(String orgUnitQuery) {
         compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
                 .subscribeOn(Schedulers.io())

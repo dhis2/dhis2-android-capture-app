@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.BR;
 import com.dhis2.databinding.ItemEventBinding;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 
 import org.hisp.dhis.android.core.event.Event;
@@ -21,7 +22,7 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TeiDashboardPresenter presenter, Event eventModel, ProgramStageModel programStage) {
+    public void bind(TeiDashboardContracts.Presenter presenter, Event eventModel, ProgramStageModel programStage) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
         binding.executePendingBindings();

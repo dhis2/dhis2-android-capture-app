@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.forms.FormRepository;
 import com.dhis2.utils.Result;
-import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -72,7 +73,7 @@ final class EventsRuleEngineRepository implements RuleEngineRepository {
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
                 .mapToOne(cursor -> {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -80,18 +81,18 @@ final class EventsRuleEngineRepository implements RuleEngineRepository {
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
                             status, eventDate, dueDate, dataValues);
-                }));
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues() {
-        return toV2Flowable(briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
+        return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     return RuleDataValue.create(eventDate, cursor.getString(1),
                             cursor.getString(2), cursor.getString(3));
-                }));
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

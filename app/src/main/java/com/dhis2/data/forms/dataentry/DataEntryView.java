@@ -10,8 +10,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
-
-interface DataEntryView /*extends View*/ {
+interface DataEntryView {
 
     @NonNull
     Flowable<RowAction> rowActions();

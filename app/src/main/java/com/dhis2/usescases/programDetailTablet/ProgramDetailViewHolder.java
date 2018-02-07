@@ -23,7 +23,7 @@ public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramDetailPresenter presenter,
+    public void bind(ProgramDetailContractModule.Presenter presenter,
                      ProgramModel program,
                      String orgUnit,
                      List<String> attributes,

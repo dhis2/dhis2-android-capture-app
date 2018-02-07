@@ -7,33 +7,53 @@ import android.support.annotation.NonNull;
 import android.view.Gravity;
 
 import com.dhis2.data.service.SyncService;
+import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.login.LoginActivity;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.user.UserModel;
 
-import javax.inject.Inject;
-
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 final class MainPresenter implements MainContracts.Presenter {
 
+    private final UserRepository userRepository;
     private MainContracts.View view;
-    @Inject
-    MainContracts.Interactor interactor;
+    private final CompositeDisposable compositeDisposable;
+
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2,
-                  MainContracts.Interactor interactor) {
+    MainPresenter(@NonNull D2 d2, UserRepository userRepository) {
         this.d2 = d2;
-        this.interactor = interactor;
+        this.compositeDisposable = new CompositeDisposable();
+        this.userRepository = userRepository;
+
     }
 
     @Override
     public void init(MainContracts.View view) {
         this.view = view;
-//        sync();
-        interactor.init(view);
+
+        ConnectableFlowable<UserModel> userObservable = userRepository.me()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .publish();
+
+
+        compositeDisposable.add(userObservable
+                .map(this::username)
+                .subscribe(
+                        view.renderUsername(),
+                        Timber::e));
+
+        compositeDisposable.addAll(userObservable.connect());
     }
 
     public void sync() {
@@ -75,7 +95,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void onDetach() {
-        interactor.onDettach();
+        compositeDisposable.clear();
     }
 
     @Override
@@ -83,5 +103,22 @@ final class MainPresenter implements MainContracts.Presenter {
         view.openDrawer(Gravity.START);
     }
 
+    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
+    private String username(@NonNull UserModel user) {
+        String username = "";
+        if (!isEmpty(user.firstName())) {
+            username += user.firstName();
+        }
+
+        if (!isEmpty(user.surname())) {
+            if (!username.isEmpty()) {
+                username += " ";
+            }
+
+            username += user.surname();
+        }
+
+        return username;
+    }
 
 }

@@ -30,16 +30,15 @@ public class SyncService extends Service implements SyncView {
     // @NonNull
     SyncResult syncResult;
 
-    enum SyncState{
+    enum SyncState {
         METADATA, EVENTS, TEI
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-//        AndroidInjection.inject(this);
         // inject dependencies
-        ((App) getApplicationContext()).getUserComponent()
+        ((App) getApplicationContext()).userComponent()
                 .plus(new ServiceModule()).inject(this);
         syncPresenter.onAttach(this);
         syncResult = SyncResult.idle();
@@ -74,7 +73,7 @@ public class SyncService extends Service implements SyncView {
             syncResult = result;
 
             if (result.inProgress()) {
-                notification =new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
 //                        .setContentTitle(getString(R.string.sync_title))
                         .setContentTitle(getTextForNotification(syncState))
@@ -86,14 +85,14 @@ public class SyncService extends Service implements SyncView {
                 next(syncState);
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_done_black)
-                        .setContentTitle(getTextForNotification(syncState)+" "+getString(R.string.sync_complete_title))
+                        .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
                 next(syncState);
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_error_black)
-                        .setContentTitle(getTextForNotification(syncState)+" "+getString(R.string.sync_error_title))
+                        .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))
                         .build();
             } else {
@@ -104,7 +103,7 @@ public class SyncService extends Service implements SyncView {
     }
 
     private void next(SyncState syncState) {
-        switch (syncState){
+        switch (syncState) {
             case METADATA:
                 syncPresenter.syncEvents();
                 break;
@@ -114,8 +113,8 @@ public class SyncService extends Service implements SyncView {
         }
     }
 
-    public String getTextForNotification(SyncState syncState){
-        switch (syncState){
+    public String getTextForNotification(SyncState syncState) {
+        switch (syncState) {
             case METADATA:
                 return getString(R.string.sync_metadata);
             case EVENTS:
@@ -125,8 +124,8 @@ public class SyncService extends Service implements SyncView {
         }
     }
 
-    public int getNotId(SyncState syncState){
-        switch (syncState){
+    public int getNotId(SyncState syncState) {
+        switch (syncState) {
             case METADATA:
                 return NOTIFICATION_ID;
             case EVENTS:

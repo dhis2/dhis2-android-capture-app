@@ -9,13 +9,13 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.Transaction;
 
+import static com.dhis2.utils.Preconditions.isNull;
+
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
 
     SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
-//        isNull(briteDatabase, "briteDatabase == null");
-        if(briteDatabase == null)
-            throw new IllegalArgumentException("briteDatabase == null");
+        isNull(briteDatabase, "briteDatabase == null");
         sqlBriteDatabase = briteDatabase;
     }
 

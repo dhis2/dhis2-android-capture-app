@@ -48,7 +48,7 @@ public class DbModule {
     @Singleton
     BriteDatabase briteDatabase(DbOpenHelper dbOpenHelper,
                                 SqlBrite sqlBrite, SchedulerProvider schedulerProvider) {
-        return sqlBrite.wrapDatabaseHelper(dbOpenHelper, Schedulers.io());
+        return sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
     }
 
     @Provides

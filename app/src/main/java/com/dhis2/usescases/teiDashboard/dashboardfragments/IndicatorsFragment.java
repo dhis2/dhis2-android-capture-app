@@ -14,7 +14,6 @@ import com.dhis2.usescases.teiDashboard.adapters.IndicatorsAdapter;
 
 import java.util.ArrayList;
 
-import dagger.android.support.AndroidSupportInjection;
 
 /**
  * Created by ppajuelo on 29/11/2017.

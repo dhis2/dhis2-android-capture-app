@@ -15,7 +15,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     private String teiUid;
     private String programUid;
 
-    @Inject
     public TeiDataDetailPresenter() {
 
     }

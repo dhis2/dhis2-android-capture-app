@@ -3,12 +3,18 @@ package com.dhis2.data.user;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerUser;
+import com.dhis2.data.forms.FormComponent;
+import com.dhis2.data.forms.FormModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
+import com.dhis2.usescases.appInfo.InfoComponent;
+import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.eventDetail.EventDetailComponent;
 import com.dhis2.usescases.eventDetail.EventDetailModule;
 import com.dhis2.usescases.main.MainComponent;
-import com.dhis2.usescases.main.MainContractsModule;
+import com.dhis2.usescases.main.MainModule;
+import com.dhis2.usescases.main.program.ProgramComponent;
+import com.dhis2.usescases.main.program.ProgramModule;
 import com.dhis2.usescases.programDetail.ProgramDetailComponent;
 import com.dhis2.usescases.programDetail.ProgramDetailModule;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletComponent;
@@ -27,7 +33,7 @@ import dagger.Subcomponent;
 public interface UserComponent {
 
     @NonNull
-    MainComponent plus(@NonNull MainContractsModule mainModule);
+    MainComponent plus(@NonNull MainModule mainModule);
 
     @NonNull
     ProgramDetailComponent plus(@NonNull ProgramDetailModule programDetailContractModule);
@@ -50,4 +56,12 @@ public interface UserComponent {
     @NonNull
     EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
 
+    @NonNull
+    FormComponent plus(@NonNull FormModule enrollmentModule);
+
+    @NonNull
+    ProgramComponent plus(@NonNull ProgramModule programModule);
+
+    @NonNull
+    InfoComponent plus(@NonNull InfoModule infoModule);
 }
