@@ -13,6 +13,7 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 02/11/2017.
+ *
  */
 
 public interface SearchRepository {

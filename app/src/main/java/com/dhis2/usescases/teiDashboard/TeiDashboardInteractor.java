@@ -8,8 +8,6 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -23,6 +21,7 @@ import retrofit2.http.Query;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor {

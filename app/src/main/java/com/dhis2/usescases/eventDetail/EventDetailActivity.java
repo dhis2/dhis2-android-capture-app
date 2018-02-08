@@ -14,15 +14,13 @@ import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.flexbox.FlexboxLayout;
 
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 /**
- * Created by Administrador on 18/12/2017.
+ * Created by Cristian E. on 18/12/2017.
+ *
  */
 
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
@@ -52,11 +50,11 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void setData(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList, MetadataRepository metadataRepository) {
-        binding.setEvent(eventModel);
+    public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
+        binding.setEvent(eventDetailModel.getEventModel());
         binding.executePendingBindings();
 
-        for (TrackedEntityDataValueModel dataValueModel : dataValueModelList) {
+        for (TrackedEntityDataValueModel dataValueModel : eventDetailModel.getDataValueModelList()) {
 
             FormEditTextDataBinding editTextBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(this), R.layout.form_edit_text_data, binding.dataLayout, false

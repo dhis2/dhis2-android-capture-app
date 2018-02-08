@@ -21,8 +21,8 @@ import com.dhis2.data.user.UserComponent;
 import com.dhis2.data.user.UserModule;
 import com.dhis2.usescases.login.LoginComponent;
 import com.dhis2.usescases.login.LoginModule;
-import com.facebook.stetho.Stetho;
 import com.dhis2.utils.UtilsModule;
+import com.facebook.stetho.Stetho;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 
 /**
  * Created by ppajuelo on 27/09/2017.
+ *
  */
 
 public class App extends MultiDexApplication implements Components {
