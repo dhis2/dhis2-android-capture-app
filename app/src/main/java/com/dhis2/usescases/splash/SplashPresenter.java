@@ -4,6 +4,8 @@ package com.dhis2.usescases.splash;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.Bindings.Bindings;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.main.MainActivity;
@@ -20,10 +22,10 @@ public class SplashPresenter implements SplashContracts.Presenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    SplashPresenter(@Nullable UserManager userManager) {
-        this.view = view;
+    SplashPresenter(@Nullable UserManager userManager, MetadataRepository metadataRepository) {
         this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
+        Bindings.setMetadataRepository(metadataRepository);
     }
 
     @Override
@@ -34,6 +36,7 @@ public class SplashPresenter implements SplashContracts.Presenter {
     @Override
     public void init(SplashContracts.View view) {
         this.view = view;
+
     }
 
     @Override

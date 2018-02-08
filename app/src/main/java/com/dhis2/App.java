@@ -11,6 +11,7 @@ import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.database.DbModule;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
+import com.dhis2.data.metadata.MetadataModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.schedulers.SchedulersProviderImpl;
 import com.dhis2.data.server.ServerComponent;
@@ -20,6 +21,7 @@ import com.dhis2.data.user.UserComponent;
 import com.dhis2.data.user.UserModule;
 import com.dhis2.usescases.login.LoginComponent;
 import com.dhis2.usescases.login.LoginModule;
+import com.dhis2.utils.UtilsModule;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -106,7 +108,9 @@ public class App extends MultiDexApplication implements Components {
         return DaggerAppComponent.builder()
                 .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
-                .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
+                .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
+                .metadataModule(new MetadataModule())
+                .utilModule(new UtilsModule());
     }
 
     @NonNull

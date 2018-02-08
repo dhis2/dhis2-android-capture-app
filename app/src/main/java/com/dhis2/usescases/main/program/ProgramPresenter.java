@@ -107,6 +107,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             Bundle bundle = new Bundle();
             bundle.putString("PROGRAM_UID", programModel.uid());
+            bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
             if (programModel.displayFrontPageList()) {
                 if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
                     view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);

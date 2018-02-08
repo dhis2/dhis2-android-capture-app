@@ -25,8 +25,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter() {
-        return new SearchTEPresenter();
+    SearchTEContractsModule.Presenter providePresenter(SearchTEContractsModule.Interactor interactor) {
+        return new SearchTEPresenter(interactor);
     }
 
     @Provides

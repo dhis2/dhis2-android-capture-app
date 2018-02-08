@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,8 +22,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 
 /**
@@ -32,11 +31,15 @@ import io.reactivex.Observable;
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private SearchTEContractsModule.View view;
-    @Inject
-    SearchTEContractsModule.Interactor interactor;
+    @NonNull
+    private final SearchTEContractsModule.Interactor interactor;
 
     private LocationManager locationManager;
     private String selectedProgram;
+
+    public SearchTEPresenter(SearchTEContractsModule.Interactor interactor) {
+        this.interactor = interactor;
+    }
 
     @Override
     public void init(SearchTEContractsModule.View view, String trackedEntityType) {
