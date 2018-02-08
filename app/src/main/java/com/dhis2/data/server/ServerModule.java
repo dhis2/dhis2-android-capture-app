@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 
 import com.dhis2.data.dagger.PerServer;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -45,6 +46,7 @@ public class ServerModule {
     OkHttpClient okHttpClient(Authenticator authenticator) {
         return new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
     }
 
