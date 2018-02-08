@@ -11,6 +11,7 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.usescases.main.MainActivity;
 
 import javax.inject.Inject;
 
@@ -109,6 +110,9 @@ public class SyncService extends Service implements SyncView {
                 break;
             case EVENTS:
                 syncPresenter.syncTrackedEntities();
+                break;
+            case TEI:
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 break;
         }
     }

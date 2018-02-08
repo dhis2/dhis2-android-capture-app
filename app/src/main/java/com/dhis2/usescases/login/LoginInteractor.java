@@ -3,7 +3,6 @@ package com.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -117,7 +116,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void sync() {
 
-//        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
 
         //TODO: TEI sync not working. Get all TEI uids and call external method before SyncService starts
         userManager.getD2().retrofit().create(TESTTrackedEntityInstanceService.class).trackEntityInstances().enqueue(new Callback<TEIResponse>() {
@@ -134,7 +132,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
         });
     }
 
-    private void saveTEI(List<TrackedEntityInstance> trackedEntityInstances) throws Exception {
+    private void saveTEI(List<TrackedEntityInstance> trackedEntityInstances) {
 
         DatabaseAdapter databaseAdapter = userManager.getD2().databaseAdapter();
 
@@ -178,10 +176,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
             Date serverDate = systemInfo.serverDate();
 
             for (int i = 0; i < trackedEntityInstances.size(); i++) {
-                if (!trackedEntityInstances.get(i).getTrackedEntityInstance().equals("tWj04Ax4qlf") &&
-                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("wNiQ2coVZ39") &&
-                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("YGyelJBMeKy") &&
-                        !trackedEntityInstances.get(i).getTrackedEntityInstance().equals("erqa3phUfpI"))
                     try {
                         response = new TrackedEntityInstanceEndPointCall(
                                 userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
@@ -191,12 +185,14 @@ public class LoginInteractor implements LoginContracts.Interactor {
                                 serverDate,
                                 trackedEntityInstances.get(i).getTrackedEntityInstance()
                         ).call();
-                    } catch (SQLiteConstraintException e) {
+                    } catch (Exception e) {
                         Log.d("TEI ERROR", trackedEntityInstances.get(i).getTrackedEntityInstance() + " - " + e.getMessage());
                     }
             }
             transaction.setSuccessful();
 
+        } catch (Exception e) {
+            Log.d("TEI RESPONSE", "ERROR SERVER RESPONSE");
         } finally {
             String data = response != null ? String.valueOf(response.isSuccessful()) : "false";
             Log.d("TEI RESPONSE", "IS SUCCSESS? = " + data);
@@ -265,10 +261,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
         @Override
         protected Void doInBackground(String... strings) {
-            try {
-                saveTEI(list);
-            } catch (Exception e) {
-            }
+
+            saveTEI(list);
+
             return null;
         }
 
@@ -276,7 +271,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
-            view.startActivity(MainActivity.class, null, true, true, null);
+//            view.startActivity(MainActivity.class, null, true, true, null);
         }
     }
 
