@@ -20,6 +20,7 @@ import com.dhis2.data.user.UserComponent;
 import com.dhis2.data.user.UserModule;
 import com.dhis2.usescases.login.LoginComponent;
 import com.dhis2.usescases.login.LoginModule;
+import com.facebook.stetho.Stetho;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -66,6 +67,8 @@ public class App extends MultiDexApplication implements Components {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Stetho.initializeWithDefaults(this);
 
         this.instance = this;
 
