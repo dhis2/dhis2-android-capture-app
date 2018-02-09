@@ -43,12 +43,17 @@
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
-        <activity android:name=".usescases.enrollment.EnrollmentActivity" />
+        <activity android:name=".data.forms.FormActivity" />
+        <activity android:name=".data.forms.dataentry.DataEntryActivity" />
 
         <service
             android:name=".data.service.SyncService"
             android:enabled="true"
             android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk"/>
 
     </application>
 

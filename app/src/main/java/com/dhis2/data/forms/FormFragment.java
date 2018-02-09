@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
 
     View fab;
+    ViewPager viewPager;
+    TabLayout tabLayout;
 
     @Inject
     FormPresenter formPresenter;
@@ -70,11 +73,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fab = view.findViewById(R.id.fab);
+        fab = view.findViewById(R.id.fab_complete_event);
+        viewPager = view.findViewById(R.id.viewpager_dataentry);
+        tabLayout = view.findViewById(R.id.tablayout_data_entry);
 
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
-//        viewPager.setAdapter(formSectionAdapter);
-//        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(formSectionAdapter);
+        tabLayout.setupWithViewPager(viewPager);
 
         setupActionBar();
         initReportDatePicker();

@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -104,9 +106,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (view.isEnabled())
-            interactor.enroll();
-        else
+        if (view.isEnabled()) {
+            FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(selectedProgram);
+            this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+        }else
             this.view.displayMessage("Select a program to enable enrolling");
     }
 

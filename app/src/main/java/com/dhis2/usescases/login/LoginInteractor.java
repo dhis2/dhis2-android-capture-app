@@ -116,8 +116,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void sync() {
 
+        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
 
-        //TODO: TEI sync not working. Get all TEI uids and call external method before SyncService starts
+       /* //TODO: TEI sync not working. Get all TEI uids and call external method before SyncService starts
         userManager.getD2().retrofit().create(TESTTrackedEntityInstanceService.class).trackEntityInstances().enqueue(new Callback<TEIResponse>() {
             @Override
             public void onResponse(Call<TEIResponse> call, Response<TEIResponse> response) {
@@ -129,7 +130,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
             public void onFailure(Call<TEIResponse> call, Throwable t) {
 
             }
-        });
+        });*/
     }
 
     private void saveTEI(List<TrackedEntityInstance> trackedEntityInstances) {
@@ -175,19 +176,19 @@ public class LoginInteractor implements LoginContracts.Interactor {
             SystemInfo systemInfo = (SystemInfo) response.body();
             Date serverDate = systemInfo.serverDate();
 
-            for (int i = 0; i < trackedEntityInstances.size(); i++) {
-                    try {
-                        response = new TrackedEntityInstanceEndPointCall(
-                                userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
-                                databaseAdapter,
-                                trackedEntityInstanceHandler,
-                                resourceHandler,
-                                serverDate,
-                                trackedEntityInstances.get(i).getTrackedEntityInstance()
-                        ).call();
-                    } catch (Exception e) {
-                        Log.d("TEI ERROR", trackedEntityInstances.get(i).getTrackedEntityInstance() + " - " + e.getMessage());
-                    }
+            for (int i = 0; i < /*trackedEntityInstances.size()*/3; i++) {
+                try {
+                    response = new TrackedEntityInstanceEndPointCall(
+                            userManager.getD2().retrofit().create(TrackedEntityInstanceService.class),
+                            databaseAdapter,
+                            trackedEntityInstanceHandler,
+                            resourceHandler,
+                            serverDate,
+                            trackedEntityInstances.get(i).getTrackedEntityInstance()
+                    ).call();
+                } catch (Exception e) {
+                    Log.d("TEI ERROR", trackedEntityInstances.get(i).getTrackedEntityInstance() + " - " + e.getMessage());
+                }
             }
             transaction.setSuccessful();
 
