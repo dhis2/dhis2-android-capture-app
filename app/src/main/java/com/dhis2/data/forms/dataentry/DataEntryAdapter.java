@@ -12,6 +12,11 @@ import android.view.ViewGroup;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,7 @@ final class DataEntryAdapter extends Adapter {
     private static final int ROW_TEXT = 3;
     private static final int ROW_OPTIONS = 4;
     private static final int ROW_DATE = 5;
+    private static final int ROW_COORDINATES = 6;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -42,14 +48,15 @@ final class DataEntryAdapter extends Adapter {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
-
-       /* rows.add(ROW_CHECKBOX, new CheckBoxRow(layoutInflater, processor));
-        rows.add(ROW_EDITTEXT, new EditTextRow(layoutInflater, processor));
-        rows.add(ROW_RADIO_BUTTONS, new RadioButtonRow(layoutInflater, processor));
+//TODO: CHECK ROWS
+        /*rows.add(ROW_CHECKBOX, new CheckBoxRow(layoutInflater, processor));
+        rows.add(ROW_EDITTEXT, new EditTextRow(processor));
+        rows.add(ROW_RADIO_BUTTONS, new RadioButtonRow(processor));
         rows.add(ROW_TEXT, new TextRow(layoutInflater));
         rows.add(ROW_OPTIONS, new OptionsRow(layoutInflater, fragmentManager,
                 processor, dataEntryArguments));
-        rows.add(ROW_DATE, new DateRow(layoutInflater, fragmentManager, processor));*/
+        rows.add(ROW_DATE, new DateRow(layoutInflater, fragmentManager, processor));
+        rows.add(ROW_COORDINATES, new CoordinateRow(processor));*/
     }
 
     @Override
@@ -71,7 +78,8 @@ final class DataEntryAdapter extends Adapter {
     @Override
     public int getItemViewType(int position) {
         return super.getItemViewType(position);
-      /*  FieldViewModel viewModel = viewModels.get(position);
+        //TODO: CHECK VIEWMODELS
+    /*    FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof CheckBoxViewModel) {
             return ROW_CHECKBOX;
         } else if (viewModel instanceof EditTextModel) {

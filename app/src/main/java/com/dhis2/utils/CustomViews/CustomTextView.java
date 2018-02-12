@@ -1,6 +1,5 @@
 package com.dhis2.utils.CustomViews;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.text.Editable;
@@ -47,24 +46,24 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
         init(context);
     }
 
-    private void init(Context context){
+    private void init(Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
         binding = CustomTextViewBinding.inflate(inflater, this, true);
         editText = findViewById(R.id.button);
         editText.addTextChangedListener(this);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute){
+    public void setAttribute(TrackedEntityAttributeModel attribute) {
         binding.setAttribute(attribute);
     }
 
-    public void setTextChangedListener(TextChangedListener listener){
+    public void setTextChangedListener(TextChangedListener listener) {
         this.listener = listener;
     }
 
     @BindingAdapter("valueType")
-    public static void setValueType(CustomTextView view, ValueType valueType){
-        switch (valueType){
+    public static void setValueType(CustomTextView view, ValueType valueType) {
+        switch (valueType) {
             case PHONE_NUMBER:
                 editText.setInputType(InputType.TYPE_CLASS_PHONE);
                 return;
@@ -105,19 +104,23 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-        if(listener != null)
+        if (listener != null)
             listener.beforeTextChanged(charSequence, start, count, after);
     }
 
     @Override
     public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-        if(listener != null)
+        if (listener != null)
             listener.onTextChanged(charSequence, start, before, count);
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
-        if(listener != null)
+        if (listener != null)
             listener.afterTextChanged(editable);
+    }
+
+    public EditText getEditText() {
+        return editText;
     }
 }

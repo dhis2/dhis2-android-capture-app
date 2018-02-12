@@ -13,14 +13,20 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
+import org.hisp.dhis.rules.RuleVariableValue;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
+import org.hisp.dhis.rules.models.RuleActionCreateEvent;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
+import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
+import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleValueType;
 import org.hisp.dhis.rules.models.RuleVariable;
 import org.hisp.dhis.rules.models.RuleVariableAttribute;
@@ -39,7 +45,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 
 @SuppressWarnings("PMD")
@@ -179,8 +184,8 @@ final class RulesRepository {
         for (Quartet<String, String, Integer, String> rawRule : rawRules) {
 
             List<RuleAction> pairActions = new ArrayList<>();
-            for(Pair<String,RuleAction> pair : ruleActions){
-                if(Objects.equals(pair.val0(), rawRule.val0()))
+            for (Pair<String, RuleAction> pair : ruleActions) {
+                if (Objects.equals(pair.val0(), rawRule.val0()))
                     pairActions.add(pair.val1());
             }
 
@@ -244,6 +249,8 @@ final class RulesRepository {
                 return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
+          /*  case CALCULATED_VALUE:
+                return RuleVariableValue.create(mimeType); //TODO: POR QUÉ NO ES PUBLICO????*/
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -264,6 +271,8 @@ final class RulesRepository {
 
     @NonNull
     private static RuleAction create(@NonNull Cursor cursor) {
+        String programStage = cursor.getString(1);
+        String section = cursor.getString(2);
         String attribute = cursor.getString(5);
         String dataElement = cursor.getString(6);
         String location = cursor.getString(7);
@@ -271,22 +280,34 @@ final class RulesRepository {
         String data = cursor.getString(9);
 
         switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
-            case DISPLAYKEYVALUEPAIR:
-                return createDisplayKeyValuePairAction(content, data, location);
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
+            case DISPLAYKEYVALUEPAIR:
+                return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
                 return RuleActionHideField.create(content,
                         isEmpty(attribute) ? dataElement : attribute);
+            case HIDESECTION:
+                return RuleActionHideSection.create(section);
             case ASSIGN:
                 return RuleActionAssign.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
+            case WARNINGONCOMPLETE:
+                return RuleActionWarningOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
             case SHOWERROR:
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
+            case ERRORONCOMPLETE:
+                return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
+            case CREATEEVENT:
+                return RuleActionCreateEvent.create(content, data, programStage);
+            case HIDEPROGRAMSTAGE:
+                return RuleActionCreateEvent.create(content, data, programStage);
+            case SETMANDATORYFIELD:
+                return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));

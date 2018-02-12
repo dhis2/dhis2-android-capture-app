@@ -5,7 +5,10 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.fields.Row;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder;
+
+import io.reactivex.processors.FlowableProcessor;
 
 /**
  * Created by frodriguez on 1/24/2018.
@@ -14,6 +17,10 @@ import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder;
 public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel> {
 
     ViewDataBinding binding;
+
+    public CoordinateRow(FlowableProcessor<RowAction> processor) {
+
+    }
 
     @NonNull
     @Override

@@ -105,7 +105,23 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         }
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-       /* for (RuleEffect ruleEffect : calcResult.items()) {
+        applyRuleEffects(fieldViewModels, calcResult);
+
+        return new ArrayList<>(fieldViewModels.values());
+    }
+
+    @NonNull
+    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
+        Map<String, FieldViewModel> map = new LinkedHashMap<>();
+        for (FieldViewModel fieldViewModel : fieldViewModels) {
+            map.put(fieldViewModel.uid(), fieldViewModel);
+        }
+        return map;
+    }
+
+    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult){
+        //TODO: APPLY RULE EFFECTS TO ALL MODELS
+        /*for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
@@ -157,16 +173,5 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.put(uid, textViewModel);
             }
         }*/
-
-        return new ArrayList<>(fieldViewModels.values());
-    }
-
-    @NonNull
-    private static Map<String, FieldViewModel> toMap(@NonNull List<FieldViewModel> fieldViewModels) {
-        Map<String, FieldViewModel> map = new LinkedHashMap<>();
-        for (FieldViewModel fieldViewModel : fieldViewModels) {
-            map.put(fieldViewModel.uid(), fieldViewModel);
-        }
-        return map;
     }
 }
