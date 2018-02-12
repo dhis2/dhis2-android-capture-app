@@ -11,8 +11,6 @@ import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.qrScanner.QRActivity;
 import com.dhis2.utils.Constants;
 
-import javax.inject.Inject;
-
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
