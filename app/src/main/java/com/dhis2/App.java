@@ -184,8 +184,6 @@ public class App extends MultiDexApplication implements Components {
 
     @Override
     public UserComponent userComponent() {
-//        if (userComponent == null)
-//            createUserComponent();
         return userComponent;
     }
 
