@@ -24,7 +24,7 @@ public class ServiceModule {
 
     @Provides
     @PerService
-    SyncPresenter syncPresenter(@NonNull D2 d2, @NonNull SchedulerProvider schedulerProvider) {
-        return new SyncPresenterImpl(d2, schedulerProvider);
+    SyncPresenter syncPresenter(@NonNull D2 d2) {
+        return new SyncPresenterImpl(d2);
     }
 }

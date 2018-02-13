@@ -28,16 +28,23 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueHandler;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueStoreImpl;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceEndPointCall;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceHandler;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceService;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceStoreImpl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.operators.flowable.FlowableInterval;
+import io.reactivex.internal.operators.flowable.FlowableTimer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,9 +58,6 @@ final class SyncPresenterImpl implements SyncPresenter {
     private final D2 d2;
 
     @NonNull
-    private final SchedulerProvider schedulerProvider;
-
-    @NonNull
     private final CompositeDisposable disposable;
 
     @Nullable
@@ -63,11 +67,9 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     private int position;
 
-    SyncPresenterImpl(@NonNull D2 d2, @NonNull SchedulerProvider schedulerProvider) {
+    SyncPresenterImpl(@NonNull D2 d2) {
         this.d2 = d2;
-        this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
-
     }
 
     @Override
@@ -110,16 +112,6 @@ final class SyncPresenterImpl implements SyncPresenter {
 
         getTEI();
 
-//        disposable.add(trackerData()
-//                .subscribeOn(Schedulers.io())
-//                .map(response -> SyncResult.success())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .onErrorReturn(throwable -> SyncResult.failure(
-//                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-//                .startWith(SyncResult.progress())
-//                .subscribe(update(SyncService.SyncState.TEI), throwable -> {
-//                    throw new OnErrorNotImplementedException(throwable);
-//                }));
     }
 
     @Override
@@ -135,12 +127,12 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private Observable<Response> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncTrackerData()));
+        return Observable.defer(() -> Observable.fromCallable(d2.syncTrackedEntityInstances()));
     }
 
     @NonNull
     private Observable<Response> trackerData2(String uid) {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncTEI(uid)));
+        return Observable.defer( ()-> Observable.fromCallable(d2.syncTEI(uid)));
     }
 
     @NonNull
@@ -176,9 +168,9 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     void syncTEI() {
 
-        disposable.add(Observable.just(teis)
-                .flatMap(Observable::fromIterable)
-                .flatMap(tei -> trackerData2(tei.getTrackedEntityInstance()))
+        disposable.add(Flowable.just(teis)
+                .flatMap(FlowableInterval::fromIterable)
+                .flatMap(tei -> trackerData2(tei.getTrackedEntityInstance()).onErrorResumeNext(Observable.empty()).toFlowable(BackpressureStrategy.BUFFER))
                 .map(mresponse -> SyncResult.success())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -189,9 +181,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                         , throwable -> {
                             throw new OnErrorNotImplementedException(throwable);
                         }));
-
     }
-
 
     //TODO: Currentl, SDK not providing TEI sync. This call is used for user android in android-current
     public interface TESTTrackedEntityInstanceService {

@@ -15,13 +15,16 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
+import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -29,11 +32,10 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -347,5 +349,16 @@ public class Bindings {
                         dataModel -> view.setHint(dataModel.displayShortName()),
                         Timber::d
                 );
+    }
+
+    @BindingAdapter("spinnerOptions")
+    public static void setSpinnerOptions(Spinner spinner, ArrayList<CategoryOptionComboModel> options) {
+        CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
+                R.layout.spinner_layout,
+                R.id.spinner_text,
+                options,
+                "");
+        spinner.setAdapter(adapter);
+
     }
 }

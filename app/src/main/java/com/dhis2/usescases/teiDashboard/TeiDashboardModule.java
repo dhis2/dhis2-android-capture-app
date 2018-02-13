@@ -25,8 +25,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter() {
-        return new TeiDashboardPresenter();
+    TeiDashboardContracts.Presenter providePresenter(TeiDashboardContracts.Interactor interactor) {
+        return new TeiDashboardPresenter(interactor);
     }
 
     @Provides

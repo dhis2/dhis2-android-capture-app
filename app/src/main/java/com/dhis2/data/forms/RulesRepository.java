@@ -249,8 +249,8 @@ final class RulesRepository {
                 return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
-          /*  case CALCULATED_VALUE:
-                return RuleVariableValue.create(mimeType); //TODO: POR QUÉ NO ES PUBLICO????*/
+            case CALCULATED_VALUE:
+//                return RuleVariableValue.create(mimeType); //TODO: POR QUÉ NO ES PUBLICO????
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);

@@ -1,4 +1,4 @@
-package com.dhis2.data.forms.dataentry;
+package com.dhis2.utils;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -13,23 +13,23 @@ import android.widget.ArrayAdapter;
 import com.dhis2.R;
 import com.dhis2.databinding.SpinnerLayoutBinding;
 
-import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.List;
 
 /**
- * Created by ppajuelo on 07/11/2017.
+ * Created by ppajuelo on 12/02/2018.
  */
 
-public class OptionAdapter extends ArrayAdapter<OptionModel> {
+public class CatComboAdapter extends ArrayAdapter<CategoryOptionComboModel> {
 
-    List<OptionModel> options;
-    String optionSetName;
+    List<CategoryOptionComboModel> options;
+    String catComboName;
 
-    public OptionAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<OptionModel> objects, String optionSetName) {
+    public CatComboAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<CategoryOptionComboModel> objects, String categoryOptionName) {
         super(context, resource, textViewResourceId, objects);
         this.options = objects;
-        this.optionSetName = optionSetName;
+        this.catComboName = categoryOptionName;
     }
 
     @NonNull
@@ -40,7 +40,7 @@ public class OptionAdapter extends ArrayAdapter<OptionModel> {
         SpinnerLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_layout, parent, false);
         if (position != 0)
             binding.setOption(options.get(position - 1).displayName());
-        binding.setOptionSetName(optionSetName);
+        binding.setOptionSetName(catComboName);
         binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
         return binding.getRoot();
 
@@ -53,7 +53,7 @@ public class OptionAdapter extends ArrayAdapter<OptionModel> {
         if (position != 0)
             binding.setOption(options.get(position - 1).displayName());
 
-        binding.setOptionSetName(optionSetName);
+        binding.setOptionSetName(catComboName);
         return binding.getRoot();
     }
 

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
@@ -9,24 +10,22 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
-import javax.inject.Inject;
-
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private TeiDashboardContracts.View view;
 
-    @Inject
-    TeiDashboardInteractor interactor;
+    @NonNull
+    private final TeiDashboardContracts.Interactor interactor;
+
     private String teUid;
     private String programUid;
 
-    public TeiDashboardPresenter() {
-
+    public TeiDashboardPresenter(TeiDashboardContracts.Interactor interactor) {
+        this.interactor = interactor;
     }
 
     @Override

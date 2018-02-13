@@ -5,7 +5,7 @@
 
         <variable
             name="option"
-            type="org.hisp.dhis.android.core.option.OptionModel" />
+            type="java.lang.String" />
 
         <variable
             name="optionSetName"
@@ -18,7 +18,7 @@
         android:layout_height="50dp"
         android:gravity="center_vertical"
         android:padding="5dp"
-        android:text="@{option.displayName!=null?option.displayName:optionSetName}"
+        android:text="@{option!=null?option:optionSetName}"
         android:textColor="?colorPrimary"
         android:textSize="16sp"
         android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"/>
