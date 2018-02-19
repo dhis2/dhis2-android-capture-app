@@ -16,8 +16,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -176,7 +174,7 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
         getTrackedEntityAttributes();
 
-        view.swapData(null, null, null);
+        view.swapListData(null, null, null);
     }
 
     @Override
@@ -215,6 +213,16 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
             if (i < orgList.size() - 1)
                 orgQuey = orgQuey.concat(";");
         }
+
+        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntityType,
+                selectedProgram.uid(),
+                enrollmentDate,
+                incidentDate,
+                null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view.swapListData(),
+                        throwable -> Log.d("ERROR", throwable.getMessage())));
 
         d2.retrofit().create(TrackedEntityInstanceService.class)
                 .trackEntityInstances(

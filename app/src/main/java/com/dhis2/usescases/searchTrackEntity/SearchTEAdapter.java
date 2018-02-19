@@ -6,12 +6,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +20,13 @@ import java.util.List;
 
 public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
 
+    private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.Presenter presenter;
-    private List<TrackedEntityInstance> trackedEntityInstances;
-    private List<TrackedEntityAttributeModel> attributeModels;
-    private List<ProgramModel> programModels;
+    private List<TrackedEntityInstanceModel> trackedEntityInstances;
 
-    public SearchTEAdapter(SearchTEContractsModule.Presenter presenter) {
+    public SearchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
         this.presenter = presenter;
+        this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();
     }
 
@@ -42,13 +40,9 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     @Override
     public void onBindViewHolder(SearchTEViewHolder holder, int position) {
 
-        TrackedEntityInstance entityInstance = trackedEntityInstances.get(position);
+        TrackedEntityInstanceModel entityInstance = trackedEntityInstances.get(position);
 
-        ArrayList<String> attributes = new ArrayList<>();
-        for (TrackedEntityAttributeValue value : entityInstance.trackedEntityAttributeValues()) {
-            attributes.add(value.value());
-        }
-        holder.bind(presenter, trackedEntityInstances.get(position), attributes, attributeModels, programModels);
+        holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
     }
 
     @Override
@@ -56,12 +50,10 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
         return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
     }
 
-    public void addItems(List<TrackedEntityInstance> trackedEntityInstances, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels) {
+    public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances) {
 
+        this.trackedEntityInstances.clear();
         this.trackedEntityInstances.addAll(trackedEntityInstances);
-
-        this.attributeModels = attributeModels;
-        this.programModels = programModels;
 
         notifyDataSetChanged();
 

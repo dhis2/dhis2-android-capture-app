@@ -19,12 +19,15 @@ import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 02/11/2017 .
@@ -80,6 +83,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
+    }
+
+    @Override
+    public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
+        return data -> searchTEAdapter.setItems(data);
     }
 
     //Updates recycler when trackedEntityInstance list size < 4. Updates size counter

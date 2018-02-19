@@ -1,19 +1,21 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public interface SearchRepository {
@@ -26,4 +28,10 @@ public interface SearchRepository {
     Observable<List<OptionModel>> optionSet(String optionSetId);
 
     Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
+
+    Flowable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
+                                                                      @Nullable String programUid,
+                                                                      @Nullable String enrollmentDate,
+                                                                      @Nullable String incidentDate,
+                                                                      @Nullable List<TrackedEntityAttributeValueModel> queryData);
 }
