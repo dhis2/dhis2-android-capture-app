@@ -110,7 +110,17 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncTrackedEntities() {
 
-        getTEI();
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(SyncService.SyncState.TEI), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+//        getTEI();
 
     }
 
@@ -127,13 +137,13 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private Observable<Response> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncTrackedEntityInstances()));
+        return Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstances(50)));
     }
 
-    @NonNull
+ /*   @NonNull
     private Observable<Response> trackerData2(String uid) {
         return Observable.defer( ()-> Observable.fromCallable(d2.syncTEI(uid)));
-    }
+    }*/
 
     @NonNull
     private Observable<Response> events() {
@@ -168,7 +178,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     void syncTEI() {
 
-        disposable.add(Flowable.just(teis)
+      /*  disposable.add(Flowable.just(teis)
                 .flatMap(FlowableInterval::fromIterable)
                 .flatMap(tei -> trackerData2(tei.getTrackedEntityInstance()).onErrorResumeNext(Observable.empty()).toFlowable(BackpressureStrategy.BUFFER))
                 .map(mresponse -> SyncResult.success())
@@ -180,7 +190,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribe(update(SyncService.SyncState.TEI)
                         , throwable -> {
                             throw new OnErrorNotImplementedException(throwable);
-                        }));
+                        }));*/
     }
 
     //TODO: Currentl, SDK not providing TEI sync. This call is used for user android in android-current
