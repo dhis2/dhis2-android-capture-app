@@ -3,8 +3,6 @@ package com.dhis2.usescases.eventDetail;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageSection;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.List;
@@ -17,9 +15,6 @@ import io.reactivex.Observable;
  */
 
 public interface EventDetailRepository {
-
-    @NonNull
-    Observable<List<ProgramStageSectionModel>> getEventSections(String eventUid);
 
     @NonNull
     Observable<EventModel> eventModelDetail(String uid);

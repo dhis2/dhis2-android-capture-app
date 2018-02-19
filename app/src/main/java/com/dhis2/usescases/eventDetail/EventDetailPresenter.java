@@ -1,7 +1,5 @@
 package com.dhis2.usescases.eventDetail;
 
-import android.util.Log;
-
 import com.dhis2.data.metadata.MetadataRepository;
 
 import io.reactivex.Observable;
@@ -33,7 +31,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     public void getEventData(String eventUid) {
         Observable.zip(eventDetailRepository.eventModelDetail(eventUid),
                 eventDetailRepository.dataValueModelList(eventUid),
-                eventDetailRepository.getEventSections(eventUid),
                 EventDetailModel::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

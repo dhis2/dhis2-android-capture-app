@@ -7,6 +7,7 @@ import android.util.Log;
 import com.dhis2.R;
 import com.dhis2.usescases.programDetail.ProgramDetailActivity;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
+import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
@@ -104,17 +105,30 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void onItemClick(ProgramModel programModel) {
-        if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
-            Bundle bundle = new Bundle();
-            bundle.putString("PROGRAM_UID", programModel.uid());
-            bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
-            if (programModel.displayFrontPageList()) {
-                if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
+        Bundle bundle = new Bundle();
+        bundle.putString("PROGRAM_UID", programModel.uid());
+        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
+
+        if (programModel.displayFrontPageList()) {
+            if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+                if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
                     view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
-                else
+                }
+                else {
                     view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
-            } else
-                view.startActivity(SearchTEActivity.class, bundle, false, false, null);
+                }
+            }
+            if (programModel.programType() == ProgramType.WITHOUT_REGISTRATION) {
+                if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
+                    // TODO: CRREATE TABLET ACTIVITY
+                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+                }
+                else {
+                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+                }
+            }
+        } else {
+            view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         }
     }
 

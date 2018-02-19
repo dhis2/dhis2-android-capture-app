@@ -3,26 +3,23 @@ package com.dhis2.usescases.eventDetail;
 import android.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.List;
 
 /**
  * Created by Cristian on 08/02/2018.
+ *
  */
 
 public class EventDetailModel extends BaseObservable {
 
-    private final List<ProgramStageSectionModel> sectionModels;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
 
-    public EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
-                            List<ProgramStageSectionModel> sectionModels) {
+    public EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
-        this.sectionModels = sectionModels;
     }
 
     public EventModel getEventModel() {

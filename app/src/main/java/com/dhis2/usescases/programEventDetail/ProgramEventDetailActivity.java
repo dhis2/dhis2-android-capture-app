@@ -1,4 +1,4 @@
-package com.dhis2.usescases.programDetail;
+package com.dhis2.usescases.programEventDetail;
 
 import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
@@ -6,20 +6,19 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.widget.Toast;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.databinding.ActivityProgramDetailBinding;
+import com.dhis2.databinding.ActivityProgramEventDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CustomViews.DateDialog;
-import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -31,42 +30,34 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Created by ppajuelo on 31/10/2017.
+ * Created by Cristian on 13/02/2018.
  *
  */
 
-public class ProgramDetailActivity extends ActivityGlobalAbstract implements ProgramDetailContractModule.View {
+public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
     private final String DAILY = "Daily";
     private final String WEEKLY = "Weekly";
     private final String MONTHLY = "Monthly";
     private final String YEARLY = "Yearly";
-    ActivityProgramDetailBinding binding;
+    ActivityProgramEventDetailBinding binding;
 
     @Inject
-    ProgramDetailContractModule.Presenter presenter;
+    ProgramEventDetailContract.Presenter presenter;
 
     @Inject
-    ProgramDetailAdapter adapter;
+    ProgramEventDetailAdapter adapter;
     private Period currentPeriod = Period.DAILY;
     ProgramModel programModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ProgramDetailModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule()).inject(this);
 
         super.onCreate(savedInstanceState);
         String programId = getIntent().getStringExtra("PROGRAM_UID");
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
         binding.setPresenter(presenter);
         presenter.init(this, programId);
-
-        binding.recycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager()) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                presenter.nextPageForApi(page + 1);
-            }
-        });
-
     }
 
     @Override
@@ -76,13 +67,14 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     }
 
     @Override
-    public void swapData(TrackedEntityObject response) {
-        if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(programModel);
-            binding.recycler.setAdapter(adapter);
-        }
-
-        adapter.addItems(response.getTrackedEntityInstances());
+    public void setData(List<EventModel> events) {
+        // TODO CRIS: SHOW EVENT LIST - CHANGE ADAPTER AND ROWS, ETC
+//        if (binding.recycler.getAdapter() == null) {
+//            adapter.setProgram(programModel);
+//            binding.recycler.setAdapter(adapter);
+//        }
+//
+//        adapter.addItems(response);
     }
 
     @Override
@@ -164,8 +156,6 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
 
     @Override
     public void addTree(TreeNode treeNode) {
-
-
         binding.treeViewContainer.removeAllViews();
 
         AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
@@ -194,10 +184,4 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
             return true;
         });
     }
-
-/*
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-
-    }*/
 }
