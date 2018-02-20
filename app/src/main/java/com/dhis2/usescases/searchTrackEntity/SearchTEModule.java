@@ -25,14 +25,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(SearchTEContractsModule.Interactor interactor) {
-        return new SearchTEPresenter(interactor);
-    }
-
-    @Provides
-    @PerActivity
-    SearchTEContractsModule.Interactor provideInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
-        return new SearchTEInteractor(d2, searchRepository, userRepository, metadataRepository);
+    SearchTEContractsModule.Presenter providePresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+        return new SearchTEPresenter(searchRepository, userRepository, metadataRepository);
     }
 
     @Provides
@@ -40,5 +34,11 @@ public class SearchTEModule {
     SearchRepository searchRepository(BriteDatabase briteDatabase) {
         return new SearchRepositoryImpl(briteDatabase);
     }
+
+   /* @Provides
+    @PerActivity
+    SearchTEAdapter searchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository){
+        return new SearchTEAdapter(presenter,metadataRepository);
+    }*/
 
 }

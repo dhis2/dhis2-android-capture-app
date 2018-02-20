@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -39,7 +37,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ";
 
     private final String GET_TRACKED_ENTITY_INSTANCES =
-            "SELECT * FROM ((" + TrackedEntityInstanceModel.TABLE +
+            "SELECT *, FROM ((" + TrackedEntityInstanceModel.TABLE +
                     " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " JOIN " + TrackedEntityAttributeValueModel.TABLE + " ON " + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " WHERE ";
@@ -82,11 +80,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Flowable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
-                                                                             @Nullable String programUid,
-                                                                             @Nullable String enrollmentDate,
-                                                                             @Nullable String incidentDate,
-                                                                             @Nullable List<TrackedEntityAttributeValueModel> queryData) {
+    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
+                                                                               @Nullable String programUid,
+                                                                               @Nullable String enrollmentDate,
+                                                                               @Nullable String incidentDate,
+                                                                               @Nullable List<TrackedEntityAttributeValueModel> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntity = '" + teType + "'";
         String TEI_FINAL_QUERY = GET_TRACKED_ENTITY_INSTANCES + teiTypeWHERE;
@@ -120,6 +118,6 @@ public class SearchRepositoryImpl implements SearchRepository {
 
 
         return briteDatabase.createQuery(TEI_TABLE_SET, TEI_FINAL_QUERY)
-                .mapToList(TrackedEntityInstanceModel::create).toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(TrackedEntityInstanceModel::create);
     }
 }

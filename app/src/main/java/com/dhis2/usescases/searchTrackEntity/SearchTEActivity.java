@@ -11,17 +11,15 @@ import android.widget.AdapterView;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.ProgramAdapter;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.usescases.programDetail.TrackedEntityObject;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -38,9 +36,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     ActivitySearchBinding binding;
     @Inject
     SearchTEContractsModule.Presenter presenter;
+    @Inject
+    MetadataRepository metadataRepository;
 
-    List<TrackedEntityInstance> trackedEntityInstanceList = new ArrayList<>();
     private SearchTEAdapter searchTEAdapter;
+
+    //---------------------------------------------------------------------------------------------
+    //region LIFECYCLE
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,12 +60,26 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 //                presenter.getNextPage(page);TODO: FIX THIS. VIEWHOLDERS DATA SWAPS INCORRECTLY
             }
         });
+        binding.scrollView.setNestedScrollingEnabled(false);
+        searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
+        binding.scrollView.setAdapter(searchTEAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
+    }
+
+    //endregion
+
+    //-----------------------------------------------------------------------
+    //region SearchForm
 
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program) {
@@ -78,43 +94,35 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         formAdapter.setList(trackedEntityAttributeModels, program);
     }
 
+    //endregion
+
+    //---------------------------------------------------------------------
+    //region TEI LIST
+    @Override
+    public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
+        return data -> {
+            binding.progress.setVisibility(View.GONE);
+            binding.objectCounter.setVisibility(View.VISIBLE);
+            binding.objectCounter.setText(String.format("%s results found", data.size()));
+
+            searchTEAdapter.setItems(data);
+        };
+    }
+
+
+    @Override
+    public void clearList() {
+        if (searchTEAdapter != null)
+            searchTEAdapter.clear();
+    }
+    //endregion
+
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
-
-    @Override
-    public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
-        return data -> searchTEAdapter.setItems(data);
-    }
-
-    //Updates recycler when trackedEntityInstance list size < 4. Updates size counter
-    @Override
-    public void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels) {
-        trackedEntityInstanceList.clear();
-        binding.progress.setVisibility(View.GONE);
-        binding.objectCounter.setVisibility(View.VISIBLE);
-
-        int counter = body != null ? body.getPager().total() : 0;
-        binding.objectCounter.setText(String.format("%s results found", counter));
-
-        if (searchTEAdapter == null) {
-            binding.scrollView.setNestedScrollingEnabled(false);
-            searchTEAdapter = new SearchTEAdapter(presenter);
-            binding.scrollView.setAdapter(searchTEAdapter);
-        }
-        if (counter > 0 && counter < 10000) {
-            trackedEntityInstanceList.addAll(body.getTrackedEntityInstances());
-            searchTEAdapter.addItems(trackedEntityInstanceList, attributeModels, programModels);
-        } else {
-            searchTEAdapter.clear();
-        }
-
-
-    }
-
 
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
@@ -138,10 +146,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         });
     }
 
-    @Override
-    public void clearList() {
-        if (searchTEAdapter != null)
-            searchTEAdapter.clear();
-    }
 
 }
