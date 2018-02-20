@@ -1,5 +1,6 @@
 package com.dhis2.data.service;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -112,7 +113,9 @@ public class SyncService extends Service implements SyncView {
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
         }
     }

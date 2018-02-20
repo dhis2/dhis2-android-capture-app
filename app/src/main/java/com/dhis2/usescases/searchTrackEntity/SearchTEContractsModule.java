@@ -30,8 +30,6 @@ public class SearchTEContractsModule {
 
         Consumer<List<TrackedEntityInstanceModel>> swapListData();
 
-        void swapData(TrackedEntityObject body, List<TrackedEntityAttributeModel> attributeModels, List<ProgramModel> programModels);
-
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList();
@@ -40,6 +38,8 @@ public class SearchTEContractsModule {
     public interface Presenter {
 
         void init(SearchTEContractsModule.View view, String trackedEntityType);
+
+        void onDestroy();
 
         void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
 
@@ -60,8 +60,6 @@ public class SearchTEContractsModule {
         void onEnrollClick(android.view.View view);
 
         void onTEIClick(String TEIuid);
-
-        void getNextPage(int page);
 
         TrackedEntityModel getTrackedEntityName();
     }
@@ -88,11 +86,6 @@ public class SearchTEContractsModule {
         void enroll();
 
         TrackedEntityModel getTrackedEntity();
-
-        void getNextPage(int page);
-    }
-
-    public interface Router {
 
     }
 }

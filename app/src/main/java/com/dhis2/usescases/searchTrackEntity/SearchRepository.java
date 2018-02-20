@@ -11,7 +11,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -29,9 +28,9 @@ public interface SearchRepository {
 
     Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
 
-    Flowable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
-                                                                      @Nullable String programUid,
-                                                                      @Nullable String enrollmentDate,
-                                                                      @Nullable String incidentDate,
-                                                                      @Nullable List<TrackedEntityAttributeValueModel> queryData);
+    Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
+                                                                        @Nullable String programUid,
+                                                                        @Nullable String enrollmentDate,
+                                                                        @Nullable String incidentDate,
+                                                                        @Nullable List<TrackedEntityAttributeValueModel> queryData);
 }

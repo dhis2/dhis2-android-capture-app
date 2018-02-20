@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.ArrayList;
@@ -21,8 +22,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import timber.log.Timber;
@@ -32,14 +31,12 @@ import timber.log.Timber;
  */
 
 public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
-    final String ouMode = "DESCENDANTS";
 
     private final SearchRepository searchRepository;
     private final UserRepository userRepository;
     private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.View view;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private D2 d2;
 
     private List<OrganisationUnitModel> orgList;
     private List<ProgramModel> programModels;
@@ -53,11 +50,10 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
     private int currentPage = 0;
 
-    public SearchTEInteractor(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+    public SearchTEInteractor(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.searchRepository = searchRepository;
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
-        this.d2 = d2;
     }
 
     @Override
@@ -174,7 +170,10 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
 
         getTrackedEntityAttributes();
 
-        view.swapListData(null, null, null);
+        //Clears tei list
+        Observable.just(new ArrayList<TrackedEntityInstanceModel>())
+                .subscribe(view.swapListData(),
+                        t -> Log.d("ERROR", t.getMessage()));
     }
 
     @Override
@@ -200,12 +199,6 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
         return trackedEntity;
     }
 
-    @Override
-    public void getNextPage(int page) {
-        currentPage = page;
-        call();
-    }
-
     private void call() {
         String orgQuey = "";
         for (int i = 0; i < orgList.size(); i++) {
@@ -214,38 +207,16 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
                 orgQuey = orgQuey.concat(";");
         }
 
-        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntityType,
-                selectedProgram.uid(),
-                enrollmentDate,
-                incidentDate,
-                null)
+        compositeDisposable.add(teiObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.swapListData(),
                         throwable -> Log.d("ERROR", throwable.getMessage())));
 
-        d2.retrofit().create(TrackedEntityInstanceService.class)
-                .trackEntityInstances(
-                        orgQuey,
-                        ouMode,
-                        selectedProgram != null ? selectedProgram.uid() : null,
-                        true,
-                        enrollmentDate,
-                        incidentDate,
-                        filters,
-                        "trackedEntityInstance,attributes[*],enrollments[status,enrollment,trackedEntity,orgUnit,program,trackedEntityInstance,incidentDate]",
-                        currentPage)
-                .enqueue(new Callback<TrackedEntityObject>() {
-                    @Override
-                    public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                        view.swapData(response.body(), attributeModelList, programModels); //TODO: Send attributeList to order data in recycler and program list
-                    }
+    }
 
-                    @Override
-                    public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
-                        Log.d("ONFAILURE", "onFailure: " + t.getMessage());
-                    }
-                });
+    private Observable<List<TrackedEntityInstanceModel>> teiObservable() {
+        return Observable.defer(() -> searchRepository.trackedEntityInstances(trackedEntityType, selectedProgram.uid(), enrollmentDate, incidentDate, null));
     }
 
 
@@ -263,18 +234,5 @@ public class SearchTEInteractor implements SearchTEContractsModule.Interactor {
         currentPage = 0;
         call();
 
-    }
-
-    private interface TrackedEntityInstanceService {
-        @GET("28/trackedEntityInstances")
-        Call<TrackedEntityObject> trackEntityInstances(@Query("ou") String orgUnits,
-                                                       @Query("ouMode") String ouMode,
-                                                       @Query("program") String programId,
-                                                       @Query("totalPages") boolean showPager,
-                                                       @Query("programEnrollmentStartDate") String enrollmentStartDate,
-                                                       @Query("programIncidentStartDate") String incientStartDate,
-                                                       @Query("filter") List<String> filter,
-                                                       @Query("fields") String fields,
-                                                       @Query("page") int page);
     }
 }
