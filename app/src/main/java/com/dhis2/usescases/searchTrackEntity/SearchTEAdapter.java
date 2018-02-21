@@ -42,8 +42,6 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     @Override
     public void onBindViewHolder(SearchTEViewHolder holder, int position) {
 
-        TrackedEntityInstanceModel entityInstance = trackedEntityInstances.get(position);
-
         holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
     }
 

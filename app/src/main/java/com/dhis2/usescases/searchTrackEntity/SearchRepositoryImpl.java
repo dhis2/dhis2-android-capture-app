@@ -37,9 +37,21 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ";
 
     private final String GET_TRACKED_ENTITY_INSTANCES =
-            "SELECT *, FROM ((" + TrackedEntityInstanceModel.TABLE +
-                    " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
-                    " JOIN " + TrackedEntityAttributeValueModel.TABLE + " ON " + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+            "SELECT " +
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.UID +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.CREATED_AT_CLIENT +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.LAST_UPDATED_AT_CLIENT +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.TRACKED_ENTITY +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.CREATED +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.LAST_UPDATED +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.STATE +", "+
+                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.ID +", "+
+                    EnrollmentModel.TABLE+"."+EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE+" AS enroll" +", "+
+                    TrackedEntityAttributeValueModel.TABLE+"."+TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE+" AS attr" +
+                    " FROM ((" + TrackedEntityInstanceModel.TABLE +
+                    " JOIN " + EnrollmentModel.TABLE + " ON enroll = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+                    " JOIN " + TrackedEntityAttributeValueModel.TABLE + " ON attr = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " WHERE ";
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
@@ -113,7 +125,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             teiAttributeWHERE.append(")");
 
-            TEI_FINAL_QUERY += " OR " + teiTypeWHERE;
+            TEI_FINAL_QUERY += " OR " + teiTypeWHERE+ " GROUP BY "+TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.UID;
         }
 
 
