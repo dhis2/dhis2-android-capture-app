@@ -1,6 +1,7 @@
 package com.dhis2.usescases.appInfo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.Components;
 import com.dhis2.R;
+import com.dhis2.data.service.SyncService;
 import com.dhis2.databinding.FragmentInfoBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 
@@ -43,6 +45,7 @@ public class AppInfoFragment extends FragmentGlobalAbstract {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_info, container, false);
         compositeDisposable = new CompositeDisposable();
+        binding.buttonSync.setOnClickListener(view -> view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class)));
         return binding.getRoot();
     }
 
