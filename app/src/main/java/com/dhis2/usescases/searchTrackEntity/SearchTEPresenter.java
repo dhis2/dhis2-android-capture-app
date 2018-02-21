@@ -22,9 +22,9 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -53,13 +53,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private String enrollmentDate;
     private String incidentDate;
     private List<ProgramModel> programModels;
-    private List<TrackedEntityAttributeValueModel> queryData;
+    private HashMap<Long, String> queryData;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         compositeDisposable = new CompositeDisposable();
+        queryData = new HashMap<>();
     }
 
     //-----------------------------------
@@ -101,6 +102,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+        compositeDisposable.add(view.rowActions()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    if(!data.value.isEmpty())
+                        queryData.put(data.id,data.value);
+                    else
+                        queryData.remove(data.id);
+                    getTrakedEntities();
+                })
+        );
+
     }
 
     @Override
@@ -118,6 +131,31 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.swapListData())
+        );
+    }
+
+    public void getTrackedEntityAttributes() {
+        compositeDisposable.add(searchRepository.programAttributes()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            attributeModelList = data;
+                            view.setForm(data, selectedProgram);
+                        },
+                        Timber::d)
+        );
+    }
+
+    public void getProgramTrackedEntityAttributes() {
+        compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            view.setForm(data, selectedProgram);
+                        },
+                        Timber::d)
         );
     }
 
@@ -144,11 +182,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void setProgram(ProgramModel programSelected) {
         selectedProgram = programSelected;
         view.clearList();
+
+        getTrakedEntities();
+        if (selectedProgram == null)
+            getTrackedEntityAttributes();
+        else
+            getProgramTrackedEntityAttributes();
     }
 
     @Override
     public void onClearClick() {
-
+        setProgram(null);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -14,6 +15,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,17 +40,17 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final String GET_TRACKED_ENTITY_INSTANCES =
             "SELECT " +
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.UID +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.CREATED_AT_CLIENT +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.LAST_UPDATED_AT_CLIENT +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.TRACKED_ENTITY +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.CREATED +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.LAST_UPDATED +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.STATE +", "+
-                    TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.ID +", "+
-                    EnrollmentModel.TABLE+"."+EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE+" AS enroll" +", "+
-                    TrackedEntityAttributeValueModel.TABLE+"."+TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE+" AS attr" +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.CREATED_AT_CLIENT + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.LAST_UPDATED_AT_CLIENT + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.CREATED + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.LAST_UPDATED + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.STATE + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.ID + ", " +
+                    EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " AS enroll" + ", " +
+                    TrackedEntityAttributeValueModel.TABLE + "." + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " AS attr" +
                     " FROM ((" + TrackedEntityInstanceModel.TABLE +
                     " JOIN " + EnrollmentModel.TABLE + " ON enroll = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " JOIN " + TrackedEntityAttributeValueModel.TABLE + " ON attr = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
@@ -96,38 +98,42 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                @Nullable String programUid,
                                                                                @Nullable String enrollmentDate,
                                                                                @Nullable String incidentDate,
-                                                                               @Nullable List<TrackedEntityAttributeValueModel> queryData) {
+                                                                               @Nullable HashMap<Long, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntity = '" + teType + "'";
         String TEI_FINAL_QUERY = GET_TRACKED_ENTITY_INSTANCES + teiTypeWHERE;
         if (programUid != null && !programUid.isEmpty()) {
             String programWHERE = "Enrollment.program = '" + programUid + "'";
-            TEI_FINAL_QUERY += " OR " + programWHERE;
+            TEI_FINAL_QUERY += " AND " + programWHERE;
         }
 
         if (enrollmentDate != null && !enrollmentDate.isEmpty()) {
             String enrollmentDateWHERE = "Enrollment.enrollmentDate = '" + enrollmentDate + "'";
-            TEI_FINAL_QUERY += " OR " + enrollmentDateWHERE;
+            TEI_FINAL_QUERY += " AND " + enrollmentDateWHERE;
         }
         if (incidentDate != null && !incidentDate.isEmpty()) {
             String incidentDateWHERE = "Enrollment.incidentData = '" + incidentDate + "'";
-            TEI_FINAL_QUERY += " OR " + incidentDateWHERE;
+            TEI_FINAL_QUERY += " AND " + incidentDateWHERE;
         }
 
 
-        if (queryData != null && !queryData.isEmpty()) { //TODO: IMPROVE DATA QUERY
+        if (queryData != null && !queryData.isEmpty()) {
             StringBuilder teiAttributeWHERE = new StringBuilder("");
-            teiAttributeWHERE.append("TrakedEntityAttributeValue.value IN (");
-            for (int i = 0; i < queryData.size(); i++) {
-                teiAttributeWHERE.append("'").append(queryData.get(i).value()).append("'");
+            teiAttributeWHERE.append(TrackedEntityAttributeValueModel.TABLE+".value IN (");
+            for(int i = 0; i < queryData.keySet().size(); i++){
+                String dataValue = queryData.get(queryData.keySet().toArray()[i]);
+                teiAttributeWHERE.append("'").append(dataValue).append("'");
                 if (i < queryData.size() - 1)
                     teiAttributeWHERE.append(",");
             }
             teiAttributeWHERE.append(")");
 
-            TEI_FINAL_QUERY += " OR " + teiTypeWHERE+ " GROUP BY "+TrackedEntityInstanceModel.TABLE+"."+TrackedEntityInstanceModel.Columns.UID;
+            TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
         }
 
+
+        TEI_FINAL_QUERY += " AND " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.ENROLLMENT_STATUS + " = '" + EnrollmentStatus.ACTIVE.name() + "'" +
+                " GROUP BY " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID;
 
         return briteDatabase.createQuery(TEI_TABLE_SET, TEI_FINAL_QUERY)
                 .mapToList(TrackedEntityInstanceModel::create);

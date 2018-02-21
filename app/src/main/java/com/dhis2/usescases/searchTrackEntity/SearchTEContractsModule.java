@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.programDetail.TrackedEntityObject;
+import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -15,6 +16,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
@@ -33,6 +35,8 @@ public class SearchTEContractsModule {
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList();
+
+        Flowable<FormViewHolder> rowActions();
     }
 
     public interface Presenter {

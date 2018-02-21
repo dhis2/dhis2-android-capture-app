@@ -13,6 +13,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public ViewDataBinding binding;
+    public String value;
+    public Long id;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());

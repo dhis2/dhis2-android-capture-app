@@ -3,8 +3,8 @@ package com.dhis2.usescases.searchTrackEntity;
 import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,7 +14,7 @@ import com.dhis2.data.forms.dataentry.ProgramAdapter;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.utils.EndlessRecyclerViewScrollListener;
+import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -52,22 +53,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
-        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
 
-        binding.scrollView.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager()) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-//                presenter.getNextPage(page);TODO: FIX THIS. VIEWHOLDERS DATA SWAPS INCORRECTLY
-            }
-        });
         binding.scrollView.setNestedScrollingEnabled(false);
         searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
         binding.scrollView.setAdapter(searchTEAdapter);
+        binding.formRecycler.setAdapter(new FormAdapter(presenter));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
+
     }
 
     @Override
@@ -84,14 +81,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program) {
 
-        FormAdapter formAdapter;
-        if (binding.formRecycler.getAdapter() == null) {
-            formAdapter = new FormAdapter(presenter);
-            binding.formRecycler.setAdapter(formAdapter);
-        } else
-            formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
+        FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
 
         formAdapter.setList(trackedEntityAttributeModels, program);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<FormViewHolder> rowActions() {
+        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowable();
     }
 
     //endregion
@@ -136,6 +134,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                     if (searchTEAdapter != null)
                         searchTEAdapter.clear();
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
+                } else {
+                    binding.progress.setVisibility(View.VISIBLE);
+                    binding.objectCounter.setVisibility(View.GONE);
+                    if (searchTEAdapter != null)
+                        searchTEAdapter.clear();
+                    presenter.setProgram(null);
                 }
             }
 

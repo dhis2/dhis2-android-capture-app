@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -32,5 +32,5 @@ public interface SearchRepository {
                                                                         @Nullable String programUid,
                                                                         @Nullable String enrollmentDate,
                                                                         @Nullable String incidentDate,
-                                                                        @Nullable List<TrackedEntityAttributeValueModel> queryData);
+                                                                        @Nullable HashMap<Long, String> queryData);
 }
