@@ -21,7 +21,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +34,7 @@ import javax.inject.Inject;
  */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
+
     private final String DAILY = "Daily";
     private final String WEEKLY = "Weekly";
     private final String MONTHLY = "Monthly";
@@ -68,13 +68,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setData(List<EventModel> events) {
-        // TODO CRIS: SHOW EVENT LIST - CHANGE ADAPTER AND ROWS, ETC
-//        if (binding.recycler.getAdapter() == null) {
-//            adapter.setProgram(programModel);
-//            binding.recycler.setAdapter(adapter);
-//        }
-//
-//        adapter.addItems(response);
+        if (binding.recycler.getAdapter() == null) {
+            binding.recycler.setAdapter(adapter);
+        }
+        adapter.addItems(events);
     }
 
     @Override
@@ -82,21 +79,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         presenter.setProgram(program);
         binding.setName(program.displayName());
-    }
-
-    @Override
-    public void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes) {
-        if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(programModel);
-            binding.recycler.setAdapter(adapter);
-        }
-
-        adapter.setAttributesToShow(programAttributes);
-    }
-
-    @Override
-    public void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits) {
-        adapter.setOrgUnits(orgsUnits);
     }
 
     @Override

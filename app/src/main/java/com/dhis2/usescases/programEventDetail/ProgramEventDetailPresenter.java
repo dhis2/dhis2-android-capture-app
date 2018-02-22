@@ -16,7 +16,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     static private ProgramEventDetailContract.View view;
     private final ProgramEventDetailContract.Interactor interactor;
-    private String programId;
     public ProgramModel program;
 
     ProgramEventDetailPresenter(ProgramEventDetailContract.Interactor interactor) {
@@ -25,7 +24,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void init(ProgramEventDetailContract.View mview, String programId) {
-        this.programId = programId;
         view = mview;
         interactor.init(view, programId);
     }

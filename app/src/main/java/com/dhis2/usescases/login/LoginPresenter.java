@@ -41,6 +41,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void onButtonClick() {
+        view.hideKeyboard();
         interactor.validateCredentials(view.getBinding().serverUrl.getEditText().getText().toString(),
                 view.getBinding().userName.getEditText().getText().toString(),
                 view.getBinding().userPass.getEditText().getText().toString());

@@ -1,13 +1,10 @@
 package com.dhis2.usescases.programEventDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.programDetail.TrackedEntityObject;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.List;
 
@@ -22,10 +19,6 @@ public class ProgramEventDetailContract {
         void setData(List<EventModel> events);
 
         void addTree(TreeNode treeNode);
-
-        void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes);
-
-        void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits);
 
         void openDrawer();
 
@@ -60,7 +53,5 @@ public class ProgramEventDetailContract {
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId);
-
-        void getOrgUnits();
     }
 }

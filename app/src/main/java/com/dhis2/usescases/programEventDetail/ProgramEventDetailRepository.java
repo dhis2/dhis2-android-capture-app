@@ -2,6 +2,7 @@ package com.dhis2.usescases.programEventDetail;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.List;

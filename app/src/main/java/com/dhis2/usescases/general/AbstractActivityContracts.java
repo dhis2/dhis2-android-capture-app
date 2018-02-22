@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 27/09/2017.
+ *
  */
 
 public class AbstractActivityContracts {
@@ -31,6 +32,8 @@ public class AbstractActivityContracts {
         <T> void saveListToPreference(String key, List<T> list);
 
         <T> List<T> getListFromPreference(String key);
+
+        void hideKeyboard();
     }
 
     public interface Presenter {
