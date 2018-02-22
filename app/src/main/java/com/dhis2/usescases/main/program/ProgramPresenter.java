@@ -109,27 +109,26 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         bundle.putString("PROGRAM_UID", programModel.uid());
         bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
 
-        if (programModel.displayFrontPageList()) {
-            if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+        if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+            if (programModel.displayFrontPageList()) {
                 if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
                     view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
-                }
-                else {
+                } else {
                     view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
                 }
-            }
-            if (programModel.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                    // TODO: CRREATE TABLET ACTIVITY
-                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-                }
-                else {
-                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-                }
+            } else {
+                view.startActivity(SearchTEActivity.class, bundle, false, false, null);
             }
         } else {
-            view.startActivity(SearchTEActivity.class, bundle, false, false, null);
+            if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
+                // TODO: CRREATE TABLET ACTIVITY
+                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+            } else {
+                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+            }
         }
+
+
     }
 
     @Override

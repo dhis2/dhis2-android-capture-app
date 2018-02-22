@@ -45,6 +45,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     }
 
     @Override
+    public void hideKeyboard() {
+
+    }
+
+    @Override
     public void displayMessage(String message) {
         getAbstractActivity().displayMessage(message);
     }
