@@ -5,13 +5,10 @@ import android.util.Log;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.DashboardRepository;
-import com.dhis2.usescases.teiDashboard.TeiDashboardInteractor;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -80,7 +77,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
             Observable.zip(dashboardRepository.getProgramData(programId),
                     dashboardRepository.getProgramStages(programId),
                     metadataRepository.getProgramTrackedEntityAttributes(programId),
-                    metadataRepository.getOrganisatuibUnit(selectedEnrollment.organisationUnit()),
+                    metadataRepository.getOrganisationUnit(selectedEnrollment.organisationUnit()),
                     metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),
                     metadataRepository.getRelationshipType(programId),
                     DashboardProgramModel::new)

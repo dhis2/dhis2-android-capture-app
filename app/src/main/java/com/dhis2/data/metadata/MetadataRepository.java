@@ -2,6 +2,8 @@ package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -32,9 +34,17 @@ public interface MetadataRepository {
 
     Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
 
+    /*CATEGORY OPTION*/
+
+    Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId);
+
+    /*CATEGORY OPTION COMBO*/
+
+    Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
+
     /*ORG UNIT*/
 
-    Observable<OrganisationUnitModel> getOrganisatuibUnit(String orgUnitUid);
+    Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
     /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
 

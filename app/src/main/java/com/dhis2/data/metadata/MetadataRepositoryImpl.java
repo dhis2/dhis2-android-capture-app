@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -22,6 +24,7 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 04/12/2017.
+ *
  */
 
 public class MetadataRepositoryImpl implements MetadataRepository {
@@ -56,7 +59,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
 
-    private final String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.TABLE + "." + ProgramStageModel.Columns.UID + " = '%s'";
+    private final String SELECT_PROGRAM_STAGE = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID);
+
+    private final String SELECT_CATEGORY_OPTION = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryOptionModel.TABLE, CategoryOptionModel.TABLE, CategoryOptionModel.Columns.UID);
+
+    private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
 
     private final BriteDatabase briteDatabase;
@@ -73,7 +83,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<OrganisationUnitModel> getOrganisatuibUnit(String orgUnitUid) {
+    public Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId) {
+        return briteDatabase
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION + "'" + categoryOptionId + "'")
+                .mapToOne(CategoryOptionModel::create);
+    }
+
+    @Override
+    public Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId) {
+        return briteDatabase
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + categoryOptionComboId + "'")
+                .mapToOne(CategoryOptionComboModel::create);
+    }
+
+    @Override
+    public Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid) {
         return briteDatabase
                 .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitUid + "'")
                 .mapToOne(OrganisationUnitModel::create);
@@ -104,13 +128,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @NonNull
     @Override
     public Observable<ProgramStageModel> programStage(String programStageId) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, String.format(SELECT_PROGRAM_STAGE, programStageId))
+        return briteDatabase
+                .createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE + "'" + programStageId + "'")
                 .mapToOne(ProgramStageModel::create);
     }
 
     @Override
     public Observable<DataElementModel> getDataElement(String dataElementUid) {
-        return briteDatabase.createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'"+ dataElementUid+"'")
+        return briteDatabase
+                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid+  "'")
                 .mapToOne(DataElementModel::create);
     }
 

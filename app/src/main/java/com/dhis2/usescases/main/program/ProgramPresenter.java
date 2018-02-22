@@ -121,7 +121,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             }
         } else {
             if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                // TODO: CRREATE TABLET ACTIVITY
+                // TODO CRIS: CRREATE TABLET ACTIVITY
                 view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
             } else {
                 view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);

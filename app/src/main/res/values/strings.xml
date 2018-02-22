@@ -50,4 +50,21 @@
     <string name="enter_positive_integer">Enter positive integer</string>
     <string name="filter_options">Filter options</string>
     <string name="choose_date">Choose date</string>
+
+    <!-- Status -->
+    <string name="event_open">Open</string>
+    <string name="event_completed">Event Completed</string>
+    <string name="event_editing_expired">Editing Expired</string>
+    <string name="event_accepted">Event Accepted</string>
+    <string name="event_approved">Event Approved</string>
+    <string name="read_only">Read only</string>
+
+
+    <!-- State -->
+    <string name="state_synced">Sync</string>
+    <string name="state_to_post">To post</string>
+    <string name="state_to_update">To update</string>
+    <string name="state_to_delete">To delete</string>
+    <string name="state_error">Error</string>
+
 </resources>

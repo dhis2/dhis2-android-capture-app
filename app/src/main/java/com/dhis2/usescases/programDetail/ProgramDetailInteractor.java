@@ -11,13 +11,10 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -41,18 +38,15 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private String ouMode = "DESCENDANTS";
     private String programId;
     private UserRepository userRepository;
-    private ProgramRepository programRepository;
     private CompositeDisposable compositeDisposable;
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
     private Call<TrackedEntityObject> currentCall;
 
-    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, @NonNull ProgramRepository programRepository, MetadataRepository metadataRepository) {
+    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
-        this.programRepository = programRepository;
         this.metadataRepository = metadataRepository;
         Bindings.setMetadataRepository(metadataRepository);
-        Bindings.setProgramRepository(programRepository);
         compositeDisposable = new CompositeDisposable();
     }
 

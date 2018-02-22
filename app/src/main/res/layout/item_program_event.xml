@@ -46,7 +46,7 @@
                 android:layout_below="@id/entity_attribute_1"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
-                android:text='@{event.organisationUnit}'
+                app:organisationUnitName='@{event.organisationUnit}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -63,7 +63,8 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black_de0"
                     android:textSize="16sp"
@@ -77,7 +78,7 @@
                     android:gravity="end"
                     android:textColor="@color/black_de0"
                     android:textSize="16sp"
-                    android:text='@{event.attributeCategoryOptions}'
+                    app:categoryOptionComboName='@{event.attributeOptionCombo}'
                     tools:text="Cat combo"/>
 
             </LinearLayout>
@@ -92,9 +93,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black_de0"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
                     android:textSize="16sp"
                     tools:text="Diagnosis"
                     app:programStage='@{event.programStage}' />
@@ -104,10 +108,11 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginEnd="25dp"
                     android:gravity="end"
                     android:textColor="@color/black_de0"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:text="Completion 44%"/>
 
             </LinearLayout>
@@ -140,15 +145,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="9dp"
                     android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_lock_open_green" />
+                    app:eventWithoutRegistrationStatusIcon='@{event}'/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    android:text="Open"
-                    tools:text="Open" />
+                    app:eventWithoutRegistrationStatusText='@{event}'
+                    tools:text="Open"/>
 
                 <ImageView
                     android:id="@+id/sync_icon"
@@ -157,14 +162,14 @@
                     android:layout_marginBottom="9dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_sync_green" />
+                    app:stateIcon='@{event.state}'/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    android:text="Sync"
+                    app:stateText='@{event.state}'
                     tools:text="Sync" />
 
             </LinearLayout>

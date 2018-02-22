@@ -79,7 +79,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
             Observable.zip(dashboardRepository.getProgramData(programId),
                     dashboardRepository.getProgramStages(programId),
                     metadataRepository.getProgramTrackedEntityAttributes(programId),
-                    metadataRepository.getOrganisatuibUnit(selectedEnrollment.organisationUnit()),
+                    metadataRepository.getOrganisationUnit(selectedEnrollment.organisationUnit()),
                     metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),
                     metadataRepository.getRelationshipType(programId),
                     DashboardProgramModel::new)
@@ -102,7 +102,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
-            Observable.zip(metadataRepository.getOrganisatuibUnit(trackedEntityInstance.organisationUnit()),
+            Observable.zip(metadataRepository.getOrganisationUnit(trackedEntityInstance.organisationUnit()),
                     metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
