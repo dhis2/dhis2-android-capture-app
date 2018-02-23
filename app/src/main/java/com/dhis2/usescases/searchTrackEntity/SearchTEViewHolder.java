@@ -16,6 +16,7 @@ import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
 
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -24,6 +25,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by frodriguez on 11/7/2017.
@@ -35,13 +40,15 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     List<ProgramModel> programsNotEnrolled;
     List<ProgramModel> programsEnrolled;
     PopupMenu menu;
+    CompositeDisposable compositeDisposable;
 
     public SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
+        compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(SearchTEContractsModule.Presenter presenter,
+    /*public void bind(SearchTEContractsModule.Presenter presenter,
                      TrackedEntityInstance entityInstance,
                      List<String> attributes,
                      List<TrackedEntityAttributeModel> attributeModels,
@@ -66,7 +73,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
                             LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
                     );
-                    programsBinding.setEnrollment(enrollment);
+//                    programsBinding.setEnrollment(enrollment);
                     programsBinding.executePendingBindings();
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
@@ -96,11 +103,68 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         itemView.setOnClickListener(view -> presenter.onTEIClick(entityInstance.uid()));
 
-    }
+    }*/
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadataRepository) {
 
+        binding.setPresenter(presenter);
 
+        //--------------------------
+        //region ENROLLMENTS
+        //endregion
+
+        compositeDisposable.add(
+                metadataRepository.getTEIEnrollments(trackedEntityInstanceModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::setEnrollment)
+        );
+
+
+        //--------------------------
+        //region PROGRAM_POP_UP
+        /*compositeDisposable.add(
+                metadataRepository.getTEIProgramsToEnroll(trackedEntityInstanceModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::setPopUp)
+        );*/
+        //endregion
+
+        binding.executePendingBindings();
+
+        itemView.setOnClickListener(view -> presenter.onTEIClick(trackedEntityInstanceModel.uid()));
+    }
+
+    private void setPopUp(List<ProgramModel> programModels) {
+        menu = new PopupMenu(binding.addProgram.getContext(), binding.addProgram);
+        for (ProgramModel program : programModels) {
+            menu.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, program.displayShortName());
+        }
+        menu.setOnMenuItemClickListener(item -> {
+            Toast.makeText(binding.addProgram.getContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+            return true;
+        });
+
+        binding.addProgram.setOnClickListener(view -> menu.show());
+    }
+
+    private void setEnrollment(List<EnrollmentModel> enrollments) {
+        for (EnrollmentModel enrollment : enrollments) {
+
+            TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
+            );
+            programsBinding.setEnrollment(enrollment);
+            programsBinding.executePendingBindings();
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
+            binding.linearLayout.invalidate();
+
+        }
+        binding.viewMore.setVisibility(binding.linearLayout.getChildCount() > 2 ? View.VISIBLE : View.GONE);
 
     }
+
+
 }

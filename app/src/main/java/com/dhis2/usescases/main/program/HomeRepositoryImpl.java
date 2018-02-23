@@ -47,7 +47,8 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT *, Program.uid, Event.uid AS event_uid FROM ((Program" +
                     " INNER JOIN Event ON Event.program = Program.uid)" +
                     " INNER JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid)" +
-                    " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)";
+                    " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)" +
+                    " GROUP BY Program.uid";
 
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};

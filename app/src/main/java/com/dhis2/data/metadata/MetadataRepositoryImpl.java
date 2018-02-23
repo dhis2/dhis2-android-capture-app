@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -24,10 +25,19 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 04/12/2017.
- *
  */
 
 public class MetadataRepositoryImpl implements MetadataRepository {
+
+    private static final String SELECT_PROGRMAS_TO_ENROLL = String.format(
+            "SELECT * FROM %s WHERE %s.%s = ?",
+            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY
+    );
+
+    private static final String SELECT_TEI_ENROLLMENTS = String.format(
+            "SELECT * FROM %s WHERE %s.%s = '%s' AND %s.%s =",
+            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.ENROLLMENT_STATUS, "ACTIVE",
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
     private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
             ProgramModel.TABLE);
@@ -136,8 +146,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<DataElementModel> getDataElement(String dataElementUid) {
         return briteDatabase
-                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid+  "'")
+                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid + "'")
                 .mapToOne(DataElementModel::create);
+    }
+
+    @Override
+    public Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid) {
+        return briteDatabase
+                .createQuery(EnrollmentModel.TABLE, SELECT_TEI_ENROLLMENTS + "'" + teiUid + "'")
+                .mapToList(EnrollmentModel::create);
+    }
+
+    @Override
+    public Observable<List<ProgramModel>> getTEIProgramsToEnroll(String teiUid) {
+        return briteDatabase
+                .createQuery(ProgramModel.TABLE,SELECT_PROGRMAS_TO_ENROLL,teiUid)
+                .mapToList(ProgramModel::create);
     }
 
     @Override

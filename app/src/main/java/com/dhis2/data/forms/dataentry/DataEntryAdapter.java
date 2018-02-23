@@ -8,15 +8,9 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
-import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
-import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
-import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
-import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +37,8 @@ final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
 
     DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-            @NonNull FragmentManager fragmentManager,
-            @NonNull DataEntryArguments dataEntryArguments) {
+                     @NonNull FragmentManager fragmentManager,
+                     @NonNull DataEntryArguments dataEntryArguments) {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
