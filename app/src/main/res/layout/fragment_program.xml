@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
                 android:gravity="end"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
                         android:minWidth="70dp"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:padding="7dp"
-                        android:text="Daily"
+                        android:text="@string/DAILY"
                         android:textColor="?colorAccent" />
                 </LinearLayout>
 
@@ -80,7 +80,7 @@
                     android:textAllCaps="false"
                     android:textColor="?colorAccent"
                     android:textSize="15sp"
-                    tools:text="Org Unitasdfasdfasdfasdfasdfasdfasdf" />
+                    android:text="Org Unit" />
 
             </LinearLayout>
 

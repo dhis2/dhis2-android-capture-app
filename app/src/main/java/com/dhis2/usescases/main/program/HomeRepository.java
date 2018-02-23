@@ -22,14 +22,15 @@ interface HomeRepository {
     @NonNull
     Observable<List<ProgramModel>> programs(List<Date> dates, Period period);
 
-
     @NonNull
     Flowable<List<ProgramModel>> programs(List<Date> dates, Period period, String orgUnitsIdQuery);
 
     @NonNull
     Observable<List<EventModel>> eventModels(String programUid);
+
     @NonNull
     Observable<List<EventModel>> eventModels();
+
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits();
 

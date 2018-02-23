@@ -51,6 +51,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void init(ProgramContract.View view) {
         this.view = view;
+        this.view = view;
         getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
         getOrgUnits();
         compositeDisposable.add(homeRepository.eventModels()
@@ -149,7 +150,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getOrgUnits() {
-
         compositeDisposable.add(homeRepository.orgUnits()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

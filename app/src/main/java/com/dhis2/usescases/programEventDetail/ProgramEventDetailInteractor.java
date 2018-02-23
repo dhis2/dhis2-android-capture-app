@@ -3,12 +3,15 @@ package com.dhis2.usescases.programEventDetail;
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
+import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -46,7 +49,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.view = view;
         this.programId = programId;
         getProgram();
-        getEvents(programId);
+        getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
     private void getEvents(String programId){
@@ -58,12 +61,35 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
                         Timber::e));
     }
 
+    @Override
+    public void getEvents(String programId, Date fromDate, Date toDate) {
+        Observable.just(programEventDetailRepository.programEvents(programId,
+                DateUtils.getInstance().formatDate(fromDate),
+                DateUtils.getInstance().formatDate(toDate))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setData,
+                        Timber::e));
+    }
+
+
+    @Override
+    public void getProgramEventsWithDates(String programId, List<Date> dates, Period period) {
+        compositeDisposable.add(programEventDetailRepository.programEvents(programId, dates, period)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setData,
+                        throwable -> view.renderError(throwable.getMessage())));
+    }
+
     private void getProgram() {
         compositeDisposable.add(metadataRepository.getProgramWithId(programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        programModel -> view.setProgram(programModel),
+                        view::setProgram,
                         Timber::d)
         );
     }

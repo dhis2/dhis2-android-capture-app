@@ -4,8 +4,12 @@ import android.os.Bundle;
 
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -56,6 +60,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setProgram(ProgramModel program) {
         this.program = program;
+    }
+
+    @Override
+    public void getEvents(Date fromDate, Date toDate) {
+        interactor.getEvents(program.uid(), fromDate, toDate);
+    }
+
+    @Override
+    public void getProgramEventsWithDates(List<Date> dates, Period period) {
+        interactor.getProgramEventsWithDates(program.uid(), dates, period);
     }
 
     @Override
