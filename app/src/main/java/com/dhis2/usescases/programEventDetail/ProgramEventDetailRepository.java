@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
 import java.util.List;
@@ -26,4 +27,7 @@ public interface ProgramEventDetailRepository {
 
     @NonNull
     Observable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period);
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> orgUnits();
 }

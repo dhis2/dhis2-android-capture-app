@@ -91,7 +91,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawer(Gravity.END);
     }
 
-
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();

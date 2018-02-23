@@ -7,6 +7,7 @@ import com.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Date;
 import java.util.List;
@@ -57,5 +58,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, dateQuery))
                 .mapToList(EventModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> orgUnits() {
+        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
+                .mapToList(OrganisationUnitModel::create);
     }
 }

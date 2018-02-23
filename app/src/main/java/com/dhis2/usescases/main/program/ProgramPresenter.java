@@ -39,7 +39,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    private Date fromDate, toDate;
     private List<Date> dates;
     private Period period;
 
@@ -65,8 +64,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getPrograms(Date fromDate, Date toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
         this.dates = null;
         this.period = null;
         compositeDisposable.add(homeRepository.programs(
@@ -81,8 +78,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getProgramsWithDates(List<Date> dates, Period period) {
-        this.fromDate = null;
-        this.toDate = null;
         this.dates = dates;
         this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
