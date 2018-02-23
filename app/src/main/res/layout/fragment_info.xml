@@ -6,6 +6,10 @@
 
     </data>
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -43,6 +47,286 @@
             tools:text="ORG UNITS"
             android:gravity="center_vertical"/>
 
+        <TextView
+            android:id="@+id/users"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryCombo"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/trackedEntitys"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/relationshipTypes"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/authenticatedUsers"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/constants"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categories"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryOptionCombo"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryOptions"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/enrollments"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/relationships"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/optionSets"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/organisationUnitProgramLinks"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/options"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/trackedEntityAttributes"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/dataElements"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/programRule"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/programStageSections"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/userRoleProgramLink"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/userRole"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/programStages"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/programIndicator"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryCategoryComboLink"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryOptionComboCategoryLink"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/categoryCategoryOptionLink"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/trackedEntityAttributeValue"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/trackedEntityDataValue"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/programTrackedEntityAttribute"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/programRuleVariable"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/programRuleAction"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/programStageDataElement"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/programStageSectionProgramIndicatorLink"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/systemInfo"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/resources"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:text="ORG UNITS"
+            android:gravity="center_vertical"/>
+
+
+<Button
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/buttonSync"
+    android:text="SYNC"/>
+
+
+
+
+
+
 
     </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </layout>
