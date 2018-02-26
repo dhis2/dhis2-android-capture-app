@@ -19,12 +19,13 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 12/02/2018.
+ *
  */
 
 public class CatComboAdapter extends ArrayAdapter<CategoryOptionComboModel> {
 
-    List<CategoryOptionComboModel> options;
-    String catComboName;
+    private List<CategoryOptionComboModel> options;
+    private String catComboName;
 
     public CatComboAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<CategoryOptionComboModel> objects, String categoryOptionName) {
         super(context, resource, textViewResourceId, objects);

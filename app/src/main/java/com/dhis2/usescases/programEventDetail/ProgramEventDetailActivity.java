@@ -8,17 +8,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramEventDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -37,11 +42,7 @@ import javax.inject.Inject;
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
 
-    private final String DAILY = "Daily";
-    private final String WEEKLY = "Weekly";
-    private final String MONTHLY = "Monthly";
-    private final String YEARLY = "Yearly";
-    ActivityProgramEventDetailBinding binding;
+    private ActivityProgramEventDetailBinding binding;
 
     @Inject
     ProgramEventDetailContract.Presenter presenter;
@@ -187,5 +188,25 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     .setTitle(getString(R.string.error))
                     .setMessage(message)
                     .show();
+    }
+
+    @Override
+    public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
+        CatComboAdapter adapter = new CatComboAdapter(this,
+                R.layout.spinner_layout,
+                R.id.spinner_text,
+                catComboList,
+                catCombo.displayName());
+
+        binding.catCombo.setAdapter(adapter);
+
+        binding.catCombo.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 0){
+                presenter.clearCatComboFilters();
+            }
+            else {
+                presenter.onCatComboSelected(adapter.getItem(position-1));
+            }
+        });
     }
 }

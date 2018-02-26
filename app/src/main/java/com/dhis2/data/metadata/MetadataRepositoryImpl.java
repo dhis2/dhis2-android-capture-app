@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -68,6 +69,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
+    private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
+
 
     private final BriteDatabase briteDatabase;
 
@@ -80,6 +84,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TrackedEntityModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
                 .mapToOne(TrackedEntityModel::create);
+    }
+
+    @Override
+    public Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId) {
+        return briteDatabase
+                .createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO + "'" + categoryComboId + "'")
+                .mapToOne(CategoryComboModel::create);
     }
 
     @Override

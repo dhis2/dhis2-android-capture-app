@@ -6,12 +6,21 @@
 
         <import type="com.dhis2.R" />
 
+        <import type="org.hisp.dhis.android.core.category.CategoryOptionComboModel"/>
+
         <variable
             name="name"
             type="java.lang.String"/>
         <variable
             name="presenter"
             type="com.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+        <variable
+            name="catCombo"
+            type="org.hisp.dhis.android.core.category.CategoryComboModel" />
+
+        <variable
+            name="catComboOptions"
+            type="java.util.List&lt;CategoryOptionComboModel>" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -122,23 +131,22 @@
                             android:textSize="15sp"
                             android:text="Org Unit" />
 
-                        <Button
-                            android:id="@+id/button_cat_combo"
+                        <Spinner
+                            android:id="@+id/cat_combo"
                             android:layout_width="wrap_content"
+                            android:minWidth="120dp"
                             android:layout_height="40dp"
                             android:layout_marginStart="5dp"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/selector_button_round_20"
                             android:maxLines="1"
                             android:minHeight="40dp"
-                            android:onClick="@{()->presenter.onCatComboButtonClick()}"
                             android:paddingEnd="15dp"
                             android:paddingStart="15dp"
-                            android:text="Cat Combo"
                             android:textAlignment="textStart"
                             android:textAllCaps="false"
                             android:textColor="?colorAccent"
-                            android:textSize="15sp" />
+                            android:textSize="15sp"/>
                     </LinearLayout>
                 </LinearLayout>
 

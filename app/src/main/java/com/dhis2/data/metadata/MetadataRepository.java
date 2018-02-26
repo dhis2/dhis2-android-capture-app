@@ -2,6 +2,7 @@ package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -41,6 +42,10 @@ public interface MetadataRepository {
     /*CATEGORY OPTION COMBO*/
 
     Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
+
+    /*CATEGORY COMBO*/
+
+    Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId);
 
     /*ORG UNIT*/
 

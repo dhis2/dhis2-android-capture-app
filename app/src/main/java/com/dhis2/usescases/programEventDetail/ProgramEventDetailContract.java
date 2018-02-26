@@ -4,6 +4,8 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -31,6 +33,8 @@ public class ProgramEventDetailContract {
         void setProgram(ProgramModel programModel);
 
         void renderError(String message);
+
+        void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -41,10 +45,6 @@ public class ProgramEventDetailContract {
         void onDateRangeButtonClick();
 
         void onOrgUnitButtonClick();
-
-        void onCatComboButtonClick();
-
-        ProgramModel getCurrentProgram();
 
         void onSearchClick();
 
@@ -57,6 +57,10 @@ public class ProgramEventDetailContract {
         void getEvents(Date fromDate, Date toDate);
 
         void getProgramEventsWithDates(List<Date> dates, Period period);
+
+        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
+
+        void clearCatComboFilters();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -67,5 +71,7 @@ public class ProgramEventDetailContract {
         void getOrgUnits();
 
         void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
+
+        void updateFilters(CategoryOptionComboModel categoryOptionComboModel);
     }
 }

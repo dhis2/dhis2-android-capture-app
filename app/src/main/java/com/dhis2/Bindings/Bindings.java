@@ -32,7 +32,6 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -471,7 +470,7 @@ public class Bindings {
     }
 
     @BindingAdapter("spinnerOptions")
-    public static void setSpinnerOptions(Spinner spinner, ArrayList<CategoryOptionComboModel> options) {
+    public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
         CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,

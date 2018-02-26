@@ -6,6 +6,7 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Period;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Date;
@@ -48,16 +49,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void onCatComboButtonClick() {
-
-    }
-
-    @Override
-    public ProgramModel getCurrentProgram() {
-        return program;
-    }
-
-    @Override
     public void setProgram(ProgramModel program) {
         this.program = program;
     }
@@ -70,6 +61,16 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void getProgramEventsWithDates(List<Date> dates, Period period) {
         interactor.getProgramEventsWithDates(program.uid(), dates, period);
+    }
+
+    @Override
+    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
+        interactor.updateFilters(categoryOptionComboModel);
+    }
+
+    @Override
+    public void clearCatComboFilters() {
+        interactor.updateFilters(null);
     }
 
     @Override
