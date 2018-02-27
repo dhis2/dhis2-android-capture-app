@@ -453,7 +453,6 @@ public class Bindings {
         }
     }
 
-
     public static void setMetadataRepository(MetadataRepository metadata) {
         metadataRepository = metadata;
     }
@@ -477,5 +476,26 @@ public class Bindings {
                 options,
                 "");
         spinner.setAdapter(adapter);
+    }
+
+    @BindingAdapter("eventCompletion")
+    public static void setEventCompletion(TextView textView, EventModel eventModel){
+        metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        trackEntityCount -> {
+                                            float perone = (float) trackEntityCount / (float) programStageCount;
+                                            int percent = (int) (perone*100);
+                                            String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
+                                            textView.setText(completionText);
+                                        },
+                                        Timber::d
+                                ),
+                        Timber::d
+                );
     }
 }

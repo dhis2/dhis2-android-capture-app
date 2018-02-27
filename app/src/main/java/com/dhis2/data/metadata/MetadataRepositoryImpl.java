@@ -11,9 +11,11 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.Arrays;
@@ -149,6 +151,38 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid+  "'")
                 .mapToOne(DataElementModel::create);
+    }
+
+    @Override
+    public Observable<Integer> getProgramStageDataElementCount(String programStageId) {
+        String SELECT_PROGRAM_STAGE_COUNT = "SELECT COUNT(*) FROM " + ProgramStageDataElementModel.TABLE +
+                " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s'";
+        return briteDatabase
+                .createQuery(ProgramStageDataElementModel.TABLE, String.format(SELECT_PROGRAM_STAGE_COUNT, programStageId))
+                .mapToOne(cursor -> {
+                    if(cursor.getCount() > 0){
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    }
+                    else
+                        return 0;
+                });
+    }
+
+    @Override
+    public Observable<Integer> getTrackEntityDataValueCount(String eventId) {
+        String SELECT_TRACKED_ENTITY_COUNT = "SELECT COUNT(*) FROM " + TrackedEntityDataValueModel.TABLE +
+                " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + " = '%s'";
+        return briteDatabase
+                .createQuery(TrackedEntityDataValueModel.TABLE, String.format(SELECT_TRACKED_ENTITY_COUNT, eventId))
+                .mapToOne(cursor -> {
+                    if(cursor.getCount() > 0){
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    }
+                    else
+                        return 0;
+                });
     }
 
     @Override

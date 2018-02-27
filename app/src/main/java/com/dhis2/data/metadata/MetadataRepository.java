@@ -67,4 +67,8 @@ public interface MetadataRepository {
     Observable<ProgramStageModel> programStage(String programStageId);
 
     Observable<DataElementModel> getDataElement(String dataElementUid);
+
+    Observable<Integer> getProgramStageDataElementCount(String programStageId);
+
+    Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 }

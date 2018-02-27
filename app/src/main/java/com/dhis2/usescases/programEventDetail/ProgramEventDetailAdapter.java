@@ -40,7 +40,6 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
     @Override
     public void onBindViewHolder(ProgramEventDetailViewHolder holder, int position) {
         EventModel event = events.get(position);
-
         holder.bind(presenter, event);
     }
 

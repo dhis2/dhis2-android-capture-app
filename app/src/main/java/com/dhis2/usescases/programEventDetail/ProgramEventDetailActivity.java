@@ -163,7 +163,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         treeView.setDefaultNodeLongClickListener((node, value) -> {
             node.setSelected(!node.isSelected());
-            ArrayList<String> childIds = new ArrayList<String>();
+            ArrayList<String> childIds = new ArrayList<>();
             childIds.add(((OrganisationUnitModel) value).uid());
             for (TreeNode childNode : node.getChildren()) {
                 childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
