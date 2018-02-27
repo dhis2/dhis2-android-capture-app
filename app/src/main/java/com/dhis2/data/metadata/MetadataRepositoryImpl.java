@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -11,9 +12,11 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.Arrays;
@@ -78,6 +81,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
+    private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
+
 
     private final BriteDatabase briteDatabase;
 
@@ -90,6 +96,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TrackedEntityModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
                 .mapToOne(TrackedEntityModel::create);
+    }
+
+    @Override
+    public Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId) {
+        return briteDatabase
+                .createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO + "'" + categoryComboId + "'")
+                .mapToOne(CategoryComboModel::create);
     }
 
     @Override
@@ -160,8 +173,40 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<List<ProgramModel>> getTEIProgramsToEnroll(String teiUid) {
         return briteDatabase
-                .createQuery(ProgramModel.TABLE,SELECT_PROGRMAS_TO_ENROLL,teiUid)
+                .createQuery(ProgramModel.TABLE, SELECT_PROGRMAS_TO_ENROLL, teiUid)
                 .mapToList(ProgramModel::create);
+    }
+
+    @Override
+    public Observable<Integer> getProgramStageDataElementCount(String programStageId) {
+        String SELECT_PROGRAM_STAGE_COUNT = "SELECT COUNT(*) FROM " + ProgramStageDataElementModel.TABLE +
+                " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s'";
+        return briteDatabase
+                .createQuery(ProgramStageDataElementModel.TABLE, String.format(SELECT_PROGRAM_STAGE_COUNT, programStageId))
+                .mapToOne(cursor -> {
+                    if(cursor.getCount() > 0){
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    }
+                    else
+                        return 0;
+                });
+    }
+
+    @Override
+    public Observable<Integer> getTrackEntityDataValueCount(String eventId) {
+        String SELECT_TRACKED_ENTITY_COUNT = "SELECT COUNT(*) FROM " + TrackedEntityDataValueModel.TABLE +
+                " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + " = '%s'";
+        return briteDatabase
+                .createQuery(TrackedEntityDataValueModel.TABLE, String.format(SELECT_TRACKED_ENTITY_COUNT, eventId))
+                .mapToOne(cursor -> {
+                    if(cursor.getCount() > 0){
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    }
+                    else
+                        return 0;
+                });
     }
 
     @Override

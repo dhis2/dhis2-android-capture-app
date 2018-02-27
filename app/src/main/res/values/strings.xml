@@ -67,4 +67,6 @@
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
 
+    <!--Completion-->
+    <string name="completion">Completion</string>
 </resources>

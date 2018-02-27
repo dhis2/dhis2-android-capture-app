@@ -1,14 +1,25 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
+import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -26,15 +37,27 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private final MetadataRepository metadataRepository;
     private final ProgramEventDetailRepository programEventDetailRepository;
-    ProgramEventDetailContract.View view;
-    private D2 d2;
-    private String ouMode = "DESCENDANTS";
+    private ProgramEventDetailContract.View view;
     private String programId;
     private CompositeDisposable compositeDisposable;
-    private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
+    private CategoryOptionComboModel categoryOptionComboModel;
 
-    ProgramEventDetailInteractor(D2 d2, ProgramEventDetailRepository programEventDetailRepository, MetadataRepository metadataRepository) {
-        this.d2 = d2;
+    private Date fromDate;
+    private Date toDate;
+
+    private List<Date> dates;
+    private Period period;
+
+    private @LastSearchType int lastSearchType;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
+    public @interface LastSearchType {
+        int DATES = 1;
+        int DATE_RANGES = 32;
+    }
+
+    ProgramEventDetailInteractor(ProgramEventDetailRepository programEventDetailRepository, MetadataRepository metadataRepository) {
         this.metadataRepository = metadataRepository;
         this.programEventDetailRepository = programEventDetailRepository;
         Bindings.setMetadataRepository(metadataRepository);
@@ -46,69 +69,158 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.view = view;
         this.programId = programId;
         getProgram();
-        getEvents(programId);
+        getOrgUnits();
+        getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
-    private void getEvents(String programId){
-        Observable.just(programEventDetailRepository.programEvents(programId)
+    @Override
+    public void getEvents(String programId, Date fromDate, Date toDate) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        lastSearchType = LastSearchType.DATES;
+        Observable.just(programEventDetailRepository.filteredProgramEvents(programId,
+                DateUtils.getInstance().formatDate(fromDate),
+                DateUtils.getInstance().formatDate(toDate),
+                categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> view.setData(data),
+                        view::setData,
                         Timber::e));
     }
+
+    @Override
+    public void getOrgUnits() {
+        compositeDisposable.add(programEventDetailRepository.orgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::renderTree,
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
+    }
+
+    @Override
+    public void getProgramEventsWithDates(String programId, List<Date> dates, Period period) {
+        this.dates = dates;
+        this.period = period;
+        lastSearchType = LastSearchType.DATE_RANGES;
+        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setData,
+                        throwable -> view.renderError(throwable.getMessage())));
+    }
+
+    @Override
+    public void updateFilters(CategoryOptionComboModel categoryOptionComboModel) {
+        this.categoryOptionComboModel = categoryOptionComboModel;
+        switch (lastSearchType){
+            case LastSearchType.DATES:
+                getEvents(programId, this.fromDate, this.toDate);
+                break;
+            case LastSearchType.DATE_RANGES:
+                getProgramEventsWithDates(programId, this.dates, this.period);
+                break;
+            default:
+                getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
+                break;
+        }
+    }
+
 
     private void getProgram() {
         compositeDisposable.add(metadataRepository.getProgramWithId(programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        programModel -> view.setProgram(programModel),
+                        (programModel) -> {
+                            view.setProgram(programModel);
+                            getCatCombo(programModel);
+                        },
                         Timber::d)
         );
     }
 
+    private void getCatCombo(ProgramModel programModel){
+        compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (catCombo) -> compositeDisposable.add(programEventDetailRepository.catCombo(programModel.categoryCombo())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        (catComboOptions) -> view.setCatComboOptions(catCombo, catComboOptions),
+                                        Timber::d)
+                        ),
+                        Timber::d)
+        );
 
-    private void renderTree(List<OrganisationUnitModel> myOrgs) {
 
-        selectedOrgUnits.addAll(myOrgs);
+    }
 
-        TreeNode root = TreeNode.root();
-        ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
-        ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
 
-        int maxLevel = -1;
-        int minLevel = 999;
-        for (OrganisationUnitModel orgUnit : myOrgs) {
-            maxLevel = orgUnit.level() > maxLevel ? orgUnit.level() : maxLevel;
-            minLevel = orgUnit.level() < minLevel ? orgUnit.level() : minLevel;
-            allTreeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
+    private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
+
+        HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
+
+        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
+        allOrgs.addAll(myOrgs);
+        for (OrganisationUnitModel myorg : myOrgs) {
+            String[] path = myorg.path().split("/");
+            for (int i = myorg.level() - 1; i > 0; i--) {
+                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
+                        .uid(path[i])
+                        .level(i)
+                        .parent(path[i - 1])
+                        .name(path[i])
+                        .displayName(path[i])
+                        .displayShortName(path[i])
+                        .build();
+                if (!allOrgs.contains(orgToAdd))
+                    allOrgs.add(orgToAdd);
+            }
         }
 
-        for (TreeNode treeNodeParent : allTreeNodes) {
-            for (TreeNode treeNodeChild : allTreeNodes) {
-                OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
-                OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
+        Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
 
-                if (childOU.parent().equals(parentOU.uid())) {
-                    treeNodeParent.addChildren(treeNodeChild);
-                    treeNodesToRemove.add(treeNodeChild);
+        for (int i = 0; i < myOrgs.get(0).level(); i++) {
+            subLists.put(i + 1, new ArrayList<>());
+        }
+
+        //Separamos las orunits en listas por nivel
+        for (OrganisationUnitModel orgs : allOrgs) {
+            ArrayList<TreeNode> sublist = subLists.get(orgs.level());
+            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(view.getContext()));
+            treeNode.setSelectable(orgs.path() != null);
+            sublist.add(treeNode);
+            subLists.put(orgs.level(), sublist);
+        }
+
+        TreeNode root = TreeNode.root();
+        root.addChildren(subLists.get(1));
+
+        for (int level = myOrgs.get(0).level(); level > 1; level--) {
+            for (TreeNode treeNode : subLists.get(level - 1)) {
+                for (TreeNode treeNodeLevel : subLists.get(level)) {
+                    if (((OrganisationUnitModel) treeNodeLevel.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                        treeNode.addChild(treeNodeLevel);
                 }
             }
         }
 
-        allTreeNodes.remove(treeNodesToRemove);
-
-        for (TreeNode treeNode : allTreeNodes) {
-            root.addChild(treeNode);
-        }
-
-
         view.addTree(root);
+
     }
 
     @Override
     public void onDettach() {
         compositeDisposable.dispose();
+    }
+
+    public void updateFilters(){
+
     }
 }

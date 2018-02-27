@@ -32,7 +32,6 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -454,7 +453,6 @@ public class Bindings {
         }
     }
 
-
     public static void setMetadataRepository(MetadataRepository metadata) {
         metadataRepository = metadata;
     }
@@ -471,12 +469,33 @@ public class Bindings {
     }
 
     @BindingAdapter("spinnerOptions")
-    public static void setSpinnerOptions(Spinner spinner, ArrayList<CategoryOptionComboModel> options) {
+    public static void setSpinnerOptions(Spinner spinner, List<CategoryOptionComboModel> options) {
         CatComboAdapter adapter = new CatComboAdapter(spinner.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,
                 options,
                 "");
         spinner.setAdapter(adapter);
+    }
+
+    @BindingAdapter("eventCompletion")
+    public static void setEventCompletion(TextView textView, EventModel eventModel){
+        metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        trackEntityCount -> {
+                                            float perone = (float) trackEntityCount / (float) programStageCount;
+                                            int percent = (int) (perone*100);
+                                            String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
+                                            textView.setText(completionText);
+                                        },
+                                        Timber::d
+                                ),
+                        Timber::d
+                );
     }
 }

@@ -8,8 +8,6 @@ import com.dhis2.usescases.programDetail.ProgramRepository;
 import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.D2;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -36,10 +34,9 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailContract.Interactor provideInteractor(D2 d2,
-                                                            @NonNull ProgramEventDetailRepository programEventDetailRepository,
+    ProgramEventDetailContract.Interactor provideInteractor(@NonNull ProgramEventDetailRepository programEventDetailRepository,
                                                             @NonNull MetadataRepository metadataRepository) {
-        return new ProgramEventDetailInteractor(d2, programEventDetailRepository, metadataRepository);
+        return new ProgramEventDetailInteractor(programEventDetailRepository, metadataRepository);
     }
 
     @Provides

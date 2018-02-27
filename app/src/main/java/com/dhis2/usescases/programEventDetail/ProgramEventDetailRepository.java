@@ -2,9 +2,13 @@ package com.dhis2.usescases.programEventDetail;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
+import com.dhis2.utils.Period;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -17,5 +21,14 @@ import io.reactivex.Observable;
 public interface ProgramEventDetailRepository {
 
     @NonNull
-    Observable<List<EventModel>> programEvents(String programUid);
+    Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
+
+    @NonNull
+    Observable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel);
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> orgUnits();
+
+    @NonNull
+    Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
 }

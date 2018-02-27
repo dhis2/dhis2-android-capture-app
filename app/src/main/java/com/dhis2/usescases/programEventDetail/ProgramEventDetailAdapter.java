@@ -1,6 +1,7 @@
 package com.dhis2.usescases.programEventDetail;
 
 import android.databinding.DataBindingUtil;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.dhis2.databinding.ItemProgramEventBinding;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,7 +40,6 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
     @Override
     public void onBindViewHolder(ProgramEventDetailViewHolder holder, int position) {
         EventModel event = events.get(position);
-
         holder.bind(presenter, event);
     }
 
@@ -47,10 +48,13 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         return events != null ? events.size() : 0;
     }
 
-    public void addItems(List<EventModel> events) {
-        if (events.size() > 0) {
-            this.events.addAll(events);
-        }
-        notifyDataSetChanged();
+    public void setEvents(List<EventModel> events){
+        Collections.sort(this.events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
+        Collections.sort(events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, events));
+        this.events.clear();
+        this.events.addAll(events);
+        diffResult.dispatchUpdatesTo(this);
     }
 }

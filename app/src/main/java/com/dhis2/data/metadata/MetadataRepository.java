@@ -2,6 +2,7 @@ package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -42,6 +43,10 @@ public interface MetadataRepository {
 
     Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
 
+    /*CATEGORY COMBO*/
+
+    Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId);
+
     /*ORG UNIT*/
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
@@ -67,4 +72,9 @@ public interface MetadataRepository {
     Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid);
 
     Observable<List<ProgramModel>> getTEIProgramsToEnroll(String teiUid);
+
+    /*EVENTS*/
+    Observable<Integer> getProgramStageDataElementCount(String programStageId);
+
+    Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 }

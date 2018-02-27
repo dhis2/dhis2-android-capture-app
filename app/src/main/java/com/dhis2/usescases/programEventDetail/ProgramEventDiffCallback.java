@@ -1,9 +1,9 @@
-package com.dhis2.usescases.main.program;
+package com.dhis2.usescases.programEventDetail;
 
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.List;
 
@@ -12,14 +12,14 @@ import java.util.List;
  *
  */
 
-class ProgramDiffCallback extends DiffUtil.Callback {
+class ProgramEventDiffCallback extends DiffUtil.Callback {
 
     @NonNull
-    private List<ProgramModel> oldList;
+    private List<EventModel> oldList;
     @NonNull
-    private List<ProgramModel> newList;
+    private List<EventModel> newList;
 
-    ProgramDiffCallback(@NonNull List<ProgramModel> oldList, @NonNull List<ProgramModel> newList) {
+    ProgramEventDiffCallback(@NonNull List<EventModel> oldList, @NonNull List<EventModel> newList) {
         this.oldList = oldList;
         this.newList = newList;
     }
