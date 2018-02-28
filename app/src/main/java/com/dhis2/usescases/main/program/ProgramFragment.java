@@ -79,11 +79,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void showRageDatePicker() {
-
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
         if (currentPeriod != Period.DAILY) {
-
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                 if (!selectedDates.isEmpty()) {
                     String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
@@ -138,7 +136,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-
         binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
         presenter.init(this);
     }
@@ -179,7 +176,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 selectedUids.add(((OrganisationUnitModel) selectedOrgsTreeNode.getValue()).uid());
             }
             binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected()));
-//            binding.drawerLayout.closeDrawers();
         });
     }
 

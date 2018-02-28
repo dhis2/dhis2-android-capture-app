@@ -1,11 +1,13 @@
 package com.dhis2.usescases.programEventDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +29,8 @@ public class ProgramEventDetailContract {
         void showRageDatePicker();
 
         void setProgram(ProgramModel programModel);
+
+        void renderError(String message);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -49,9 +53,19 @@ public class ProgramEventDetailContract {
         void onTEIClick(String TEIuid, String programUid);
 
         void setProgram(ProgramModel program);
+
+        void getEvents(Date fromDate, Date toDate);
+
+        void getProgramEventsWithDates(List<Date> dates, Period period);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId);
+
+        void getEvents(String programId, Date fromDate, Date toDate);
+
+        void getOrgUnits();
+
+        void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
     }
 }

@@ -43,12 +43,8 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     }
 
     public void setData(List<ProgramModel> program) {
-//        this.programList.clear();
-//        this.programList.addAll(program);
-
         Collections.sort(this.programList, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
         Collections.sort(program, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
-//        notifyDataSetChanged();
 
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
         programList.clear();

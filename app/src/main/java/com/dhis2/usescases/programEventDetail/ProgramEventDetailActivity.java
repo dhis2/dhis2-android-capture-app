@@ -6,14 +6,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
-import android.widget.Toast;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramEventDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.utils.CustomViews.DateDialog;
+import com.dhis2.utils.CustomViews.RxDateDialog;
+import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -24,6 +25,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -71,7 +73,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }
-        adapter.addItems(events);
+        adapter.setEvents(events);
     }
 
     @Override
@@ -91,49 +93,59 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void showRageDatePicker() {
-
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
         if (currentPeriod != Period.DAILY) {
-            DateDialog dialog = DateDialog.newInstace(currentPeriod);
-            dialog.setCancelable(true);
-            getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
+            new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
+                if (!selectedDates.isEmpty()) {
+                    String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
+                    if (selectedDates.size() > 1)
+                        textToShow += " " + DateUtils.getInstance().formatDate(selectedDates.get(1));
+                    binding.buttonPeriodText.setText(textToShow);
+                    presenter.getProgramEventsWithDates(selectedDates, currentPeriod);
+                } else {
+                    binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+                    Date[] dates = DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+                    presenter.getEvents(dates[0], dates[1]);
+                }
+            });
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-
+                calendar.set(year, monthOfYear, dayOfMonth);
+                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                presenter.getEvents(dates[0], dates[1]);
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
         }
     }
 
+
     @Override
     public void showTimeUnitPicker() {
         Drawable drawable = null;
-        String period = null;
+
         switch (currentPeriod) {
             case DAILY:
                 currentPeriod = Period.WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
-                period = WEEKLY;
                 break;
             case WEEKLY:
                 currentPeriod = Period.MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
-                period = MONTHLY;
                 break;
             case MONTHLY:
                 currentPeriod = Period.YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
-                period = YEARLY;
                 break;
             case YEARLY:
                 currentPeriod = Period.DAILY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
-                period = DAILY;
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        Toast.makeText(getContext(), String.format("Period filter set to %s", period), Toast.LENGTH_LONG).show();
+        binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+        Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+        presenter.getEvents(dates[0], dates[1]);
     }
 
     @Override
@@ -165,5 +177,15 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawers();
             return true;
         });
+    }
+
+    @Override
+    public void renderError(String message) {
+        if (getActivity() != null)
+            new AlertDialog.Builder(getActivity())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setTitle(getString(R.string.error))
+                    .setMessage(message)
+                    .show();
     }
 }
