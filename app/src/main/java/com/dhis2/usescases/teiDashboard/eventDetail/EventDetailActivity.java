@@ -3,10 +3,13 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -16,7 +19,8 @@ import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.flexbox.FlexboxLayout;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 
 import javax.inject.Inject;
 
@@ -55,12 +59,44 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         binding.setEvent(eventDetailModel.getEventModel());
         binding.executePendingBindings();
 
-        for (TrackedEntityDataValueModel dataValueModel : eventDetailModel.getDataValueModelList()) {
+        if (!eventDetailModel.getStageSections().isEmpty()) {
+            setSectionDataElements(eventDetailModel, "null");
+
+            for (ProgramStageSectionModel section : eventDetailModel.getStageSections()) {
+
+                TextView sectionTitle = new TextView(this);
+                sectionTitle.setText(section.displayName());
+                sectionTitle.setTextColor(ContextCompat.getColor(this, R.color.cell_text_color));
+                sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                sectionTitle.setHintTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+                FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setFlexBasisPercent(1f);
+                binding.dataLayout.addView(sectionTitle, params);
+
+                setSectionDataElements(eventDetailModel, section.uid());
+
+
+            }
+        } else
+            setSectionDataElements(eventDetailModel, null);
+
+        binding.dataLayout.invalidate();
+
+
+        supportStartPostponedEnterTransition();
+
+    }
+
+    private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {
+
+        for (ProgramStageDataElementModel dataValueModel : eventDetailModel.getDataElementsForSection(sectionUid)) {
 
             FormEditTextDataBinding editTextBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(this), R.layout.form_edit_text_data, binding.dataLayout, false
             );
             editTextBinding.setDataValue(dataValueModel);
+
+            editTextBinding.formEdittext.setText(eventDetailModel.getValueForDE(dataValueModel.dataElement()));
 
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setFlexBasisPercent(.5f);
@@ -84,12 +120,5 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             });
 
         }
-
-
-        binding.dataLayout.invalidate();
-
-
-        supportStartPostponedEnterTransition();
-
     }
 }

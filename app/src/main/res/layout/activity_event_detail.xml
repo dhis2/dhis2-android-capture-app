@@ -24,6 +24,7 @@
             type="Boolean" />
     </data>
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,9 +40,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick="@{()->presenter.back()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                android:onClick="@{()->presenter.back()}"/>
+                app:srcCompat="@drawable/ic_arrow_back" />
 
             <TextView
                 android:id="@id/toolbar_title"
@@ -177,13 +178,18 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/data_layout"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            app:alignContent="stretch"
-            app:alignItems="stretch"
-            app:flexWrap="wrap" />
+            android:layout_height="match_parent">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/data_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap" />
+        </ScrollView>
     </LinearLayout>
 </layout>

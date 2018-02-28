@@ -34,6 +34,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     public void getEventData(String eventUid) {
         Observable.zip(eventDetailRepository.eventModelDetail(eventUid),
                 eventDetailRepository.dataValueModelList(eventUid),
+                eventDetailRepository.programStageSection(eventUid),
+                eventDetailRepository.programStageDataElement(eventUid),
                 EventDetailModel::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
