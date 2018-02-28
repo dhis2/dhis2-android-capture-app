@@ -1,0 +1,13 @@
+package com.dhis2.usescases.teiDashboard.teiDataDetail;
+
+import android.support.annotation.NonNull;
+
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+
+import io.reactivex.Flowable;
+
+public interface EnrollmentStatusEntryStore {
+
+    @NonNull
+    Flowable<Long> save(@NonNull String uid, @NonNull EnrollmentStatus value);
+}

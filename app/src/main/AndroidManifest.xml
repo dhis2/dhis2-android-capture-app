@@ -41,7 +41,7 @@
         <activity android:name=".usescases.teiDashboard.tablet.TeiDashboardTabletActivity" />
         <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
-        <activity android:name=".usescases.eventDetail.EventDetailActivity" />
+        <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
         <activity android:name=".data.forms.FormActivity" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />

@@ -1,12 +1,12 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.DashboardRepository;
 import com.dhis2.usescases.teiDashboard.DashboardRepositoryImpl;
 import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,6 +17,14 @@ import dagger.Provides;
 @PerActivity
 @Module
 public class TeiDataDetailModule {
+
+    private String enrollmentUid;
+
+    TeiDataDetailModule(String enrollmentUid) {
+        this.enrollmentUid = enrollmentUid;
+    }
+
+
     @Provides
     @PerActivity
     TeiDataDetailContracts.View provideView(TeiDataDetailActivity detailActivity) {
@@ -25,19 +33,28 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    TeiDataDetailContracts.Presenter providePresenter() {
-        return new TeiDataDetailPresenter();
-    }
-
-    @Provides
-    @PerActivity
-    TeiDataDetailContracts.Interactor provideInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
-        return new TeiDataDetailInteractor(d2, dashboardRepository,metadataRepository);
+    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
+                                                      AttrEntryStore dataEntryStore, EnrollmentStatusStore enrollmentStatusStore) {
+        return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, dataEntryStore, enrollmentStatusStore);
     }
 
     @Provides
     @PerActivity
     DashboardRepository dashboardRepository(BriteDatabase briteDatabase) {
         return new DashboardRepositoryImpl(briteDatabase);
+    }
+
+    @Provides
+    @PerActivity
+    AttrEntryStore dataEntryRepository(@NonNull BriteDatabase briteDatabase) {
+
+        return new AttrValueStore(briteDatabase, enrollmentUid);
+
+    }
+
+    @Provides
+    @PerActivity
+    EnrollmentStatusStore enrollmentStatusStore(@NonNull BriteDatabase briteDatabase) {
+        return new EnrollmentStatusStore(briteDatabase, enrollmentUid);
     }
 }

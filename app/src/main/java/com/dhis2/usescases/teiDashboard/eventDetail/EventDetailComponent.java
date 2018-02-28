@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventDetail;
+package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import com.dhis2.data.dagger.PerActivity;
 

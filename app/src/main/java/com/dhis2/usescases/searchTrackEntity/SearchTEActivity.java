@@ -81,6 +81,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program) {
 
+        binding.buttonAdd.setVisibility(program == null ? View.GONE : View.VISIBLE);
+
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
 
         formAdapter.setList(trackedEntityAttributeModels, program);

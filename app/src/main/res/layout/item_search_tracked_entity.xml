@@ -23,7 +23,7 @@
 
         <variable
             name="attribute"
-            type="java.util.List&lt;String&gt;" />
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
 
         <variable
             name="programString"
@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -82,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
+                    android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"

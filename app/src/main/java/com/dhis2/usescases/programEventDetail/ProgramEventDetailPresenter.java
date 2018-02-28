@@ -59,10 +59,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void onSearchClick() {
-        Bundle bundle = new Bundle();
-        //bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
-        view.startActivity(SearchTEActivity.class, bundle, false, false, null);
+    public void addEvent() {
+        //TODO: Implement Event Creation 'Screen 0'
     }
 
     @Override

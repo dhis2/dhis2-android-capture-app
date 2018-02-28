@@ -132,7 +132,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
 
-        TEI_FINAL_QUERY += " AND " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.ENROLLMENT_STATUS + " = '" + EnrollmentStatus.ACTIVE.name() + "'" +
+        TEI_FINAL_QUERY += /*" AND " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.ENROLLMENT_STATUS + " = '" + EnrollmentStatus.ACTIVE.name() + "'" +*/
                 " GROUP BY " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID;
 
         return briteDatabase.createQuery(TEI_TABLE_SET, TEI_FINAL_QUERY)

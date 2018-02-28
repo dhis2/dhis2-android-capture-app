@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
@@ -56,6 +57,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private HashMap<Long, String> queryData;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+        Bindings.setMetadataRepository(metadataRepository);
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
@@ -106,8 +108,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    if(!data.value.isEmpty())
-                        queryData.put(data.id,data.value);
+                    if (!data.value.isEmpty())
+                        queryData.put(data.id, data.value);
                     else
                         queryData.remove(data.id);
                     getTrakedEntities();
@@ -162,6 +164,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public TrackedEntityModel getTrackedEntityName() {
         return trackedEntity;
+    }
+
+    @Override
+    public ProgramModel getProgramModel() {
+        return selectedProgram;
     }
 
     @Override
@@ -230,17 +237,22 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onEnrollClick(View view) {
         if (view.isEnabled()) {
-            FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(selectedProgram.uid());
-            this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+            enroll(selectedProgram.uid());
         } else
             this.view.displayMessage("Select a program to enable enrolling");
+    }
+
+    @Override
+    public void enroll(String programUid) {
+        FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(programUid);
+        this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
     }
 
     @Override
     public void onTEIClick(String TEIuid) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);
-        bundle.putString("PROGRAM_UID", selectedProgram.uid());
+        bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
        /* if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
             view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
         else*/

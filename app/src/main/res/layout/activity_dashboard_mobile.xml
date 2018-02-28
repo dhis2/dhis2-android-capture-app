@@ -11,7 +11,7 @@
 
         <variable
             name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
 
         <variable
             name="dashboardModel"
@@ -44,7 +44,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:textSize="20sp"
-                android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
+                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 android:textColor="?colorAccent"
                 tools:text="TEI NAME" />
 

@@ -6,6 +6,7 @@ import com.dhis2.BR;
 import com.dhis2.databinding.ItemRelationshipBinding;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 /**
  * Created by ppajuelo on 05/12/2017.
@@ -21,7 +22,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(Relationship relationship) {
+    public void bind(RelationshipModel relationship) {
         binding.setVariable(BR.relationship, relationship);
         binding.executePendingBindings();
     }

@@ -63,9 +63,13 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(android.view.View view);
 
+        void enroll(String programUid);
+
         void onTEIClick(String TEIuid);
 
         TrackedEntityModel getTrackedEntityName();
+
+        ProgramModel getProgramModel();
     }
 
     public interface Interactor {

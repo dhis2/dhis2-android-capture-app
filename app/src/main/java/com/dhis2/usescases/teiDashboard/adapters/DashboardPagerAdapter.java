@@ -4,11 +4,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+
+import java.util.ArrayList;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -17,10 +20,33 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     private boolean isTablet;
+    private DashboardProgramModel dashboardProgram;
 
-    public DashboardPagerAdapter(FragmentManager fm, boolean isTablet) {
+    private ArrayList<Fragment> pagerFragments = new ArrayList<>();
+    private ArrayList<String> pagerFragmentsTitle = new ArrayList<>();
+
+    public DashboardPagerAdapter(FragmentManager fm, DashboardProgramModel program, boolean isTablet) {
         super(fm);
         this.isTablet = isTablet;
+        this.dashboardProgram = program;
+
+        if (!isTablet) {
+            pagerFragments.add(TEIDataFragment.getInstance());
+            pagerFragmentsTitle.add("Program");
+        }
+        if (dashboardProgram.getCurrentProgram().relationshipType() != null) {
+            pagerFragments.add(RelationshipFragment.getInstance());
+            pagerFragmentsTitle.add("Relationships");
+        }
+        pagerFragments.add(IndicatorsFragment.getInstance());
+        pagerFragmentsTitle.add("Indicators");
+
+        pagerFragments.add(ScheduleFragment.getInstance());
+        pagerFragmentsTitle.add("Schedule");
+
+        pagerFragments.add(NotesFragment.getInstance());
+        pagerFragmentsTitle.add("Notes");
+
     }
 
     @Override
@@ -44,18 +70,18 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
                 fragment = NotesFragment.getInstance();
                 break;
         }
-        return fragment;
+        return pagerFragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return isTablet ? 4 : 5;
+        return pagerFragments.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         String title;
-        switch (position){
+        switch (position) {
             default:
                 title = "Program";
                 break;
@@ -72,6 +98,6 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
                 title = "Notes";
                 break;
         }
-        return title;
+        return pagerFragmentsTitle.get(position);
     }
 }

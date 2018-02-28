@@ -1,8 +1,10 @@
-package com.dhis2.usescases.eventDetail;
+package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -20,7 +22,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian E. on 18/12/2017.
- *
  */
 
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
@@ -33,7 +34,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new EventDetailModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new EventDetailModule(getIntent().getStringExtra("EVENT_UID"))).inject(this);
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
         eventUid = getIntent().getStringExtra("EVENT_UID");
@@ -65,7 +66,26 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             params.setFlexBasisPercent(.5f);
             binding.dataLayout.addView(editTextBinding.getRoot(), params);
 
+            editTextBinding.formEdittext.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    presenter.saveData(dataValueModel.dataElement(), s.toString());
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+
         }
+
+
         binding.dataLayout.invalidate();
 
 

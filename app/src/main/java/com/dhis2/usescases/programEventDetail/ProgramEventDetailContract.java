@@ -42,7 +42,7 @@ public class ProgramEventDetailContract {
 
         ProgramModel getCurrentProgram();
 
-        void onSearchClick();
+        void addEvent();
 
         void onBackClick();
 
