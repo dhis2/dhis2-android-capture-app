@@ -69,4 +69,13 @@
 
     <!--Completion-->
     <string name="completion">Completion</string>
+
+    <!--Event initial-->
+    <string name="create">Create</string>
+    <string name="date">Date</string>
+    <string name="org_unit">Org unit</string>
+    <string name="category_option">Category option</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="new_event">New event</string>
 </resources>

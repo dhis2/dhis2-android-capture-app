@@ -2,8 +2,7 @@ package com.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
 
-import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.usescases.eventInitial.EventInitialActivity;
 import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -74,14 +73,24 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void onSearchClick() {
+    public void onEventClick(String eventId) {
         Bundle bundle = new Bundle();
-        //bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
-        view.startActivity(SearchTEActivity.class, bundle, false, false, null);
+        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putString("EVENT_UID", eventId);
+        bundle.putBoolean("NEW_EVENT", false);
+        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+    }
+
+    @Override
+    public ProgramModel getCurrentProgram() {
+        return program;
     }
 
     public void addEvent() {
-        //TODO: Implement Event Creation 'Screen 0'
+        Bundle bundle = new Bundle();
+        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putBoolean("NEW_EVENT", true);
+        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 
     @Override
@@ -92,13 +101,5 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onDettach() {
         interactor.onDettach();
-    }
-
-    @Override
-    public void onTEIClick(String TEIuid, String programUid) {
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", TEIuid);
-        bundle.putString("PROGRAM_UID", programUid);
-        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 }

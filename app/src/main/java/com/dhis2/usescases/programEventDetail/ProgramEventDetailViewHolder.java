@@ -26,8 +26,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();
 
-        // TODO CRIS: ON EVENT CLICK?
-//        itemView.setOnClickListener(view -> presenter.onTEIClick(uid, program.uid()));
+        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid()));
     }
 
 

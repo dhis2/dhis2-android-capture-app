@@ -485,7 +485,8 @@ public class Bindings {
                 R.layout.spinner_layout,
                 R.id.spinner_text,
                 options,
-                "");
+                "",
+                R.color.white_faf);
         spinner.setAdapter(adapter);
     }
 

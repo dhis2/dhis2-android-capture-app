@@ -10,12 +10,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 /**
  * Created by frodriguez on 16/01/2018.
+ *
  */
 
 public class DateTimeFormHolder extends FormViewHolder{
 
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableObject;
+    private SearchTEContractsModule.Presenter presenter;
+    private TrackedEntityAttributeModel bindableObject;
 
     public DateTimeFormHolder(ViewDataBinding binding) {
         super(binding);
@@ -33,7 +34,6 @@ public class DateTimeFormHolder extends FormViewHolder{
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.label, label);
         binding.executePendingBindings();
-
     }
 
 }

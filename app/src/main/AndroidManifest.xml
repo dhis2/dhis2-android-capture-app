@@ -45,6 +45,9 @@
         <activity android:name=".usescases.qrScanner.QRActivity" />
         <activity android:name=".data.forms.FormActivity" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
+        <activity
+            android:name=".usescases.eventInitial.EventInitialActivity"
+            android:windowSoftInputMode="stateHidden"/>
 
         <service
             android:name=".data.service.SyncService"

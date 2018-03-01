@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 /**
  * Created by ppajuelo on 09/01/2018.
+ *
  */
 
 public class CoordinatesFormHolder extends FormViewHolder {

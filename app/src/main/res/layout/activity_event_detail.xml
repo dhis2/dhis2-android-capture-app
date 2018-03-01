@@ -100,6 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="@{isEditable ? View.VISIBLE : View.INVISIBLE}"
+                    app:backgroundTint="?colorPrimary"
                     app:srcCompat="@drawable/ic_edit" />
             </RelativeLayout>
 

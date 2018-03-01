@@ -95,7 +95,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:srcCompat="@drawable/ic_menu"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="?colorPrimary"
         app:elevation="8dp"
         app:layout_anchor="@+id/content_frame"
         app:layout_anchorGravity="bottom|right|end"

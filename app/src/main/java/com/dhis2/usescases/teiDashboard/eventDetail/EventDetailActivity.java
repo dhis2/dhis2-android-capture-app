@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian E. on 18/12/2017.
+ *
  */
 
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {

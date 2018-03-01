@@ -17,15 +17,16 @@ import java.util.Locale;
 
 /**
  * Created by ppajuelo on 06/11/2017.
+ *
  */
 
 public class ButtonFormHolder extends FormViewHolder
         implements DatePickerDialog.OnDateSetListener,
         LocationListener {
 
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableOnject;
-    int programPosition;
+    private SearchTEContractsModule.Presenter presenter;
+    private TrackedEntityAttributeModel bindableOnject;
+    private int programPosition;
 
     public ButtonFormHolder(ViewDataBinding binding) {
         super(binding);

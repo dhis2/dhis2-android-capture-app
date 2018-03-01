@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 /**
  * Created by ppajuelo on 06/11/2017.
+ *
  */
 
 public abstract class FormViewHolder extends RecyclerView.ViewHolder {

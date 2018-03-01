@@ -25,6 +25,7 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 04/12/2017.
+ *
  */
 
 public interface MetadataRepository {

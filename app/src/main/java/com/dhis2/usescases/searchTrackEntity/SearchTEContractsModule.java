@@ -22,7 +22,9 @@ import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 02/11/2017.
+ *
  */
+
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {

@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 04/12/2017.
+ *
  */
 
 public class DashboardProgramModel extends BaseObservable {

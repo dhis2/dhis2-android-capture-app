@@ -1,134 +1,75 @@
-package com.dhis2.usescases.programEventDetail;
+package com.dhis2.usescases.eventInitial;
 
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
-import com.dhis2.utils.DateUtils;
-import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * Created by Cristian on 01/03/2018.
  *
  */
 
-public class ProgramEventDetailInteractor implements ProgramEventDetailContract.Interactor {
+public class EventInitialInteractor implements EventInitialContract.Interactor {
 
     private final MetadataRepository metadataRepository;
-    private final ProgramEventDetailRepository programEventDetailRepository;
-    private ProgramEventDetailContract.View view;
+    private final EventInitialRepository eventInitialRepository;
+    private EventInitialContract.View view;
     private String programId;
+    private String eventId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
 
-    private Date fromDate;
-    private Date toDate;
 
-    private List<Date> dates;
-    private Period period;
-
-    private @LastSearchType int lastSearchType;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
-    public @interface LastSearchType {
-        int DATES = 1;
-        int DATE_RANGES = 32;
-    }
-
-    ProgramEventDetailInteractor(ProgramEventDetailRepository programEventDetailRepository, MetadataRepository metadataRepository) {
+    EventInitialInteractor(EventInitialRepository eventInitialRepository, MetadataRepository metadataRepository) {
         this.metadataRepository = metadataRepository;
-        this.programEventDetailRepository = programEventDetailRepository;
+        this.eventInitialRepository = eventInitialRepository;
         Bindings.setMetadataRepository(metadataRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View view, String programId) {
+    public void init(EventInitialContract.View view, String programId, String eventId) {
         this.view = view;
         this.programId = programId;
+        this.eventId = eventId;
         getProgram();
+        getEvent();
         getOrgUnits();
-        getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
     @Override
-    public void getEvents(String programId, Date fromDate, Date toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        lastSearchType = LastSearchType.DATES;
-        Observable.just(programEventDetailRepository.filteredProgramEvents(programId,
-                DateUtils.getInstance().formatDate(fromDate),
-                DateUtils.getInstance().formatDate(toDate),
-                categoryOptionComboModel)
+    public void onDettach() {
+        compositeDisposable.dispose();
+    }
+
+    private void getEvent(){
+        compositeDisposable.add(eventInitialRepository.event(eventId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view::setData,
-                        Timber::e));
+                        (eventModel) -> {
+                            view.setEvent(eventModel);
+                        },
+                        Timber::d)
+        );
     }
-
-    @Override
-    public void getOrgUnits() {
-        compositeDisposable.add(programEventDetailRepository.orgUnits()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::renderTree,
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
-    }
-
-    @Override
-    public void getProgramEventsWithDates(String programId, List<Date> dates, Period period) {
-        this.dates = dates;
-        this.period = period;
-        lastSearchType = LastSearchType.DATE_RANGES;
-        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setData,
-                        throwable -> view.renderError(throwable.getMessage())));
-    }
-
-    @Override
-    public void updateFilters(CategoryOptionComboModel categoryOptionComboModel) {
-        this.categoryOptionComboModel = categoryOptionComboModel;
-        switch (lastSearchType){
-            case LastSearchType.DATES:
-                getEvents(programId, this.fromDate, this.toDate);
-                break;
-            case LastSearchType.DATE_RANGES:
-                getProgramEventsWithDates(programId, this.dates, this.period);
-                break;
-            default:
-                getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
-                break;
-        }
-    }
-
 
     private void getProgram() {
         compositeDisposable.add(metadataRepository.getProgramWithId(programId)
@@ -148,7 +89,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (catCombo) -> compositeDisposable.add(programEventDetailRepository.catCombo(programModel.categoryCombo())
+                        (catCombo) -> compositeDisposable.add(eventInitialRepository.catCombo(programModel.categoryCombo())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
@@ -159,6 +100,16 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         );
     }
 
+    @Override
+    public void getOrgUnits() {
+        compositeDisposable.add(eventInitialRepository.orgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::renderTree,
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
+    }
 
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
@@ -210,11 +161,5 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         }
 
         view.addTree(root);
-
-    }
-
-    @Override
-    public void onDettach() {
-        compositeDisposable.dispose();
     }
 }

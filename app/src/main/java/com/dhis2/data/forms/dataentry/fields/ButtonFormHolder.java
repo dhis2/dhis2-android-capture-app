@@ -42,7 +42,6 @@ public class ButtonFormHolder extends FormViewHolder
         ((FormButtonTextBinding) binding).buttonDate.setOnFocusChangeListener((view, b) -> {
             if (b) {
                 presenter.onDateClick(ButtonFormHolder.this);
-
             }
         });
     }

@@ -46,17 +46,11 @@ public class ProgramEventDetailContract {
 
         void onOrgUnitButtonClick();
 
-        void onSearchClick();
-
-        void onCatComboButtonClick();
-
         ProgramModel getCurrentProgram();
 
         void addEvent();
 
         void onBackClick();
-
-        void onTEIClick(String TEIuid, String programUid);
 
         void setProgram(ProgramModel program);
 
@@ -67,6 +61,8 @@ public class ProgramEventDetailContract {
         void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
 
         void clearCatComboFilters();
+
+        void onEventClick(String eventId);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

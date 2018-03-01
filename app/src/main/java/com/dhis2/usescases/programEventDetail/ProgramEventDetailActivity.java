@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
-import android.view.View;
-import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -196,7 +194,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 R.layout.spinner_layout,
                 R.id.spinner_text,
                 catComboList,
-                catCombo.displayName());
+                catCombo.displayName(),
+                R.color.white_faf);
 
         binding.catCombo.setAdapter(adapter);
 
