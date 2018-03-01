@@ -176,9 +176,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_margin="20dp"
                         android:background="@drawable/oval_23"
-                        android:onClick="@{()->presenter.onSearchClick()}"
+                        android:onClick="@{()->presenter.addEvent()}"
                         android:paddingBottom="7dp"
-                        app:srcCompat="@drawable/ic_searchandnew" />
+                        app:srcCompat="@drawable/ic_add" />
 
                 </RelativeLayout>
 

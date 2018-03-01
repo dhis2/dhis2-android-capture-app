@@ -5,14 +5,11 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.D2;
-
 import dagger.Module;
 import dagger.Provides;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 @PerActivity
 @Module
@@ -25,14 +22,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(TeiDashboardContracts.Interactor interactor) {
-        return new TeiDashboardPresenter(interactor);
-    }
-
-    @Provides
-    @PerActivity
-    TeiDashboardContracts.Interactor provideInteractor(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
-        return new TeiDashboardInteractor(d2, dashboardRepository,metadataRepository);
+    TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+        return new TeiDashboardPresenter(dashboardRepository, metadataRepository);
     }
 
     @Provides

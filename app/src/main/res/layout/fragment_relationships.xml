@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
                 android:fontFamily="sans-serif"
-                android:text='@{String.format("Add %s",relationshipType), default="Add new relationship"}'
+                android:text='@{relationshipType, default="Add new relationship"}'
                 android:textColor="#444444"
                 android:textSize="13.3sp"
                 android:textStyle="normal"

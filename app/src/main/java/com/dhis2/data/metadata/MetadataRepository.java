@@ -13,6 +13,9 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.List;
@@ -29,11 +32,15 @@ public interface MetadataRepository {
     /*PROGRAMS*/
     Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments);
 
+    Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid);
+
     Observable<ProgramModel> getProgramWithId(String programUid);
 
     /*TRACKED ENTITY*/
 
     Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
+
+    Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid);
 
     /*CATEGORY OPTION*/
 
@@ -51,9 +58,20 @@ public interface MetadataRepository {
 
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
+    Observable<OrganisationUnitModel> getTeiOrgUnit(String teiUid);
+
+    Observable<List<OrganisationUnitModel>> getOrgUnitForOpenAndClosedDate(String currentDate);
+
     /*PROGRAM TRACKED ENTITY ATTRIBUTE*/
 
     Observable<List<ProgramTrackedEntityAttributeModel>> getProgramTrackedEntityAttributes(String programUid);
+
+    Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String teiUid);
+
+    Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
+
+    Observable<TrackedEntityAttributeModel> getTrackedEntityAttribute(String teAttribute);
+
 
     /*RELATIONSHIPS*/
 

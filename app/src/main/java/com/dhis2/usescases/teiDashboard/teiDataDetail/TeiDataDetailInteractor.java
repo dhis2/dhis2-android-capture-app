@@ -68,7 +68,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
 
     @Override
     public void getProgramData(String programId) {
-        Enrollment selectedEnrollment = null;
+       /* Enrollment selectedEnrollment = null;
         for (Enrollment enrollment : trackedEntityInstance.enrollments())
             if (enrollment.program().equals(programId))
                 selectedEnrollment = enrollment;
@@ -97,7 +97,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> view.setData(trackedEntityInstance, data),
-                        throwable -> Log.d("ERROR", throwable.getMessage()));
+                        throwable -> Log.d("ERROR", throwable.getMessage()));*/
 
     }
 

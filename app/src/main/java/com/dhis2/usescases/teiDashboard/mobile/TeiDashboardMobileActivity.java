@@ -16,7 +16,6 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
-import com.dhis2.usescases.teiDashboard.TeiDashboardPresenter;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
@@ -24,7 +23,6 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.List;
 
@@ -41,7 +39,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     TeiDashboardContracts.Presenter presenter;
 
     DashboardProgramModel programModel;
-    TrackedEntityInstance trackedEntityInstance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +51,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), getResources().getBoolean(R.bool.is_tablet)));
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     }
@@ -68,29 +64,31 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel program) {
+    public void setData(DashboardProgramModel program) {
+        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
+
         binding.setDashboardModel(program);
-        binding.setTrackEntity(trackedEntityModel);
+        binding.setTrackEntity(program.getTei());
         binding.executePendingBindings();
         this.programModel = program;
-        this.trackedEntityInstance = trackedEntityModel;
         setDataFragment();
-        RelationshipFragment.getInstance().setData(trackedEntityModel.relationships(), program.getRelationshipTypeModel());
-        ScheduleFragment.getInstance().setData(trackedEntityModel, program);
+        RelationshipFragment.getInstance().setData(program);
+        ScheduleFragment.getInstance().setData(program);
         binding.teiPager.setOffscreenPageLimit(6);
     }
 
     public void setDataFragment() {
-        TEIDataFragment.getInstance().setData(trackedEntityInstance, programModel);
+        TEIDataFragment.getInstance().setData(programModel);
     }
 
     @Override
-    public void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel) {
-        binding.setDashboardModel(programModel);
-        binding.setTrackEntity(trackedEntityInstance);
+    public void setDataWithOutProgram(DashboardProgramModel program) {
+        binding.setDashboardModel(program);
+        binding.setTrackEntity(program.getTei());
         binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
-        TEIDataFragment.getInstance().setData(trackedEntityInstance, null);
+        this.programModel = program;
+        setDataFragment();
     }
 
     @Override
@@ -101,7 +99,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
             menu.getMenu().add(Menu.NONE, cont++, Menu.NONE, program.displayShortName());
         }
         menu.setOnMenuItemClickListener(item -> {
-            init(trackedEntityInstance.uid(), programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
+            init(programModel.getTei().uid(), programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
             return true;
         });
         menu.show();

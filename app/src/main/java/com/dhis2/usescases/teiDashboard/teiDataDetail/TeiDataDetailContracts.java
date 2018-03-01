@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard.teiDataDetail;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 public class TeiDataDetailContracts {
@@ -10,7 +11,7 @@ public class TeiDataDetailContracts {
     public interface View extends AbstractActivityContracts.View {
         void init(String teUid, String programUid);
 
-        void setData(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel program);
+        void setData(DashboardProgramModel program);
 
     }
 
@@ -18,6 +19,12 @@ public class TeiDataDetailContracts {
         void init(View view, String uid, String programUid);
 
         void onBackPressed();
+
+        void saveData(ProgramTrackedEntityAttributeModel programAttr, String s);
+
+        void onButtonActionClick(DashboardProgramModel dashboardProgramModel);
+
+        void onDeactivate(DashboardProgramModel dashboardProgramModel);
     }
 
     public interface Interactor {

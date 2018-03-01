@@ -48,6 +48,12 @@ public class ProgramEventDetailContract {
 
         void onSearchClick();
 
+        void onCatComboButtonClick();
+
+        ProgramModel getCurrentProgram();
+
+        void addEvent();
+
         void onBackClick();
 
         void onTEIClick(String TEIuid, String programUid);

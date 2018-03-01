@@ -1,14 +1,19 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.util.Log;
 import android.view.View;
 
-import com.dhis2.usescases.eventDetail.EventDetailActivity;
+import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -16,16 +21,17 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
+    private final DashboardRepository dashboardRepository;
+    private final MetadataRepository metadataRepository;
     private TeiDashboardContracts.View view;
-
-    @NonNull
-    private final TeiDashboardContracts.Interactor interactor;
 
     private String teUid;
     private String programUid;
+    private String enrollmentUid;
 
-    public TeiDashboardPresenter(TeiDashboardContracts.Interactor interactor) {
-        this.interactor = interactor;
+    public TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+        this.dashboardRepository = dashboardRepository;
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -33,7 +39,45 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.view = view;
         this.teUid = teiUid;
         this.programUid = programUid;
-        interactor.init(view, teiUid, programUid);
+
+        getData();
+
+
+    }
+
+    private void getData() {
+
+        if (programUid != null)
+            Observable.zip(
+                    metadataRepository.getTrackedEntityInstance(teUid),
+                    dashboardRepository.getEnrollment(programUid, teUid),
+                    dashboardRepository.getProgramStages(programUid),
+                    dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
+                    metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                    dashboardRepository.getTEIAttributeValues(programUid, teUid),
+                    metadataRepository.getTeiOrgUnit(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid),
+                    dashboardRepository.getRelationships(programUid, teUid),
+                    DashboardProgramModel::new)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            view::setData,
+                            throwable -> Log.d("ERROR", throwable.getMessage()));
+        else {
+            //TODO: NO SE HA SELECCIONADO PROGRAMA
+            Observable.zip(
+                    metadataRepository.getTrackedEntityInstance(teUid),
+                    metadataRepository.getProgramTrackedEntityAttributes(null),
+                    dashboardRepository.getTEIAttributeValues(null, teUid),
+                    metadataRepository.getTeiOrgUnit(teUid),
+                    metadataRepository.getTeiActivePrograms(teUid),
+                    DashboardProgramModel::new)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(view::setDataWithOutProgram,
+                            throwable -> Log.d("ERROR", throwable.getMessage()));
+        }
     }
 
     @Override
@@ -48,7 +92,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onEnrollmentSelectorClick() {
-        interactor.getEnrollments(teUid);
+//        interactor.getEnrollments(teUid);
+        view.showEnrollmentList(null);
     }
 
     @Override
@@ -56,10 +101,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void editTei(boolean isEditable, View sharedView) {
+    public void editTei(boolean isEditable, View sharedView, DashboardProgramModel dashboardProgramModel) {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
+        extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         extras.putBoolean("IS_EDITABLE", isEditable);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);

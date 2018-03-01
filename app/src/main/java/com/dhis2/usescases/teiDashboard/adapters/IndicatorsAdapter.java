@@ -9,6 +9,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.List;
 
@@ -18,9 +19,9 @@ import java.util.List;
 
 public class IndicatorsAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
-    private List<Event> events;
+    private List<EventModel> events;
 
-    public IndicatorsAdapter(List<Event> eventList) {
+    public IndicatorsAdapter(List<EventModel> eventList) {
         this.events = eventList;
     }
 

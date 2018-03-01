@@ -80,6 +80,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         view.startActivity(SearchTEActivity.class, bundle, false, false, null);
     }
 
+    public void addEvent() {
+        //TODO: Implement Event Creation 'Screen 0'
+    }
+
     @Override
     public void onBackClick() {
         view.back();

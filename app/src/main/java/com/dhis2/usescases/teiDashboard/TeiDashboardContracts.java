@@ -20,9 +20,9 @@ public class TeiDashboardContracts {
 
         void init(String teUid, String programUid);
 
-        void setData(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel program);
+        void setData(DashboardProgramModel program);
 
-        void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel);
+        void setDataWithOutProgram(DashboardProgramModel programModel);
 
         void showEnrollmentList(List<Enrollment> enrollments);
 
@@ -40,7 +40,7 @@ public class TeiDashboardContracts {
 
         void setProgram(ProgramModel program);
 
-        void editTei(boolean isEditable, android.view.View view);
+        void editTei(boolean isEditable, android.view.View view, DashboardProgramModel dashboardProgramModel);
 
         void onEventSelected(String uid, android.view.View view);
     }

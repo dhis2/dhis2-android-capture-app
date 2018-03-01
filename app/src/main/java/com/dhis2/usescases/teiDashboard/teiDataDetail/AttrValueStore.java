@@ -1,4 +1,4 @@
-package com.dhis2.data.forms.dataentry;
+package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
@@ -18,10 +18,9 @@ import java.util.Locale;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
-public final class AttributeValueStore implements DataEntryStore {
+public final class AttrValueStore implements AttrEntryStore {
     private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
             "SET lastUpdated = ?, value = ?\n" +
             "WHERE trackedEntityInstance = (\n" +
@@ -51,17 +50,13 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement insertStatement;
 
- /*   @NonNull
-    private final CurrentDateProvider currentDateProvider;*/
 
     @NonNull
     private final String enrollment;
 
-    public AttributeValueStore(@NonNull BriteDatabase briteDatabase
-                        /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
+    public AttrValueStore(@NonNull BriteDatabase briteDatabase, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
-//        this.currentDateProvider = currentDateProvider;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);

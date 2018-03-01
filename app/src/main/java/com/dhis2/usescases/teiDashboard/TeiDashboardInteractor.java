@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -70,7 +71,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
     @Override
     public void getProgramData(String programId) {
 
-        Enrollment selectedEnrollment = null;
+       /* Enrollment selectedEnrollment = null;
         for (Enrollment enrollment : trackedEntityInstance.enrollments())
             if (enrollment.program().equals(programId))
                 selectedEnrollment = enrollment;
@@ -110,7 +111,7 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
                     .subscribe(
                             data -> view.setDataWithOutProgram(trackedEntityInstance, data),
                             throwable -> Log.d("ERROR", throwable.getMessage()));
-        }
+        }*/
 
     }
 
@@ -128,7 +129,6 @@ public class TeiDashboardInteractor implements TeiDashboardContracts.Interactor 
 
                     }
                 });
-
 
     }
 

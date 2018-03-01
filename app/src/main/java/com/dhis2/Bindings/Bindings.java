@@ -243,10 +243,10 @@ public class Bindings {
             status = EventStatus.ACTIVE;
         switch (status) {
             default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_open_green);
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit);
                 break;
             case COMPLETED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_lock_completed);
+                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility);
                 break;
         }
 
@@ -460,6 +460,17 @@ public class Bindings {
     @BindingAdapter("dataElementHint")
     public static void setDataElementName(TextInputLayout view, String dataElementUid) {
         metadataRepository.getDataElement(dataElementUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        dataModel -> view.setHint(dataModel.displayShortName()),
+                        Timber::d
+                );
+    }
+
+    @BindingAdapter("attrHint")
+    public static void setAttrName(TextInputLayout view, String teAttribute) {
+        metadataRepository.getTrackedEntityAttribute(teAttribute)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

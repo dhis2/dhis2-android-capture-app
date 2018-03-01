@@ -10,12 +10,8 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentRelationshipsBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
-
-import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
-
-import java.util.List;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -44,14 +40,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         return binding.getRoot();
     }
 
-    @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
-    }
-
-    public void setData(List<Relationship> relationships, RelationshipTypeModel relationshipTypeModel) {
-        binding.setRelationshipType(relationshipTypeModel.bIsToA());
-        relationshipAdapter.addItems(relationships);
+    public void setData(DashboardProgramModel dashboardProgramModel) {
+        binding.setRelationshipType(dashboardProgramModel.getCurrentProgram().relationshipText());
+        relationshipAdapter.addItems(dashboardProgramModel.getRelationships());
     }
 }

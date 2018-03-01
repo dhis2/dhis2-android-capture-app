@@ -1,14 +1,14 @@
-package com.dhis2.data.forms.dataentry;
+package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -18,15 +18,19 @@ import java.util.Locale;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
-public final class AttributeValueStore implements DataEntryStore {
-    private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
+public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
+   /* private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
             "SET lastUpdated = ?, value = ?\n" +
             "WHERE trackedEntityInstance = (\n" +
             "  SELECT trackedEntityInstance FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1\n" +
-            ") AND trackedEntityAttribute = ?;";
+            ") AND trackedEntityAttribute = ?;";*/
+
+    private static final String UPDATE = "UPDATE Enrollment\n" +
+            "SET lastUpdated = ?, status = ?\n" +
+            "WHERE uid = ?;";
+
 
     private static final String INSERT = "INSERT INTO TrackedEntityAttributeValue ( " +
             "created, lastUpdated, value, trackedEntityAttribute, trackedEntityInstance" +
@@ -51,17 +55,12 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement insertStatement;
 
- /*   @NonNull
-    private final CurrentDateProvider currentDateProvider;*/
-
     @NonNull
     private final String enrollment;
 
-    public AttributeValueStore(@NonNull BriteDatabase briteDatabase
-                        /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
+    public EnrollmentStatusStore(@NonNull BriteDatabase briteDatabase, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
-//        this.currentDateProvider = currentDateProvider;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);
@@ -69,7 +68,7 @@ public final class AttributeValueStore implements DataEntryStore {
                 .compileStatement(INSERT);
     }
 
-    @NonNull
+   /* @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable
@@ -82,15 +81,24 @@ public final class AttributeValueStore implements DataEntryStore {
                     return Flowable.just(insert(uid, value));
                 })
                 .switchMap(status -> updateEnrollment(status));
+    }*/
+
+    @NonNull
+    @Override
+    public Flowable<Long> save(@NonNull String uid, @NonNull EnrollmentStatus value) {
+        return Flowable
+                .defer(() -> {
+                    long updated = update(value);
+                    return Flowable.just(updated);
+                })
+                .switchMap(this::updateEnrollment);
     }
 
-
-    private long update(@NonNull String attribute, @Nullable String value) {
+    private long update(EnrollmentStatus value) {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
         sqLiteBind(updateStatement, 2, value);
         sqLiteBind(updateStatement, 3, enrollment);
-        sqLiteBind(updateStatement, 4, attribute);
 
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -99,27 +107,11 @@ public final class AttributeValueStore implements DataEntryStore {
         return updated;
     }
 
-    private long insert(@NonNull String attribute, @NonNull String value) {
-        String created = BaseIdentifiableObject.DATE_FORMAT
-                .format(Calendar.getInstance().getTime());
-
-        sqLiteBind(insertStatement, 1, created);
-        sqLiteBind(insertStatement, 2, created);
-        sqLiteBind(insertStatement, 3, value);
-        sqLiteBind(insertStatement, 4, attribute);
-        sqLiteBind(insertStatement, 5, enrollment);
-
-        long inserted = briteDatabase.executeInsert(
-                TrackedEntityAttributeValueModel.TABLE, insertStatement);
-        insertStatement.clearBindings();
-
-        return inserted;
-    }
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {
@@ -137,4 +129,6 @@ public final class AttributeValueStore implements DataEntryStore {
                     return Flowable.just(status);
                 });
     }
+
+
 }

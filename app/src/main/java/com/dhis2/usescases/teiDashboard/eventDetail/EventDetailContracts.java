@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventDetail;
+package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.general.AbstractActivityContracts;
@@ -19,6 +19,10 @@ public class EventDetailContracts {
         void init(EventDetailContracts.View view);
 
         void getEventData(String eventUid);
+
+        void saveData(String uid, String value);
+
+        void back();
 
     }
 

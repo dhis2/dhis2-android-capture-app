@@ -1,0 +1,16 @@
+package com.dhis2.usescases.teiDashboard.eventDetail;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import io.reactivex.Flowable;
+
+/**
+ * Created by ppajuelo on 28/02/2018.
+ */
+
+public interface DataEntryStore {
+
+    @NonNull
+    Flowable<Long> save(@NonNull String uid, @Nullable String value);
+}
