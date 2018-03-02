@@ -34,6 +34,8 @@ public class EventInitialContract {
         void addTree(TreeNode treeNode);
 
         void setEvent(EventModel event);
+
+        void setCatOption(CategoryOptionComboModel categoryOptionComboModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -52,6 +54,8 @@ public class EventInitialContract {
         void onLocationClick();
 
         void onLocation2Click();
+
+        void getCatOption(String categoryOptionComboId);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -59,5 +63,7 @@ public class EventInitialContract {
         void init(EventInitialContract.View view, String programId, String eventId);
 
         void getOrgUnits();
+
+        void getCatOption(String categoryOptionComboId);
     }
 }

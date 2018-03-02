@@ -64,6 +64,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void getCatOption(String categoryOptionComboId) {
+        interactor.getCatOption(categoryOptionComboId);
+    }
+
+    @Override
     public void onDettach() {
         interactor.onDettach();
     }
