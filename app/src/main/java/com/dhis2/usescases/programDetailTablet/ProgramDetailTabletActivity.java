@@ -13,7 +13,6 @@ import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailTabletBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.utils.CustomViews.DateDialog;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
@@ -32,6 +31,7 @@ import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 31/10/2017.
+ *
  */
 
 public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implements ProgramDetailContractModule.View {

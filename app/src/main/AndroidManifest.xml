@@ -48,6 +48,9 @@
         <activity
             android:name=".usescases.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".usescases.eventInitial.tablet.EventInitialTabletActivity"
+            android:windowSoftInputMode="stateHidden"/>
 
         <service
             android:name=".data.service.SyncService"
