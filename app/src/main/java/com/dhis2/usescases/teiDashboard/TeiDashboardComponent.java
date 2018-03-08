@@ -7,6 +7,7 @@ import dagger.Subcomponent;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 @PerActivity
 @Subcomponent(modules = TeiDashboardModule.class)

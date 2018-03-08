@@ -13,12 +13,9 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-
-import java.util.List;
-
 /**
  * Created by ppajuelo on 29/11/2017.
+ *
  */
 
 public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
@@ -49,11 +46,6 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel programModel) {
-
-    }
-
-    @Override
-    public void showEnrollmentList(List<Enrollment> enrollments) {
 
     }
 

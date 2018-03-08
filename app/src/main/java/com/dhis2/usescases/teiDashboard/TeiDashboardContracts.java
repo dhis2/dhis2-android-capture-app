@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public class TeiDashboardContracts {
@@ -23,8 +24,6 @@ public class TeiDashboardContracts {
         void setData(DashboardProgramModel program);
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
-
-        void showEnrollmentList(List<Enrollment> enrollments);
 
         String getToolbarTitle();
     }
@@ -51,8 +50,6 @@ public class TeiDashboardContracts {
         void getTrackedEntityInstance(String teiUid);
 
         void getProgramData(String programId);
-
-        void getEnrollments(String teUid);
     }
 
 

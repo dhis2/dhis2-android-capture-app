@@ -14,7 +14,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 
 public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
 
-    ViewDataBinding binding;
+    private ViewDataBinding binding;
 
     public ProgramEventDetailViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());

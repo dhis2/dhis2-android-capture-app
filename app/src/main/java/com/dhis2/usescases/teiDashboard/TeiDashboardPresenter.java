@@ -8,6 +8,7 @@ import android.view.View;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -17,6 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
@@ -41,12 +43,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.programUid = programUid;
 
         getData();
-
-
     }
 
     private void getData() {
-
         if (programUid != null)
             Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
@@ -92,8 +91,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onEnrollmentSelectorClick() {
-//        interactor.getEnrollments(teUid);
-        view.showEnrollmentList(null);
+        Bundle extras = new Bundle();
+        extras.putString("TEI_UID", teUid);
+        extras.putString("PROGRAM_UID", programUid);
+        view.startActivity(TeiProgramListActivity.class, extras, false, false, null);
     }
 
     @Override

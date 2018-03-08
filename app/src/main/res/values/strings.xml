@@ -78,4 +78,9 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">New event</string>
+
+    <!--TEI Program list-->
+    <string name="programs_list">Programs list</string>
+    <string name="active_programs">Active programs</string>
+    <string name="past_programs">Past programs</string>
 </resources>
