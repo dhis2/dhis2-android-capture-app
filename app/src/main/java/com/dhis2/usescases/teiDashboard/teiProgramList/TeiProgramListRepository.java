@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
@@ -20,4 +21,10 @@ public interface TeiProgramListRepository {
 
     @NonNull
     Observable<List<EnrollmentModel>> otherEnrollments(String trackedEntityId);
+
+    @NonNull
+    Observable<List<ProgramModel>> allPrograms(String trackedEntityId);
+
+    @NonNull
+    Observable<List<ProgramModel>> alreadyEnrolledPrograms(String trackedEntityId);
 }

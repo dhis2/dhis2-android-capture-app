@@ -1,7 +1,9 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
-import com.dhis2.Bindings.Bindings;
-import com.dhis2.data.metadata.MetadataRepository;
+import org.hisp.dhis.android.core.program.ProgramModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -17,25 +19,21 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     private TeiProgramListContract.View view;
     private String trackedEntityId;
-    private String programId;
     private CompositeDisposable compositeDisposable;
-    private final MetadataRepository metadataRepository;
     private final TeiProgramListRepository teiProgramListRepository;
 
-    TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository, MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
+    TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository) {
         this.teiProgramListRepository = teiProgramListRepository;
-        Bindings.setMetadataRepository(metadataRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(TeiProgramListContract.View view, String trackedEntityId, String programId) {
+    public void init(TeiProgramListContract.View view, String trackedEntityId) {
         this.view = view;
         this.trackedEntityId = trackedEntityId;
-        this.programId = programId;
         getActiveEnrollments();
         getOtherEnrollments();
+        getPrograms();
     }
 
     private void getActiveEnrollments(){
@@ -55,11 +53,45 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (enrollments) -> {
-                            view.setOtherEnrollments(enrollments);
-                        },
+                        (enrollments) -> view.setOtherEnrollments(enrollments),
                         Timber::d)
         );
+    }
+
+    private void getPrograms(){
+        compositeDisposable.add(teiProgramListRepository.allPrograms(trackedEntityId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::getAlreadyEnrolledPrograms,
+                        Timber::d)
+        );
+    }
+
+    private void getAlreadyEnrolledPrograms(List<ProgramModel> programs){
+        compositeDisposable.add(teiProgramListRepository.alreadyEnrolledPrograms(trackedEntityId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (alreadyEnrolledPrograms) -> deleteRepeatedPrograms(programs, alreadyEnrolledPrograms),
+                        Timber::d)
+        );
+    }
+
+    private void deleteRepeatedPrograms(List<ProgramModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms){
+        ArrayList<ProgramModel> programListToPrint = new ArrayList<>();
+        for (ProgramModel programModel1 : allPrograms){
+            boolean isAlreadyEnrolled = false;
+            for (ProgramModel programModel2 : alreadyEnrolledPrograms){
+                if (programModel1.uid().equals(programModel2.uid())){
+                    isAlreadyEnrolled = true;
+                }
+            }
+            if (!isAlreadyEnrolled || !programModel1.onlyEnrollOnce()){
+                programListToPrint.add(programModel1);
+            }
+        }
+        view.setPrograms(programListToPrint);
     }
 
     @Override

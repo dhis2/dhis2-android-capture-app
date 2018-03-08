@@ -93,7 +93,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEnrollmentSelectorClick() {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
-        extras.putString("PROGRAM_UID", programUid);
         view.startActivity(TeiProgramListActivity.class, extras, false, false, null);
     }
 

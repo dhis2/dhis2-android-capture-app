@@ -3,7 +3,6 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerActivity;
-import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -33,9 +32,8 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository,
-                                                        @NonNull MetadataRepository metadataRepository) {
-        return new TeiProgramListInteractor(teiProgramListRepository, metadataRepository);
+    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository) {
+        return new TeiProgramListInteractor(teiProgramListRepository);
     }
 
     @Provides

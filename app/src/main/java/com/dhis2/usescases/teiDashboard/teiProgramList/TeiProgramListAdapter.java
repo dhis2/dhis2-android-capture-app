@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,14 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     private List<TeiProgramListItem> listItems;
     private List<EnrollmentModel> activeEnrollments;
     private List<EnrollmentModel> inactiveEnrollments;
+    private List<ProgramModel> programs;
 
     TeiProgramListAdapter(TeiProgramListContract.Presenter presenter) {
         this.presenter = presenter;
         this.listItems = new ArrayList<>();
         this.activeEnrollments = new ArrayList<>();
         this.inactiveEnrollments = new ArrayList<>();
+        this.programs = new ArrayList<>();
     }
 
     @Override
@@ -45,8 +48,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment, parent, false);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.PROGRAM:
-                // TODO CRIS
-                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment, parent, false);
+                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_programs, parent, false);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.SECOND_TITLE:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_inactive_title, parent, false);
@@ -72,17 +74,19 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     public void onBindViewHolder(TeiProgramListEnrollmentViewHolder holder, int position) {
         switch (listItems.get(position).getViewType()){
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
-                holder.bind(presenter, listItems.get(position).getEnrollmentModel());
+                holder.bind(presenter, null, null);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT:
-                holder.bind(presenter, listItems.get(position).getEnrollmentModel());
+                holder.bind(presenter, listItems.get(position).getEnrollmentModel(), null);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.PROGRAM:
+                holder.bind(presenter, null, listItems.get(position).getProgramModel());
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.SECOND_TITLE:
+                holder.bind(presenter, null, null);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT:
-                holder.bind(presenter, listItems.get(position).getEnrollmentModel());
+                holder.bind(presenter, listItems.get(position).getEnrollmentModel(), null);
                 break;
             default:
                 break;
@@ -106,6 +110,12 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         orderList();
     }
 
+    void setPrograms(List<ProgramModel> programs){
+        this.programs.clear();
+        this.programs.addAll(programs);
+        orderList();
+    }
+
     private void orderList(){
         this.listItems.clear();
 
@@ -114,6 +124,11 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
         for (EnrollmentModel enrollmentModel : activeEnrollments){
             TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT);
+            listItems.add(teiProgramListItem);
+        }
+
+        for (ProgramModel programModel : programs){
+            TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programModel, TeiProgramListItem.TeiProgramListItemViewType.PROGRAM);
             listItems.add(teiProgramListItem);
         }
 

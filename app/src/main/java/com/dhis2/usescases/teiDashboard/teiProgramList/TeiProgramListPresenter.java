@@ -10,19 +10,14 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     private TeiProgramListContract.View view;
     private final TeiProgramListContract.Interactor interactor;
 
-    private String trackedEntityId;
-    private String programId;
-
     TeiProgramListPresenter(TeiProgramListContract.Interactor interactor) {
         this.interactor = interactor;
     }
 
     @Override
-    public void init(TeiProgramListContract.View view, String trackedEntityId, String programId) {
+    public void init(TeiProgramListContract.View view, String trackedEntityId) {
         this.view = view;
-        this.trackedEntityId = trackedEntityId;
-        this.programId = programId;
-        interactor.init(view, trackedEntityId, programId);
+        interactor.init(view, trackedEntityId);
     }
 
     @Override
@@ -31,7 +26,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
-    public void onEnrollmentClick(String enrollmentId) {
+    public void onEnrollClick(String enrollmentId) {
         // TODO CRIS
     }
 

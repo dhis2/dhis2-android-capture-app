@@ -4,10 +4,9 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.dhis2.databinding.ItemTeiProgramsEnrollmentBinding;
-import com.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -23,15 +22,14 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
         this.binding = binding;
     }
 
-    public void bind(TeiProgramListContract.Presenter presenter, EnrollmentModel enrollment) {
-        if (binding instanceof ItemTeiProgramsEnrollmentBinding || binding instanceof ItemTeiProgramsEnrollmentInactiveBinding){
-            binding.setVariable(BR.enrollment, enrollment);
-        }
-
+    public void bind(TeiProgramListContract.Presenter presenter, EnrollmentModel enrollment, ProgramModel programModel) {
+        binding.setVariable(BR.enrollment, enrollment);
+        binding.setVariable(BR.program, programModel);
         binding.setVariable(BR.presenter, presenter);
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onEnrollmentClick(enrollment.uid()));
+        // TODO CRIS: ON ITEMS CLICK?
+//        itemView.setOnClickListener(view -> presenter.onEnrollmentClick(enrollment.uid()));
     }
 
 

@@ -83,4 +83,5 @@
     <string name="programs_list">Programs list</string>
     <string name="active_programs">Active programs</string>
     <string name="past_programs">Past programs</string>
+    <string name="enroll">Enroll</string>
 </resources>

@@ -10,6 +10,7 @@ import com.dhis2.databinding.ActivityTeiProgramListBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
@@ -35,10 +36,9 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
         super.onCreate(savedInstanceState);
         String trackedEntityId = getIntent().getStringExtra("TEI_UID");
-        String programUid = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-        presenter.init(this, trackedEntityId, programUid);
+        presenter.init(this, trackedEntityId);
     }
 
     @Override
@@ -61,5 +61,13 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
             binding.recycler.setAdapter(adapter);
         }
         adapter.setOtherEnrollments(enrollments);
+    }
+
+    @Override
+    public void setPrograms(List<ProgramModel> programs) {
+        if (binding.recycler.getAdapter() == null) {
+            binding.recycler.setAdapter(adapter);
+        }
+        adapter.setPrograms(programs);
     }
 }
