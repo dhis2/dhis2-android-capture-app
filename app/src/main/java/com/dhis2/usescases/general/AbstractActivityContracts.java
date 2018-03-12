@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +33,8 @@ public class AbstractActivityContracts {
         <T> List<T> getListFromPreference(String key);
 
         void hideKeyboard();
+
+        void showToast(String message);
     }
 
     public interface Presenter {
@@ -43,6 +44,4 @@ public class AbstractActivityContracts {
     public interface Interactor {
         void onDettach();
     }
-
-
 }

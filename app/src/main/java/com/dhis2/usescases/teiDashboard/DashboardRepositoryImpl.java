@@ -21,6 +21,7 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public class DashboardRepositoryImpl implements DashboardRepository {
@@ -146,5 +147,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, programUid, teiUid)
                 .mapToList(RelationshipModel::create);
 
+    }
+
+    @Override
+    public Observable<Void> setFollowUp(String enrollmentUid, boolean followUp) {
+        String CHANGE_ENROLLMENT_FOLLOW_UP = "UPDATE " + EnrollmentModel.TABLE + " SET " + EnrollmentModel.Columns.FOLLOW_UP + "='%s' WHERE " + EnrollmentModel.Columns.UID + "='%s'";
+        return briteDatabase.createQuery(
+                EnrollmentModel.TABLE,
+                String.format(CHANGE_ENROLLMENT_FOLLOW_UP, followUp ? "1" : "0", enrollmentUid))
+                .map(__ -> (Void) null);
     }
 }

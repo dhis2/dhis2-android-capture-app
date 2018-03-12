@@ -2,6 +2,7 @@ package com.dhis2.utils;
 
 /**
  * Created by ppajuelo on 15/01/2018.
+ *
  */
 
 public class Constants {

@@ -5,19 +5,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.widget.Toast;
 
 import com.dhis2.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by ppajuelo on 18/10/2017.
+ *
  */
 
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
@@ -70,5 +71,10 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
         }.getType();
 
         return gson.fromJson(json, type);
+    }
+
+    @Override
+    public void showToast(String message){
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -14,7 +14,9 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -29,11 +31,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private String teUid;
     private String programUid;
-    private String enrollmentUid;
+
+    private CompositeDisposable compositeDisposable;
 
     public TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -118,5 +122,25 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
         view.startActivity(EventDetailActivity.class, extras, false, false, options);
+    }
+
+    @Override
+    public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
+        compositeDisposable.add(
+                dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(), !dashboardProgramModel.getCurrentEnrollment().followUp())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (Void) -> {
+                            view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ? "Follow up enabled" : "Follow up disabled");
+                            getData();
+                        },
+                        Timber::d)
+        );
+    }
+
+    @Override
+    public void onDettach() {
+        compositeDisposable.dispose();
     }
 }

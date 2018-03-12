@@ -1,14 +1,8 @@
 package com.dhis2.usescases.teiDashboard;
 
-import android.support.annotation.Nullable;
-
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import java.util.List;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -42,15 +36,9 @@ public class TeiDashboardContracts {
         void editTei(boolean isEditable, android.view.View view, DashboardProgramModel dashboardProgramModel);
 
         void onEventSelected(String uid, android.view.View view);
+
+        void onFollowUp(DashboardProgramModel dashboardProgramModel);
+
+        void onDettach();
     }
-
-    public interface Interactor {
-        void init(View view, String teiUid, @Nullable String programUid);
-
-        void getTrackedEntityInstance(String teiUid);
-
-        void getProgramData(String programId);
-    }
-
-
 }
