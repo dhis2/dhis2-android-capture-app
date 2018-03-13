@@ -5,7 +5,6 @@ import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.programDetail.TrackedEntityObject;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -22,7 +21,6 @@ import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public class SearchTEContractsModule {
@@ -72,6 +70,8 @@ public class SearchTEContractsModule {
         TrackedEntityModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
+
+        List<ProgramModel> getProgramList();
     }
 
     public interface Interactor {

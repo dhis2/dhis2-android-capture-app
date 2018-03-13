@@ -1,5 +1,6 @@
 package com.dhis2.data.forms.dataentry;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.util.DiffUtil;
@@ -8,9 +9,14 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
+import com.dhis2.databinding.FormEditTextCustomBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +25,16 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 final class DataEntryAdapter extends Adapter {
-    private static final int ROW_CHECKBOX = 0;
-    private static final int ROW_EDITTEXT = 1;
-    private static final int ROW_RADIO_BUTTONS = 2;
-    private static final int ROW_TEXT = 3;
-    private static final int ROW_OPTIONS = 4;
-    private static final int ROW_DATE = 5;
-    private static final int ROW_COORDINATES = 6;
+    private final int EDITTEXT = 0;
+    private final int BUTTON = 1;
+    private final int CHECKBOX = 2;
+    private final int SPINNER = 3;
+    private final int COORDINATES = 4;
+    private final int TIME = 5;
+    private final int DATE = 6;
+    private final int DATETIME = 7;
+    private final int AGEVIEW = 8;
+    private final int YES_NO = 9;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -43,19 +52,22 @@ final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
-        /*rows.add(ROW_CHECKBOX, new CheckBoxRow(layoutInflater, processor));
-        rows.add(ROW_EDITTEXT, new EditTextRow(processor));
-        rows.add(ROW_RADIO_BUTTONS, new RadioButtonRow(processor));
-        rows.add(ROW_TEXT, new TextRow(layoutInflater));
-        rows.add(ROW_OPTIONS, new OptionsRow(layoutInflater, fragmentManager,
-                processor, dataEntryArguments));
-        rows.add(ROW_DATE, new DateRow(layoutInflater, fragmentManager, processor));
-        rows.add(ROW_COORDINATES, new CoordinateRow(processor));*/
+        rows.add(EDITTEXT, new EditTextRow(processor));
+        rows.add(BUTTON, new EditTextRow(processor));
+        rows.add(CHECKBOX, new EditTextRow(processor));
+        rows.add(SPINNER, new SpinnerRow(processor));
+        rows.add(COORDINATES, new EditTextRow(processor));
+        rows.add(TIME, new DateTimeRow(processor));
+        rows.add(DATE, new DateTimeRow(processor));
+        rows.add(DATETIME, new DateTimeRow(processor));
+        rows.add(AGEVIEW, new EditTextRow(processor));
+        rows.add(YES_NO, new EditTextRow(processor));
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return rows.get(viewType).onCreate(parent);
+        FormEditTextCustomBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_edit_text_custom, parent, false);
+        return rows.get(viewType).onCreate(binding, parent);
     }
 
     @Override
@@ -71,10 +83,15 @@ final class DataEntryAdapter extends Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+//        return super.getItemViewType(position);
         //TODO: CHECK VIEWMODELS
-    /*    FieldViewModel viewModel = viewModels.get(position);
-        if (viewModel instanceof CheckBoxViewModel) {
+        FieldViewModel viewModel = viewModels.get(position);
+        return EDITTEXT;
+       /* if (viewModel instanceof EditTextModel) {
+            return EDITTEXT;
+        } else
+            return super.getItemViewType(position);*/
+       /* if (viewModel instanceof CheckBoxViewModel) {
             return ROW_CHECKBOX;
         } else if (viewModel instanceof EditTextModel) {
             return ROW_EDITTEXT;

@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -25,7 +26,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 04/12/2017.
- *
  */
 
 public interface MetadataRepository {
@@ -92,8 +92,12 @@ public interface MetadataRepository {
 
     Observable<List<ProgramModel>> getTEIProgramsToEnroll(String teiUid);
 
+    Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid);
+
+
     /*EVENTS*/
     Observable<Integer> getProgramStageDataElementCount(String programStageId);
 
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
+
 }

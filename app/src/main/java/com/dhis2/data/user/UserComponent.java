@@ -11,6 +11,8 @@ import com.dhis2.usescases.appInfo.InfoComponent;
 import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventInitial.EventInitialModule;
+import com.dhis2.usescases.login.LoginComponent;
+import com.dhis2.usescases.login.LoginModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainModule;
 import com.dhis2.usescases.main.program.ProgramComponent;

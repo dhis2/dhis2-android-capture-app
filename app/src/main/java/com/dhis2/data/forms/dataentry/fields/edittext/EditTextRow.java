@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder;
-import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -26,9 +24,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextViewModel>
         this.processor = processor;
     }
 
-    @NonNull
-    @Override
-    public EditTextCustomHolder onCreate(@NonNull ViewGroup parent) {
+    public EditTextCustomHolder onCreate(ViewDataBinding binding, ViewGroup viewGroup) {
         return new EditTextCustomHolder(binding, processor);
     }
 
@@ -36,5 +32,6 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextViewModel>
     public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextViewModel viewModel) {
 
     }
+
 
 }

@@ -9,7 +9,6 @@ import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
-import static android.text.TextUtils.isEmpty;
 import static com.dhis2.utils.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
@@ -72,10 +71,9 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }*/
 
         switch (type) {
-            default:
             case BOOLEAN:
                 return RadioButtonViewModel.fromRawValue(id, label, mandatory, value);
-           /* case TRUE_ONLY:
+            case TRUE_ONLY:
                 return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);
             case TEXT:
                 return createText(id, label, mandatory, value);
@@ -96,11 +94,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
                 return createDateTime(id, label, mandatory, value);
             default:
-                return TextViewModel.create(id, label, type.toString());*/
+                return TextViewModel.create(id, label, type.toString());
         }
     }
 
-/*    @NonNull
+    @NonNull
     private DateViewModel createDate(@NonNull String uid, @NonNull String label,
                                      @NonNull Boolean mandatory, @Nullable String value) {
         return DateViewModel.forDate(uid, label, hintChooseDate, mandatory, value);
@@ -162,5 +160,5 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                                                  @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
                 hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
-    }*/
+    }
 }

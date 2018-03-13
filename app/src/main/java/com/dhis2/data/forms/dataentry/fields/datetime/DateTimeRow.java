@@ -17,9 +17,17 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     ViewDataBinding binding;
 
+
+    @NonNull
+    private final FlowableProcessor<RowAction> processor;
+
+    public DateTimeRow(@NonNull FlowableProcessor<RowAction> processor) {
+        this.processor = processor;
+    }
+
     @NonNull
     @Override
-    public DateTimeHolder onCreate(@NonNull ViewGroup parent) {
+    public DateTimeHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
         return new DateTimeHolder(binding);
     }
 

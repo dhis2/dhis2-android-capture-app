@@ -22,7 +22,6 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
@@ -51,7 +49,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private TrackedEntityModel trackedEntity;
-    private List<TrackedEntityAttributeModel> attributeModelList;
     private String enrollmentDate;
     private String incidentDate;
     private List<ProgramModel> programModels;
@@ -74,6 +71,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.view = view;
         locationManager = (LocationManager) view.getAbstracContext().getSystemService(Context.LOCATION_SERVICE);
 
+        compositeDisposable.add(
+                searchRepository.programsWithRegistration(trackedEntityType)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(programModels -> {
+                                    this.programModels = programModels;
+                                    view.setPrograms(programModels);
+                                },
+                                Timber::d)
+        );
         compositeDisposable.add(metadataRepository.getTrackedEntity(trackedEntityType)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -86,10 +93,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            attributeModelList = data;
-                            view.setForm(data, selectedProgram);
-                        },
+                        data -> view.setForm(data, selectedProgram),
                         Timber::d)
         );
 
@@ -128,24 +132,21 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
 
-    public void getTrakedEntities() {
+    private void getTrakedEntities() {
         compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
                 selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view.swapListData())
+                .subscribe(view.swapListData(), Timber::d)
         );
     }
 
-    public void getTrackedEntityAttributes() {
+    private void getTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            attributeModelList = data;
-                            view.setForm(data, selectedProgram);
-                        },
+                        data -> view.setForm(data, selectedProgram),
                         Timber::d)
         );
     }
@@ -155,9 +156,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            view.setForm(data, selectedProgram);
-                        },
+                        data -> view.setForm(data, selectedProgram),
                         Timber::d)
         );
     }
@@ -171,6 +170,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public ProgramModel getProgramModel() {
         return selectedProgram;
     }
+
+    @Override
+    public List<ProgramModel> getProgramList() {
+        return programModels;
+    }
+
 
     @Override
     public Observable<List<OptionModel>> getOptions(String optionSetId) {
@@ -245,8 +250,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid) {
-        FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(programUid);
-        this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+        //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
+
+        compositeDisposable.add(
+                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(enrollmentUid -> {
+                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
+                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+                                },
+                                Timber::d)
+        );
+
+
     }
 
     @Override

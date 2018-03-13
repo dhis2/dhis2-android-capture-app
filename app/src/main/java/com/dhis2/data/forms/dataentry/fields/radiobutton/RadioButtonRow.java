@@ -19,13 +19,17 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     ViewDataBinding binding;
 
+    @NonNull
+    private final FlowableProcessor<RowAction> processor;
+
     public RadioButtonRow(FlowableProcessor<RowAction> processor) {
+        this.processor = processor;
 
     }
 
     @NonNull
     @Override
-    public RadioButtonHolder onCreate(@NonNull ViewGroup parent) {
+    public RadioButtonHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
         return new RadioButtonHolder(binding);
     }
 

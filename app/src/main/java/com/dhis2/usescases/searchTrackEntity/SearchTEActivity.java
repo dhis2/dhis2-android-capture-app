@@ -41,6 +41,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     MetadataRepository metadataRepository;
 
     private SearchTEAdapter searchTEAdapter;
+    private TabletSearchAdapter searchTEATabletAdapter;
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -54,9 +55,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
 
-        binding.scrollView.setNestedScrollingEnabled(false);
-        searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
-        binding.scrollView.setAdapter(searchTEAdapter);
+        if (getResources().getBoolean(R.bool.is_tablet)) {
+            searchTEATabletAdapter = new TabletSearchAdapter(this, presenter, metadataRepository);
+            binding.tableView.setAdapter(searchTEATabletAdapter);
+            binding.scrollView.setVisibility(View.GONE);
+
+        } else {
+            binding.scrollView.setNestedScrollingEnabled(false);
+            searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
+            binding.scrollView.setAdapter(searchTEAdapter);
+            binding.tableView.setVisibility(View.GONE);
+        }
+
+
         binding.formRecycler.setAdapter(new FormAdapter(presenter));
     }
 
@@ -105,7 +116,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.objectCounter.setVisibility(View.VISIBLE);
             binding.objectCounter.setText(String.format("%s results found", data.size()));
 
-            searchTEAdapter.setItems(data);
+            if (getResources().getBoolean(R.bool.is_tablet)) {
+                searchTEATabletAdapter.setItems(data, presenter.getProgramList());
+            } else {
+                searchTEAdapter.setItems(data);
+            }
         };
     }
 

@@ -1,7 +1,6 @@
 package com.dhis2.usescases.login;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -10,19 +9,22 @@ import android.view.View;
 import com.dhis2.App;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
-import com.dhis2.data.service.SyncService;
 import com.dhis2.usescases.main.MainActivity;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import retrofit2.Response;
+import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 public class LoginInteractor implements LoginContracts.Interactor {
@@ -30,6 +32,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
+
     @NonNull
     private final CompositeDisposable disposable;
 
@@ -87,8 +90,71 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void sync() {
 
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+        disposable.add(metadata()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(LoginActivity.SyncState.METADATA), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
 
+    }
+
+    @Override
+    public void syncEvents() {
+        disposable.add(events()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(LoginActivity.SyncState.EVENTS), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+    }
+
+    @Override
+    public void syncTrackedEntities() {
+
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(LoginActivity.SyncState.TEI), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+    }
+
+    @NonNull
+    private Observable<Response> metadata() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
+    }
+
+    @NonNull
+    private Observable<Response> trackerData() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(50)));
+    }
+
+    @NonNull
+    private Observable<Response> events() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(600)));
+    }
+
+    @NonNull
+    private Consumer<SyncResult> update(LoginActivity.SyncState syncState) {
+        return result -> {
+            if (view != null) {
+                view.update(syncState).accept(result);
+            }
+        };
     }
 
 
@@ -98,10 +164,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
         Timber.d("Authentication response code: %s", userResponse.code());
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
-            sync();
             view.saveUsersData();
             view.handleSync();
-//            view.startActivity(MainActivity.class, null, true, true, null);
+            sync();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
             view.hideProgress();
             view.renderInvalidCredentialsError();
@@ -135,4 +200,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
         return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }
 
+    @Override
+    public void onDestroy() {
+        disposable.dispose();
+    }
 }

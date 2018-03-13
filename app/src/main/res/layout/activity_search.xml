@@ -12,7 +12,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorBackGround">
+        android:background="@color/gray_f6f">
 
         <!--SCROLLING VIEW-->
 
@@ -20,15 +20,25 @@
             android:id="@+id/nestedScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
+            android:clipToPadding="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/scrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+
+                    <com.evrencoskun.tableview.TableView
+                        android:id="@+id/tableView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:row_header_width="90dp"/>
+                </RelativeLayout>
         </android.support.v4.widget.NestedScrollView>
 
         <!--END OF SCROLLING VIEW-->
@@ -91,7 +101,7 @@
                     android:layout_height="match_parent"
                     android:focusableInTouchMode="true"
                     app:initGrid="@{false}"
-                    app:spanSize="@{true}"/>
+                    app:spanSize="@{true}" />
 
             </LinearLayout>
 
