@@ -5,6 +5,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
 
+import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -16,7 +17,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -34,7 +34,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
 
-    public TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+    TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
@@ -126,17 +126,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        compositeDisposable.add(
-                dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(), !dashboardProgramModel.getCurrentEnrollment().followUp())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (Void) -> {
-                            view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ? "Follow up enabled" : "Follow up disabled");
-                            getData();
-                        },
-                        Timber::d)
-        );
+        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(), !dashboardProgramModel.getCurrentEnrollment().followUp());
+        if (success > 0) {
+            view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ?
+                    view.getContext().getString(R.string.follow_up_enabled) :
+                    view.getContext().getString(R.string.follow_up_disabled));
+            getData();
+        }
     }
 
     @Override

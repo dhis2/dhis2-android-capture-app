@@ -36,5 +36,5 @@ public interface DashboardRepository {
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
 
-    Observable<Void> setFollowUp(String enrollmentUid, boolean followUp);
+    int setFollowUp(String enrollmentUid, boolean followUp);
 }

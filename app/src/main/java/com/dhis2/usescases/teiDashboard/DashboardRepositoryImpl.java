@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.content.ContentValues;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -150,11 +152,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<Void> setFollowUp(String enrollmentUid, boolean followUp) {
-        String CHANGE_ENROLLMENT_FOLLOW_UP = "UPDATE " + EnrollmentModel.TABLE + " SET " + EnrollmentModel.Columns.FOLLOW_UP + "='%s' WHERE " + EnrollmentModel.Columns.UID + "='%s'";
-        return briteDatabase.createQuery(
-                EnrollmentModel.TABLE,
-                String.format(CHANGE_ENROLLMENT_FOLLOW_UP, followUp ? "1" : "0", enrollmentUid))
-                .map(__ -> (Void) null);
+    public int setFollowUp(String enrollmentUid, boolean followUp) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+
+        return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
     }
 }
