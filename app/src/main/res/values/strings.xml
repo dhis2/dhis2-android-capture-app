@@ -92,4 +92,7 @@
     <string name="follow_up">Follow up</string>
     <string name="follow_up_enabled">Follow up enabled</string>
     <string name="follow_up_disabled">Follow up disabled</string>
+
+    <!--DONE TASKS-->
+    <string name="events">events</string>
 </resources>

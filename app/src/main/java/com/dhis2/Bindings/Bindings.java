@@ -84,6 +84,19 @@ public class Bindings {
                         Timber::d);
     }
 
+    @BindingAdapter("numberOfEvents")
+    public static void setNumberOfEvents(TextView textView, Observable<List<EventModel>> listObservable) {
+        listObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            String text = data.size() + " " + textView.getContext().getString(R.string.events);
+                            textView.setText(text);
+                        },
+                        Timber::d);
+    }
+
     @BindingAdapter("initGrid")
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
         RecyclerView.LayoutManager recyclerLayout;
