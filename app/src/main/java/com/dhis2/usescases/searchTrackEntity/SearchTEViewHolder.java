@@ -139,8 +139,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     private void setEnrollment(List<EnrollmentModel> enrollments) {
         this.teiEnrollments = enrollments;
         binding.linearLayout.removeAllViews();
+        boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {
-
             if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE) {
                 TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
                         LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
@@ -150,7 +150,12 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
                 binding.linearLayout.invalidate();
+
+                if (enrollment.followUp())
+                    isFollowUp = true;
             }
+
+            binding.setFollowUp(isFollowUp);
 
         }
         binding.viewMore.setVisibility(binding.linearLayout.getChildCount() > 2 ? View.VISIBLE : View.GONE);

@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 class EventViewHolder extends RecyclerView.ViewHolder {
     ItemEventBinding binding;
 
-    public EventViewHolder(ItemEventBinding binding) {
+    EventViewHolder(ItemEventBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
