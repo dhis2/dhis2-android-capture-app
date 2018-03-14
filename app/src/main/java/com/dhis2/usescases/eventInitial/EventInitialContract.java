@@ -36,6 +36,8 @@ public class EventInitialContract {
         void setEvent(EventModel event);
 
         void setCatOption(CategoryOptionComboModel categoryOptionComboModel);
+
+        void setLocation(double latitude, double longitude);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

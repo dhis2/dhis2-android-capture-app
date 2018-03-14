@@ -1,8 +1,10 @@
 package com.dhis2.usescases.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -220,6 +222,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
     }
 
+    @Override
+    public void setLocation(double latitude, double longitude) {
+        binding.lat.setText(String.valueOf(latitude));
+        binding.lon.setText(String.valueOf(longitude));
+    }
+
 
     @Override
     public void renderError(String message) {
@@ -274,5 +282,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    presenter.onLocationClick();
+                } else {
+                    // TODO CRIS
+                }
+            }
+        }
     }
 }
