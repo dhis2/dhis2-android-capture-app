@@ -71,15 +71,16 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }*/
 
         switch (type) {
+            default:
             case BOOLEAN:
                 return RadioButtonViewModel.fromRawValue(id, label, mandatory, value);
-            case TRUE_ONLY:
-                return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);
+         /*   case TRUE_ONLY:
+                return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);*/
             case TEXT:
                 return createText(id, label, mandatory, value);
             case LONG_TEXT:
                 return createLongText(id, label, mandatory, value);
-            case NUMBER:
+            /*case NUMBER:
                 return createNumber(id, label, mandatory, value);
             case INTEGER:
                 return createInteger(id, label, mandatory, value);
@@ -94,11 +95,11 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATETIME:
                 return createDateTime(id, label, mandatory, value);
             default:
-                return TextViewModel.create(id, label, type.toString());
+                return TextViewModel.create(id, label, type.toString());*/
         }
     }
 
-    @NonNull
+   /* @NonNull
     private DateViewModel createDate(@NonNull String uid, @NonNull String label,
                                      @NonNull Boolean mandatory, @Nullable String value) {
         return DateViewModel.forDate(uid, label, hintChooseDate, mandatory, value);
@@ -114,7 +115,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private OptionsViewModel createOption(@NonNull String id, @NonNull String label,
                                           @NonNull Boolean mandatory, @NonNull String optionSet, @Nullable String value) {
         return OptionsViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
-    }
+    }*/
 
     @NonNull
     private EditTextViewModel createText(@NonNull String id, @NonNull String label,
@@ -128,7 +129,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
     }
 
-    @NonNull
+    /*@NonNull
     private EditTextDoubleViewModel createNumber(@NonNull String id, @NonNull String label,
                                                  @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextDoubleViewModel.fromRawValue(id, label, mandatory, value, hintEnterNumber);
@@ -160,5 +161,5 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                                                  @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
                 hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
-    }
+    }*/
 }
