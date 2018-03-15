@@ -43,6 +43,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchTEAdapter searchTEAdapter;
     private TabletSearchAdapter searchTEATabletAdapter;
 
+    private String initialProgram;
+
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -69,6 +71,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
         binding.formRecycler.setAdapter(new FormAdapter(presenter));
+        initialProgram = getIntent().getStringExtra("PROGRAM_UID");
     }
 
     @Override
@@ -142,6 +145,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
         binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels, presenter.getTrackedEntityName().displayName()));
+        if(!initialProgram.isEmpty())
+            setInitialProgram(programModels);
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
@@ -165,6 +170,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             }
         });
+    }
+
+    private void setInitialProgram(List<ProgramModel> programModels) {
+        for (int i = 0; i < programModels.size(); i++) {
+            if(programModels.get(i).uid().equals(initialProgram)) {
+                binding.programSpinner.setSelection(i + 1);
+                initialProgram = null;
+            }
+        }
     }
 
 
