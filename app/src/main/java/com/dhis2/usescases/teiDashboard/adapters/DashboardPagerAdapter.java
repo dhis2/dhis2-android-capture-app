@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 /**
  * Created by ppajuelo on 29/11/2017.
+ *
  */
 
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {

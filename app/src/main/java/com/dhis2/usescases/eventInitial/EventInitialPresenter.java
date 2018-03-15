@@ -1,7 +1,13 @@
 package com.dhis2.usescases.eventInitial;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.pm.PackageManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -14,9 +20,12 @@ import timber.log.Timber;
 
 public class EventInitialPresenter implements EventInitialContract.Presenter {
 
+    public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
     static private EventInitialContract.View view;
     private final EventInitialContract.Interactor interactor;
     public ProgramModel program;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     EventInitialPresenter(EventInitialContract.Interactor interactor) {
         this.interactor = interactor;
@@ -26,6 +35,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void init(EventInitialContract.View mview, String programId, String eventId) {
         view = mview;
         interactor.init(view, programId, eventId);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
     }
 
     @Override
@@ -55,12 +65,32 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onLocationClick() {
-        Timber.d("MENSAJE", "clickado");
+        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(view.getAbstractActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // TODO CRIS
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                ActivityCompat.requestPermissions(view.getAbstractActivity(),
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+            }
+            return;
+        }
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> view.setLocation(location.getLatitude(), location.getLongitude()));
     }
 
     @Override
     public void onLocation2Click() {
         Timber.d("MENSAJE", "clickado2");
+    }
+
+    @Override
+    public void getCatOption(String categoryOptionComboId) {
+        interactor.getCatOption(categoryOptionComboId);
     }
 
     @Override

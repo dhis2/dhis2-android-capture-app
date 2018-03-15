@@ -10,6 +10,7 @@ import dagger.Provides;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 @PerActivity
 @Module

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -57,31 +58,79 @@
                 android:paddingTop="7dp"
                 android:transitionName="user_info">
 
-
-                <ImageView
-                    android:id="@+id/program_lock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    app:enrolmentIcon='@{enrollment.enrollmentStatus()}'
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_lock_open_green" />
-
                 <TextView
+                    android:id="@+id/follow_up_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
-                    android:maxWidth="60dp"
-                    android:textColor="#787878"
-                    android:textSize="14sp"
+                    android:textSize="9sp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginTop="14dp"
                     android:textStyle="normal"
-                    app:enrolmentText='@{enrollment.enrollmentStatus()}'
-                    app:layout_constraintEnd_toEndOf="@id/program_lock"
-                    app:layout_constraintStart_toStartOf="@id/program_lock"
-                    app:layout_constraintTop_toBottomOf="@id/program_lock" />
+                    android:lines="1"
+                    android:text="@string/follow_up"
+                    android:layout_gravity="center_vertical"
+                    tools:ignore="SmallSp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/follow_up"
+                    android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'/>
 
+
+                <ImageView
+                    android:id="@+id/follow_up"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:srcCompat="@drawable/ic_warning_white"
+                    android:layout_gravity="center_vertical"
+                    android:background='@{enrollment.followUp() ? @drawable/ic_circle_red : @drawable/ic_circle}'
+                    tools:ignore="ContentDescription"
+                    app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'/>
+
+
+                <RelativeLayout
+                    android:id="@+id/program_lock_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/program_lock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_centerHorizontal="true"
+                        app:enrolmentIcon='@{enrollment.enrollmentStatus()}'
+                        app:srcCompat="@drawable/ic_lock_open_green"
+                        tools:ignore="ContentDescription"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+                    <TextView
+                        android:id="@+id/program_lock_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_horizontal"
+                        android:textColor="#787878"
+                        android:textSize="12sp"
+                        android:lines="1"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/program_lock"
+                        android:maxWidth="80dp"
+                        android:textStyle="normal"
+                        app:enrolmentText='@{enrollment.enrollmentStatus()}'
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/program_lock"/>
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/view_tei"
@@ -91,7 +140,7 @@
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="8sp"
                     android:onClick="@{() -> presenter.editTei(false,cardData,dashboardModel)}"
-                    android:text="VIEW MORE"
+                    android:text="@string/view_more"
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -107,7 +156,7 @@
                     android:gravity="center_horizontal"
                     android:lineSpacingExtra="8sp"
                     android:onClick="@{() -> presenter.editTei(true,cardData, dashboardModel)}"
-                    android:text="EDIT"
+                    android:text="@string/edit"
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -124,9 +173,9 @@
                     app:alignItems="stretch"
                     app:flexWrap="wrap"
                     app:layout_constraintBottom_toTopOf="@id/view_tei"
-                    app:layout_constraintEnd_toStartOf="@id/program_lock"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/program_lock_layout">
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -138,7 +187,8 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:srcCompat="@drawable/photo_temp" />
+                            app:srcCompat="@drawable/photo_temp"
+                            tools:ignore="ContentDescription" />
 
 
                         <TextView
@@ -199,7 +249,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="Enrolling OU:"
+                            android:text="@string/enrolling_ou"
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/enrollment_date_label" />

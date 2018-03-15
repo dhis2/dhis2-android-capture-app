@@ -2,7 +2,9 @@ package com.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
 
+import com.dhis2.R;
 import com.dhis2.usescases.eventInitial.EventInitialActivity;
+import com.dhis2.usescases.eventInitial.tablet.EventInitialTabletActivity;
 import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -78,7 +80,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString("PROGRAM_UID", program.uid());
         bundle.putString("EVENT_UID", eventId);
         bundle.putBoolean("NEW_EVENT", false);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
+            view.startActivity(EventInitialTabletActivity.class, bundle, false, false, null);
+        }
+        else{
+            view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        }
     }
 
     @Override
@@ -90,7 +97,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", program.uid());
         bundle.putBoolean("NEW_EVENT", true);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
+            view.startActivity(EventInitialTabletActivity.class, bundle, false, false, null);
+        }
+        else{
+            view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        }
     }
 
     @Override

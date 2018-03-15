@@ -12,12 +12,13 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 /**
  * Created by ppajuelo on 27/02/2018.
+ *
  */
 
 public class DashboardProgramAdapter extends RecyclerView.Adapter<DashboardProgramViewHolder> {
 
     private final TeiDashboardContracts.Presenter presenter;
-    DashboardProgramModel dashboardProgramModel;
+    private DashboardProgramModel dashboardProgramModel;
 
     public DashboardProgramAdapter(TeiDashboardContracts.Presenter presenter, DashboardProgramModel program) {
         this.dashboardProgramModel = program;

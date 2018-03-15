@@ -143,4 +143,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
     }
+
+    @Override
+    public void showToast(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 }

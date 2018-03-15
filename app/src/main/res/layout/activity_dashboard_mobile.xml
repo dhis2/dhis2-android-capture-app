@@ -35,7 +35,8 @@
                 android:layout_height="match_parent"
                 android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/toolbar_title"
@@ -54,7 +55,8 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_program_border" />
+                app:srcCompat="@drawable/ic_program_border"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 

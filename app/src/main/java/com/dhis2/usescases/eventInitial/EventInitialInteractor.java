@@ -101,6 +101,17 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
+    public void getCatOption(String categoryOptionComboId){
+        compositeDisposable.add(metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (catOption) -> view.setCatOption(catOption),
+                        Timber::d)
+        );
+    }
+
+    @Override
     public void getOrgUnits() {
         compositeDisposable.add(eventInitialRepository.orgUnits()
                 .subscribeOn(Schedulers.io())

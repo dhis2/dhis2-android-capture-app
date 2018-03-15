@@ -1,6 +1,7 @@
 package com.dhis2.usescases.eventInitial;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.usescases.eventInitial.tablet.EventInitialTabletActivity;
 
 import dagger.Subcomponent;
 
@@ -13,4 +14,5 @@ import dagger.Subcomponent;
 @Subcomponent(modules = EventInitialModule.class)
 public interface EventInitialComponent {
     void inject(EventInitialActivity activity);
+    void inject(EventInitialTabletActivity activity);
 }

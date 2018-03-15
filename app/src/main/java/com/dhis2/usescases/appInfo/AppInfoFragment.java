@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ppajuelo on 31/01/2018.
+ *
  */
 
 public class AppInfoFragment extends FragmentGlobalAbstract {

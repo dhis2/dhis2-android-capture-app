@@ -5,8 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v7.widget.PopupMenu;
-import android.view.Menu;
 import android.view.View;
 
 import com.dhis2.App;
@@ -20,11 +18,6 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.program.ProgramModel;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -59,9 +52,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void init(String teiUid, String programUid) {
-        presenter.init(this,
-                teiUid,
-                programUid);
+        presenter.init(this, teiUid, programUid);
     }
 
     @Override
@@ -90,20 +81,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
         setDataFragment();
-    }
-
-    @Override
-    public void showEnrollmentList(List<Enrollment> enrollments) {
-        PopupMenu menu = new PopupMenu(this, binding.programSelectorButton);
-        int cont = 0;
-        for (ProgramModel program : programModel.getEnrollmentProgramModels()) {
-            menu.getMenu().add(Menu.NONE, cont++, Menu.NONE, program.displayShortName());
-        }
-        menu.setOnMenuItemClickListener(item -> {
-            init(programModel.getTei().uid(), programModel.getEnrollmentProgramModels().get(item.getItemId()).uid());
-            return true;
-        });
-        menu.show();
     }
 
     @Override

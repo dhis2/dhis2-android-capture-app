@@ -43,6 +43,7 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 28/09/2017.
+ *
  */
 
 public class Bindings {
@@ -83,6 +84,19 @@ public class Bindings {
                         Timber::d);
     }
 
+    @BindingAdapter("numberOfEvents")
+    public static void setNumberOfEvents(TextView textView, Observable<List<EventModel>> listObservable) {
+        listObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            String text = data.size() + " " + textView.getContext().getString(R.string.events);
+                            textView.setText(text);
+                        },
+                        Timber::d);
+    }
+
     @BindingAdapter("enrollmentLastEventDate")
     public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
         metadataRepository.getEnrollmentLastEvent(enrollmentUid)
@@ -102,6 +116,7 @@ public class Bindings {
                         data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
                         Timber::d);
     }
+
 
     @BindingAdapter("initGrid")
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {

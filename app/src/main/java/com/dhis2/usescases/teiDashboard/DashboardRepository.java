@@ -15,6 +15,7 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public interface DashboardRepository {
@@ -35,4 +36,5 @@ public interface DashboardRepository {
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
 
+    int setFollowUp(String enrollmentUid, boolean followUp);
 }

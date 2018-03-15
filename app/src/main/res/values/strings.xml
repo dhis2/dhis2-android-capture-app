@@ -78,4 +78,21 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">New event</string>
+
+    <!--TEI Program list-->
+    <string name="programs_list">Programs list</string>
+    <string name="active_programs">Active programs</string>
+    <string name="past_programs">Past programs</string>
+    <string name="enroll">Enroll</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="view_more">VIEW MORE</string>
+    <string name="edit">EDIT</string>
+    <string name="enrolling_ou">Enrolling OU:</string>
+    <string name="follow_up">Follow up</string>
+    <string name="follow_up_enabled">Follow up enabled</string>
+    <string name="follow_up_disabled">Follow up disabled</string>
+
+    <!--DONE TASKS-->
+    <string name="events">events</string>
 </resources>

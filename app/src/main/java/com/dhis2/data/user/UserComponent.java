@@ -31,6 +31,8 @@ import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailModule;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
 import dagger.Subcomponent;
 
@@ -64,6 +66,9 @@ public interface UserComponent {
 
     @NonNull
     EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
+
+    @NonNull
+    TeiProgramListComponent plus(@NonNull TeiProgramListModule teiProgramListModule);
 
     @NonNull
     FormComponent plus(@NonNull FormModule enrollmentModule);

@@ -110,10 +110,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void handleSync() {
         binding.login.setVisibility(View.GONE);
-        ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-        params.height = MATCH_PARENT;
-        binding.logo.setLayoutParams(params);
-        binding.syncLayout.setVisibility(View.VISIBLE);
+        if (binding.logo != null) {
+            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+            params.height = MATCH_PARENT;
+            binding.logo.setLayoutParams(params);
+        }
     }
 
     @Override

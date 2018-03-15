@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 18/10/2017.
+ *
  */
 
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
@@ -24,7 +25,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     private List<ProgramModel> programList;
     private ProgramContract.Presenter presenter;
 
-    public ProgramAdapter(ProgramContract.Presenter presenter) {
+    ProgramAdapter(ProgramContract.Presenter presenter) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
     }

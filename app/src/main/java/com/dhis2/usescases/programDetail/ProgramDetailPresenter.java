@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 31/10/2017.
+ *
  */
 
 public class ProgramDetailPresenter implements ProgramDetailContractModule.Presenter {
@@ -70,7 +71,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onSearchClick() {
         Bundle bundle = new Bundle();
-        //bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());
         view.startActivity(SearchTEActivity.class, bundle, false, false, null);
     }
 
