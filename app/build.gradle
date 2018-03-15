@@ -169,9 +169,8 @@ dependencies {
     }
 
     //LOCATION
-    implementation ("com.google.android.gms:play-services-location:${libraries.gmsVersion}"){
-        force = true
-    }
+    implementation ("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
+    implementation ("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'

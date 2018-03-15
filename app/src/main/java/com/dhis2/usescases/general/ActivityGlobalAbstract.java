@@ -85,7 +85,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
-//        NavigationController.startActivity(ActivityGlobalAbstract.this, destination, bundle, finishCurrent, finishAll, transition);
         if (finishCurrent)
             finish();
         Intent intent = new Intent(this, destination);
