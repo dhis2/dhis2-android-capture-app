@@ -4,6 +4,7 @@ import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -43,7 +44,6 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 28/09/2017.
- *
  */
 
 public class Bindings {
@@ -72,6 +72,14 @@ public class Bindings {
             textView.setText(dateOut);
         }
 
+    }
+
+    @BindingAdapter("drawableEnd")
+    public static void setDrawableEnd(TextView textView, Drawable drawable) {
+        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+
+        if(drawable instanceof AnimatedVectorDrawable)
+            ((AnimatedVectorDrawable) drawable).start();
     }
 
     @BindingAdapter("lastEventDate")

@@ -98,7 +98,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(600)));
+        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(786)));
     }
 
 

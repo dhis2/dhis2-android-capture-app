@@ -1,12 +1,14 @@
 package com.dhis2.usescases.eventInitial;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -23,7 +25,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialInteractor implements EventInitialContract.Interactor {
@@ -35,6 +36,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     private String eventId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
+    private ProgramModel programModel;
+    private CategoryComboModel catCombo;
 
 
     EventInitialInteractor(EventInitialRepository eventInitialRepository, MetadataRepository metadataRepository) {
@@ -45,12 +48,62 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void init(EventInitialContract.View view, String programId, String eventId) {
+    public void init(EventInitialContract.View view, String programId, @Nullable String eventId) {
         this.view = view;
         this.programId = programId;
         this.eventId = eventId;
-        getProgram();
-        getEvent();
+
+        if (eventId != null)
+            compositeDisposable.add(
+                    eventInitialRepository.event(eventId)
+                            .flatMap(
+                                    (eventModel) -> {
+                                        view.setEvent(eventModel);
+                                        return metadataRepository.getProgramWithId(programId);
+                                    }
+                            )
+                            .flatMap(
+                                    programModel -> {
+                                        this.programModel = programModel;
+                                        view.setProgram(programModel);
+                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo());
+                                    }
+                            )
+                            .flatMap(
+                                    catCombo -> {
+                                        this.catCombo = catCombo;
+                                        return eventInitialRepository.catCombo(programModel.categoryCombo());
+                                    }
+                            )
+                            .subscribe(
+                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
+                                    Timber::d
+                            )
+            );
+        else
+            compositeDisposable.add(
+                    metadataRepository.getProgramWithId(programId)
+                            .flatMap(
+                                    programModel -> {
+                                        this.programModel = programModel;
+                                        view.setProgram(programModel);
+                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo());
+                                    }
+                            )
+                            .flatMap(
+                                    catCombo -> {
+                                        this.catCombo = catCombo;
+                                        return eventInitialRepository.catCombo(programModel.categoryCombo());
+                                    }
+                            )
+                            .subscribe(
+                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
+                                    Timber::d
+                            )
+            );
+
+      /*  getProgram();
+        getEvent();*/
         getOrgUnits();
     }
 
@@ -59,14 +112,12 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
         compositeDisposable.dispose();
     }
 
-    private void getEvent(){
+    private void getEvent() {
         compositeDisposable.add(eventInitialRepository.event(eventId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> {
-                            view.setEvent(eventModel);
-                        },
+                        (eventModel) -> view.setEvent(eventModel),
                         Timber::d)
         );
     }
@@ -84,7 +135,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
         );
     }
 
-    private void getCatCombo(ProgramModel programModel){
+    private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -101,7 +152,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void getCatOption(String categoryOptionComboId){
+    public void getCatOption(String categoryOptionComboId) {
         compositeDisposable.add(metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

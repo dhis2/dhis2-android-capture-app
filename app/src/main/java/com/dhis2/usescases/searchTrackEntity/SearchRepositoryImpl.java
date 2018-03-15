@@ -106,7 +106,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                @Nullable String programUid,
                                                                                @Nullable String enrollmentDate,
                                                                                @Nullable String incidentDate,
-                                                                               @Nullable HashMap<Long, String> queryData) {
+                                                                               @Nullable HashMap<String, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntity = '" + teType + "'";
         String TEI_FINAL_QUERY = GET_TRACKED_ENTITY_INSTANCES + teiTypeWHERE;
@@ -124,7 +124,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             TEI_FINAL_QUERY += " AND " + incidentDateWHERE;
         }
 
-
         if (queryData != null && !queryData.isEmpty()) {
             StringBuilder teiAttributeWHERE = new StringBuilder("");
             teiAttributeWHERE.append(TrackedEntityAttributeValueModel.TABLE + ".value IN (");
@@ -135,6 +134,20 @@ public class SearchRepositoryImpl implements SearchRepository {
                     teiAttributeWHERE.append(",");
             }
             teiAttributeWHERE.append(")");
+
+//            TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
+        }
+
+        String valueFilter = "(" + TrackedEntityAttributeValueModel.TABLE + ".trackedEntityAttribute = 'ATTR_ID' AND " + TrackedEntityAttributeValueModel.TABLE + ".value LIKE '%ATTR_VALUE%')";
+        if (queryData != null && !queryData.isEmpty()) {
+            StringBuilder teiAttributeWHERE = new StringBuilder("");
+            for (int i = 0; i < queryData.keySet().size(); i++) {
+                String dataId = queryData.keySet().toArray()[i].toString();
+                String dataValue = queryData.get(dataId);
+                teiAttributeWHERE.append(valueFilter.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
+                if (i < queryData.size() - 1)
+                    teiAttributeWHERE.append(" AND ");
+            }
 
             TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
         }

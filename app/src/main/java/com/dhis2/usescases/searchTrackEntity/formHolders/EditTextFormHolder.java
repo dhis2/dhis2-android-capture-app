@@ -63,7 +63,8 @@ public class EditTextFormHolder extends FormViewHolder {
                 public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                     value = charSequence.toString();
                     id = bindableObject.id();
-                    presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true); //Searchs for attributes which contains charSequece in its value
+                    uid = bindableObject.uid();
+//                    presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true); //Searchs for attributes which contains charSequece in its value
                     processor.onNext(EditTextFormHolder.this);
                 }
 

@@ -19,6 +19,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CatComboAdapter2;
+import com.dhis2.utils.DateUtils;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -37,7 +38,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
@@ -139,20 +139,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
     }
 
-    private void checkActionButtonVisibility(){
-        if (isFormCompleted()){
+    private void checkActionButtonVisibility() {
+        if (isFormCompleted()) {
             binding.actionButton.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isFormCompleted(){
+    private boolean isFormCompleted() {
         return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatOption != null;
     }
 
-    private boolean isCompleted(String field){
+    private boolean isCompleted(String field) {
         return field != null && !field.isEmpty();
     }
 
@@ -182,12 +181,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
-
         binding.treeViewContainer.addView(treeView.getView());
         treeView.expandAll();
 
-        treeView.setDefaultNodeLongClickListener((node, value) -> {
-            node.setSelected(!node.isSelected());
+        treeView.setDefaultNodeClickListener((node, value) -> {
+            treeView.selectNode(node, node.isSelected());
             ArrayList<String> childIds = new ArrayList<>();
             childIds.add(((OrganisationUnitModel) value).uid());
             for (TreeNode childNode : node.getChildren()) {
@@ -201,8 +199,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
             binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
             binding.drawerLayout.closeDrawers();
-            return true;
         });
+
+        if (treeView.getSelected() != null && treeView.getSelected().isEmpty()) {
+            binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
+        }
+
     }
 
     @Override
@@ -213,10 +215,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setCatOption(CategoryOptionComboModel categoryOptionComboModel) {
-        if (categoryOptionComboModels != null){
-            for (int i=0; i< categoryOptionComboModels.size(); i++){
-                if (categoryOptionComboModels.get(i).uid().equals(categoryOptionComboModel.uid())){
-                    binding.catCombo.setSelection(i+1);
+        if (categoryOptionComboModels != null) {
+            for (int i = 0; i < categoryOptionComboModels.size(); i++) {
+                if (categoryOptionComboModels.get(i).uid().equals(categoryOptionComboModel.uid())) {
+                    binding.catCombo.setSelection(i + 1);
                 }
             }
         }
@@ -254,7 +256,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (catComboList.size() > position - 1 && position > 0)
-                    selectedCatOption = catComboList.get(position-1);
+                    selectedCatOption = catComboList.get(position - 1);
                 else
                     selectedCatOption = null;
                 checkActionButtonVisibility();
@@ -282,6 +284,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
+        presenter.filterOrgUnits(date);
     }
 
     @Override

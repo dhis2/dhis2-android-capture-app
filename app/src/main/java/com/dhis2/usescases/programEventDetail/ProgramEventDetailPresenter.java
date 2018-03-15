@@ -114,4 +114,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void onDettach() {
         interactor.onDettach();
     }
+
+    @Override
+    public void filterOrgUnits(String date) {
+        interactor.getOrgUnits(date);
+    }
 }

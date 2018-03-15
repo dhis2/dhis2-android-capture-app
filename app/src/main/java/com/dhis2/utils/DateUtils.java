@@ -197,6 +197,8 @@ public class DateUtils {
         return calendar;
     }
 
+    public String reformatDate(String ddMM)
+
 
     /**********************
      COMPARE DATES REGION*/

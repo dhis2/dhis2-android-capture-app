@@ -16,6 +16,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     public ViewDataBinding binding;
     public String value;
     public Long id;
+    public String uid;
 
     public FormViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());

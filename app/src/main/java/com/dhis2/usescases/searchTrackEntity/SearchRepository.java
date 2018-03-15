@@ -32,7 +32,7 @@ public interface SearchRepository {
                                                                         @Nullable String programUid,
                                                                         @Nullable String enrollmentDate,
                                                                         @Nullable String incidentDate,
-                                                                        @Nullable HashMap<Long, String> queryData);
+                                                                        @Nullable HashMap<String, String> queryData);
 
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid);

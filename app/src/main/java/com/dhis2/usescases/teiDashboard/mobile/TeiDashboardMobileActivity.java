@@ -75,6 +75,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
+        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
+        binding.teiPager.setOffscreenPageLimit(6);
+
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         binding.tabLayout.setVisibility(View.GONE);
