@@ -1,6 +1,5 @@
 package com.dhis2.data.service;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -77,7 +76,6 @@ public class SyncService extends Service implements SyncView {
             if (result.inProgress()) {
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
-//                        .setContentTitle(getString(R.string.sync_title))
                         .setContentTitle(getTextForNotification(syncState))
                         .setContentText(getString(R.string.sync_text))
                         .setProgress(0, 0, true)

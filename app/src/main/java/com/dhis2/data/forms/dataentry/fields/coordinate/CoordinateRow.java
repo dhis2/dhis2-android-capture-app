@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -17,14 +16,17 @@ import io.reactivex.processors.FlowableProcessor;
 public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel> {
 
     ViewDataBinding binding;
+    @NonNull
+    private final FlowableProcessor<RowAction> processor;
 
     public CoordinateRow(FlowableProcessor<RowAction> processor) {
+        this.processor = processor;
 
     }
 
     @NonNull
     @Override
-    public CoordinateHolder onCreate(@NonNull ViewGroup parent) {
+    public CoordinateHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
         return new CoordinateHolder(binding);
     }
 

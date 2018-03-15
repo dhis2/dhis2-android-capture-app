@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -28,10 +29,62 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?colorPrimary"
-                android:gravity="center"
                 android:padding="20dp">
 
-                <include layout="@layout/logo_dhis" />
+                <include
+                    android:id="@+id/logo_layout"
+                    layout="@layout/logo_dhis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+                <LinearLayout
+                    android:id="@+id/sync_layout"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/logo_layout"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/metadataText"
+                        android:layout_width="200dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorAccent"
+                        tools:text="Metadata sync"
+                        tools:drawableEnd="@drawable/ic_sync"/>
+
+                    <TextView
+                        android:id="@+id/eventsText"
+                        android:layout_width="200dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorAccent"
+                        tools:text="Events sync"
+                        tools:drawableEnd="@drawable/ic_sync"
+                        android:alpha=".3"/>
+
+                    <TextView
+                        android:id="@+id/teiText"
+                        android:layout_width="200dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorAccent"
+                        tools:text="TEI sync"
+                        tools:drawableEnd="@drawable/ic_sync"
+                        android:alpha=".3"/>
+                </LinearLayout>
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -46,20 +99,19 @@
                     android:id="@+id/qr_button"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    app:srcCompat="@drawable/ic_qr"
-                    android:background="@drawable/full_width_button_bg"
                     android:layout_alignParentEnd="true"
-                    android:onClick="@{presenter::onQRClick}"/>
+                    android:background="@drawable/full_width_button_bg"
+                    android:onClick="@{presenter::onQRClick}"
+                    app:srcCompat="@drawable/ic_qr" />
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/server_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/qr_button"
                     android:hint="@string/url_hint"
                     android:textColorHint="?colorPrimary"
-                    android:theme="@style/loginInputText"
-                    android:layout_toStartOf="@id/qr_button"
-                    >
+                    android:theme="@style/loginInputText">
 
                     <com.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
                         android:id="@+id/server_url_edit"
@@ -69,7 +121,7 @@
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:padding="5dp"
                         android:textColor="?colorPrimaryDark"
-                        android:textSize="17sp"/>
+                        android:textSize="17sp" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -121,7 +173,7 @@
                 style="@style/FullWidthButton"
                 android:onClick="@{()-> presenter.onButtonClick()}"
                 android:text="@string/log_in_button"
-                android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE}" />
+                android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE, default = gone}" />
 
             <Button
                 android:id="@+id/unlock"

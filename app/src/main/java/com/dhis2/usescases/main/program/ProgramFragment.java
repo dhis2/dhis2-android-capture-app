@@ -66,13 +66,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         setUpRecycler();
+
+        return binding.getRoot();
     }
 
     //endregion
@@ -179,15 +175,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         });
     }
 
-    @Override
-    public void setOrgUnits(List<OrganisationUnitModel> orgUnits) {
-        binding.linearContainer.removeAllViews();
-        for (OrganisationUnitModel orgUnit : orgUnits) {
-            TextView textView = new TextView(getContext());
-            textView.setText(orgUnit.shortName());
-            binding.linearContainer.addView(textView);
-        }
-    }
 
     @Override
     public void openDrawer() {

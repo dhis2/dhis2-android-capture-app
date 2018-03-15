@@ -1,4 +1,4 @@
-package com.dhis2.data.service;
+package com.dhis2.usescases.login;
 
 import android.support.annotation.NonNull;
 

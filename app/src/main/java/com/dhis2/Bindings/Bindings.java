@@ -97,6 +97,27 @@ public class Bindings {
                         Timber::d);
     }
 
+    @BindingAdapter("enrollmentLastEventDate")
+    public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
+        metadataRepository.getEnrollmentLastEvent(enrollmentUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> textView.setText(DateUtils.getInstance().formatDate(data.eventDate())),
+                        Timber::d);
+    }
+
+    @BindingAdapter("eventLabel")
+    public static void setEventLabel(TextView textView, String programUid) {
+        metadataRepository.getProgramWithId(programUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
+                        Timber::d);
+    }
+
+
     @BindingAdapter("initGrid")
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
         RecyclerView.LayoutManager recyclerLayout;
@@ -379,8 +400,7 @@ public class Bindings {
         if (eventModel.dueDate() != null && !DateUtils.getInstance().hasExpired(eventModel.dueDate())) {
             textView.setText(textView.getContext().getString(R.string.event_editing_expired));
             textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     textView.setText(textView.getContext().getString(R.string.event_open));
@@ -403,8 +423,7 @@ public class Bindings {
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, EventModel eventModel) {
         if (eventModel.dueDate() != null && !DateUtils.getInstance().hasExpired(eventModel.dueDate())) {
             imageView.setImageResource(R.drawable.ic_eye_red);
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     imageView.setImageResource(R.drawable.ic_edit_yellow);
@@ -422,7 +441,7 @@ public class Bindings {
 
     @BindingAdapter("stateText")
     public static void setStateText(TextView textView, State state) {
-        switch (state){
+        switch (state) {
             case TO_POST:
                 textView.setText(textView.getContext().getString(R.string.state_to_post));
                 break;
@@ -445,7 +464,7 @@ public class Bindings {
 
     @BindingAdapter("stateIcon")
     public static void setStateIcon(ImageView imageView, State state) {
-        switch (state){
+        switch (state) {
             case TO_POST:
                 imageView.setImageResource(R.drawable.ic_sync_problem_grey);
                 break;
@@ -504,7 +523,7 @@ public class Bindings {
     }
 
     @BindingAdapter("eventCompletion")
-    public static void setEventCompletion(TextView textView, EventModel eventModel){
+    public static void setEventCompletion(TextView textView, EventModel eventModel) {
         metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -514,7 +533,7 @@ public class Bindings {
                                 .subscribe(
                                         trackEntityCount -> {
                                             float perone = (float) trackEntityCount / (float) programStageCount;
-                                            int percent = (int) (perone*100);
+                                            int percent = (int) (perone * 100);
                                             String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
                                             textView.setText(completionText);
                                         },

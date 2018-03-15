@@ -10,6 +10,7 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.user.User;
 
+import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 
 public class LoginContracts {
@@ -46,6 +47,9 @@ public class LoginContracts {
 
         @UiThread
         void saveUsersData();
+
+        @NonNull
+        Consumer<SyncResult> update(LoginActivity.SyncState syncState);
     }
 
     public interface Presenter {
@@ -58,21 +62,34 @@ public class LoginContracts {
         void onQRClick(android.view.View v);
 
         ObservableField<Boolean> isServerUrlSet();
+
         ObservableField<Boolean> isUserNameSet();
+
         ObservableField<Boolean> isUserPassSet();
 
         void unlockSession(String pin);
+
+        void onDestroy();
+
+        void syncNext(LoginActivity.SyncState syncState);
     }
 
     public interface Interactor {
         void validateCredentials(@NonNull String serverUrl,
                                  @NonNull String username, @NonNull String password);
 
-        void sync();
-
         void handleResponse(@NonNull Response<User> userResponse);
 
         void handleError(@NonNull Throwable throwable);
+
+
+        void sync();
+
+        void syncEvents();
+
+        void syncTrackedEntities();
+
+        void onDestroy();
     }
 
 }

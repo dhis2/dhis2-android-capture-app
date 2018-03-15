@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="attr"
+            type="java.lang.String"/>
+
+        <variable
+            name="position"
+            type="java.lang.Integer" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:minWidth="137dp"
+        android:layout_height="90dp"
+        android:paddingStart="5dp"
+        android:background="@{position%2 == 0 ? @color/gray_f6f : @color/gray_b2e}"
+        android:paddingEnd="5dp">
+
+        <TextView
+            android:id="@+id/tracked_entity_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            tool:text="Header"
+            android:text="@{attr}"
+            android:layout_margin="7dp"
+            android:textSize="14sp"
+            android:textColor="@color/gray_444"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+</layout>

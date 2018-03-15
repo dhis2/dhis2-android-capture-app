@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
@@ -32,7 +33,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 04/12/2017.
- * 
  */
 
 public class MetadataRepositoryImpl implements MetadataRepository {
@@ -46,6 +46,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             "SELECT * FROM %s WHERE %s.%s =",
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
+
+    private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
+            "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s DESC LIMIT 1",
+            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE
+    );
+    private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
+
 
     private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
             ProgramModel.TABLE);
@@ -299,17 +307,23 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid) {
+        return briteDatabase
+                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid)
+                .mapToOne(EventModel::create);
+    }
+
+    @Override
     public Observable<Integer> getProgramStageDataElementCount(String programStageId) {
         String SELECT_PROGRAM_STAGE_COUNT = "SELECT COUNT(*) FROM " + ProgramStageDataElementModel.TABLE +
                 " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s'";
         return briteDatabase
                 .createQuery(ProgramStageDataElementModel.TABLE, String.format(SELECT_PROGRAM_STAGE_COUNT, programStageId))
                 .mapToOne(cursor -> {
-                    if(cursor.getCount() > 0){
+                    if (cursor.getCount() > 0) {
                         cursor.moveToFirst();
                         return cursor.getInt(0);
-                    }
-                    else
+                    } else
                         return 0;
                 });
     }
@@ -321,11 +335,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, String.format(SELECT_TRACKED_ENTITY_COUNT, eventId))
                 .mapToOne(cursor -> {
-                    if(cursor.getCount() > 0){
+                    if (cursor.getCount() > 0) {
                         cursor.moveToFirst();
                         return cursor.getInt(0);
-                    }
-                    else
+                    } else
                         return 0;
                 });
     }

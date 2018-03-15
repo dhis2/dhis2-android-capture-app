@@ -2,7 +2,6 @@ package com.dhis2.usescases.main.program;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.dhis2.R;
 import com.dhis2.usescases.programDetail.ProgramDetailActivity;
@@ -53,12 +52,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         this.view = view;
         getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
         getOrgUnits();
-        compositeDisposable.add(homeRepository.eventModels()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("EVENT DATA", "events:" + data.size()),
-                        throwable -> view.renderError(throwable.getMessage())));
     }
 
 

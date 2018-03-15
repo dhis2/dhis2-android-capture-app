@@ -1,10 +1,13 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -15,9 +18,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.Observable;
@@ -61,9 +67,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     private static final String[] TEI_TABLE_NAMES = new String[]{TrackedEntityInstanceModel.TABLE,
             EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};
     private static final Set<String> TEI_TABLE_SET = new HashSet<>(Arrays.asList(TEI_TABLE_NAMES));
+    private final CodeGenerator codeGenerator;
 
 
-    SearchRepositoryImpl(BriteDatabase briteDatabase) {
+    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+        this.codeGenerator = codeGenerator;
         this.briteDatabase = briteDatabase;
     }
 
@@ -119,8 +127,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         if (queryData != null && !queryData.isEmpty()) {
             StringBuilder teiAttributeWHERE = new StringBuilder("");
-            teiAttributeWHERE.append(TrackedEntityAttributeValueModel.TABLE+".value IN (");
-            for(int i = 0; i < queryData.keySet().size(); i++){
+            teiAttributeWHERE.append(TrackedEntityAttributeValueModel.TABLE + ".value IN (");
+            for (int i = 0; i < queryData.keySet().size(); i++) {
                 String dataValue = queryData.get(queryData.keySet().toArray()[i]);
                 teiAttributeWHERE.append("'").append(dataValue).append("'");
                 if (i < queryData.size() - 1)
@@ -137,5 +145,49 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         return briteDatabase.createQuery(TEI_TABLE_SET, TEI_FINAL_QUERY)
                 .mapToList(TrackedEntityInstanceModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid) {
+        Date currentDate = Calendar.getInstance().getTime();
+        return Observable.defer(() -> {
+            TrackedEntityInstanceModel trackedEntityInstanceModel =
+                    TrackedEntityInstanceModel.builder()
+                            .uid(codeGenerator.generate())
+                            .created(currentDate)
+                            .lastUpdated(currentDate)
+                            .organisationUnit(orgUnit)
+                            .trackedEntity(teiType)
+                            .state(State.TO_POST)
+                            .build();
+            if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
+                    trackedEntityInstanceModel.toContentValues()) < 0) {
+                String message = String.format(Locale.US, "Failed to insert new tracked entity " +
+                                "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                        orgUnit, teiType);
+                return Observable.error(new SQLiteConstraintException(message));
+            }
+
+            EnrollmentModel enrollmentModel = EnrollmentModel.builder()
+                    .uid(codeGenerator.generate())
+                    .created(currentDate)
+                    .lastUpdated(currentDate)
+                    .dateOfEnrollment(currentDate)
+                    .program(programUid)
+                    .organisationUnit(orgUnit)
+                    .trackedEntityInstance(trackedEntityInstanceModel.uid())
+                    .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                    .state(State.TO_POST)
+                    .build();
+
+            if (briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues()) < 0) {
+                String message = String.format(Locale.US, "Failed to insert new enrollment " +
+                        "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
+                return Observable.error(new SQLiteConstraintException(message));
+            }
+
+            return Observable.just(enrollmentModel.uid());
+        });
     }
 }
