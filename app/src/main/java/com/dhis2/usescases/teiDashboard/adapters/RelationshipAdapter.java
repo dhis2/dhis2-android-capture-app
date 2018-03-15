@@ -9,6 +9,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemRelationshipBinding;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
 
-    private List<Relationship> relationships;
+    private List<RelationshipModel> relationships;
 
     public RelationshipAdapter() {
 
@@ -41,7 +42,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
         return relationships != null ? relationships.size() : 0;
     }
 
-    public void addItems(List<Relationship> relationships) {
+    public void addItems(List<RelationshipModel> relationships) {
         this.relationships = relationships;
         notifyDataSetChanged();
     }

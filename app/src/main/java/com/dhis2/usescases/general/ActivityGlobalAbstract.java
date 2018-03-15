@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.dhis2.R;
@@ -24,6 +25,7 @@ import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Javi on 28/07/2017.
+ *
  */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View {
@@ -83,7 +85,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
-//        NavigationController.startActivity(ActivityGlobalAbstract.this, destination, bundle, finishCurrent, finishAll, transition);
         if (finishCurrent)
             finish();
         Intent intent = new Intent(this, destination);
@@ -132,5 +133,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     public Observable<Status> observableLifeCycle() {
         return lifeCycleObservable;
+    }
+
+    public void hideKeyboard(){
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null)
+                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public void showToast(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

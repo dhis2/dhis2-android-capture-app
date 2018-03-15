@@ -1,14 +1,15 @@
 package com.dhis2.usescases.programEventDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.programDetail.TrackedEntityObject;
+import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,10 +24,6 @@ public class ProgramEventDetailContract {
 
         void addTree(TreeNode treeNode);
 
-        void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes);
-
-        void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits);
-
         void openDrawer();
 
         void showTimeUnitPicker();
@@ -34,6 +31,10 @@ public class ProgramEventDetailContract {
         void showRageDatePicker();
 
         void setProgram(ProgramModel programModel);
+
+        void renderError(String message);
+
+        void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -45,22 +46,34 @@ public class ProgramEventDetailContract {
 
         void onOrgUnitButtonClick();
 
-        void onCatComboButtonClick();
-
         ProgramModel getCurrentProgram();
 
-        void onSearchClick();
+        void addEvent();
 
         void onBackClick();
 
-        void onTEIClick(String TEIuid, String programUid);
-
         void setProgram(ProgramModel program);
+
+        void getEvents(Date fromDate, Date toDate);
+
+        void getProgramEventsWithDates(List<Date> dates, Period period);
+
+        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
+
+        void clearCatComboFilters();
+
+        void onEventClick(String eventId);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId);
 
+        void getEvents(String programId, Date fromDate, Date toDate);
+
         void getOrgUnits();
+
+        void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
+
+        void updateFilters(CategoryOptionComboModel categoryOptionComboModel);
     }
 }

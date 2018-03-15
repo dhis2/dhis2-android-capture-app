@@ -1,17 +1,12 @@
 package com.dhis2.usescases.teiDashboard;
 
-import android.support.annotation.Nullable;
-
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import java.util.List;
 
 /**
  * Created by ppajuelo on 30/11/2017.
+ *
  */
 
 public class TeiDashboardContracts {
@@ -20,11 +15,9 @@ public class TeiDashboardContracts {
 
         void init(String teUid, String programUid);
 
-        void setData(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel program);
+        void setData(DashboardProgramModel program);
 
-        void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel);
-
-        void showEnrollmentList(List<Enrollment> enrollments);
+        void setDataWithOutProgram(DashboardProgramModel programModel);
 
         String getToolbarTitle();
     }
@@ -40,20 +33,12 @@ public class TeiDashboardContracts {
 
         void setProgram(ProgramModel program);
 
-        void editTei(boolean isEditable, android.view.View view);
+        void editTei(boolean isEditable, android.view.View view, DashboardProgramModel dashboardProgramModel);
 
         void onEventSelected(String uid, android.view.View view);
+
+        void onFollowUp(DashboardProgramModel dashboardProgramModel);
+
+        void onDettach();
     }
-
-    public interface Interactor {
-        void init(View view, String teiUid, @Nullable String programUid);
-
-        void getTrackedEntityInstance(String teiUid);
-
-        void getProgramData(String programId);
-
-        void getEnrollments(String teUid);
-    }
-
-
 }

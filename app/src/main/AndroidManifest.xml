@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dhis2">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -41,10 +42,18 @@
         <activity android:name=".usescases.teiDashboard.tablet.TeiDashboardTabletActivity" />
         <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
-        <activity android:name=".usescases.eventDetail.EventDetailActivity" />
+        <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
         <activity android:name=".data.forms.FormActivity" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
+        <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
+        <activity android:name=".usescases.map.MapSelectorActivity" />
+        <activity
+            android:name=".usescases.eventInitial.EventInitialActivity"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".usescases.eventInitial.tablet.EventInitialTabletActivity"
+            android:windowSoftInputMode="stateHidden"/>
 
         <service
             android:name=".data.service.SyncService"

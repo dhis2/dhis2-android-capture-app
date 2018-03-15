@@ -39,8 +39,6 @@ public class ProgramContract {
         @UiThread
         void addTree(TreeNode treeNode);
 
-        void setOrgUnits(List<OrganisationUnitModel> orgUnits);
-
         void openDrawer();
     }
 

@@ -21,7 +21,7 @@ import io.reactivex.Flowable;
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
-final class AttributeValueStore implements DataEntryStore {
+public final class AttributeValueStore implements DataEntryStore {
     private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
             "SET lastUpdated = ?, value = ?\n" +
             "WHERE trackedEntityInstance = (\n" +
@@ -57,7 +57,7 @@ final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final String enrollment;
 
-    AttributeValueStore(@NonNull BriteDatabase briteDatabase
+    public AttributeValueStore(@NonNull BriteDatabase briteDatabase
                         /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;

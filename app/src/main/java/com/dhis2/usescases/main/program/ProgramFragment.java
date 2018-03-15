@@ -66,24 +66,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         setUpRecycler();
+
+        return binding.getRoot();
     }
 
     //endregion
 
     @Override
     public void showRageDatePicker() {
-
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
         if (currentPeriod != Period.DAILY) {
-
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                 if (!selectedDates.isEmpty()) {
                     String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
@@ -138,7 +132,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-
         binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
         presenter.init(this);
     }
@@ -179,19 +172,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 selectedUids.add(((OrganisationUnitModel) selectedOrgsTreeNode.getValue()).uid());
             }
             binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected()));
-//            binding.drawerLayout.closeDrawers();
         });
     }
 
-    @Override
-    public void setOrgUnits(List<OrganisationUnitModel> orgUnits) {
-        binding.linearContainer.removeAllViews();
-        for (OrganisationUnitModel orgUnit : orgUnits) {
-            TextView textView = new TextView(getContext());
-            textView.setText(orgUnit.shortName());
-            binding.linearContainer.addView(textView);
-        }
-    }
 
     @Override
     public void openDrawer() {

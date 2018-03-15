@@ -33,11 +33,13 @@
     <color name="gray_666">#666666</color>
     <color name="gray_444">#444444</color>
     <color name="gray_814">#81444444</color>
+    <color name="gray_afa">#afafaf</color>
     <color name="gray_b2b">#b2b2b2</color>
     <color name="gray_dfe">#dfe0df</color>
     <color name="green_7ed">#7ed321</color>
     <color name="red_060">#e06060</color>
     <color name="red_a14">#a14545</color>
+    <color name="gray_f6f">#f6f6f6</color>
 
     <color name="yellow_ffd">#ffd55d</color>
 
@@ -47,8 +49,10 @@
     <color name="event_gray">#f8f9f9</color>
 
     <color name="blue_4fa">#4fa8d1</color>
+    <color name="blue_fab">#1D69A3</color>
     <color name="gray_979">#979797</color>
     <color name="gray_9b9">#9b9b9b</color>
+    <color name="gray_b2e">#b2e3e3e3</color>
 
 
 </resources>

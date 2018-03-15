@@ -2,7 +2,6 @@ package com.dhis2.usescases.main.program;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.dhis2.R;
 import com.dhis2.usescases.programDetail.ProgramDetailActivity;
@@ -39,7 +38,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    private Date fromDate, toDate;
     private List<Date> dates;
     private Period period;
 
@@ -51,21 +49,14 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void init(ProgramContract.View view) {
         this.view = view;
+        this.view = view;
         getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
         getOrgUnits();
-        compositeDisposable.add(homeRepository.eventModels()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("EVENT DATA", "events:" + data.size()),
-                        throwable -> view.renderError(throwable.getMessage())));
     }
 
 
     @Override
     public void getPrograms(Date fromDate, Date toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
         this.dates = null;
         this.period = null;
         compositeDisposable.add(homeRepository.programs(
@@ -80,8 +71,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getProgramsWithDates(List<Date> dates, Period period) {
-        this.fromDate = null;
-        this.toDate = null;
         this.dates = dates;
         this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
@@ -109,27 +98,26 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         bundle.putString("PROGRAM_UID", programModel.uid());
         bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
 
-        if (programModel.displayFrontPageList()) {
-            if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+        if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+            if (programModel.displayFrontPageList()) {
                 if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
                     view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
-                }
-                else {
+                } else {
                     view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
                 }
-            }
-            if (programModel.programType() == ProgramType.WITHOUT_REGISTRATION) {
-                if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                    // TODO: CRREATE TABLET ACTIVITY
-                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-                }
-                else {
-                    view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-                }
+            } else {
+                view.startActivity(SearchTEActivity.class, bundle, false, false, null);
             }
         } else {
-            view.startActivity(SearchTEActivity.class, bundle, false, false, null);
+            if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
+                // TODO CRIS: CRREATE TABLET ACTIVITY
+                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+            } else {
+                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+            }
         }
+
+
     }
 
     @Override
@@ -150,7 +138,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getOrgUnits() {
-
         compositeDisposable.add(homeRepository.orgUnits()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

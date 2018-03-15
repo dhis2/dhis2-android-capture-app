@@ -11,13 +11,14 @@ import java.util.List;
 
 /**
  * Created by frodriguez on 10/31/2017.
+ *
  */
 
 public class ProgramDetailViewHolder extends RecyclerView.ViewHolder {
 
-    ViewDataBinding binding;
+    private ViewDataBinding binding;
 
-    public ProgramDetailViewHolder(ViewDataBinding binding) {
+    ProgramDetailViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }

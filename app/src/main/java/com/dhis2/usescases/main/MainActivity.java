@@ -66,19 +66,15 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         presenter.init(this);
         changeFragment(R.id.menu_done_tasks);
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         presenter.onDetach();
-        super.onPause();
+        super.onStop();
     }
 
     //endregion

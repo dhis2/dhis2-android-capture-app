@@ -11,7 +11,7 @@
 
         <variable
             name="trackEntity"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance" />
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
 
         <variable
             name="dashboardModel"
@@ -35,7 +35,8 @@
                 android:layout_height="match_parent"
                 android:onClick='@{()->presenter.onBackPressed()}'
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/toolbar_title"
@@ -44,7 +45,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:textSize="20sp"
-                android:text='@{dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),1) +" "+ dashboardModel.getAttributeBySortOrder(trackEntity.trackedEntityAttributeValues(),2)}'
+                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 android:textColor="?colorAccent"
                 tools:text="TEI NAME" />
 
@@ -54,7 +55,8 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_program_border" />
+                app:srcCompat="@drawable/ic_program_border"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 

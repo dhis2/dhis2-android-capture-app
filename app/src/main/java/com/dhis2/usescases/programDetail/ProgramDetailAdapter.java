@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 /**
  * Created by frodriguez on 11/2/2017.
+ *
  */
 
 public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailViewHolder> {

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="event"
-            type="org.hisp.dhis.android.core.event.Event"/>
+            type="org.hisp.dhis.android.core.event.EventModel"/>
         <variable
             name="stage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
@@ -67,7 +67,7 @@
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="03/10/2017"
-                app:date='@{event.eventDate}'/>
+                app:date='@{event.eventDate()}'/>
 
 
             <ImageView

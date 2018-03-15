@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 18/10/2017.
+ *
  */
 
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
@@ -24,7 +25,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     private List<ProgramModel> programList;
     private ProgramContract.Presenter presenter;
 
-    public ProgramAdapter(ProgramContract.Presenter presenter) {
+    ProgramAdapter(ProgramContract.Presenter presenter) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
     }
@@ -43,12 +44,8 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     }
 
     public void setData(List<ProgramModel> program) {
-//        this.programList.clear();
-//        this.programList.addAll(program);
-
         Collections.sort(this.programList, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
         Collections.sort(program, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
-//        notifyDataSetChanged();
 
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
         programList.clear();

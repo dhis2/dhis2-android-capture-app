@@ -9,6 +9,7 @@ import java.util.Locale;
 
 /**
  * Created by ppajuelo on 16/01/2018.
+ *
  */
 
 public class DateUtils {
@@ -194,6 +195,14 @@ public class DateUtils {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+
+    /**********************
+     COMPARE DATES REGION*/
+
+    public boolean hasExpired(@NonNull Date dueDate){
+        return dueDate.before(getToday());
     }
 
 }

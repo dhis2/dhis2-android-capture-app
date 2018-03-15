@@ -52,119 +52,124 @@
             android:fitsSystemWindows="false"
             tools:openDrawer="end">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingEnd="15dp"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp">
+                android:layout_height="match_parent">
 
-                <com.google.android.flexbox.FlexboxLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="20dp"
-                    app:alignContent="flex_end"
-                    app:alignItems="flex_end"
-                    app:flexWrap="wrap"
-                    app:justifyContent="flex_end">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingEnd="15dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="3dp">
-
-                        <ImageView
-                            android:id="@+id/button_time"
-                            android:layout_width="56dp"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/period_button"
-                            android:onClick="@{()->presenter.onTimeButtonClick()}"
-                            android:padding="7dp"
-                            app:srcCompat="@drawable/ic_view_day" />
-
-                        <TextView
-                            android:id="@+id/button_date_range"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/period_time_button"
-                            android:gravity="center"
-                            android:onClick="@{()->presenter.onDateRangeButtonClick()}"
-                            android:padding="7dp"
-                            android:paddingEnd="15dp"
-                            android:text="DD/MM/YYYY"
-                            android:textColor="?colorAccent" />
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/button_org_unit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="3dp"
-                        android:background="@drawable/selector_button_round_20"
-                        android:maxLines="1"
-                        android:minHeight="40dp"
-                        android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
-                        android:text="Org Unit"
-                        android:textAlignment="textStart"
-                        android:textAllCaps="false"
-                        android:textColor="?colorAccent"
-                        android:textSize="15sp" />
-
-                    <Button
-                        android:id="@+id/button_cat_combo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="3dp"
-                        android:background="@drawable/selector_button_round_20"
-                        android:maxLines="1"
-                        android:minHeight="40dp"
-                        android:onClick="@{()->presenter.onCatComboButtonClick()}"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
-                        android:text="Cat Combo"
-                        android:textAlignment="textStart"
-                        android:textAllCaps="false"
-                        android:textColor="?colorAccent"
-                        android:textSize="15sp" />
-                </com.google.android.flexbox.FlexboxLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.evrencoskun.tableview.TableView
-                        android:id="@+id/table_layout"
+                    <com.google.android.flexbox.FlexboxLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                    <ProgressBar
-                        android:id="@+id/program_progress"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerInParent="true"
-                        android:visibility="gone"
-                        app:progressColor="@{@color/colorPrimary}" />
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="20dp"
-                        android:background="@drawable/oval_23"
-                        android:onClick="@{()->presenter.onSearchClick()}"
-                        android:paddingBottom="7dp"
-                        app:srcCompat="@drawable/ic_searchandnew" />
+                        android:lineSpacingExtra="20dp"
+                        app:alignContent="flex_end"
+                        app:alignItems="flex_end"
+                        app:flexWrap="wrap"
+                        app:justifyContent="flex_end">
 
-                </RelativeLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="3dp">
 
-            </LinearLayout>
+                            <ImageView
+                                android:id="@+id/button_time"
+                                android:layout_width="56dp"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/period_button"
+                                android:onClick="@{()->presenter.onTimeButtonClick()}"
+                                android:padding="7dp"
+                                app:srcCompat="@drawable/ic_view_day" />
+
+                            <TextView
+                                android:id="@+id/button_date_range"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/period_time_button"
+                                android:gravity="center"
+                                android:onClick="@{()->presenter.onDateRangeButtonClick()}"
+                                android:padding="7dp"
+                                android:paddingEnd="15dp"
+                                android:text="DD/MM/YYYY"
+                                android:textColor="?colorAccent" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/button_org_unit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="3dp"
+                            android:background="@drawable/selector_button_round_20"
+                            android:maxLines="1"
+                            android:minHeight="40dp"
+                            android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
+                            android:paddingEnd="15dp"
+                            android:paddingStart="15dp"
+                            android:text="Org Unit"
+                            android:textAlignment="textStart"
+                            android:textAllCaps="false"
+                            android:textColor="?colorAccent"
+                            android:textSize="15sp" />
+
+                        <Button
+                            android:id="@+id/button_cat_combo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="3dp"
+                            android:background="@drawable/selector_button_round_20"
+                            android:maxLines="1"
+                            android:minHeight="40dp"
+                            android:onClick="@{()->presenter.onCatComboButtonClick()}"
+                            android:paddingEnd="15dp"
+                            android:paddingStart="15dp"
+                            android:text="Cat Combo"
+                            android:textAlignment="textStart"
+                            android:textAllCaps="false"
+                            android:textColor="?colorAccent"
+                            android:textSize="15sp" />
+                    </com.google.android.flexbox.FlexboxLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.evrencoskun.tableview.TableView
+                            android:id="@+id/table_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                        <ProgressBar
+                            android:id="@+id/program_progress"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"
+                            app:progressColor="@{@color/colorPrimary}" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:backgroundTint="?colorPrimary"
+                android:onClick="@{()->presenter.onSearchClick()}"
+                app:srcCompat="@drawable/ic_searchandnew" />
+
+            </RelativeLayout>
 
 
             <android.support.design.widget.NavigationView

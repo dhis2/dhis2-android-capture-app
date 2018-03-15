@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Consumer;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
 
@@ -33,6 +37,10 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     List<String> users;
     List<String> urls;
+
+    enum SyncState {
+        METADATA, EVENTS, TEI
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         presenter.init(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
+    }
 
     @Override
     public ActivityLoginBinding getBinding() {
@@ -97,9 +110,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void handleSync() {
         binding.login.setVisibility(View.GONE);
-        ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-        params.height = MATCH_PARENT;
-        binding.logo.setLayoutParams(params);
+        if (binding.logo != null) {
+            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+            params.height = MATCH_PARENT;
+            binding.logo.setLayoutParams(params);
+        }
     }
 
     @Override
@@ -131,8 +146,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         urls = getListFromPreference(Constants.PREFS_URLS);
         users = getListFromPreference(Constants.PREFS_USERS);
 
-        ArrayAdapter<String> urlAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, urls);
-        ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, users);
+        ArrayAdapter<String> urlAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, urls);
+        ArrayAdapter<String> userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, users);
 
         binding.serverUrlEdit.setAdapter(urlAdapter);
         binding.userNameEdit.setAdapter(userAdapter);
@@ -149,6 +164,56 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             saveListToPreference(Constants.PREFS_USERS, users);
         }
     }
+
+    @NonNull
+    @Override
+    public Consumer<SyncResult> update(SyncState syncState) {
+        return result -> {
+            if (result.inProgress()) {
+                if (syncState == SyncState.METADATA)
+                    binding.metadataText.setText("Metadata: Synchronising with server");
+                else if (syncState == SyncState.EVENTS) {
+                    binding.eventsText.setText("Events: Synchronising with server");
+                    binding.eventsText.setAlpha(1.0f);
+                } else {
+                    binding.teiText.setText("TEI: Synchronising with server");
+                    binding.teiText.setAlpha(1.0f);
+                }
+            } else if (result.isSuccess()) {
+                if (syncState == SyncState.METADATA) {
+                    binding.metadataText.setText("Metadata: Sync complete");
+                    binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
+                } else if (syncState == SyncState.EVENTS) {
+                    binding.eventsText.setText("Events: Sync complete");
+                    binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
+
+                } else {
+                    binding.teiText.setText("TEI: Sync complete");
+                    binding.teiText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
+                }
+                presenter.syncNext(syncState);
+            } else if (!result.isSuccess()) {
+                if (syncState == SyncState.METADATA) {
+                    binding.metadataText.setText("Metadata: Sync Error");
+                    binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
+                } else if (syncState == SyncState.EVENTS) {
+                    binding.eventsText.setText("Events: Sync Error");
+                    binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
+
+                } else {
+                    binding.teiText.setText("TEI: Sync Error");
+                    binding.teiText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
+                }
+
+                presenter.syncNext(syncState);
+
+            } else {
+                throw new IllegalStateException();
+            }
+
+        };
+    }
+
 
     @Override
     public void onBackPressed() {

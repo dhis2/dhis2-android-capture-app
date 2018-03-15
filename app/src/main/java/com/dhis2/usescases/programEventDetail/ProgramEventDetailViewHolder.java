@@ -5,9 +5,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
 
-import org.hisp.dhis.android.core.program.ProgramModel;
-
-import java.util.List;
+import org.hisp.dhis.android.core.event.EventModel;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -16,27 +14,19 @@ import java.util.List;
 
 public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
 
-    ViewDataBinding binding;
+    private ViewDataBinding binding;
 
     public ProgramEventDetailViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
-    public void bind(ProgramEventDetailContract.Presenter presenter,
-                     ProgramModel program,
-                     String orgUnit,
-                     List<String> attributes,
-                     String stage,
-                     String uid) {
+    public void bind(ProgramEventDetailContract.Presenter presenter, EventModel event) {
         binding.setVariable(BR.presenter, presenter);
-        binding.setVariable(BR.program, program);
-        binding.setVariable(BR.orgUnit, orgUnit);
-        binding.setVariable(BR.attribute, attributes);
-        binding.setVariable(BR.stage, stage);
+        binding.setVariable(BR.event, event);
         binding.executePendingBindings();
 
-        itemView.setOnClickListener(view -> presenter.onTEIClick(uid, program.uid()));
+        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid()));
     }
 
 

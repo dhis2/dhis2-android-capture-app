@@ -1,11 +1,12 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
-
-import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,14 +32,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchRepository searchRepository(BriteDatabase briteDatabase) {
-        return new SearchRepositoryImpl(briteDatabase);
+    SearchRepository searchRepository(@NonNull CodeGenerator codeGenerator,
+                                      @NonNull BriteDatabase briteDatabase) {
+        return new SearchRepositoryImpl(codeGenerator,briteDatabase);
     }
-
-   /* @Provides
-    @PerActivity
-    SearchTEAdapter searchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository){
-        return new SearchTEAdapter(presenter,metadataRepository);
-    }*/
-
 }

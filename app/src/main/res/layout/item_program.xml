@@ -44,18 +44,28 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/program_last_date"
+                android:id="@+id/events_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_below="@id/program_name"
                 android:layout_marginStart="7.8dp"
                 android:textColor="@color/gray_9b9"
                 android:layout_marginTop="5.4dp"
                 android:gravity="bottom"
                 android:textSize="14sp"
-                app:lastEventDate="@{presenter.getEvents(program)}"
-                tools:text="date" />
+                app:numberOfEvents="@{presenter.getEvents(program)}"/>
+
+            <TextView
+                android:id="@+id/program_last_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/events_number"
+                android:layout_marginStart="7.8dp"
+                android:textColor="@color/gray_9b9"
+                android:layout_marginTop="5.4dp"
+                android:gravity="bottom"
+                android:textSize="14sp"
+                app:lastEventDate="@{presenter.getEvents(program)}" />
 
         </RelativeLayout>
 

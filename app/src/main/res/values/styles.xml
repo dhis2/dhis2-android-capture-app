@@ -72,7 +72,6 @@
     <style name="dataInputText" parent="TextAppearance.AppCompat">
         <item name="android:textColorHint">?colorPrimary</item>
         <item name="colorAccent">?colorPrimary</item>
-        <!--<item name="colorControlNormal">?colorPrimary</item>-->
         <item name="colorControlActivated">?colorPrimary</item>
     </style>
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="headerTitle"
+            type="java.lang.String" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/gray_b2e"
+        android:minHeight="40dp"
+        android:minWidth="137dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp">
+
+        <TextView
+            android:id="@+id/tracked_entity_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gray_9b9"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tool:text="@{headerTitle}" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

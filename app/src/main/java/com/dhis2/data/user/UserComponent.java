@@ -9,8 +9,10 @@ import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.appInfo.InfoComponent;
 import com.dhis2.usescases.appInfo.InfoModule;
-import com.dhis2.usescases.eventDetail.EventDetailComponent;
-import com.dhis2.usescases.eventDetail.EventDetailModule;
+import com.dhis2.usescases.eventInitial.EventInitialComponent;
+import com.dhis2.usescases.eventInitial.EventInitialModule;
+import com.dhis2.usescases.login.LoginComponent;
+import com.dhis2.usescases.login.LoginModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainModule;
 import com.dhis2.usescases.main.program.ProgramComponent;
@@ -25,8 +27,12 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
+import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
+import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailModule;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
 import dagger.Subcomponent;
 
@@ -62,6 +68,9 @@ public interface UserComponent {
     EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
 
     @NonNull
+    TeiProgramListComponent plus(@NonNull TeiProgramListModule teiProgramListModule);
+
+    @NonNull
     FormComponent plus(@NonNull FormModule enrollmentModule);
 
     @NonNull
@@ -69,4 +78,7 @@ public interface UserComponent {
 
     @NonNull
     InfoComponent plus(@NonNull InfoModule infoModule);
+
+    @NonNull
+    EventInitialComponent plus(@NonNull EventInitialModule eventInitialModule);
 }

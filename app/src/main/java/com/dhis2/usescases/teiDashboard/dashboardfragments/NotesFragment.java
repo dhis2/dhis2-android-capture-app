@@ -37,12 +37,6 @@ public class NotesFragment extends FragmentGlobalAbstract {
         return binding.getRoot();
     }
 
-    @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
-    }
-
     public void addNote(View view) {
         ((NotesAdapter) binding.notesRecycler.getAdapter()).addNote(binding.editNote.getText().toString());
         clearNote(view);

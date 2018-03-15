@@ -5,7 +5,7 @@ import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.programDetail.TrackedEntityObject;
+import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -15,12 +15,14 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 02/11/2017.
  */
+
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {
@@ -33,6 +35,8 @@ public class SearchTEContractsModule {
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList();
+
+        Flowable<FormViewHolder> rowActions();
     }
 
     public interface Presenter {
@@ -59,9 +63,15 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(android.view.View view);
 
+        void enroll(String programUid);
+
         void onTEIClick(String TEIuid);
 
         TrackedEntityModel getTrackedEntityName();
+
+        ProgramModel getProgramModel();
+
+        List<ProgramModel> getProgramList();
     }
 
     public interface Interactor {

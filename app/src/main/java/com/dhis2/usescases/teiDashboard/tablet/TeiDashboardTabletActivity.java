@@ -13,14 +13,9 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import java.util.List;
-
 /**
  * Created by ppajuelo on 29/11/2017.
+ *
  */
 
 public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
@@ -34,7 +29,7 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_tablet);
 //        binding.setPresenter(new TeiDashboardPresenter());
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), true));
+        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), null, true));
         getSupportFragmentManager().beginTransaction().add(R.id.tei_main_view, TEIDataFragment.getInstance()).commit();
 
     }
@@ -45,17 +40,12 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel program) {
-        TEIDataFragment.getInstance().setData(trackedEntityModel, program);
+    public void setData(DashboardProgramModel program) {
+        TEIDataFragment.getInstance().setData(program);
     }
 
     @Override
-    public void setDataWithOutProgram(TrackedEntityInstance trackedEntityInstance, DashboardProgramModel programModel) {
-
-    }
-
-    @Override
-    public void showEnrollmentList(List<Enrollment> enrollments) {
+    public void setDataWithOutProgram(DashboardProgramModel programModel) {
 
     }
 

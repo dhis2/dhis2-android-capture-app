@@ -18,12 +18,16 @@
             type="org.hisp.dhis.android.core.program.ProgramModel" />
 
         <variable
+            name="followUp"
+            type="java.lang.Boolean" />
+
+        <variable
             name="orgUnit"
             type="java.lang.String" />
 
         <variable
             name="attribute"
-            type="java.util.List&lt;String&gt;" />
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
 
         <variable
             name="programString"
@@ -46,21 +50,35 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
-                android:src="@drawable/photo_temp" />
+                android:src="@drawable/photo_temp"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/follow_up"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                app:srcCompat="@drawable/ic_warning_white"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/ic_circle_red"
+                android:padding="8dp"
+                tools:ignore="ContentDescription"
+                android:layout_alignBottom="@id/tracked_entity_image"
+                android:layout_alignEnd="@id/tracked_entity_image"
+                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:orientation="vertical"
-                android:layout_toEndOf="@id/tracked_entity_image"
-                >
+                android:layout_toEndOf="@id/tracked_entity_image">
 
                 <TextView
                     android:id="@+id/entity_attribute_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -71,7 +89,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -82,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
+                    android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -117,7 +135,8 @@
                     android:layout_height="35dp"
                     android:layout_alignParentStart="true"
                     android:layout_marginStart="13.5dp"
-                    app:srcCompat="@drawable/ic_add_circle" />
+                    app:srcCompat="@drawable/ic_add_circle"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/view_more"
@@ -127,12 +146,13 @@
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
-                    android:text="View More"
+                    android:text="@string/view_more"
                     android:textAllCaps="true"
                     android:textColor="?colorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="view more" />
+                    tools:text="view more"
+                    tools:ignore="RelativeOverlap" />
 
             </RelativeLayout>
 

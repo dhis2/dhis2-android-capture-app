@@ -5,13 +5,10 @@ import android.util.Log;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.DashboardRepository;
-import com.dhis2.usescases.teiDashboard.TeiDashboardInteractor;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -71,7 +68,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
 
     @Override
     public void getProgramData(String programId) {
-        Enrollment selectedEnrollment = null;
+       /* Enrollment selectedEnrollment = null;
         for (Enrollment enrollment : trackedEntityInstance.enrollments())
             if (enrollment.program().equals(programId))
                 selectedEnrollment = enrollment;
@@ -80,7 +77,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
             Observable.zip(dashboardRepository.getProgramData(programId),
                     dashboardRepository.getProgramStages(programId),
                     metadataRepository.getProgramTrackedEntityAttributes(programId),
-                    metadataRepository.getOrganisatuibUnit(selectedEnrollment.organisationUnit()),
+                    metadataRepository.getOrganisationUnit(selectedEnrollment.organisationUnit()),
                     metadataRepository.getProgramModelFromEnrollmentList(trackedEntityInstance.enrollments()),
                     metadataRepository.getRelationshipType(programId),
                     DashboardProgramModel::new)
@@ -100,7 +97,7 @@ public class TeiDataDetailInteractor  implements TeiDataDetailContracts.Interact
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> view.setData(trackedEntityInstance, data),
-                        throwable -> Log.d("ERROR", throwable.getMessage()));
+                        throwable -> Log.d("ERROR", throwable.getMessage()));*/
 
     }
 

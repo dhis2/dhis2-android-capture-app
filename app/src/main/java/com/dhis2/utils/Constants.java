@@ -2,6 +2,7 @@ package com.dhis2.utils;
 
 /**
  * Created by ppajuelo on 15/01/2018.
+ *
  */
 
 public class Constants {
@@ -15,4 +16,7 @@ public class Constants {
 
     //RQ CODES
     public static final int RQ_QR_SCANNER = 101;
+
+    // MAP SELECTION
+    public static final int RQ_MAP_LOCATION = 102;
 }

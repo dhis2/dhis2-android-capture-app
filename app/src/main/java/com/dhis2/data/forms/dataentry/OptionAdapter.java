@@ -19,12 +19,13 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 07/11/2017.
+ *
  */
 
 public class OptionAdapter extends ArrayAdapter<OptionModel> {
 
-    List<OptionModel> options;
-    String optionSetName;
+    private List<OptionModel> options;
+    private String optionSetName;
 
     public OptionAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<OptionModel> objects, String optionSetName) {
         super(context, resource, textViewResourceId, objects);

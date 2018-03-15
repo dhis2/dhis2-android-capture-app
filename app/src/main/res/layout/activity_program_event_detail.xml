@@ -14,7 +14,8 @@
             type="com.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -52,122 +53,133 @@
             android:fitsSystemWindows="false"
             tools:openDrawer="end">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingEnd="15dp"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp">
+                android:layout_height="match_parent">
 
-                <com.google.android.flexbox.FlexboxLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="20dp"
-                    app:alignContent="flex_end"
-                    app:alignItems="flex_end"
-                    app:flexWrap="wrap"
-                    app:justifyContent="flex_end">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingEnd="15dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="3dp">
+                        android:id="@+id/filter_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="7dp"
+                        android:gravity="end"
+                        android:visibility="visible">
 
-                        <ImageView
-                            android:id="@+id/button_time"
-                            android:layout_width="56dp"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/period_button"
-                            android:onClick="@{()->presenter.onTimeButtonClick()}"
-                            android:padding="7dp"
-                            app:srcCompat="@drawable/ic_view_day" />
-
-                        <TextView
-                            android:id="@+id/button_date_range"
+                        <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/period_time_button"
-                            android:gravity="center"
-                            android:onClick="@{()->presenter.onDateRangeButtonClick()}"
-                            android:padding="7dp"
-                            android:paddingEnd="15dp"
-                            android:text="DD/MM/YYYY"
-                            android:textColor="?colorAccent" />
+                            android:layout_height="40dp">
+
+                            <ImageView
+                                android:id="@+id/button_time"
+                                android:layout_width="56dp"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/period_button"
+                                android:onClick="@{()->presenter.onTimeButtonClick()}"
+                                android:padding="7dp"
+                                app:srcCompat="@drawable/ic_view_day" />
+
+                            <TextView
+                                android:id="@+id/button_period_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/period_time_button"
+                                android:ellipsize="end"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:maxWidth="140dp"
+                                android:minWidth="70dp"
+                                android:onClick="@{()->presenter.onDateRangeButtonClick()}"
+                                android:padding="7dp"
+                                android:text="@string/DAILY"
+                                android:textColor="?colorAccent" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="end">
+
+                            <Button
+                                android:id="@+id/button_org_unit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginStart="15dp"
+                                android:background="@drawable/selector_button_round_20"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:minHeight="40dp"
+                                android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
+                                android:paddingEnd="15dp"
+                                android:paddingStart="15dp"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="false"
+                                android:textColor="?colorAccent"
+                                android:textSize="15sp"
+                                android:text="@string/org_unit" />
+
+                            <Spinner
+                                android:id="@+id/cat_combo"
+                                android:layout_width="wrap_content"
+                                android:minWidth="120dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginTop="3dp"
+                                android:background="@drawable/selector_button_round_20"
+                                android:maxLines="1"
+                                android:minHeight="40dp"
+                                android:paddingEnd="15dp"
+                                android:paddingStart="15dp"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="false"
+                                android:textColor="?colorAccent"
+                                android:textSize="15sp"/>
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <Button
-                        android:id="@+id/button_org_unit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="3dp"
-                        android:background="@drawable/selector_button_round_20"
-                        android:maxLines="1"
-                        android:minHeight="40dp"
-                        android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
-                        android:text="Org Unit"
-                        android:textAlignment="textStart"
-                        android:textAllCaps="false"
-                        android:textColor="?colorAccent"
-                        android:textSize="15sp" />
-
-                    <Button
-                        android:id="@+id/button_cat_combo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="3dp"
-                        android:background="@drawable/selector_button_round_20"
-                        android:maxLines="1"
-                        android:minHeight="40dp"
-                        android:onClick="@{()->presenter.onCatComboButtonClick()}"
-                        android:paddingEnd="15dp"
-                        android:paddingStart="15dp"
-                        android:text="Cat Combo"
-                        android:textAlignment="textStart"
-                        android:textAllCaps="false"
-                        android:textColor="?colorAccent"
-                        android:textSize="15sp" />
-                </com.google.android.flexbox.FlexboxLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                        tools:listitem="@layout/item_program" />
+                        android:layout_height="match_parent">
 
-                    <ProgressBar
-                        android:id="@+id/program_progress"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_centerInParent="true"
-                        android:visibility="gone"
-                        app:progressColor="@{@color/colorPrimary}" />
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                            tools:listitem="@layout/item_program_event" />
 
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_margin="20dp"
-                        android:background="@drawable/oval_23"
-                        android:onClick="@{()->presenter.onSearchClick()}"
-                        android:paddingBottom="7dp"
-                        app:srcCompat="@drawable/ic_searchandnew" />
+                        <ProgressBar
+                            android:id="@+id/program_progress"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"
+                            app:progressColor="@{@color/colorPrimary}" />
+                    </RelativeLayout>
 
-                </RelativeLayout>
+                </LinearLayout>
 
-            </LinearLayout>
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:backgroundTint="?colorPrimary"
+                    android:onClick="@{()->presenter.addEvent()}"
+                    app:srcCompat="@drawable/ic_add" />
 
+            </RelativeLayout>
 
             <android.support.design.widget.NavigationView
                 android:id="@+id/org_unit_view"

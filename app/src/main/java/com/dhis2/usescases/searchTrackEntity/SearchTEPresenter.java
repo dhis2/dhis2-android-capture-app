@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
@@ -21,10 +22,9 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -49,17 +49,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private TrackedEntityModel trackedEntity;
-    private List<TrackedEntityAttributeModel> attributeModelList;
     private String enrollmentDate;
     private String incidentDate;
     private List<ProgramModel> programModels;
-    private List<TrackedEntityAttributeValueModel> queryData;
+    private HashMap<Long, String> queryData;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+        Bindings.setMetadataRepository(metadataRepository);
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         compositeDisposable = new CompositeDisposable();
+        queryData = new HashMap<>();
     }
 
     //-----------------------------------
@@ -69,6 +70,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void init(SearchTEContractsModule.View view, String trackedEntityType) {
         this.view = view;
         locationManager = (LocationManager) view.getAbstracContext().getSystemService(Context.LOCATION_SERVICE);
+
+        compositeDisposable.add(
+                searchRepository.programsWithRegistration(trackedEntityType)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(programModels -> {
+                                    this.programModels = programModels;
+                                    view.setPrograms(programModels);
+                                },
+                                Timber::d)
+        );
 
         compositeDisposable.add(metadataRepository.getTrackedEntity(trackedEntityType)
                 .subscribeOn(Schedulers.io())
@@ -82,23 +94,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            attributeModelList = data;
-                            view.setForm(data, selectedProgram);
-                        },
+                        data -> view.setForm(data, selectedProgram),
                         Timber::d)
         );
 
-
-        compositeDisposable.add(searchRepository.programsWithRegistration(trackedEntityType)
+        compositeDisposable.add(view.rowActions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programModels -> {
-                            this.programModels = programModels;
-                            view.setPrograms(programModels);
-                        },
-                        Timber::d)
+                .subscribe(data -> {
+                    if (!data.value.isEmpty())
+                        queryData.put(data.id, data.value);
+                    else
+                        queryData.remove(data.id);
+                    getTrakedEntities();
+                })
         );
 
     }
@@ -112,12 +121,32 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //------------------------------------------
     //region DATA
 
-    public void getTrakedEntities() {
+    private void getTrakedEntities() {
         compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
                 selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view.swapListData())
+                .subscribe(view.swapListData(), Timber::d)
+        );
+    }
+
+    private void getTrackedEntityAttributes() {
+        compositeDisposable.add(searchRepository.programAttributes()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> view.setForm(data, selectedProgram),
+                        Timber::d)
+        );
+    }
+
+    public void getProgramTrackedEntityAttributes() {
+        compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> view.setForm(data, selectedProgram),
+                        Timber::d)
         );
     }
 
@@ -125,6 +154,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public TrackedEntityModel getTrackedEntityName() {
         return trackedEntity;
     }
+
+    @Override
+    public ProgramModel getProgramModel() {
+        return selectedProgram;
+    }
+
+    @Override
+    public List<ProgramModel> getProgramList() {
+        return programModels;
+    }
+
 
     @Override
     public Observable<List<OptionModel>> getOptions(String optionSetId) {
@@ -144,11 +184,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void setProgram(ProgramModel programSelected) {
         selectedProgram = programSelected;
         view.clearList();
+
+        getTrakedEntities();
+        if (selectedProgram == null)
+            getTrackedEntityAttributes();
+        else
+            getProgramTrackedEntityAttributes();
     }
 
     @Override
     public void onClearClick() {
-
+        setProgram(null);
     }
 
     @Override
@@ -186,17 +232,34 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onEnrollClick(View view) {
         if (view.isEnabled()) {
-            FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(selectedProgram.uid());
-            this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+            enroll(selectedProgram.uid());
         } else
             this.view.displayMessage("Select a program to enable enrolling");
+    }
+
+    @Override
+    public void enroll(String programUid) {
+        //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
+
+        compositeDisposable.add(
+                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(enrollmentUid -> {
+                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
+                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+                                },
+                                Timber::d)
+        );
+
+
     }
 
     @Override
     public void onTEIClick(String TEIuid) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);
-        bundle.putString("PROGRAM_UID", selectedProgram.uid());
+        bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
        /* if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
             view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
         else*/

@@ -19,9 +19,6 @@ import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-
 /**
  * Created by ppajuelo on 29/11/2017.
  */
@@ -31,7 +28,6 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     FragmentScheduleBinding binding;
 
     static ScheduleFragment instance;
-    private static TrackedEntityInstance trackedEntity;
     private static DashboardProgramModel program;
 
     public static ScheduleFragment getInstance() {
@@ -44,28 +40,13 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
-        if (trackedEntity != null)
-            for (Enrollment enrollment : trackedEntity.enrollments())
-                if (enrollment.program().equals(program.getProgram().uid()))
-                    binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), enrollment.events()));
-        onResume();
+        if (program!= null)
+            binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), program.getEvents()));
         binding.scheduleFilter.setOnClickListener(this);
         return binding.getRoot();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
-    }
-
-    public void setData(TrackedEntityInstance trackedEntityModel, DashboardProgramModel mprogram) {
-        trackedEntity = trackedEntityModel;
+    public void setData(DashboardProgramModel mprogram) {
         program = mprogram;
     }
 

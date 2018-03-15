@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
 
         <import type="java.lang.String" />
@@ -13,7 +12,7 @@
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.Enrollment" />
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
 
     </data>
 
@@ -39,7 +38,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:programName="@{enrollment.program()}"
-                tools:text="ANCAAfffffffggggffffffff"/>
+                tools:text="ANCAAfffffffggggffffffff" />
 
             <ImageView
                 android:id="@+id/program_image"

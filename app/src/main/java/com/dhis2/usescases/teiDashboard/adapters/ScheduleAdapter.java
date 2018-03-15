@@ -9,6 +9,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
-    private List<Event> events;
+    private List<EventModel> events;
     private final List<ProgramStageModel> programStageList;
     private Filter currentFilter = Filter.ALL;
 
@@ -32,17 +33,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
         OVERDUE, SCHEDULE, ALL
     }
 
-    public ScheduleAdapter(List<ProgramStageModel> programStageList, List<Event> eventList) {
+    public ScheduleAdapter(List<ProgramStageModel> programStageList, List<EventModel> eventList) {
         this.programStageList = programStageList;
 
         this.events = new ArrayList<>();
-        for (Event event : eventList)
+        for (EventModel event : eventList)
             if (event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.SKIPPED)
                 this.events.add(event);
 
-        Collections.sort(events, new Comparator<Event>() {
+        Collections.sort(events, new Comparator<EventModel>() {
             @Override
-            public int compare(Event eventA, Event eventB) {
+            public int compare(EventModel eventA, EventModel eventB) {
 
                 if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SCHEDULE)
                     return eventB.eventDate().compareTo(eventA.eventDate());

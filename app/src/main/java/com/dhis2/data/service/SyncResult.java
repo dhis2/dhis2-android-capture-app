@@ -6,16 +6,16 @@ import com.google.auto.value.AutoValue;
 
 
 @AutoValue
-abstract class SyncResult {
+public abstract class SyncResult {
 
     @NonNull
     abstract Boolean isIdle();
 
     @NonNull
-    abstract Boolean inProgress();
+    public abstract Boolean inProgress();
 
     @NonNull
-    abstract Boolean isSuccess();
+    public abstract Boolean isSuccess();
 
     @NonNull
     abstract String message();

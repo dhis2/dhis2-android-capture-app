@@ -35,9 +35,8 @@ public class ProgramDetailModule {
     @Provides
     @PerActivity
     ProgramDetailContractModule.Interactor provideInteractor(D2 d2, @NonNull UserRepository userRepository,
-                                                             @NonNull ProgramRepository programRepository,
                                                              @NonNull MetadataRepository metadataRepository) {
-        return new ProgramDetailInteractor(d2, userRepository, programRepository, metadataRepository);
+        return new ProgramDetailInteractor(d2, userRepository, metadataRepository);
     }
 
     @Provides

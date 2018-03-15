@@ -21,6 +21,7 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 07/11/2017.
+ *
  */
 
 public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemSelectedListener {
