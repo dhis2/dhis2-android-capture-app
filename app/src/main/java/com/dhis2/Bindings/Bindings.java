@@ -196,6 +196,18 @@ public class Bindings {
                 );
     }
 
+    @BindingAdapter("programStageDescription")
+    public static void getStageDescription(TextView textView, String stageId) {
+        metadataRepository.programStage(stageId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
+                        programStageModel -> textView.setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."),
+                        Timber::d
+                );
+    }
+
     @BindingAdapter("srcBackGround")
     public static void setBackGroundCompat(View view, int drawableId) {
         view.setBackground(ContextCompat.getDrawable(view.getContext(), drawableId));

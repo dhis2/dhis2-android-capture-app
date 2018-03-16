@@ -108,24 +108,46 @@
                                 <LinearLayout
                                     android:layout_width="0dp"
                                     android:layout_weight="1"
-                                    android:layout_height="match_parent"
-                                    android:orientation="horizontal">
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
 
-                                    <android.support.design.widget.TextInputLayout
+                                    <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:hint="@string/date"
-                                        android:theme="@style/dataInputText">
+                                        android:textSize="14sp"
+                                        android:textColor="?colorPrimary"
+                                        app:programStage='@{event.programStage()}'/>
 
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/date"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:focusable="false"
-                                            android:textSize="15sp"
-                                            android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
-                                    </android.support.design.widget.TextInputLayout>
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        app:programStageDescription='@{event.programStage()}'/>
+
                                 </LinearLayout>
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/date"
+                                    android:theme="@style/dataInputText">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:focusable="false"
+                                        android:textSize="15sp"
+                                        android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
+                                </android.support.design.widget.TextInputLayout>
                             </LinearLayout>
 
 
