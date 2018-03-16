@@ -63,7 +63,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
             editTextBinding.setAttrModel(programAttr);
             editTextBinding.setIsEditable(isEditable);
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setFlexBasisPercent(.5f);
+            params.setFlexBasisPercent(1f);
             binding.dataLayout.addView(editTextBinding.getRoot(), params);
 
             for (TrackedEntityAttributeValueModel dataValueModel : programModel.getTrackedEntityAttributeValues()) {
