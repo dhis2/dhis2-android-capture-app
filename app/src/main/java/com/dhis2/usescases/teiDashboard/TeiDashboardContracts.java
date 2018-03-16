@@ -33,7 +33,7 @@ public class TeiDashboardContracts {
 
         void setProgram(ProgramModel program);
 
-        void editTei(boolean isEditable, android.view.View view, DashboardProgramModel dashboardProgramModel);
+        void seeDetails(android.view.View view, DashboardProgramModel dashboardProgramModel);
 
         void onEventSelected(String uid, android.view.View view);
 

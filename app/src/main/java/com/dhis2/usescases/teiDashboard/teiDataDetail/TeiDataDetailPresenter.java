@@ -85,6 +85,11 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
+    public void editData() {
+        view.setDataEditable();
+    }
+
+    @Override
     public void saveData(ProgramTrackedEntityAttributeModel programAttr, String s) {
         disposable.add(dataEntryStore.save(programAttr.trackedEntityAttribute(), s)
                 .subscribeOn(Schedulers.computation())

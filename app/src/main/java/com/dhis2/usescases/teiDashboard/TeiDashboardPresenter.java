@@ -105,12 +105,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void editTei(boolean isEditable, View sharedView, DashboardProgramModel dashboardProgramModel) {
+    public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
         extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        extras.putBoolean("IS_EDITABLE", isEditable);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
     }
