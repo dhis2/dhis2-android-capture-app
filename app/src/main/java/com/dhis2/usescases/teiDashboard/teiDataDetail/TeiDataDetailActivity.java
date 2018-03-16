@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
@@ -96,5 +97,11 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         }
 
         binding.dataLayout.invalidate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        super.onBackPressed();
     }
 }

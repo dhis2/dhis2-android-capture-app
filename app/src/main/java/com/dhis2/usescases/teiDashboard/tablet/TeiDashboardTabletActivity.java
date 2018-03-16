@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityDashboardTabletBinding;
@@ -46,6 +47,11 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel programModel) {
+
+    }
+
+    @Override
+    public void goToDetails(View view, String enrollmentUid) {
 
     }
 

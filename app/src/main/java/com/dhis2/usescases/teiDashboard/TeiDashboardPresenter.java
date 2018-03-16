@@ -8,7 +8,6 @@ import android.view.View;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -84,6 +83,22 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public Observable<DashboardProgramModel> getProgram() {
+        return Observable.zip(
+                metadataRepository.getTrackedEntityInstance(teUid),
+                dashboardRepository.getEnrollment(programUid, teUid),
+                dashboardRepository.getProgramStages(programUid),
+                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
+                metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                dashboardRepository.getTEIAttributeValues(programUid, teUid),
+                metadataRepository.getTeiOrgUnit(teUid),
+                metadataRepository.getTeiActivePrograms(teUid),
+                dashboardRepository.getRelationships(programUid, teUid),
+                DashboardProgramModel::new)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    @Override
     public void onBackPressed() {
         view.back();
     }
@@ -106,12 +121,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teUid);
-        extras.putString("PROGRAM_UID", programUid);
-        extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
+        view.goToDetails(sharedView, dashboardProgramModel.getCurrentEnrollment().uid());
     }
 
     @Override

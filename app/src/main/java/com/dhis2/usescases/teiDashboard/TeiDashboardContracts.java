@@ -4,6 +4,8 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import io.reactivex.Observable;
+
 /**
  * Created by ppajuelo on 30/11/2017.
  *
@@ -19,6 +21,8 @@ public class TeiDashboardContracts {
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
+        void goToDetails(android.view.View view, String enrollmentUid);
+
         String getToolbarTitle();
     }
 
@@ -30,6 +34,8 @@ public class TeiDashboardContracts {
         void onProgramSelected();
 
         void onEnrollmentSelectorClick();
+
+        Observable<DashboardProgramModel> getProgram();
 
         void setProgram(ProgramModel program);
 
