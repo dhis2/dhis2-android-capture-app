@@ -2,16 +2,17 @@ package com.dhis2.usescases.eventInitial;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
+import com.dhis2.usescases.map.MapSelectorActivity;
+import com.dhis2.utils.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
-
-import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -85,7 +86,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onLocation2Click() {
-        Timber.d("MENSAJE", "clickado2");
+        Intent intent = new Intent(view.getContext(), MapSelectorActivity.class);
+        view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_MAP_LOCATION);
     }
 
     @Override
