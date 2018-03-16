@@ -27,10 +27,12 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -105,6 +107,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void showTimeUnitPicker() {
 
         Drawable drawable = null;
+        String textToShow = "";
+        SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
         switch (currentPeriod) {
             case DAILY:
@@ -125,9 +131,29 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
         Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
-        presenter.getPrograms(dates[0], dates[1]);
+        if (dates.length!=0) {
+
+            switch (currentPeriod) {
+                case DAILY:
+                    textToShow = DateUtils.getInstance().formatDate(dates[0]);
+                    break;
+                case WEEKLY:
+                    textToShow = weeklyFormat.format(dates[0]);
+                    break;
+                case MONTHLY:
+                    textToShow = monthFormat.format(dates[0]);
+                    break;
+                case YEARLY:
+                    textToShow = yearFormat.format(dates[0]);
+                    break;
+            }
+        }
+
+            binding.buttonPeriodText.setText(textToShow);
+
+        //binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+       presenter.getPrograms(dates[0], dates[1]);
     }
 
     @Override
