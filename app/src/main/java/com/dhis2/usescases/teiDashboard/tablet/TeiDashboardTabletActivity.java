@@ -22,6 +22,7 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
 
     ActivityDashboardTabletBinding binding;
+    DashboardPagerAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,7 +31,8 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_tablet);
 //        binding.setPresenter(new TeiDashboardPresenter());
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), null, true));
+        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), null, true);
+        binding.teiPager.setAdapter(adapter);
         getSupportFragmentManager().beginTransaction().add(R.id.tei_main_view, TEIDataFragment.getInstance()).commit();
 
     }
@@ -41,17 +43,19 @@ public class TeiDashboardTabletActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public DashboardPagerAdapter getAdapter() {
+        return adapter;
+    }
+
+    @Override
+
+
     public void setData(DashboardProgramModel program) {
         TEIDataFragment.getInstance().setData(program);
     }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel programModel) {
-
-    }
-
-    @Override
-    public void goToDetails(View view, String enrollmentUid) {
 
     }
 

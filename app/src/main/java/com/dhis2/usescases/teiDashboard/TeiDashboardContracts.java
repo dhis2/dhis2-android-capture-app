@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -21,9 +22,9 @@ public class TeiDashboardContracts {
 
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
-        void goToDetails(android.view.View view, String enrollmentUid);
-
         String getToolbarTitle();
+
+        DashboardPagerAdapter getAdapter();
     }
 
     public interface Presenter {

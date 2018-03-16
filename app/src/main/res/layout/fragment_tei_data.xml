@@ -134,9 +134,8 @@
 
                 <TextView
                     android:id="@+id/view_tei"
-                    android:layout_width="93dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="27dp"
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="8sp"
                     android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"

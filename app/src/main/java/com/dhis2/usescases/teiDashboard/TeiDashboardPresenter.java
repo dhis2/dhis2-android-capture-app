@@ -1,13 +1,17 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
+import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -121,7 +125,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        view.goToDetails(sharedView, dashboardProgramModel.getCurrentEnrollment().uid());
+        Fragment teiFragment = view.getAdapter().getItem(0);
+        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("TEI_UID", teUid);
+        extras.putString("PROGRAM_UID", programUid);
+        extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
+        intent.putExtras(extras);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
+        teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
     }
 
     @Override

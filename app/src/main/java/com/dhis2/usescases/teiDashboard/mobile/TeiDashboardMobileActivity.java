@@ -96,18 +96,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         setDataFragment();
     }
 
-    @SuppressLint("RestrictedApi")
     @Override
-    public void goToDetails(View sharedView, String enrollmentUid) {
-        teiFragment = adapter.getItem(0);
-        Intent intent = new Intent(this, TeiDataDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teiUid);
-        extras.putString("PROGRAM_UID", programUid);
-        extras.putString("ENROLLMENT_UID", enrollmentUid);
-        intent.putExtras(extras);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, "user_info");
-        teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
+    public DashboardPagerAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
