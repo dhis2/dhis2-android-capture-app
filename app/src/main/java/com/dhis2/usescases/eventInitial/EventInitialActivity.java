@@ -244,6 +244,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
+
+        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+            binding.catCombo.setVisibility(View.GONE);
+            binding.catComboLine.setVisibility(View.GONE);
+        }
+        else {
+            binding.catCombo.setVisibility(View.VISIBLE);
+            binding.catComboLine.setVisibility(View.VISIBLE);
+        }
+
         categoryOptionComboModels = catComboList;
 
         CatComboAdapter2 adapter = new CatComboAdapter2(this,

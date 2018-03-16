@@ -183,6 +183,7 @@
                                 android:textSize="15sp"/>
 
                             <View
+                                android:id="@+id/cat_combo_line"
                                 android:layout_width="match_parent"
                                 android:layout_height="0.8dp"
                                 android:layout_marginStart="4dp"
