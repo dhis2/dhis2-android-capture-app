@@ -86,6 +86,7 @@
     <string name="enroll">Enroll</string>
 
     <!--TEI DASHBOARD-->
+    <string name="see_details">See Details</string>
     <string name="view_more">VIEW MORE</string>
     <string name="edit">EDIT</string>
     <string name="enrolling_ou">Enrolling OU:</string>

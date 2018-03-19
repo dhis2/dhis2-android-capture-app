@@ -13,12 +13,16 @@ public class TeiDataDetailContracts {
 
         void setData(DashboardProgramModel program);
 
+        void setDataEditable();
+
     }
 
     public interface Presenter {
         void init(View view, String uid, String programUid);
 
         void onBackPressed();
+
+        void editData();
 
         void saveData(ProgramTrackedEntityAttributeModel programAttr, String s);
 
