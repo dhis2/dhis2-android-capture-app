@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class AbstractActivityContracts {
     public interface Presenter {
         void onDettach();
 
-        void filterOrgUnits(String date);
+        void filterOrgUnits(Date date);
     }
 
     public interface Interactor {

@@ -14,6 +14,8 @@ import com.google.android.gms.location.LocationServices;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.Date;
+
 /**
  * Created by Cristian on 01/03/2018.
  *
@@ -98,5 +100,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void filterOrgUnits(Date date) {
+
     }
 }

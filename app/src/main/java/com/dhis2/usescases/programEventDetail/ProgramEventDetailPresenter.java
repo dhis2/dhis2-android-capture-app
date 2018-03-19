@@ -116,7 +116,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void filterOrgUnits(String date) {
+    public void filterOrgUnits(Date date) {
         interactor.getOrgUnits(date);
     }
 }

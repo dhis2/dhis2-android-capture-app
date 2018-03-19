@@ -298,7 +298,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
-        presenter.filterOrgUnits(date);
+        presenter.filterOrgUnits(DateUtils.getInstance().toDate(date));
     }
 
     @Override

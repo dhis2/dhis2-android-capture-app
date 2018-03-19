@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import java.util.Date;
+
 /**
  * Created by Cristian on 06/03/2018.
  *
@@ -33,5 +35,10 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void filterOrgUnits(Date date) {
+
     }
 }
