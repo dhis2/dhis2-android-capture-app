@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.dhis2.Components;
@@ -38,6 +39,11 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+import static com.dhis2.utils.Period.DAILY;
+import static com.dhis2.utils.Period.MONTHLY;
+import static com.dhis2.utils.Period.WEEKLY;
+import static com.dhis2.utils.Period.YEARLY;
+
 /**
  * Created by ppajuelo on 18/10/2017.f
  */
@@ -48,9 +54,17 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Inject
     ProgramContract.Presenter presenter;
 
-    private Period currentPeriod = Period.DAILY;
+    private Period currentPeriod = DAILY;
 
     private AndroidTreeView treeView;
+
+    private Date chosenDateDay = new Date();
+    private ArrayList<Date> chosenDateWeek = new ArrayList<>();
+    private ArrayList<Date> chosenDateMonth =  new ArrayList<>();
+    private ArrayList<Date> chosenDateYear = new ArrayList<>();
+    SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
+    SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
     //-------------------------------------------
     //region LIFECYCLE
@@ -68,6 +82,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
+        chosenDateWeek.add(new Date());
+        chosenDateMonth.add(new Date());
+        chosenDateYear.add(new Date());
+        binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(new Date()));
         setUpRecycler();
 
         return binding.getRoot();
@@ -79,27 +97,76 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
-        if (currentPeriod != Period.DAILY) {
+        if (currentPeriod != DAILY) {
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                 if (!selectedDates.isEmpty()) {
-                    String textToShow = DateUtils.getInstance().formatDate(selectedDates.get(0));
-                    if (selectedDates.size() > 1)
-                        textToShow += " " + DateUtils.getInstance().formatDate(selectedDates.get(1));
+                    String textToShow;
+                    if (currentPeriod== WEEKLY) {
+                        textToShow=weeklyFormat.format(selectedDates.get(0))+ ", " + yearFormat.format(selectedDates.get(0));
+                        chosenDateWeek= (ArrayList<Date>) selectedDates;
+                        if (selectedDates.size() > 1)
+                            textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
+                    }
+                    else if (currentPeriod== MONTHLY) {
+                        textToShow=monthFormat.format(selectedDates.get(0));
+                        chosenDateMonth= (ArrayList<Date>) selectedDates;
+                        if (selectedDates.size() > 1)
+                            textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
+                    }
+                    else {
+                        textToShow=yearFormat.format(selectedDates.get(0));
+                        chosenDateYear= (ArrayList<Date>) selectedDates;
+                        if (selectedDates.size() > 1)
+                            textToShow += "... " /*+ yearFormat.format(selectedDates.get(1))*/;
+
+                    }
                     binding.buttonPeriodText.setText(textToShow);
                     presenter.getProgramsWithDates(selectedDates, currentPeriod);
+
                 } else {
-                    binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
-                    Date[] dates = DateUtils.getInstance().getDateFromPeriod(currentPeriod);
-                    presenter.getPrograms(dates[0], dates[1]);
+                    //binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
+                    ArrayList<Date> date = new ArrayList<>();
+                    date.add(new Date());
+
+                    String text="";
+
+                    switch (currentPeriod){
+                    case WEEKLY:
+                        text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
+                        chosenDateWeek.clear();
+                        chosenDateWeek.add(date.get(0));
+                        break;
+                    case MONTHLY:
+                        text = monthFormat.format(date.get(0));
+                        chosenDateMonth.clear();
+                        chosenDateMonth.add(date.get(0));
+
+                        break;
+                    case YEARLY:
+                        text =  yearFormat.format(date.get(0));
+                        chosenDateYear.clear();
+                        chosenDateYear.add(date.get(0));
+
+                        break;
+                    }
+                    binding.buttonPeriodText.setText(text);
+                    presenter.getProgramsWithDates(date,currentPeriod);
+
                 }
             });
         } else {
-            DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-                calendar.set(year, monthOfYear, dayOfMonth);
-                Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
-                presenter.getPrograms(dates[0], dates[1]);
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            Calendar cal= Calendar.getInstance();
+            cal.setTime(chosenDateDay);
+            DatePickerDialog pickerDialog;
+                pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
+                    calendar.set(year, monthOfYear, dayOfMonth);
+                    Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
+                    presenter.getPrograms(dates[0], dates[1]);
+                    binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
+                    chosenDateDay=dates[0];
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
+
         }
     }
 
@@ -108,52 +175,60 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
         Drawable drawable = null;
         String textToShow = "";
-        SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
-        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+
 
         switch (currentPeriod) {
             case DAILY:
-                currentPeriod = Period.WEEKLY;
+                currentPeriod = WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
                 break;
             case WEEKLY:
-                currentPeriod = Period.MONTHLY;
+                currentPeriod = MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
                 break;
             case MONTHLY:
-                currentPeriod = Period.YEARLY;
+                currentPeriod = YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
                 break;
             case YEARLY:
-                currentPeriod = Period.DAILY;
+                currentPeriod = DAILY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
-        if (dates.length!=0) {
+        //Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
+
+
 
             switch (currentPeriod) {
                 case DAILY:
-                    textToShow = DateUtils.getInstance().formatDate(dates[0]);
+                    Date[] datesD = DateUtils.getInstance().getDateFromDateAndPeriod(chosenDateDay, currentPeriod);
+                    if (datesD.length!=0)textToShow = DateUtils.getInstance().formatDate(datesD[0]);
+                    if (datesD.length > 2) textToShow += "... ";
+                    presenter.getPrograms(datesD[0], datesD[1]);
                     break;
                 case WEEKLY:
-                    textToShow = weeklyFormat.format(dates[0]);
+                    if (!chosenDateWeek.isEmpty()) textToShow = weeklyFormat.format(chosenDateWeek.get(0)) + ", " + yearFormat.format(chosenDateWeek.get(0));
+                    if (!chosenDateWeek.isEmpty() && chosenDateWeek.size()>1) textToShow += "... ";
+                    presenter.getProgramsWithDates(chosenDateWeek, currentPeriod);
                     break;
                 case MONTHLY:
-                    textToShow = monthFormat.format(dates[0]);
+                    if (!chosenDateMonth.isEmpty()) textToShow = monthFormat.format(chosenDateMonth.get(0));
+                    if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
+                    presenter.getProgramsWithDates(chosenDateMonth, currentPeriod);
                     break;
                 case YEARLY:
-                    textToShow = yearFormat.format(dates[0]);
+                    if (!chosenDateYear.isEmpty()) textToShow = yearFormat.format(chosenDateYear.get(0));
+                    if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
+                    presenter.getProgramsWithDates(chosenDateYear, currentPeriod);
                     break;
             }
-        }
+
 
             binding.buttonPeriodText.setText(textToShow);
 
         //binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
-       presenter.getPrograms(dates[0], dates[1]);
+
     }
 
     @Override
