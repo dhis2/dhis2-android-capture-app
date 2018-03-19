@@ -41,6 +41,7 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian on 01/03/2018.
+ *
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
@@ -205,8 +206,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.drawerLayout.closeDrawers();
         });
 
-        if (treeView.getSelected() != null && treeView.getSelected().isEmpty()) {
+        if (treeView.getSelected() != null && !treeView.getSelected().isEmpty()) {
             binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
+        }
+        else {
+            binding.orgUnit.setText(getString(R.string.org_unit));
         }
 
     }
@@ -294,11 +298,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        // TODO CRIS: FILTER ORG UNITS ON DATE CHANGED, DELETE PREVIOUSLY SELECTED ORG UNIT IN CASE
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
-        presenter.filterOrgUnits(DateUtils.getInstance().toDate(date));
+        binding.orgUnit.setText("");
+        presenter.filterOrgUnits(date);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.dhis2.usescases.programDetail;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;

@@ -21,5 +21,4 @@ public interface UserRepository {
 
     @NonNull
     Observable<List<OrganisationUnitModel>> myOrgUnits();
-
 }

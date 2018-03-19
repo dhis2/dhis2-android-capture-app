@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
@@ -25,19 +24,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final BriteDatabase briteDatabase;
 
-    public UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
     @NonNull
     @Override
     public Flowable<UserCredentialsModel> credentials() {
-        // we don't want to track updates on this table
-
-        /*return RxJavaInterop.toV2Flowable(briteDatabase
-                .createQuery(UserCredentialsModel.TABLE, SELECT_USER_CREDENTIALS)
-                .mapToOne(UserCredentialsModel::create)
-                .take(1));*/
         return briteDatabase
                 .createQuery(UserCredentialsModel.TABLE, SELECT_USER_CREDENTIALS)
                 .mapToOne(UserCredentialsModel::create)
@@ -47,9 +40,6 @@ public class UserRepositoryImpl implements UserRepository {
     @NonNull
     @Override
     public Flowable<UserModel> me() {
-        /*return RxJavaInterop.toV2Flowable(briteDatabase
-                .createQuery(UserModel.TABLE, SELECT_USER)
-                .mapToOne(UserModel::create));*/
         return briteDatabase
                 .createQuery(UserModel.TABLE, SELECT_USER)
                 .mapToOne(UserModel::create).toFlowable(BackpressureStrategy.BUFFER);
@@ -62,6 +52,4 @@ public class UserRepositoryImpl implements UserRepository {
                 .createQuery(OrganisationUnitModel.TABLE, SELECT_USER_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
-
-
 }
