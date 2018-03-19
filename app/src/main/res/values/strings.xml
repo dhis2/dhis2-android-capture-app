@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Dhis2</string>
+    <string name="google_api">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
 
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
@@ -79,6 +80,11 @@
     <string name="longitude">Longitude</string>
     <string name="new_event">New event</string>
 
+    <!--Event Detail-->
+    <string name="event_date">Event date</string>
+    <string name="due_date">Due date</string>
+    <string name="cat_combo">Cat combo</string>
+
     <!--TEI Program list-->
     <string name="programs_list">Programs list</string>
     <string name="active_programs">Active programs</string>
@@ -96,4 +102,8 @@
 
     <!--DONE TASKS-->
     <string name="events">events</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">Select location</string>
+
 </resources>

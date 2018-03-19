@@ -1,6 +1,7 @@
 package com.dhis2.usescases.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -18,7 +19,9 @@ import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
+import com.dhis2.utils.Constants;
 import com.dhis2.utils.DateUtils;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -139,19 +142,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
     }
 
-    private void checkActionButtonVisibility() {
-        if (isFormCompleted()) {
+    private void checkActionButtonVisibility(){
+        if (isFormCompleted()){
             binding.actionButton.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isFormCompleted() {
+    private boolean isFormCompleted(){
         return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatOption != null;
     }
 
-    private boolean isCompleted(String field) {
+    private boolean isCompleted(String field){
         return field != null && !field.isEmpty();
     }
 
@@ -162,7 +166,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setName(activityTitle);
         binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
         binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-        binding.location2.setOnClickListener(v -> presenter.onLocationClick());
+        binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
     }
 
     @Override
@@ -243,6 +247,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
+
+        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+            binding.catCombo.setVisibility(View.GONE);
+            binding.catComboLine.setVisibility(View.GONE);
+        }
+        else {
+            binding.catCombo.setVisibility(View.VISIBLE);
+            binding.catComboLine.setVisibility(View.VISIBLE);
+        }
+
         categoryOptionComboModels = catComboList;
 
         CatComboAdapter2 adapter = new CatComboAdapter2(this,
@@ -298,6 +312,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     // TODO CRIS
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+            setLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
         }
     }
 }

@@ -34,7 +34,7 @@
                 android:layout_height="135dp"
                 app:programTypeIcon='@{program.programType()}'
                 app:randomColor="@{program.uid()}"
-                android:contentDescription="TODO" />
+                tools:ignore="ContentDescription" />
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"

@@ -86,8 +86,7 @@
                                     android:layout_weight="1"
                                     android:layout_height="wrap_content"
                                     android:gravity="center_horizontal"
-                                    android:orientation="horizontal"
-                                    android:layout_marginEnd="60dp">
+                                    android:orientation="horizontal">
 
                                     <ImageView
                                         android:contentDescription='@{name}'
@@ -106,27 +105,50 @@
                                         android:layout_marginEnd="24dp"
                                         app:srcCompat="@drawable/ic_program_border" />
 
-                                    <android.support.design.widget.TextInputLayout
+                                    <LinearLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:hint="@string/date"
-                                        android:theme="@style/dataInputText">
+                                        android:orientation="horizontal">
 
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/date"
-                                            android:layout_width="match_parent"
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
                                             android:layout_height="wrap_content"
-                                            android:focusable="false"
-                                            android:textSize="15sp"
-                                            android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
-                                    </android.support.design.widget.TextInputLayout>
-                                </LinearLayout>
+                                            android:orientation="vertical">
 
-                                <View
-                                    android:layout_width="0dp"
-                                    android:layout_weight="0.75"
-                                    android:layout_height="match_parent"
-                                    android:orientation="horizontal"/>
+                                            <TextView
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="14sp"
+                                                android:textColor="?colorPrimary"
+                                                app:programStage='@{event.programStage()}'/>
+
+                                            <TextView
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="12sp"
+                                                app:programStageDescription='@{event.programStage()}'/>
+
+                                        </LinearLayout>
+
+
+                                        <android.support.design.widget.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:layout_height="wrap_content"
+                                            android:hint="@string/date"
+                                            android:theme="@style/dataInputText">
+
+                                            <android.support.design.widget.TextInputEditText
+                                                android:id="@+id/date"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:focusable="false"
+                                                android:textSize="15sp"
+                                                android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
+                                        </android.support.design.widget.TextInputLayout>
+                                    </LinearLayout>
+                                </LinearLayout>
                             </LinearLayout>
 
 
@@ -278,7 +300,8 @@
                     android:layout_gravity="end"
                     android:background="@color/white_faf"
                     android:fitsSystemWindows="false"
-                    app:itemTextColor="?colorPrimary">
+                    app:itemTextColor="?colorPrimary"
+                    tools:visibility="gone">
 
                     <RelativeLayout
                         android:id="@+id/tree_view_container"

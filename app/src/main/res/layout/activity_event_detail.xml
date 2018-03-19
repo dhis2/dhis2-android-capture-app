@@ -42,7 +42,8 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.back()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@id/toolbar_title"
@@ -115,6 +116,38 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
+            <LinearLayout
+                android:id="@+id/program_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                app:layout_constraintTop_toBottomOf="@id/icon_container">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="?colorPrimary"
+                    app:programStage='@{event.programStage()}'/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    app:programStageDescription='@{event.programStage()}'/>
+
+            </LinearLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/event_data_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/program_description">
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/event_data_layout"
                             android:layout_width="match_parent"
@@ -129,6 +162,12 @@
                                 android:hint="Event date"
                                 android:theme="@style/dataInputText"
                                 app:layout_flexBasisPercent="100%">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/event_date"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/event_date"
@@ -145,6 +184,12 @@
                                 android:hint="Due date"
                                 android:theme="@style/dataInputText"
                                 app:layout_flexBasisPercent="100%">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/due_date"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/due_date"
@@ -154,6 +199,12 @@
                                     android:text="@{event.dueDate().toLocaleString()}" />
                             </android.support.design.widget.TextInputLayout>
 
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/cat_combo"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
                             <android.support.design.widget.TextInputLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -174,6 +225,12 @@
                                 android:hint="Org Unit"
                                 android:theme="@style/dataInputText"
                                 app:layout_flexBasisPercent="100%">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/org_unit"
+                    android:theme="@style/dataInputText"
+                    app:layout_flexBasisPercent="50%">
 
                                 <EditText
                                     android:id="@+id/org_unit"
