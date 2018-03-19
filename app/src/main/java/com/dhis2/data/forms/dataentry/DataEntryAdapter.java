@@ -11,11 +11,14 @@ import android.view.ViewGroup;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
 import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.file.FileRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
@@ -55,15 +58,15 @@ final class DataEntryAdapter extends Adapter {
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
         rows.add(EDITTEXT, new EditTextRow(processor));
-        rows.add(BUTTON, new EditTextRow(processor));
-        rows.add(CHECKBOX, new EditTextRow(processor));
+        rows.add(BUTTON, new FileRow());
+        rows.add(CHECKBOX, new RadioButtonRow(processor));
         rows.add(SPINNER, new SpinnerRow(processor));
-        rows.add(COORDINATES, new EditTextRow(processor));
+        rows.add(COORDINATES, new CoordinateRow(processor));
         rows.add(TIME, new DateTimeRow(processor));
         rows.add(DATE, new DateTimeRow(processor));
         rows.add(DATETIME, new DateTimeRow(processor));
         rows.add(AGEVIEW, new EditTextRow(processor));
-        rows.add(YES_NO, new EditTextRow(processor));
+        rows.add(YES_NO, new RadioButtonRow(processor));
     }
 
     @Override
