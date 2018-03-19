@@ -279,7 +279,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
         });
 
-        //TODO CRIS: CON QUE SE PUEBLA ESTE SPINNER?
         presenter.getCatOption(eventModel.attributeOptionCombo());
     }
 
@@ -292,6 +291,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        // TODO CRIS: FILTER ORG UNITS ON DATE CHANGED, DELETE PREVIOUSLY SELECTED ORG UNIT IN CASE
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();

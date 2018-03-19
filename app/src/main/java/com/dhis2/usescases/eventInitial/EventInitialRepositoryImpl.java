@@ -38,6 +38,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
+        //TODO CRIS: FILTER BY OPENDATE AND CLOSEDATE
         String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
