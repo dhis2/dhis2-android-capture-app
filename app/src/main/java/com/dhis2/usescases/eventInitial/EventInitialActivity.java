@@ -22,7 +22,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
 import com.dhis2.utils.Constants;
-import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -44,7 +44,9 @@ import javax.inject.Inject;
  *
  */
 
-public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
+
+    private static final int PROGRESS_TIME = 2000;
 
     @Inject
     EventInitialContract.Presenter presenter;
@@ -60,6 +62,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String selectedLat;
     private String selectedLon;
     private List<CategoryOptionComboModel> categoryOptionComboModels;
+    private int completionPercent;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,6 +144,29 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             }
         });
+
+        initProgressBar();
+    }
+
+    private void initProgressBar(){
+        if (isNewEvent){
+            binding.progressGains.setVisibility(View.GONE);
+        }
+        else {
+            binding.progressGains.setVisibility(View.VISIBLE);
+            //TODO CRIS: GET REAL PERCENTAGE HERE
+            completionPercent = 44;
+            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
+            gainAnim.setDuration(PROGRESS_TIME);
+            binding.progressGains.setAnimation(gainAnim);
+        }
+    }
+
+    @Override
+    public void onUpdate(boolean lost, float interpolatedTime) {
+        int progress = (int)(completionPercent * interpolatedTime);
+        String text = String.valueOf(progress) + "%";
+        binding.progress.setText(text);
     }
 
     private void checkActionButtonVisibility(){

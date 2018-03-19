@@ -52,6 +52,32 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp">
+
+                <ProgressBar
+                    android:id="@+id/progressGains"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/progress_circle"
+                    android:background="@drawable/circle_shape"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"/>
+
+                <TextView
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="44%"
+                    android:textColor="@color/yellow_fdd"
+                    android:layout_centerInParent="true"
+                    android:textSize="12sp"/>
+            </RelativeLayout>
+
         </LinearLayout>
 
         <android.support.v4.widget.DrawerLayout
@@ -174,7 +200,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
                                 android:layout_marginStart="5dp"
-                                android:layout_marginTop="3dp"
+                                android:layout_marginTop="16dp"
                                 android:maxLines="1"
                                 android:minHeight="40dp"
                                 android:textAlignment="textStart"
@@ -195,57 +221,14 @@
                                 android:baselineAligned="false"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="40dp"
                                 android:orientation="horizontal">
 
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:gravity="center">
 
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@string/latitude"
-                                        android:theme="@style/dataInputText">
-
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/lat"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:inputType="numberDecimal"
-                                            android:textSize="15sp"
-                                            android:text='@{event != null ? event.latitude() : ""}'/>
-
-                                    </android.support.design.widget.TextInputLayout>
-
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@string/longitude"
-                                        android:theme="@style/dataInputText">
-
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/lon"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:inputType="numberDecimal"
-                                            android:textSize="15sp"
-                                            android:text='@{event != null ? event.longitude() : ""}'/>
-
-                                    </android.support.design.widget.TextInputLayout>
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:layout_marginTop="20dp"
-                                    android:gravity="center">
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="12dp">
 
                                     <ImageButton
                                         android:id="@+id/location1"
@@ -253,19 +236,63 @@
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
                                         android:padding="6dp"
+                                        android:layout_centerInParent="true"
                                         android:background="@drawable/selector_gray_button_round_7"
                                         app:srcCompat="@drawable/ic_my_location"/>
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="21dp">
 
                                     <ImageButton
                                         android:id="@+id/location2"
                                         android:contentDescription='@{name}'
-                                        android:layout_marginTop="16dp"
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
                                         android:padding="6dp"
+                                        android:layout_centerInParent="true"
                                         android:background="@drawable/selector_gray_button_round_7"
-                                        app:srcCompat="@drawable/ic_place" />
-                                </LinearLayout>
+                                        app:srcCompat="@drawable/ic_map" />
+                                </RelativeLayout>
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/latitude"
+                                    android:layout_marginEnd="21dp"
+                                    android:theme="@style/dataInputText">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/lat"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="numberDecimal"
+                                        android:textSize="15sp"
+                                        android:text='@{event != null ? event.latitude() : ""}'/>
+
+                                </android.support.design.widget.TextInputLayout>
+
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/longitude"
+                                    android:theme="@style/dataInputText">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/lon"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="numberDecimal"
+                                        android:textSize="15sp"
+                                        android:text='@{event != null ? event.longitude() : ""}'/>
+
+                                </android.support.design.widget.TextInputLayout>
+
                             </LinearLayout>
 
                             <View
@@ -279,11 +306,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentEnd="true"
                         android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="16dp"
                         android:background="@drawable/selector_button_round_7"
                         android:textAllCaps="true"
                         android:textColor="@color/white"
+                        android:textSize="15sp"
                         android:text="@string/create"
                         android:onClick="@{()->presenter.createEvent()}"/>
                 </RelativeLayout>
@@ -295,7 +324,8 @@
                     android:layout_gravity="end"
                     android:background="@color/white_faf"
                     android:fitsSystemWindows="false"
-                    app:itemTextColor="?colorPrimary">
+                    app:itemTextColor="?colorPrimary"
+                    tools:visibility="gone">
 
                     <RelativeLayout
                         android:id="@+id/tree_view_container"
