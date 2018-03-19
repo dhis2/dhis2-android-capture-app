@@ -230,7 +230,7 @@
                                         android:padding="6dp"
                                         android:layout_marginStart="12dp"
                                         android:background="@drawable/selector_gray_button_round_7"
-                                        app:srcCompat="@drawable/ic_place" />
+                                        app:srcCompat="@drawable/ic_map" />
 
 
                                     <android.support.design.widget.TextInputLayout

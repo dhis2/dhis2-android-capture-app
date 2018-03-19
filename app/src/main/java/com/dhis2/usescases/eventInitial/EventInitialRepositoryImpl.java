@@ -52,4 +52,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
                 .mapToList(CategoryOptionComboModel::create);
     }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date) {
+        if (date == null)
+            return orgUnits();
+        String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE + " WHERE ("
+                + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
+                " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date('%s')) AND ("
+                + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
+                " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date('%s'))";
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, String.format(SELECT_ORG_UNITS_FILTERED, date, date))
+                .mapToList(OrganisationUnitModel::create);
+    }
 }
