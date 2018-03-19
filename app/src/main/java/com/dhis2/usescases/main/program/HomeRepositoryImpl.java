@@ -68,13 +68,6 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Observable<List<ProgramModel>> programs(String fromDate, String toDate) {
-        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES, fromDate, toDate))
-                .mapToList(ProgramModel::create);
-    }
-
-    @NonNull
-    @Override
     public Observable<List<ProgramModel>> programs(List<Date> dates, Period period) {
 
         StringBuilder dateQuery = new StringBuilder();
@@ -98,7 +91,7 @@ class HomeRepositoryImpl implements HomeRepository {
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Program.lastUpdated", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
@@ -121,10 +114,5 @@ class HomeRepositoryImpl implements HomeRepository {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
-    @NonNull
-    @Override
-    public Observable<List<EventModel>> eventModels() {
-        return briteDatabase.createQuery(EventModel.TABLE, EVENT)
-                .mapToList(EventModel::create);
-    }
+
 }
