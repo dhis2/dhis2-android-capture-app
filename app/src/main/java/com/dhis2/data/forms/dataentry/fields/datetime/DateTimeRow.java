@@ -27,7 +27,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     @NonNull
     @Override
-    public DateTimeHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
+    public DateTimeHolder onCreate(@NonNull ViewGroup parent) {
         return new DateTimeHolder(binding);
     }
 

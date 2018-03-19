@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeHolder;
-import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -29,7 +27,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     @NonNull
     @Override
-    public RadioButtonHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
+    public RadioButtonHolder onCreate(@NonNull ViewGroup parent) {
         return new RadioButtonHolder(binding);
     }
 

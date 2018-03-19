@@ -3,16 +3,71 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
+
     </data>
 
-    <EditText
-        android:id="@+id/custom_coordinate_view"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        />
-    <!--app:attribute="@{attribute}"-->
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/latitude"
+            android:theme="@style/dataInputText">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/lat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/longitude"
+            android:theme="@style/dataInputText">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/lon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <ImageButton
+            android:id="@+id/location1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/selector_gray_button_round_7"
+            android:padding="6dp"
+            app:srcCompat="@drawable/ic_my_location" />
+
+        <ImageButton
+            android:id="@+id/location2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/selector_gray_button_round_7"
+            android:padding="6dp"
+            app:srcCompat="@drawable/ic_place" />
+    </LinearLayout>
 
 </layout>
