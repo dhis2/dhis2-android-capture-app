@@ -68,13 +68,6 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Observable<List<ProgramModel>> programs(String fromDate, String toDate) {
-        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES, fromDate, toDate))
-                .mapToList(ProgramModel::create);
-    }
-
-    @NonNull
-    @Override
     public Observable<List<ProgramModel>> programs(List<Date> dates, Period period) {
 
         StringBuilder dateQuery = new StringBuilder();

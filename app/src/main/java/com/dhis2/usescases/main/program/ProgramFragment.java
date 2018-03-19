@@ -278,7 +278,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void addTree(TreeNode treeNode) {
         binding.treeViewContainer.removeAllViews();
-        binding.orgUnitApply.setOnClickListener((View.OnClickListener) view -> apply());
+        binding.orgUnitApply.setOnClickListener(view -> apply());
         treeView = new AndroidTreeView(getContext(), treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
@@ -288,12 +288,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            ArrayList<String> selectedUids = new ArrayList<>();
-            for (TreeNode selectedOrgsTreeNode : treeView.getSelected()) {
-                selectedUids.add(((OrganisationUnitModel) selectedOrgsTreeNode.getValue()).uid());
-            }
-            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected()));
+            ((OrgUnitHolder)node.getViewHolder()).update();
+            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
         });
+
+        binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
     }
 
 
