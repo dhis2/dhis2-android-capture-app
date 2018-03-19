@@ -151,7 +151,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
                 binding.linearLayout.invalidate();
 
-                if (enrollment.followUp())
+
+                if (enrollment.followUp() != null && enrollment.followUp())
                     isFollowUp = true;
             }
 

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -30,7 +31,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailInteractor implements ProgramEventDetailContract.Interactor {
@@ -48,7 +48,8 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     private List<Date> dates;
     private Period period;
 
-    private @LastSearchType int lastSearchType;
+    private @LastSearchType
+    int lastSearchType;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -69,7 +70,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.view = view;
         this.programId = programId;
         getProgram();
-        getOrgUnits();
+        getOrgUnits(null);
         getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
@@ -90,8 +91,13 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     }
 
     @Override
-    public void getOrgUnits() {
+    public void getOrgUnits(Date date) {
         compositeDisposable.add(programEventDetailRepository.orgUnits()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .flatMapIterable(organisationUnitModels -> organisationUnitModels)
+                .filter(orgUnit -> orgUnit.openingDate() != null && orgUnit.closedDate() != null)
+                .filter(orgUnit -> orgUnit.openingDate().compareTo(date) <= 0 && orgUnit.closedDate().compareTo(date) >= 0)
+                .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -116,7 +122,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     @Override
     public void updateFilters(CategoryOptionComboModel categoryOptionComboModel) {
         this.categoryOptionComboModel = categoryOptionComboModel;
-        switch (lastSearchType){
+        switch (lastSearchType) {
             case LastSearchType.DATES:
                 getEvents(programId, this.fromDate, this.toDate);
                 break;
@@ -143,7 +149,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         );
     }
 
-    private void getCatCombo(ProgramModel programModel){
+    private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

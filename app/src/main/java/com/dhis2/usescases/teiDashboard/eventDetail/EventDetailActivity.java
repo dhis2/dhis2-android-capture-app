@@ -100,7 +100,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             editTextBinding.formEdittext.setText(eventDetailModel.getValueForDE(dataValueModel.dataElement()));
 
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setFlexBasisPercent(.5f);
+            params.setFlexBasisPercent(1f);
             binding.dataLayout.addView(editTextBinding.getRoot(), params);
 
             editTextBinding.formEdittext.addTextChangedListener(new TextWatcher() {

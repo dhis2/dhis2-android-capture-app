@@ -176,7 +176,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         for (int i = 0; i < programModels.size(); i++) {
             if(programModels.get(i).uid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
-                initialProgram = null;
             }
         }
     }

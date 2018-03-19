@@ -7,6 +7,8 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 /**
@@ -81,5 +83,10 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void filterOrgUnits(Date date) {
+
     }
 }

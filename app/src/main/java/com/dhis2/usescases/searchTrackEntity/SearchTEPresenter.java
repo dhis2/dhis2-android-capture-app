@@ -52,7 +52,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private String enrollmentDate;
     private String incidentDate;
     private List<ProgramModel> programModels;
-    private HashMap<Long, String> queryData;
+    private HashMap<String, String> queryData;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         Bindings.setMetadataRepository(metadataRepository);
@@ -72,30 +72,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         locationManager = (LocationManager) view.getAbstracContext().getSystemService(Context.LOCATION_SERVICE);
 
         compositeDisposable.add(
-                searchRepository.programsWithRegistration(trackedEntityType)
+                metadataRepository.getTrackedEntity(trackedEntityType)
+                        .switchMap(trackedEntity ->
+                        {
+                            this.trackedEntity = trackedEntity;
+                            getTrakedEntities();
+                            return searchRepository.programsWithRegistration(trackedEntityType);
+                        })
+                        .switchMap(programModels -> {
+                            this.programModels = programModels;
+                            view.setPrograms(programModels);
+                            return searchRepository.programAttributes();
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(programModels -> {
-                                    this.programModels = programModels;
-                                    view.setPrograms(programModels);
-                                },
+                        .subscribe(
+                                data -> view.setForm(data, selectedProgram),
                                 Timber::d)
-        );
-
-        compositeDisposable.add(metadataRepository.getTrackedEntity(trackedEntityType)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                    this.trackedEntity = data;
-                    getTrakedEntities();
-                }));
-
-        compositeDisposable.add(searchRepository.programAttributes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> view.setForm(data, selectedProgram),
-                        Timber::d)
         );
 
         compositeDisposable.add(view.rowActions()
@@ -103,9 +96,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     if (!data.value.isEmpty())
-                        queryData.put(data.id, data.value);
+                        queryData.put(data.uid, data.value);
                     else
-                        queryData.remove(data.id);
+                        queryData.remove(data.uid);
                     getTrakedEntities();
                 })
         );

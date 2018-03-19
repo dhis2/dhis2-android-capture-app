@@ -2,14 +2,16 @@ package com.dhis2.utils;
 
 import android.support.annotation.NonNull;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * Created by ppajuelo on 16/01/2018.
- *
  */
 
 public class DateUtils {
@@ -197,12 +199,21 @@ public class DateUtils {
         return calendar;
     }
 
-
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date dueDate){
+    public boolean hasExpired(@NonNull Date dueDate) {
         return dueDate.before(getToday());
     }
 
+    public Date toDate(String date) {
+
+        try {
+            return databaseDateFormat().parse(date);
+
+        } catch (ParseException e) {
+            Timber.e(e);
+            return null;
+        }
+    }
 }

@@ -105,116 +105,128 @@
                     app:srcCompat="@drawable/ic_edit" />
             </RelativeLayout>
 
-
-            <LinearLayout
-                android:id="@+id/program_description"
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/icon_container">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="?colorPrimary"
-                    app:programStage='@{event.programStage()}'/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    app:programStageDescription='@{event.programStage()}'/>
-
-            </LinearLayout>
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/event_data_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:alignContent="stretch"
-                app:alignItems="stretch"
-                app:flexWrap="wrap"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/program_description">
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/event_date"
-                    android:theme="@style/dataInputText"
-                    app:layout_flexBasisPercent="50%">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/event_date"
+                    <LinearLayout
+                        android:id="@+id/program_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:inputType="date"
-                        android:text="@{event.eventDate().toLocaleString()}" />
-                </android.support.design.widget.TextInputLayout>
+                        android:orientation="vertical"
+                        android:padding="10dp"
+                        app:layout_constraintTop_toBottomOf="@id/icon_container">
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/due_date"
-                    android:theme="@style/dataInputText"
-                    app:layout_flexBasisPercent="50%">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?colorPrimary"
+                            android:textSize="14sp"
+                            app:programStage='@{event.programStage()}' />
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/due_date"
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            app:programStageDescription='@{event.programStage()}' />
+
+                    </LinearLayout>
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/event_data_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="date"
-                        android:text="@{event.dueDate().toLocaleString()}" />
-                </android.support.design.widget.TextInputLayout>
+                        app:alignContent="stretch"
+                        app:alignItems="stretch"
+                        app:flexWrap="wrap"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/program_description">
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/cat_combo"
-                    android:theme="@style/dataInputText"
-                    app:layout_flexBasisPercent="50%">
 
-                    <EditText
-                        android:id="@+id/category_combo"
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/event_date"
+                            android:theme="@style/dataInputText"
+                            app:layout_flexBasisPercent="50%">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/event_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"
+                                android:inputType="date"
+                                android:text="@{event.eventDate().toLocaleString()}" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/due_date"
+                            android:theme="@style/dataInputText"
+                            app:layout_flexBasisPercent="50%">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/due_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="date"
+                                android:text="@{event.dueDate().toLocaleString()}" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/cat_combo"
+                            android:theme="@style/dataInputText"
+                            app:layout_flexBasisPercent="50%">
+
+
+                            <EditText
+                                android:id="@+id/category_combo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="date" />
+                        </android.support.design.widget.TextInputLayout>
+
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/org_unit"
+                            android:theme="@style/dataInputText"
+                            app:layout_flexBasisPercent="50%">
+
+                            <EditText
+                                android:id="@+id/org_unit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="date"
+                                android:text="@{event.organisationUnit()}" />
+                        </android.support.design.widget.TextInputLayout>
+                    </com.google.android.flexbox.FlexboxLayout>
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/data_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="date" />
-                </android.support.design.widget.TextInputLayout>
+                        android:layout_marginBottom="20dp"
+                        app:alignContent="stretch"
+                        app:alignItems="stretch"
+                        app:flexWrap="wrap" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/org_unit"
-                    android:theme="@style/dataInputText"
-                    app:layout_flexBasisPercent="50%">
+                </LinearLayout>
 
-                    <EditText
-                        android:id="@+id/org_unit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="date"
-                        android:text="@{event.organisationUnit()}" />
-                </android.support.design.widget.TextInputLayout>
-            </com.google.android.flexbox.FlexboxLayout>
-
+            </ScrollView>
 
         </android.support.constraint.ConstraintLayout>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/data_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:alignContent="stretch"
-                app:alignItems="stretch"
-                app:flexWrap="wrap" />
-        </ScrollView>
     </LinearLayout>
 </layout>
