@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.databinding.ViewDataBinding;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.widget.EditText;
@@ -46,6 +47,30 @@ public class EditTextCustomHolder extends FormViewHolder {
     public EditTextCustomHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.processor = processor;
+
+        model = BehaviorProcessor.create();
+
+        model.subscribe(editTextModel -> {
+            editText.setTextColor(Color.BLACK);
+            editText.setHintTextColor(Color.BLUE);
+            editText.setText(editTextModel.value() == null ?
+                    null : valueOf(editTextModel.value()));
+            if (!isEmpty(editTextModel.warning())) {
+                editText.setError(editTextModel.warning());
+            } else if (!isEmpty(editTextModel.error())) {
+                editText.setError(editTextModel.error());
+            } else
+                editText.setError(null);
+
+            editText.setHint(isEmpty(editText.getText()) ? editTextModel.hint() : "");
+        });
+
+        if (binding instanceof FormAgeCustomBinding) {
+            modelFormAge((FormAgeCustomBinding) binding);
+
+        } else {
+            modelFormEditText((FormEditTextCustomBinding) binding);
+        }
     }
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
@@ -54,14 +79,7 @@ public class EditTextCustomHolder extends FormViewHolder {
         binding.setVariable(BR.attribute, bindableObject);
         binding.executePendingBindings();
 
-        model = BehaviorProcessor.create();
 
-        if (binding instanceof FormAgeCustomBinding) {
-            modelFormAge((FormAgeCustomBinding) binding);
-
-        } else {
-            modelFormEditText((FormEditTextCustomBinding) binding);
-        }
     }
 
     private void modelFormEditText(FormEditTextCustomBinding binding) {
@@ -84,10 +102,6 @@ public class EditTextCustomHolder extends FormViewHolder {
             }
         });
 
-        model.subscribe(editTextModel -> {
-           editText.setText(editTextModel.value() == null ?
-                    null : valueOf(editTextModel.value()));
-        });
 
         ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(binding.customEdittext).takeUntil(RxView.detaches(binding.getRoot())).publish();
 

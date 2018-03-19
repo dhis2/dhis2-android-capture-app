@@ -21,7 +21,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public CoordinateRow(FlowableProcessor<RowAction> processor) {
+    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
         this.processor = processor;
 
     }

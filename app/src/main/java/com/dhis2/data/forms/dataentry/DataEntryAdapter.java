@@ -57,16 +57,16 @@ final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
-        rows.add(EDITTEXT, new EditTextRow(processor));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor));
         rows.add(BUTTON, new FileRow());
-        rows.add(CHECKBOX, new RadioButtonRow(processor));
-        rows.add(SPINNER, new SpinnerRow(processor));
-        rows.add(COORDINATES, new CoordinateRow(processor));
-        rows.add(TIME, new DateTimeRow(processor));
-        rows.add(DATE, new DateTimeRow(processor));
-        rows.add(DATETIME, new DateTimeRow(processor));
-        rows.add(AGEVIEW, new EditTextRow(processor));
-        rows.add(YES_NO, new RadioButtonRow(processor));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor));
+        rows.add(AGEVIEW, new EditTextRow(layoutInflater, processor));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor));
     }
 
     @Override

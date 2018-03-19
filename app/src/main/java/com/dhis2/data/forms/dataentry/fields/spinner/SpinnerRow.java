@@ -23,7 +23,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public SpinnerRow(FlowableProcessor<RowAction> processor) {
+    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
         this.processor = processor;
     }
 
