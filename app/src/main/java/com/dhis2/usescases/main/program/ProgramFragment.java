@@ -288,8 +288,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
+            if(treeView.getSelected().size()>1){
             ((OrgUnitHolder)node.getViewHolder()).update();
-            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));}
         });
 
         binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
