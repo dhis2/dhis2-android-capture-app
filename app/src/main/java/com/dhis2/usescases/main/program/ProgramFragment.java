@@ -55,6 +55,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     ProgramContract.Presenter presenter;
 
     private Period currentPeriod = DAILY;
+    StringBuilder orgUnitFilter = new StringBuilder();
 
     private AndroidTreeView treeView;
 
@@ -133,20 +134,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     switch (currentPeriod){
                     case WEEKLY:
                         text = weeklyFormat.format(date.get(0)) + ", " + yearFormat.format(date.get(0));
-                        chosenDateWeek.clear();
-                        chosenDateWeek.add(date.get(0));
+                        chosenDateWeek=date;
                         break;
                     case MONTHLY:
                         text = monthFormat.format(date.get(0));
-                        chosenDateMonth.clear();
-                        chosenDateMonth.add(date.get(0));
-
+                        chosenDateMonth= date;
                         break;
                     case YEARLY:
                         text =  yearFormat.format(date.get(0));
-                        chosenDateYear.clear();
-                        chosenDateYear.add(date.get(0));
-
+                        chosenDateYear=date;
                         break;
                     }
                     binding.buttonPeriodText.setText(text);
@@ -285,7 +281,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void apply() {
         binding.drawerLayout.closeDrawers();
-        StringBuilder orgUnitFilter = new StringBuilder();
+
         for (int i = 0; i < treeView.getSelected().size(); i++) {
             orgUnitFilter.append("'");
             orgUnitFilter.append(((OrganisationUnitModel) treeView.getSelected().get(i).getValue()).uid());
