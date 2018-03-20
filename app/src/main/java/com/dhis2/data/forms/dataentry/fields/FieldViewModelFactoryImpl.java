@@ -3,6 +3,7 @@ package com.dhis2.data.forms.dataentry.fields;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -75,8 +76,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
 
         switch (type) {
-           /* case AGE:
-                return AGEVIEW;*/
+           case AGE:
+                return AgeViewModel.create(id, label, mandatory, value);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -94,14 +95,14 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, value);
+                return DateTimeViewModel.create(id, label, mandatory, type, value);
             case FILE_RESOURCE:
                 return FileViewModel.create(id, label, mandatory, value);
             case COORDINATE:
                 return CoordinateViewModel.create(id, label, mandatory, value);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, mandatory, value);
+                return RadioButtonViewModel.fromRawValue(id, label, type,  mandatory, value);
             case TRACKER_ASSOCIATE:
             case ORGANISATION_UNIT:
             case URL:
@@ -130,17 +131,17 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         return OptionsViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
     }*/
 
-    @NonNull
+    /*@NonNull
     private EditTextViewModel createText(@NonNull String id, @NonNull String label,
-                                         @NonNull Boolean mandatory, @Nullable String value) {
-        return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
+                                         @NonNull Boolean mandatory, @Nullable String value, @NonNull ValueType type) {
+        return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, type, 1);
     }
 
     @NonNull
     private EditTextViewModel createLongText(@NonNull String id, @NonNull String label,
-                                             @NonNull Boolean mandatory, @Nullable String value) {
-        return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
-    }
+                                             @NonNull Boolean mandatory, @Nullable String value, @NonNull ValueType type) {
+        return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, type, 3);
+    }*/
 
     /*@NonNull
     private EditTextDoubleViewModel createNumber(@NonNull String id, @NonNull String label,
