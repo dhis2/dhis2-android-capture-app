@@ -2,24 +2,19 @@ package com.dhis2.usescases.programDetailTablet;
 
 import android.os.Bundle;
 
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
-import java.util.Date;
-
-import javax.inject.Inject;
-
 /**
  * Created by ppajuelo on 31/10/2017.
+ *
  */
 
 public class ProgramDetailPresenter implements ProgramDetailContractModule.Presenter {
 
     private ProgramDetailContractModule.View view;
     private final ProgramDetailContractModule.Interactor interactor;
-    private String programId;
     public ProgramModel program;
 
     ProgramDetailPresenter(ProgramDetailContractModule.Interactor interactor) {
@@ -28,7 +23,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     @Override
     public void init(ProgramDetailContractModule.View mview, String programId) {
-        this.programId = programId;
         this.view = mview;
         interactor.init(view, programId);
     }
@@ -83,10 +77,5 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     @Override
     public void onDettach() {
         interactor.onDettach();
-    }
-
-    @Override
-    public void filterOrgUnits(Date date) {
-
     }
 }

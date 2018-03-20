@@ -2,6 +2,7 @@ package com.dhis2.data.forms.dataentry.fields.datetime;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.fields.Row;
@@ -21,13 +22,13 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public DateTimeRow(@NonNull FlowableProcessor<RowAction> processor) {
+    public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor) {
         this.processor = processor;
     }
 
     @NonNull
     @Override
-    public DateTimeHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
+    public DateTimeHolder onCreate(@NonNull ViewGroup parent) {
         return new DateTimeHolder(binding);
     }
 

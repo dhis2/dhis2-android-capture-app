@@ -58,6 +58,8 @@ public class EventInitialContract {
         void onLocation2Click();
 
         void getCatOption(String categoryOptionComboId);
+
+        void filterOrgUnits(String date);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -67,5 +69,7 @@ public class EventInitialContract {
         void getOrgUnits();
 
         void getCatOption(String categoryOptionComboId);
+
+        void getFilteredOrgUnits(String date);
     }
 }

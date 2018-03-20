@@ -1,6 +1,5 @@
 package com.dhis2.data.forms.dataentry;
 
-import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.util.DiffUtil;
@@ -9,14 +8,20 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
+import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.file.FileRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
-import com.dhis2.databinding.FormEditTextCustomBinding;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,22 +57,21 @@ final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
-        rows.add(EDITTEXT, new EditTextRow(processor));
-        rows.add(BUTTON, new EditTextRow(processor));
-        rows.add(CHECKBOX, new EditTextRow(processor));
-        rows.add(SPINNER, new SpinnerRow(processor));
-        rows.add(COORDINATES, new EditTextRow(processor));
-        rows.add(TIME, new DateTimeRow(processor));
-        rows.add(DATE, new DateTimeRow(processor));
-        rows.add(DATETIME, new DateTimeRow(processor));
-        rows.add(AGEVIEW, new EditTextRow(processor));
-        rows.add(YES_NO, new EditTextRow(processor));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor));
+        rows.add(BUTTON, new FileRow());
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor));
+        rows.add(AGEVIEW, new EditTextRow(layoutInflater, processor));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor));
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        FormEditTextCustomBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_edit_text_custom, parent, false);
-        return rows.get(viewType).onCreate(binding, parent);
+        return rows.get(viewType).onCreate(parent);
     }
 
     @Override
@@ -86,27 +90,30 @@ final class DataEntryAdapter extends Adapter {
 //        return super.getItemViewType(position);
         //TODO: CHECK VIEWMODELS
         FieldViewModel viewModel = viewModels.get(position);
-        return EDITTEXT;
-       /* if (viewModel instanceof EditTextModel) {
+        if (viewModel instanceof EditTextModel) {
             return EDITTEXT;
-        } else
-            return super.getItemViewType(position);*/
-       /* if (viewModel instanceof CheckBoxViewModel) {
-            return ROW_CHECKBOX;
-        } else if (viewModel instanceof EditTextModel) {
-            return ROW_EDITTEXT;
+       /* } else if (viewModel instanceof CheckBoxViewModel) {
+            return BUTTON;*/
         } else if (viewModel instanceof RadioButtonViewModel) {
-            return ROW_RADIO_BUTTONS;
-        } else if (viewModel instanceof TextViewModel) {
-            return ROW_TEXT;
-        } else if (viewModel instanceof OptionsViewModel) {
-            return ROW_OPTIONS;
+            return CHECKBOX;
+        } else if (viewModel instanceof SpinnerViewModel) {
+            return SPINNER;
+        } else if (viewModel instanceof CoordinateViewModel) {
+            return COORDINATES;
+       /* } else if (viewModel instanceof OptionsViewModel) {
+            return TIME;
         } else if (viewModel instanceof DateViewModel) {
-            return ROW_DATE;
+            return DATE;*/
+        } else if (viewModel instanceof DateTimeViewModel) {
+            return DATETIME;
+      /*  } else if (viewModel instanceof DateViewModel) {
+            return AGEVIEW;
+        } else if (viewModel instanceof YesNoView) {
+            return YES_NO;*/
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
-        }*/
+        }
     }
 
     @Override

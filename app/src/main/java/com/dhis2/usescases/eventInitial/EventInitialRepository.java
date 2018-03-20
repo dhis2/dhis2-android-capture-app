@@ -25,4 +25,7 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date);
 }

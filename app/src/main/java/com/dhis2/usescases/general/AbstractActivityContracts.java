@@ -40,8 +40,6 @@ public class AbstractActivityContracts {
 
     public interface Presenter {
         void onDettach();
-
-        void filterOrgUnits(Date date);
     }
 
     public interface Interactor {

@@ -39,9 +39,11 @@
                 android:layout_below="@id/program_image"
                 android:layout_marginStart="7.8dp"
                 android:layout_marginTop="5.4dp"
-                android:text="@{program.shortName(), default=name}"
+                android:lines="2"
+                android:text="@{program.shortName()}"
                 android:textColor="@color/gray_666"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                tools:text="dasfasdadgfg\n" />
 
             <TextView
                 android:id="@+id/events_number"
@@ -49,11 +51,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/program_name"
                 android:layout_marginStart="7.8dp"
-                android:textColor="@color/gray_9b9"
                 android:layout_marginTop="5.4dp"
                 android:gravity="bottom"
+                android:textColor="@color/gray_9b9"
                 android:textSize="14sp"
-                app:numberOfEvents="@{presenter.getEvents(program)}"/>
+                app:numberOfEvents="@{presenter.getEvents(program)}"
+                tools:text="15 events" />
 
             <TextView
                 android:id="@+id/program_last_date"
@@ -61,11 +64,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/events_number"
                 android:layout_marginStart="7.8dp"
-                android:textColor="@color/gray_9b9"
                 android:layout_marginTop="5.4dp"
                 android:gravity="bottom"
+                android:textColor="@color/gray_9b9"
                 android:textSize="14sp"
-                app:lastEventDate="@{presenter.getEvents(program)}" />
+                app:lastEventDate="@{presenter.getEvents(program)}"
+                tools:text="yyyy-mm-dd" />
 
         </RelativeLayout>
 
