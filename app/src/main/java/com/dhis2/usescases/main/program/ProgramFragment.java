@@ -288,9 +288,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if(treeView.getSelected().size()>1){
-            ((OrgUnitHolder)node.getViewHolder()).update();
-            binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));}
+            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
+                ((OrgUnitHolder) node.getViewHolder()).update();
+                binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+            }else if(treeView.getSelected().size()>1){
+                ((OrgUnitHolder) node.getViewHolder()).update();
+                binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+            }
         });
 
         binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
@@ -316,22 +320,22 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         }
 
 
-            switch (currentPeriod){
-                case DAILY:
-                    ArrayList<Date> datesD = new ArrayList<>();
-                    datesD.add(chosenDateDay);
-                    getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case WEEKLY:
-                    getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case MONTHLY:
-                    getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
-                    break;
-                case YEARLY:
-                    getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
-                    break;
-            }
+        switch (currentPeriod) {
+            case DAILY:
+                ArrayList<Date> datesD = new ArrayList<>();
+                datesD.add(chosenDateDay);
+                getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
+                break;
+            case WEEKLY:
+                getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                break;
+            case MONTHLY:
+                getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                break;
+            case YEARLY:
+                getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                break;
+        }
 
 
 

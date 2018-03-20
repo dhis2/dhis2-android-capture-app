@@ -5,17 +5,20 @@
     <data>
 
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+            name="valueType"
+            type="org.hisp.dhis.android.core.common.ValueType" />
+
+        <variable
+            name="label"
+            type="java.lang.String"/>
 
     </data>
 
     <com.dhis2.utils.CustomViews.CustomTextView
         android:id="@+id/custom_edittext"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        app:attribute="@{ attribute }"
-        app:valueType="@{ attribute.valueType }"
-        />
+        android:layout_height="wrap_content"
+        app:label="@{ label }"
+        app:valueType="@{ valueType }" />
 
 </layout>

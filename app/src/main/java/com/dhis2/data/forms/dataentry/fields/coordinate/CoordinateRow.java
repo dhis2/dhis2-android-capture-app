@@ -20,23 +20,26 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    @NonNull
+    private final LayoutInflater inflater;
 
-    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
+    public CoordinateRow(@NonNull LayoutInflater layoutInflater,
+                         @NonNull FlowableProcessor<RowAction> processor) {
+        this.inflater = layoutInflater;
         this.processor = processor;
-
     }
 
     @NonNull
     @Override
     public CoordinateHolder onCreate(@NonNull ViewGroup parent) {
-        FormCoordinatesBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+        FormCoordinatesBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_coordinates, parent, false);
-        return new CoordinateHolder(binding);
+        return new CoordinateHolder(binding, processor);
     }
 
     @Override
     public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 }

@@ -1,10 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
-import android.databinding.ViewDataBinding;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.text.Editable;
-import android.widget.EditText;
 
 import com.dhis2.BR;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
@@ -15,7 +12,6 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Preconditions;
-import com.dhis2.utils.TextChangedListener;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -38,39 +34,42 @@ public class EditTextCustomHolder extends FormViewHolder {
     private final FlowableProcessor<RowAction> processor;
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableObject;
-
-    EditText editText;
-
+    private final FormEditTextCustomBinding binding;
     @NonNull
     BehaviorProcessor<EditTextModel> model;
 
-    public EditTextCustomHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+    public EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.processor = processor;
-
+        this.binding = binding;
         model = BehaviorProcessor.create();
 
         model.subscribe(editTextModel -> {
-            editText.setTextColor(Color.BLACK);
-            editText.setHintTextColor(Color.BLUE);
-            editText.setText(editTextModel.value() == null ?
+            binding.setLabel(editTextModel.label());
+            binding.setValueType(editTextModel.valueType());
+            binding.customEdittext.getEditText().setTextColor(Color.BLACK);
+            binding.customEdittext.getEditText().setHintTextColor(Color.BLUE);
+            binding.customEdittext.getEditText().setText(editTextModel.value() == null ?
                     null : valueOf(editTextModel.value()));
             if (!isEmpty(editTextModel.warning())) {
-                editText.setError(editTextModel.warning());
+                binding.customEdittext.getEditText().setError(editTextModel.warning());
             } else if (!isEmpty(editTextModel.error())) {
-                editText.setError(editTextModel.error());
+                binding.customEdittext.getEditText().setError(editTextModel.error());
             } else
-                editText.setError(null);
+                binding.customEdittext.getEditText().setError(null);
 
-            editText.setHint(isEmpty(editText.getText()) ? editTextModel.hint() : "");
+            binding.customEdittext.getEditText().setHint(isEmpty(binding.customEdittext.getEditText().getText()) ? editTextModel.label() : "");
+
+            binding.executePendingBindings();
         });
 
-        if (binding instanceof FormAgeCustomBinding) {
+       /* if (binding instanceof FormAgeCustomBinding) {
             modelFormAge((FormAgeCustomBinding) binding);
 
-        } else {
-            modelFormEditText((FormEditTextCustomBinding) binding);
-        }
+        } else {*/
+        modelFormEditText(binding);
+
+
     }
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
@@ -78,32 +77,11 @@ public class EditTextCustomHolder extends FormViewHolder {
         this.bindableObject = bindableObject;
         binding.setVariable(BR.attribute, bindableObject);
         binding.executePendingBindings();
-
-
     }
 
     private void modelFormEditText(FormEditTextCustomBinding binding) {
 
-        editText = binding.customEdittext.getEditText();
-        binding.customEdittext.setTextChangedListener(new TextChangedListener() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true); //Searchs for attributes which contains charSequece in its value
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-
-        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(binding.customEdittext).takeUntil(RxView.detaches(binding.getRoot())).publish();
+        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(binding.customEdittext.getEditText()).takeUntil(RxView.detaches(binding.getRoot())).publish();
 
         // persist value on focus change
         editTextObservable
@@ -112,7 +90,7 @@ public class EditTextCustomHolder extends FormViewHolder {
                 .filter(state -> state.val0() && model.hasValue())
                 .filter(valueHasChangedPredicate())
                 .map(event -> RowAction.create(model.getValue().uid(),
-                        editText.getText().toString()))
+                        binding.customEdittext.getEditText().getText().toString()))
                 .subscribe(action -> processor.onNext(action), OnErrorHandler.create(), () -> {
                     // this is necessary for persisting last value in the form
                     if (valueHasChanged()) {
@@ -125,22 +103,7 @@ public class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void modelFormAge(FormAgeCustomBinding binding) {
-        binding.customAgeview.setTextChangedListener(new TextChangedListener() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
     }
 
     @NonNull
@@ -150,7 +113,7 @@ public class EditTextCustomHolder extends FormViewHolder {
 
     @NonNull
     private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
+        return !Preconditions.equals(isEmpty(binding.customEdittext.getEditText().getText()) ? "" : binding.customEdittext.getEditText().getText().toString(),
                 model.getValue().value() == null ? "" : valueOf(model.getValue().value()));
     }
 

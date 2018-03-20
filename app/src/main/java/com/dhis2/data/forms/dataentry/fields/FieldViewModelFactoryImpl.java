@@ -90,7 +90,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
             case TIME:
             case DATE:
             case DATETIME:
@@ -106,7 +106,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case ORGANISATION_UNIT:
             case URL:
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
         }
 
 
@@ -130,7 +130,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         return OptionsViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
     }*/
 
-    @NonNull
+    /*@NonNull
     private EditTextViewModel createText(@NonNull String id, @NonNull String label,
                                          @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
@@ -140,7 +140,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private EditTextViewModel createLongText(@NonNull String id, @NonNull String label,
                                              @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
-    }
+    }*/
 
     /*@NonNull
     private EditTextDoubleViewModel createNumber(@NonNull String id, @NonNull String label,

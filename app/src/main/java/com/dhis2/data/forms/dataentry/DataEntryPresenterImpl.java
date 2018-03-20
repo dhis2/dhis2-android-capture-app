@@ -143,7 +143,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
-                            ((EditTextViewModel) model).withWarning(showError.content()));
+                            ((EditTextViewModel) model).withError(showError.content()));
                 } /*else if (model != null && model instanceof EditTextDoubleViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextDoubleViewModel) model).withWarning(showError.content()));

@@ -53,8 +53,9 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
         editText.addTextChangedListener(this);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute) {
-        binding.setAttribute(attribute);
+    public void setLabel(String label) {
+        binding.setLabel(label);
+        binding.executePendingBindings();
     }
 
     public void setTextChangedListener(TextChangedListener listener) {
