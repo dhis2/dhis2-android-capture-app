@@ -1,12 +1,15 @@
 package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
+import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.databinding.YesNoViewBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -29,6 +32,8 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     @NonNull
     @Override
     public RadioButtonHolder onCreate(@NonNull ViewGroup parent) {
+        YesNoViewBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                R.layout.form_yes_no, parent, false);
         return new RadioButtonHolder(binding);
     }
 
