@@ -10,7 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import com.dhis2.usescases.eventInitial.EventInitialPresenter;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;

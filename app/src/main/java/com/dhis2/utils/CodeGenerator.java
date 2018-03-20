@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 /**
  * Created by ppajuelo on 09/01/2018.
+ *
  */
 
 public interface CodeGenerator {

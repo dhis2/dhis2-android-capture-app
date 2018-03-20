@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventInitial;
+package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.support.annotation.NonNull;
 
@@ -6,6 +6,7 @@ import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -40,8 +41,8 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new EventInitialRepositoryImpl(briteDatabase);
+    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase);
     }
 
     @Provides

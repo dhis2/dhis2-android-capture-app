@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventInitial;
+package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -133,6 +133,40 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         this::renderTree,
+                        throwable -> view.renderError(throwable.getMessage())
+
+                ));
+    }
+
+    @Override
+    public void createNewEvent(String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+        compositeDisposable.add(eventInitialRepository.programStage(programUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (programStageModel) ->
+                            compositeDisposable.add(eventInitialRepository.createEvent(view.getContext(), programUid, programStageModel.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            (eventModel) -> view.onEventCreated(eventModel.uid()),
+                                            throwable -> view.renderError(throwable.getMessage())
+
+                                    ))
+                        ,
+                        throwable -> view.renderError(throwable.getMessage())
+
+                ));
+    }
+
+
+    @Override
+    public void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
+        compositeDisposable.add(eventInitialRepository.editEvent(eventUid, date, orgUnitUid, catComboUid, latitude, longitude)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (eventModel) -> view.onEventCreated(eventModel.uid()),
                         throwable -> view.renderError(throwable.getMessage())
 
                 ));
