@@ -36,7 +36,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @Override
     public void onBind(@NonNull SpinnerHolder viewHolder, @NonNull SpinnerViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 }

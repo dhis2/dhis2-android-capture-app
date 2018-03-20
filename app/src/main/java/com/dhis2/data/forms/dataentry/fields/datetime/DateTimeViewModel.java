@@ -19,9 +19,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 public abstract class DateTimeViewModel extends FieldViewModel {
 
     @NonNull
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value) {
-        return null;
-    @NonNull
     public abstract Boolean mandatory();
 
     @Nullable

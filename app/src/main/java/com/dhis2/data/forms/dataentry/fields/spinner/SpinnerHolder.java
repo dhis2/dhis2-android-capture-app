@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.databinding.ViewDataBinding;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -8,6 +9,7 @@ import com.dhis2.BR;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormSpinnerBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
@@ -17,6 +19,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -29,8 +33,16 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableOnject;
 
-    public SpinnerHolder(ViewDataBinding binding) {
+    private final FlowableProcessor<RowAction> processor;
+    @NonNull
+    private BehaviorProcessor<SpinnerViewModel> model;
+
+    public SpinnerHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        this.processor = processor;
+
+        model = BehaviorProcessor.create();
+
     }
 
     @Override
@@ -71,5 +83,9 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
+    }
+
+    public void update(SpinnerViewModel viewModel) {
+        model.onNext(viewModel);
     }
 }

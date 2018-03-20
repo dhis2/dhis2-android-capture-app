@@ -36,7 +36,7 @@ public class EditTextCustomHolder extends FormViewHolder {
     TrackedEntityAttributeModel bindableObject;
     private final FormEditTextCustomBinding binding;
     @NonNull
-    BehaviorProcessor<EditTextModel> model;
+    private BehaviorProcessor<EditTextModel> model;
 
     public EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
@@ -91,7 +91,7 @@ public class EditTextCustomHolder extends FormViewHolder {
                 .filter(valueHasChangedPredicate())
                 .map(event -> RowAction.create(model.getValue().uid(),
                         binding.customEdittext.getEditText().getText().toString()))
-                .subscribe(action -> processor.onNext(action), OnErrorHandler.create(), () -> {
+                .subscribe(processor::onNext, OnErrorHandler.create(), () -> {
                     // this is necessary for persisting last value in the form
                     if (valueHasChanged()) {
                         processor.onNext(RowAction.create(model.getValue().uid(),
