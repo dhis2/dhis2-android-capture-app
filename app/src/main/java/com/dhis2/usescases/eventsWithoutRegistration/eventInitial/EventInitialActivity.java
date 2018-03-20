@@ -1,6 +1,7 @@
-package com.dhis2.usescases.eventInitial.tablet;
+package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -17,11 +18,12 @@ import android.widget.DatePicker;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
-import com.dhis2.usescases.eventInitial.EventInitialContract;
-import com.dhis2.usescases.eventInitial.EventInitialModule;
-import com.dhis2.usescases.eventInitial.EventInitialPresenter;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
+import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -43,7 +45,9 @@ import javax.inject.Inject;
  *
  */
 
-public class EventInitialTabletActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener {
+public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
+
+    private static final int PROGRESS_TIME = 2000;
 
     @Inject
     EventInitialContract.Presenter presenter;
@@ -55,10 +59,13 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
     private String selectedDate;
     private String selectedOrgUnit;
-    private CategoryOptionComboModel selectedCatOption;
+    private CategoryOptionComboModel selectedCatOptionCombo;
+    private CategoryComboModel selectedCatCombo;
     private String selectedLat;
     private String selectedLon;
     private List<CategoryOptionComboModel> categoryOptionComboModels;
+    private int completionPercent;
+    private String eventId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,8 +73,8 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         String programId = getIntent().getStringExtra("PROGRAM_UID");
         isNewEvent = getIntent().getBooleanExtra("NEW_EVENT", true);
-        String eventId = getIntent().getStringExtra("EVENT_UID");
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial_tablet);
+        eventId = getIntent().getStringExtra("EVENT_UID");
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
         binding.setPresenter(presenter);
         binding.setIsNewEvent(isNewEvent);
         binding.date.clearFocus();
@@ -97,7 +104,6 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedOrgUnit = s.toString();
                 checkActionButtonVisibility();
             }
 
@@ -140,6 +146,47 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
             }
         });
+
+        initProgressBar();
+
+        if (isNewEvent){
+            binding.actionButton.setText(R.string.create);
+        }
+        else {
+            binding.actionButton.setText(R.string.update);
+        }
+
+        binding.actionButton.setOnClickListener(v -> {
+            if (isNewEvent){
+                presenter.createEvent(selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+            }
+            else {
+                presenter.editEvent(eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+            }
+        });
+    }
+
+    private void initProgressBar(){
+        if (isNewEvent){
+            binding.progressGains.setVisibility(View.GONE);
+            binding.progress.setVisibility(View.GONE);
+        }
+        else {
+            binding.progressGains.setVisibility(View.VISIBLE);
+            binding.progress.setVisibility(View.VISIBLE);
+            //TODO CRIS: GET REAL PERCENTAGE HERE
+            completionPercent = 44;
+            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
+            gainAnim.setDuration(PROGRESS_TIME);
+            binding.progressGains.setAnimation(gainAnim);
+        }
+    }
+
+    @Override
+    public void onUpdate(boolean lost, float interpolatedTime) {
+        int progress = (int)(completionPercent * interpolatedTime);
+        String text = String.valueOf(progress) + "%";
+        binding.progress.setText(text);
     }
 
     private void checkActionButtonVisibility(){
@@ -152,7 +199,7 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
     }
 
     private boolean isFormCompleted(){
-        return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatOption != null;
+        return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null;
     }
 
     private boolean isCompleted(String field){
@@ -164,9 +211,9 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
         presenter.setProgram(program);
         String activityTitle = isNewEvent ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         binding.setName(activityTitle);
-        binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialTabletActivity.this));
+        binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
         binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-        binding.location2.setOnClickListener(v -> presenter.onLocationClick());
+        binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
     }
 
     @Override
@@ -185,12 +232,11 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
-
         binding.treeViewContainer.addView(treeView.getView());
         treeView.expandAll();
 
-        treeView.setDefaultNodeLongClickListener((node, value) -> {
-            node.setSelected(!node.isSelected());
+        treeView.setDefaultNodeClickListener((node, value) -> {
+            treeView.selectNode(node, node.isSelected());
             ArrayList<String> childIds = new ArrayList<>();
             childIds.add(((OrganisationUnitModel) value).uid());
             for (TreeNode childNode : node.getChildren()) {
@@ -204,8 +250,17 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
             }
             binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
             binding.drawerLayout.closeDrawers();
-            return true;
         });
+
+        if (treeView.getSelected() != null && !treeView.getSelected().isEmpty()) {
+            binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
+            selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
+        }
+        else {
+            selectedOrgUnit = null;
+            binding.orgUnit.setText(getString(R.string.org_unit));
+        }
+
     }
 
     @Override
@@ -216,10 +271,10 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatOption(CategoryOptionComboModel categoryOptionComboModel) {
-        if (categoryOptionComboModels != null){
-            for (int i=0; i< categoryOptionComboModels.size(); i++){
-                if (categoryOptionComboModels.get(i).uid().equals(categoryOptionComboModel.uid())){
-                    binding.catCombo.setSelection(i+1);
+        if (categoryOptionComboModels != null) {
+            for (int i = 0; i < categoryOptionComboModels.size(); i++) {
+                if (categoryOptionComboModels.get(i).uid().equals(categoryOptionComboModel.uid())) {
+                    binding.catCombo.setSelection(i + 1);
                 }
             }
         }
@@ -229,6 +284,14 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
     public void setLocation(double latitude, double longitude) {
         binding.lat.setText(String.valueOf(latitude));
         binding.lon.setText(String.valueOf(longitude));
+        checkActionButtonVisibility();
+    }
+
+    @Override
+    public void onEventCreated(String eventUid) {
+        Bundle bundle = new Bundle();
+        bundle.putString("EVENT_UID", eventUid);
+        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
     }
 
 
@@ -244,6 +307,21 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
+
+        selectedCatCombo = catCombo;
+
+        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+            binding.catCombo.setVisibility(View.GONE);
+            binding.catComboLine.setVisibility(View.GONE);
+            if (catComboList != null && !catComboList.isEmpty()) {
+                selectedCatOptionCombo = catComboList.get(0);
+            }
+        }
+        else {
+            binding.catCombo.setVisibility(View.VISIBLE);
+            binding.catComboLine.setVisibility(View.VISIBLE);
+        }
+
         categoryOptionComboModels = catComboList;
 
         CatComboAdapter2 adapter = new CatComboAdapter2(this,
@@ -257,9 +335,9 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (catComboList.size() > position - 1 && position > 0)
-                    selectedCatOption = catComboList.get(position-1);
+                    selectedCatOptionCombo = catComboList.get(position - 1);
                 else
-                    selectedCatOption = null;
+                    selectedCatOptionCombo = null;
                 checkActionButtonVisibility();
             }
 
@@ -269,7 +347,6 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
             }
         });
 
-        //TODO CRIS: CON QUE SE PUEBLA ESTE SPINNER?
         presenter.getCatOption(eventModel.attributeOptionCombo());
     }
 
@@ -285,6 +362,8 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
+        binding.orgUnit.setText("");
+        presenter.filterOrgUnits(date);
     }
 
     @Override
@@ -298,6 +377,13 @@ public class EventInitialTabletActivity extends ActivityGlobalAbstract implement
                     // TODO CRIS
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+            setLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
         }
     }
 }

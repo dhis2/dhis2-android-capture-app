@@ -48,13 +48,10 @@
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
+        <activity android:name=".usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity" />
         <activity
-            android:name=".usescases.eventInitial.EventInitialActivity"
+            android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden"/>
-        <activity
-            android:name=".usescases.eventInitial.tablet.EventInitialTabletActivity"
-            android:windowSoftInputMode="stateHidden"/>
-
         <service
             android:name=".data.service.SyncService"
             android:enabled="true"

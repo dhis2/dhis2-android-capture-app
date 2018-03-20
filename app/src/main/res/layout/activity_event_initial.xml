@@ -16,7 +16,7 @@
             type="boolean"/>
         <variable
             name="presenter"
-            type="com.dhis2.usescases.eventInitial.EventInitialContract.Presenter" />
+            type="com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
     </data>
 
     <LinearLayout
@@ -313,8 +313,7 @@
                         android:textAllCaps="true"
                         android:textColor="@color/white"
                         android:textSize="15sp"
-                        android:text="@string/create"
-                        android:onClick="@{()->presenter.createEvent()}"/>
+                        android:text="@string/create"/>
                 </RelativeLayout>
 
                 <android.support.design.widget.NavigationView
