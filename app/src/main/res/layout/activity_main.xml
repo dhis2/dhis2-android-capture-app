@@ -118,7 +118,7 @@
                         android:id="@+id/menu_info"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="SYNC Manager"
+                        android:text="@string/SYNC_MANAGER"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorAccent"
                         android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"/>

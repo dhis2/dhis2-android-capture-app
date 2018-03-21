@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.syncManager.SyncManagerPresenter"/>
 
     </data>
 
@@ -24,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/radioData"
-                android:checkedButton="@id/dataManual">
+                tools:checkedButton="@id/dataManual">
 
             <RadioButton
                 android:layout_width="match_parent"
@@ -65,7 +68,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonSyncData"
                 android:layout_marginTop="10dp"
-                android:text="@string/SYNC_DATA"/>
+                android:text="@string/SYNC_DATA"
+                android:onClick="@{()->presenter.sync()}"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -77,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/radioMeta"
-                android:checkedButton="@id/metaManual">
+                tools:checkedButton="@id/metaManual">
 
 
             <RadioButton
@@ -98,7 +102,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/metaManual"
                 android:text="@string/Manual"
-
                 android:buttonTint="?colorPrimary"
                 />
             </RadioGroup>
@@ -107,7 +110,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonSyncMeta"
                 android:layout_marginTop="10dp"
-                android:text="@string/SYNC_META"/>
+                android:text="@string/SYNC_META"
+                android:onClick="@{()->presenter.sync()}"/>
 
 
         </LinearLayout>

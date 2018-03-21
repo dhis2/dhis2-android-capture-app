@@ -111,5 +111,6 @@
     <string name="a_week">1 Week</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
+    <string name="SYNC_MANAGER">SYNC Manager</string>
 
 </resources>
