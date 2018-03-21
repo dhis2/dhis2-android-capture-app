@@ -65,9 +65,9 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         presenter.onDestroy();
-        super.onDestroy();
+        super.onPause();
     }
 
     @Override

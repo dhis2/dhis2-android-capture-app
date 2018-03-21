@@ -31,7 +31,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_spinner, parent, false);
-        return new SpinnerHolder(binding);
+        return new SpinnerHolder(binding, processor);
     }
 
     @Override

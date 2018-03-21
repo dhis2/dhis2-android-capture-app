@@ -82,9 +82,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         presenter.onDestroy();
-        super.onDestroy();
+        super.onPause();
     }
 
     //endregion
@@ -153,14 +153,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (pos > 0) {
                     binding.progress.setVisibility(View.VISIBLE);
                     binding.objectCounter.setVisibility(View.GONE);
-                    if (searchTEAdapter != null)
-                        searchTEAdapter.clear();
+                    /*if (searchTEAdapter != null)
+                        searchTEAdapter.clear();*/
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                 } else {
                     binding.progress.setVisibility(View.VISIBLE);
                     binding.objectCounter.setVisibility(View.GONE);
-                    if (searchTEAdapter != null)
-                        searchTEAdapter.clear();
+                /*    if (searchTEAdapter != null)
+                        searchTEAdapter.clear();*/
                     presenter.setProgram(null);
                 }
             }
