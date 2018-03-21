@@ -59,7 +59,6 @@
                         android:minWidth="70dp"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:padding="7dp"
-                        android:text="@string/DAILY"
                         android:textColor="?colorAccent" />
                 </LinearLayout>
 

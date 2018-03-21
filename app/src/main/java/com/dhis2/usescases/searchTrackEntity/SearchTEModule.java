@@ -13,6 +13,7 @@ import dagger.Provides;
 
 /**
  * Created by ppajuelo on 02/11/2017.
+ *
  */
 @PerActivity
 @Module
@@ -34,6 +35,6 @@ public class SearchTEModule {
     @PerActivity
     SearchRepository searchRepository(@NonNull CodeGenerator codeGenerator,
                                       @NonNull BriteDatabase briteDatabase) {
-        return new SearchRepositoryImpl(codeGenerator,briteDatabase);
+        return new SearchRepositoryImpl(codeGenerator, briteDatabase);
     }
 }

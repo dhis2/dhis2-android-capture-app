@@ -44,6 +44,7 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 28/09/2017.
+ *
  */
 
 public class Bindings {
@@ -200,6 +201,18 @@ public class Bindings {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         programStageModel -> textView.setText(programStageModel.displayName()),
+                        Timber::d
+                );
+    }
+
+    @BindingAdapter("programStageDescription")
+    public static void getStageDescription(TextView textView, String stageId) {
+        metadataRepository.programStage(stageId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
+                        programStageModel -> textView.setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."),
                         Timber::d
                 );
     }

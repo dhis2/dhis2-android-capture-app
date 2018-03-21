@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,10 @@ public class ProgramContract {
 
         void setUpRecycler();
 
+        void getSelectedPrograms(ArrayList<Date> dates, Period period,String orgUnitQuery);
+
         Consumer<List<ProgramModel>> swapProgramData();
+        void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
         @UiThread
         void renderError(String message);
@@ -40,12 +44,11 @@ public class ProgramContract {
         void addTree(TreeNode treeNode);
 
         void openDrawer();
+
     }
 
     public interface Presenter {
         void init(View view);
-
-        void getPrograms(Date fromDate, Date toDate);
 
         void onItemClick(ProgramModel homeViewModel);
 
@@ -55,13 +58,12 @@ public class ProgramContract {
 
         void onTimeButtonClick();
 
-        void getOrgUnits();
 
         Observable<List<EventModel>> getEvents(ProgramModel programModel);
 
-        void getProgramsWithDates(List<Date> dates, Period period);
+        void getProgramsWithDates(ArrayList<Date> dates, Period period);
 
-        void getProgramsOrgUnit(String orgUnitQuery);
+        void getProgramsOrgUnit(List<Date> dates, Period period,String orgUnitQuery);
 
 
     }

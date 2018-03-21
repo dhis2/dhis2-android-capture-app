@@ -202,6 +202,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @Override
     public void onDestroy() {
-        disposable.dispose();
+        disposable.clear();
     }
 }

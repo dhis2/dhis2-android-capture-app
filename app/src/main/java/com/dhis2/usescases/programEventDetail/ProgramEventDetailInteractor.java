@@ -26,10 +26,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -98,7 +95,8 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         compositeDisposable.add(programEventDetailRepository.orgUnits()
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .flatMapIterable(organisationUnitModels -> organisationUnitModels)
-                .filter(organisationUnitModel -> or)
+                .filter(orgUnit -> orgUnit.openingDate() != null && orgUnit.closedDate() != null)
+                .filter(orgUnit -> orgUnit.openingDate().compareTo(date) <= 0 && orgUnit.closedDate().compareTo(date) >= 0)
                 .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -223,6 +221,6 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

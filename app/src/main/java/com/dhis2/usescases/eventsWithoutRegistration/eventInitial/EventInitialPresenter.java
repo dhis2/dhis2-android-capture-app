@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventInitial;
+package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
@@ -50,8 +50,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent() {
-        // TODO CRIS
+    public void createEvent(String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+        if (program != null) {
+            interactor.createNewEvent(program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+        }
+    }
+
+    @Override
+    public void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
+        interactor.editEvent(eventUid, date, orgUnitUid, catComboUid, latitude, longitude);
     }
 
     @Override
@@ -98,5 +105,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void filterOrgUnits(String date) {
+        interactor.getFilteredOrgUnits(date);
     }
 }

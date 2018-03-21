@@ -2,13 +2,10 @@ package com.dhis2.usescases.programDetail;
 
 import android.os.Bundle;
 
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
-
-import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 31/10/2017.
@@ -19,7 +16,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     static private ProgramDetailContractModule.View view;
     private final ProgramDetailContractModule.Interactor interactor;
-    private String programId;
     public ProgramModel program;
 
     ProgramDetailPresenter(ProgramDetailContractModule.Interactor interactor) {
@@ -28,7 +24,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
 
     @Override
     public void init(ProgramDetailContractModule.View mview, String programId) {
-        this.programId = programId;
         view = mview;
         interactor.init(view, programId);
     }

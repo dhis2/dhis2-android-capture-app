@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
+
+        <variable
+            name="attribute"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+    </data>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:background="?colorPrimary"
+        android:paddingStart="20dp"
+        android:text="Add file"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent" />
+</layout>

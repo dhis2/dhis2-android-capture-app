@@ -70,7 +70,7 @@ public class ProgramEventDetailContract {
 
         void getEvents(String programId, Date fromDate, Date toDate);
 
-        void getOrgUnits(String date);
+        void getOrgUnits(Date date);
 
         void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
 

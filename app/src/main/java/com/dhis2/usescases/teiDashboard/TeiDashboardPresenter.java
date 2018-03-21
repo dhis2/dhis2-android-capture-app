@@ -1,12 +1,15 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
@@ -84,6 +87,22 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public Observable<DashboardProgramModel> getProgram() {
+        return Observable.zip(
+                metadataRepository.getTrackedEntityInstance(teUid),
+                dashboardRepository.getEnrollment(programUid, teUid),
+                dashboardRepository.getProgramStages(programUid),
+                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
+                metadataRepository.getProgramTrackedEntityAttributes(programUid),
+                dashboardRepository.getTEIAttributeValues(programUid, teUid),
+                metadataRepository.getTeiOrgUnit(teUid),
+                metadataRepository.getTeiActivePrograms(teUid),
+                dashboardRepository.getRelationships(programUid, teUid),
+                DashboardProgramModel::new)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    @Override
     public void onBackPressed() {
         view.back();
     }
@@ -105,14 +124,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void editTei(boolean isEditable, View sharedView, DashboardProgramModel dashboardProgramModel) {
+    public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
+        Fragment teiFragment = view.getAdapter().getItem(0);
+        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
         extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        extras.putBoolean("IS_EDITABLE", isEditable);
+        intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
+        teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
     }
 
     @Override
@@ -137,6 +158,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

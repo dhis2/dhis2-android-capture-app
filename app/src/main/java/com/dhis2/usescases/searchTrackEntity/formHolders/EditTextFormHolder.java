@@ -33,6 +33,8 @@ public class EditTextFormHolder extends FormViewHolder {
         this.presenter = presenter;
         this.bindableObject = bindableObject;
         binding.setVariable(BR.attribute, bindableObject);
+        binding.setVariable(BR.label, bindableObject.displayShortName());
+        binding.setVariable(BR.valueType, bindableObject.valueType());
         binding.executePendingBindings();
 
         if (binding instanceof FormAgeCustomBinding) {

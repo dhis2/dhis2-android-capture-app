@@ -37,8 +37,8 @@ public class SplashActivity extends ActivityGlobalAbstract implements SplashCont
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
         presenter.destroy();
+        super.onPause();
     }
 }

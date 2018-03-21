@@ -18,7 +18,7 @@
 
         <variable
             name="isEditable"
-            type="java.lang.Boolean" />
+            type="android.databinding.ObservableBoolean" />
 
     </data>
 

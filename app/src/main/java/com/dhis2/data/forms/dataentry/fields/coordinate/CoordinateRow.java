@@ -1,11 +1,14 @@
 package com.dhis2.data.forms.dataentry.fields.coordinate;
 
-import android.databinding.ViewDataBinding;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.databinding.FormCoordinatesBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -15,24 +18,28 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel> {
 
-    ViewDataBinding binding;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    @NonNull
+    private final LayoutInflater inflater;
 
-    public CoordinateRow(FlowableProcessor<RowAction> processor) {
+    public CoordinateRow(@NonNull LayoutInflater layoutInflater,
+                         @NonNull FlowableProcessor<RowAction> processor) {
+        this.inflater = layoutInflater;
         this.processor = processor;
-
     }
 
     @NonNull
     @Override
-    public CoordinateHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
-        return new CoordinateHolder(binding);
+    public CoordinateHolder onCreate(@NonNull ViewGroup parent) {
+        FormCoordinatesBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.form_coordinates, parent, false);
+        return new CoordinateHolder(binding, processor);
     }
 
     @Override
     public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 }

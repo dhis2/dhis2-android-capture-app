@@ -24,19 +24,6 @@ public class DateTimeHolder extends FormViewHolder {
     }
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
-        this.presenter = presenter;
-        this.bindableObject = bindableObject;
-        binding.setVariable(BR.attribute, bindableObject);
-        binding.executePendingBindings();
-
-    }
-
-    public void bindProgramData(SearchTEContractsModule.Presenter presenter, String label, int position) {
-        this.presenter = presenter;
-        binding.setVariable(BR.presenter, presenter);
-        binding.setVariable(BR.label, label);
-        binding.executePendingBindings();
-
     }
 
 }

@@ -31,6 +31,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
     @Override
     public View createNodeView(TreeNode node, OrganisationUnitModel value) {
+        this.node = node;
         final LayoutInflater layoutInflater = LayoutInflater.from(context);
         final View view = layoutInflater.inflate(R.layout.item_node, null, false);
         this.node = node;
@@ -41,6 +42,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
         checkBox.setChecked(node.isSelected());
+
 
         if (!node.isSelectable()) {
             checkBox.setVisibility(View.GONE);
@@ -55,10 +57,10 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         if (node.getChildren() == null || node.getChildren().isEmpty())
             imageView.setImageResource(R.drawable.ic_circle);
 
-        checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
+        /*checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             textView.setTextColor(b ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
             node.setSelected(b);
-        });
+        });*/
 
         return view;
     }
@@ -73,4 +75,9 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         checkBox.performClick();
     }
 
+    public void update() {
+        node.setSelected(!node.isSelected());
+        textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
+        checkBox.setChecked(node.isSelected());
+    }
 }

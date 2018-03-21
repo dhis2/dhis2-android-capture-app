@@ -6,6 +6,8 @@ import android.text.InputType;
 
 import com.google.auto.value.AutoValue;
 
+import org.hisp.dhis.android.core.common.ValueType;
+
 /**
  * Created by frodriguez on 1/24/2018.
  */
@@ -16,21 +18,21 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
-                                           @NonNull Integer lines) {
+                                           @NonNull Integer lines, @NonNull ValueType valueType) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, hint, lines, InputType.TYPE_CLASS_TEXT, null, null);
+                value, hint, lines, InputType.TYPE_CLASS_TEXT, valueType, null, null);
     }
 
     @NonNull
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), hint(), maxLines(), inputType(), warning, error());
+                value(), hint(), maxLines(), inputType(),valueType(), warning, error());
     }
 
     @NonNull
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(), hint(), maxLines(), inputType(), warning(), error);
+                value(), hint(), maxLines(), inputType(),valueType(), warning(), error);
     }
 
 }

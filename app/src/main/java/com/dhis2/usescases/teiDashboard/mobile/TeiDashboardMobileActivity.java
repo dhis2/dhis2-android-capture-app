@@ -1,10 +1,14 @@
 package com.dhis2.usescases.teiDashboard.mobile;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.dhis2.App;
@@ -18,6 +22,7 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
 import javax.inject.Inject;
 
@@ -33,6 +38,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     TeiDashboardContracts.Presenter presenter;
 
     DashboardProgramModel programModel;
+    DashboardPagerAdapter adapter;
+    Fragment teiFragment;
+
+    String teiUid;
+    String programUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +54,9 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
-        init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
+        teiUid = getIntent().getStringExtra("TEI_UID");
+        programUid = getIntent().getStringExtra("PROGRAM_UID");
+        init(teiUid, programUid);
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     }
@@ -57,7 +69,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setData(DashboardProgramModel program) {
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
+        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
+        binding.teiPager.setAdapter(adapter);
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
@@ -87,6 +100,11 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    public DashboardPagerAdapter getAdapter() {
+        return adapter;
+    }
+
+    @Override
     public String getToolbarTitle() {
         return binding.toolbarTitle.getText().toString();
     }
@@ -95,4 +113,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return presenter;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -53,8 +53,9 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
         editText.addTextChangedListener(this);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute) {
-        binding.setAttribute(attribute);
+    public void setLabel(String label) {
+        binding.setLabel(label);
+        binding.executePendingBindings();
     }
 
     public void setTextChangedListener(TextChangedListener listener) {
@@ -63,43 +64,44 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     @BindingAdapter("valueType")
     public static void setValueType(CustomTextView view, ValueType valueType) {
-        switch (valueType) {
-            case PHONE_NUMBER:
-                editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                return;
-            case EMAIL:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                return;
-            case TEXT:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                editText.setLines(1);
-                editText.setEllipsize(TextUtils.TruncateAt.END);
-                return;
-            case LETTER:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
-                return;
-            case NUMBER:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER |
-                        InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                        InputType.TYPE_NUMBER_FLAG_SIGNED);
-                return;
-            case INTEGER_NEGATIVE:
-            case INTEGER:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                return;
-            case INTEGER_ZERO_OR_POSITIVE:
-            case INTEGER_POSITIVE:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
-                return;
-            case UNIT_INTERVAL:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                return;
-            default:
-                break;
-        }
+        if (valueType != null)
+            switch (valueType) {
+                case PHONE_NUMBER:
+                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    return;
+                case EMAIL:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
+                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    return;
+                case TEXT:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    editText.setLines(1);
+                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    return;
+                case LETTER:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
+                    return;
+                case NUMBER:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER |
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                            InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    return;
+                case INTEGER_NEGATIVE:
+                case INTEGER:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    return;
+                case INTEGER_ZERO_OR_POSITIVE:
+                case INTEGER_POSITIVE:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
+                    return;
+                case UNIT_INTERVAL:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    return;
+                default:
+                    break;
+            }
     }
 
     @Override

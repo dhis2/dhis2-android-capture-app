@@ -1,6 +1,8 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,7 +27,8 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Inject
     TeiDataDetailContracts.Presenter presenter;
-    private boolean isEditable;
+
+    private ObservableBoolean isEditable = new ObservableBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +38,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding = DataBindingUtil.setContentView(this, R.layout.activity_teidata_detail);
         binding.setPresenter(presenter);
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
-        isEditable = getIntent().getBooleanExtra("IS_EDITABLE", false);
-
     }
 
     @Override
@@ -51,7 +52,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.executePendingBindings();
         setUpAttr(program);
         supportStartPostponedEnterTransition();
+    }
 
+    @Override
+    public void setDataEditable() {
+        isEditable.set(!isEditable.get());
+        binding.dataLayout.invalidate();
     }
 
     private void setUpAttr(DashboardProgramModel programModel) {
@@ -91,5 +97,11 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         }
 
         binding.dataLayout.invalidate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        super.onBackPressed();
     }
 }

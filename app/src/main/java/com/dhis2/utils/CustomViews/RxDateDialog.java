@@ -47,7 +47,12 @@ public class RxDateDialog {
             notifyClick(dialog.callback, dialog.clearFilters());
             dialog.dismiss();
         });
-        activity.getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
+
+        if(activity.getSupportFragmentManager().findFragmentByTag("dialog") == null){
+            activity.getSupportFragmentManager().beginTransaction().add(dialog, "dialog").commit();
+        }
+
+
     }
 
     public DateDialog create() {

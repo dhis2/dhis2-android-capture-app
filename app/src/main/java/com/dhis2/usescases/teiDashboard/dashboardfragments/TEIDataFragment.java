@@ -1,10 +1,12 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +20,15 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * -Created by ppajuelo on 29/11/2017.
  */
 
 public class TEIDataFragment extends FragmentGlobalAbstract {
+
+    private static final int REQ_DETAILS = 1001;
 
     FragmentTeiDataBinding binding;
 
@@ -43,8 +49,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
-        if(program!=null)
-            setData(program);
         return binding.getRoot();
     }
 
@@ -73,5 +77,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
 
     }
 
+    public static int getRequestCode() {
+        return REQ_DETAILS;
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQ_DETAILS){
+            if(resultCode == RESULT_OK){
+                presenter.getProgram()
+                        .subscribe(this::setData,
+                                throwable -> Log.d("ERROR", throwable.getMessage()));
+            }
+        }
+    }
 }
