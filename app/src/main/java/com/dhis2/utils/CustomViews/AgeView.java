@@ -53,7 +53,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Tex
         init(context);
     }
 
-    private void init(Context context){
+    private void init(Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
         binding = AgeCustomViewBinding.inflate(inflater, this, true);
         date = findViewById(R.id.date_picker);
@@ -75,21 +75,25 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Tex
 
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute){
+    public void setAttribute(TrackedEntityAttributeModel attribute) {
         binding.setAttribute(attribute);
     }
 
+    public void setLabel(String label) {
+        binding.setLabel(label);
+    }
+
     private void onFocusChanged(View view, boolean b) {
-        if(b)
+        if (b)
             onClick(view);
     }
 
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
-        int year  = c.get(Calendar.YEAR);
+        int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
-        int day   = c.get(Calendar.DAY_OF_MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
                 (datePicker, year1, month1, day1) -> {
@@ -106,25 +110,25 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Tex
         dateDialog.show();
     }
 
-    public void setTextChangedListener(TextChangedListener listener){
+    public void setTextChangedListener(TextChangedListener listener) {
         this.listener = listener;
     }
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-        if(listener != null)
+        if (listener != null)
             listener.beforeTextChanged(charSequence, start, count, after);
     }
 
     @Override
     public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-        if(listener != null)
+        if (listener != null)
             listener.onTextChanged(charSequence, start, before, count);
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
-        if(listener != null)
+        if (listener != null)
             listener.afterTextChanged(editable);
     }
 }

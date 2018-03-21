@@ -40,7 +40,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             SpinnerProgramLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_program_layout, parent, false);
             convertView = binding.getRoot();
-            if (position != 0)
+            if (position > 0)
                 binding.setProgram(options.get(position - 1));
             binding.setProgramTitle("All "+trackedEntityName);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));

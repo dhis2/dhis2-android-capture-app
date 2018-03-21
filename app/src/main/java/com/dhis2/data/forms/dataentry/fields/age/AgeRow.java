@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.AgeCustomViewBinding;
+import com.dhis2.databinding.FormAgeCustomBinding;
+
+import io.reactivex.processors.FlowableProcessor;
 
 /**
  * Created by frodriguez on 20/03/2018.
@@ -15,10 +19,16 @@ import com.dhis2.databinding.AgeCustomViewBinding;
 
 public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
+    private final LayoutInflater inflater;
+
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
+        this.inflater = layoutInflater;
+    }
+
     @NonNull
     @Override
     public AgeHolder onCreate(@NonNull ViewGroup parent) {
-        AgeCustomViewBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+        FormAgeCustomBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_age_custom, parent, false);
         return new AgeHolder(binding);
     }

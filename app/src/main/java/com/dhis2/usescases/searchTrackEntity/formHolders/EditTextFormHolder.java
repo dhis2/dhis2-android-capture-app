@@ -27,6 +27,7 @@ public class EditTextFormHolder extends FormViewHolder {
     public EditTextFormHolder(ViewDataBinding binding, FlowableProcessor<FormViewHolder> processor) {
         super(binding);
         this.processor = processor;
+        setIsRecyclable(false);
     }
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {

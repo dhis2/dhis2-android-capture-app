@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -78,6 +79,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 }));
 
         disposable.add(dataEntryView.rowActions()
+                .debounce(1500, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .switchMap(action -> {

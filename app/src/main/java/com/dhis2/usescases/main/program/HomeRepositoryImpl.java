@@ -28,15 +28,6 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT * FROM %s WHERE %s.%s = 'programUid' ORDER BY Event.lastUpdated DESC",
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM);
 
-    private final static String EVENT = "SELECT * FROM Event ORDER BY Event.lastUpdated DESC";
-
-    private final static String PROGRAMS_EVENT_DATES = "" +
-            "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated " +
-            "FROM Program " +
-            "INNER JOIN Event ON Event.program = Program.uid " +
-            "WHERE event_updated BETWEEN '%s' AND '%s' " +
-            "GROUP BY Program.uid";
-
     private final static String PROGRAMS_EVENT_DATES_2 = "" +
             "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid "+

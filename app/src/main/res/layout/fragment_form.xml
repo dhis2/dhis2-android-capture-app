@@ -10,43 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingtoolbarlayout_data_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:titleEnabled="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="196dp"
-                android:gravity="bottom">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textview_report_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="42dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="@color/colorPrimaryLight"
-                        android:clickable="true"
-                        android:gravity="center_vertical"
-                        android:hint="report date"
-                        android:padding="8dp"
-                        android:textSize="16sp"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -56,16 +28,39 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:titleTextColor="@android:color/white"/>
+                app:titleTextColor="@android:color/white" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
-        <com.dhis2.data.forms.AutoHidingTabLayout
-            android:id="@+id/tablayout_data_entry"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:tabMode="scrollable"/>
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textview_report_date"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorPrimaryLight"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:hint="report date"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <com.dhis2.data.forms.AutoHidingTabLayout
+                android:id="@+id/tablayout_data_entry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:tabMode="scrollable" />
+
+        </LinearLayout>
+
 
     </android.support.design.widget.AppBarLayout>
 
@@ -84,7 +79,7 @@
                 android:id="@+id/viewpager_dataentry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"/>
+                android:background="@color/white" />
 
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>
@@ -94,10 +89,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_menu"
         app:backgroundTint="?colorPrimary"
         app:elevation="8dp"
         app:layout_anchor="@+id/content_frame"
         app:layout_anchorGravity="bottom|right|end"
-        app:pressedTranslationZ="8dp"/>
+        app:pressedTranslationZ="8dp"
+        app:srcCompat="@drawable/ic_menu" />
 </android.support.design.widget.CoordinatorLayout>

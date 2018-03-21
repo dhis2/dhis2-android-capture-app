@@ -4,15 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-
 import com.dhis2.R;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import static com.dhis2.utils.Preconditions.isNull;
 
-public class FormActivity extends AppCompatActivity {
+public class FormActivity extends ActivityGlobalAbstract {
     private static String ARGUMENTS = "formViewArguments";
 
     @NonNull

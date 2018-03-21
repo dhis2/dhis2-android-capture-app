@@ -38,6 +38,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     List<String> users;
     List<String> urls;
+    private boolean isSyncing;
 
     enum SyncState {
         METADATA, EVENTS, TEI
@@ -61,12 +62,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        if (!isSyncing)
+            presenter.init(this);
     }
 
     @Override
     protected void onPause() {
-        presenter.onDestroy();
+        if (!isSyncing)
+            presenter.onDestroy();
         super.onPause();
     }
 
@@ -110,6 +113,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void handleSync() {
+        isSyncing = true;
         binding.login.setVisibility(View.GONE);
         if (binding.logo != null) {
             ViewGroup.LayoutParams params = binding.logo.getLayoutParams();

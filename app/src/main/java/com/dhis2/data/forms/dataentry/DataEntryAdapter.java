@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.age.AgeRow;
+import com.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
 import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
 import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
@@ -65,7 +67,7 @@ final class DataEntryAdapter extends Adapter {
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME));
-        rows.add(AGEVIEW, new EditTextRow(layoutInflater, processor));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor));
     }
 
@@ -106,9 +108,9 @@ final class DataEntryAdapter extends Adapter {
             return DATE;*/
         } else if (viewModel instanceof DateTimeViewModel) {
             return DATETIME;
-      /*  } else if (viewModel instanceof DateViewModel) {
+        } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
-        } else if (viewModel instanceof YesNoView) {
+       /*   } else if (viewModel instanceof YesNoView) {
             return YES_NO;*/
         } else {
             throw new IllegalStateException("Unsupported view model type: "

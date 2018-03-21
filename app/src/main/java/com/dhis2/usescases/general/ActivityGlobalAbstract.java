@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.dhis2.R;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -25,10 +26,9 @@ import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Javi on 28/07/2017.
- *
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
 
@@ -135,7 +135,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         return lifeCycleObservable;
     }
 
-    public void hideKeyboard(){
+    public void hideKeyboard() {
         if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             if (inputMethodManager != null)
@@ -144,9 +144,12 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     @Override
-    public void showToast(String message){
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        coordinatesView.updateLocation(0, 0);
+    }
 }

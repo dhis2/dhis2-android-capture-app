@@ -1,7 +1,5 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -19,7 +17,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -32,16 +29,37 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableOnject;
+    FormSpinnerBinding binding;
+    private SpinnerViewModel model;
 
-    private final FlowableProcessor<RowAction> processor;
-    @NonNull
-    private BehaviorProcessor<SpinnerViewModel> model;
 
-    public SpinnerHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+    public SpinnerHolder(FormSpinnerBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
-        this.processor = processor;
-
+        this.binding = binding;
+        /*
         model = BehaviorProcessor.create();
+
+        model.subscribe(spinnerViewModel -> {
+            binding.setLabel(spinnerViewModel.label());
+            binding.setOptionSet(spinnerViewModel.optionSet());
+            binding.executePendingBindings();
+        });*/
+
+        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position > 0) {
+                    processor.onNext(
+                            RowAction.create(model.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
+                    );
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
     }
 
@@ -53,7 +71,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.attribute, bindableOnject);
 
-        ((FormSpinnerBinding) binding).spinner.setOnItemSelectedListener(this);
+        binding.spinner.setOnItemSelectedListener(this);
         presenter.getOptions(bindableOnject.optionSet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -65,12 +83,12 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     }
 
     void setAdapter(List<OptionModel> optionModels, TrackedEntityAttributeModel bindableOnject) {
-        OptionAdapter adapter = new OptionAdapter(((FormSpinnerBinding) binding).spinner.getContext(),
+        OptionAdapter adapter = new OptionAdapter(binding.spinner.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,
                 optionModels,
                 bindableOnject.displayShortName());
-        ((FormSpinnerBinding) binding).spinner.setAdapter(adapter);
+        binding.spinner.setAdapter(adapter);
     }
 
     @Override
@@ -86,6 +104,9 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     }
 
     public void update(SpinnerViewModel viewModel) {
-        model.onNext(viewModel);
+        this.model = viewModel;
+        binding.setLabel(viewModel.label());
+        binding.setOptionSet(viewModel.optionSet());
+        binding.executePendingBindings();
     }
 }

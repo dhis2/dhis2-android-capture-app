@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
-import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.Row;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
 import com.dhis2.usescases.searchTrackEntity.formHolders.DateTimeFormHolder;
@@ -29,10 +31,9 @@ import io.reactivex.processors.PublishProcessor;
 
 /**
  * Created by ppajuelo on 06/11/2017.
- *
  */
 
-public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
+public class FormAdapter extends RecyclerView.Adapter {
 
     private final int EDITTEXT = 0;
     private final int BUTTON = 1;
@@ -50,18 +51,23 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private ProgramModel programModel;
     @NonNull
     private final FlowableProcessor<FormViewHolder> processor;
+    @NonNull
+    private final List<Row> rows;
 
-    FormAdapter(SearchTEContractsModule.Presenter presenter) {
+    FormAdapter(LayoutInflater inflater, SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
+        rows = new ArrayList<>();
+
+        rows.add(EDITTEXT, new EditTextRow(inflater, PublishProcessor.create()));
     }
 
     @Override
-    public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding binding;
-        FormViewHolder holder;
+        RecyclerView.ViewHolder holder;
         switch (viewType) {
             case DATE:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_date_text, parent, false);
@@ -73,7 +79,8 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 break;
             case EDITTEXT:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
-                holder = new EditTextFormHolder(binding, processor);
+//                holder = new EditTextCustomHolder((FormEditTextCustomBinding) binding, null);
+                holder = rows.get(viewType).onCreate(parent);
                 break;
             case BUTTON:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
@@ -85,7 +92,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 break;
             case SPINNER:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
-                holder = new SpinnerHolder(binding);
+                holder = new SpinnerHolder(binding, processor);
                 break;
             case COORDINATES:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, parent, false);
@@ -105,7 +112,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
                 break;
             default:
                 binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
-                holder = new SpinnerHolder(binding);
+                holder = new SpinnerHolder(binding, processor);
                 break;
         }
 
@@ -114,11 +121,16 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(FormViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position < programData) {
-            ((DateTimeFormHolder) holder).bindProgramData(presenter, position == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), position);
+            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
         } else {
-            holder.bind(presenter, attributeList.get(position - programData));
+            TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
+            if (holder.getItemViewType() == EDITTEXT)
+                rows.get(holder.getItemViewType()).onBind(holder, EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null,
+                        attr.displayShortName(), 1, attr.valueType()));
+            else
+                ((FormViewHolder) holder).bind(presenter, attributeList.get(holder.getAdapterPosition() - programData));
         }
     }
 
@@ -132,7 +144,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
         if (position < programData) {
             return programModel.id() + position;
         } else {
-            return attributeList.get(position - programData).id();
+            return attributeList.get(position - programData).uid().hashCode();
         }
     }
 
