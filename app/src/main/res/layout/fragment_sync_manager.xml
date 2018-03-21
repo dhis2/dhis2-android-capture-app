@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Automatic_Sync_Data"/>
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radioData"
+                android:checkedButton="@id/dataManual">
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/dataMinute"
+                android:layout_marginTop="15dp"
+                android:text="@string/a_minute"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/data15"
+                android:text="@string/fifteen_minute"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/dataHour"
+                android:text="@string/a_hour"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/a_day"
+                android:id="@+id/dataDay"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Manual"
+                android:id="@+id/dataManual"
+
+                android:buttonTint="?colorPrimary"/>
+        </RadioGroup>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonSyncData"
+                android:layout_marginTop="10dp"
+                android:text="@string/SYNC_DATA"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/Automatic_Sync_Metadata"/>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radioMeta"
+                android:checkedButton="@id/metaManual">
+
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/metaDay"
+                android:layout_marginTop="15dp"
+                android:text="@string/a_day"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/metaWeek"
+                android:text="@string/a_week"
+                android:buttonTint="?colorPrimary"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/metaManual"
+                android:text="@string/Manual"
+
+                android:buttonTint="?colorPrimary"
+                />
+            </RadioGroup>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonSyncMeta"
+                android:layout_marginTop="10dp"
+                android:text="@string/SYNC_META"/>
+
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</layout>
