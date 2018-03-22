@@ -56,6 +56,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private ActivityEventInitialBinding binding;
     private boolean isNewEvent;
+    private boolean isCaptureCoordinates;
 
     private String selectedDate;
     private String selectedOrgUnit;
@@ -212,8 +213,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         String activityTitle = isNewEvent ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         binding.setName(activityTitle);
         binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
-        binding.location1.setOnClickListener(v -> presenter.onLocationClick());
-        binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+
+        if (program.captureCoordinates()) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+            isCaptureCoordinates = true;
+        }
+        else{
+            binding.coordinatesLayout.setVisibility(View.GONE);
+            isCaptureCoordinates = false;
+            selectedLat = "0.0";
+            selectedLon = "0.0";
+        }
     }
 
     @Override

@@ -31,6 +31,4 @@ public class EventInfoSectionsPresenter implements EventInfoSectionsContract.Pre
     public void onDettach() {
         interactor.onDettach();
     }
-
-
 }

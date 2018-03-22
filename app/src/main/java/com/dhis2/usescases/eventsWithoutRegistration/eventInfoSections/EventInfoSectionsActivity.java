@@ -9,8 +9,6 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInfoSectionsBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
-import org.hisp.dhis.android.core.event.EventModel;
-
 import javax.inject.Inject;
 
 /**
@@ -23,7 +21,6 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
     @Inject
     EventInfoSectionsContract.Presenter presenter;
 
-    private EventModel eventModel;
     private ActivityEventInfoSectionsBinding binding;
 
 

@@ -11,6 +11,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 02/11/2017.
@@ -97,26 +99,24 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         try {
             eventDate = simpleDateFormat.parse(date);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
         EventModel eventModel = EventModel.builder()
                 .uid(codeGenerator.generate())
-                .enrollmentUid(null)
-                .trackedEntityInstance(null)
                 .created(createDate)
-                .createdAtClient(null)
                 .lastUpdated(createDate)
-                .lastUpdatedAtClient(null)
-                .status(EventStatus.ACTIVE)
-                .latitude(latitude)
-                .longitude(longitude)
+                .eventDate(eventDate)
                 .program(programUid)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-                .eventDate(eventDate)
-                .attributeCategoryOptions(catOptionUid)
-                .attributeOptionCombo(catComboUid)
+                .status(EventStatus.ACTIVE)
+                .state(State.TO_POST)
+                // TODO CRIS: CHECK IF THESE ARE WORKING...
+//                .latitude(latitude)
+//                .longitude(longitude)
+//                .attributeCategoryOptions(catOptionUid)
+//                .attributeOptionCombo(catComboUid)
                 .build();
 
         long rowId = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
