@@ -1,11 +1,14 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
-import android.databinding.ViewDataBinding;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.databinding.FormEditTextBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -15,7 +18,6 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class EditTextRow implements Row<EditTextCustomHolder, EditTextViewModel> {
 
-    ViewDataBinding binding;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -24,7 +26,9 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextViewModel>
         this.processor = processor;
     }
 
-    public EditTextCustomHolder onCreate(ViewDataBinding binding, ViewGroup viewGroup) {
+    public EditTextCustomHolder onCreate(ViewGroup viewGroup) {
+        FormEditTextBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()),
+                R.layout.form_edit_text, viewGroup, false);
         return new EditTextCustomHolder(binding, processor);
     }
 
