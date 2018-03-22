@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
@@ -52,15 +53,18 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final FlowableProcessor<FormViewHolder> processor;
     @NonNull
+    private final FlowableProcessor<RowAction> raProcessor;
+    @NonNull
     private final List<Row> rows;
 
     FormAdapter(LayoutInflater inflater, SearchTEContractsModule.Presenter presenter) {
         this.presenter = presenter;
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
+        raProcessor = PublishProcessor.create();
         rows = new ArrayList<>();
 
-        rows.add(EDITTEXT, new EditTextRow(inflater, PublishProcessor.create()));
+        rows.add(EDITTEXT, new EditTextRow(inflater, raProcessor, false));
     }
 
     @Override
@@ -78,7 +82,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 holder = new DateTimeFormHolder(binding);
                 break;
             case EDITTEXT:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
+//                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
 //                holder = new EditTextCustomHolder((FormEditTextCustomBinding) binding, null);
                 holder = rows.get(viewType).onCreate(parent);
                 break;
@@ -220,5 +224,10 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     FlowableProcessor<FormViewHolder> asFlowable() {
         return processor;
+    }
+
+    @NonNull
+    FlowableProcessor<RowAction> asFlowableRA() {
+        return raProcessor;
     }
 }

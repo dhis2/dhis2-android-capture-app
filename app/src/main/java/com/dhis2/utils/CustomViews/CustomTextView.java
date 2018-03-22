@@ -3,10 +3,8 @@ package com.dhis2.utils.CustomViews;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -15,13 +13,11 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.dhis2.BR;
 import com.dhis2.R;
-import com.dhis2.databinding.CustomTextViewAccentBinding;
-import com.dhis2.databinding.CustomTextViewBinding;
 import com.dhis2.utils.TextChangedListener;
 
 import org.hisp.dhis.android.core.common.ValueType;
@@ -33,9 +29,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     private static EditText editText;
-    private static TextInputLayout inputLayout;
-    private CustomTextViewBinding binding;
-    private CustomTextViewAccentBinding bindingAccent;
+    private static ViewDataBinding binding;
 
     private TextChangedListener listener;
 
@@ -69,62 +63,28 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     private void init(Context context) {
         inflater = LayoutInflater.from(context);
+    }
 
-        binding = CustomTextViewBinding.inflate(inflater, this, true);
+    private void setLayout() {
+        if (isBgTransparent)
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
 
-        editText = findViewById(R.id.button);
-        inputLayout = findViewById(R.id.input_layout);
+        editText = null;
+        editText = findViewById(R.id.input_editText);
         editText.addTextChangedListener(this);
     }
 
     public void setLabel(String label) {
-        if (binding != null) {
-            binding.setLabel(label);
-            binding.executePendingBindings();
-        } else if (bindingAccent != null) {
-            bindingAccent.setLabel(label);
-            bindingAccent.executePendingBindings();
-        }
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
     }
 
-    public void setCustomTheme(double lum) {
-        if (lum > 180) {
-            editText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-            editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-
-        } else {
-            editText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-
-
-        }
-
-        invalidate();
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        View viewWithBgColor = null;
-        do {
-            if (viewWithBgColor == null)
-                viewWithBgColor = (View) getParent();
-            else
-                viewWithBgColor = (View) viewWithBgColor.getParent();
-        } while (viewWithBgColor.getBackground() == null);
-
-        if (viewWithBgColor.getBackground() instanceof ColorDrawable) {
-            int colorBg = ((ColorDrawable) viewWithBgColor.getBackground()).getColor();
-
-            int red = Color.red(colorBg);
-            int green = Color.green(colorBg);
-            int blue = Color.blue(colorBg);
-
-            double lum = (((0.299 * red) + ((0.587 * green) + (0.114 * blue))));
-
-            setCustomTheme(lum);
-        }
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
+//        requestLayout();
     }
 
     public void setTextChangedListener(TextChangedListener listener) {
@@ -172,7 +132,7 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
                     break;
             }
 
-            editText.invalidate();
+        editText.invalidate();
     }
 
     @Override

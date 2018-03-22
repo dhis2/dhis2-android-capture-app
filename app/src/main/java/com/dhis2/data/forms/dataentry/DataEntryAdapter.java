@@ -59,7 +59,7 @@ final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor,true));
         rows.add(BUTTON, new FileRow());
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor));

@@ -103,6 +103,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 })
         );
 
+        compositeDisposable.add(view.rowActionss()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    if (!data.value().isEmpty())
+                        queryData.put(data.id(), data.value());
+                    else
+                        queryData.remove(data.id());
+                    getTrakedEntities();
+                })
+        );
+
     }
 
     @Override

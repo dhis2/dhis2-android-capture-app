@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.ProgramAdapter;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -106,6 +107,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Flowable<FormViewHolder> rowActions() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowable();
+    }
+
+    @NonNull
+    public Flowable<RowAction> rowActionss() {
+        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
     }
 
     //endregion
