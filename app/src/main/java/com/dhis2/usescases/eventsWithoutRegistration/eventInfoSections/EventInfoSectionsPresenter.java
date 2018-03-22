@@ -9,7 +9,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 public class EventInfoSectionsPresenter implements EventInfoSectionsContract.Presenter {
 
-    static private EventInfoSectionsContract.View view;
+    private EventInfoSectionsContract.View view;
     private final EventInfoSectionsContract.Interactor interactor;
     public ProgramModel program;
 
@@ -19,6 +19,7 @@ public class EventInfoSectionsPresenter implements EventInfoSectionsContract.Pre
 
     @Override
     public void init(EventInfoSectionsContract.View view, String eventId) {
+        this.view = view;
         interactor.init(view, eventId);
     }
 

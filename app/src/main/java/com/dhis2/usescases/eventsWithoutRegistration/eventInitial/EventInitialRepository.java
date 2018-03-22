@@ -14,7 +14,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
- *
  */
 
 public interface EventInitialRepository {
@@ -31,11 +30,13 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date);
 
+    long createEvent(@NonNull Context context, @NonNull String program,
+                     @NonNull String programStage, @NonNull String date,
+                     @NonNull String orgUnitUid, @NonNull String catComboUid,
+                     @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+
     @NonNull
-    Observable<EventModel> createEvent(@NonNull Context context, @NonNull String program,
-                                       @NonNull String programStage, @NonNull String date,
-                                       @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                       @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+    Observable<EventModel> newlyCreatedEvent(long rowId);
 
     @NonNull
     Observable<ProgramStageModel> programStage(String programUid);

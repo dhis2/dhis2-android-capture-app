@@ -29,6 +29,7 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
         ((App) getApplicationContext()).userComponent().plus(new EventInfoSectionsModule()).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_info_sections);
+        binding.setPresenter(presenter);
         String eventId = getIntent().getStringExtra("EVENT_UID");
         presenter.init(this, eventId);
     }

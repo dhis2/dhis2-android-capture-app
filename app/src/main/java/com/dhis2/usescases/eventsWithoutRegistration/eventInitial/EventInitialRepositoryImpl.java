@@ -2,10 +2,8 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 
-import com.dhis2.R;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -83,9 +81,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    @NonNull
     @Override
-    public Observable<EventModel> createEvent(@NonNull Context context, @NonNull String programUid,
+    public long createEvent(@NonNull Context context, @NonNull String programUid,
                                               @NonNull String programStage, @NonNull String date,
                                               @NonNull String orgUnitUid, @NonNull String catComboUid,
                                               @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
@@ -119,16 +116,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 //                .attributeOptionCombo(catComboUid)
                 .build();
 
-        long rowId = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+        return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+    }
 
-        if (rowId < 0) {
-            String message = context.getString(R.string.failed_insert_event);
-            return Observable.error(new SQLiteConstraintException(message));
-        }
-        else {
-            String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'";
-            return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
-        }
+    @NonNull
+    @Override
+    public Observable<EventModel> newlyCreatedEvent(long rowId) {
+        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'";
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
     }
 
     @NonNull

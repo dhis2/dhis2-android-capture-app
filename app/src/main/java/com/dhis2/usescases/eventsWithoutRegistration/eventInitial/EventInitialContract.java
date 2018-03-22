@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
 
@@ -40,6 +41,8 @@ public class EventInitialContract {
         void setLocation(double latitude, double longitude);
 
         void onEventCreated(String eventUid);
+
+        void setProgramStage(ProgramStageModel programStage);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -49,7 +52,7 @@ public class EventInitialContract {
 
         void onBackClick();
 
-        void createEvent(String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
@@ -76,7 +79,7 @@ public class EventInitialContract {
 
         void getFilteredOrgUnits(String date);
 
-        void createNewEvent(String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
     }

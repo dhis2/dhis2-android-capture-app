@@ -32,6 +32,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,12 +57,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private ActivityEventInitialBinding binding;
     private boolean isNewEvent;
-    private boolean isCaptureCoordinates;
 
     private String selectedDate;
     private String selectedOrgUnit;
     private CategoryOptionComboModel selectedCatOptionCombo;
     private CategoryComboModel selectedCatCombo;
+    private ProgramStageModel programStageModel;
     private String selectedLat;
     private String selectedLon;
     private List<CategoryOptionComboModel> categoryOptionComboModels;
@@ -159,7 +160,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         binding.actionButton.setOnClickListener(v -> {
             if (isNewEvent){
-                presenter.createEvent(selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
             }
             else {
                 presenter.editEvent(eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
@@ -218,11 +219,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-            isCaptureCoordinates = true;
         }
         else{
             binding.coordinatesLayout.setVisibility(View.GONE);
-            isCaptureCoordinates = false;
             selectedLat = "0.0";
             selectedLon = "0.0";
         }
@@ -301,9 +300,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventCreated(String eventUid) {
-        Bundle bundle = new Bundle();
-        bundle.putString("EVENT_UID", eventUid);
-        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+        showToast(getString(R.string.event_created) + " " + eventUid);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("EVENT_UID", eventUid);
+//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+//        finish();
+    }
+
+    @Override
+    public void setProgramStage(ProgramStageModel programStage) {
+        this.programStageModel = programStage;
     }
 
 

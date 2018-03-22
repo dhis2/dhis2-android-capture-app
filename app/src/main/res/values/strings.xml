@@ -81,6 +81,7 @@
     <string name="longitude">Longitude</string>
     <string name="new_event">New event</string>
     <string name="failed_insert_event">Failed to insert new Event</string>
+    <string name="event_created">Event created</string>
 
     <!--Event Detail-->
     <string name="event_date">Event date</string>
