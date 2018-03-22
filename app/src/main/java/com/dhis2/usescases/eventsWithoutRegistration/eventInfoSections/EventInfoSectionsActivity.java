@@ -9,8 +9,6 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInfoSectionsBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
-import org.hisp.dhis.android.core.event.EventModel;
-
 import javax.inject.Inject;
 
 /**
@@ -23,7 +21,6 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
     @Inject
     EventInfoSectionsContract.Presenter presenter;
 
-    private EventModel eventModel;
     private ActivityEventInfoSectionsBinding binding;
 
 
@@ -32,6 +29,7 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
         ((App) getApplicationContext()).userComponent().plus(new EventInfoSectionsModule()).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_info_sections);
+        binding.setPresenter(presenter);
         String eventId = getIntent().getStringExtra("EVENT_UID");
         presenter.init(this, eventId);
     }

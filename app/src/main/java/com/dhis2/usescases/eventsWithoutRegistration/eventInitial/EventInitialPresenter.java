@@ -50,9 +50,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent(String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         if (program != null) {
-            interactor.createNewEvent(program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+            interactor.createNewEvent(programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
         }
     }
 

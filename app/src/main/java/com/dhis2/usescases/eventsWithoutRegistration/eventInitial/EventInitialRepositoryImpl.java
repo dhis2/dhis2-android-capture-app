@@ -2,10 +2,8 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 
-import com.dhis2.R;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -25,9 +23,11 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 02/11/2017.
+ *
  */
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {
@@ -81,9 +81,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    @NonNull
     @Override
-    public Observable<EventModel> createEvent(@NonNull Context context, @NonNull String programUid,
+    public long createEvent(@NonNull Context context, @NonNull String programUid,
                                               @NonNull String programStage, @NonNull String date,
                                               @NonNull String orgUnitUid, @NonNull String catComboUid,
                                               @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
@@ -97,7 +96,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         try {
             eventDate = simpleDateFormat.parse(date);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
         EventModel eventModel = EventModel.builder()
@@ -110,16 +109,21 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .organisationUnit(orgUnitUid)
                 .status(EventStatus.ACTIVE)
                 .state(State.TO_POST)
+                // TODO CRIS: CHECK IF THESE ARE WORKING...
+//                .latitude(latitude)
+//                .longitude(longitude)
+//                .attributeCategoryOptions(catOptionUid)
+//                .attributeOptionCombo(catComboUid)
                 .build();
 
-        long rowId = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+        return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+    }
 
-        if (rowId < 0) {
-            String message = context.getString(R.string.failed_insert_event);
-            return Observable.error(new SQLiteConstraintException(message));
-        } else {
-            return Observable.just(eventModel);
-        }
+    @NonNull
+    @Override
+    public Observable<EventModel> newlyCreatedEvent(long rowId) {
+        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'";
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
     }
 
     @NonNull
@@ -137,11 +141,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.EVENT_DATE, date);
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
-        contentValues.put(EventModel.Columns.LATITUDE, latitude);
-        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
-        // TODO CRIS: ADD CAT COMBO
-        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catComboUid == null ? "default" : catComboUid);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid == null ? "default" : catComboUid);
+        // TODO CRIS: CHECK IF THESE ARE WORKING...
+//        contentValues.put(EventModel.Columns.LATITUDE, latitude);
+//        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
+//        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catComboUid == null ? "default" : catComboUid);
+//        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid == null ? "default" : catComboUid);
 
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
         return event(eventUid);
