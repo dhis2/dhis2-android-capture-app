@@ -15,7 +15,7 @@ public abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
     public abstract Integer maxLines();
 
     @NonNull
-    public abstract Integer inputType();
+    public abstract Integer inputType();//TODO: CHhange to valueType
 
     @Nullable
     public abstract String warning();

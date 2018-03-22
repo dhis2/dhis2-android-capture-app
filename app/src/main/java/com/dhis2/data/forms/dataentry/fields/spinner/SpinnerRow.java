@@ -28,7 +28,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     @Override
-    public SpinnerHolder onCreate(ViewDataBinding binding, @NonNull ViewGroup parent) {
+    public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         return new SpinnerHolder(binding);
     }
 
