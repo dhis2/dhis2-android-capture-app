@@ -42,6 +42,8 @@ public class EventInitialContract {
 
         void onEventCreated(String eventUid);
 
+        void onEventUpdated(String eventUid);
+
         void setProgramStage(ProgramStageModel programStage);
     }
 

@@ -18,7 +18,6 @@ import android.widget.DatePicker;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
-import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
@@ -271,7 +270,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             selectedOrgUnit = null;
             binding.orgUnit.setText(getString(R.string.org_unit));
         }
-
+        checkActionButtonVisibility();
     }
 
     @Override
@@ -301,6 +300,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created) + " " + eventUid);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("EVENT_UID", eventUid);
+//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+//        finish();
+    }
+
+    @Override
+    public void onEventUpdated(String eventUid) {
+        showToast(getString(R.string.event_updated) + " " + eventUid);
 //        Bundle bundle = new Bundle();
 //        bundle.putString("EVENT_UID", eventUid);
 //        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
@@ -366,6 +374,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
 
         presenter.getCatOption(eventModel.attributeOptionCombo());
+        checkActionButtonVisibility();
     }
 
     @Override

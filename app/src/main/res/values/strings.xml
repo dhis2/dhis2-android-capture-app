@@ -82,6 +82,7 @@
     <string name="new_event">New event</string>
     <string name="failed_insert_event">Failed to insert new Event</string>
     <string name="event_created">Event created</string>
+    <string name="event_updated">Event updated</string>
 
     <!--Event Detail-->
     <string name="event_date">Event date</string>

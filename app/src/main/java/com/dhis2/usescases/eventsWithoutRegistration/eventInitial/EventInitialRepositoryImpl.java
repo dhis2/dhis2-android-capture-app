@@ -141,11 +141,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.EVENT_DATE, date);
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
-        contentValues.put(EventModel.Columns.LATITUDE, latitude);
-        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
-        // TODO CRIS: ADD CAT COMBO
-        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catComboUid == null ? "default" : catComboUid);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid == null ? "default" : catComboUid);
+        // TODO CRIS: CHECK IF THESE ARE WORKING...
+//        contentValues.put(EventModel.Columns.LATITUDE, latitude);
+//        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
+//        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catComboUid == null ? "default" : catComboUid);
+//        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid == null ? "default" : catComboUid);
 
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
         return event(eventUid);
