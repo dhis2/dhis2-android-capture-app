@@ -2,6 +2,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -18,7 +19,7 @@ public class EventInfoSectionsContract {
     public interface View extends AbstractActivityContracts.View {
         void renderError(String message);
 
-        void setProgramStageSections(List<ProgramStageSectionModel> programStageSectionModelList);
+        void setSections(List<FormSectionViewModel> programStageSectionModelList);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

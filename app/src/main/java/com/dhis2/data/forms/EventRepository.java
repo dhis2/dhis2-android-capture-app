@@ -25,8 +25,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
-
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
 })

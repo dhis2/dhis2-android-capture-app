@@ -3,6 +3,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.forms.FormRepository;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
@@ -33,20 +34,13 @@ public class EventInfoSectionsModule {
 
     @Provides
     @PerActivity
-    EventInfoSectionsContract.Interactor provideInteractor(@NonNull EventInfoSectionsRepository eventInfoSectionsRepository,
-                                                      @NonNull MetadataRepository metadataRepository) {
-        return new EventInfoSectionsInteractor(eventInfoSectionsRepository, metadataRepository);
+    EventInfoSectionsContract.Interactor provideInteractor(@NonNull EventInfoSectionsRepository eventInfoSectionsRepository) {
+        return new EventInfoSectionsInteractor(eventInfoSectionsRepository);
     }
 
     @Provides
     @PerActivity
     EventInfoSectionsRepository eventInfoSectionsRepository(BriteDatabase briteDatabase) {
         return new EventInfoSectionsRepositoryImpl(briteDatabase);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramRepository homeRepository(BriteDatabase briteDatabase) {
-        return new ProgramRepositoryImpl(briteDatabase);
     }
 }

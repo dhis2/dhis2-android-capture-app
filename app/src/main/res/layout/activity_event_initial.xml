@@ -164,7 +164,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/date"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/date"
@@ -181,6 +181,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/org_unit"
+                                android:textColorHint="@color/colorPrimary"
                                 android:layout_marginTop="16dp"
                                 android:theme="@style/dataInputText">
 
@@ -264,7 +265,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/latitude"
                                     android:layout_marginEnd="21dp"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/lat"
@@ -282,7 +283,7 @@
                                     android:layout_weight="1"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/longitude"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/lon"

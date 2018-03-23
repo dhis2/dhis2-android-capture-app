@@ -2,12 +2,10 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections;
 
 import android.support.annotation.NonNull;
 
-import com.dhis2.Bindings.Bindings;
-import com.dhis2.data.metadata.MetadataRepository;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -16,15 +14,12 @@ import io.reactivex.schedulers.Schedulers;
 
 public class EventInfoSectionsInteractor implements EventInfoSectionsContract.Interactor {
 
-    private final MetadataRepository metadataRepository;
     private final EventInfoSectionsRepository eventInfoSectionsRepository;
     private EventInfoSectionsContract.View view;
     private CompositeDisposable compositeDisposable;
 
-    EventInfoSectionsInteractor(EventInfoSectionsRepository eventInfoSectionsRepository, MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
+    EventInfoSectionsInteractor(EventInfoSectionsRepository eventInfoSectionsRepository) {
         this.eventInfoSectionsRepository = eventInfoSectionsRepository;
-        Bindings.setMetadataRepository(metadataRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -34,13 +29,13 @@ public class EventInfoSectionsInteractor implements EventInfoSectionsContract.In
         getProgramStageSections(programStageUid);
     }
 
-    private void getProgramStageSections(String programStageUid) {
-        compositeDisposable.add(eventInfoSectionsRepository.programStageSections(programStageUid)
+    private void getProgramStageSections(String eventUid) {
+        compositeDisposable.add(eventInfoSectionsRepository.sections(eventUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        programStageSectionModelList -> view.setProgramStageSections(programStageSectionModelList),
-                        throwable -> view.renderError(throwable.getMessage())
+                        sections -> view.setSections(sections),
+                        Timber::e
                 ));
     }
 

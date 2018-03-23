@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormSectionAdapter;
+import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.databinding.ActivityEventInfoSectionsBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
     EventInfoSectionsContract.Presenter presenter;
 
     private ActivityEventInfoSectionsBinding binding;
-    private List<ProgramStageSectionModel> programStageSectionModelList;
+    private FormSectionAdapter adapter;
 
 
     @Override
@@ -44,8 +44,9 @@ public class EventInfoSectionsActivity extends ActivityGlobalAbstract implements
     }
 
     @Override
-    public void setProgramStageSections(List<ProgramStageSectionModel> programStageSectionModelList) {
-        this.programStageSectionModelList = programStageSectionModelList;
-        binding.viewPager.setAdapter(new EventInfoSectionsViewPagerAdapter(getSupportFragmentManager()));
+    public void setSections(List<FormSectionViewModel> formSectionViewModels) {
+        adapter = new FormSectionAdapter(getSupportFragmentManager());
+        binding.viewPager.setAdapter(adapter);
+        adapter.swapData(formSectionViewModels);
     }
 }

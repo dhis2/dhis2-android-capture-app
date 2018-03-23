@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -34,12 +33,17 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -106,6 +110,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                selectedOrgUnit = s.toString();
                 checkActionButtonVisibility();
             }
 
@@ -163,7 +168,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
             }
             else {
-                presenter.editEvent(programStageModel.uid(), eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                try {
+                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
+                    Date date = dateFormat.parse(selectedDate);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String formattedDate = simpleDateFormat.format(date);
+                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                }
+                catch (Exception e){
+                    Timber.e(e);
+                }
             }
         });
     }
@@ -300,13 +314,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventCreated(String eventUid, String programStageUid) {
-        showToast(getString(R.string.event_created) + " " + eventUid);
+        showToast(getString(R.string.event_created));
         startFormActivity(eventUid, programStageUid);
     }
 
     @Override
     public void onEventUpdated(String eventUid, String programStageUid) {
-        showToast(getString(R.string.event_updated) + " " + eventUid);
+        showToast(getString(R.string.event_updated));
         startFormActivity(eventUid, programStageUid);
     }
 

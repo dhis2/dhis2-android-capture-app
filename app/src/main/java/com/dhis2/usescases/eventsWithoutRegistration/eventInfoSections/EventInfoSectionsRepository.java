@@ -2,11 +2,11 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
+import com.dhis2.data.forms.FormSectionViewModel;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
@@ -17,6 +17,6 @@ public interface EventInfoSectionsRepository {
 
 
     @NonNull
-    Observable<List<ProgramStageSectionModel>> programStageSections(@NonNull String programStageUid);
+    Flowable<List<FormSectionViewModel>> sections(@NonNull String eventUid);
 
 }
