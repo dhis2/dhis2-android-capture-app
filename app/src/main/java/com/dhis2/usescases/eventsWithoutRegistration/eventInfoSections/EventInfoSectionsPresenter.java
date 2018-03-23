@@ -1,5 +1,7 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections;
 
+import android.support.annotation.NonNull;
+
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 /**
@@ -18,9 +20,9 @@ public class EventInfoSectionsPresenter implements EventInfoSectionsContract.Pre
     }
 
     @Override
-    public void init(EventInfoSectionsContract.View view, String eventId) {
+    public void init(@NonNull EventInfoSectionsContract.View view, @NonNull String eventId, @NonNull String programStageUid) {
         this.view = view;
-        interactor.init(view, eventId);
+        interactor.init(view, eventId, programStageUid);
     }
 
     @Override

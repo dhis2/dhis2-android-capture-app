@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
@@ -162,7 +163,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
             }
             else {
-                presenter.editEvent(eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                presenter.editEvent(programStageModel.uid(), eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
             }
         });
     }
@@ -298,37 +299,28 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onEventCreated(String eventUid) {
+    public void onEventCreated(String eventUid, String programStageUid) {
         showToast(getString(R.string.event_created) + " " + eventUid);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("EVENT_UID", eventUid);
-//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-//        finish();
+        startFormActivity(eventUid, programStageUid);
     }
 
     @Override
-    public void onEventUpdated(String eventUid) {
+    public void onEventUpdated(String eventUid, String programStageUid) {
         showToast(getString(R.string.event_updated) + " " + eventUid);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("EVENT_UID", eventUid);
-//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-//        finish();
+        startFormActivity(eventUid, programStageUid);
+    }
+
+    private void startFormActivity(String eventUid, String programStageUid){
+        Bundle bundle = new Bundle();
+        bundle.putString(EventInfoSectionsActivity.EVENT_UID, eventUid);
+        bundle.putString(EventInfoSectionsActivity.PROGRAM_STAGE_UID, programStageUid);
+        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+        finish();
     }
 
     @Override
     public void setProgramStage(ProgramStageModel programStage) {
         this.programStageModel = programStage;
-    }
-
-
-    @Override
-    public void renderError(String message) {
-        if (getActivity() != null)
-            new AlertDialog.Builder(getActivity())
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setTitle(getString(R.string.error))
-                    .setMessage(message)
-                    .show();
     }
 
     @Override
