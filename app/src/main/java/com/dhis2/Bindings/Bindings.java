@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
@@ -78,7 +79,7 @@ public class Bindings {
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 
-        if(drawable instanceof AnimatedVectorDrawable)
+        if (drawable instanceof AnimatedVectorDrawable)
             ((AnimatedVectorDrawable) drawable).start();
     }
 
@@ -561,5 +562,24 @@ public class Bindings {
                                 ),
                         Timber::d
                 );
+    }
+
+    @BindingAdapter({"optionSet", "label"})
+    public static void setOptionSet(Spinner spinner, String optionSet, String label) {
+        if (metadataRepository != null)
+            metadataRepository.optionSet(optionSet)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            optionModels -> {
+                                OptionAdapter adapter = new OptionAdapter(spinner.getContext(),
+                                        R.layout.spinner_layout,
+                                        R.id.spinner_text,
+                                        optionModels,
+                                        label);
+                                spinner.setAdapter(adapter);
+                                spinner.setPrompt(label);
+                            },
+                            Timber::d);
     }
 }

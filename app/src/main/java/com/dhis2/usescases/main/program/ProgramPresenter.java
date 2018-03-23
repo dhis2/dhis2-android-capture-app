@@ -38,8 +38,9 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    private List<Date> dates;
+    private ArrayList<Date> dates = new ArrayList<>();
     private Period period;
+    private List<OrganisationUnitModel> myOrgs;
 
     ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
@@ -50,27 +51,30 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void init(ProgramContract.View view) {
         this.view = view;
         this.view = view;
-        getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
-        getOrgUnits();
-    }
 
-
-    @Override
-    public void getPrograms(Date fromDate, Date toDate) {
-        this.dates = null;
-        this.period = null;
-        compositeDisposable.add(homeRepository.programs(
-                DateUtils.getInstance().formatDate(fromDate),
-                DateUtils.getInstance().formatDate(toDate))
+        compositeDisposable.add(homeRepository.orgUnits()
+                .map(
+                        myOrgs -> {
+                            this.myOrgs = myOrgs;
+                            ArrayList<Date> today = new ArrayList<>();
+                            today.add(DateUtils.getInstance().getToday());
+                            return homeRepository.programs(today, Period.DAILY, orgUnitQuery());
+                        }
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view.swapProgramData(),
+                        data -> {
+                            view.swapProgramData().accept(data.blockingFirst());
+                            renderTree(myOrgs);
+                        },
                         throwable -> view.renderError(throwable.getMessage())));
+//        getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
+
     @Override
-    public void getProgramsWithDates(List<Date> dates, Period period) {
+    public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
         this.dates = dates;
         this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
@@ -81,8 +85,9 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
+
     @Override
-    public void getProgramsOrgUnit(String orgUnitQuery) {
+    public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
         compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -135,18 +140,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onTimeButtonClick() {
         view.showTimeUnitPicker();
     }
-
-    @Override
-    public void getOrgUnits() {
-        compositeDisposable.add(homeRepository.orgUnits()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::renderTree,
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
-    }
-
 
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
@@ -204,5 +197,18 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public Observable<List<EventModel>> getEvents(ProgramModel programModel) {
         return homeRepository.eventModels(programModel.uid());
+    }
+
+    public String orgUnitQuery(){
+        StringBuilder orgUnitFilter = new StringBuilder();
+        for (int i = 0; i < myOrgs.size(); i++) {
+            orgUnitFilter.append("'");
+            orgUnitFilter.append(myOrgs.get(i).uid());
+            orgUnitFilter.append("'");
+            if (i < myOrgs.size() - 1)
+                orgUnitFilter.append(", ");
+        }
+        view.setOrgUnitFilter(orgUnitFilter);
+        return orgUnitFilter.toString();
     }
 }

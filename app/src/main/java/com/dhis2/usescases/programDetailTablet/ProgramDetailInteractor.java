@@ -30,14 +30,14 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 31/10/2017 .
+ *
  */
 
 public class ProgramDetailInteractor implements ProgramDetailContractModule.Interactor {
 
     private final MetadataRepository metadataRepository;
-    ProgramDetailContractModule.View view;
+    private ProgramDetailContractModule.View view;
     private D2 d2;
-    private String ouMode = "DESCENDANTS";
     private String programId;
     private UserRepository userRepository;
     private CompositeDisposable compositeDisposable;
@@ -108,6 +108,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 orgQuey = orgQuey.concat(";");
         }
 
+        String ouMode = "DESCENDANTS";
         currentCall = d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(
                 orgQuey,
                 ouMode,
@@ -176,7 +177,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     @Override
     public void onDettach() {
         currentCall.cancel();
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     private interface TrackedEntityInstanceService {

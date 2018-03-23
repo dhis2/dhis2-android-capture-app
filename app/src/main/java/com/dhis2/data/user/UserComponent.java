@@ -9,10 +9,10 @@ import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.appInfo.InfoComponent;
 import com.dhis2.usescases.appInfo.InfoModule;
-import com.dhis2.usescases.eventInitial.EventInitialComponent;
-import com.dhis2.usescases.eventInitial.EventInitialModule;
-import com.dhis2.usescases.login.LoginComponent;
-import com.dhis2.usescases.login.LoginModule;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsComponent;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsModule;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainModule;
 import com.dhis2.usescases.main.program.ProgramComponent;
@@ -81,4 +81,7 @@ public interface UserComponent {
 
     @NonNull
     EventInitialComponent plus(@NonNull EventInitialModule eventInitialModule);
+
+    @NonNull
+    EventInfoSectionsComponent plus(@NonNull EventInfoSectionsModule eventInitialModule);
 }

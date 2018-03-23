@@ -23,22 +23,22 @@
             android:clipToPadding="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/scrollView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/scrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
-                    <com.evrencoskun.tableview.TableView
-                        android:id="@+id/tableView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:row_header_width="90dp"/>
-                </RelativeLayout>
+                <com.evrencoskun.tableview.TableView
+                    android:id="@+id/tableView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:row_header_width="90dp" />
+            </RelativeLayout>
         </android.support.v4.widget.NestedScrollView>
 
         <!--END OF SCROLLING VIEW-->
@@ -46,7 +46,8 @@
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbatlayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary">
 
             <LinearLayout
                 android:layout_width="match_parent"

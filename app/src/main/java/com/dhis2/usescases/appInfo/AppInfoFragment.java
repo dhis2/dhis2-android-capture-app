@@ -291,9 +291,9 @@ public class AppInfoFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onDestroy() {
-        compositeDisposable.dispose();
-        super.onDestroy();
+    public void onPause() {
+        compositeDisposable.clear();
+        super.onPause();
     }
 
 

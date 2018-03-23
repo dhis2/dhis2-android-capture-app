@@ -73,12 +73,14 @@
 
     <!--Event initial-->
     <string name="create">Create</string>
+    <string name="update">Update</string>
     <string name="date">Date</string>
     <string name="org_unit">Org unit</string>
     <string name="category_option">Category option</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="new_event">New event</string>
+    <string name="failed_insert_event">Failed to insert new Event</string>
 
     <!--Event Detail-->
     <string name="event_date">Event date</string>

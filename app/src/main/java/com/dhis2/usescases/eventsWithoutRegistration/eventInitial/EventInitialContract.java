@@ -1,4 +1,4 @@
-package com.dhis2.usescases.eventInitial;
+package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
 import android.support.annotation.Nullable;
@@ -38,16 +38,20 @@ public class EventInitialContract {
         void setCatOption(CategoryOptionComboModel categoryOptionComboModel);
 
         void setLocation(double latitude, double longitude);
+
+        void onEventCreated(String eventUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventInitialContract.View mview, String programId, String eventId);
+        void init(EventInitialContract.View view, String programId, String eventId);
 
         void setProgram(ProgramModel program);
 
         void onBackClick();
 
-        void createEvent();
+        void createEvent(String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+
+        void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
         void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
 
@@ -58,6 +62,8 @@ public class EventInitialContract {
         void onLocation2Click();
 
         void getCatOption(String categoryOptionComboId);
+
+        void filterOrgUnits(String date);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -67,5 +73,11 @@ public class EventInitialContract {
         void getOrgUnits();
 
         void getCatOption(String categoryOptionComboId);
+
+        void getFilteredOrgUnits(String date);
+
+        void createNewEvent(String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+
+        void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
     }
 }

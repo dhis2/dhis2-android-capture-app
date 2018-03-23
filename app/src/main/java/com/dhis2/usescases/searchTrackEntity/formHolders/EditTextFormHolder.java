@@ -27,12 +27,15 @@ public class EditTextFormHolder extends FormViewHolder {
     public EditTextFormHolder(ViewDataBinding binding, FlowableProcessor<FormViewHolder> processor) {
         super(binding);
         this.processor = processor;
+        setIsRecyclable(false);
     }
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
         this.presenter = presenter;
         this.bindableObject = bindableObject;
         binding.setVariable(BR.attribute, bindableObject);
+        binding.setVariable(BR.label, bindableObject.displayShortName());
+        binding.setVariable(BR.valueType, bindableObject.valueType());
         binding.executePendingBindings();
 
         if (binding instanceof FormAgeCustomBinding) {

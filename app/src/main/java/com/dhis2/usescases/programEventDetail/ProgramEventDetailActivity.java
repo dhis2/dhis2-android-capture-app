@@ -63,9 +63,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
         presenter.onDettach();
+        super.onPause();
     }
 
     @Override

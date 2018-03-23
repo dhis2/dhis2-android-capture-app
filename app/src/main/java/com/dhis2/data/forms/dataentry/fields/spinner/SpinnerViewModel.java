@@ -14,12 +14,6 @@ import com.google.auto.value.AutoValue;
 public abstract class SpinnerViewModel extends FieldViewModel {
 
     @NonNull
-    public abstract String uid();
-
-    @NonNull
-    public abstract String label();
-
-    @NonNull
     public abstract Boolean mandatory();
 
     @Nullable

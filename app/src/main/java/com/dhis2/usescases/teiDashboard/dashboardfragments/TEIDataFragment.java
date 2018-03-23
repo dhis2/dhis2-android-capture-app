@@ -49,8 +49,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
-        if(program!=null)
-            setData(program);
         return binding.getRoot();
     }
 

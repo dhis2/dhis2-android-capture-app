@@ -12,7 +12,9 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 31/10/2017.
+ *
  */
+
 public class ProgramDetailContractModule {
 
     public interface View extends AbstractActivityContracts.View {
@@ -53,7 +55,6 @@ public class ProgramDetailContractModule {
         void onBackClick();
 
         void setProgram(ProgramModel program);
-
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

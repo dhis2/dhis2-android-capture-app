@@ -15,7 +15,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -25,11 +28,13 @@ import timber.log.Timber;
 
 public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemSelectedListener {
 
+    private final FlowableProcessor<FormViewHolder> processor;
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableOnject;
 
-    public SpinnerHolder(ViewDataBinding binding) {
+    public SpinnerHolder(ViewDataBinding binding, @Nullable FlowableProcessor<FormViewHolder> processor) {
         super(binding);
+        this.processor = processor;
     }
 
     @Override
