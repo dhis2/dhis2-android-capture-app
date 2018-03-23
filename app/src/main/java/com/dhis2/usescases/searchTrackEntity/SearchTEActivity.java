@@ -5,12 +5,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.ProgramAdapter;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -69,8 +71,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.tableView.setVisibility(View.GONE);
         }
 
-
-        binding.formRecycler.setAdapter(new FormAdapter(presenter));
+        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this),presenter));
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
     }
 
@@ -82,9 +83,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         presenter.onDestroy();
-        super.onDestroy();
+        super.onPause();
     }
 
     //endregion
@@ -106,6 +107,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Flowable<FormViewHolder> rowActions() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowable();
+    }
+
+    @NonNull
+    public Flowable<RowAction> rowActionss() {
+        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
     }
 
     //endregion
@@ -153,14 +159,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 if (pos > 0) {
                     binding.progress.setVisibility(View.VISIBLE);
                     binding.objectCounter.setVisibility(View.GONE);
-                    if (searchTEAdapter != null)
-                        searchTEAdapter.clear();
+                    /*if (searchTEAdapter != null)
+                        searchTEAdapter.clear();*/
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                 } else {
                     binding.progress.setVisibility(View.VISIBLE);
                     binding.objectCounter.setVisibility(View.GONE);
-                    if (searchTEAdapter != null)
-                        searchTEAdapter.clear();
+                /*    if (searchTEAdapter != null)
+                        searchTEAdapter.clear();*/
                     presenter.setProgram(null);
                 }
             }

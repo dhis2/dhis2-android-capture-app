@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.databinding.FormEditTextBinding;
+import com.dhis2.databinding.FormEditTextCustomBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -18,23 +18,31 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class EditTextRow implements Row<EditTextCustomHolder, EditTextViewModel> {
 
+    @NonNull
+    private final LayoutInflater inflater;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    private final boolean isBgTransparent;
 
-    public EditTextRow(FlowableProcessor<RowAction> processor) {
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+        this.inflater = layoutInflater;
         this.processor = processor;
+        this.isBgTransparent = isBgTransparent;
     }
 
-    public EditTextCustomHolder onCreate(ViewGroup viewGroup) {
-        FormEditTextBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()),
-                R.layout.form_edit_text, viewGroup, false);
+    @NonNull
+    @Override
+    public EditTextCustomHolder onCreate(@NonNull ViewGroup viewGroup) {
+
+        FormEditTextCustomBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, viewGroup, false);
+        binding.customEdittext.setIsBgTransparent(isBgTransparent);
         return new EditTextCustomHolder(binding, processor);
     }
 
     @Override
     public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 

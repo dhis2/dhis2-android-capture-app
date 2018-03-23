@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
@@ -37,6 +38,7 @@ public class SearchTEContractsModule {
         void clearList();
 
         Flowable<FormViewHolder> rowActions();
+        Flowable<RowAction> rowActionss();
     }
 
     public interface Presenter {

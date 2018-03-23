@@ -46,6 +46,6 @@ public class EventInfoSectionsInteractor implements EventInfoSectionsContract.In
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

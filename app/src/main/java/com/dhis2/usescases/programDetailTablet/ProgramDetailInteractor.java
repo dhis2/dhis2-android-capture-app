@@ -177,7 +177,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     @Override
     public void onDettach() {
         currentCall.cancel();
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     private interface TrackedEntityInstanceService {

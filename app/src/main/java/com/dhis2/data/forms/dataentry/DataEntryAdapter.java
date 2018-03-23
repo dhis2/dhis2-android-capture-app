@@ -11,11 +11,16 @@ import android.view.ViewGroup;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.forms.dataentry.fields.age.AgeRow;
+import com.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
 import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.file.FileRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
@@ -54,16 +59,16 @@ final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 //TODO: CHECK ROWS
-        rows.add(EDITTEXT, new EditTextRow(processor));
-        rows.add(BUTTON, new EditTextRow(processor));
-        rows.add(CHECKBOX, new EditTextRow(processor));
-        rows.add(SPINNER, new SpinnerRow(processor));
-        rows.add(COORDINATES, new EditTextRow(processor));
-        rows.add(TIME, new DateTimeRow(processor));
-        rows.add(DATE, new DateTimeRow(processor));
-        rows.add(DATETIME, new DateTimeRow(processor));
-        rows.add(AGEVIEW, new EditTextRow(processor));
-        rows.add(YES_NO, new EditTextRow(processor));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor,true));
+        rows.add(BUTTON, new FileRow());
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor));
     }
 
     @Override
@@ -103,9 +108,9 @@ final class DataEntryAdapter extends Adapter {
             return DATE;*/
         } else if (viewModel instanceof DateTimeViewModel) {
             return DATETIME;
-      /*  } else if (viewModel instanceof DateViewModel) {
+        } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
-        } else if (viewModel instanceof YesNoView) {
+       /*   } else if (viewModel instanceof YesNoView) {
             return YES_NO;*/
         } else {
             throw new IllegalStateException("Unsupported view model type: "

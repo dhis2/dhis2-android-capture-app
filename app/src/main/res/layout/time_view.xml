@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
-
         <variable
             name="attribute"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
         <variable
             name="label"
-            type="java.lang.String" />
-
-        <variable
-            name="optionSet"
             type="java.lang.String" />
     </data>
 
@@ -28,13 +17,18 @@
         android:layout_margin="5dp"
         tools:background="?colorPrimary">
 
-        <Spinner
-            android:id="@+id/spinner"
+        <EditText
+            android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            app:label="@{label}"
-            app:optionSet="@{optionSet}" />
+            android:hint='@{attribute!=null?attribute.displayShortName:label,default=text}'
+            android:imeOptions="actionNext"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@color/white_faf"
+            android:textSize="16sp" />
 
         <View
             android:layout_width="match_parent"

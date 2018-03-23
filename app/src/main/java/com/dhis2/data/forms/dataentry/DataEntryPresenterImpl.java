@@ -2,8 +2,8 @@ package com.dhis2.data.forms.dataentry;
 
 import android.support.annotation.NonNull;
 
-
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.Result;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -48,10 +49,10 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private final CompositeDisposable disposable;
 
     DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
-            @NonNull DataEntryStore dataEntryStore,
-            @NonNull DataEntryRepository dataEntryRepository,
-            @NonNull RuleEngineRepository ruleEngineRepository,
-            @NonNull SchedulerProvider schedulerProvider) {
+                           @NonNull DataEntryStore dataEntryStore,
+                           @NonNull DataEntryRepository dataEntryRepository,
+                           @NonNull RuleEngineRepository ruleEngineRepository,
+                           @NonNull SchedulerProvider schedulerProvider) {
         this.codeGenerator = codeGenerator;
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
@@ -78,6 +79,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 }));
 
         disposable.add(dataEntryView.rowActions()
+                .debounce(1500, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .switchMap(action -> {
@@ -119,9 +121,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         return map;
     }
 
-    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult){
+    private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
-        /*for (RuleEffect ruleEffect : calcResult.items()) {
+        for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
@@ -130,27 +132,27 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
-                } else if (model != null && model instanceof EditTextDoubleViewModel) {
+                } /*else if (model != null && model instanceof EditTextDoubleViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextDoubleViewModel) model).withWarning(showWarning.content()));
                 } else if (model != null && model instanceof EditTextIntegerViewModel) {
                     fieldViewModels.put(showWarning.field(), ((EditTextIntegerViewModel) model)
                             .withWarning(showWarning.content()));
-                }
+                }*/
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
                 if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
-                            ((EditTextViewModel) model).withWarning(showError.content()));
-                } else if (model != null && model instanceof EditTextDoubleViewModel) {
+                            ((EditTextViewModel) model).withError(showError.content()));
+                } /*else if (model != null && model instanceof EditTextDoubleViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextDoubleViewModel) model).withWarning(showError.content()));
                 } else if (model != null && model instanceof EditTextIntegerViewModel) {
                     fieldViewModels.put(showError.field(), ((EditTextIntegerViewModel) model)
                             .withWarning(showError.content()));
-                }
+                }*/
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
@@ -158,20 +160,20 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = codeGenerator.generate();
 
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
-                TextViewModel textViewModel = TextViewModel.create(uid,
+              /*  EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayText.content(), displayText.data());
 
-                fieldViewModels.put(uid, textViewModel);
+                fieldViewModels.put(uid, textViewModel);*/
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
 
                 RuleActionDisplayKeyValuePair displayText =
                         (RuleActionDisplayKeyValuePair) ruleAction;
-                TextViewModel textViewModel = TextViewModel.create(uid,
+               /* TextViewModel textViewModel = TextViewModel.create(uid,
                         displayText.content(), displayText.data());
 
-                fieldViewModels.put(uid, textViewModel);
+                fieldViewModels.put(uid, textViewModel);*/
             }
-        }*/
+        }
     }
 }

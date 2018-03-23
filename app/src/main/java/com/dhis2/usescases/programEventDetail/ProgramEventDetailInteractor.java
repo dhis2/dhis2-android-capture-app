@@ -221,6 +221,6 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

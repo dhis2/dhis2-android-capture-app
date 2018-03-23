@@ -104,15 +104,19 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         List<ProgramModel> possibleEnrollmentPrograms = new ArrayList<>();
 
         boolean found;
+        boolean active;
         for (ProgramModel programModel : programModels) {
             found = false;
+            active = false;
             for (EnrollmentModel enrollment : teiEnrollments) {
-                if (programModel.uid().equals(enrollment.program()))
+                if (programModel.uid().equals(enrollment.program())) {
                     found = true;
+                    active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                }
             }
 
-            if (found) {
-                if (!programModel.onlyEnrollOnce())
+            if (found) {//TODO: ENROLLMENT STATUS
+                if (!active && !programModel.onlyEnrollOnce())
                     possibleEnrollmentPrograms.add(programModel);
             } else
                 possibleEnrollmentPrograms.add(programModel);

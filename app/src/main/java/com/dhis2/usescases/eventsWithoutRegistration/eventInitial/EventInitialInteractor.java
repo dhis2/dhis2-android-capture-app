@@ -113,7 +113,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     @Override

@@ -67,9 +67,9 @@ public class ProgramDetailTabletActivity extends ActivityGlobalAbstract implemen
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
         presenter.onDettach();
+        super.onPause();
     }
 
     @Override

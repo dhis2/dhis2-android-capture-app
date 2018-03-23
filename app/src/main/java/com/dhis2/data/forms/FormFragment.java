@@ -4,9 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -27,7 +24,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,6 +39,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     View fab;
     ViewPager viewPager;
     TabLayout tabLayout;
+    Toolbar toolbar;
 
     @Inject
     FormPresenter formPresenter;
@@ -50,6 +47,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     private FormSectionAdapter formSectionAdapter;
     private PublishSubject<ReportStatus> undoObservable;
     private PublishSubject<String> onReportDateChanged;
+    private TextView reportDate;
 
     public FormFragment() {
         // Required empty public constructor
@@ -76,7 +74,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         fab = view.findViewById(R.id.fab_complete_event);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
-
+        toolbar = view.findViewById(R.id.toolbar);
+        reportDate = view.findViewById(R.id.textview_report_date);
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -87,13 +86,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     private void setupActionBar() {
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
-//        if (activity != null) {
-//            activity.setSupportActionBar(toolbar);
-//            if (activity.getSupportActionBar() != null) {
-//                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//                activity.getSupportActionBar().setHomeButtonEnabled(true);
-//            }
-//        }
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeButtonEnabled(true);
+            }
+        }
     }
 
     @NonNull
@@ -158,13 +157,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     @NonNull
     @Override
     public Consumer<String> renderReportDate() {
-        return date -> Log.d("d",date);
+        return date -> {
+            reportDate.setText(date);
+        };
     }
 
     @NonNull
     @Override
     public Consumer<String> renderTitle() {
-        return title ->  Log.d("d",title);
+        return title -> Log.d("d", title);
     }
 
     @NonNull
@@ -205,11 +206,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     }
 
     private void initReportDatePicker() {
-      /*  reportDate.setOnClickListener(v -> {
+        reportDate.setOnClickListener(v -> {
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
-        });*/
+        });
     }
 
     @NonNull

@@ -1,7 +1,10 @@
 package com.dhis2.utils.CustomViews;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -13,12 +16,11 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.dhis2.BR;
 import com.dhis2.R;
-import com.dhis2.databinding.CustomTextViewBinding;
 import com.dhis2.utils.TextChangedListener;
 
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 /**
  * Created by frodriguez on 1/17/2018.
@@ -27,9 +29,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     private static EditText editText;
-    private CustomTextViewBinding binding;
+    private static ViewDataBinding binding;
 
     private TextChangedListener listener;
+
+    private LayoutInflater inflater;
+    private Boolean isBgTransparent;
 
     public CustomTextView(Context context) {
         super(context);
@@ -38,6 +43,16 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.CustomTextView,
+                0, 0);
+
+        try {
+            isBgTransparent = a.getBoolean(R.styleable.CustomTextView_isBackgroundTransparent, false);
+        } finally {
+            a.recycle();
+        }
         init(context);
     }
 
@@ -47,14 +62,29 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
     }
 
     private void init(Context context) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        binding = CustomTextViewBinding.inflate(inflater, this, true);
-        editText = findViewById(R.id.button);
+        inflater = LayoutInflater.from(context);
+    }
+
+    private void setLayout() {
+        if (isBgTransparent)
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.custom_text_view_accent, this, true);
+
+        editText = null;
+        editText = findViewById(R.id.input_editText);
         editText.addTextChangedListener(this);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute) {
-        binding.setAttribute(attribute);
+    public void setLabel(String label) {
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
+    }
+
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
+//        requestLayout();
     }
 
     public void setTextChangedListener(TextChangedListener listener) {
@@ -101,6 +131,8 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
                 default:
                     break;
             }
+
+        editText.invalidate();
     }
 
     @Override

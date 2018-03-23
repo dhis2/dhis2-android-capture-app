@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -99,5 +100,9 @@ public interface MetadataRepository {
     Observable<Integer> getProgramStageDataElementCount(String programStageId);
 
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
+
+    /*OPTION SET*/
+    Observable<List<OptionModel>> optionSet(String optionSetId);
+
 
 }

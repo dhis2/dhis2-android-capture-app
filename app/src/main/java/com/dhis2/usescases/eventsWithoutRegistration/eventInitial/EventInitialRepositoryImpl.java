@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * Created by Cristian on 22/03/2018.
  *
  */
 
@@ -118,6 +118,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
     }
+
 
     @NonNull
     @Override
