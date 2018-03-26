@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityEventInitialBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
@@ -42,7 +43,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
@@ -150,29 +150,32 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         initProgressBar();
 
-        if (isNewEvent){
+        if (isNewEvent) {
             binding.actionButton.setText(R.string.create);
-        }
-        else {
+        } else {
             binding.actionButton.setText(R.string.update);
         }
 
         binding.actionButton.setOnClickListener(v -> {
-            if (isNewEvent){
+            if (isNewEvent) {
                 presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-            }
-            else {
+            } else {
                 presenter.editEvent(eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
             }
         });
     }
 
-    private void initProgressBar(){
-        if (isNewEvent){
+    @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    private void initProgressBar() {
+        if (isNewEvent) {
             binding.progressGains.setVisibility(View.GONE);
             binding.progress.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             binding.progressGains.setVisibility(View.VISIBLE);
             binding.progress.setVisibility(View.VISIBLE);
             //TODO CRIS: GET REAL PERCENTAGE HERE
@@ -185,25 +188,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int)(completionPercent * interpolatedTime);
+        int progress = (int) (completionPercent * interpolatedTime);
         String text = String.valueOf(progress) + "%";
         binding.progress.setText(text);
     }
 
-    private void checkActionButtonVisibility(){
-        if (isFormCompleted()){
+    private void checkActionButtonVisibility() {
+        if (isFormCompleted()) {
             binding.actionButton.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isFormCompleted(){
+    private boolean isFormCompleted() {
         return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null;
     }
 
-    private boolean isCompleted(String field){
+    private boolean isCompleted(String field) {
         return field != null && !field.isEmpty();
     }
 
@@ -218,8 +220,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
-        else{
+        } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
             selectedLat = "0.0";
             selectedLon = "0.0";
@@ -265,8 +266,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty()) {
             binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
-        }
-        else {
+        } else {
             selectedOrgUnit = null;
             binding.orgUnit.setText(getString(R.string.org_unit));
         }
@@ -299,11 +299,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventCreated(String eventUid) {
-        showToast(getString(R.string.event_created) + " " + eventUid);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("EVENT_UID", eventUid);
-//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-//        finish();
+//        showToast(getString(R.string.event_created) + " " + eventUid);
+        Bundle bundle = new Bundle();
+        bundle.putString("EVENT_UID", eventUid);
+        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+        finish();
     }
 
     @Override
@@ -336,14 +336,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         selectedCatCombo = catCombo;
 
-        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
             binding.catComboLine.setVisibility(View.GONE);
             if (catComboList != null && !catComboList.isEmpty()) {
                 selectedCatOptionCombo = catComboList.get(0);
             }
-        }
-        else {
+        } else {
             binding.catCombo.setVisibility(View.VISIBLE);
             binding.catComboLine.setVisibility(View.VISIBLE);
         }

@@ -16,7 +16,6 @@ import java.util.List;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialContract {
@@ -69,6 +68,8 @@ public class EventInitialContract {
         void getCatOption(String categoryOptionComboId);
 
         void filterOrgUnits(String date);
+
+        void onDetach();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -84,5 +85,7 @@ public class EventInitialContract {
         void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+
+        void onDetach();
     }
 }
