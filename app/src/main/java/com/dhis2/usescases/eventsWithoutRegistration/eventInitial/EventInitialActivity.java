@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -17,6 +16,8 @@ import android.widget.DatePicker;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -34,15 +35,21 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * Created by Cristian on 01/03/2018.
+ *
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
@@ -105,6 +112,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                selectedOrgUnit = s.toString();
                 checkActionButtonVisibility();
             }
 
@@ -150,17 +158,27 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         initProgressBar();
 
-        if (isNewEvent) {
+        if (isNewEvent){
             binding.actionButton.setText(R.string.create);
         } else {
             binding.actionButton.setText(R.string.update);
         }
 
         binding.actionButton.setOnClickListener(v -> {
-            if (isNewEvent) {
+            if (isNewEvent){
                 presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-            } else {
-                presenter.editEvent(eventId, selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+            }
+            else {
+                try {
+                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
+                    Date date = dateFormat.parse(selectedDate);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String formattedDate = simpleDateFormat.format(date);
+                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                }
+                catch (Exception e){
+                    Timber.e(e);
+                }
             }
         });
     }
@@ -188,24 +206,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int) (completionPercent * interpolatedTime);
+        int progress = (int)(completionPercent * interpolatedTime);
         String text = String.valueOf(progress) + "%";
         binding.progress.setText(text);
     }
 
-    private void checkActionButtonVisibility() {
-        if (isFormCompleted()) {
+    private void checkActionButtonVisibility(){
+        if (isFormCompleted()){
             binding.actionButton.setVisibility(View.VISIBLE);
         } else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isFormCompleted() {
+    private boolean isFormCompleted(){
         return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null;
     }
 
-    private boolean isCompleted(String field) {
+    private boolean isCompleted(String field){
         return field != null && !field.isEmpty();
     }
 
@@ -298,37 +316,32 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onEventCreated(String eventUid) {
-//        showToast(getString(R.string.event_created) + " " + eventUid);
-        Bundle bundle = new Bundle();
-        bundle.putString("EVENT_UID", eventUid);
-        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-        finish();
+    public void onEventCreated(String eventUid, String programStageUid) {
+        showToast(getString(R.string.event_created));
+        startFormActivity(eventUid, programStageUid);
     }
 
     @Override
-    public void onEventUpdated(String eventUid) {
-        showToast(getString(R.string.event_updated) + " " + eventUid);
+    public void onEventUpdated(String eventUid, String programStageUid) {
+        showToast(getString(R.string.event_updated));
+        startFormActivity(eventUid, programStageUid);
+    }
+
+    private void startFormActivity(String eventUid, String programStageUid){
 //        Bundle bundle = new Bundle();
-//        bundle.putString("EVENT_UID", eventUid);
+//        bundle.putString(EventInfoSectionsActivity.EVENT_UID, eventUid);
+//        bundle.putString(EventInfoSectionsActivity.PROGRAM_STAGE_UID, programStageUid);
 //        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
 //        finish();
+
+        FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
+        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
     }
 
     @Override
     public void setProgramStage(ProgramStageModel programStage) {
         this.programStageModel = programStage;
-    }
-
-
-    @Override
-    public void renderError(String message) {
-        if (getActivity() != null)
-            new AlertDialog.Builder(getActivity())
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setTitle(getString(R.string.error))
-                    .setMessage(message)
-                    .show();
+        binding.setProgramStage(programStage);
     }
 
     @Override

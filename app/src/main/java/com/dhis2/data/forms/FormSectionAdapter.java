@@ -11,12 +11,12 @@ import com.dhis2.data.forms.dataentry.DataEntryFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-class FormSectionAdapter extends FragmentStatePagerAdapter {
+public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
 
-    FormSectionAdapter(FragmentManager fragmentManager) {
+    public FormSectionAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
         this.formSectionViewModelList = new ArrayList<>();
     }
@@ -49,7 +49,7 @@ class FormSectionAdapter extends FragmentStatePagerAdapter {
         return formSectionViewModelList.get(position).label();
     }
 
-    void swapData(List<FormSectionViewModel> models) {
+    public void swapData(List<FormSectionViewModel> models) {
         formSectionViewModelList.clear();
         formSectionViewModelList.addAll(models);
         notifyDataSetChanged();

@@ -32,9 +32,9 @@ class FormPresenterImpl implements FormPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-            FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
-            @NonNull SchedulerProvider schedulerProvider,
-            @NonNull FormRepository formRepository) {
+    FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
+                        @NonNull SchedulerProvider schedulerProvider,
+                        @NonNull FormRepository formRepository) {
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;

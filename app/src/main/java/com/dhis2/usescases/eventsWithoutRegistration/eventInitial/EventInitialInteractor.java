@@ -162,7 +162,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            eventModel -> view.onEventCreated(eventModel.uid()),
+                            eventModel -> view.onEventCreated(eventModel.uid(), programStageModelUid),
                             throwable -> view.renderError(throwable.getMessage())
                     ));
         }
@@ -170,13 +170,13 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
 
     @Override
-    public void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
+    public void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
         compositeDisposable.add(eventInitialRepository.editEvent(eventUid, date, orgUnitUid, catComboUid, latitude, longitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
-                        throwable -> view.renderError(throwable.getMessage())
+                        (eventModel) -> view.onEventUpdated(eventModel.uid(), programStageModelUid),
+                        Timber::e
 
                 ));
     }

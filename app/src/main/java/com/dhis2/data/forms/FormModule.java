@@ -24,7 +24,7 @@ public class FormModule {
     @Provides
     @PerForm
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
-            @NonNull FormRepository formRepository) {
+                                @NonNull FormRepository formRepository) {
         return new FormPresenterImpl(formViewArguments, schedulerProvider, formRepository);
     }
 

@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by Cristian on 01/03/2018.
+ *
  */
 
 public class EventInitialContract {
@@ -39,9 +40,9 @@ public class EventInitialContract {
 
         void setLocation(double latitude, double longitude);
 
-        void onEventCreated(String eventUid);
+        void onEventCreated(String eventUid, String programStageUid);
 
-        void onEventUpdated(String eventUid);
+        void onEventUpdated(String eventUid, String programStageUid);
 
         void setProgramStage(ProgramStageModel programStage);
     }
@@ -55,7 +56,7 @@ public class EventInitialContract {
 
         void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+        void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
         void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
 
@@ -84,7 +85,7 @@ public class EventInitialContract {
 
         void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+        void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
         void onDetach();
     }

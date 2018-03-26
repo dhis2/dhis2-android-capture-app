@@ -45,7 +45,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     FormPresenter formPresenter;
 
     private FormSectionAdapter formSectionAdapter;
-    private PublishSubject<ReportStatus> undoObservable;
     private PublishSubject<String> onReportDateChanged;
     private TextView reportDate;
 
@@ -98,8 +97,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     @NonNull
     @Override
     public Observable<ReportStatus> eventStatusChanged() {
-        undoObservable = PublishSubject.create();
-//        return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getReportStatusFromFab()));
+        PublishSubject<ReportStatus> undoObservable = PublishSubject.create();
         return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getReportStatusFromFab()));
     }
 

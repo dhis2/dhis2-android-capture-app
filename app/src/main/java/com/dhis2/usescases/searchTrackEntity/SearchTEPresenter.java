@@ -265,9 +265,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);
         bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
-       /* if (view.getContext().getResources().getBoolean(R.bool.is_tablet))
-            view.startActivity(TeiDashboardTabletActivity.class, bundle, false, false, null);
-        else*/
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 

@@ -12,6 +12,9 @@
             name="event"
             type="org.hisp.dhis.android.core.event.EventModel"/>
         <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
+        <variable
             name="isNewEvent"
             type="boolean"/>
         <variable
@@ -142,13 +145,14 @@
                                         android:layout_height="wrap_content"
                                         android:textSize="14sp"
                                         android:textColor="?colorPrimary"
-                                        app:programStage='@{event.programStage()}'/>
+                                        android:text='@{programStage.displayName()}'/>
 
+                                    <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textSize="12sp"
-                                        app:programStageDescription='@{event.programStage()}'/>
+                                        android:text="@string/fake_program_stage_description"/>
 
                                 </LinearLayout>
 
@@ -164,7 +168,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/date"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/date"
@@ -181,6 +185,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/org_unit"
+                                android:textColorHint="@color/colorPrimary"
                                 android:layout_marginTop="16dp"
                                 android:theme="@style/dataInputText">
 
@@ -264,7 +269,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/latitude"
                                     android:layout_marginEnd="21dp"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/lat"
@@ -282,7 +287,7 @@
                                     android:layout_weight="1"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/longitude"
-                                    android:theme="@style/dataInputText">
+                                    android:textColorHint="@color/colorPrimary">
 
                                     <android.support.design.widget.TextInputEditText
                                         android:id="@+id/lon"

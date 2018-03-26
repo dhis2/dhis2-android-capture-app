@@ -57,8 +57,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
-        interactor.editEvent(eventUid, date, orgUnitUid, catComboUid, latitude, longitude);
+    public void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
+        interactor.editEvent(programStageModel, eventUid, date, orgUnitUid, catComboUid, latitude, longitude);
     }
 
     @Override
