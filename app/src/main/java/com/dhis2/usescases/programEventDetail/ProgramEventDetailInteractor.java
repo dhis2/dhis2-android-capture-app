@@ -31,6 +31,7 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 13/02/2018.
+ *
  */
 
 public class ProgramEventDetailInteractor implements ProgramEventDetailContract.Interactor {

@@ -35,12 +35,17 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -162,27 +167,27 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.actionButton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(EventSummaryActivity.EVENT_ID, eventId);
-            bundle.putString(EventSummaryActivity.PROGRAM_ID, programId);
-            Intent intent = new Intent(this, EventSummaryActivity.class);
-            intent.putExtras(bundle);
-            startActivity(intent);
-//            if (isNewEvent){
-//                presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-//            }
-//            else {
-//                try {
-//                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
-//                    Date date = dateFormat.parse(selectedDate);
-//                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-//                    String formattedDate = simpleDateFormat.format(date);
-//                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
-//                }
-//                catch (Exception e){
-//                    Timber.e(e);
-//                }
-//            }
+//            Bundle bundle = new Bundle();
+//            bundle.putString(EventSummaryActivity.EVENT_ID, eventId);
+//            bundle.putString(EventSummaryActivity.PROGRAM_ID, programId);
+//            Intent intent = new Intent(this, EventSummaryActivity.class);
+//            intent.putExtras(bundle);
+//            startActivity(intent);
+            if (isNewEvent){
+                presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+            }
+            else {
+                try {
+                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
+                    Date date = dateFormat.parse(selectedDate);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String formattedDate = simpleDateFormat.format(date);
+                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                }
+                catch (Exception e){
+                    Timber.e(e);
+                }
+            }
         });
     }
 
