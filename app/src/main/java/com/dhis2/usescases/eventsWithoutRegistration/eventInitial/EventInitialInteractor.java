@@ -181,6 +181,11 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                 ));
     }
 
+    @Override
+    public void onDetach() {
+        compositeDisposable.dispose();
+    }
+
 
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
