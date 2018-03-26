@@ -110,4 +110,7 @@
     <!--MAP SELECTION-->
     <string name="select_location">Select location</string>
 
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Report date</string>
+
 </resources>

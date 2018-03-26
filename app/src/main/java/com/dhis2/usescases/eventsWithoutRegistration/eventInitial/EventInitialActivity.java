@@ -16,6 +16,8 @@ import android.widget.DatePicker;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -325,16 +327,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid, String programStageUid){
-        Bundle bundle = new Bundle();
-        bundle.putString(EventInfoSectionsActivity.EVENT_UID, eventUid);
-        bundle.putString(EventInfoSectionsActivity.PROGRAM_STAGE_UID, programStageUid);
-        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-        finish();
+//        Bundle bundle = new Bundle();
+//        bundle.putString(EventInfoSectionsActivity.EVENT_UID, eventUid);
+//        bundle.putString(EventInfoSectionsActivity.PROGRAM_STAGE_UID, programStageUid);
+//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
+//        finish();
+
+        FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
+        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
     }
 
     @Override
     public void setProgramStage(ProgramStageModel programStage) {
         this.programStageModel = programStage;
+        binding.setProgramStage(programStage);
     }
 
     @Override

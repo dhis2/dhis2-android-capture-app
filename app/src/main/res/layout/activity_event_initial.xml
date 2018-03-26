@@ -12,6 +12,9 @@
             name="event"
             type="org.hisp.dhis.android.core.event.EventModel"/>
         <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
+        <variable
             name="isNewEvent"
             type="boolean"/>
         <variable
@@ -142,13 +145,14 @@
                                         android:layout_height="wrap_content"
                                         android:textSize="14sp"
                                         android:textColor="?colorPrimary"
-                                        app:programStage='@{event.programStage()}'/>
+                                        android:text='@{programStage.displayName()}'/>
 
+                                    <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textSize="12sp"
-                                        app:programStageDescription='@{event.programStage()}'/>
+                                        android:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."/>
 
                                 </LinearLayout>
 
