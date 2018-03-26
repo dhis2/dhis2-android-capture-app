@@ -19,6 +19,7 @@ import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityEventInitialBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
@@ -34,17 +35,12 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -73,12 +69,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private List<CategoryOptionComboModel> categoryOptionComboModels;
     private int completionPercent;
     private String eventId;
+    private String programId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule()).inject(this);
         super.onCreate(savedInstanceState);
-        String programId = getIntent().getStringExtra("PROGRAM_UID");
+        programId = getIntent().getStringExtra("PROGRAM_UID");
         isNewEvent = getIntent().getBooleanExtra("NEW_EVENT", true);
         eventId = getIntent().getStringExtra("EVENT_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
@@ -165,21 +162,27 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.actionButton.setOnClickListener(v -> {
-            if (isNewEvent){
-                presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-            }
-            else {
-                try {
-                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
-                    Date date = dateFormat.parse(selectedDate);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    String formattedDate = simpleDateFormat.format(date);
-                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
-                }
-                catch (Exception e){
-                    Timber.e(e);
-                }
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString(EventSummaryActivity.EVENT_ID, eventId);
+            bundle.putString(EventSummaryActivity.PROGRAM_ID, programId);
+            Intent intent = new Intent(this, EventSummaryActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+//            if (isNewEvent){
+//                presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+//            }
+//            else {
+//                try {
+//                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
+//                    Date date = dateFormat.parse(selectedDate);
+//                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//                    String formattedDate = simpleDateFormat.format(date);
+//                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+//                }
+//                catch (Exception e){
+//                    Timber.e(e);
+//                }
+//            }
         });
     }
 
@@ -326,12 +329,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid, String programStageUid){
-//        Bundle bundle = new Bundle();
-//        bundle.putString(EventInfoSectionsActivity.EVENT_UID, eventUid);
-//        bundle.putString(EventInfoSectionsActivity.PROGRAM_STAGE_UID, programStageUid);
-//        startActivity(EventInfoSectionsActivity.class, bundle, false, false, null);
-//        finish();
-
         FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
         startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
     }

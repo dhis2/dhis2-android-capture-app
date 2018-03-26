@@ -25,7 +25,7 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
     private ProgramEventDetailContract.Presenter presenter;
     private List<EventModel> events;
 
-    public ProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
+    ProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
         this.presenter = presenter;
         this.events = new ArrayList<>();
     }

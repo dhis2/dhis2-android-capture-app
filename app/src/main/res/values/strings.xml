@@ -114,4 +114,10 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>
 
+    <!--EVENT SUMMARY-->
+    <string name="section_list">Section list</string>
+    <string name="event_summary_header">%s questions of %s completed</string>
+    <string name="event_summary_sections_header">%s of %s completed</string>
+    <string name="complete_and_close">Complete and close</string>
+
 </resources>

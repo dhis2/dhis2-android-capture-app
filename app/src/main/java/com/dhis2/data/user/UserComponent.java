@@ -9,6 +9,8 @@ import com.dhis2.usescases.appInfo.InfoComponent;
 import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
+import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
+import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainModule;
 import com.dhis2.usescases.main.program.ProgramComponent;
@@ -77,4 +79,7 @@ public interface UserComponent {
 
     
     EventInitialComponent plus(EventInitialModule eventInitialModule);
+
+
+    EventSummaryComponent plus(EventSummaryModule eventInitialModule);
 }
