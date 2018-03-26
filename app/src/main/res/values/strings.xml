@@ -83,6 +83,7 @@
     <string name="failed_insert_event">Failed to insert new Event</string>
     <string name="event_created">Event created</string>
     <string name="event_updated">Event updated</string>
+    <string name="fake_program_stage_description">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
 
     <!--Event Detail-->
     <string name="event_date">Event date</string>

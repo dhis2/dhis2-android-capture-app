@@ -152,7 +152,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textSize="12sp"
-                                        android:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."/>
+                                        android:text="@string/fake_program_stage_description"/>
 
                                 </LinearLayout>
 
