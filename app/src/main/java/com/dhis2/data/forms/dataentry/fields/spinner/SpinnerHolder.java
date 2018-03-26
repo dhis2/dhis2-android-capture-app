@@ -1,7 +1,9 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.dhis2.BR;
 import com.dhis2.R;
@@ -27,6 +29,7 @@ import timber.log.Timber;
 
 public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemSelectedListener {
 
+    private final FlowableProcessor<RowAction> processor;
     SearchTEContractsModule.Presenter presenter;
     TrackedEntityAttributeModel bindableOnject;
     FormSpinnerBinding binding;
@@ -35,6 +38,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     public SpinnerHolder(FormSpinnerBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        this.processor = processor;
         this.binding = binding;
         /*
         model = BehaviorProcessor.create();
@@ -53,6 +57,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
                             RowAction.create(model.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
                     );
                 }
+                ((TextView) view).setTextColor(Color.BLACK);
             }
 
             @Override
@@ -94,7 +99,9 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
         if (position > 0)
-            presenter.query(String.format("%s:EQ:%s", bindableOnject.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName()), true);
+            processor.onNext(
+                    RowAction.create(model.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
+            );
         else
             presenter.clearFilter(bindableOnject.uid());
     }
@@ -105,8 +112,15 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
 
     public void update(SpinnerViewModel viewModel) {
         this.model = viewModel;
-        binding.setLabel(viewModel.label());
-        binding.setOptionSet(viewModel.optionSet());
-        binding.executePendingBindings();
+        if (binding.spinner.getAdapter() == null) {
+            binding.setLabel(viewModel.label());
+            binding.setOptionSet(viewModel.optionSet());
+            binding.executePendingBindings();
+        } else {
+            for (int i = 1; i < binding.spinner.getAdapter().getCount(); i++) {
+                if (((OptionModel) binding.spinner.getAdapter().getItem(i)).displayName().equals(viewModel.value()))
+                    binding.spinner.setSelection(i, false);
+            }
+        }
     }
 }

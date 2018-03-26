@@ -56,9 +56,11 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
     }
 
     public void setAttribute(TrackedEntityAttributeModel attribute){
-        binding.setAttribute(attribute);
-        if(attribute.valueType() == ValueType.TRUE_ONLY)
-            no.setVisibility(View.GONE);
+        if(attribute!=null) {
+            binding.setAttribute(attribute);
+            if (attribute.valueType() == ValueType.TRUE_ONLY)
+                no.setVisibility(View.GONE);
+        }
     }
 
     @Override

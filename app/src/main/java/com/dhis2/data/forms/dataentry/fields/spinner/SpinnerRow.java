@@ -22,7 +22,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
         this.processor = processor;
     }
 

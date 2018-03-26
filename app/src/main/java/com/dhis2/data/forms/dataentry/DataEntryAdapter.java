@@ -20,6 +20,7 @@ import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
+import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
@@ -62,7 +63,7 @@ final class DataEntryAdapter extends Adapter {
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor,true));
         rows.add(BUTTON, new FileRow());
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE));
@@ -110,8 +111,8 @@ final class DataEntryAdapter extends Adapter {
             return DATETIME;
         } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
-       /*   } else if (viewModel instanceof YesNoView) {
-            return YES_NO;*/
+          } else if (viewModel instanceof FileViewModel) {
+            return BUTTON;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());

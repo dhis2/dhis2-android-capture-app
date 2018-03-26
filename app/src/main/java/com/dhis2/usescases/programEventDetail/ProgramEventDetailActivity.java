@@ -192,7 +192,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
 
-        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()){
             binding.catCombo.setVisibility(View.GONE);
         }
         else {

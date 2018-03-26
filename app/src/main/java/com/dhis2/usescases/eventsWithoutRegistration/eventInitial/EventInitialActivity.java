@@ -19,7 +19,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityEventInitialBinding;
-import com.dhis2.usescases.eventsWithoutRegistration.eventInfoSections.EventInfoSectionsActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;

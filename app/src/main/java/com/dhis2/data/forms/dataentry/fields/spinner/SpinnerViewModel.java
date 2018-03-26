@@ -25,7 +25,7 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @NonNull
     public abstract String optionSet();
 
-    public static FieldViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory, String optionSet, String value) {
+    public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory, String optionSet, String value) {
         return new AutoValue_SpinnerViewModel(id, label, mandatory, value, hintFilterOptions, optionSet);
     }
 }

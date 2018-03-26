@@ -20,6 +20,10 @@
         <variable
             name="optionSet"
             type="java.lang.String" />
+
+        <variable
+            name="isBgTransparent"
+            type="java.lang.Boolean"/>
     </data>
 
     <RelativeLayout
