@@ -40,6 +40,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
         super(binding);
         this.processor = processor;
         this.binding = binding;
+
         /*
         model = BehaviorProcessor.create();
 
@@ -111,16 +112,20 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
     }
 
     public void update(SpinnerViewModel viewModel) {
-        this.model = viewModel;
-        if (binding.spinner.getAdapter() == null) {
+        if (model == null || binding.spinner.getAdapter() == null) {
             binding.setLabel(viewModel.label());
             binding.setOptionSet(viewModel.optionSet());
             binding.executePendingBindings();
+            this.model = viewModel;
+
         } else {
+
             for (int i = 1; i < binding.spinner.getAdapter().getCount(); i++) {
-                if (((OptionModel) binding.spinner.getAdapter().getItem(i)).displayName().equals(viewModel.value()))
+                if (((OptionModel) binding.spinner.getAdapter().getItem(i)).displayName().equals(viewModel.value()) && !model.value().equals(viewModel.value()))
                     binding.spinner.setSelection(i, false);
             }
         }
+
+
     }
 }
