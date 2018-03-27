@@ -15,55 +15,58 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="3dp"
-        tools:background="?colorPrimary">
+        android:padding="5dp">
 
         <TextView
-            android:id="@+id/label"
+            android:id="@+id/button"
             android:layout_width="wrap_content"
+            android:maxWidth="150dp"
+            android:minWidth="150dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
-            android:gravity="center"
-            android:text='@{label , default=text}'
-            android:textAlignment="center"
+            android:gravity="start|center"
+            android:text='@{label}'
+            tools:text="WHOMCH Smocking cessation counselling provided"
             android:textAllCaps="false"
-            android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
+            android:textColor="?attr/colorPrimary"
+            android:textColorHint="?attr/colorPrimary"
             android:textSize="16sp" />
 
 
         <RadioGroup
             android:id="@+id/radiogroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <RadioButton
                 android:id="@+id/yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/white"
+                android:buttonTint="?attr/colorPrimary"
                 android:checked="false"
                 android:text="yes"
-                android:textColor="@color/white" />
+                android:textColor="?attr/colorPrimary" />
 
             <RadioButton
                 android:id="@+id/no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/white"
+                android:buttonTint="?attr/colorPrimary"
                 android:checked="false"
                 android:text="no"
-                android:textColor="@color/white" />
+                android:textColor="?attr/colorPrimary" />
 
             <RadioButton
                 android:id="@+id/no_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/white"
+                android:buttonTint="?attr/colorPrimary"
 
                 android:checked="false"
                 android:text="no value"
-                android:textColor="@color/white" />
+                android:textColor="?attr/colorPrimary" />
 
         </RadioGroup>
 

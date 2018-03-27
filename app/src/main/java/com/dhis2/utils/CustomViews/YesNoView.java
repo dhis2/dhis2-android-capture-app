@@ -1,20 +1,20 @@
 package com.dhis2.utils.CustomViews;
 
 import android.content.Context;
-import android.support.v7.widget.SwitchCompat;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
+import android.widget.TextView;
 
+import com.dhis2.BR;
 import com.dhis2.R;
-import com.dhis2.databinding.YesNoViewBinding;
 
 import org.hisp.dhis.android.core.common.ValueType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 
 /**
@@ -23,12 +23,15 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedChangeListener {
 
-    private YesNoViewBinding binding;
+    private ViewDataBinding binding;
 
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
     private RadioButton no_value;
+    private TextView labelView;
+    private boolean isBgTransparent;
+    private LayoutInflater inflater;
 
     public YesNoView(Context context) {
         super(context);
@@ -45,26 +48,55 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
         init(context);
     }
 
-    private void init(Context context){
-        LayoutInflater inflater = LayoutInflater.from(context);
-        binding = YesNoViewBinding.inflate(inflater, this, true);
-        radioGroup = findViewById(R.id.radiogroup);
-        yes  = findViewById(R.id.yes);
-        no = findViewById(R.id.no);
-        no_value = findViewById(R.id.no_value);
-        radioGroup.setOnCheckedChangeListener(this);
+    private void init(Context context) {
+        inflater = LayoutInflater.from(context);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute){
-        if(attribute!=null) {
-            binding.setAttribute(attribute);
-            if (attribute.valueType() == ValueType.TRUE_ONLY)
-                no.setVisibility(View.GONE);
-        }
+    public void setValueType(ValueType valueType) {
+
+        if (valueType == ValueType.TRUE_ONLY)
+            no.setVisibility(View.GONE);
+
+    }
+
+    public void setLabel(String label) {
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
     }
 
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int i) {
 
+    }
+
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
+    }
+
+    private void setLayout() {
+        if (isBgTransparent)
+            binding = DataBindingUtil.inflate(inflater, R.layout.yes_no_view_primary, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.yes_no_view, this, true);
+
+        radioGroup = findViewById(R.id.radiogroup);
+        yes = findViewById(R.id.yes);
+        no = findViewById(R.id.no);
+        no_value = findViewById(R.id.no_value);
+        labelView = findViewById(R.id.label);
+        radioGroup.setOnCheckedChangeListener(this);
+
+    }
+
+    public String getLabel() {
+        if (labelView != null)
+            return labelView.getText().toString();
+        else
+            return null;
+    }
+
+    public RadioGroup getRadioGroup() {
+        return radioGroup;
     }
 }

@@ -62,14 +62,14 @@ final class DataEntryAdapter extends Adapter {
 //TODO: CHECK ROWS
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor,true));
         rows.add(BUTTON, new FileRow());
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
     }
 
     @Override

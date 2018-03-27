@@ -38,6 +38,7 @@ public class EditTextCustomHolder extends FormViewHolder {
 
         this.binding = binding;
         this.processor = processor;
+        this.processor = processor;
 
         model = BehaviorProcessor.create();
         model.subscribe(editTextModel -> {

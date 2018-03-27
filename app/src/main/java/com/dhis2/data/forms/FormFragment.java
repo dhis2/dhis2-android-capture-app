@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -47,6 +49,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     private FormSectionAdapter formSectionAdapter;
     private PublishSubject<String> onReportDateChanged;
     private TextView reportDate;
+    PublishSubject<ReportStatus> undoObservable;
+    private CoordinatorLayout coordinatorLayout;
 
     public FormFragment() {
         // Required empty public constructor
@@ -75,6 +79,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
         reportDate = view.findViewById(R.id.textview_report_date);
+        coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -97,7 +102,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     @NonNull
     @Override
     public Observable<ReportStatus> eventStatusChanged() {
-        PublishSubject<ReportStatus> undoObservable = PublishSubject.create();
+        undoObservable = PublishSubject.create();
         return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getReportStatusFromFab()));
     }
 
@@ -182,11 +187,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
-     /*   String snackBarMessage = reportStatus == ReportStatus.COMPLETED ?
-                getString(R.string.complete) : getString(R.string.active);
+        String snackBarMessage = reportStatus == ReportStatus.COMPLETED ?
+                "Completed" : "Activated";
 
         Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.undo), v1 -> {
+                .setAction("Revert", v1 -> {
                     if (undoObservable == null) {
                         return;
                     }
@@ -196,7 +201,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
                         undoObservable.onNext(ReportStatus.COMPLETED);
                     }
                 })
-                .show();*/
+                .show();
     }
 
     private ReportStatus getReportStatusFromFab() {

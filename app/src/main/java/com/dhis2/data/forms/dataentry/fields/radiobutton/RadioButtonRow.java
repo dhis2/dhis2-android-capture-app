@@ -10,7 +10,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormYesNoBinding;
-import com.dhis2.databinding.YesNoViewBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -20,27 +19,30 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewModel> {
 
-    ViewDataBinding binding;
+    private final LayoutInflater inflater;
+    private final boolean isBgTransparent;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
+    public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+        this.inflater = layoutInflater;
         this.processor = processor;
-
+        this.isBgTransparent = isBgTransparent;
     }
 
     @NonNull
     @Override
     public RadioButtonHolder onCreate(@NonNull ViewGroup parent) {
-        FormYesNoBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+        FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_yes_no, parent, false);
-        return new RadioButtonHolder(binding);
+        binding.customYesNo.setIsBgTransparent(isBgTransparent);
+        return new RadioButtonHolder(parent,binding, processor);
     }
 
     @Override
     public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 
