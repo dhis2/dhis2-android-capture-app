@@ -8,7 +8,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 
 import io.reactivex.Flowable;
 
-interface RuleEngineRepository {
+public interface RuleEngineRepository {
 
     @NonNull
     Flowable<Result<RuleEffect>> calculate();

@@ -1,11 +1,17 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.forms.EventRepository;
+import com.dhis2.data.forms.FormRepository;
+import com.dhis2.data.forms.RulesRepository;
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialRepository;
+import com.dhis2.data.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite2.BriteDatabase;
+
+import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,6 +23,17 @@ import dagger.Provides;
 @PerActivity
 @Module
 public class EventSummaryModule {
+
+    @NonNull
+    private Context context;
+
+    @NonNull
+    private String eventUid;
+
+    EventSummaryModule(@NonNull Context context, @NonNull String eventUid) {
+        this.context = context;
+        this.eventUid = eventUid;
+    }
 
     @Provides
     @PerActivity
@@ -33,13 +50,28 @@ public class EventSummaryModule {
     @Provides
     @PerActivity
     EventSummaryContract.Interactor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                      @NonNull MetadataRepository metadataRepository) {
-        return new EventSummaryInteractor(eventSummaryRepository, metadataRepository);
+                                                      @NonNull MetadataRepository metadataRepository,
+                                                      @NonNull SchedulerProvider schedulerProvider) {
+        return new EventSummaryInteractor(eventSummaryRepository, metadataRepository, schedulerProvider);
     }
 
     @Provides
     @PerActivity
-    EventSummaryRepository eventSummaryRepository(BriteDatabase briteDatabase) {
-        return new EventSummaryRepositoryImpl(briteDatabase);
+    EventSummaryRepository eventSummaryRepository(@NonNull Context context,
+                                                  @NonNull BriteDatabase briteDatabase,
+                                                  @NonNull FormRepository formRepository) {
+        return new EventSummaryRepositoryImpl(context, briteDatabase, formRepository, eventUid);
+    }
+
+    @Provides
+    FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
+                                  @NonNull RuleExpressionEvaluator evaluator,
+                                  @NonNull RulesRepository rulesRepository) {
+        return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid);
+    }
+
+    @Provides
+    RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
+        return new RulesRepository(briteDatabase);
     }
 }

@@ -1,5 +1,8 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Created by Cristian on 01/03/2018.
  *
@@ -16,7 +19,7 @@ public class EventSummaryPresenter implements EventSummaryContract.Presenter {
     }
 
     @Override
-    public void init(EventSummaryContract.View mview, String programId, String eventId) {
+    public void init(@NonNull EventSummaryContract.View mview, @NonNull String programId, @NonNull String eventId) {
         view = mview;
         interactor.init(view, programId, eventId);
     }
@@ -24,6 +27,11 @@ public class EventSummaryPresenter implements EventSummaryContract.Presenter {
     @Override
     public void onBackClick() {
         view.back();
+    }
+
+    @Override
+    public void getSectionCompletion(@Nullable String sectionUid) {
+        interactor.getSectionCompletion(sectionUid);
     }
 
     @Override

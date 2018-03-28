@@ -23,7 +23,7 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-final class EventsRuleEngineRepository implements RuleEngineRepository {
+public final class EventsRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_EVENT = "SELECT uid,\n" +
             "  programStage,\n" +
             "  status,\n" +

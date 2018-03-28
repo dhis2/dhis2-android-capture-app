@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer;
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
 })
-class EventRepository implements FormRepository {
+public class EventRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
             ProgramModel.TABLE, ProgramStageModel.TABLE);
 
@@ -78,7 +78,7 @@ class EventRepository implements FormRepository {
     @Nonnull
     private final String eventUid;
 
-    EventRepository(@NonNull BriteDatabase briteDatabase,
+    public EventRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull RuleExpressionEvaluator evaluator,
             @NonNull RulesRepository rulesRepository,
             @NonNull String eventUid) {

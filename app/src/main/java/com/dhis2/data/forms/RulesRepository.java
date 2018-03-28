@@ -48,7 +48,7 @@ import static android.text.TextUtils.isEmpty;
 
 
 @SuppressWarnings("PMD")
-final class RulesRepository {
+public final class RulesRepository {
     private static final String QUERY_RULES = "SELECT\n" +
             "  ProgramRule.uid, \n" +
             "  ProgramRule.programStage,\n" +
@@ -111,7 +111,7 @@ final class RulesRepository {
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    RulesRepository(@NonNull BriteDatabase briteDatabase) {
+    public RulesRepository(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
