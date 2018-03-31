@@ -32,6 +32,7 @@ public class EventInitialModule {
         return new EventInitialPresenter(interactor);
     }
 
+
     @Provides
     @PerActivity
     EventInitialContract.Interactor provideInteractor(@NonNull EventInitialRepository eventInitialRepository,

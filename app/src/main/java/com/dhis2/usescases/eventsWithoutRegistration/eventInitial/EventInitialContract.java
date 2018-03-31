@@ -1,6 +1,7 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
@@ -22,7 +23,7 @@ import java.util.List;
 public class EventInitialContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setProgram(ProgramModel program);
+        void setProgram(@NonNull ProgramModel program);
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
 
@@ -40,9 +41,9 @@ public class EventInitialContract {
 
         void setLocation(double latitude, double longitude);
 
-        void onEventCreated(String eventUid, String programStageUid);
+        void onEventCreated(String eventUid);
 
-        void onEventUpdated(String eventUid, String programStageUid);
+        void onEventUpdated(String eventUid);
 
         void setProgramStage(ProgramStageModel programStage);
     }

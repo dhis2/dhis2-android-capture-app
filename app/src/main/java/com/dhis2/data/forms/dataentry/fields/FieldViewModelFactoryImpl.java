@@ -109,9 +109,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
         }
-
-
-            }
+    }
 
    /* @NonNull
     private DateViewModel createDate(@NonNull String uid, @NonNull String label,

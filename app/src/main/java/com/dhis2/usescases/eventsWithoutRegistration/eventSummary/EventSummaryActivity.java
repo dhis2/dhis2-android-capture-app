@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dhis2.App;
@@ -43,8 +44,10 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventSummaryContract.Presenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent = 44;
+    private int completionPercent;
     private int totalFields;
+    private int totalCompletedFields;
+    private int fieldsToCompleteBeforeClosing;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,20 +65,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_summary);
         binding.setPresenter(presenter);
+
+        binding.actionButton.setOnClickListener(v -> finish());
+
         initProgressBar();
     }
 
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         binding.setName(program.displayName());
-    }
-
-    private void initProgressBar(){
-        //TODO CRIS: GET REAL PERCENTAGE HERE
-        completionPercent = 44;
-        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-        gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.setAnimation(gainAnim);
     }
 
     @Override
@@ -104,15 +102,53 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
-        // TODO CRIS: REPLACE X WITH NUMBER OF COMPLETED FIELDS + UPDATE PROGRESS CIRCLE + UPDATE GREEN PROGRESS ON EACH ROW
         View sectionView = sections.get(sectionUid);
         if (sectionView != null) {
-            totalFields = totalFields + updates.size();
-            String completionText = "X/" + updates.size();
+            int completedSectionFields = calculateCompletedFields(updates);
+            int totalSectionFields = updates.size();
+            totalFields = totalFields + totalSectionFields;
+            totalCompletedFields = totalCompletedFields + completedSectionFields;
+            fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
+            String completionText = completedSectionFields + "/" + totalSectionFields;
             ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
+            sectionView.findViewById(R.id.completed_progress)
+                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, totalSectionFields - completedSectionFields));
+            sectionView.findViewById(R.id.empty_progress)
+                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
         }
 
-        binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), "X", String.valueOf(totalFields)));
-        binding.summarySectionsHeader.setText(String.format(getString(R.string.event_summary_sections_header), "X", String.valueOf(totalFields)));
+        binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
+        binding.summarySectionsHeader.setText(String.format(getString(R.string.event_summary_sections_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
+        float completionPerone = (float) totalCompletedFields / (float) totalFields;
+        completionPercent = (int) (completionPerone * 100);
+        checkButton();
+    }
+
+    private void checkButton(){
+        binding.actionButton.setEnabled(fieldsToCompleteBeforeClosing <= 0);
+    }
+
+    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates){
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates){
+            if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+                total++;
+        }
+        return total;
+    }
+
+    private int calculateMandatoryUnansweredFields(@NonNull List<FieldViewModel> updates){
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates){
+            if ((fieldViewModel.value() == null || fieldViewModel.value().isEmpty()) && fieldViewModel.mandatory())
+                total++;
+        }
+        return total;
+    }
+
+    private void initProgressBar(){
+        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
+        gainAnim.setDuration(PROGRESS_TIME);
+        binding.progressGains.setAnimation(gainAnim);
     }
 }

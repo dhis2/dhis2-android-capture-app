@@ -34,5 +34,4 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
                 value(), hint(), maxLines(), inputType(),valueType(), warning(), error);
     }
-
 }

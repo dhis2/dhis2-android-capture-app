@@ -19,7 +19,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityEventInitialBinding;
-import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
@@ -232,7 +231,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
+    public void setProgram(@NonNull ProgramModel program) {
         presenter.setProgram(program);
         String activityTitle = isNewEvent ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         binding.setName(activityTitle);
@@ -322,18 +321,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onEventCreated(String eventUid, String programStageUid) {
+    public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
-        startFormActivity(eventUid, programStageUid);
+        startFormActivity(eventUid);
     }
 
     @Override
-    public void onEventUpdated(String eventUid, String programStageUid) {
+    public void onEventUpdated(String eventUid) {
         showToast(getString(R.string.event_updated));
-        startFormActivity(eventUid, programStageUid);
+        startFormActivity(eventUid);
     }
 
-    private void startFormActivity(String eventUid, String programStageUid){
+    private void startFormActivity(String eventUid){
         FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
         startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
     }
@@ -413,8 +412,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter.onLocationClick();
-                } else {
-                    // TODO CRIS
                 }
             }
         }

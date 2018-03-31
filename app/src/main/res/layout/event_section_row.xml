@@ -21,15 +21,13 @@
             <View
                 android:id="@+id/completed_progress"
                 android:background="@color/green_7ed"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>
 
             <View
                 android:id="@+id/empty_progress"
                 android:background="@color/white_d6d"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"/>
 
         </LinearLayout>

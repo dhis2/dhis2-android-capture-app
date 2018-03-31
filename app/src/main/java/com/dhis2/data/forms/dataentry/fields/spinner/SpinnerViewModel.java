@@ -1,7 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
@@ -12,12 +11,6 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class SpinnerViewModel extends FieldViewModel {
-
-    @NonNull
-    public abstract Boolean mandatory();
-
-    @Nullable
-    public abstract String value();
 
     @NonNull
     public abstract String hint();

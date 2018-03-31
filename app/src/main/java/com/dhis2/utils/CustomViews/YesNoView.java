@@ -1,14 +1,12 @@
 package com.dhis2.utils.CustomViews;
 
 import android.content.Context;
-import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 
 import com.dhis2.R;
 import com.dhis2.databinding.YesNoViewBinding;
@@ -25,10 +23,7 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
 
     private YesNoViewBinding binding;
 
-    private RadioGroup radioGroup;
-    private RadioButton yes;
     private RadioButton no;
-    private RadioButton no_value;
 
     public YesNoView(Context context) {
         super(context);
@@ -48,10 +43,8 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
     private void init(Context context){
         LayoutInflater inflater = LayoutInflater.from(context);
         binding = YesNoViewBinding.inflate(inflater, this, true);
-        radioGroup = findViewById(R.id.radiogroup);
-        yes  = findViewById(R.id.yes);
+        RadioGroup radioGroup = findViewById(R.id.radiogroup);
         no = findViewById(R.id.no);
-        no_value = findViewById(R.id.no_value);
         radioGroup.setOnCheckedChangeListener(this);
     }
 

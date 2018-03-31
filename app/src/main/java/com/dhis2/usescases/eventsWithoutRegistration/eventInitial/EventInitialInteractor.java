@@ -162,7 +162,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            eventModel -> view.onEventCreated(eventModel.uid(), programStageModelUid),
+                            eventModel -> view.onEventCreated(eventModel.uid()),
                             throwable -> view.renderError(throwable.getMessage())
                     ));
         }
@@ -175,7 +175,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (eventModel) -> view.onEventUpdated(eventModel.uid(), programStageModelUid),
+                        (eventModel) -> view.onEventUpdated(eventModel.uid()),
                         Timber::e
 
                 ));

@@ -150,7 +150,7 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @NonNull
     private FormSectionViewModel mapToFormSectionViewModels(@NonNull String eventUid, @NonNull Cursor cursor) {
-        // TODO GET PROGRAMSTAGE DISPLAYNAME IN CASE THERE ARE NO SECTIONS
+        // GET PROGRAMSTAGE DISPLAYNAME IN CASE THERE ARE NO SECTIONS
         if (cursor.getString(2) == null) {
             // This programstage has no sections
             return FormSectionViewModel.createForProgramStageWithLabel(eventUid, cursor.getString(4), cursor.getString(1));
@@ -165,7 +165,8 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
     public Flowable<List<FieldViewModel>> list(String sectionUid, String eventUid) {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
-                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(this::transform)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
@@ -210,10 +211,11 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
     public Flowable<Result<RuleEffect>> calculate() {
         return queryDataValues(eventUid)
                 .switchMap(this::queryEvent)
-                .switchMap(event -> formRepository.ruleEngine()
-                        .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event))
-                                .map(Result::success)
-                                .onErrorReturn(error -> Result.failure(new Exception(error)))
+                .switchMap(
+                        event -> formRepository.ruleEngine()
+                                    .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event))
+                                    .map(Result::success)
+                                    .onErrorReturn(error -> Result.failure(new Exception(error)))
                         )
                 );
     }
