@@ -110,4 +110,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void filterOrgUnits(String date) {
         interactor.getFilteredOrgUnits(date);
     }
+
+    @Override
+    public void getSectionCompletion(@Nullable String sectionUid) {
+        interactor.getSectionCompletion(sectionUid);
+    }
 }

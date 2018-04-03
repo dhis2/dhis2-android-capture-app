@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.forms.FormSectionViewModel;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -14,6 +16,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -46,6 +50,11 @@ public class EventInitialContract {
         void onEventUpdated(String eventUid);
 
         void setProgramStage(ProgramStageModel programStage);
+
+        void onEventSections(List<FormSectionViewModel> formSectionViewModels);
+
+        @NonNull
+        Consumer<List<FieldViewModel>> showFields(String sectionUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -70,6 +79,8 @@ public class EventInitialContract {
         void getCatOption(String categoryOptionComboId);
 
         void filterOrgUnits(String date);
+
+        void getSectionCompletion(@Nullable String sectionUid);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -85,5 +96,9 @@ public class EventInitialContract {
         void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+
+        void getEventSections(@NonNull String eventId);
+
+        void getSectionCompletion(@Nullable String sectionUid);
     }
 }

@@ -3,6 +3,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.FormRepository;
@@ -41,7 +42,7 @@ import static android.text.TextUtils.isEmpty;
  *
  */
 
-class EventSummaryRepositoryImpl implements EventSummaryRepository {
+public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
 
     private final FieldViewModelFactory fieldFactory;
@@ -52,7 +53,7 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     private final FormRepository formRepository;
 
-    @NonNull
+    @Nullable
     private final String eventUid;
 
 
@@ -120,10 +121,10 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
             " WHERE event = ? AND value IS NOT NULL;";
 
 
-    EventSummaryRepositoryImpl(@NonNull Context context,
-                               @NonNull BriteDatabase briteDatabase,
-                               @NonNull FormRepository formRepository,
-                               @NonNull String eventUid) {
+    public EventSummaryRepositoryImpl(@NonNull Context context,
+                                      @NonNull BriteDatabase briteDatabase,
+                                      @NonNull FormRepository formRepository,
+                                      @Nullable String eventUid) {
         this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
         this.eventUid = eventUid;
@@ -196,15 +197,6 @@ class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue);
     }
-
-
-
-
-
-
-
-
-
 
     @NonNull
     @Override

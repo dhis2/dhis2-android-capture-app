@@ -17,7 +17,9 @@ import android.widget.DatePicker;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.FormViewArguments;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
@@ -44,6 +46,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 /**
@@ -74,14 +77,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private int completionPercent;
     private String eventId;
     private String programId;
+    private int totalFields;
+    private int totalCompletedFields;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new EventInitialModule()).inject(this);
         super.onCreate(savedInstanceState);
         programId = getIntent().getStringExtra("PROGRAM_UID");
         isNewEvent = getIntent().getBooleanExtra("NEW_EVENT", true);
         eventId = getIntent().getStringExtra("EVENT_UID");
+
+        ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventId)).inject(this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
         binding.setPresenter(presenter);
         binding.setIsNewEvent(isNewEvent);
@@ -198,11 +205,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         else {
             binding.progressGains.setVisibility(View.VISIBLE);
             binding.progress.setVisibility(View.VISIBLE);
-            //TODO CRIS: GET REAL PERCENTAGE HERE
-            completionPercent = 44;
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-            gainAnim.setDuration(PROGRESS_TIME);
-            binding.progressGains.setAnimation(gainAnim);
         }
     }
 
@@ -422,5 +424,39 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
             setLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
         }
+    }
+
+    @Override
+    public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
+        for (FormSectionViewModel formSectionViewModel : formSectionViewModels){
+            presenter.getSectionCompletion(formSectionViewModel.sectionUid());
+        }
+    }
+
+    @NonNull
+    @Override
+    public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
+        return fields -> swap(fields, sectionUid);
+    }
+
+    void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
+        int completedSectionFields = calculateCompletedFields(updates);
+        int totalSectionFields = updates.size();
+        totalFields = totalFields + totalSectionFields;
+        totalCompletedFields = totalCompletedFields + completedSectionFields;
+        float completionPerone = (float) totalCompletedFields / (float) totalFields;
+        completionPercent = (int) (completionPerone * 100);
+        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
+        gainAnim.setDuration(PROGRESS_TIME);
+        binding.progressGains.startAnimation(gainAnim);
+    }
+
+    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates){
+        int total = 0;
+        for (FieldViewModel fieldViewModel : updates){
+            if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
+                total++;
+        }
+        return total;
     }
 }

@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,8 +19,6 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -75,13 +74,13 @@ public class EventRepository implements FormRepository {
     @NonNull
     private final Flowable<RuleEngine> cachedRuleEngineFlowable;
 
-    @Nonnull
+    @Nullable
     private final String eventUid;
 
     public EventRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull RuleExpressionEvaluator evaluator,
-            @NonNull RulesRepository rulesRepository,
-            @NonNull String eventUid) {
+                            @NonNull RuleExpressionEvaluator evaluator,
+                            @NonNull RulesRepository rulesRepository,
+                            @Nullable String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -136,7 +135,7 @@ public class EventRepository implements FormRepository {
     public Flowable<List<FormSectionViewModel>> sections() {
         return briteDatabase
                 .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid)
-                .mapToList(cursor -> mapToFormSectionViewModels(eventUid, cursor))
+                .mapToList(cursor -> mapToFormSectionViewModels(eventUid == null ? "" : eventUid, cursor))
                 .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -164,6 +163,7 @@ public class EventRepository implements FormRepository {
         };
     }
 
+    @NonNull
     @Override
     public Consumer<String> autoGenerateEvent() {
         return s -> {
@@ -178,8 +178,7 @@ public class EventRepository implements FormRepository {
     }
 
     @NonNull
-    private FormSectionViewModel mapToFormSectionViewModels(
-            @NonNull String eventUid, @NonNull Cursor cursor) {
+    private FormSectionViewModel mapToFormSectionViewModels(@NonNull String eventUid, @NonNull Cursor cursor) {
         if (cursor.getString(2) == null) {
             // This programstage has no sections
             return FormSectionViewModel.createForProgramStage(

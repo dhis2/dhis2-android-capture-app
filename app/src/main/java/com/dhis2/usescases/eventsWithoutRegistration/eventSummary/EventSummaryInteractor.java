@@ -47,9 +47,9 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     private String eventUid;
 
 
-    public EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                                  @NonNull MetadataRepository metadataRepository,
-                                  @NonNull SchedulerProvider schedulerProvider) {
+    EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
+                          @NonNull MetadataRepository metadataRepository,
+                           @NonNull SchedulerProvider schedulerProvider) {
         this.metadataRepository = metadataRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
@@ -84,7 +84,6 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 .subscribe(
                         view::onEventSections,
                         Timber::e
-
                 ));
     }
 
