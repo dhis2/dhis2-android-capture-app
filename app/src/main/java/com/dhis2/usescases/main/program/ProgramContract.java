@@ -39,7 +39,6 @@ public class ProgramContract {
         @UiThread
         void renderError(String message);
 
-        @NonNull
         @UiThread
         void addTree(TreeNode treeNode);
 

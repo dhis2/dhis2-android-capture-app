@@ -160,4 +160,5 @@
     <string name="hint_day">dd</string>
     <string name="hint_month">mm</string>
     <string name="hint_year">yyyy</string>
+    <string name="week">Week</string>
 </resources>

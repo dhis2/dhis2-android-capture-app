@@ -62,17 +62,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    SimpleDateFormat weeklyFormat = new SimpleDateFormat("'Week' w", Locale.getDefault());
     SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
     //-------------------------------------------
     //region LIFECYCLE
-
-
-    public StringBuilder getOrgUnitFilter() {
-        return orgUnitFilter;
-    }
 
     public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
         this.orgUnitFilter = orgUnitFilter;
@@ -106,6 +100,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
         calendar.setMinimalDaysInFirstWeek(7);
+
+        String week = getString(R.string.week);
+        SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
+
         if (currentPeriod != DAILY) {
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                 if (!selectedDates.isEmpty()) {
@@ -129,10 +127,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     }
                     binding.buttonPeriodText.setText(textToShow);
                     getSelectedPrograms((ArrayList<Date>) selectedDates, currentPeriod, orgUnitFilter.toString());
-                    //presenter.getProgramsWithDates(selectedDates, currentPeriod);
 
                 } else {
-                    //binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
                     ArrayList<Date> date = new ArrayList<>();
                     date.add(new Date());
 
@@ -153,7 +149,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             break;
                     }
                     binding.buttonPeriodText.setText(text);
-                    //presenter.getProgramsWithDates(date,currentPeriod);
                     getSelectedPrograms(date, currentPeriod, orgUnitFilter.toString());
 
                 }
@@ -167,13 +162,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                 ArrayList<Date> day = new ArrayList<>();
                 day.add(dates[0]);
-                //presenter.getPrograms(dates[0], dates[1]);
                 getSelectedPrograms(day, currentPeriod, orgUnitFilter.toString());
                 binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
                 chosenDateDay = dates[0];
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
-
         }
     }
 
@@ -182,7 +175,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
         Drawable drawable = null;
         String textToShow = "";
-
 
         switch (currentPeriod) {
             case DAILY:
@@ -202,49 +194,43 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
         }
-        binding.buttonTime.setImageDrawable(drawable);
-        //Date[] dates = com.dhis2.utils.DateUtils.getInstance().getDateFromPeriod(currentPeriod);
 
+        binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
             case DAILY:
-                //Date[] datesD = DateUtils.getInstance().getDateFromDateAndPeriod(chosenDateDay, currentPeriod);
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
                 if (!datesD.isEmpty())
                     textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                //presenter.getPrograms(datesD[0], datesD[1]);
                 getSelectedPrograms(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
-                if (!chosenDateWeek.isEmpty())
+                if (!chosenDateWeek.isEmpty()) {
+                    String week = getString(R.string.week);
+                    SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
                     textToShow = weeklyFormat.format(chosenDateWeek.get(0)) + ", " + yearFormat.format(chosenDateWeek.get(0));
+                }
                 if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1) textToShow += "... ";
-                //presenter.getProgramsWithDates(chosenDateWeek, currentPeriod);
                 getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
                 if (!chosenDateMonth.isEmpty())
                     textToShow = monthFormat.format(chosenDateMonth.get(0));
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
-                //presenter.getProgramsWithDates(chosenDateMonth, currentPeriod);
                 getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
                 if (!chosenDateYear.isEmpty())
                     textToShow = yearFormat.format(chosenDateYear.get(0));
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
-                //presenter.getProgramsWithDates(chosenDateYear, currentPeriod);
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
 
 
         binding.buttonPeriodText.setText(textToShow);
-
-        //binding.buttonPeriodText.setText(getString(currentPeriod.getNameResouce()));
-
     }
 
     @Override
@@ -255,8 +241,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
-        if (orgUnitQuery.isEmpty()) presenter.getProgramsWithDates(dates, period);
-        else presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
+        if (orgUnitQuery.isEmpty())
+            presenter.getProgramsWithDates(dates, period);
+        else
+            presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
     }
 
     @Override
@@ -338,13 +326,5 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
-
-
-
-       /* if (!orgUnitFilter.toString().isEmpty())
-            presenter.getProgramsOrgUnit(orgUnitFilter.toString());*/
-
     }
-
-
 }

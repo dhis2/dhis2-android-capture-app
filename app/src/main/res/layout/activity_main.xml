@@ -124,8 +124,6 @@
                         android:gravity="center_vertical"
                         android:textColor="@color/colorAccent"
                         android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"/>
-
-
                 </LinearLayout>
 
                 <Button
@@ -166,9 +164,7 @@
                 android:id="@+id/indicator_dots"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:gravity="center"
-
-                />
+                android:gravity="center"/>
 
             <com.andrognito.pinlockview.PinLockView
                 android:id="@+id/pin_lock_view"
@@ -185,5 +181,4 @@
                 app:pinLength="4" />
         </RelativeLayout>
     </android.support.v4.widget.DrawerLayout>
-
 </layout>
