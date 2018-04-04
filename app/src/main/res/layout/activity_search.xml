@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -68,16 +69,18 @@
                         android:background="@android:color/transparent"
                         android:onClick="@{()->presenter.onBackClick()}"
                         android:padding="10dp"
-                        app:srcCompat="@drawable/ic_arrow_back" />
+                        app:srcCompat="@drawable/ic_arrow_back"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_toEndOf="@id/back_button"
                         android:gravity="center_vertical"
-                        android:text="Search"
+                        android:text="@string/search"
                         android:textColor="@color/white_faf"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        tools:ignore="RelativeOverlap" />
 
                     <ImageView
                         android:id="@+id/clear_button"
@@ -86,7 +89,8 @@
                         android:layout_alignParentEnd="true"
                         android:onClick="@{()->presenter.onClearClick()}"
                         android:padding="10dp"
-                        app:srcCompat="@drawable/ic_clear" />
+                        app:srcCompat="@drawable/ic_clear"
+                        tools:ignore="ContentDescription" />
                 </RelativeLayout>
 
                 <Spinner
@@ -132,7 +136,8 @@
                     android:layout_height="40dp"
                     android:background="@drawable/selector_enroll_button"
                     android:onClick="@{(view)->presenter.onEnrollClick(view)}"
-                    android:text="ADD NEW"
+                    android:text="@string/add_new"
+                    android:textAllCaps="true"
                     android:textColor="?colorPrimary" />
             </LinearLayout>
 

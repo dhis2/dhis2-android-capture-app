@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -75,6 +76,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void getEvents(String programId, Date fromDate, Date toDate) {
         this.fromDate = fromDate;

@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:buttonTint="@color/white"
-                android:text="yes"
+                android:text="@string/yes"
                 android:checked="false" />
 
             <RadioButton
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:buttonTint="@color/white"
-                android:text="no"
+                android:text="@string/no"
                 android:checked="false" />
 
             <RadioButton
@@ -55,12 +55,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-
                 android:buttonTint="@color/white"
-                android:text="no value"
+                android:text="@string/no_value"
                 android:checked="false" />
-
         </RadioGroup>
-
     </LinearLayout>
 </layout>

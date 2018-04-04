@@ -1,5 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields;
 
+import android.annotation.SuppressLint;
 import android.databinding.ViewDataBinding;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,13 +27,14 @@ import timber.log.Timber;
 
 public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemSelectedListener {
 
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableOnject;
+    private SearchTEContractsModule.Presenter presenter;
+    private TrackedEntityAttributeModel bindableOnject;
 
     public SpinnerHolder(ViewDataBinding binding) {
         super(binding);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
         this.presenter = presenter;
@@ -52,7 +54,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
         binding.executePendingBindings();
     }
 
-    void setAdapter(List<OptionModel> optionModels, TrackedEntityAttributeModel bindableOnject) {
+    private void setAdapter(List<OptionModel> optionModels, TrackedEntityAttributeModel bindableOnject) {
         OptionAdapter adapter = new OptionAdapter(((FormSpinnerBinding) binding).spinner.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,

@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -33,7 +34,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     FragmentTeiDataBinding binding;
 
     static TEIDataFragment instance;
-    private static DashboardProgramModel program;
     TeiDashboardContracts.Presenter presenter;
 
     static public TEIDataFragment getInstance() {
@@ -53,24 +53,23 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     }
 
     public void setData(DashboardProgramModel nprogram) {
-        program = nprogram;
 
-        if (program != null && program.getCurrentEnrollment() != null) {
+        if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
 
-            binding.teiRecycler.setAdapter(new EventAdapter(presenter, program.getProgramStages(), program.getEvents()));
+            binding.teiRecycler.setAdapter(new EventAdapter(presenter, nprogram.getProgramStages(), nprogram.getEvents()));
 
-            binding.setTrackEntity(program.getTei());
-            binding.setEnrollment(program.getCurrentEnrollment());
-            binding.setProgram(program.getCurrentProgram());
-            binding.setDashboardModel(program);
-        } else if (program != null) {
+            binding.setTrackEntity(nprogram.getTei());
+            binding.setEnrollment(nprogram.getCurrentEnrollment());
+            binding.setProgram(nprogram.getCurrentProgram());
+            binding.setDashboardModel(nprogram);
+        } else if (nprogram != null) {
             binding.teiRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false));
-            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, program));
+            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
 
-            binding.setTrackEntity(program.getTei());
+            binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(null);
             binding.setProgram(null);
-            binding.setDashboardModel(program);
+            binding.setDashboardModel(nprogram);
         }
 
         binding.executePendingBindings();
@@ -81,6 +80,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         return REQ_DETAILS;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

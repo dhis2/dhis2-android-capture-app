@@ -1,5 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 
@@ -28,12 +29,13 @@ import static java.lang.String.valueOf;
 public class EditTextCustomHolder extends FormViewHolder {
 
     private final FormEditTextCustomBinding binding;
-    FlowableProcessor<RowAction> processor;
+    private FlowableProcessor<RowAction> processor;
 
     @NonNull
     private BehaviorProcessor<EditTextModel> model;
 
-    public EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
+    @SuppressLint("CheckResult")
+    EditTextCustomHolder(FormEditTextCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
 
         this.binding = binding;
@@ -41,7 +43,6 @@ public class EditTextCustomHolder extends FormViewHolder {
 
         model = BehaviorProcessor.create();
         model.subscribe(editTextModel -> {
-
             binding.setLabel(editTextModel.label());
             binding.setValueType(editTextModel.valueType());
 

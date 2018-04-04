@@ -177,27 +177,27 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         return result -> {
             if (result.inProgress()) {
                 if (syncState == SyncState.METADATA)
-                    binding.metadataText.setText("Syncing your Configuration");
+                    binding.metadataText.setText(getString(R.string.syncing_configuration));
                 else {
-                    binding.eventsText.setText("Syncing your Data");
+                    binding.eventsText.setText(getString(R.string.syncing_data));
                     Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
                     binding.eventsText.setAlpha(1.0f);
                 }
             } else if (result.isSuccess()) {
                 if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText("Your Configuration is ready");
+                    binding.metadataText.setText(getString(R.string.configuration_ready));
                     Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
                 } else if (syncState == SyncState.TEI) {
-                    binding.eventsText.setText("Your Data is ready");
+                    binding.eventsText.setText(getString(R.string.data_ready));
                     Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
                 }
                 presenter.syncNext(syncState);
             } else if (!result.isSuccess()) {
                 if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText("Configuration sync failed");
+                    binding.metadataText.setText(getString(R.string.configuration_sync_failed));
                     binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
                 } else if (syncState == SyncState.TEI) {
-                    binding.eventsText.setText("Data sync failed");
+                    binding.eventsText.setText(getString(R.string.data_sync_failed));
                     binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
                 }
 
@@ -206,10 +206,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             } else {
                 throw new IllegalStateException();
             }
-
         };
     }
-
 
     @Override
     public void onBackPressed() {

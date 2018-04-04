@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity.formHolders;
 
+import android.annotation.SuppressLint;
 import android.databinding.ViewDataBinding;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +38,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
         this.processor = processor;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
         this.presenter = presenter;
@@ -56,7 +58,7 @@ public class SpinnerHolder extends FormViewHolder implements AdapterView.OnItemS
         binding.executePendingBindings();
     }
 
-    void setAdapter(List<OptionModel> optionModels, TrackedEntityAttributeModel bindableOnject) {
+    private void setAdapter(List<OptionModel> optionModels, TrackedEntityAttributeModel bindableOnject) {
         OptionAdapter adapter = new OptionAdapter(((FormSpinnerBinding) binding).spinner.getContext(),
                 R.layout.spinner_layout,
                 R.id.spinner_text,

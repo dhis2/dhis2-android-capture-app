@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.coordinate;
 
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.dhis2.BR;
@@ -16,13 +17,15 @@ import io.reactivex.processors.FlowableProcessor;
 
 public class CoordinateHolder extends FormViewHolder {
 
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableObject;
+    private SearchTEContractsModule.Presenter presenter;
+    private TrackedEntityAttributeModel bindableObject;
 
     @NonNull
+    private
     BehaviorProcessor<CoordinateViewModel> model;
 
-    public CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
+    @SuppressLint("CheckResult")
+    CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
 
         model = BehaviorProcessor.create();

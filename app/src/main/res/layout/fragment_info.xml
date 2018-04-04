@@ -320,13 +320,11 @@
                 android:padding="10dp"
                 tools:text="ORG UNITS" />
 
-
             <Button
                 android:id="@+id/buttonSync"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SYNC" />
-
+                android:text="@string/action_sync" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

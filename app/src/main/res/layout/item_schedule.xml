@@ -44,7 +44,8 @@
             app:layout_constraintEnd_toEndOf="@id/event_status"
             app:layout_constraintStart_toStartOf="@id/event_status"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/schedule_path" />
+            app:srcCompat="@drawable/schedule_path"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/path_down"
@@ -55,7 +56,8 @@
             app:layout_constraintEnd_toEndOf="@id/event_status"
             app:layout_constraintStart_toStartOf="@id/event_status"
             app:layout_constraintTop_toBottomOf="@id/guideline"
-            app:srcCompat="@drawable/schedule_path" />
+            app:srcCompat="@drawable/schedule_path"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/event_status"
@@ -66,7 +68,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/schedule_circle_green"
-            app:scheduleColor="@{event.status()}"/>
+            app:scheduleColor="@{event.status()}"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/event_name"
@@ -79,8 +82,7 @@
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toTopOf="@id/event_status"
             tools:text="ANC4"
-            android:text='@{stage.displayName,default="Stage Name"}'
-            />
+            android:text='@{stage.displayName, default="Stage Name"}'/>
 
         <TextView
             android:id="@+id/event_date"
@@ -94,8 +96,7 @@
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toBottomOf="@id/event_name"
             tools:text="03/10/2017 "
-            app:date='@{event.status()==EventStatus.SCHEDULE ? event.eventDate() : event.dueDate()}'
-            />
+            app:date='@{event.status()==EventStatus.SCHEDULE ? event.eventDate() : event.dueDate()}'/>
 
 
     </android.support.constraint.ConstraintLayout>

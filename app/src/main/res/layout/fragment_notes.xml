@@ -24,13 +24,14 @@
                 android:layout_marginTop="30dp"
                 android:background="@drawable/gray_border_box"
                 android:gravity="start"
-                android:hint="Write new note"
+                android:hint="@string/write_new_note"
                 android:maxHeight="195dp"
                 android:padding="16dp"
                 android:textColor="@color/gray_444"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:inputType="text"/>
 
             <Button
                 android:id="@+id/button_delete"
@@ -41,7 +42,7 @@
                 android:background="@drawable/button_delete_selector"
                 android:paddingEnd="23dp"
                 android:paddingStart="23dp"
-                android:text="clear"
+                android:text="@string/clear"
                 android:textColor="?colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_note" />
@@ -55,7 +56,7 @@
                 android:background="@drawable/button_selector"
                 android:paddingEnd="23dp"
                 android:paddingStart="23dp"
-                android:text="Add note"
+                android:text="@string/add_note"
                 android:textColor="?colorAccent"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/button_delete"

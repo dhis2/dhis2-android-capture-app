@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by frodriguez on 1/15/2018.
@@ -46,7 +47,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         binding = DateTimeViewBinding.inflate(inflater, this, true);
         time = findViewById(R.id.button);
         time.setOnFocusChangeListener(this::onFocusChanged);
-        time.setOnClickListener(this::onClick);
+        time.setOnClickListener(this);
 
     }
 
@@ -69,8 +70,8 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         boolean is24HourFormat = DateFormat.is24HourFormat(getContext());
-        SimpleDateFormat twentyFourHourFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat twelveHourFormat = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat twentyFourHourFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat twelveHourFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
         TimePickerDialog dialog = new TimePickerDialog(getContext(), (timePicker, hourOfDay, minutes) -> {
             Calendar calendar = Calendar.getInstance();

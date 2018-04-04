@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
@@ -91,6 +92,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawer(Gravity.END);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();

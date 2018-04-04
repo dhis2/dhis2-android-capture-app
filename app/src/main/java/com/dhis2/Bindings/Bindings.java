@@ -1,11 +1,13 @@
 package com.dhis2.Bindings;
 
+import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -79,10 +81,13 @@ public class Bindings {
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 
-        if (drawable instanceof AnimatedVectorDrawable)
-            ((AnimatedVectorDrawable) drawable).start();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (drawable instanceof AnimatedVectorDrawable)
+                ((AnimatedVectorDrawable) drawable).start();
+        }
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("lastEventDate")
     public static void setLastEventDate(TextView textView, Observable<List<EventModel>> listObservable) {
         listObservable
@@ -93,6 +98,7 @@ public class Bindings {
                         Timber::d);
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("numberOfEvents")
     public static void setNumberOfEvents(TextView textView, Observable<List<EventModel>> listObservable) {
         listObservable
@@ -106,6 +112,7 @@ public class Bindings {
                         Timber::d);
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("enrollmentLastEventDate")
     public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
         metadataRepository.getEnrollmentLastEvent(enrollmentUid)
@@ -116,6 +123,7 @@ public class Bindings {
                         Timber::d);
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("eventLabel")
     public static void setEventLabel(TextView textView, String programUid) {
         metadataRepository.getProgramWithId(programUid)
@@ -194,6 +202,7 @@ public class Bindings {
         progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("programStage")
     public static void getStageName(TextView textView, String stageId) {
         metadataRepository.programStage(stageId)
@@ -205,6 +214,7 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("programStageDescription")
     public static void getStageDescription(TextView textView, String stageId) {
         metadataRepository.programStage(stageId)
@@ -212,7 +222,7 @@ public class Bindings {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
-                        programStageModel -> textView.setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."),
+                        programStageModel -> textView.setText(textView.getContext().getString(R.string.lorem)),
                         Timber::d
                 );
     }
@@ -253,13 +263,13 @@ public class Bindings {
             status = EnrollmentStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                action = "Complete";
+                action = textView.getContext().getString(R.string.complete);
                 break;
             case COMPLETED:
-                action = "re-open";
+                action = textView.getContext().getString(R.string.re_open);
                 break;
             case CANCELLED:
-                action = "activate";
+                action = textView.getContext().getString(R.string.activate);
                 break;
             default:
                 action = "";
@@ -275,16 +285,16 @@ public class Bindings {
             status = EnrollmentStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                text = "Open";
+                text = view.getContext().getString(R.string.event_open);
                 break;
             case COMPLETED:
-                text = "Completed";
+                text = view.getContext().getString(R.string.completed);
                 break;
             case CANCELLED:
-                text = "Cancelled";
+                text = view.getContext().getString(R.string.cancelled);
                 break;
             default:
-                text = "Read only";
+                text = view.getContext().getString(R.string.read_only);
                 break;
         }
 
@@ -316,16 +326,16 @@ public class Bindings {
             status = EventStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                text = "Open";
+                text = view.getContext().getString(R.string.event_open);
                 break;
             case COMPLETED:
-                text = "Program completed";
+                text = view.getContext().getString(R.string.program_completed);
                 break;
             case SCHEDULE:
-                text = "Program inactive";
+                text = view.getContext().getString(R.string.program_inactive);
                 break;
             default:
-                text = "Read only";
+                text = view.getContext().getString(R.string.read_only);
                 break;
         }
 
@@ -372,6 +382,7 @@ public class Bindings {
         view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("programName")
     public static void setProgramName(TextView textView, String programUid) {
         metadataRepository.getProgramWithId(programUid)
@@ -383,6 +394,7 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("organisationUnitName")
     public static void setOrganisationUnitName(TextView textView, String organisationUnitUid) {
         metadataRepository.getOrganisationUnit(organisationUnitUid)
@@ -394,6 +406,7 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("categoryOptionName")
     public static void setCategoryOptionName(TextView textView, String categoryOptionId) {
         metadataRepository.getCategoryOptionWithId(categoryOptionId)
@@ -405,6 +418,7 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("categoryOptionComboName")
     public static void setCategoryOptionComboName(TextView textView, String categoryOptionComboId) {
         metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
@@ -510,6 +524,7 @@ public class Bindings {
         metadataRepository = metadata;
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("dataElementHint")
     public static void setDataElementName(TextInputLayout view, String dataElementUid) {
         metadataRepository.getDataElement(dataElementUid)
@@ -521,6 +536,7 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("attrHint")
     public static void setAttrName(TextInputLayout view, String teAttribute) {
         metadataRepository.getTrackedEntityAttribute(teAttribute)
@@ -543,6 +559,7 @@ public class Bindings {
         spinner.setAdapter(adapter);
     }
 
+    @SuppressLint("CheckResult")
     @BindingAdapter("eventCompletion")
     public static void setEventCompletion(TextView textView, EventModel eventModel) {
         metadataRepository.getProgramStageDataElementCount(eventModel.programStage())

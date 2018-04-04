@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
 
         <variable
@@ -54,7 +54,6 @@
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
                 tools:text="TEI NAME" />
-
         </LinearLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -188,12 +187,12 @@
                             android:theme="@style/dataInputText"
                             app:layout_flexBasisPercent="50%">
 
-
                             <EditText
                                 android:id="@+id/category_combo"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="date" />
+                                android:inputType="date"
+                                tools:ignore="LabelFor" />
                         </android.support.design.widget.TextInputLayout>
 
 
@@ -209,7 +208,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="date"
-                                android:text="@{event.organisationUnit()}" />
+                                android:text="@{event.organisationUnit()}"
+                                tools:ignore="LabelFor" />
                         </android.support.design.widget.TextInputLayout>
                     </com.google.android.flexbox.FlexboxLayout>
 
@@ -221,12 +221,8 @@
                         app:alignContent="stretch"
                         app:alignItems="stretch"
                         app:flexWrap="wrap" />
-
                 </LinearLayout>
-
             </ScrollView>
-
         </android.support.constraint.ConstraintLayout>
-
     </LinearLayout>
 </layout>

@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -19,7 +20,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private final DataEntryStore dataEntryStore;
     private EventDetailContracts.View view;
 
-    public EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
+    EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
         this.metadataRepository = metadataRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
@@ -30,6 +31,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         this.view = view;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void getEventData(String eventUid) {
         Observable.zip(eventDetailRepository.eventModelDetail(eventUid),

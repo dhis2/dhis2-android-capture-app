@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Dhis2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
     <string name="google_api">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
 
     <!-- Warnings and error messages -->
@@ -8,6 +10,9 @@
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
     <string name="error_internal_server_error">Internal server error</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="no_value">no value</string>
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
@@ -25,6 +30,8 @@
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
 
     <string name="search_result_text">%s results found</string>
+    <string name="add_new">Add new</string>
+    <string name="schedule_new">Schedule new</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
 
     <!-- Login -->
@@ -33,12 +40,21 @@
     <string name="password_hint">Password</string>
     <string name="log_in_button">Log In</string>
     <string name="unlock_button">Unlock session</string>
+    <string name="syncing_configuration">Syncing your Configuration</string>
+    <string name="syncing_data_shortly">Your Data will shortly be synced</string>
+    <string name="syncing_data">Syncing your Data</string>
+    <string name="configuration_ready">Your Configuration is ready</string>
+    <string name="data_ready">Your Data is ready</string>
+    <string name="configuration_sync_failed">Configuration sync failed</string>
+    <string name="data_sync_failed">Data sync failed</string>
 
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
     <string name="WEEKLY">Weekly</string>
     <string name="MONTHLY">Monthly</string>
     <string name="YEARLY">Yearly</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="action_accept">Accept</string>
 
     <!-- Input hints -->
     <string name="search">Search</string>
@@ -53,13 +69,20 @@
     <string name="choose_date">Choose date</string>
 
     <!-- Status -->
+    <string name="program_completed">Program Completed</string>
+    <string name="program_inactive">Program inactive</string>
+
     <string name="event_open">Open</string>
     <string name="event_completed">Event Completed</string>
     <string name="event_editing_expired">Editing Expired</string>
     <string name="event_accepted">Event Accepted</string>
     <string name="event_approved">Event Approved</string>
     <string name="read_only">Read only</string>
-
+    <string name="complete">Complete</string>
+    <string name="completed">Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="re_open">re-open</string>
+    <string name="activate">activate</string>
 
     <!-- State -->
     <string name="state_synced">Sync</string>
@@ -67,6 +90,7 @@
     <string name="state_to_update">To update</string>
     <string name="state_to_delete">To delete</string>
     <string name="state_error">Error</string>
+    <string name="action_sync">SYNC</string>
 
     <!--Completion-->
     <string name="completion">Completion</string>
@@ -89,12 +113,15 @@
     <string name="event_date">Event date</string>
     <string name="due_date">Due date</string>
     <string name="cat_combo">Cat combo</string>
+    <string name="date_default">DD/MM/YYYY</string>
 
     <!--TEI Program list-->
     <string name="programs_list">Programs list</string>
     <string name="active_programs">Active programs</string>
     <string name="past_programs">Past programs</string>
     <string name="enroll">Enroll</string>
+    <string name="last_visit">Last Visit:</string>
+    <string name="apply">apply</string>
 
     <!--TEI DASHBOARD-->
     <string name="see_details">See Details</string>
@@ -104,15 +131,24 @@
     <string name="follow_up">Follow up</string>
     <string name="follow_up_enabled">Follow up enabled</string>
     <string name="follow_up_disabled">Follow up disabled</string>
+    <string name="deactivate">Deactivate</string>
 
     <!--DONE TASKS-->
     <string name="events">events</string>
+    <string name="done_task">Done Task</string>
+    <string name="app_info">App Info</string>
+    <string name="log_out">Log Out</string>
+    <string name="block_session">Block Session</string>
 
     <!--MAP SELECTION-->
     <string name="select_location">Select location</string>
 
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>
+    <string name="add_file">Add file</string>
+    <string name="write_new_note">Write new note</string>
+    <string name="clear">clear</string>
+    <string name="add_note">Add note</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
@@ -120,4 +156,8 @@
     <string name="event_summary_sections_header">%s of %s completed</string>
     <string name="complete_and_close">Complete and close</string>
 
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">dd</string>
+    <string name="hint_month">mm</string>
+    <string name="hint_year">yyyy</string>
 </resources>

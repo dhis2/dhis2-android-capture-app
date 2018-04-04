@@ -44,7 +44,8 @@
                     android:layout_height="match_parent"
                     android:onClick="@{()->presenter.onMenuClick()}"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_menu" />
+                    app:srcCompat="@drawable/ic_menu"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/title"
@@ -52,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:text="Done Task"
+                    android:text="@string/done_task"
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
 
@@ -62,7 +63,8 @@
                     android:layout_height="match_parent"
                     android:onClick="@{()->presenter.showFilter()}"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_filter_list" />
+                    app:srcCompat="@drawable/ic_filter_list"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -109,7 +111,7 @@
                         android:id="@+id/menu_done_tasks"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="Done Tasks"
+                        android:text="@string/done_task"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorAccent"
                         android:onClick="@{()->presenter.changeFragment(R.id.menu_done_tasks)}"/>
@@ -118,7 +120,7 @@
                         android:id="@+id/menu_info"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="App Info"
+                        android:text="@string/app_info"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorAccent"
                         android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"/>
@@ -134,7 +136,7 @@
                     android:layout_gravity="bottom"
                     android:background="?colorPrimaryDark"
                     android:onClick="@{() -> presenter.logOut()}"
-                    android:text="Log Out"
+                    android:text="@string/log_out"
                     android:textColor="@color/white_faf" />
 
                 <Button
@@ -146,7 +148,7 @@
                     android:layout_gravity="bottom"
                     android:background="?colorPrimaryDark"
                     android:onClick="onLockClick"
-                    android:text="Block Session"
+                    android:text="@string/block_session"
                     android:textColor="@color/white_faf" />
             </RelativeLayout>
 

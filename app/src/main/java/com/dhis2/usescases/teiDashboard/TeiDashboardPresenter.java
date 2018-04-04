@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -52,6 +53,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         getData();
     }
 
+    @SuppressLint("CheckResult")
     private void getData() {
         if (programUid != null)
             Observable.zip(

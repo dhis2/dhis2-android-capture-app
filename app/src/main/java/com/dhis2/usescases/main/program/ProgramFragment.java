@@ -1,5 +1,6 @@
 package com.dhis2.usescases.main.program;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -100,6 +101,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     //endregion
 
+    @SuppressLint("CheckResult")
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
