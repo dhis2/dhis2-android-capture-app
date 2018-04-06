@@ -1,14 +1,11 @@
 package com.dhis2.usescases.teiDashboard.mobile;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.dhis2.App;
@@ -22,7 +19,6 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 
 import javax.inject.Inject;
 
@@ -39,7 +35,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     DashboardProgramModel programModel;
     DashboardPagerAdapter adapter;
-    Fragment teiFragment;
 
     String teiUid;
     String programUid;

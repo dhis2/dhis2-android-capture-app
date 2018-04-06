@@ -154,11 +154,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
                 binding.linearLayout.invalidate();
-
-
-                if (enrollment.followUp() != null && enrollment.followUp())
-                    isFollowUp = true;
             }
+
+            if (enrollment.followUp() != null && enrollment.followUp())
+                isFollowUp = true;
 
             binding.setFollowUp(isFollowUp);
 
@@ -166,8 +165,5 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.viewMore.setVisibility(binding.linearLayout.getChildCount() > 2 ? View.VISIBLE : View.GONE);
 
         binding.executePendingBindings();
-
     }
-
-
 }
