@@ -8,8 +8,6 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
-import java.util.Locale;
-
 /**
  * Created by frodriguez on 1/24/2018.
  */

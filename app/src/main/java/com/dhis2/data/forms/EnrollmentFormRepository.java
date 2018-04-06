@@ -175,6 +175,7 @@ class EnrollmentFormRepository implements FormRepository {
         };
     }
 
+    @NonNull
     @Override
     public Consumer<String> autoGenerateEvent() {
         return enrollmentUid -> {

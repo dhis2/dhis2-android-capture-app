@@ -16,7 +16,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
 
-    public FormSectionAdapter(FragmentManager fragmentManager) {
+    FormSectionAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
         this.formSectionViewModelList = new ArrayList<>();
     }
@@ -49,7 +49,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         return formSectionViewModelList.get(position).label();
     }
 
-    public void swapData(List<FormSectionViewModel> models) {
+    void swapData(List<FormSectionViewModel> models) {
         formSectionViewModelList.clear();
         formSectionViewModelList.addAll(models);
         notifyDataSetChanged();
