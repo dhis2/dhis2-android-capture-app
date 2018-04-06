@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.databinding.AgeCustomViewBinding;
 import com.dhis2.databinding.FormAgeCustomBinding;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -21,7 +20,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     private final LayoutInflater inflater;
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor) {
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
     }
 

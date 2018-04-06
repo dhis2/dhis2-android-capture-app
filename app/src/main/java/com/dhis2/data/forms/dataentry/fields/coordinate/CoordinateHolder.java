@@ -32,13 +32,13 @@ public class CoordinateHolder extends FormViewHolder {
         });
     }
 
-    @Override
+   /* @Override
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
         this.presenter = presenter;
         this.bindableObject = bindableObject;
         binding.setVariable(BR.attribute, bindableObject);
         binding.executePendingBindings();
-    }
+    }*/
 
     void update(CoordinateViewModel viewModel) {
 

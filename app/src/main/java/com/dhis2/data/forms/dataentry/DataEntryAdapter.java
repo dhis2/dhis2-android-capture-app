@@ -33,16 +33,16 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 final class DataEntryAdapter extends Adapter {
-    private final int EDITTEXT = 0;
-    private final int BUTTON = 1;
-    private final int CHECKBOX = 2;
-    private final int SPINNER = 3;
-    private final int COORDINATES = 4;
-    private final int TIME = 5;
-    private final int DATE = 6;
-    private final int DATETIME = 7;
-    private final int AGEVIEW = 8;
-    private final int YES_NO = 9;
+    private static final int EDITTEXT = 0;
+    private static final int BUTTON = 1;
+    private static final int CHECKBOX = 2;
+    private static final int SPINNER = 3;
+    private static final int COORDINATES = 4;
+    private static final int TIME = 5;
+    private static final int DATE = 6;
+    private static final int DATETIME = 7;
+    private static final int AGEVIEW = 8;
+    private static final int YES_NO = 9;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -56,19 +56,20 @@ final class DataEntryAdapter extends Adapter {
     DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                      @NonNull FragmentManager fragmentManager,
                      @NonNull DataEntryArguments dataEntryArguments) {
+        setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
-//TODO: CHECK ROWS
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor,true));
-        rows.add(BUTTON, new FileRow());
+
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
     }
 
@@ -95,23 +96,18 @@ final class DataEntryAdapter extends Adapter {
         FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;
-       /* } else if (viewModel instanceof CheckBoxViewModel) {
-            return BUTTON;*/
         } else if (viewModel instanceof RadioButtonViewModel) {
             return CHECKBOX;
         } else if (viewModel instanceof SpinnerViewModel) {
             return SPINNER;
         } else if (viewModel instanceof CoordinateViewModel) {
             return COORDINATES;
-       /* } else if (viewModel instanceof OptionsViewModel) {
-            return TIME;
-        } else if (viewModel instanceof DateViewModel) {
-            return DATE;*/
+
         } else if (viewModel instanceof DateTimeViewModel) {
             return DATETIME;
         } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
-          } else if (viewModel instanceof FileViewModel) {
+        } else if (viewModel instanceof FileViewModel) {
             return BUTTON;
         } else {
             throw new IllegalStateException("Unsupported view model type: "

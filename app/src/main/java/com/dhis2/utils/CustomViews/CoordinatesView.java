@@ -3,6 +3,8 @@ package com.dhis2.utils.CustomViews;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -25,13 +27,15 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 
 public class CoordinatesView extends RelativeLayout implements View.OnClickListener {
 
-    private FormCoordinatesBinding binding;
+    private ViewDataBinding binding;
     private TextView latitude;
     private TextView longitude;
     private ImageButton position;
     private ImageButton map;
     private FusedLocationProviderClient mFusedLocationClient;
     private OnMapPositionClick listener;
+    private boolean isBgTransparent;
+    private LayoutInflater inflater;
 
 
     public CoordinatesView(Context context) {
@@ -50,8 +54,20 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     private void init(Context context) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        inflater = LayoutInflater.from(context);
         binding = FormCoordinatesBinding.inflate(inflater, this, true);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+    }
+
+
+    private void setLayout() {
+        if (isBgTransparent)
+            binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
+
         latitude = findViewById(R.id.lat);
         longitude = findViewById(R.id.lon);
         position = findViewById(R.id.location1);
@@ -59,9 +75,6 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
         position.setOnClickListener(this);
         map.setOnClickListener(this);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-
     }
 
     public void setMapListener(OnMapPositionClick listener) {
@@ -78,7 +91,7 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
                 if (listener != null)
                     listener.onMapPositionClick(this);
                 else
-                    ((OnMapPositionClick)getContext()).onMapPositionClick(this);
+                    ((OnMapPositionClick) getContext()).onMapPositionClick(this);
                 break;
         }
     }
@@ -97,6 +110,12 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
                     });
         }
     }
+
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
+    }
+
 
     public interface OnMapPositionClick {
         void onMapPositionClick(CoordinatesView coordinatesView);

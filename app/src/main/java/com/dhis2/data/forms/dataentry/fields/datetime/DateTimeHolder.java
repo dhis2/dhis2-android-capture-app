@@ -15,15 +15,14 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 public class DateTimeHolder extends FormViewHolder {
 
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableObject;
-
-
     public DateTimeHolder(ViewDataBinding binding) {
         super(binding);
     }
 
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
+
+    public void update(DateTimeViewModel viewModel) {
+        binding.setVariable(BR.label, viewModel.label());
+        binding.executePendingBindings();
     }
 
 }

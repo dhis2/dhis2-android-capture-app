@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -37,7 +36,8 @@ public class SearchTEContractsModule {
 
         void clearList();
 
-        Flowable<FormViewHolder> rowActions();
+        android.view.View getProgress();
+
         Flowable<RowAction> rowActionss();
     }
 
@@ -65,7 +65,7 @@ public class SearchTEContractsModule {
 
         void onEnrollClick(android.view.View view);
 
-        void enroll(String programUid);
+        void enroll(String programUid, String uid);
 
         void onTEIClick(String TEIuid);
 
@@ -74,30 +74,5 @@ public class SearchTEContractsModule {
         ProgramModel getProgramModel();
 
         List<ProgramModel> getProgramList();
-    }
-
-    public interface Interactor {
-        void init(View view, String trackedEntityType);
-
-        void getTrackedEntityAttributes();
-
-        void getProgramTrackedEntityAttributes();
-
-        Observable<List<OptionModel>> getOptions(String optionSetId);
-
-        void filterTrackEntities(String filter);
-
-        void setProgram(ProgramModel programSelected);
-
-        void addDateQuery(String filter);
-
-        void clear();
-
-        void clearFilter(String uid);
-
-        void enroll();
-
-        TrackedEntityModel getTrackedEntity();
-
     }
 }

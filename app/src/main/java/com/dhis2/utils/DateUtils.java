@@ -180,6 +180,16 @@ public class DateUtils {
     }
 
     @NonNull
+    public static SimpleDateFormat timeFormat() {
+        return new SimpleDateFormat("HH:mm", Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat dateTimeFormat() {
+        return new SimpleDateFormat("yyyy-mm-dd HH:mm", Locale.US);
+    }
+
+    @NonNull
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
     }

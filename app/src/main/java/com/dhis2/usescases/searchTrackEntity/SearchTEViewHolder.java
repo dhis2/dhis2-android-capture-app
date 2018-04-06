@@ -13,6 +13,7 @@ import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
+import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -38,6 +39,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     private CompositeDisposable compositeDisposable;
     private List<EnrollmentModel> teiEnrollments;
     private SearchTEContractsModule.Presenter presenter;
+    private TrackedEntityInstanceModel tei;
 
     SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
         super(binding.getRoot());
@@ -49,7 +51,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         binding.setPresenter(presenter);
-
+        this.tei = trackedEntityInstanceModel;
         //--------------------------
         //region ENROLLMENTS
 
@@ -63,7 +65,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::setPopUp)
+                        .subscribe(this::setPopUp, OnErrorHandler.create())
         );
 
         //endregion
@@ -76,7 +78,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     metadataRepository.getTEIAttributeValues(trackedEntityInstanceModel.uid())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData)
+                            .subscribe(this::setTEIData, OnErrorHandler.create())
 
             );
         else
@@ -84,7 +86,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     metadataRepository.getTEIAttributeValues(presenter.getProgramModel().uid(), trackedEntityInstanceModel.uid())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData)
+                            .subscribe(this::setTEIData, OnErrorHandler.create())
 
             );
         //endregion
@@ -130,7 +132,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         menu.setOnMenuItemClickListener(item -> {
             for (ProgramModel programModel : programModels) {
                 if (programModel.displayShortName().equals(item.getTitle())) {
-                    presenter.enroll(programModel.uid());
+                    presenter.enroll(programModel.uid(), tei.uid());
                     return true;
                 }
             }

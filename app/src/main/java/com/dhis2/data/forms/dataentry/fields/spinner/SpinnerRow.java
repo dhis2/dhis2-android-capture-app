@@ -21,16 +21,18 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    private final boolean isBackgroundTransparent;
 
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
         this.processor = processor;
+        this.isBackgroundTransparent = isBackgroundTransparent;
     }
 
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         FormSpinnerBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_spinner, parent, false);
-        return new SpinnerHolder(binding, processor);
+        return new SpinnerHolder(binding, processor, isBackgroundTransparent);
     }
 
     @Override

@@ -73,46 +73,52 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
         compositeDisposable.add(
                 metadataRepository.getTrackedEntity(trackedEntityType)
-                        .switchMap(trackedEntity ->
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .flatMap(trackedEntity ->
                         {
                             this.trackedEntity = trackedEntity;
-                            getTrakedEntities();
+//                            getTrakedEntities(); Should not look for all trackedEntities
                             return searchRepository.programsWithRegistration(trackedEntityType);
                         })
-                        .switchMap(programModels -> {
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(programModels -> {
                             this.programModels = programModels;
                             view.setPrograms(programModels);
                             return searchRepository.programAttributes();
                         })
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> view.setForm(data, selectedProgram),
                                 Timber::d)
         );
 
-        compositeDisposable.add(view.rowActions()
-                .subscribeOn(Schedulers.io())
+      /*  compositeDisposable.add(view.rowActions()
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    if (!data.value.isEmpty())
-                        queryData.put(data.uid, data.value);
-                    else
-                        queryData.remove(data.uid);
-                    getTrakedEntities();
-                })
-        );
+                            if (!data.value.isEmpty())
+                                queryData.put(data.uid, data.value);
+                            else
+                                queryData.remove(data.uid);
+                            getTrakedEntities();
+                        },
+                        Timber::d)
+        );*/
 
         compositeDisposable.add(view.rowActionss()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    if (!data.value().isEmpty())
-                        queryData.put(data.id(), data.value());
-                    else
-                        queryData.remove(data.id());
-                    getTrakedEntities();
-                })
+                            if (!data.value().isEmpty())
+                                queryData.put(data.id(), data.value());
+                            else
+                                queryData.remove(data.id());
+                            getTrakedEntities();
+                        },
+                        Timber::d)
         );
 
     }
@@ -127,12 +133,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
 
     private void getTrakedEntities() {
-        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
-                selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view.swapListData(), Timber::d)
-        );
+        if (!queryData.isEmpty())
+            compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
+                    selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
+//                    .subscribeOn(AndroidSchedulers.mainThread())
+//                    .doOnSubscribe(data->view.getProgress().setVisibility(View.VISIBLE))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view.swapListData(), Timber::d)
+            );
     }
 
     private void getTrackedEntityAttributes() {
@@ -237,17 +246,17 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void onEnrollClick(View view) {
         if (view.isEnabled()) {
-            enroll(selectedProgram.uid());
+            enroll(selectedProgram.uid(), null);
         } else
             this.view.displayMessage("Select a program to enable enrolling");
     }
 
     @Override
-    public void enroll(String programUid) {
+    public void enroll(String programUid, String uid) {
         //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
 
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid)
+                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {

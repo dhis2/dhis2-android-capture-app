@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.dhis2.BR;
@@ -8,7 +9,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormYesNoBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxRadioGroup;
@@ -24,7 +24,7 @@ import rx.exceptions.OnErrorNotImplementedException;
  * Created by frodriguez on 18/01/2018.
  */
 
-public class RadioButtonHolder extends FormViewHolder {
+public class RadioButtonHolder extends RecyclerView.ViewHolder {
     private FormYesNoBinding binding;
     private final FlowableProcessor<RowAction> processor;
     SearchTEContractsModule.Presenter presenter;
@@ -34,7 +34,7 @@ public class RadioButtonHolder extends FormViewHolder {
     BehaviorProcessor<RadioButtonViewModel> model;
 
     public RadioButtonHolder(ViewGroup parent, FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
-        super(binding);
+        super(binding.getRoot());
         this.binding = binding;
         this.processor = processor;
 

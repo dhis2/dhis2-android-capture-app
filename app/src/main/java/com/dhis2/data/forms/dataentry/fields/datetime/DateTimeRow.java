@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.datetime;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -24,36 +25,48 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     private final int DATE = 6;
     private final int DATETIME = 7;
     private final LayoutInflater inflater;
+    private final FlowableProcessor<RowAction> processor;
+    private final boolean isBgTransparent;
 
     private int viewType;
 
-    public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType) {
-        //this.processor = processor;
+    public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
+        this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
+        this.isBgTransparent = isBgTransparent;
     }
 
     @NonNull
     @Override
     public DateTimeHolder onCreate(@NonNull ViewGroup parent) {
-        if (viewType == TIME) {
-            FormTimeTextBinding binding = DataBindingUtil.inflate(inflater,
-                    R.layout.form_time_text, parent, false);
-            return new DateTimeHolder(binding);
-        } else if (viewType == DATE) {
-            FormDateTextBinding binding = DataBindingUtil.inflate(inflater,
-                    R.layout.form_date_text, parent, false);
-            return new DateTimeHolder(binding);
-        } else {
-            FormDateTimeTextBinding binding = DataBindingUtil.inflate(inflater,
-                    R.layout.form_date_time_text, parent, false);
-            return new DateTimeHolder(binding);
+
+        ViewDataBinding binding;
+
+        switch (viewType) {
+            case TIME:
+                binding = DataBindingUtil.inflate(inflater,
+                        R.layout.form_time_text, parent, false);
+                ((FormTimeTextBinding) binding).timeView.setIsBgTransparent(isBgTransparent);
+                break;
+            case DATE:
+                binding = DataBindingUtil.inflate(inflater,
+                        R.layout.form_date_text, parent, false);
+                ((FormDateTextBinding) binding).dateView.setIsBgTransparent(isBgTransparent);
+                break;
+            default:
+                binding = DataBindingUtil.inflate(inflater,
+                        R.layout.form_date_time_text, parent, false);
+                ((FormDateTimeTextBinding) binding).dateTimeView.setIsBgTransparent(isBgTransparent);
+                break;
         }
+
+        return new DateTimeHolder(binding);
     }
 
     @Override
     public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 
 }

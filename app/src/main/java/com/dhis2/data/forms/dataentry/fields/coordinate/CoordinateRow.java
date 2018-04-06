@@ -9,7 +9,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.CustomFormCoordinateBinding;
-import com.dhis2.databinding.FormCoordinatesBinding;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -23,11 +22,13 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     private final FlowableProcessor<RowAction> processor;
     @NonNull
     private final LayoutInflater inflater;
+    private final boolean isBgTransparent;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
-                         @NonNull FlowableProcessor<RowAction> processor) {
+                         @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
+        this.isBgTransparent = isBgTransparent;
     }
 
     @NonNull
@@ -35,6 +36,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     public CoordinateHolder onCreate(@NonNull ViewGroup parent) {
         CustomFormCoordinateBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.custom_form_coordinate, parent, false);
+        binding.formCoordinates.setIsBgTransparent(isBgTransparent);
         return new CoordinateHolder(binding, processor);
     }
 

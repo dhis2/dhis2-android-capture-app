@@ -4,19 +4,13 @@
     <data>
 
         <variable
-            name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
-
-        <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
-        <variable
             name="label"
             type="java.lang.String" />
+
     </data>
 
     <Button
+        android:id="@+id/formButton"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="5dp"
@@ -24,6 +18,5 @@
         android:paddingStart="20dp"
         android:text="Add file"
         android:textAlignment="viewStart"
-        android:textAllCaps="false"
-        android:textColor="@color/colorAccent" />
+        android:textAllCaps="false" />
 </layout>
