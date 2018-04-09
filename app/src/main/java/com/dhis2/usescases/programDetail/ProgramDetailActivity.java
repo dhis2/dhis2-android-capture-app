@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -15,7 +14,6 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CustomViews.DateDialog;
-import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -59,14 +57,6 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
         presenter.init(this, programId);
-
-        binding.recycler.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager()) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                presenter.nextPageForApi(page + 1);
-            }
-        });
-
     }
 
     @Override
@@ -82,7 +72,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
             binding.recycler.setAdapter(adapter);
         }
 
-        adapter.addItems(response.getTrackedEntityInstances());
+        adapter.addItems(response.getMyTrackedEntityInstances());
     }
 
     @Override
@@ -125,9 +115,8 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
             dialog.setCancelable(true);
             getActivity().getSupportFragmentManager().beginTransaction().add(dialog, null).commit();
         } else {
-            DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
-
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {},
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
         }
     }
@@ -159,13 +148,11 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        Toast.makeText(getContext(), String.format("Period filter set to %s", period), Toast.LENGTH_LONG).show();
+        presenter.getData();
     }
 
     @Override
     public void addTree(TreeNode treeNode) {
-
-
         binding.treeViewContainer.removeAllViews();
 
         AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
@@ -194,10 +181,4 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
             return true;
         });
     }
-
-/*
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-
-    }*/
 }

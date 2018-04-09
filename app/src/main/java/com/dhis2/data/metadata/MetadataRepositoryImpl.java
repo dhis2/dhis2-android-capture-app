@@ -48,6 +48,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
+    private static final String SELECT_ENROLLMENT_EVENTS = String.format(
+            "SELECT * FROM %s WHERE %s.%s =",
+            EventModel.TABLE,
+            EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID);
+
     private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
             "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s DESC LIMIT 1",
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
@@ -168,12 +173,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
-    private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
-
 
     private final BriteDatabase briteDatabase;
 
-    public MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
@@ -195,6 +198,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TrackedEntityInstanceModel.TABLE, TRACKED_ENTITY_INSTANCE_QUERY + "'" + teiUid + "'")
                 .mapToOne(TrackedEntityInstanceModel::create);
+    }
+
+    @Override
+    public Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid) {
+        String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE
+                + " JOIN " + TrackedEntityModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY
+                + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY
+                + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + programUid + "'";
+
+        final Set<String> PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityInstanceModel.TABLE, TrackedEntityModel.TABLE, ProgramModel.TABLE));
+
+        return briteDatabase
+                .createQuery(PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES, PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY)
+                .mapToList(TrackedEntityInstanceModel::create);
     }
 
     @Override
@@ -312,8 +329,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid) {
         return briteDatabase
-                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid)
+                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_EVENTS, enrollmentUid)
                 .mapToOne(EventModel::create);
+    }
+
+    @Override
+    public Observable<List<EventModel>> getEnrollmentEvents(String enrollmentUid) {
+        return briteDatabase
+                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid)
+                .mapToList(EventModel::create);
     }
 
     @Override
@@ -348,6 +372,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<List<OptionModel>> optionSet(String optionSetId) {
+        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
         return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET, optionSetId)
                 .mapToList(OptionModel::create);
     }
