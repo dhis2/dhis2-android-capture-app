@@ -217,7 +217,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
 
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid)
+                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid, queryData)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {

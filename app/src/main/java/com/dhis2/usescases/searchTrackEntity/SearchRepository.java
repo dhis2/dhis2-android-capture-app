@@ -35,5 +35,5 @@ public interface SearchRepository {
                                                                         @Nullable HashMap<String, String> queryData);
 
     @NonNull
-    Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid);
+    Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData);
 }
