@@ -3,6 +3,10 @@ package com.dhis2.data.user;
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
+import com.dhis2.data.service.DataServiceComponent;
+import com.dhis2.data.service.DataServiceModule;
+import com.dhis2.data.service.MetadataServiceComponent;
+import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.appInfo.InfoComponent;
@@ -38,46 +42,52 @@ import dagger.Subcomponent;
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
 
-    
+
     MainComponent plus(MainModule mainModule);
 
-    
+
     ProgramDetailComponent plus(ProgramDetailModule programDetailContractModule);
 
-    
+
     ProgramEventDetailComponent plus(ProgramEventDetailModule programEventDetailModule);
 
-    
+
+    MetadataServiceComponent plus(MetadataServiceModule serviceModule);
+
+
+    DataServiceComponent plus(DataServiceModule serviceModule);
+
+
     ProgramDetailTabletComponent plus(ProgramDetailTabletModule programDetailModule);
 
-    
+
     SearchTEComponent plus(SearchTEModule searchTEModule);
 
-    
+
     TeiDashboardComponent plus(TeiDashboardModule dashboardModule);
 
-    
+
     ServiceComponent plus(ServiceModule serviceModule);
 
-    
+
     TeiDataDetailComponent plus(TeiDataDetailModule dataDetailModule);
 
-    
+
     EventDetailComponent plus(EventDetailModule eventDetailModule);
 
-    
+
     TeiProgramListComponent plus(TeiProgramListModule teiProgramListModule);
 
-    
+
     FormComponent plus(FormModule enrollmentModule);
 
-    
+
     ProgramComponent plus(ProgramModule programModule);
 
-    
+
     InfoComponent plus(InfoModule infoModule);
 
-    
+
     EventInitialComponent plus(EventInitialModule eventInitialModule);
 
 
