@@ -175,6 +175,9 @@ dependencies {
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
 
+    //FIREBASE
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+
 
     //Test
 

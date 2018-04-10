@@ -21,7 +21,8 @@ public class SyncManagerContracts {
 
     public interface Presenter {
 
-        void sync();
+        void syncData();
+        void syncMeta();
 
     }
 }

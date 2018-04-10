@@ -5,6 +5,10 @@ import android.support.annotation.NonNull;
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
+import com.dhis2.data.service.DataServiceComponent;
+import com.dhis2.data.service.DataServiceModule;
+import com.dhis2.data.service.MetadataServiceComponent;
+import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.appInfo.InfoComponent;
@@ -60,6 +64,12 @@ public interface UserComponent {
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);
+
+    @NonNull
+    DataServiceComponent plus(@NonNull DataServiceModule serviceModule);
 
     @NonNull
     TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);

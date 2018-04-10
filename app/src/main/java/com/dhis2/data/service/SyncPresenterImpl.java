@@ -45,7 +45,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncService.SyncState.METADATA), throwable -> {
+                .subscribe(update(SyncState.METADATA), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
     }
@@ -59,7 +59,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncService.SyncState.EVENTS), throwable -> {
+                .subscribe(update(SyncState.EVENTS), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
     }
@@ -74,7 +74,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncService.SyncState.TEI), throwable -> {
+                .subscribe(update(SyncState.TEI), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
@@ -103,7 +103,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
 
     @NonNull
-    private Consumer<SyncResult> update(SyncService.SyncState syncState) {
+    private Consumer<SyncResult> update(SyncState syncState) {
         return result -> {
             if (syncView != null) {
                 syncView.update(syncState).accept(result);
