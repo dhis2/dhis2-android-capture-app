@@ -38,8 +38,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    private ArrayList<Date> dates = new ArrayList<>();
-    private Period period;
     private List<OrganisationUnitModel> myOrgs;
 
     ProgramPresenter(HomeRepository homeRepository) {
@@ -69,14 +67,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                             renderTree(myOrgs);
                         },
                         throwable -> view.renderError(throwable.getMessage())));
-//        getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
 
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
-        this.dates = dates;
-        this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -200,7 +195,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         return homeRepository.eventModels(programModel.uid());
     }
 
-    public String orgUnitQuery(){
+    private String orgUnitQuery(){
         StringBuilder orgUnitFilter = new StringBuilder();
         for (int i = 0; i < myOrgs.size(); i++) {
             orgUnitFilter.append("'");

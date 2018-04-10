@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -28,7 +28,7 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
     private List<OrganisationUnitModel> orgUnits;
     private ProgramModel program;
 
-    public ProgramDetailTabletAdapter(Context p_jContext) {
+    ProgramDetailTabletAdapter(Context p_jContext) {
         super(p_jContext);
     }
 
@@ -73,9 +73,9 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
 
     class CellViewHolder extends AbstractViewHolder {
 
-        public TextView textView;
+        TextView textView;
 
-        public CellViewHolder(View view) {
+        CellViewHolder(View view) {
             super(view);
             textView = view.findViewById(android.R.id.text1);
         }
@@ -102,9 +102,9 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
 
     class HeaderViewHolder extends AbstractViewHolder {
 
-        public TextView textView;
+        TextView textView;
 
-        public HeaderViewHolder(View view) {
+        HeaderViewHolder(View view) {
             super(view);
             textView = view.findViewById(android.R.id.text1);
         }
@@ -127,9 +127,9 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
     *  ROW HEADER VIEW
     * */
     class RowViewHolder extends AbstractViewHolder {
-        public TextView textView;
+        TextView textView;
 
-        public RowViewHolder(View view) {
+        RowViewHolder(View view) {
             super(view);
             textView = view.findViewById(android.R.id.text1);
 
@@ -146,7 +146,7 @@ public class ProgramDetailTabletAdapter extends AbstractTableAdapter<TrackedEnti
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object p_jValue, int p_nYPosition) {
         RowViewHolder cellViewHolder = (RowViewHolder) holder;
-        cellViewHolder.textView.setText(""+p_nYPosition);
+        cellViewHolder.textView.setText(String.valueOf(p_nYPosition));
     }
 
     @Override

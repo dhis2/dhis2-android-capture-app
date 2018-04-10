@@ -45,8 +45,6 @@ public class ProgramDetailContractModule {
 
         ProgramModel getCurrentProgram();
 
-        void nextPageForApi(int page);
-
         void onSearchClick();
 
         void onBackClick();
@@ -54,13 +52,13 @@ public class ProgramDetailContractModule {
         void onTEIClick(String TEIuid,String programUid);
 
         void setProgram(ProgramModel program);
+
+        void getData();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId);
 
-        void getOrgUnits();
-
-        void getData(int page);
+        void getData();
     }
 }

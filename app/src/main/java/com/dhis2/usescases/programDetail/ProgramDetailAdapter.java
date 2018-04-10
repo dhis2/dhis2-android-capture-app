@@ -7,20 +7,17 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramTrackedEntityBinding;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
-import org.hisp.dhis.android.core.enrollment.Enrollment;
-import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Created by frodriguez on 11/2/2017.
@@ -28,14 +25,13 @@ import javax.inject.Inject;
  */
 
 public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailViewHolder> {
-
     private ProgramDetailContractModule.Presenter presenter;
-    private List<TrackedEntityInstance> trackedEntityInstances;
+    private List<MyTrackedEntityInstance> trackedEntityInstances;
     private List<ProgramTrackedEntityAttributeModel> attributesToShow;
     private ProgramModel program;
     private List<OrganisationUnitModel> orgUnits;
 
-    public ProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter) {
+    ProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter) {
         this.presenter = presenter;
         this.trackedEntityInstances = new ArrayList<>();
     }
@@ -50,11 +46,11 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
     @Override
     public void onBindViewHolder(ProgramDetailViewHolder holder, int position) {
 
-        TrackedEntityInstance entityInstance = trackedEntityInstances.get(position);
+        MyTrackedEntityInstance entityInstance = trackedEntityInstances.get(position);
 
         ArrayList<String> attributes = new ArrayList<>();
         for (ProgramTrackedEntityAttributeModel programAttributes : attributesToShow) {
-            for (TrackedEntityAttributeValue value : entityInstance.trackedEntityAttributeValues()) {
+            for (TrackedEntityAttributeValueModel value : entityInstance.getTrackedEntityAttributeValues()) {
                 if (value.trackedEntityAttribute().equals(programAttributes.trackedEntityAttribute()))
                     attributes.add(value.value());
             }
@@ -62,23 +58,25 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
 
         String orgUnit = "";
         for (OrganisationUnitModel orgUnitModel : orgUnits) {
-            if (orgUnitModel.uid().equals(entityInstance.organisationUnit()))
+            if (orgUnitModel.uid().equals(entityInstance.getTrackedEntityInstance().organisationUnit()))
                 orgUnit = orgUnitModel.displayShortName();
         }
 
         String stage = "";
-        if (entityInstance.enrollments() != null)
-            for (Enrollment enrollment : entityInstance.enrollments()) {
-                if (enrollment.events() != null) {
-                    List<Event> events = new ArrayList<>();
-                    events.addAll(enrollment.events());
-                    Collections.sort(events, (event, t1) -> event.dueDate().compareTo(t1.dueDate()));
-                    stage = events.get(0).programStage();
-                }
-
+        boolean followUp = false;
+        if (entityInstance.getEnrollments() != null) {
+            for (EnrollmentModel enrollment : entityInstance.getEnrollments()) {
+                if (enrollment.followUp())
+                    followUp = true;
             }
+        }
+        if (entityInstance.getEventModels() != null) {
+            List<EventModel> events = new ArrayList<>(entityInstance.getEventModels());
+            Collections.sort(events, (event, t1) -> event.dueDate().compareTo(t1.dueDate()));
+            stage = events.get(0).programStage();
+        }
 
-        holder.bind(presenter, program, orgUnit, attributes, stage, entityInstance.uid());
+        holder.bind(presenter, program, orgUnit, attributes, stage, entityInstance.getTrackedEntityInstance().uid(), followUp);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class ProgramDetailAdapter extends RecyclerView.Adapter<ProgramDetailView
         return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
     }
 
-    public void addItems(List<TrackedEntityInstance> trackedEntityInstances) {
+    public void addItems(List<MyTrackedEntityInstance> trackedEntityInstances) {
         if (trackedEntityInstances.size() > 0) {
             this.trackedEntityInstances.addAll(trackedEntityInstances);
         }

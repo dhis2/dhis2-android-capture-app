@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -23,7 +24,6 @@
     </data>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
@@ -75,7 +75,6 @@
                     android:id="@+id/progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="44%"
                     android:textColor="@color/yellow_fdd"
                     android:layout_centerInParent="true"
                     android:textSize="12sp"/>
@@ -109,74 +108,67 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
+                            <ImageView
+                                android:contentDescription='@{name}'
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                app:srcCompat="@drawable/photo_temp" />
+
+                            <!--TODO CRIS: PROGRAM COLOR-->
+                            <ImageView
+                                android:contentDescription='@{name}'
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="4dp"
+                                android:tint="@color/red_060"
+                                android:layout_marginEnd="24dp"
+                                app:srcCompat="@drawable/ic_program_border" />
+
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:orientation="horizontal">
-
-                                <ImageView
-                                    android:contentDescription='@{name}'
-                                    android:layout_width="80dp"
-                                    android:layout_height="80dp"
-                                    app:srcCompat="@drawable/photo_temp" />
-
-                                <!--TODO CRIS: PROGRAM COLOR-->
-                                <ImageView
-                                    android:contentDescription='@{name}'
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:tint="@color/red_060"
-                                    android:layout_marginEnd="24dp"
-                                    app:srcCompat="@drawable/ic_program_border" />
+                                android:orientation="horizontal"
+                                android:baselineAligned="false">
 
                                 <LinearLayout
-                                    android:layout_width="match_parent"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
+                                    android:orientation="vertical">
 
-                                    <LinearLayout
-                                        android:layout_width="0dp"
-                                        android:layout_weight="1"
+                                    <TextView
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:orientation="vertical">
+                                        android:textSize="14sp"
+                                        android:textColor="?colorPrimary"
+                                        android:text='@{programStage.displayName()}'/>
 
-                                        <TextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:textSize="14sp"
-                                            android:textColor="?colorPrimary"
-                                            android:text='@{programStage.displayName()}'/>
-
-                                        <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
-                                        <TextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:textSize="12sp"
-                                            android:text="@string/fake_program_stage_description"/>
-
-                                    </LinearLayout>
-
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="0dp"
-                                        android:layout_weight="1"
+                                    <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
+                                    <TextView
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:hint="@string/date"
-                                        android:theme="@style/dataInputText">
+                                        android:textSize="12sp"
+                                        android:text="@string/fake_program_stage_description"/>
 
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/date"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:focusable="false"
-                                            android:textSize="15sp"
-                                            android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
-                                    </android.support.design.widget.TextInputLayout>
                                 </LinearLayout>
+
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/date"
+                                    android:theme="@style/dataInputText">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:focusable="false"
+                                        android:textSize="15sp"
+                                        android:text='@{event != null ? event.eventDate().toLocaleString() : ""}'/>
+                                </android.support.design.widget.TextInputLayout>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -185,7 +177,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:layout_marginTop="16dp">
+                            android:layout_marginTop="16dp"
+                            android:baselineAligned="false">
 
                             <android.support.design.widget.TextInputLayout
                                 android:layout_width="0dp"
@@ -337,6 +330,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="20dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="40dp" />
 
                 <LinearLayout
@@ -345,6 +339,7 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingStart="20dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="40dp" />
 
             </android.support.design.widget.NavigationView>

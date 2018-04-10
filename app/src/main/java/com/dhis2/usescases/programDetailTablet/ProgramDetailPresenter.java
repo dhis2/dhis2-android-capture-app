@@ -58,11 +58,6 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public void nextPageForApi(int page) {
-        interactor.getData(page);
-    }
-
-    @Override
     public void onSearchClick() {
         Bundle bundle = new Bundle();
         //bundle.putString("TRACKED_ENTITY_UID", program.trackedEntityType());

@@ -20,7 +20,8 @@
             android:layout_marginBottom="90dp"
             android:layout_marginTop="90dp"
             android:background="?colorAccent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/title"
@@ -43,15 +44,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end">
+
                 <Button
                     android:id="@+id/clear_button"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_gravity="end"
                     android:background="@android:color/transparent"
-                    android:text="Clear filters"
+                    android:text="@string/clear_filters"
                     android:textColor="?colorPrimary"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp"
+                    style="?buttonBarButtonStyle"/>
 
                 <Button
                     android:id="@+id/accept_button"
@@ -59,9 +62,10 @@
                     android:layout_height="40dp"
                     android:layout_gravity="end"
                     android:background="?colorPrimary"
-                    android:text="Accept"
+                    android:text="@string/action_accept"
                     android:textColor="?colorAccent"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp"
+                    style="?buttonBarButtonStyle"/>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

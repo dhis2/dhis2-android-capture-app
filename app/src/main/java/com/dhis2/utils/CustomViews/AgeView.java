@@ -63,7 +63,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Tex
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
         date.setOnFocusChangeListener(this::onFocusChanged);
-        date.setOnClickListener(this::onClick);
+        date.setOnClickListener(this);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
         month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});

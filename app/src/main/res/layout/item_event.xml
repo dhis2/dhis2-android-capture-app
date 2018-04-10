@@ -77,7 +77,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down" />
+                app:srcCompat="@drawable/ic_arrow_down"
+                tools:ignore="ContentDescription" />
 
 
             <LinearLayout
@@ -97,7 +98,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     app:srcCompat="@drawable/ic_edit"
-                    app:eventIcon="@{event.status()}"/>
+                    app:eventIcon="@{event.status()}"
+                    tools:ignore="ContentDescription" />
+
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/status_text"
                     android:layout_width="wrap_content"
@@ -109,10 +112,6 @@
                     tools:text="Read only"
                     app:eventText='@{event.status()}'/>
             </LinearLayout>
-
-
-
         </android.support.constraint.ConstraintLayout>
-
     </android.support.v7.widget.CardView>
 </layout>

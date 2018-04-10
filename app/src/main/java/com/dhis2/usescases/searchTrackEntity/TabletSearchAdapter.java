@@ -1,9 +1,9 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +40,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     private List<ProgramModel> programs;
     private SearchTEContractsModule.Presenter presenter;
 
-    public TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
+    TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
         super(p_jContext);
 
         this.metadata = metadataRepository;
@@ -48,6 +48,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     }
 
 
+    @SuppressLint("CheckResult")
     public void setItems(List<TrackedEntityInstanceModel> teis, List<ProgramModel> programs) {
 
         this.teis = teis;

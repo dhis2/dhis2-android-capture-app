@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="center_vertical"
-        android:paddingStart="20dp">
+        android:paddingStart="20dp"
+        android:paddingEnd="0dp">
 
         <TextView
             android:layout_width="match_parent"

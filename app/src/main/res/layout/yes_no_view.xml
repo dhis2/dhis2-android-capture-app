@@ -42,15 +42,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/white"
-                android:checked="false"
-                android:text="yes"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:text="@string/yes"
+                android:checked="false" />
 
             <RadioButton
                 android:id="@+id/no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/white"
+                android:text="@string/no"
+                android:checked="false" />
                 android:checked="false"
                 android:text="no"
                 android:textColor="@color/white" />
@@ -59,13 +61,10 @@
                 android:id="@+id/no_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:buttonTint="@color/white"
-
-                android:checked="false"
-                android:text="no value"
-                android:textColor="@color/white" />
-
+                android:text="@string/no_value"
+                android:checked="false" />
         </RadioGroup>
-
     </LinearLayout>
 </layout>

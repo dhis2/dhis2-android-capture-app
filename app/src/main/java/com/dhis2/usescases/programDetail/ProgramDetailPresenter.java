@@ -59,8 +59,8 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
-    public void nextPageForApi(int page) {
-        interactor.getData(page);
+    public void getData() {
+        interactor.getData();
     }
 
     @Override

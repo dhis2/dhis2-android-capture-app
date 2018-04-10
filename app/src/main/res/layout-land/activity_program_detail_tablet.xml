@@ -32,7 +32,8 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
                 android:padding="15dp"
-                app:srcCompat="@drawable/ic_arrow_back" />
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="0dp"
@@ -76,7 +77,8 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="40dp"
-                            android:layout_marginTop="3dp">
+                            android:layout_marginTop="3dp"
+                            tools:ignore="UseCompoundDrawables">
 
                             <ImageView
                                 android:id="@+id/button_time"
@@ -85,7 +87,8 @@
                                 android:background="@drawable/period_button"
                                 android:onClick="@{()->presenter.onTimeButtonClick()}"
                                 android:padding="7dp"
-                                app:srcCompat="@drawable/ic_view_day" />
+                                app:srcCompat="@drawable/ic_view_day"
+                                tools:ignore="ContentDescription" />
 
                             <TextView
                                 android:id="@+id/button_date_range"
@@ -96,7 +99,8 @@
                                 android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                                 android:padding="7dp"
                                 android:paddingEnd="15dp"
-                                android:text="DD/MM/YYYY"
+                                android:paddingStart="0dp"
+                                android:text="@string/date_default"
                                 android:textColor="?colorAccent" />
                         </LinearLayout>
 
@@ -113,7 +117,7 @@
                             android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                             android:paddingEnd="15dp"
                             android:paddingStart="15dp"
-                            android:text="Org Unit"
+                            android:text="@string/org_unit"
                             android:textAlignment="textStart"
                             android:textAllCaps="false"
                             android:textColor="?colorAccent"
@@ -131,7 +135,7 @@
                             android:onClick="@{()->presenter.onCatComboButtonClick()}"
                             android:paddingEnd="15dp"
                             android:paddingStart="15dp"
-                            android:text="Cat Combo"
+                            android:text="@string/cat_combo"
                             android:textAlignment="textStart"
                             android:textAllCaps="false"
                             android:textColor="?colorAccent"
@@ -187,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingStart="20dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="40dp" />
 
                 <LinearLayout
@@ -195,11 +200,9 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingStart="20dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="40dp" />
-
             </android.support.design.widget.NavigationView>
-
         </android.support.v4.widget.DrawerLayout>
-
     </LinearLayout>
 </layout>

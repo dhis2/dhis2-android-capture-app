@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programDetail;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.dhis2.Bindings.Bindings;
@@ -8,22 +9,17 @@ import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 import timber.log.Timber;
 
 /**
@@ -35,15 +31,12 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
 
     private final MetadataRepository metadataRepository;
     private ProgramDetailContractModule.View view;
-    private D2 d2;
     private String programId;
     private UserRepository userRepository;
     private CompositeDisposable compositeDisposable;
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
-    private Call<TrackedEntityObject> currentCall;
 
-    ProgramDetailInteractor(D2 d2, @NonNull UserRepository userRepository, MetadataRepository metadataRepository) {
-        this.d2 = d2;
+    ProgramDetailInteractor(@NonNull UserRepository userRepository, MetadataRepository metadataRepository) {
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
         Bindings.setMetadataRepository(metadataRepository);
@@ -56,6 +49,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
         this.programId = programId;
         getProgram();
         getOrgUnits();
+        getData();
     }
 
     private void getProgram() {
@@ -68,8 +62,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
         );
     }
 
-    @Override
-    public void getOrgUnits() {
+    private void getOrgUnits() {
         compositeDisposable.add(userRepository.myOrgUnits()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -80,66 +73,66 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                         },
                         Timber::d)
         );
-
-        compositeDisposable.add(metadataRepository.getProgramTrackedEntityAttributes(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::show,
-                        Timber::d)
-        );
-    }
-
-    private void show(List<ProgramTrackedEntityAttributeModel> programAttributes) {
-        view.setAttributeOrder(programAttributes);
     }
 
     @Override
-    public void getData(int page) {
-        String orgQuey = "";
-        for (int i = 0; i < selectedOrgUnits.size(); i++) {
-            orgQuey = orgQuey.concat(selectedOrgUnits.get(i).uid());
-            if (i < selectedOrgUnits.size() - 1)
-                orgQuey = orgQuey.concat(";");
-        }
+    @SuppressLint("CheckResult")
+    public void getData(){
+        Observable.zip(
+                metadataRepository.getTrackedEntityInstances(programId),
+                metadataRepository.getProgramTrackedEntityAttributes(programId),
+                (trackedEntityInstanceModelList, programTrackedEntityAttributeModelList) -> {
 
-        String ouMode = "DESCENDANTS";
-        currentCall = d2.retrofit().create(TrackedEntityInstanceService.class).trackEntityInstances(
-                orgQuey,
-                ouMode,
-                programId,
-                true,
-                page,
-                "*,attributes[*],enrollments[enrollment,events[event,dueDate,programStage]]"
-        );
-        currentCall.enqueue(new Callback<TrackedEntityObject>() {
-            @Override
-            public void onResponse(Call<TrackedEntityObject> call, Response<TrackedEntityObject> response) {
-                if (response.body() != null) {
-                    view.swapData(response.body());
-                } else if (response.errorBody() != null) {
-                    try {
-                        Timber.d(response.errorBody().string());
-                    } catch (IOException e) {
-                        Timber.e(e);
+                    List<MyTrackedEntityInstance> myTrackedEntityInstanceList = new ArrayList<>();
+                    for (TrackedEntityInstanceModel trackedEntityInstanceModel : trackedEntityInstanceModelList) {
+                        MyTrackedEntityInstance myTrackedEntityInstance = new MyTrackedEntityInstance(trackedEntityInstanceModel);
+                        myTrackedEntityInstanceList.add(myTrackedEntityInstance);
                     }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<TrackedEntityObject> call, Throwable t) {
+                    TrackedEntityObject trackedEntityObject = new TrackedEntityObject(myTrackedEntityInstanceList, programTrackedEntityAttributeModelList);
 
-            }
-        });
+                    for (MyTrackedEntityInstance myTrackedEntityInstance : trackedEntityObject.getMyTrackedEntityInstances()) {
+                        compositeDisposable.add(metadataRepository.getTEIAttributeValues(programId, myTrackedEntityInstance.getTrackedEntityInstance().trackedEntity())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        myTrackedEntityInstance::setTrackedEntityAttributeValues,
+                                        Timber::d)
+                        );
 
+                        compositeDisposable.add(metadataRepository.getTEIEnrollments(myTrackedEntityInstance.getTrackedEntityInstance().trackedEntity())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        (enrollments) -> {
+                                            myTrackedEntityInstance.setEnrollments(enrollments);
+                                            for (EnrollmentModel enrollmentModel : enrollments){
+                                                compositeDisposable.add(metadataRepository.getEnrollmentEvents(enrollmentModel.uid())
+                                                        .subscribeOn(Schedulers.io())
+                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                        .subscribe(
+                                                                myTrackedEntityInstance::setEventModels,
+                                                                Timber::d)
+                                                );
+                                            }
+                                        },
+                                        Timber::d)
+                        );
+                    }
+                    return trackedEntityObject;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        (trackedEntityObject) -> {
+                            view.swapData(trackedEntityObject);
+                            view.setAttributeOrder(trackedEntityObject.getProgramTrackedEntityAttributes());
+                        },
+                        Timber::d);
     }
 
     private void renderTree(List<OrganisationUnitModel> myOrgs) {
-
         selectedOrgUnits.addAll(myOrgs);
-
-        getData(1);
-
         TreeNode root = TreeNode.root();
         ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
         ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
@@ -170,23 +163,11 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
             root.addChild(treeNode);
         }
 
-
         view.addTree(root);
     }
 
     @Override
     public void onDettach() {
-        currentCall.cancel();
         compositeDisposable.clear();
-    }
-
-    private interface TrackedEntityInstanceService {
-        @GET("28/trackedEntityInstances")
-        Call<TrackedEntityObject> trackEntityInstances(@Query("ou") String orgUnits,
-                                                       @Query("ouMode") String ouMode,
-                                                       @Query("program") String programId,
-                                                       @Query("totalPages") boolean showPager,
-                                                       @Query("page") int page,
-                                                       @Query("fields") String fields);
     }
 }

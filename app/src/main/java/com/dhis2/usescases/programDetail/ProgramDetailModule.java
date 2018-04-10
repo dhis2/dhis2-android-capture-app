@@ -7,8 +7,6 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.D2;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -34,9 +32,9 @@ public class ProgramDetailModule {
 
     @Provides
     @PerActivity
-    ProgramDetailContractModule.Interactor provideInteractor(D2 d2, @NonNull UserRepository userRepository,
+    ProgramDetailContractModule.Interactor provideInteractor(@NonNull UserRepository userRepository,
                                                              @NonNull MetadataRepository metadataRepository) {
-        return new ProgramDetailInteractor(d2, userRepository, metadataRepository);
+        return new ProgramDetailInteractor(userRepository, metadataRepository);
     }
 
     @Provides

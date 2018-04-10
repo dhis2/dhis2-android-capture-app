@@ -44,6 +44,9 @@ public interface MetadataRepository {
 
     Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid);
 
+    Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid);
+
+
     /*CATEGORY OPTION*/
 
     Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId);
@@ -95,14 +98,15 @@ public interface MetadataRepository {
 
     Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid);
 
+    Observable<List<EventModel>> getEnrollmentEvents(String enrollmentUid);
+
 
     /*EVENTS*/
     Observable<Integer> getProgramStageDataElementCount(String programStageId);
 
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 
+
     /*OPTION SET*/
     Observable<List<OptionModel>> optionSet(String optionSetId);
-
-
 }

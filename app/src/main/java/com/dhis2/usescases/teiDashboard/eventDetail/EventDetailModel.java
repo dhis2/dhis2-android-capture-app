@@ -58,10 +58,6 @@ public class EventDetailModel extends BaseObservable {
         return eventModel;
     }
 
-    public List<TrackedEntityDataValueModel> getDataValueModelList() {
-        return dataValueModelList;
-    }
-
     List<ProgramStageSectionModel> getStageSections() {
         return stageSections;
     }
@@ -74,13 +70,10 @@ public class EventDetailModel extends BaseObservable {
     }
 
     String getValueForDE(String dataelementUid) {
-
         for (TrackedEntityDataValueModel trackedEntityDataValueModel : dataValueModelList) {
             if (trackedEntityDataValueModel.dataElement().equals(dataelementUid))
                 return trackedEntityDataValueModel.value();
         }
-
         return null;
-
     }
 }

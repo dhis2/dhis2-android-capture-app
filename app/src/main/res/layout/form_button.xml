@@ -16,7 +16,8 @@
         android:layout_margin="5dp"
         android:background="?colorPrimary"
         android:paddingStart="20dp"
-        android:text="Add file"
+        android:paddingEnd="0dp"
+        android:text="@string/add_file"
         android:textAlignment="viewStart"
         android:textAllCaps="false" />
 </layout>

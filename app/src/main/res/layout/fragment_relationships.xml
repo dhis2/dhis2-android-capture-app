@@ -34,7 +34,8 @@
                 android:layout_marginTop="9dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/relationship_recycler"
-                app:srcCompat="@drawable/ic_add_circle" />
+                app:srcCompat="@drawable/ic_add_circle"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
