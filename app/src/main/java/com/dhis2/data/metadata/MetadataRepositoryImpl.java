@@ -202,7 +202,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid) {
-        String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE
+        String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT " + TrackedEntityInstanceModel.TABLE + ".* FROM " + TrackedEntityInstanceModel.TABLE
                 + " JOIN " + TrackedEntityModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY
                 + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY
                 + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + programUid + "'";
