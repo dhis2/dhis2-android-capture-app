@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import com.dhis2.databinding.FormCoordinatesBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -55,10 +54,7 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
     private void init(Context context) {
         inflater = LayoutInflater.from(context);
-        binding = FormCoordinatesBinding.inflate(inflater, this, true);
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-
     }
 
 

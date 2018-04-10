@@ -118,17 +118,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.progress.setVisibility(View.GONE);
             binding.objectCounter.setText(String.format("%s results found", data.size()));
 
-            if (getResources().getBoolean(R.bool.is_tablet)) {
-                searchTEATabletAdapter.setItems(data, presenter.getProgramList());
-            } else {
-                searchTEAdapter.setItems(data);
-            }
+            if (data.size() < 4) //Only shows data for the selected criteria if there are less than 4 results
+                if (getResources().getBoolean(R.bool.is_tablet)) {
+                    searchTEATabletAdapter.setItems(data, presenter.getProgramList());
+                } else {
+                    searchTEAdapter.setItems(data);
+                }
         };
     }
 
 
     @Override
-    public void clearList() {
+    public void clearList(String uid) {
+        this.initialProgram = uid;
         if (searchTEAdapter != null)
             searchTEAdapter.clear();
     }
@@ -144,8 +146,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
         binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels, presenter.getTrackedEntityName().displayName()));
-        if (!initialProgram.isEmpty())
+        if (initialProgram != null && !initialProgram.isEmpty())
             setInitialProgram(programModels);
+        else
+            binding.programSpinner.setSelection(0);
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {

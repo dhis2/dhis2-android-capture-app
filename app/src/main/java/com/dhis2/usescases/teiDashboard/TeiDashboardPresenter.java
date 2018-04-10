@@ -24,7 +24,6 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
@@ -104,14 +103,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
     @Override
     public void onBackPressed() {
         view.back();
-    }
-
-    @Override
-    public void onProgramSelected() {
-
     }
 
     @Override
@@ -123,6 +118,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void setProgram(ProgramModel program) {
+        this.programUid = program.uid();
+        getData();
     }
 
     @Override

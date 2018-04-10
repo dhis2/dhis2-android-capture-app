@@ -32,8 +32,6 @@ public class TeiDashboardContracts {
 
         void onBackPressed();
 
-        void onProgramSelected();
-
         void onEnrollmentSelectorClick();
 
         Observable<DashboardProgramModel> getProgram();

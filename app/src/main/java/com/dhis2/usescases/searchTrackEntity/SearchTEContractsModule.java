@@ -1,13 +1,11 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.app.DatePickerDialog;
-import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -16,7 +14,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -34,7 +31,7 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<ProgramModel> programModels);
 
-        void clearList();
+        void clearList(String uid);
 
         android.view.View getProgress();
 
@@ -47,10 +44,6 @@ public class SearchTEContractsModule {
 
         void onDestroy();
 
-        void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
-
-        Observable<List<OptionModel>> getOptions(String s);
-
         void query(String format, boolean isAttribute);
 
         void setProgram(ProgramModel programSelected);
@@ -58,10 +51,6 @@ public class SearchTEContractsModule {
         void onBackClick();
 
         void onClearClick();
-
-        void requestCoordinates(LocationListener locationListener);
-
-        void clearFilter(String uid);
 
         void onEnrollClick(android.view.View view);
 

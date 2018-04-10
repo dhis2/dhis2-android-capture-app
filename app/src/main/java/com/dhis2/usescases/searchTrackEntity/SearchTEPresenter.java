@@ -1,16 +1,8 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.Manifest;
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.dhis2.Bindings.Bindings;
@@ -20,14 +12,12 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -179,13 +169,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return programModels;
     }
 
-
-    @Override
-    public Observable<List<OptionModel>> getOptions(String optionSetId) {
-
-        return searchRepository.optionSet(optionSetId);
-    }
-
     //endregion
 
 
@@ -197,9 +180,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void setProgram(ProgramModel programSelected) {
         selectedProgram = programSelected;
-        view.clearList();
+        view.clearList(programSelected == null ? null : programSelected.uid());
 
         getTrakedEntities();
+
         if (selectedProgram == null)
             getTrackedEntityAttributes();
         else
@@ -211,35 +195,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         setProgram(null);
     }
 
-    @Override
-    public void clearFilter(String uid) {
-    }
 
     //endregion
 
     @Override
-    public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {
-        view.showDateDialog(listener);
-    }
-
-    @Override
     public void onBackClick() {
         view.back();
-    }
-
-
-    @Override
-    public void requestCoordinates(LocationListener locationListener) {
-        if (ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(view.getAbstracContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
-        } else {
-            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (lastLocation != null)
-                locationListener.onLocationChanged(lastLocation);
-            else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, locationListener);
-            }
-        }
     }
 
 

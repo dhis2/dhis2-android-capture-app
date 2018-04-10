@@ -18,7 +18,7 @@ import io.reactivex.processors.FlowableProcessor;
  */
 
 public class FileRow implements Row<FileHolder, FileViewModel> {
-
+    FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
@@ -34,7 +34,7 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
     @NonNull
     @Override
     public FileHolder onCreate(@NonNull ViewGroup parent) {
-        FormButtonBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_button, parent, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.form_button, parent, false);
         if (isBgTransparent)
             binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorPrimary));
         else
@@ -45,6 +45,6 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
 
     @Override
     public void onBind(@NonNull FileHolder viewHolder, @NonNull FileViewModel viewModel) {
-
+        binding.setLabel(viewModel.label());
     }
 }
