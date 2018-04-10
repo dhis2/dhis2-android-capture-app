@@ -59,7 +59,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:transitionName="shared_view">
 
             <android.support.constraint.Guideline
@@ -106,6 +106,7 @@
             </RelativeLayout>
 
             <ScrollView
+                android:id="@+id/program_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -128,13 +129,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="?colorPrimary"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             app:programStage='@{event.programStage()}' />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="12sp"
+                            android:textSize="14sp"
                             app:programStageDescription='@{event.programStage()}' />
 
                     </LinearLayout>
@@ -222,9 +223,43 @@
                         app:alignItems="stretch"
                         app:flexWrap="wrap" />
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="end"
+                        android:layout_marginBottom="30dp">
+                        <Button
+                            android:id="@+id/complete_button"
+                            android:layout_width="125dp"
+                            android:layout_height="34dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginEnd="22.5dp"
+                            android:background="@drawable/selector_button_round_7"
+                            android:minHeight="0dp"
+                            android:text="COMPLETE"
+                            android:textColor="@color/white_faf"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/deactivate_button" />
 
+                        <Button
+                            android:id="@+id/deactivate_button"
+                            android:layout_width="125dp"
+                            android:layout_height="34dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginEnd="22.5dp"
+                            android:background="@drawable/button_delete_selector"
+                            android:minHeight="0dp"
+                            android:text="DEACTIVATE"
+                            android:textColor="@color/white_faf"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </ScrollView>
+
+
 
         </android.support.constraint.ConstraintLayout>
 
