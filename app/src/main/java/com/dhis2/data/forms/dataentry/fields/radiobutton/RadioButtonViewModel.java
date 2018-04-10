@@ -8,6 +8,8 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
+import java.util.Locale;
+
 /**
  * Created by frodriguez on 1/24/2018.
  */
@@ -33,8 +35,6 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     @NonNull
     public abstract Boolean mandatory();
 
-    @Nullable
-    public abstract Value value();
 
     @NonNull
     public abstract ValueType valueType();
@@ -43,13 +43,13 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                                     @NonNull Boolean mandatory, @Nullable String value) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, mandatory, null, type);
+            return new AutoValue_RadioButtonViewModel(id, label, null, mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, mandatory, Value.CHECKED, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, mandatory, Value.UNCHECKED, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, mandatory, Value.CHECKED_NO, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), mandatory, type);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }

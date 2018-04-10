@@ -174,15 +174,16 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         allOrgs.addAll(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
+            String[] pathName = myorg.displayNamePath().split("/");
             String[] path = myorg.path().split("/");
             for (int i = myorg.level() - 1; i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
                         .uid(path[i])
                         .level(i)
                         .parent(path[i - 1])
-                        .name(path[i])
-                        .displayName(path[i])
-                        .displayShortName(path[i])
+                        .name(pathName[i])
+                        .displayName(pathName[i])
+                        .displayShortName(pathName[i])
                         .build();
                 if (!allOrgs.contains(orgToAdd))
                     allOrgs.add(orgToAdd);
