@@ -583,7 +583,7 @@ public class Bindings {
 
     @BindingAdapter({"optionSet", "label"})
     public static void setOptionSet(Spinner spinner, String optionSet, String label) {
-        if (metadataRepository != null)
+        if (metadataRepository != null && optionSet != null)
             metadataRepository.optionSet(optionSet)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

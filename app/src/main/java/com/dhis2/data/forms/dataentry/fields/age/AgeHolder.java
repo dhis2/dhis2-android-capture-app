@@ -17,8 +17,5 @@ public class AgeHolder extends FormViewHolder {
         super(binding);
     }
 
-    @Override
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
 
-    }
 }

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.map;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,6 +36,11 @@ public class MapSelectorActivity extends ActivityGlobalAbstract implements OnMap
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
     private TextView latLon;
+
+    @NonNull
+    public static Intent create(@NonNull Activity activity) {
+        return new Intent(activity, MapSelectorActivity.class);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

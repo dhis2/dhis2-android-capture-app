@@ -63,7 +63,7 @@
         <item name="android:colorAccent">@color/colorPrimaryGreen</item>
     </style>
 
-    <style name="loginInputText" parent="TextAppearance.AppCompat">
+    <style name="loginInputText" ><!--parent="TextAppearance.AppCompat"-->
         <item name="android:textColorHint">?colorPrimary</item>
         <item name="colorAccent">?colorPrimary</item>
         <item name="colorControlNormal">?colorPrimary</item>

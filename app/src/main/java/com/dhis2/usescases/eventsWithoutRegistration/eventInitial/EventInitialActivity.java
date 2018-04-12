@@ -167,8 +167,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (isNewEvent){
             binding.actionButton.setText(R.string.create);
-        }
-        else {
+        } else {
             binding.actionButton.setText(R.string.update);
         }
 
@@ -197,12 +196,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
     }
 
-    private void initProgressBar(){
-        if (isNewEvent){
+    @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    private void initProgressBar() {
+        if (isNewEvent) {
             binding.progressGains.setVisibility(View.GONE);
             binding.progress.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             binding.progressGains.setVisibility(View.VISIBLE);
             binding.progress.setVisibility(View.VISIBLE);
         }
@@ -218,8 +222,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void checkActionButtonVisibility(){
         if (isFormCompleted()){
             binding.actionButton.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
@@ -243,8 +246,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }
-        else{
+        } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
             selectedLat = "0.0";
             selectedLon = "0.0";
@@ -290,8 +292,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty()) {
             binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
-        }
-        else {
+        } else {
             selectedOrgUnit = null;
             binding.orgUnit.setText(getString(R.string.org_unit));
         }
@@ -350,14 +351,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         selectedCatCombo = catCombo;
 
-        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()){
+        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
             binding.catComboLine.setVisibility(View.GONE);
             if (catComboList != null && !catComboList.isEmpty()) {
                 selectedCatOptionCombo = catComboList.get(0);
             }
-        }
-        else {
+        } else {
             binding.catCombo.setVisibility(View.VISIBLE);
             binding.catComboLine.setVisibility(View.VISIBLE);
         }

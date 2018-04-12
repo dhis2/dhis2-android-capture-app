@@ -4,16 +4,22 @@
 
     <data>
 
+
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+            name="valueType"
+            type="org.hisp.dhis.android.core.common.ValueType" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
 
     </data>
 
     <com.dhis2.utils.CustomViews.YesNoView
-        android:layout_height="wrap_content"
+        android:id="@+id/customYesNo"
         android:layout_width="wrap_content"
-        app:attribute="@{ attribute }"
-        />
+        android:layout_height="wrap_content"
+        app:label="@{label}"
+        app:valueType="@{ valueType }" />
 
 </layout>

@@ -2,17 +2,16 @@ package com.dhis2.utils.CustomViews;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.dhis2.R;
 import com.dhis2.databinding.DateTimeViewBinding;
-
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,8 +23,11 @@ import java.util.Locale;
 
 public class TimeView extends RelativeLayout implements View.OnClickListener {
 
-    private EditText time;
+    private TextInputLayout time;
+    private TextInputEditText editText;
     private DateTimeViewBinding binding;
+    private LayoutInflater inflater;
+    private boolean isBgTransparent;
 
     public TimeView(Context context) {
         super(context);
@@ -42,25 +44,32 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         init(context);
     }
 
-    private void init(Context context){
-        LayoutInflater inflater = LayoutInflater.from(context);
+    private void init(Context context) {
+        inflater = LayoutInflater.from(context);
+
+
+    }
+
+    private void setLayout() {
         binding = DateTimeViewBinding.inflate(inflater, this, true);
         time = findViewById(R.id.button);
+        editText = findViewById(R.id.inputEditText);
         time.setOnFocusChangeListener(this::onFocusChanged);
-        time.setOnClickListener(this);
-
+        time.setOnClickListener(this::onClick);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute){
-        binding.setAttribute(attribute);
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
     }
 
-    public void setLabel(String label){
+    public void setLabel(String label) {
         binding.setLabel(label);
+        binding.executePendingBindings();
     }
 
     private void onFocusChanged(View view, boolean b) {
-        if(b)
+        if (b)
             onClick(view);
     }
 
@@ -79,13 +88,12 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
             calendar.set(Calendar.MINUTE, minutes);
             String calendarTime;
 
-            if(is24HourFormat) {
+            if (is24HourFormat) {
                 calendarTime = twentyFourHourFormat.format(calendar.getTime());
-                time.setText(calendarTime);
-            }
-            else {
+                editText.setText(calendarTime);
+            } else {
                 calendarTime = twelveHourFormat.format(calendar.getTime());
-                time.setText(calendarTime);
+                editText.setText(calendarTime);
             }
         }, hour, minute, is24HourFormat);
         dialog.show();

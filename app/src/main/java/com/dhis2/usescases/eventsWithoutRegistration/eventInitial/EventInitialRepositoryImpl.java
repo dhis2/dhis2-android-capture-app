@@ -2,6 +2,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.dhis2.utils.CodeGenerator;
@@ -27,7 +28,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 22/03/2018.
- *
  */
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {
@@ -83,9 +83,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public long createEvent(@NonNull Context context, @NonNull String programUid,
-                                              @NonNull String programStage, @NonNull String date,
-                                              @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                              @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
+                            @NonNull String programStage, @NonNull String date,
+                            @NonNull String orgUnitUid, @NonNull String catComboUid,
+                            @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
 
         Date createDate = Calendar.getInstance().getTime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -116,7 +116,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 //                .attributeOptionCombo(catComboUid)
                 .build();
 
-        return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+        return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
     }
 
 

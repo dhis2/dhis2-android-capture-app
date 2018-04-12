@@ -112,6 +112,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void onDetach() {
+        interactor.onDetach();
+    }
+
+    @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
         interactor.getSectionCompletion(sectionUid);
     }

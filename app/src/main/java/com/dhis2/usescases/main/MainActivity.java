@@ -17,6 +17,7 @@ import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.appInfo.AppInfoFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
+import com.dhis2.usescases.syncManager.SyncManagerFragment;
 
 import javax.inject.Inject;
 
@@ -140,8 +141,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             tag = "Done Task";
             binding.filter.setVisibility(View.VISIBLE);
         } else {
-            fragment = new AppInfoFragment();
-            tag = "Info";
+            /*fragment = new AppInfoFragment();
+            tag = "Info";*/
+            fragment = new SyncManagerFragment();
+            tag = "SYNC Manager";
+
             binding.filter.setVisibility(View.GONE);
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();

@@ -16,7 +16,6 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -46,6 +45,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private TabletSearchAdapter searchTEATabletAdapter;
 
     private String initialProgram;
+    private String tEType;
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -71,15 +71,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.tableView.setVisibility(View.GONE);
         }
 
-        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this),presenter));
+        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
+        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, getIntent().getStringExtra("TRACKED_ENTITY_UID"));
-
+        presenter.init(this, tEType);
     }
 
     @Override
@@ -104,12 +104,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     }
 
     @NonNull
-    @Override
-    public Flowable<FormViewHolder> rowActions() {
-        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowable();
-    }
-
-    @NonNull
     public Flowable<RowAction> rowActionss() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
     }
@@ -122,20 +116,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
         return data -> {
             binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setVisibility(View.VISIBLE);
             binding.objectCounter.setText(String.format("%s results found", data.size()));
 
-            if (getResources().getBoolean(R.bool.is_tablet)) {
-                searchTEATabletAdapter.setItems(data, presenter.getProgramList());
-            } else {
-                searchTEAdapter.setItems(data);
-            }
+            if (data.size() < 4) //Only shows data for the selected criteria if there are less than 4 results
+                if (getResources().getBoolean(R.bool.is_tablet)) {
+                    searchTEATabletAdapter.setItems(data, presenter.getProgramList());
+                } else {
+                    searchTEAdapter.setItems(data);
+                }
         };
     }
 
 
     @Override
-    public void clearList() {
+    public void clearList(String uid) {
+        this.initialProgram = uid;
         if (searchTEAdapter != null)
             searchTEAdapter.clear();
     }
@@ -151,22 +146,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
         binding.programSpinner.setAdapter(new ProgramAdapter(this, R.layout.spinner_program_layout, R.id.spinner_text, programModels, presenter.getTrackedEntityName().displayName()));
-        if(!initialProgram.isEmpty())
+        if (initialProgram != null && !initialProgram.isEmpty())
             setInitialProgram(programModels);
+        else
+            binding.programSpinner.setSelection(0);
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                binding.objectCounter.setText("");
                 if (pos > 0) {
-                    binding.progress.setVisibility(View.VISIBLE);
-                    binding.objectCounter.setVisibility(View.GONE);
-                    /*if (searchTEAdapter != null)
-                        searchTEAdapter.clear();*/
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                 } else {
-                    binding.progress.setVisibility(View.VISIBLE);
-                    binding.objectCounter.setVisibility(View.GONE);
-                /*    if (searchTEAdapter != null)
-                        searchTEAdapter.clear();*/
                     presenter.setProgram(null);
                 }
             }
@@ -180,11 +170,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private void setInitialProgram(List<ProgramModel> programModels) {
         for (int i = 0; i < programModels.size(); i++) {
-            if(programModels.get(i).uid().equals(initialProgram)) {
+            if (programModels.get(i).uid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
             }
         }
     }
 
-
+    @Override
+    public View getProgress() {
+        return binding.progress;
+    }
 }

@@ -30,8 +30,6 @@ public class TeiDashboardContracts {
 
         void onBackPressed();
 
-        void onProgramSelected();
-
         void onEnrollmentSelectorClick();
 
         void setProgram(ProgramModel program);

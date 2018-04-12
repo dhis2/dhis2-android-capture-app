@@ -81,6 +81,8 @@ public class EventInitialContract {
         void filterOrgUnits(String date);
 
         void getSectionCompletion(@Nullable String sectionUid);
+
+        void onDetach();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -100,5 +102,7 @@ public class EventInitialContract {
         void getEventSections(@NonNull String eventId);
 
         void getSectionCompletion(@Nullable String sectionUid);
+
+        void onDetach();
     }
 }

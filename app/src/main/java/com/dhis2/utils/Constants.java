@@ -19,4 +19,5 @@ public class Constants {
 
     // MAP SELECTION
     public static final int RQ_MAP_LOCATION = 102;
+    public static final int RQ_MAP_LOCATION_VIEW = 103;
 }

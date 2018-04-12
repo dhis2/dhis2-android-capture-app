@@ -176,7 +176,7 @@
                     android:layout_marginBottom="9dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_sync_green"
+                    tools:src="@drawable/ic_sync_green"
                     tools:ignore="ContentDescription" />
 
                 <TextView

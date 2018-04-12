@@ -2,7 +2,7 @@
     <string name="app_name">Dhis2</string>
     <string name="logo_text">dhis</string>
     <string name="logo_number">2</string>
-    <string name="google_api">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
+    <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
 
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
@@ -142,6 +142,19 @@
 
     <!--MAP SELECTION-->
     <string name="select_location">Select location</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 Minute</string>
+    <string name="fifteen_minute">15 Minutes</string>
+    <string name="a_hour">1 Hour</string>
+    <string name="a_day">1 Day</string>
+    <string name="Automatic_Sync_Data">Automatic Sync Data every:</string>
+    <string name="Manual">Manual (Default)</string>
+    <string name="Automatic_Sync_Metadata">Automatic Sync Configuration every:</string>
+    <string name="a_week">1 Week</string>
+    <string name="SYNC_DATA">SYNC Data Now</string>
+    <string name="SYNC_META">SYNC Configuration Now</string>
+    <string name="SYNC_MANAGER">SYNC Manager</string>
 
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>

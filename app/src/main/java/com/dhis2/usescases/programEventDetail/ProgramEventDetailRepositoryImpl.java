@@ -18,7 +18,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
@@ -31,14 +30,16 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     public Observable<List<EventModel>> programEvents(String programUid, String fromDate, String toDate) {
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.LAST_UPDATED + " BETWEEN '%s' and '%s'" ;
+        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.LAST_UPDATED + " BETWEEN '%s' and '%s' " +
+                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE;
         return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, fromDate, toDate))
                 .mapToList(EventModel::create);
     }
 
     @NonNull
     public Observable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period) {
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s)";
+        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
+                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE;
         StringBuilder dateQuery = new StringBuilder();
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
@@ -55,7 +56,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
-        if (categoryOptionComboModel == null){
+        if (categoryOptionComboModel == null) {
             return programEvents(programUid, fromDate, toDate);
         }
         String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.LAST_UPDATED + " BETWEEN '%s' and '%s'"
@@ -67,7 +68,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel) {
-        if (categoryOptionComboModel == null){
+        if (categoryOptionComboModel == null) {
             return programEvents(programUid, dates, period);
         }
         String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s)";
@@ -95,7 +96,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
-        String SELECT_CATEGORY_COMBO = "SELECT "+CategoryOptionComboModel.TABLE+".* FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
+        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryOptionComboModel.TABLE + ".* FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
                 " ON " + CategoryOptionComboModel.TABLE + "." + CategoryOptionComboModel.Columns.CATEGORY_COMBO + " = " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID
                 + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + categoryComboUid + "'";
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)

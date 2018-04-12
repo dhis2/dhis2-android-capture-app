@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.annotation.Nullable;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -29,7 +31,7 @@ import java.util.Set;
 import io.reactivex.Observable;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
 public class SearchRepositoryImpl implements SearchRepository {
@@ -57,10 +59,16 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.ID + ", " +
                     EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " AS enroll" + ", " +
                     TrackedEntityAttributeValueModel.TABLE + "." + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " AS attr" +
-                    " FROM ((" + TrackedEntityInstanceModel.TABLE +
-                    " JOIN " + EnrollmentModel.TABLE + " ON enroll = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON enroll = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " JOIN " + TrackedEntityAttributeValueModel.TABLE + " ON attr = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
                     " WHERE ";
+
+    private final String SEARCH =
+            "SELECT TrackedEntityInstance.*" +
+                    " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
+                    " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid)" +
+                    " WHERE ";
+
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
@@ -152,34 +160,96 @@ public class SearchRepositoryImpl implements SearchRepository {
             TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
         }
 
+        String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
+                "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
+        StringBuilder attr = new StringBuilder("");
+        for (int i = 0; i < queryData.keySet().size(); i++) {
+            String dataId = queryData.keySet().toArray()[i].toString();
+            String dataValue = queryData.get(dataId);
+
+            if (i > 0)
+                attr.append(" INNER JOIN  ");
+
+            attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
+            attr.append(i + 1);
+            if (i > 0)
+                attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
+        }
+
+        String search = SEARCH.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
+        if (programUid != null && !programUid.isEmpty()) {
+            String programWHERE = "Enrollment.program = '" + programUid + "'";
+            search += " AND " + programWHERE;
+        }
+        search += " GROUP BY TrackedEntityInstance.uid";
 
         TEI_FINAL_QUERY += /*" AND " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.ENROLLMENT_STATUS + " = '" + EnrollmentStatus.ACTIVE.name() + "'" +*/
                 " GROUP BY " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID;
 
-        return briteDatabase.createQuery(TEI_TABLE_SET, TEI_FINAL_QUERY)
+        return briteDatabase.createQuery(TEI_TABLE_SET, search)
                 .mapToList(TrackedEntityInstanceModel::create);
     }
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid) {
+    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
-            TrackedEntityInstanceModel trackedEntityInstanceModel =
-                    TrackedEntityInstanceModel.builder()
-                            .uid(codeGenerator.generate())
-                            .created(currentDate)
-                            .lastUpdated(currentDate)
-                            .organisationUnit(orgUnit)
-                            .trackedEntity(teiType)
-                            .state(State.TO_POST)
-                            .build();
-            if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
-                    trackedEntityInstanceModel.toContentValues()) < 0) {
-                String message = String.format(Locale.US, "Failed to insert new tracked entity " +
-                                "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                        orgUnit, teiType);
-                return Observable.error(new SQLiteConstraintException(message));
+            TrackedEntityInstanceModel trackedEntityInstanceModel = null;
+            if (teiUid == null) {
+                String generatedUid = codeGenerator.generate();
+                trackedEntityInstanceModel =
+                        TrackedEntityInstanceModel.builder()
+                                .uid(generatedUid)
+                                .created(currentDate)
+                                .lastUpdated(currentDate)
+                                .organisationUnit(orgUnit)
+                                .trackedEntity(teiType)
+                                .state(State.TO_POST)
+                                .build();
+
+                if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
+                        trackedEntityInstanceModel.toContentValues()) < 0) {
+                    String message = String.format(Locale.US, "Failed to insert new tracked entity " +
+                                    "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                            orgUnit, teiType);
+                    return Observable.error(new SQLiteConstraintException(message));
+                }
+
+                for (String key : queryData.keySet()) {
+                    TrackedEntityAttributeValueModel attributeValueModel =
+                            TrackedEntityAttributeValueModel.builder()
+                                    .created(currentDate)
+                                    .lastUpdated(currentDate)
+                                    .value(queryData.get(key))
+                                    .trackedEntityAttribute(key)
+                                    .trackedEntityInstance(generatedUid)
+                                    .build();
+                    if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
+                            attributeValueModel.toContentValues()) < 0) {
+                        String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
+                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                                orgUnit, teiType);
+                        return Observable.error(new SQLiteConstraintException(message));
+                    }
+                }
+
+            } else {
+                ContentValues dataValue = new ContentValues();
+
+                // renderSearchResults time stamp
+                dataValue.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED,
+                        BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
+                dataValue.put(TrackedEntityInstanceModel.Columns.STATE,
+                        State.TO_POST.toString());
+
+                if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, dataValue,
+                        TrackedEntityInstanceModel.Columns.UID + " = ? ", teiUid) <= 0) {
+                    String message = String.format(Locale.US, "Failed to update tracked entity " +
+                                    "instance for uid=[%s]",
+                            teiUid);
+                    return Observable.error(new SQLiteConstraintException(message));
+                }
             }
 
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
@@ -189,7 +259,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .dateOfEnrollment(currentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
-                    .trackedEntityInstance(trackedEntityInstanceModel.uid())
+                    .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
                     .enrollmentStatus(EnrollmentStatus.ACTIVE)
                     .state(State.TO_POST)
                     .build();

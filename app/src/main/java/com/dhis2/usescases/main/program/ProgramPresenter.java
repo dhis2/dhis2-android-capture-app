@@ -141,15 +141,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         allOrgs.addAll(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
-            String[] path = myorg.path().split("/");
+            String[] pathName = myorg.displayNamePath().split("/");
+            String[] pathUid = myorg.path().split("/");
             for (int i = myorg.level() - 1; i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(path[i])
+                        .uid(pathUid[i])
                         .level(i)
-                        .parent(path[i - 1])
-                        .name(path[i])
-                        .displayName(path[i])
-                        .displayShortName(path[i])
+                        .parent(pathUid[i - 1])
+                        .name(pathName[i])
+                        .displayName(pathName[i])
+                        .displayShortName(pathName[i])
                         .build();
                 if (!allOrgs.contains(orgToAdd))
                     allOrgs.add(orgToAdd);

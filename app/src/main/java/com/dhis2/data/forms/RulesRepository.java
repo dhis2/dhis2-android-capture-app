@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
-import org.hisp.dhis.rules.RuleVariableValue;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
@@ -304,10 +303,11 @@ public final class RulesRepository {
                 return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);
-            case HIDEPROGRAMSTAGE:
-                return RuleActionCreateEvent.create(content, data, programStage);
+
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
+            case HIDEPROGRAMSTAGE:
+//                return RuleActionCreateEvent.create(content, data, programStage);TODO: CHECK THIS
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));

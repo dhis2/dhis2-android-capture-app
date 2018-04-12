@@ -11,7 +11,6 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.constant.ConstantModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -42,7 +41,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.core.user.UserRoleModel;
-import org.hisp.dhis.android.core.user.UserRoleProgramLinkModel;
 
 import java.util.List;
 
@@ -50,7 +48,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 31/01/2018.
- *
  */
 
 public class InfoRepositoryImpl implements InfoRepository {
@@ -215,12 +212,7 @@ public class InfoRepositoryImpl implements InfoRepository {
                 .mapToList(ProgramStageSectionModel::create);
     }
 
-    @NonNull
-    @Override
-    public Observable<List<UserRoleProgramLinkModel>> userRoleProgramLink() {
-        return briteDatabase.createQuery(UserRoleProgramLinkModel.TABLE, "SELECT * FROM " + UserRoleProgramLinkModel.TABLE)
-                .mapToList(UserRoleProgramLinkModel::create);
-    }
+
 
     @NonNull
     @Override

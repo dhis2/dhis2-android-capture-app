@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.dhis2.R;
+import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.google.gson.Gson;
@@ -27,12 +28,12 @@ import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Javi on 28/07/2017.
- *
  */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
+    private CoordinatesView coordinatesView;
 
     public enum Status {
         ON_PAUSE,
@@ -161,6 +162,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void onMapPositionClick(CoordinatesView coordinatesView) {
-        coordinatesView.updateLocation(0, 0);
+        this.coordinatesView = coordinatesView;
+        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Constants.RQ_MAP_LOCATION_VIEW:
+                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                this.coordinatesView = null;
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
