@@ -5,8 +5,6 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
-import io.reactivex.Observable;
-
 /**
  * Created by ppajuelo on 30/11/2017.
  *
@@ -36,8 +34,6 @@ public class TeiDashboardContracts {
 
         void onEnrollmentSelectorClick();
 
-        Observable<DashboardProgramModel> getProgram();
-
         void setProgram(ProgramModel program);
 
         void seeDetails(android.view.View view, DashboardProgramModel dashboardProgramModel);
@@ -47,5 +43,7 @@ public class TeiDashboardContracts {
         void onFollowUp(DashboardProgramModel dashboardProgramModel);
 
         void onDettach();
+
+        void getData();
     }
 }

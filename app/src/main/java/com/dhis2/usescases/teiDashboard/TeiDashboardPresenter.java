@@ -54,7 +54,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @SuppressLint("CheckResult")
-    private void getData() {
+    @Override
+    public void getData() {
         if (programUid != null)
             Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
@@ -70,8 +71,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()));
+                            (dashboardProgramModel) ->
+                                    dashboardRepository.getIndicators(programUid)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(
+                                                    (programIndicatorModels) -> {
+                                                        dashboardProgramModel.setProgramIndicatorModels(programIndicatorModels);
+                                                        view.setData(dashboardProgramModel);
+                                                    },
+                                                    throwable -> Log.d("ERROR", throwable.getMessage())));
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
@@ -88,22 +97,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         }
     }
 
-    @Override
-    public Observable<DashboardProgramModel> getProgram() {
-        return Observable.zip(
-                metadataRepository.getTrackedEntityInstance(teUid),
-                dashboardRepository.getEnrollment(programUid, teUid),
-                dashboardRepository.getProgramStages(programUid),
-                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
-                metadataRepository.getProgramTrackedEntityAttributes(programUid),
-                dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                metadataRepository.getTeiOrgUnit(teUid),
-                metadataRepository.getTeiActivePrograms(teUid),
-                dashboardRepository.getRelationships(programUid, teUid),
-                DashboardProgramModel::new)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
     @Override
     public void onBackPressed() {
         view.back();
