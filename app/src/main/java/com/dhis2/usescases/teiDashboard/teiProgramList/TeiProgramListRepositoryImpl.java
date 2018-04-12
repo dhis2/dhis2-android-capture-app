@@ -43,7 +43,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramModel>> allPrograms(String trackedEntityId) {
-        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY + "='%s'" ;
+        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "='%s'" ;
         return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId))
                 .mapToList(ProgramModel::create);
     }

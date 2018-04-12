@@ -38,7 +38,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
                         inflater,
                         isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
                         viewGroup,
-                        true
+                        false
                 ), processor, isBgTransparent);
     }
 
@@ -46,6 +46,5 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel) {
         viewHolder.update(viewModel);
     }
-
 
 }

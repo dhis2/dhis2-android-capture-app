@@ -96,7 +96,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onItemClick(ProgramModel programModel) {
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programModel.uid());
-        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
+        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
 
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             if (programModel.displayFrontPageList()) {

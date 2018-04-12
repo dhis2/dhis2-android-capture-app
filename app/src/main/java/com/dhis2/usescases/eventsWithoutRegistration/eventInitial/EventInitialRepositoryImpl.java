@@ -2,7 +2,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 
 import com.dhis2.utils.CodeGenerator;
@@ -82,7 +82,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public long createEvent(@NonNull Context context, @NonNull String programUid,
+    public Observable<String> createEvent(@NonNull Context context, @NonNull String programUid,
                             @NonNull String programStage, @NonNull String date,
                             @NonNull String orgUnitUid, @NonNull String catComboUid,
                             @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
@@ -116,7 +116,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 //                .attributeOptionCombo(catComboUid)
                 .build();
 
-        return briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues(), SQLiteDatabase.CONFLICT_REPLACE);
+        if (briteDatabase.insert(EventModel.TABLE,
+                eventModel.toContentValues()) < 0) {
+            String message = String.format(Locale.US, "Failed to insert new event " +
+                            "instance for organisationUnit=[%s] and programStage=[%s]",
+                    orgUnitUid, programStage);
+            return Observable.error(new SQLiteConstraintException(message));
+        } else
+            return Observable.just(eventModel.uid());
     }
 
 

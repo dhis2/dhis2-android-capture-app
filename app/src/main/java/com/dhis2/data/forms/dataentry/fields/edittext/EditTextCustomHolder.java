@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;

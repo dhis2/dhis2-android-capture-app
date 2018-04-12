@@ -11,6 +11,7 @@ import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -32,7 +34,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailInteractor implements ProgramEventDetailContract.Interactor {
@@ -154,6 +155,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
+                .filter(categoryComboModel -> !Objects.equals(categoryComboModel.uid(), CategoryComboModel.DEFAULT_UID))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

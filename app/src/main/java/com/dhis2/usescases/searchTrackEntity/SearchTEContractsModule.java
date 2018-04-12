@@ -9,7 +9,7 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class SearchTEContractsModule {
 
         void onTEIClick(String TEIuid);
 
-        TrackedEntityModel getTrackedEntityName();
+        TrackedEntityTypeModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
 

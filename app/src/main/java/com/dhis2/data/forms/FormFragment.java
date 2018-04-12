@@ -180,8 +180,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     @NonNull
     @Override
     public Consumer<String> finishEnrollment() {
-        return enrollmentUid -> {
+        return eventUid -> {//TODO: CHECK
+            if (eventUid != null) {
+                FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
+                startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments));
+            }
             getActivity().finish();
+
         };
     }
 

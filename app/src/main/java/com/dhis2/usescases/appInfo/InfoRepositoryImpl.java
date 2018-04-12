@@ -37,7 +37,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.core.user.UserRoleModel;
@@ -102,9 +102,9 @@ public class InfoRepositoryImpl implements InfoRepository {
 
     @NonNull
     @Override
-    public Observable<List<TrackedEntityModel>> trackedEntitys() {
-        return briteDatabase.createQuery(TrackedEntityModel.TABLE, "SELECT * FROM " + TrackedEntityModel.TABLE)
-                .mapToList(TrackedEntityModel::create);
+    public Observable<List<TrackedEntityTypeModel>> trackedEntitys() {
+        return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, "SELECT * FROM " + TrackedEntityTypeModel.TABLE)
+                .mapToList(TrackedEntityTypeModel::create);
     }
 
     @NonNull

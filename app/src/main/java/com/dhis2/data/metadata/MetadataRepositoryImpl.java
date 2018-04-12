@@ -22,7 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,7 +40,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private static final String SELECT_PROGRMAS_TO_ENROLL = String.format(
             "SELECT * FROM %s WHERE %s.%s = ?",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY
+            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY_TYPE
     );
 
     private static final String SELECT_TEI_ENROLLMENTS = String.format(
@@ -80,7 +80,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private final String TRACKED_ENTITY_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            TrackedEntityModel.TABLE, TrackedEntityModel.TABLE, TrackedEntityModel.Columns.UID);
+            TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.Columns.UID);
 
     private final String TRACKED_ENTITY_INSTANCE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
@@ -181,10 +181,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid) {
+    public Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid) {
         return briteDatabase
-                .createQuery(TrackedEntityModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
-                .mapToOne(TrackedEntityModel::create);
+                .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
+                .mapToOne(TrackedEntityTypeModel::create);
     }
 
     @Override
@@ -203,11 +203,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid) {
         String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE
-                + " JOIN " + TrackedEntityModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY
-                + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityModel.TABLE + "." + TrackedEntityModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY
+                + " JOIN " + TrackedEntityTypeModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE
+                + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE
                 + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + programUid + "'";
 
-        final Set<String> PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityInstanceModel.TABLE, TrackedEntityModel.TABLE, ProgramModel.TABLE));
+        final Set<String> PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityInstanceModel.TABLE, TrackedEntityTypeModel.TABLE, ProgramModel.TABLE));
 
         return briteDatabase
                 .createQuery(PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES, PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY)

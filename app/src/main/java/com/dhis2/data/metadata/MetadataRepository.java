@@ -18,7 +18,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public interface MetadataRepository {
 
     /*TRACKED ENTITY*/
 
-    Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
+    Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid);
 
     Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid);
 

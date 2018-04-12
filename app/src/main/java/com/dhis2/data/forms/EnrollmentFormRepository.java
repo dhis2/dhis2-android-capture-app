@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -24,10 +25,9 @@ import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
-
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -60,6 +60,12 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
+    private static final String SELECT_USE_FIRST_STAGE = "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit \n" +
+            "FROM Enrollment\n" +
+            "  JOIN Program ON Enrollment.program = Program.uid\n" +
+            "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND Program.useFirstStageDuringRegistration  = 1\n" +
+            "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1";
+
     private static final String SELECT_PROGRAM = "SELECT \n" +
             "  program\n" +
             "FROM Enrollment\n" +
@@ -82,11 +88,11 @@ class EnrollmentFormRepository implements FormRepository {
     private final String enrollmentUid;
 
     EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull RuleExpressionEvaluator expressionEvaluator,
-            @NonNull RulesRepository rulesRepository,
-            @NonNull CodeGenerator codeGenerator,
+                             @NonNull RuleExpressionEvaluator expressionEvaluator,
+                             @NonNull RulesRepository rulesRepository,
+                             @NonNull CodeGenerator codeGenerator,
 //            @NonNull CurrentDateProvider currentDateProvider,
-            @NonNull String enrollmentUid) {
+                             @NonNull String enrollmentUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
 //        this.currentDateProvider = currentDateProvider;
@@ -209,6 +215,42 @@ class EnrollmentFormRepository implements FormRepository {
                 throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
             }
         };
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> useFirstStageDuringRegistration() {
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid)
+                .map(query -> {
+                    Cursor cursor = query.run();
+                    if (cursor != null) {
+                        String programStageUid = cursor.getString(0);
+                        String programStageProgram = cursor.getString(1);
+                        String enrollmentOrgUnit = cursor.getString(2);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(Calendar.getInstance().getTime());
+                        Date eventDate = cal.getTime();
+
+                        EventModel event = EventModel.builder()
+                                .uid(codeGenerator.generate())
+                                .created(Calendar.getInstance().getTime())
+                                .lastUpdated(Calendar.getInstance().getTime())
+                                .eventDate(eventDate)
+                                .enrollmentUid(enrollmentUid)
+                                .program(programStageProgram)
+                                .programStage(programStageUid)
+                                .organisationUnit(enrollmentOrgUnit)
+                                .status(EventStatus.ACTIVE)
+                                .state(State.TO_POST)
+                                .build();
+
+                        if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                            throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                        }
+                        return event.uid();
+                    } else
+                        return null;
+                });
     }
 
     @NonNull

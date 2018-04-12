@@ -193,4 +193,8 @@ dependencies {
     //RXLint
     compile 'nl.littlerobots.rxlint:rxlint:1.6'
 
+    //JODA-TIME
+    implementation 'joda-time:joda-time:2.9.9'
+
+
 }

@@ -7,6 +7,7 @@ import org.hisp.dhis.rules.RuleEngine;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 public interface FormRepository {
@@ -34,4 +35,7 @@ public interface FormRepository {
 
     @NonNull
     Consumer<String> autoGenerateEvent();
+
+    @NonNull
+    Observable<String> useFirstStageDuringRegistration();
 }
