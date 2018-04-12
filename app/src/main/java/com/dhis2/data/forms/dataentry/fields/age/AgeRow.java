@@ -19,9 +19,13 @@ import io.reactivex.processors.FlowableProcessor;
 public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     private final LayoutInflater inflater;
+    private final boolean isBgTransparent;
+    private final FlowableProcessor<RowAction> processor;
 
     public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
+        this.isBgTransparent = isBgTransparent;
+        this.processor = processor;
     }
 
     @NonNull
@@ -29,11 +33,12 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     public AgeHolder onCreate(@NonNull ViewGroup parent) {
         FormAgeCustomBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_age_custom, parent, false);
-        return new AgeHolder(binding);
+        binding.customAgeview.setIsBgTransparent(isBgTransparent);
+        return new AgeHolder(binding, processor);
     }
 
     @Override
     public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel) {
-
+        viewHolder.update(viewModel);
     }
 }

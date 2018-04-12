@@ -31,14 +31,14 @@ import java.util.Set;
 import io.reactivex.Observable;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
 public class SearchRepositoryImpl implements SearchRepository {
 
     private final BriteDatabase briteDatabase;
 
-    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntity = ";
+    private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ";
     private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
             " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
             " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
@@ -52,7 +52,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.CREATED_AT_CLIENT + ", " +
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.LAST_UPDATED_AT_CLIENT + ", " +
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT + ", " +
-                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY + ", " +
+                    TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE + ", " +
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.CREATED + ", " +
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.LAST_UPDATED + ", " +
                     TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.STATE + ", " +
@@ -116,7 +116,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                @Nullable String incidentDate,
                                                                                @Nullable HashMap<String, String> queryData) {
 
-        String teiTypeWHERE = "TrackedEntityInstance.trackedEntity = '" + teType + "'";
+        String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
         String TEI_FINAL_QUERY = GET_TRACKED_ENTITY_INSTANCES + teiTypeWHERE;
         if (programUid != null && !programUid.isEmpty()) {
             String programWHERE = "Enrollment.program = '" + programUid + "'";
@@ -192,18 +192,19 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid) {
+    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
             TrackedEntityInstanceModel trackedEntityInstanceModel = null;
             if (teiUid == null) {
+                String generatedUid = codeGenerator.generate();
                 trackedEntityInstanceModel =
                         TrackedEntityInstanceModel.builder()
-                                .uid(codeGenerator.generate())
+                                .uid(generatedUid)
                                 .created(currentDate)
                                 .lastUpdated(currentDate)
                                 .organisationUnit(orgUnit)
-                                .trackedEntity(teiType)
+                                .trackedEntityType(teiType)
                                 .state(State.TO_POST)
                                 .build();
 
@@ -214,6 +215,25 @@ public class SearchRepositoryImpl implements SearchRepository {
                             orgUnit, teiType);
                     return Observable.error(new SQLiteConstraintException(message));
                 }
+
+                for (String key : queryData.keySet()) {
+                    TrackedEntityAttributeValueModel attributeValueModel =
+                            TrackedEntityAttributeValueModel.builder()
+                                    .created(currentDate)
+                                    .lastUpdated(currentDate)
+                                    .value(queryData.get(key))
+                                    .trackedEntityAttribute(key)
+                                    .trackedEntityInstance(generatedUid)
+                                    .build();
+                    if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
+                            attributeValueModel.toContentValues()) < 0) {
+                        String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
+                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
+                                orgUnit, teiType);
+                        return Observable.error(new SQLiteConstraintException(message));
+                    }
+                }
+
             } else {
                 ContentValues dataValue = new ContentValues();
 

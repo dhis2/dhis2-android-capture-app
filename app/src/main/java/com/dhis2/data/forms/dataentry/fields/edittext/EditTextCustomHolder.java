@@ -8,6 +8,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -42,7 +43,6 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
     private final TextInputLayout inputLayout;
     private EditText editText;
-    private TextInputLayout textInputLayout;
     @NonNull
     private BehaviorProcessor<EditTextModel> model;
 
@@ -59,29 +59,39 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(editTextModel -> {
 
-            setInputType(editTextModel.valueType());
+                    editText.setText(editTextModel.value() == null ?
+                            null : valueOf(editTextModel.value()));
 
-            editText.setText(editTextModel.value() != null ? model.getValue().value().toString() : "");
+                    setInputType(editTextModel.valueType());
 
-            inputLayout.setHint(editTextModel.label());
 
-            editText.setText(editTextModel.value() == null ?
-                    null : valueOf(editTextModel.value()));
+                    if (!isEmpty(editTextModel.warning())) {
+                        inputLayout.setError(editTextModel.warning());
+                    } else if (!isEmpty(editTextModel.error())) {
+                        inputLayout.setError(editTextModel.error());
+                    } else
+                        inputLayout.setError(null);
 
-            if (!isEmpty(editTextModel.warning())) {
-                editText.setError(editTextModel.warning());
-            } else if (!isEmpty(editTextModel.error())) {
-                editText.setError(editTextModel.error());
-            } else
-                editText.setError(null);
 
-        }, OnErrorHandler.create()));
+                    editText.setSelection(editText.getText() == null ?
+                            0 : editText.getText().length());
+                    inputLayout.setHint(isEmpty(editText.getText()) ? editTextModel.label() : "");
+
+                }
+                , t -> Log.d("DHIS_ERROR", t.getMessage())));
 
 
         // show and hide hint
         ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
                 .publish();
+
+     /*   editTextObservable
+                .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
+                        && model.hasValue() ? model.getValue().label() : "")
+                .subscribe(hint -> inputLayout.setHint(hint), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                });*/
 
         disposable.add(RxTextView.textChanges(editText)
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())

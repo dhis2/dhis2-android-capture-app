@@ -2,6 +2,8 @@ package com.dhis2.utils;
 
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -225,5 +227,12 @@ public class DateUtils {
             Timber.e(e);
             return null;
         }
+    }
+
+    public static int[] getDifference(Date startDate, Date endDate) {
+
+        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime());
+        return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+
     }
 }

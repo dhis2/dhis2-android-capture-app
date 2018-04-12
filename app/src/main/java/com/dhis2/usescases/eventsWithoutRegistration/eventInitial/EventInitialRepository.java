@@ -31,7 +31,7 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date);
 
-    long createEvent(@NonNull Context context, @NonNull String program,
+    Observable<String> createEvent(@NonNull Context context, @NonNull String program,
                      @NonNull String programStage, @NonNull String date,
                      @NonNull String orgUnitUid, @NonNull String catComboUid,
                      @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);

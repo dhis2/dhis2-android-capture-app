@@ -60,20 +60,20 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     FormAdapter(LayoutInflater layoutInflater) {
         setHasStableIds(true);
-//        this.processor = PublishProcessor.create();
+        //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
         rows = new ArrayList<>();
 
-        rows.add(EDITTEXT,      new EditTextRow(layoutInflater, processor, false));
-        rows.add(BUTTON,        new FileRow(layoutInflater, processor, false));
-        rows.add(CHECKBOX,      new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(SPINNER,       new SpinnerRow(layoutInflater, processor, false));
-        rows.add(COORDINATES,   new CoordinateRow(layoutInflater, processor, false));
-        rows.add(TIME,          new DateTimeRow(layoutInflater, processor, TIME, false));
-        rows.add(DATE,          new DateTimeRow(layoutInflater, processor, DATE, false));
-        rows.add(DATETIME,      new DateTimeRow(layoutInflater, processor, DATETIME, false));
-        rows.add(AGEVIEW,       new AgeRow(layoutInflater, processor, false));
-        rows.add(YES_NO,        new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, false));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
     }
 
     @Override

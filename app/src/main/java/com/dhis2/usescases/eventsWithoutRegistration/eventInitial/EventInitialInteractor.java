@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.Bindings.Bindings;
-import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
@@ -39,7 +38,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialInteractor implements EventInitialContract.Interactor {
@@ -128,7 +126,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
             getEventSections(eventUid);
     }
 
-    private void getProgramStage(String programUid){
+    private void getProgramStage(String programUid) {
         compositeDisposable.add(eventInitialRepository.programStage(programUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -179,12 +177,17 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
     @Override
     public void createNewEvent(String programStageModelUid, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
-        long rowId = eventInitialRepository.createEvent(view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
-        if (rowId < 0) {
+
+        compositeDisposable.add(
+                eventInitialRepository.createEvent(view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
+        );
+      /*  if (rowId < 0) {
             String message = view.getContext().getString(R.string.failed_insert_event);
             view.showToast(message);
-        }
-        else {
+        } else {
             compositeDisposable.add(eventInitialRepository.newlyCreatedEvent(rowId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -192,7 +195,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                             eventModel -> view.onEventCreated(eventModel.uid()),
                             throwable -> view.renderError(throwable.getMessage())
                     ));
-        }
+        }*/
     }
 
 
@@ -287,7 +290,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
 
     @Override
-    public void getSectionCompletion(@Nullable String sectionUid){
+    public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation());

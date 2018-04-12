@@ -170,8 +170,8 @@
     <string name="complete_and_close">Complete and close</string>
 
     <!--AGE CUSTOM VIEW-->
-    <string name="hint_day">dd</string>
-    <string name="hint_month">mm</string>
-    <string name="hint_year">yyyy</string>
-    <string name="week">Week</string>
+    <string name="hint_day">Days</string>
+    <string name="hint_month">Months</string>
+    <string name="hint_year">Years</string>
+    <string name="week">Weeks</string>
 </resources>

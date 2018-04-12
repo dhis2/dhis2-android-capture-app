@@ -13,7 +13,7 @@ import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private ProgramModel selectedProgram;
 
     private CompositeDisposable compositeDisposable;
-    private TrackedEntityModel trackedEntity;
+    private TrackedEntityTypeModel trackedEntity;
     private String enrollmentDate;
     private String incidentDate;
     private List<ProgramModel> programModels;
@@ -155,7 +155,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public TrackedEntityModel getTrackedEntityName() {
+    public TrackedEntityTypeModel getTrackedEntityName() {
         return trackedEntity;
     }
 
@@ -217,7 +217,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
 
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid)
+                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid, queryData)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {

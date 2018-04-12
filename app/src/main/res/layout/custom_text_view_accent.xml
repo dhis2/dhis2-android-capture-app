@@ -4,9 +4,6 @@
 
     <data>
 
-        <variable
-            name="label"
-            type="java.lang.String" />
 
     </data>
 
@@ -21,9 +18,9 @@
             android:id="@+id/input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@{label}"
             android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent">
+            android:theme="@style/loginInputTextAccent"
+            tools:hint="this is the hint">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_editText"

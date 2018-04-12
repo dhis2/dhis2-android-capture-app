@@ -31,7 +31,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     public Observable<List<EventModel>> programEvents(String programUid, String fromDate, String toDate) {
         String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.LAST_UPDATED + " BETWEEN '%s' and '%s' " +
-                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE;
+                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
         return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, fromDate, toDate))
                 .mapToList(EventModel::create);
     }
@@ -39,7 +39,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     public Observable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period) {
         String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
-                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE;
+                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
         StringBuilder dateQuery = new StringBuilder();
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {

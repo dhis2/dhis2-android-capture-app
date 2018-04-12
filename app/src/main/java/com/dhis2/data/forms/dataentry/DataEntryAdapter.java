@@ -26,6 +26,8 @@ import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
+import org.hisp.dhis.android.core.common.ValueType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,11 +67,11 @@ final class DataEntryAdapter extends Adapter {
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
     }
 
@@ -91,8 +93,7 @@ final class DataEntryAdapter extends Adapter {
 
     @Override
     public int getItemViewType(int position) {
-//        return super.getItemViewType(position);
-        //TODO: CHECK VIEWMODELS
+
         FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;
@@ -104,7 +105,12 @@ final class DataEntryAdapter extends Adapter {
             return COORDINATES;
 
         } else if (viewModel instanceof DateTimeViewModel) {
-            return DATETIME;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+                return DATE;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+                return TIME;
+            else
+                return DATETIME;
         } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {

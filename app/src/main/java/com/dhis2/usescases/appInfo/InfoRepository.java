@@ -35,7 +35,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.core.user.UserRoleModel;
@@ -69,7 +69,7 @@ public interface InfoRepository {
     Observable<List<CategoryComboModel>> categoryCombo();
 
     @NonNull
-    Observable<List<TrackedEntityModel>> trackedEntitys();
+    Observable<List<TrackedEntityTypeModel>> trackedEntitys();
 
     @NonNull
     Observable<List<RelationshipTypeModel>> relationshipTypes();
