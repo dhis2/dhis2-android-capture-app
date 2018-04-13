@@ -9,14 +9,17 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 public class SyncManagerContracts {
 
     interface View extends AbstractActivityContracts.View {
+        void setLastDataSyncDate(String date);
 
-
+        void setLastMetaDataSyncDate(String date);
     }
 
     public interface Presenter {
 
-        void syncData();
-        void syncMeta();
+        void init(SyncManagerContracts.View view);
 
+        void syncData(int seconds);
+
+        void syncMeta(int seconds);
     }
 }

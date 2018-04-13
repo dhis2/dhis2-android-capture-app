@@ -1,6 +1,7 @@
 package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -173,6 +175,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
+
+    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.ID);
 
     private final BriteDatabase briteDatabase;
 
@@ -403,5 +408,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + programUid + "'")
                 .mapToOne(ProgramModel::create);
+    }
+
+    @Override
+    public Observable<ResourceModel> getLastSync(int resourceId) {
+        return briteDatabase
+                .createQuery(ResourceModel.TABLE, RESOURCES_QUERY + resourceId)
+                .mapToOne(ResourceModel::create);
     }
 }

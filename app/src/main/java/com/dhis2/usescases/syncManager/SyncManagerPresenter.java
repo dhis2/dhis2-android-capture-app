@@ -1,16 +1,24 @@
 package com.dhis2.usescases.syncManager;
 
-import android.content.Intent;
-
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.service.SyncDataService;
 import com.dhis2.data.service.SyncMetadataService;
-import com.dhis2.data.service.SyncService;
+import com.dhis2.usescases.main.MainContracts;
+import com.dhis2.utils.DateUtils;
+import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobTrigger;
 import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
+
+import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by lmartin on 21/03/2018.
@@ -18,43 +26,94 @@ import com.firebase.jobdispatcher.Trigger;
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
 
-    private SyncManagerContracts.View view;
+    public static final int DATA_RESOURCE = 16;  //Events Resource
+    public static final int META_DATA_RESOURCE = 1; // User Resource
 
-    public SyncManagerPresenter(SyncManagerContracts.View view) {
-        this.view = view;
+    private MetadataRepository metadataRepository;
+    private FirebaseJobDispatcher dispatcher;
+    private CompositeDisposable compositeDisposable;
+
+    public SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher) {
+        this.metadataRepository = metadataRepository;
+        this.dispatcher = dispatcher;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
+    @Override
+    public void init(SyncManagerContracts.View view) {
+        compositeDisposable.add(
+                metadataRepository.getLastSync(META_DATA_RESOURCE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        resourceModel -> view.setLastMetaDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
+                        Timber::e
+                )
+        );
+
+        compositeDisposable.add(
+                metadataRepository.getLastSync(DATA_RESOURCE)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                resourceModel -> view.setLastDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
+                                Timber::e
+                        )
+        );
+    }
 
     @Override
-    public void syncData() {
-        String tag = "data";
-        FirebaseJobDispatcher dispatcher;
-        Job dataJob = null;
-        dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(view.getContext()));
-        //if (dataJob != null) dispatcher.cancel(tag);
+    public void syncData(int seconds) {
+        String tag = "Data";
+        Job dataJob;
+
+        boolean isRecurring = false;
+        JobTrigger trigger = Trigger.NOW;
+
+        if(seconds != 0){
+            isRecurring = true;
+            trigger = Trigger.executionWindow(seconds, seconds + 60);
+        }
+
         dataJob = dispatcher.newJobBuilder()
-                // the JobService that will be called
                 .setService(SyncDataService.class)
-                // uniquely identifies the job
                 .setTag(tag)
-                // one-off job
-                //.setRecurring(true)
-                // start between - and - seconds from now
-                //.setTrigger(Trigger.executionWindow(0, 150))
-                // don't overwrite an existing job with the same tag
-                //.setReplaceCurrent(false)
-                // don't persist past a device reboot
-                //.setLifetime(Lifetime.FOREVER)
-                //.setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setRecurring(isRecurring)
+                .setTrigger(trigger)
+                .setReplaceCurrent(false)
+                .setLifetime(Lifetime.FOREVER)
+                .setConstraints(
+                        Constraint.ON_ANY_NETWORK
+                )
                 .build();
 
         dispatcher.mustSchedule(dataJob);
-
-    //    view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncDataService.class));
     }
 
     @Override
-    public void syncMeta() {
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
+    public void syncMeta(int seconds) {
+        String tag = "MetaData";
+        Job metaJob;
+
+        boolean isRecurring = false;
+        JobTrigger trigger = Trigger.NOW;
+
+        if(seconds != 0){
+            isRecurring = true;
+            trigger = Trigger.executionWindow(seconds, seconds + 60);
+        }
+
+        metaJob = dispatcher.newJobBuilder()
+                .setService(SyncMetadataService.class)
+                .setTag(tag)
+                .setRecurring(isRecurring)
+                .setTrigger(trigger)
+                .setReplaceCurrent(true)
+                .setLifetime(Lifetime.FOREVER)
+                .setConstraints(
+                        Constraint.ON_ANY_NETWORK
+                )
+                .build();
+        dispatcher.mustSchedule(metaJob);
     }
 }

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="presenter"
-            type="com.dhis2.usescases.syncManager.SyncManagerPresenter"/>
+            type="com.dhis2.usescases.syncManager.SyncManagerContracts.Presenter"/>
 
     </data>
 
@@ -23,45 +23,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/Automatic_Sync_Data"/>
+
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/radioData"
                 tools:checkedButton="@id/dataManual">
 
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/dataMinute"
-                android:layout_marginTop="15dp"
-                android:text="@string/a_minute"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/data15"
-                android:text="@string/fifteen_minute"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/dataHour"
-                android:text="@string/a_hour"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/a_day"
-                android:id="@+id/dataDay"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Manual"
-                android:id="@+id/dataManual"
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/data15"
+                    android:text="@string/fifteen_minute"
+                    android:buttonTint="?colorPrimary"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dataHour"
+                    android:text="@string/a_hour"
+                    android:buttonTint="?colorPrimary"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/a_day"
+                    android:id="@+id/dataDay"
+                    android:buttonTint="?colorPrimary"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Manual"
+                    android:id="@+id/dataManual"
+                    android:buttonTint="?colorPrimary"/>
+            </RadioGroup>
 
-                android:buttonTint="?colorPrimary"/>
-        </RadioGroup>
+            <TextView
+                android:id="@+id/data_last_sync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/last_data_sync_date"/>
 
             <Button
                 android:layout_width="match_parent"
@@ -69,7 +68,7 @@
                 android:id="@+id/buttonSyncData"
                 android:layout_marginTop="10dp"
                 android:text="@string/SYNC_DATA"
-                android:onClick="@{()->presenter.syncData()}"/>
+                android:onClick="@{()->presenter.syncData(0)}"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -84,35 +83,40 @@
                 tools:checkedButton="@id/metaManual">
 
 
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/metaDay"
-                android:layout_marginTop="15dp"
-                android:text="@string/a_day"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/metaWeek"
-                android:text="@string/a_week"
-                android:buttonTint="?colorPrimary"/>
-            <RadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/metaManual"
-                android:text="@string/Manual"
-                android:buttonTint="?colorPrimary"
-                />
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/metaDay"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/a_day"
+                    android:buttonTint="?colorPrimary"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/metaWeek"
+                    android:text="@string/a_week"
+                    android:buttonTint="?colorPrimary"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/metaManual"
+                    android:text="@string/Manual"
+                    android:buttonTint="?colorPrimary" />
             </RadioGroup>
+
+            <TextView
+                android:id="@+id/metadata_last_sync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/last_metadata_sync_date"/>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonSyncMeta"
                 android:layout_marginTop="10dp"
                 android:text="@string/SYNC_META"
-                android:onClick="@{()->presenter.syncMeta()}"/>
-
+                android:onClick="@{()->presenter.syncMeta(0)}"/>
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -69,9 +69,9 @@ public class SyncService extends Service implements SyncView {
         return result -> {
             Notification notification;
             syncResult = result;
-
+            String channelId = "dhis";
             if (result.inProgress()) {
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getTextForNotification(syncState))
                         .setContentText(getString(R.string.sync_text))
@@ -80,14 +80,14 @@ public class SyncService extends Service implements SyncView {
                         .build();
             } else if (result.isSuccess()) {
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))

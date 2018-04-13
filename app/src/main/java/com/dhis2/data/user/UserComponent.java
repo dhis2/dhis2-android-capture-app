@@ -29,6 +29,8 @@ import com.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import com.dhis2.usescases.syncManager.SyncManagerComponent;
+import com.dhis2.usescases.syncManager.SyncManagerModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
@@ -95,4 +97,7 @@ public interface UserComponent {
 
     @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
+
+    @NonNull
+    SyncManagerComponent plus(SyncManagerModule syncManagerModule);
 }
