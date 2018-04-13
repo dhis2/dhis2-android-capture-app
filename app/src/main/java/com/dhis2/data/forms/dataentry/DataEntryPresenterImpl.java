@@ -8,6 +8,7 @@ import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.Result;
 
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
@@ -160,10 +161,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = codeGenerator.generate();
 
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
-              /*  EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), displayText.data());
-
-                fieldViewModels.put(uid, textViewModel);*/
+                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
+                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT);
+                fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
 
