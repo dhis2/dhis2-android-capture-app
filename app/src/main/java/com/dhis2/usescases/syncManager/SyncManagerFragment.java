@@ -198,7 +198,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
       //  if (metaJob != null) dispatcher.cancel(tag);
         metaJob = dispatcher.newJobBuilder()
                 // the JobService that will be called
-                .setService(SyncDataService.class)
+                .setService(SyncMetadataService.class)
                 // uniquely identifies the job
                 .setTag(tag)
                 // one-off job

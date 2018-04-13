@@ -92,7 +92,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                     TrackedEntityObject trackedEntityObject = new TrackedEntityObject(myTrackedEntityInstanceList, programTrackedEntityAttributeModelList);
 
                     for (MyTrackedEntityInstance myTrackedEntityInstance : trackedEntityObject.getMyTrackedEntityInstances()) {
-                        compositeDisposable.add(metadataRepository.getTEIAttributeValues(programId, myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())
+                        compositeDisposable.add(metadataRepository.getTEIAttributeValues(programId, myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
@@ -100,7 +100,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                                         Timber::d)
                         );
 
-                        compositeDisposable.add(metadataRepository.getTEIEnrollments(myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())
+                        compositeDisposable.add(metadataRepository.getTEIEnrollments(myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(

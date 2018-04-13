@@ -55,6 +55,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
 
     @Override
     public void syncMeta() {
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncMetadataService.class));
+        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
     }
 }

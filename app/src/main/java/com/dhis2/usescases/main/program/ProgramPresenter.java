@@ -116,8 +116,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
             }
         }
-
-
     }
 
     @Override

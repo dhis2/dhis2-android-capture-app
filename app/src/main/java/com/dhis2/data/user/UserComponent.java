@@ -1,5 +1,7 @@
 package com.dhis2.data.user;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
@@ -42,54 +44,55 @@ import dagger.Subcomponent;
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
 
+    @NonNull
+    MainComponent plus(@NonNull MainModule mainModule);
 
-    MainComponent plus(MainModule mainModule);
+    @NonNull
+    ProgramDetailComponent plus(@NonNull ProgramDetailModule programDetailContractModule);
+
+    @NonNull
+    ProgramEventDetailComponent plus(@NonNull ProgramEventDetailModule programEventDetailModule);
+
+    @NonNull
+    ProgramDetailTabletComponent plus(@NonNull ProgramDetailTabletModule programDetailModule);
+
+    @NonNull
+    SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
+
+    @NonNull
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
+
+    @NonNull
+    ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);
+
+    @NonNull
+    DataServiceComponent plus(@NonNull DataServiceModule serviceModule);
+
+    @NonNull
+    TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);
+
+    @NonNull
+    EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
+
+    @NonNull
+    TeiProgramListComponent plus(@NonNull TeiProgramListModule teiProgramListModule);
+
+    @NonNull
+    FormComponent plus(@NonNull FormModule enrollmentModule);
+
+    @NonNull
+    ProgramComponent plus(@NonNull ProgramModule programModule);
 
 
-    ProgramDetailComponent plus(ProgramDetailModule programDetailContractModule);
-
-
-    ProgramEventDetailComponent plus(ProgramEventDetailModule programEventDetailModule);
-
-
-    MetadataServiceComponent plus(MetadataServiceModule serviceModule);
-
-
-    DataServiceComponent plus(DataServiceModule serviceModule);
-
-
-    ProgramDetailTabletComponent plus(ProgramDetailTabletModule programDetailModule);
-
-
-    SearchTEComponent plus(SearchTEModule searchTEModule);
-
-
-    TeiDashboardComponent plus(TeiDashboardModule dashboardModule);
-
-
-    ServiceComponent plus(ServiceModule serviceModule);
-
-
-    TeiDataDetailComponent plus(TeiDataDetailModule dataDetailModule);
-
-
-    EventDetailComponent plus(EventDetailModule eventDetailModule);
-
-
-    TeiProgramListComponent plus(TeiProgramListModule teiProgramListModule);
-
-
-    FormComponent plus(FormModule enrollmentModule);
-
-
-    ProgramComponent plus(ProgramModule programModule);
-
-
+    @NonNull
     InfoComponent plus(InfoModule infoModule);
 
-
+    @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);
 
-
+    @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
 }
