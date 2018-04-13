@@ -1,23 +1,22 @@
 package com.dhis2.data.service;
 
 import android.app.Notification;
-import android.app.Service;
 import android.content.Intent;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.usescases.main.MainActivity;
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
-public class SyncService extends Service implements SyncView {
+public class SyncDataService extends JobService implements SyncView {
     private final static int NOTIFICATION_ID = 0xdeadbeef;
     private final static int NOTIFICATION_ID_EVENT = 0xDEADBEEE;
     private final static int NOTIFICATION_ID_TEI = 0xDEADBEED;
@@ -30,6 +29,7 @@ public class SyncService extends Service implements SyncView {
 
     // @NonNull
     SyncResult syncResult;
+    private JobParameters job;
 
 
     @Override
@@ -37,9 +37,8 @@ public class SyncService extends Service implements SyncView {
         super.onCreate();
         // inject dependencies
         ((App) getApplicationContext()).userComponent()
-                .plus(new ServiceModule()).inject(this);
-        syncPresenter.onAttach(this);
-        syncResult = SyncResult.idle();
+                .plus(new DataServiceModule()).inject(this);
+
     }
 
     @Override
@@ -49,18 +48,19 @@ public class SyncService extends Service implements SyncView {
     }
 
     @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+    public boolean onStartJob(JobParameters job) {
+        this.job = job;
+        syncPresenter.onAttach(this);
+        syncResult = SyncResult.idle();
         if (!syncResult.inProgress()) {
-            syncPresenter.sync();
+            syncPresenter.syncEvents();
         }
-
-        return super.onStartCommand(intent, flags, startId);
+        return true;
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new IllegalStateException("This service is not intended for binding.");
+    public boolean onStopJob(JobParameters job) {
+        return true;
     }
 
     @NonNull
@@ -108,9 +108,8 @@ public class SyncService extends Service implements SyncView {
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                jobFinished(job, true);
+                syncPresenter.onDetach();
                 break;
         }
     }

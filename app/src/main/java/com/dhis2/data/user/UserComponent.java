@@ -1,8 +1,14 @@
 package com.dhis2.data.user;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerUser;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
+import com.dhis2.data.service.DataServiceComponent;
+import com.dhis2.data.service.DataServiceModule;
+import com.dhis2.data.service.MetadataServiceComponent;
+import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.appInfo.InfoComponent;
@@ -38,48 +44,55 @@ import dagger.Subcomponent;
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
 
-    
-    MainComponent plus(MainModule mainModule);
+    @NonNull
+    MainComponent plus(@NonNull MainModule mainModule);
 
-    
-    ProgramDetailComponent plus(ProgramDetailModule programDetailContractModule);
+    @NonNull
+    ProgramDetailComponent plus(@NonNull ProgramDetailModule programDetailContractModule);
 
-    
-    ProgramEventDetailComponent plus(ProgramEventDetailModule programEventDetailModule);
+    @NonNull
+    ProgramEventDetailComponent plus(@NonNull ProgramEventDetailModule programEventDetailModule);
 
-    
-    ProgramDetailTabletComponent plus(ProgramDetailTabletModule programDetailModule);
+    @NonNull
+    ProgramDetailTabletComponent plus(@NonNull ProgramDetailTabletModule programDetailModule);
 
-    
-    SearchTEComponent plus(SearchTEModule searchTEModule);
+    @NonNull
+    SearchTEComponent plus(@NonNull SearchTEModule searchTEModule);
 
-    
-    TeiDashboardComponent plus(TeiDashboardModule dashboardModule);
+    @NonNull
+    TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
 
-    
-    ServiceComponent plus(ServiceModule serviceModule);
+    @NonNull
+    ServiceComponent plus(@NonNull ServiceModule serviceModule);
 
-    
-    TeiDataDetailComponent plus(TeiDataDetailModule dataDetailModule);
+    @NonNull
+    MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);
 
-    
-    EventDetailComponent plus(EventDetailModule eventDetailModule);
+    @NonNull
+    DataServiceComponent plus(@NonNull DataServiceModule serviceModule);
 
-    
-    TeiProgramListComponent plus(TeiProgramListModule teiProgramListModule);
+    @NonNull
+    TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);
 
-    
-    FormComponent plus(FormModule enrollmentModule);
+    @NonNull
+    EventDetailComponent plus(@NonNull EventDetailModule eventDetailModule);
 
-    
-    ProgramComponent plus(ProgramModule programModule);
+    @NonNull
+    TeiProgramListComponent plus(@NonNull TeiProgramListModule teiProgramListModule);
 
-    
+    @NonNull
+    FormComponent plus(@NonNull FormModule enrollmentModule);
+
+    @NonNull
+    ProgramComponent plus(@NonNull ProgramModule programModule);
+
+
+    @NonNull
     InfoComponent plus(InfoModule infoModule);
 
-    
+    @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);
 
-
+    @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
 }

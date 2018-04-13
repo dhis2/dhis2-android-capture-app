@@ -57,6 +57,20 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service android:name=".data.service.SyncMetadataService"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        <intent-filter>
+            <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+        </intent-filter>
+        </service>
+
+        <service android:name=".data.service.SyncDataService"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk"/>

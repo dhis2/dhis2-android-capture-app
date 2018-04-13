@@ -69,7 +69,7 @@
                 android:id="@+id/buttonSyncData"
                 android:layout_marginTop="10dp"
                 android:text="@string/SYNC_DATA"
-                android:onClick="@{()->presenter.sync()}"/>
+                android:onClick="@{()->presenter.syncData()}"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                 android:id="@+id/buttonSyncMeta"
                 android:layout_marginTop="10dp"
                 android:text="@string/SYNC_META"
-                android:onClick="@{()->presenter.sync()}"/>
+                android:onClick="@{()->presenter.syncMeta()}"/>
 
 
         </LinearLayout>
