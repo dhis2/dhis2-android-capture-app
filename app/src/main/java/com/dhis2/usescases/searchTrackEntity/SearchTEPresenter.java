@@ -11,7 +11,9 @@ import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
@@ -226,8 +228,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 },
                                 Timber::d)
         );
-
-
     }
 
     @Override
