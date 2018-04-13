@@ -16,9 +16,12 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import javax.inject.Inject;
 
@@ -56,7 +59,6 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     }
 
-
     @Override
     public void init(String teiUid, String programUid) {
         presenter.init(this, teiUid, programUid);
@@ -71,14 +73,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.setTrackEntity(program.getTei());
         binding.executePendingBindings();
         this.programModel = program;
-        setDataFragment();
+        TEIDataFragment.getInstance().setData(programModel);
+        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         RelationshipFragment.getInstance().setData(program);
         ScheduleFragment.getInstance().setData(program);
+        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         binding.teiPager.setOffscreenPageLimit(6);
-    }
-
-    public void setDataFragment() {
-        TEIDataFragment.getInstance().setData(programModel);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
         this.programModel = program;
-        setDataFragment();
+        TEIDataFragment.getInstance().setData(programModel);
     }
 
     @Override

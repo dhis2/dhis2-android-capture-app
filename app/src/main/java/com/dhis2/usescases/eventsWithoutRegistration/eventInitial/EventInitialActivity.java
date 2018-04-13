@@ -395,6 +395,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        if (programStageModel != null && programStageModel.hideDueDate())
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
 

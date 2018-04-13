@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.databinding.ItemIndicatorBinding;
 import com.dhis2.databinding.ItemScheduleBinding;
 
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import java.util.List;
 
@@ -17,27 +17,27 @@ import java.util.List;
  * Created by ppajuelo on 29/11/2017.
  */
 
-public class IndicatorsAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
+public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder> {
 
-    private List<EventModel> events;
+    private List<ProgramIndicatorModel> programIndicatorModels;
 
-    public IndicatorsAdapter(List<EventModel> eventList) {
-        this.events = eventList;
+    public IndicatorsAdapter(List<ProgramIndicatorModel> programIndicatorModels) {
+        this.programIndicatorModels = programIndicatorModels;
     }
 
     @Override
-    public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemScheduleBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_indicator, parent, false);
-        return new ScheduleViewHolder(binding);
+    public IndicatorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        ItemIndicatorBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_indicator, parent, false);
+        return new IndicatorViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(ScheduleViewHolder holder, int position) {
-        holder.bind(events.get(position), position == 0, position == events.size() - 1, null);
+    public void onBindViewHolder(IndicatorViewHolder holder, int position) {
+        holder.bind(programIndicatorModels.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return events != null ? events.size() : 0;
+        return programIndicatorModels != null ? programIndicatorModels.size() : 0;
     }
 }

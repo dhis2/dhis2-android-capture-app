@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
 
     static TEIDataFragment instance;
     TeiDashboardContracts.Presenter presenter;
+    private DashboardProgramModel dashboardProgramModel;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -52,7 +52,22 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setData(dashboardProgramModel);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+        binding.setPresenter(presenter);
+        setData(dashboardProgramModel);
+    }
+
     public void setData(DashboardProgramModel nprogram) {
+        this.dashboardProgramModel = nprogram;
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
 
@@ -86,9 +101,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQ_DETAILS){
             if(resultCode == RESULT_OK){
-                presenter.getProgram()
-                        .subscribe(this::setData,
-                                throwable -> Log.d("ERROR", throwable.getMessage()));
+                presenter.getData();
             }
         }
     }

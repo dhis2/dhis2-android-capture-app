@@ -52,25 +52,6 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
-        int positionfix = isTablet ? 1 : 0;
-        switch (position + positionfix) {
-            default:
-                fragment = TEIDataFragment.getInstance();
-                break;
-            case 1:
-                fragment = RelationshipFragment.getInstance();
-                break;
-            case 2:
-                fragment = IndicatorsFragment.getInstance();
-                break;
-            case 3:
-                fragment = ScheduleFragment.getInstance();
-                break;
-            case 4:
-                fragment = NotesFragment.getInstance();
-                break;
-        }
         return pagerFragments.get(position);
     }
 
@@ -81,24 +62,6 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title;
-        switch (position) {
-            default:
-                title = "Program";
-                break;
-            case 1:
-                title = "Relationships";
-                break;
-            case 2:
-                title = "Indicators";
-                break;
-            case 3:
-                title = "Schedule";
-                break;
-            case 4:
-                title = "Notes";
-                break;
-        }
         return pagerFragmentsTitle.get(position);
     }
 }
