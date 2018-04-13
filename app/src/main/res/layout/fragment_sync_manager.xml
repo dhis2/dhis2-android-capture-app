@@ -35,7 +35,8 @@
                 android:id="@+id/dataMinute"
                 android:layout_marginTop="15dp"
                 android:text="@string/a_minute"
-                android:buttonTint="?colorPrimary"/>
+                android:buttonTint="?colorPrimary"
+                android:visibility="gone"/>
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
