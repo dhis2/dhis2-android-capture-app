@@ -36,7 +36,8 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp">
+                    android:layout_height="40dp"
+                    tools:ignore="UseCompoundDrawables">
 
                     <ImageView
                         android:id="@+id/button_time"
@@ -45,7 +46,8 @@
                         android:background="@drawable/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
-                        app:srcCompat="@drawable/ic_view_day" />
+                        app:srcCompat="@drawable/ic_view_day"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:id="@+id/button_period_text"
@@ -79,7 +81,7 @@
                     android:textAllCaps="false"
                     android:textColor="?colorAccent"
                     android:textSize="15sp"
-                    android:text="Org Unit" />
+                    android:text="@string/org_unit" />
 
             </LinearLayout>
 
@@ -128,15 +130,15 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:paddingStart="20dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="40dp" />
 
                 <Button
                     android:id="@+id/org_unit_apply"
                     style="@style/FullWidthButton"
                     android:layout_gravity="bottom"
-                    android:text="apply" />
+                    android:text="@string/apply" />
             </LinearLayout>
         </android.support.design.widget.NavigationView>
-
     </android.support.v4.widget.DrawerLayout>
 </layout>

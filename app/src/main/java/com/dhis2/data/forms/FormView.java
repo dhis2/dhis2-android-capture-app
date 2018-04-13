@@ -31,4 +31,5 @@ interface FormView {
     Consumer<String> finishEnrollment();
 
     void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
+
 }

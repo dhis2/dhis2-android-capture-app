@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.EditableFieldViewModel;
 
+import org.hisp.dhis.android.core.common.ValueType;
+
 
 public abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
 
@@ -16,6 +18,9 @@ public abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
 
     @NonNull
     public abstract Integer inputType();
+
+    @NonNull
+    public abstract ValueType valueType();
 
     @Nullable
     public abstract String warning();

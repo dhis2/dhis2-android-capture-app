@@ -2,9 +2,14 @@
 <layout xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="attribute"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,12 +19,12 @@
         tools:background="?colorPrimary">
 
         <TextView
-            android:id="@+id/button"
+            android:id="@+id/label"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
-            android:text='@{attribute.displayShortName , default=text}'
             android:gravity="center"
+            android:text='@{label , default=text}'
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/white_faf"
@@ -36,31 +41,30 @@
                 android:id="@+id/yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:buttonTint="@color/white"
-                android:text="yes"
+                android:textColor="@color/white"
+                android:text="@string/yes"
                 android:checked="false" />
 
             <RadioButton
                 android:id="@+id/no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
                 android:buttonTint="@color/white"
-                android:text="no"
+                android:text="@string/no"
                 android:checked="false" />
+                android:checked="false"
+                android:text="no"
+                android:textColor="@color/white" />
 
             <RadioButton
                 android:id="@+id/no_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-
                 android:buttonTint="@color/white"
-                android:text="no value"
+                android:text="@string/no_value"
                 android:checked="false" />
-
         </RadioGroup>
-
     </LinearLayout>
 </layout>

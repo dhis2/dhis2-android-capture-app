@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="indicator"
+            type="org.hisp.dhis.android.core.program.ProgramIndicatorModel"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -26,7 +28,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Risk factors:" />
+            android:text='@{indicator.displayShortName()}'/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,7 +41,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/indicator_name"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="James Johnson" />
+            tools:text="James Johnson"
+            android:visibility="gone"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

@@ -1,7 +1,6 @@
 package com.dhis2.usescases.programDetailTablet;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.main.program.HomeViewModel;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -12,7 +11,9 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 31/10/2017.
+ *
  */
+
 public class ProgramDetailContractModule {
 
     public interface View extends AbstractActivityContracts.View {
@@ -46,14 +47,11 @@ public class ProgramDetailContractModule {
 
         ProgramModel getCurrentProgram();
 
-        void nextPageForApi(int page);
-
         void onSearchClick();
 
         void onBackClick();
 
         void setProgram(ProgramModel program);
-
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

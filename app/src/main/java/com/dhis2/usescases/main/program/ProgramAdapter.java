@@ -40,7 +40,6 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     @Override
     public void onBindViewHolder(ProgramViewHolder holder, int position) {
         holder.bind(presenter, getItemAt(position));
-
     }
 
     public void setData(List<ProgramModel> program) {

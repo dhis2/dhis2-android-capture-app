@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -11,6 +12,18 @@
         <variable
             name="attribute"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="optionSet"
+            type="java.lang.String" />
+
+        <variable
+            name="isBgTransparent"
+            type="java.lang.Boolean"/>
     </data>
 
     <RelativeLayout
@@ -24,8 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:prompt="@{attribute.displayShortName}"
-            />
+            app:label="@{label}"
+            app:optionSet="@{optionSet}" />
 
         <View
             android:layout_width="match_parent"

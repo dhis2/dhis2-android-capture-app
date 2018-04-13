@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -20,6 +21,8 @@ public class TeiDashboardContracts {
         void setDataWithOutProgram(DashboardProgramModel programModel);
 
         String getToolbarTitle();
+
+        DashboardPagerAdapter getAdapter();
     }
 
     public interface Presenter {
@@ -27,18 +30,18 @@ public class TeiDashboardContracts {
 
         void onBackPressed();
 
-        void onProgramSelected();
-
         void onEnrollmentSelectorClick();
 
         void setProgram(ProgramModel program);
 
-        void editTei(boolean isEditable, android.view.View view, DashboardProgramModel dashboardProgramModel);
+        void seeDetails(android.view.View view, DashboardProgramModel dashboardProgramModel);
 
         void onEventSelected(String uid, android.view.View view);
 
         void onFollowUp(DashboardProgramModel dashboardProgramModel);
 
         void onDettach();
+
+        void getData();
     }
 }

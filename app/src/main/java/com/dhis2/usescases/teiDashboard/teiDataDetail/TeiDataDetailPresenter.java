@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -28,10 +29,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     private final EnrollmentStatusStore enrollmentStore;
     private TeiDataDetailContracts.View view;
 
-    private String teiUid;
-    private String programUid;
-
-    public TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, AttrEntryStore dataEntryStore, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, AttrEntryStore dataEntryStore, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
         this.dataEntryStore = dataEntryStore;
@@ -39,23 +37,22 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         disposable = new CompositeDisposable();
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void init(TeiDataDetailContracts.View view, String uid, String programUid) {
         this.view = view;
-        this.teiUid = uid;
-        this.programUid = programUid;
 
         if (programUid != null)
             Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teiUid),
-                    dashboardRepository.getEnrollment(programUid, teiUid),
+                    metadataRepository.getTrackedEntityInstance(uid),
+                    dashboardRepository.getEnrollment(programUid, uid),
                     dashboardRepository.getProgramStages(programUid),
-                    dashboardRepository.getTEIEnrollmentEvents(programUid, teiUid),
+                    dashboardRepository.getTEIEnrollmentEvents(programUid, uid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
-                    dashboardRepository.getTEIAttributeValues(programUid, teiUid),
-                    metadataRepository.getTeiOrgUnit(teiUid),
-                    metadataRepository.getTeiActivePrograms(teiUid),
-                    dashboardRepository.getRelationships(programUid, teiUid),
+                    dashboardRepository.getTEIAttributeValues(programUid, uid),
+                    metadataRepository.getTeiOrgUnit(uid),
+                    metadataRepository.getTeiActivePrograms(uid),
+                    dashboardRepository.getRelationships(programUid, uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -65,23 +62,27 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
-                    metadataRepository.getTrackedEntityInstance(teiUid),
+                    metadataRepository.getTrackedEntityInstance(uid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
-                    dashboardRepository.getTEIAttributeValues(null, teiUid),
-                    metadataRepository.getTeiOrgUnit(teiUid),
-                    metadataRepository.getTeiActivePrograms(teiUid),
+                    dashboardRepository.getTEIAttributeValues(null, uid),
+                    metadataRepository.getTeiOrgUnit(uid),
+                    metadataRepository.getTeiActivePrograms(uid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setData,
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         }
-
     }
 
     @Override
     public void onBackPressed() {
         view.getAbstracContext().onBackPressed();
+    }
+
+    @Override
+    public void editData() {
+        view.setDataEditable();
     }
 
     @Override

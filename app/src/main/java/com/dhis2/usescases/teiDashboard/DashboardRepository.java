@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -35,6 +36,8 @@ public interface DashboardRepository {
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
+
+    Observable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     int setFollowUp(String enrollmentUid, boolean followUp);
 }

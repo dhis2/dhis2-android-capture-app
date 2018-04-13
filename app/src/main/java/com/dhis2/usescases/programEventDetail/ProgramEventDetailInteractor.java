@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -10,6 +11,7 @@ import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -21,6 +23,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -30,7 +34,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailInteractor implements ProgramEventDetailContract.Interactor {
@@ -48,7 +51,8 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     private List<Date> dates;
     private Period period;
 
-    private @LastSearchType int lastSearchType;
+    private @LastSearchType
+    int lastSearchType;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -69,10 +73,11 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.view = view;
         this.programId = programId;
         getProgram();
-        getOrgUnits();
+        getOrgUnits(null);
         getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void getEvents(String programId, Date fromDate, Date toDate) {
         this.fromDate = fromDate;
@@ -90,8 +95,13 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     }
 
     @Override
-    public void getOrgUnits() {
+    public void getOrgUnits(Date date) {
         compositeDisposable.add(programEventDetailRepository.orgUnits()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .flatMapIterable(organisationUnitModels -> organisationUnitModels)
+                .filter(orgUnit -> orgUnit.openingDate() != null && orgUnit.closedDate() != null)
+                .filter(orgUnit -> orgUnit.openingDate().compareTo(date) <= 0 && orgUnit.closedDate().compareTo(date) >= 0)
+                .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -116,7 +126,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     @Override
     public void updateFilters(CategoryOptionComboModel categoryOptionComboModel) {
         this.categoryOptionComboModel = categoryOptionComboModel;
-        switch (lastSearchType){
+        switch (lastSearchType) {
             case LastSearchType.DATES:
                 getEvents(programId, this.fromDate, this.toDate);
                 break;
@@ -143,8 +153,9 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         );
     }
 
-    private void getCatCombo(ProgramModel programModel){
+    private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
+                .filter(categoryComboModel -> !Objects.equals(categoryComboModel.uid(), CategoryComboModel.DEFAULT_UID))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -167,15 +178,16 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         allOrgs.addAll(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
+            String[] pathName = myorg.displayNamePath().split("/");
             String[] path = myorg.path().split("/");
             for (int i = myorg.level() - 1; i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
                         .uid(path[i])
                         .level(i)
                         .parent(path[i - 1])
-                        .name(path[i])
-                        .displayName(path[i])
-                        .displayShortName(path[i])
+                        .name(pathName[i])
+                        .displayName(pathName[i])
+                        .displayShortName(pathName[i])
                         .build();
                 if (!allOrgs.contains(orgToAdd))
                     allOrgs.add(orgToAdd);
@@ -215,6 +227,6 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

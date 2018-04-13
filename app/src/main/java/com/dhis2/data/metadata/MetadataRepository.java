@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -17,7 +18,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
@@ -39,9 +40,12 @@ public interface MetadataRepository {
 
     /*TRACKED ENTITY*/
 
-    Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid);
+    Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid);
 
     Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid);
+
+    Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid);
+
 
     /*CATEGORY OPTION*/
 
@@ -94,10 +98,15 @@ public interface MetadataRepository {
 
     Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid);
 
+    Observable<List<EventModel>> getEnrollmentEvents(String enrollmentUid);
+
 
     /*EVENTS*/
     Observable<Integer> getProgramStageDataElementCount(String programStageId);
 
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 
+
+    /*OPTION SET*/
+    Observable<List<OptionModel>> optionSet(String optionSetId);
 }

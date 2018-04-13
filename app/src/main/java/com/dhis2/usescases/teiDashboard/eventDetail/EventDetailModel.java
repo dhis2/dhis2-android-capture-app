@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by Cristian on 08/02/2018.
+ *
  */
 
 public class EventDetailModel extends BaseObservable {
@@ -23,7 +24,7 @@ public class EventDetailModel extends BaseObservable {
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
 
-    public EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
+    EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                             List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
@@ -53,33 +54,26 @@ public class EventDetailModel extends BaseObservable {
         }
     }
 
-    public EventModel getEventModel() {
+    EventModel getEventModel() {
         return eventModel;
     }
 
-    public List<TrackedEntityDataValueModel> getDataValueModelList() {
-        return dataValueModelList;
-    }
-
-    public List<ProgramStageSectionModel> getStageSections() {
+    List<ProgramStageSectionModel> getStageSections() {
         return stageSections;
     }
 
-    public List<ProgramStageDataElementModel> getDataElementsForSection(String sectionUid) {
+    List<ProgramStageDataElementModel> getDataElementsForSection(String sectionUid) {
         if (sectionUid != null)
             return fieldsElements.get(sectionUid);
         else
             return dataElemets;
     }
 
-    public String getValueForDE(String dataelementUid) {
-
+    String getValueForDE(String dataelementUid) {
         for (TrackedEntityDataValueModel trackedEntityDataValueModel : dataValueModelList) {
             if (trackedEntityDataValueModel.dataElement().equals(dataelementUid))
                 return trackedEntityDataValueModel.value();
         }
-
         return null;
-
     }
 }

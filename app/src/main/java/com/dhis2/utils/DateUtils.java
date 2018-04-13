@@ -2,14 +2,18 @@ package com.dhis2.utils;
 
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * Created by ppajuelo on 16/01/2018.
- *
  */
 
 public class DateUtils {
@@ -178,6 +182,16 @@ public class DateUtils {
     }
 
     @NonNull
+    public static SimpleDateFormat timeFormat() {
+        return new SimpleDateFormat("HH:mm", Locale.US);
+    }
+
+    @NonNull
+    public static SimpleDateFormat dateTimeFormat() {
+        return new SimpleDateFormat("yyyy-mm-dd HH:mm", Locale.US);
+    }
+
+    @NonNull
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
     }
@@ -197,12 +211,28 @@ public class DateUtils {
         return calendar;
     }
 
-
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date dueDate){
+    public boolean hasExpired(@NonNull Date dueDate) {
         return dueDate.before(getToday());
     }
 
+    public Date toDate(String date) {
+
+        try {
+            return databaseDateFormat().parse(date);
+
+        } catch (ParseException e) {
+            Timber.e(e);
+            return null;
+        }
+    }
+
+    public static int[] getDifference(Date startDate, Date endDate) {
+
+        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime());
+        return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
+
+    }
 }

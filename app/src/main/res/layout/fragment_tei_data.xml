@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
 
         <variable
@@ -134,35 +133,19 @@
 
                 <TextView
                     android:id="@+id/view_tei"
-                    android:layout_width="93dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="27dp"
                     android:fontFamily="sans-serif"
                     android:lineSpacingExtra="8sp"
-                    android:onClick="@{() -> presenter.editTei(false,cardData,dashboardModel)}"
-                    android:text="@string/view_more"
+                    android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
+                    android:text="@string/see_details"
                     android:textColor="#1d69a3"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/data_layout" />
+                    app:layout_constraintTop_toBottomOf="@id/data_layout"/>
 
-                <TextView
-                    android:id="@+id/edit_tei"
-                    android:layout_width="93dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:gravity="center_horizontal"
-                    android:lineSpacingExtra="8sp"
-                    android:onClick="@{() -> presenter.editTei(true,cardData, dashboardModel)}"
-                    android:text="@string/edit"
-                    android:textColor="#1d69a3"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/view_tei"
-                    app:layout_constraintEnd_toStartOf="@id/view_tei"
-                    app:layout_constraintTop_toTopOf="@id/view_tei" />
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:id="@+id/data_layout"

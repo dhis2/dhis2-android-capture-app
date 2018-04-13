@@ -7,12 +7,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.dhis2.R;
+import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -25,12 +28,12 @@ import rx.subjects.BehaviorSubject;
 
 /**
  * Created by Javi on 28/07/2017.
- *
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
+    private CoordinatesView coordinatesView;
 
     public enum Status {
         ON_PAUSE,
@@ -135,7 +138,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         return lifeCycleObservable;
     }
 
-    public void hideKeyboard(){
+    public void hideKeyboard() {
         if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             if (inputMethodManager != null)
@@ -144,7 +147,33 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     @Override
-    public void showToast(String message){
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void renderError(String message) {
+        if (getActivity() != null)
+            new AlertDialog.Builder(getActivity())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setTitle(getString(R.string.error))
+                    .setMessage(message)
+                    .show();
+    }
+
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        this.coordinatesView = coordinatesView;
+        startActivityForResult(MapSelectorActivity.create(this), Constants.RQ_MAP_LOCATION_VIEW);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Constants.RQ_MAP_LOCATION_VIEW:
+                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                this.coordinatesView = null;
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

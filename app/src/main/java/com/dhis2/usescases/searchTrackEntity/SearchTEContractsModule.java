@@ -1,22 +1,19 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.app.DatePickerDialog;
-import android.location.LocationListener;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.general.AbstractActivityContracts;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 
-import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -34,9 +31,11 @@ public class SearchTEContractsModule {
 
         void setPrograms(List<ProgramModel> programModels);
 
-        void clearList();
+        void clearList(String uid);
 
-        Flowable<FormViewHolder> rowActions();
+        android.view.View getProgress();
+
+        Flowable<RowAction> rowActionss();
     }
 
     public interface Presenter {
@@ -44,10 +43,6 @@ public class SearchTEContractsModule {
         void init(SearchTEContractsModule.View view, String trackedEntityType);
 
         void onDestroy();
-
-        void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener);
-
-        Observable<List<OptionModel>> getOptions(String s);
 
         void query(String format, boolean isAttribute);
 
@@ -57,45 +52,16 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void requestCoordinates(LocationListener locationListener);
-
-        void clearFilter(String uid);
-
         void onEnrollClick(android.view.View view);
 
-        void enroll(String programUid);
+        void enroll(String programUid, String uid);
 
         void onTEIClick(String TEIuid);
 
-        TrackedEntityModel getTrackedEntityName();
+        TrackedEntityTypeModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
 
         List<ProgramModel> getProgramList();
-    }
-
-    public interface Interactor {
-        void init(View view, String trackedEntityType);
-
-        void getTrackedEntityAttributes();
-
-        void getProgramTrackedEntityAttributes();
-
-        Observable<List<OptionModel>> getOptions(String optionSetId);
-
-        void filterTrackEntities(String filter);
-
-        void setProgram(ProgramModel programSelected);
-
-        void addDateQuery(String filter);
-
-        void clear();
-
-        void clearFilter(String uid);
-
-        void enroll();
-
-        TrackedEntityModel getTrackedEntity();
-
     }
 }

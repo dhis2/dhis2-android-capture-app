@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="relationship"
             type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
@@ -56,8 +55,8 @@
             android:layout_height="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_clear_red" />
-
+            app:srcCompat="@drawable/ic_clear_red"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/tei_relationship_link"
@@ -66,7 +65,7 @@
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toStartOf="@id/clear_relationship_button"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_insert_link" />
-
+            app:srcCompat="@drawable/ic_insert_link"
+            tools:ignore="ContentDescription" />
     </android.support.constraint.ConstraintLayout>
 </layout>

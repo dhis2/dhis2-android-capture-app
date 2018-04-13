@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.mobile;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -15,9 +16,12 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import javax.inject.Inject;
 
@@ -33,6 +37,10 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     TeiDashboardContracts.Presenter presenter;
 
     DashboardProgramModel programModel;
+    DashboardPagerAdapter adapter;
+
+    String teiUid;
+    String programUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,11 +52,12 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
-        init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
+        teiUid = getIntent().getStringExtra("TEI_UID");
+        programUid = getIntent().getStringExtra("PROGRAM_UID");
+        init(teiUid, programUid);
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     }
-
 
     @Override
     public void init(String teiUid, String programUid) {
@@ -57,30 +66,37 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setData(DashboardProgramModel program) {
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
+        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
+        binding.teiPager.setAdapter(adapter);
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         binding.executePendingBindings();
         this.programModel = program;
-        setDataFragment();
+        TEIDataFragment.getInstance().setData(programModel);
+        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         RelationshipFragment.getInstance().setData(program);
         ScheduleFragment.getInstance().setData(program);
+        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         binding.teiPager.setOffscreenPageLimit(6);
-    }
-
-    public void setDataFragment() {
-        TEIDataFragment.getInstance().setData(programModel);
     }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
+        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
+        binding.teiPager.setOffscreenPageLimit(6);
+
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
         this.programModel = program;
-        setDataFragment();
+        TEIDataFragment.getInstance().setData(programModel);
+    }
+
+    @Override
+    public DashboardPagerAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
@@ -92,4 +108,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         return presenter;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

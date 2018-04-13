@@ -24,8 +24,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:prompt="@{catCombo.displayName}"
-            app:spinnerOptions="@{catComboOptions}"
-            />
+            app:spinnerOptions="@{catComboOptions}"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

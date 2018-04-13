@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
@@ -21,7 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,13 +40,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private static final String SELECT_PROGRMAS_TO_ENROLL = String.format(
             "SELECT * FROM %s WHERE %s.%s = ?",
-            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY
+            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY_TYPE
     );
 
     private static final String SELECT_TEI_ENROLLMENTS = String.format(
             "SELECT * FROM %s WHERE %s.%s =",
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
+
+    private static final String SELECT_ENROLLMENT_EVENTS = String.format(
+            "SELECT * FROM %s WHERE %s.%s =",
+            EventModel.TABLE,
+            EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID);
 
     private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
             "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s DESC LIMIT 1",
@@ -74,7 +80,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private final String TRACKED_ENTITY_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            TrackedEntityModel.TABLE, TrackedEntityModel.TABLE, TrackedEntityModel.Columns.UID);
+            TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.Columns.UID);
 
     private final String TRACKED_ENTITY_INSTANCE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
@@ -132,7 +138,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.ID);
+            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.ID);
     private final Set<String> ATTR_PROGRAM_VALUE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
     private final String TE_ATTRIBUTE_QUERY = String.format(
@@ -170,15 +176,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private final BriteDatabase briteDatabase;
 
-    public MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
     @Override
-    public Observable<TrackedEntityModel> getTrackedEntity(String trackedEntityUid) {
+    public Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid) {
         return briteDatabase
-                .createQuery(TrackedEntityModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
-                .mapToOne(TrackedEntityModel::create);
+                .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
+                .mapToOne(TrackedEntityTypeModel::create);
     }
 
     @Override
@@ -192,6 +198,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TrackedEntityInstanceModel.TABLE, TRACKED_ENTITY_INSTANCE_QUERY + "'" + teiUid + "'")
                 .mapToOne(TrackedEntityInstanceModel::create);
+    }
+
+    @Override
+    public Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid) {
+        String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE
+                + " JOIN " + TrackedEntityTypeModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE
+                + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE
+                + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + programUid + "'";
+
+        final Set<String> PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityInstanceModel.TABLE, TrackedEntityTypeModel.TABLE, ProgramModel.TABLE));
+
+        return briteDatabase
+                .createQuery(PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES, PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY)
+                .mapToList(TrackedEntityInstanceModel::create);
     }
 
     @Override
@@ -309,8 +329,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid) {
         return briteDatabase
-                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid)
+                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_EVENTS, enrollmentUid)
                 .mapToOne(EventModel::create);
+    }
+
+    @Override
+    public Observable<List<EventModel>> getEnrollmentEvents(String enrollmentUid) {
+        return briteDatabase
+                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid)
+                .mapToList(EventModel::create);
     }
 
     @Override
@@ -341,6 +368,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                     } else
                         return 0;
                 });
+    }
+
+    @Override
+    public Observable<List<OptionModel>> optionSet(String optionSetId) {
+        String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET, optionSetId)
+                .mapToList(OptionModel::create);
     }
 
     @Override

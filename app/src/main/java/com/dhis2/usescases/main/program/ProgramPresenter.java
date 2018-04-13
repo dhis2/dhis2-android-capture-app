@@ -38,8 +38,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    private ArrayList<Date> dates = new ArrayList<>();
-    private Period period;
     private List<OrganisationUnitModel> myOrgs;
 
     ProgramPresenter(HomeRepository homeRepository) {
@@ -69,14 +67,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                             renderTree(myOrgs);
                         },
                         throwable -> view.renderError(throwable.getMessage())));
-//        getPrograms(DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
     }
 
 
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
-        this.dates = dates;
-        this.period = period;
         compositeDisposable.add(homeRepository.programs(dates, period)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -101,7 +96,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onItemClick(ProgramModel programModel) {
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programModel.uid());
-        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntity());
+        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
 
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             if (programModel.displayFrontPageList()) {
@@ -121,8 +116,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
             }
         }
-
-
     }
 
     @Override
@@ -148,15 +141,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         allOrgs.addAll(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
-            String[] path = myorg.path().split("/");
+            String[] pathName = myorg.displayNamePath().split("/");
+            String[] pathUid = myorg.path().split("/");
             for (int i = myorg.level() - 1; i > 0; i--) {
                 OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(path[i])
+                        .uid(pathUid[i])
                         .level(i)
-                        .parent(path[i - 1])
-                        .name(path[i])
-                        .displayName(path[i])
-                        .displayShortName(path[i])
+                        .parent(pathUid[i - 1])
+                        .name(pathName[i])
+                        .displayName(pathName[i])
+                        .displayShortName(pathName[i])
                         .build();
                 if (!allOrgs.contains(orgToAdd))
                     allOrgs.add(orgToAdd);
@@ -199,7 +193,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         return homeRepository.eventModels(programModel.uid());
     }
 
-    public String orgUnitQuery(){
+    private String orgUnitQuery(){
         StringBuilder orgUnitFilter = new StringBuilder();
         for (int i = 0; i < myOrgs.size(); i++) {
             orgUnitFilter.append("'");

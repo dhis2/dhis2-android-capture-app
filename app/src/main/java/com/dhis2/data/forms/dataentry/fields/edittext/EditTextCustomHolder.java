@@ -2,131 +2,151 @@ package com.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
-import android.text.Editable;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.text.method.DigitsKeyListener;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.dhis2.BR;
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.databinding.FormAgeCustomBinding;
-import com.dhis2.databinding.FormEditTextCustomBinding;
-import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
 import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Preconditions;
-import com.dhis2.utils.TextChangedListener;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.common.ValueType;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
 
 /**
- * Created by frodriguez on 18/01/2018.
+ * QUADRAM. Created by frodriguez on 18/01/2018..
  */
 
-public class EditTextCustomHolder extends FormViewHolder {
+final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
-    private final FlowableProcessor<RowAction> processor;
-    SearchTEContractsModule.Presenter presenter;
-    TrackedEntityAttributeModel bindableObject;
-
-    EditText editText;
-
+    private final TextInputLayout inputLayout;
+    private EditText editText;
     @NonNull
-    BehaviorProcessor<EditTextModel> model;
+    private BehaviorProcessor<EditTextModel> model;
 
-    public EditTextCustomHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
-        super(binding);
-        this.processor = processor;
-    }
+    private CompositeDisposable disposable;
 
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
-        this.presenter = presenter;
-        this.bindableObject = bindableObject;
-        binding.setVariable(BR.attribute, bindableObject);
-        binding.executePendingBindings();
+    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+        super(binding.getRoot());
+
+        editText = binding.getRoot().findViewById(R.id.input_editText);
+        inputLayout = binding.getRoot().findViewById(R.id.input_layout);
+
+        this.disposable = new CompositeDisposable();
 
         model = BehaviorProcessor.create();
+        disposable.add(model.subscribe(editTextModel -> {
 
-        if (binding instanceof FormAgeCustomBinding) {
-            modelFormAge((FormAgeCustomBinding) binding);
+                    editText.setText(editTextModel.value() == null ?
+                            null : valueOf(editTextModel.value()));
 
-        } else {
-            modelFormEditText((FormEditTextCustomBinding) binding);
-        }
-    }
+                    setInputType(editTextModel.valueType());
 
-    private void modelFormEditText(FormEditTextCustomBinding binding) {
 
-        editText = binding.customEdittext.getEditText();
-        binding.customEdittext.setTextChangedListener(new TextChangedListener() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                    if (!isEmpty(editTextModel.warning())) {
+                        inputLayout.setError(editTextModel.warning());
+                    } else if (!isEmpty(editTextModel.error())) {
+                        inputLayout.setError(editTextModel.error());
+                    } else
+                        inputLayout.setError(null);
 
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true); //Searchs for attributes which contains charSequece in its value
-            }
+                    editText.setSelection(editText.getText() == null ?
+                            0 : editText.getText().length());
+                    inputLayout.setHint(isEmpty(editText.getText()) ? editTextModel.label() : "");
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+                }
+                , t -> Log.d("DHIS_ERROR", t.getMessage())));
 
-            }
-        });
 
-        model.subscribe(editTextModel -> {
-           editText.setText(editTextModel.value() == null ?
-                    null : valueOf(editTextModel.value()));
-        });
+        // show and hide hint
+        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
+                .takeUntil(RxView.detaches(parent))
+                .publish();
 
-        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(binding.customEdittext).takeUntil(RxView.detaches(binding.getRoot())).publish();
+     /*   editTextObservable
+                .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
+                        && model.hasValue() ? model.getValue().label() : "")
+                .subscribe(hint -> inputLayout.setHint(hint), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                });*/
 
-        // persist value on focus change
-        editTextObservable
-                .scan(Pair.create(false, false), (state, hasFocus) ->
-                        Pair.create(state.val1() && !hasFocus, hasFocus))
-                .filter(state -> state.val0() && model.hasValue())
-                .filter(valueHasChangedPredicate())
-                .map(event -> RowAction.create(model.getValue().uid(),
-                        editText.getText().toString()))
-                .subscribe(action -> processor.onNext(action), OnErrorHandler.create(), () -> {
-                    // this is necessary for persisting last value in the form
-                    if (valueHasChanged()) {
-                        processor.onNext(RowAction.create(model.getValue().uid(),
-                                binding.customEdittext.getEditText().getText().toString()));
-                    }
-                });
+        disposable.add(RxTextView.textChanges(editText)
+                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                .filter(data -> model.getValue() != null)
+                .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
+                .subscribe(processor::onNext,
+                        OnErrorHandler.create(), () ->
+                        {
+                            if (valueHasChanged()) {
+                                processor.onNext(RowAction.create(model.getValue().uid(),
+                                        editText.getText().toString()));
+                            }
+                        }));
 
         editTextObservable.connect();
     }
 
-    private void modelFormAge(FormAgeCustomBinding binding) {
-        binding.customAgeview.setTextChangedListener(new TextChangedListener() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                presenter.query(String.format("%s:LIKE:%s", bindableObject.uid(), charSequence), true);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+    private void setInputType(ValueType valueType) {
+        switch (valueType) {
+            case PHONE_NUMBER:
+                editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                break;
+            case EMAIL:
+                editText.setInputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                break;
+            case TEXT:
+                editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                editText.setLines(1);
+                editText.setEllipsize(TextUtils.TruncateAt.END);
+                break;
+            case LETTER:
+                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
+                break;
+            case NUMBER:
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER |
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                        InputType.TYPE_NUMBER_FLAG_SIGNED);
+                break;
+            case INTEGER_NEGATIVE:
+            case INTEGER:
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                break;
+            case INTEGER_ZERO_OR_POSITIVE:
+            case INTEGER_POSITIVE:
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
+                break;
+            case UNIT_INTERVAL:
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                break;
+            default:
+                break;
+        }
     }
 
     @NonNull

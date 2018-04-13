@@ -2,8 +2,6 @@ package com.dhis2.usescases.appInfo;
 
 import android.support.annotation.NonNull;
 
-import com.dhis2.domain.responses.TrackedEntityInstance;
-
 import org.hisp.dhis.android.core.category.CategoryCategoryComboLinkModel;
 import org.hisp.dhis.android.core.category.CategoryCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -11,7 +9,6 @@ import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.constant.ConstantModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -38,12 +35,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.core.user.UserRoleModel;
-import org.hisp.dhis.android.core.user.UserRoleProgramLinkModel;
 
 import java.util.List;
 
@@ -51,7 +46,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 31/01/2018.
- *
  */
 
 public interface InfoRepository {
@@ -75,7 +69,7 @@ public interface InfoRepository {
     Observable<List<CategoryComboModel>> categoryCombo();
 
     @NonNull
-    Observable<List<TrackedEntityModel>> trackedEntitys();
+    Observable<List<TrackedEntityTypeModel>> trackedEntitys();
 
     @NonNull
     Observable<List<RelationshipTypeModel>> relationshipTypes();
@@ -121,9 +115,6 @@ public interface InfoRepository {
 
     @NonNull
     Observable<List<ProgramStageSectionModel>> programStageSections();
-
-    @NonNull
-    Observable<List<UserRoleProgramLinkModel>> userRoleProgramLink();
 
     @NonNull
     Observable<List<UserRoleModel>> userRole();

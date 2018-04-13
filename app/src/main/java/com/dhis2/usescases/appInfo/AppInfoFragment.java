@@ -190,12 +190,6 @@ public class AppInfoFragment extends FragmentGlobalAbstract {
                 .subscribe(data -> binding.programStageSections.setText("ProgramStageSections: " + data.size()))
         );
 
-        compositeDisposable.add(infoRepository.userRoleProgramLink()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> binding.userRoleProgramLink.setText("UserRoleProgramLink: " + data.size()))
-        );
-
         compositeDisposable.add(infoRepository.userRole()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -291,9 +285,9 @@ public class AppInfoFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onDestroy() {
-        compositeDisposable.dispose();
-        super.onDestroy();
+    public void onPause() {
+        compositeDisposable.clear();
+        super.onPause();
     }
 
 

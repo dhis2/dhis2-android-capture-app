@@ -27,6 +27,10 @@
         <variable
             name="stage"
             type="java.lang.String" />
+
+        <variable
+            name="followUp"
+            type="Boolean" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -37,7 +41,8 @@
         <ImageView
             android:id="@+id/program_image"
             android:layout_width="8dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            tools:ignore="ContentDescription" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -49,7 +54,8 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/photo_temp" />
+                android:src="@drawable/photo_temp"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/entity_attribute_1"
@@ -127,6 +133,16 @@
                 android:background="@color/gray_dfe"
                 tools:ignore="InvalidId" />
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                app:srcCompat="@drawable/ic_warning"
+                android:alpha="0.5"
+                android:visibility='@{followUp ? View.VISIBLE : View.INVISIBLE}'
+                tools:ignore="ContentDescription" />
+
             <LinearLayout
                 android:id="@+id/icons_layout"
                 android:layout_width="wrap_content"
@@ -143,15 +159,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="9dp"
                     android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_lock_open_green" />
+                    app:srcCompat="@drawable/ic_lock_open_green"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    android:text="Open"
-                    tools:text="Open" />
+                    tools:text="@string/event_open"/>
 
                 <ImageView
                     android:id="@+id/sync_icon"
@@ -160,15 +176,15 @@
                     android:layout_marginBottom="9dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_sync_green" />
+                    tools:src="@drawable/ic_sync_green"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    android:text="Sync"
-                    tools:text="Sync" />
+                    tools:text="@string/state_synced"/>
 
             </LinearLayout>
 

@@ -140,12 +140,13 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @NonNull
     private Observable<Response> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(50)));
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(100)));
     }
+
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(600)));
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(300)));
     }
 
     @NonNull
@@ -202,6 +203,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @Override
     public void onDestroy() {
-        disposable.dispose();
+        disposable.clear();
     }
 }

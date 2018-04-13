@@ -1,23 +1,29 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.usescases.searchTrackEntity.formHolders.ButtonFormHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.CoordinatesFormHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.DateTimeFormHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextFormHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.EditTextHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.FormViewHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.RadioGroupFormHolder;
-import com.dhis2.usescases.searchTrackEntity.formHolders.SpinnerHolder;
+import com.dhis2.data.forms.dataentry.fields.age.AgeRow;
+import com.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateRow;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
+import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeRow;
+import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
+import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import com.dhis2.data.forms.dataentry.fields.file.FileRow;
+import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
+import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -29,10 +35,9 @@ import io.reactivex.processors.PublishProcessor;
 
 /**
  * Created by ppajuelo on 06/11/2017.
- *
  */
 
-public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
+public class FormAdapter extends RecyclerView.Adapter {
 
     private final int EDITTEXT = 0;
     private final int BUTTON = 1;
@@ -45,81 +50,87 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     private final int AGEVIEW = 8;
     private final int YES_NO = 9;
     private int programData = 0;
-    private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityAttributeModel> attributeList;
     private ProgramModel programModel;
     @NonNull
-    private final FlowableProcessor<FormViewHolder> processor;
+    private final FlowableProcessor<RowAction> processor;
 
-    FormAdapter(SearchTEContractsModule.Presenter presenter) {
-        this.presenter = presenter;
+    @NonNull
+    private final List<Row> rows;
+
+    FormAdapter(LayoutInflater layoutInflater) {
         setHasStableIds(true);
+        //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
+        rows = new ArrayList<>();
+
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, false));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, false));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, false));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, false));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
     }
 
     @Override
-    public FormViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ViewDataBinding binding;
-        FormViewHolder holder;
-        switch (viewType) {
-            case DATE:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_text, parent, false);
-                holder = new DateTimeFormHolder(binding);
-                break;
-            case DATETIME:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_date_time_text, parent, false);
-                holder = new DateTimeFormHolder(binding);
-                break;
-            case EDITTEXT:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
-                holder = new EditTextFormHolder(binding, processor);
-                break;
-            case BUTTON:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_button_text, parent, false);
-                holder = new ButtonFormHolder(binding);
-                break;
-            case CHECKBOX:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_check_box, parent, false);
-                holder = new EditTextHolder(binding);
-                break;
-            case SPINNER:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
-                holder = new SpinnerHolder(binding);
-                break;
-            case COORDINATES:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates, parent, false);
-                holder = new CoordinatesFormHolder(binding);
-                break;
-            case TIME:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_edit_text_custom, parent, false);
-                holder = new DateTimeFormHolder(binding);
-                break;
-            case AGEVIEW:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_age_custom, parent, false);
-                holder = new EditTextFormHolder(binding, processor);
-                break;
-            case YES_NO:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_yes_no, parent, false);
-                holder = new RadioGroupFormHolder(binding);
-                break;
-            default:
-                binding = DataBindingUtil.inflate(inflater, R.layout.form_spinner, parent, false);
-                holder = new SpinnerHolder(binding);
-                break;
-        }
-
-        return holder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return rows.get(viewType).onCreate(parent);
 
     }
 
     @Override
-    public void onBindViewHolder(FormViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        FieldViewModel viewModel = null;
+
         if (position < programData) {
-            ((DateTimeFormHolder) holder).bindProgramData(presenter, position == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), position);
+//            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
+            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null);
+
         } else {
-            holder.bind(presenter, attributeList.get(position - programData));
+            TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
+            switch (holder.getItemViewType()) {
+                case EDITTEXT:
+                    viewModel = EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null, attr.displayShortName(), 1, attr.valueType());
+                    break;
+                case BUTTON:
+                    viewModel = FileViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    break;
+                case CHECKBOX:
+                case YES_NO:
+                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), attr.displayShortName(), attr.valueType(), false, null);
+                    break;
+                case SPINNER:
+                    viewModel = SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null);
+                    break;
+                case COORDINATES:
+                    viewModel = CoordinateViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    break;
+                case TIME:
+                case DATE:
+                case DATETIME:
+                    viewModel = DateTimeViewModel.create(attr.uid(), attr.displayShortName(), false, attr.valueType(), null);
+                    break;
+                case AGEVIEW:
+                    viewModel = AgeViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported viewType " +
+                            "source type: " + holder.getItemViewType());
+            }
+         /*   if (holder.getItemViewType() == EDITTEXT)
+                rows.get(holder.getItemViewType()).onBind(holder, EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null,
+                        attr.displayShortName(), 1, attr.valueType()));
+            else if (holder.getItemViewType() == SPINNER) {
+                rows.get(holder.getItemViewType()).onBind(holder, SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null));
+            } else
+                ((FormViewHolder) holder).bind(presenter, attributeList.get(holder.getAdapterPosition() - programData));*/
         }
+        rows.get(holder.getItemViewType()).onBind(holder, viewModel);
+
     }
 
     @Override
@@ -132,7 +143,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
         if (position < programData) {
             return programModel.id() + position;
         } else {
-            return attributeList.get(position - programData).id();
+            return attributeList.get(position - programData).uid().hashCode();
         }
     }
 
@@ -206,7 +217,7 @@ public class FormAdapter extends RecyclerView.Adapter<FormViewHolder> {
     }
 
     @NonNull
-    FlowableProcessor<FormViewHolder> asFlowable() {
+    FlowableProcessor<RowAction> asFlowableRA() {
         return processor;
     }
 }

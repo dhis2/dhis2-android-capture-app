@@ -11,7 +11,7 @@ import com.dhis2.data.forms.dataentry.DataEntryFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-class FormSectionAdapter extends FragmentStatePagerAdapter {
+public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;

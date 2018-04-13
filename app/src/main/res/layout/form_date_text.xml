@@ -3,20 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
         <variable
             name="label"
             type="java.lang.String" />
     </data>
 
     <com.dhis2.utils.CustomViews.DateView
+        android:id="@+id/dateView"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        app:attribute="@{ attribute }"
         app:label="@{label}"
         />
 

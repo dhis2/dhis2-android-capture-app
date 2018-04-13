@@ -7,6 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -30,6 +31,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
+
+    private final String PROGRAM_INDICATORS_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
+            ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.PROGRAM);
 
     private final String ATTRIBUTES_QUERY = String.format("SELECT %s.* FROM %s INNER JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ",
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
@@ -149,6 +153,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, programUid, teiUid)
                 .mapToList(RelationshipModel::create);
 
+    }
+
+    @Override
+    public Observable<List<ProgramIndicatorModel>> getIndicators(String programUid) {
+        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_INDICATORS_QUERY + "'" + programUid + "'")
+                .mapToList(ProgramIndicatorModel::create);
     }
 
     @Override

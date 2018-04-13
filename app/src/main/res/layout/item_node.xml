@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
-        app:srcCompat="@drawable/ic_add_circle" />
+        app:srcCompat="@drawable/ic_add_circle"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/org_unit_name"

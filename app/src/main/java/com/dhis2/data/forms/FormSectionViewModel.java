@@ -22,15 +22,23 @@ public abstract class FormSectionViewModel {
     public abstract Type type();
 
     @NonNull
-    static FormSectionViewModel createForSection(@NonNull String eventUid,
-                                                 @NonNull String sectionUid, @NonNull String label) {
+    public static FormSectionViewModel createForSection(@NonNull String eventUid,
+                                                         @NonNull String sectionUid,
+                                                         @NonNull String label) {
         return new AutoValue_FormSectionViewModel(eventUid, sectionUid, label, Type.SECTION);
     }
 
     @NonNull
-    static FormSectionViewModel createForProgramStage(
-            @NonNull String eventUid, @NonNull String programStageUid) {
+    public static FormSectionViewModel createForProgramStage(@NonNull String eventUid,
+                                                             @NonNull String programStageUid) {
         return new AutoValue_FormSectionViewModel(eventUid, programStageUid, null, Type.PROGRAM_STAGE);
+    }
+
+    @NonNull
+    public static FormSectionViewModel createForProgramStageWithLabel(@NonNull String eventUid,
+                                                                      @NonNull String programStageDisplayName,
+                                                                      @NonNull String programStageUid) {
+        return new AutoValue_FormSectionViewModel(eventUid, programStageUid, programStageDisplayName, Type.PROGRAM_STAGE);
     }
 
     @NonNull

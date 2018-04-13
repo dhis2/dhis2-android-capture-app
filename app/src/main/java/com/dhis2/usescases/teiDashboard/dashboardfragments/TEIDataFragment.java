@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,17 +20,21 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * -Created by ppajuelo on 29/11/2017.
  */
 
 public class TEIDataFragment extends FragmentGlobalAbstract {
 
+    private static final int REQ_DETAILS = 1001;
+
     FragmentTeiDataBinding binding;
 
     static TEIDataFragment instance;
-    private static DashboardProgramModel program;
     TeiDashboardContracts.Presenter presenter;
+    private DashboardProgramModel dashboardProgramModel;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -43,35 +49,60 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
-        if(program!=null)
-            setData(program);
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setData(dashboardProgramModel);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+        binding.setPresenter(presenter);
+        setData(dashboardProgramModel);
+    }
+
     public void setData(DashboardProgramModel nprogram) {
-        program = nprogram;
+        this.dashboardProgramModel = nprogram;
 
-        if (program != null && program.getCurrentEnrollment() != null) {
+        if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
 
-            binding.teiRecycler.setAdapter(new EventAdapter(presenter, program.getProgramStages(), program.getEvents()));
+            binding.teiRecycler.setAdapter(new EventAdapter(presenter, nprogram.getProgramStages(), nprogram.getEvents()));
 
-            binding.setTrackEntity(program.getTei());
-            binding.setEnrollment(program.getCurrentEnrollment());
-            binding.setProgram(program.getCurrentProgram());
-            binding.setDashboardModel(program);
-        } else if (program != null) {
+            binding.setTrackEntity(nprogram.getTei());
+            binding.setEnrollment(nprogram.getCurrentEnrollment());
+            binding.setProgram(nprogram.getCurrentProgram());
+            binding.setDashboardModel(nprogram);
+        } else if (nprogram != null) {
             binding.teiRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false));
-            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, program));
+            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
 
-            binding.setTrackEntity(program.getTei());
+            binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(null);
             binding.setProgram(null);
-            binding.setDashboardModel(program);
+            binding.setDashboardModel(nprogram);
         }
 
         binding.executePendingBindings();
 
     }
 
+    public static int getRequestCode() {
+        return REQ_DETAILS;
+    }
 
+    @SuppressLint("CheckResult")
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQ_DETAILS){
+            if(resultCode == RESULT_OK){
+                presenter.getData();
+            }
+        }
+    }
 }

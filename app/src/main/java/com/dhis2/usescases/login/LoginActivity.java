@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -37,6 +38,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     List<String> users;
     List<String> urls;
+    private boolean isSyncing;
 
     enum SyncState {
         METADATA, EVENTS, TEI
@@ -60,13 +62,15 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this);
+        if (!isSyncing)
+            presenter.init(this);
     }
 
     @Override
-    protected void onDestroy() {
-        presenter.onDestroy();
-        super.onDestroy();
+    protected void onPause() {
+        if (!isSyncing)
+            presenter.onDestroy();
+        super.onPause();
     }
 
     @Override
@@ -109,11 +113,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void handleSync() {
+        isSyncing = true;
         binding.login.setVisibility(View.GONE);
         if (binding.logo != null) {
             ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
             params.height = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
+            binding.syncLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -171,38 +177,28 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         return result -> {
             if (result.inProgress()) {
                 if (syncState == SyncState.METADATA)
-                    binding.metadataText.setText("Metadata: Synchronising with server");
-                else if (syncState == SyncState.EVENTS) {
-                    binding.eventsText.setText("Events: Synchronising with server");
+                    binding.metadataText.setText(getString(R.string.syncing_configuration));
+                else {
+                    binding.eventsText.setText(getString(R.string.syncing_data));
+                    Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
                     binding.eventsText.setAlpha(1.0f);
-                } else {
-                    binding.teiText.setText("TEI: Synchronising with server");
-                    binding.teiText.setAlpha(1.0f);
                 }
             } else if (result.isSuccess()) {
                 if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText("Metadata: Sync complete");
-                    binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
-                } else if (syncState == SyncState.EVENTS) {
-                    binding.eventsText.setText("Events: Sync complete");
-                    binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
-
-                } else {
-                    binding.teiText.setText("TEI: Sync complete");
-                    binding.teiText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_done_black), null);
+                    binding.metadataText.setText(getString(R.string.configuration_ready));
+                    Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
+                } else if (syncState == SyncState.TEI) {
+                    binding.eventsText.setText(getString(R.string.data_ready));
+                    Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
                 }
                 presenter.syncNext(syncState);
             } else if (!result.isSuccess()) {
                 if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText("Metadata: Sync Error");
+                    binding.metadataText.setText(getString(R.string.configuration_sync_failed));
                     binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
-                } else if (syncState == SyncState.EVENTS) {
-                    binding.eventsText.setText("Events: Sync Error");
+                } else if (syncState == SyncState.TEI) {
+                    binding.eventsText.setText(getString(R.string.data_sync_failed));
                     binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
-
-                } else {
-                    binding.teiText.setText("TEI: Sync Error");
-                    binding.teiText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
                 }
 
                 presenter.syncNext(syncState);
@@ -210,10 +206,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             } else {
                 throw new IllegalStateException();
             }
-
         };
     }
-
 
     @Override
     public void onBackPressed() {

@@ -25,7 +25,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -143,8 +143,8 @@ dependencies {
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
 
     //square
-    implementation "com.squareup.sqlbrite2:sqlbrite:${libraries.sqlbrite}"
-    implementation "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
+    implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
+//    implementation "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
     implementation "com.github.lykmapipo:sqlbrite-migrations:v1.0.1"
 
     // Jake Wharton libraries
@@ -189,8 +189,16 @@ dependencies {
     })
 
     testCompile 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     compile 'com.facebook.stetho:stetho:1.5.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    //RXLint
+    compile 'nl.littlerobots.rxlint:rxlint:1.6'
+
+    //JODA-TIME
+    implementation 'joda-time:joda-time:2.9.9'
+
+
 }

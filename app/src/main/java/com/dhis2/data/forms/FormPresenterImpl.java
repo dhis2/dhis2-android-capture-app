@@ -2,7 +2,6 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
-
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.DateUtils;
 
@@ -32,9 +31,9 @@ class FormPresenterImpl implements FormPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-            FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
-            @NonNull SchedulerProvider schedulerProvider,
-            @NonNull FormRepository formRepository) {
+    FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
+                      @NonNull SchedulerProvider schedulerProvider,
+                      @NonNull FormRepository formRepository) {
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
@@ -118,8 +117,16 @@ class FormPresenterImpl implements FormPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
-        compositeDisposable.add(enrollmentDoneStream
+      /*  compositeDisposable.add(enrollmentDoneStream
                 .subscribeOn(schedulerProvider.ui())
+                .subscribe(view.finishEnrollment(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));*/
+
+        //TODO: if Program has useFirstStageDuringRegistration go to data entry
+        compositeDisposable.add(enrollmentDoneStream
+                .flatMap(data -> formRepository.useFirstStageDuringRegistration())
+                .subscribeOn(schedulerProvider.io())
                 .subscribe(view.finishEnrollment(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));

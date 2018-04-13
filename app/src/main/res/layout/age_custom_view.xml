@@ -1,113 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+            name="label"
+            type="java.lang.String" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="3dp"
-        tools:background="?colorPrimary">
-
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <EditText
-                android:id="@+id/date_picker"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:background="@android:color/transparent"
-                android:hint='@{attribute.displayShortName,default=text}'
-                android:imeOptions="actionNext"
-                android:textAlignment="textStart"
-                android:paddingStart="5dp"
-                android:textAllCaps="false"
-                android:textColor="@color/white_faf"
-                android:textColorHint="@color/white_faf"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/white_faf" />
-        </LinearLayout>
-
-
-
-        <TextView
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:gravity="center|bottom"
-            android:text=" " />
+        android:padding="3dp">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
-            android:textSize="16sp"
-            android:layout_weight="1">
+            android:layout_weight="2"
+            android:hint='@{label}'
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText"
+            tools:hint="Age">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/date_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:textColor="?attr/colorPrimary"
+                tools:text="1987-06-26" />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/hint_day"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_days"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="date"
-                android:textColor="@color/white_faf"
-                android:hint="dd" />
+                android:textColor="?attr/colorPrimary" />
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:gravity="center|bottom"
-            android:text=" " />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
-            android:textSize="16sp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_month"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/hint_month"
                 android:inputType="date"
-                android:textColor="@color/white_faf"
-                android:hint="mm" />
+                android:textColor="?attr/colorPrimary" />
         </android.support.design.widget.TextInputLayout>
-
-        <TextView
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:gravity="center|bottom"
-            android:text=" " />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
-            android:textSize="16sp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_year"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/hint_year"
                 android:inputType="date"
-                android:textColor="@color/white_faf"
-                android:hint="yyyy" />
+                android:textColor="?attr/colorPrimary"
+                tools:text="01" />
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>

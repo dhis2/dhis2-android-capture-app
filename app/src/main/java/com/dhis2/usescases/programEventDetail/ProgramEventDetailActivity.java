@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -62,9 +64,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
         presenter.onDettach();
+        super.onPause();
     }
 
     @Override
@@ -90,6 +92,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawer(Gravity.END);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -190,22 +193,28 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
-        CatComboAdapter adapter = new CatComboAdapter(this,
-                R.layout.spinner_layout,
-                R.id.spinner_text,
-                catComboList,
-                catCombo.displayName(),
-                R.color.white_faf);
 
-        binding.catCombo.setAdapter(adapter);
+        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()){
+            binding.catCombo.setVisibility(View.GONE);
+        }
+        else {
+            CatComboAdapter adapter = new CatComboAdapter(this,
+                    R.layout.spinner_layout,
+                    R.id.spinner_text,
+                    catComboList,
+                    catCombo.displayName(),
+                    R.color.white_faf);
 
-        binding.catCombo.setOnItemClickListener((parent, view, position, id) -> {
-            if (position == 0){
-                presenter.clearCatComboFilters();
-            }
-            else {
-                presenter.onCatComboSelected(adapter.getItem(position-1));
-            }
-        });
+            binding.catCombo.setVisibility(View.VISIBLE);
+            binding.catCombo.setAdapter(adapter);
+
+            binding.catCombo.setOnItemClickListener((parent, view, position, id) -> {
+                if (position == 0) {
+                    presenter.clearCatComboFilters();
+                } else {
+                    presenter.onCatComboSelected(adapter.getItem(position - 1));
+                }
+            });
+        }
     }
 }

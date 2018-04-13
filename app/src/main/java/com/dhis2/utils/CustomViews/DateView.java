@@ -2,20 +2,22 @@ package com.dhis2.utils.CustomViews;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.dhis2.BR;
 import com.dhis2.R;
-import com.dhis2.databinding.DateTimeViewBinding;
-
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import com.dhis2.utils.DateUtils;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by frodriguez on 1/15/2018.
@@ -23,11 +25,13 @@ import java.util.Calendar;
 
 public class DateView extends RelativeLayout implements View.OnClickListener {
 
-    private EditText dateTime;
-    private DateTimeViewBinding binding;
+    private TextInputEditText editText;
+    private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
+    private boolean isBgTransparent;
+    private LayoutInflater inflater;
 
     public DateView(Context context) {
         super(context);
@@ -44,36 +48,46 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         init(context);
     }
 
-    private void init(Context context){
-        LayoutInflater inflater = LayoutInflater.from(context);
-        binding = DateTimeViewBinding.inflate(inflater, this, true);
-        dateTime = findViewById(R.id.button);
+    private void init(Context context) {
+        inflater = LayoutInflater.from(context);
+
+
+    }
+
+    private void setLayout() {
+        if (isBgTransparent)
+            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view, this, true);
+        else
+            binding = DataBindingUtil.inflate(inflater, R.layout.date_time_view_accent, this, true);
+
+        editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        dateTime.setOnFocusChangeListener(this::onFocusChanged);
-        dateTime.setOnClickListener(this::onClick);
-
+        editText.setOnFocusChangeListener(this::onFocusChanged);
+        editText.setOnClickListener(this);
     }
 
-    public void setAttribute(TrackedEntityAttributeModel attribute){
-        binding.setAttribute(attribute);
+    public void setIsBgTransparent(boolean isBgTransparent) {
+        this.isBgTransparent = isBgTransparent;
+        setLayout();
     }
 
-    public void setLabel(String label){
-        binding.setLabel(label);
+    public void setLabel(String label) {
+        binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
     }
 
     private void onFocusChanged(View view, boolean b) {
-        if(b)
+        if (b)
             onClick(view);
     }
 
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
-        int year  = c.get(Calendar.YEAR);
+        int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
-        int day   = c.get(Calendar.DAY_OF_MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
                 (datePicker, year1, month1, day1) -> {
@@ -82,8 +96,8 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
                     selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
                     selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
                     selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
-                    String result = dateFormat.format(selectedCalendar.getTime());
-                    dateTime.setText(result);
+                    String result = DateUtils.uiDateFormat().format(selectedCalendar.getTime());
+                    editText.setText(result);
                 }),
                 year,
                 month,

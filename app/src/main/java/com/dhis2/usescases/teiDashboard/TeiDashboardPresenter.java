@@ -1,12 +1,16 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
@@ -20,7 +24,6 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
@@ -49,7 +52,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         getData();
     }
 
-    private void getData() {
+    @SuppressLint("CheckResult")
+    @Override
+    public void getData() {
         if (programUid != null)
             Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
@@ -65,8 +70,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()));
+                            (dashboardProgramModel) ->
+                                    dashboardRepository.getIndicators(programUid)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(
+                                                    (programIndicatorModels) -> {
+                                                        dashboardProgramModel.setProgramIndicatorModels(programIndicatorModels);
+                                                        view.setData(dashboardProgramModel);
+                                                    },
+                                                    throwable -> Log.d("ERROR", throwable.getMessage())));
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
@@ -82,15 +95,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         }
     }
-
+    
     @Override
     public void onBackPressed() {
         view.back();
-    }
-
-    @Override
-    public void onProgramSelected() {
-
     }
 
     @Override
@@ -102,17 +110,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void setProgram(ProgramModel program) {
+        this.programUid = program.uid();
+        getData();
     }
 
     @Override
-    public void editTei(boolean isEditable, View sharedView, DashboardProgramModel dashboardProgramModel) {
+    public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
+        Fragment teiFragment = view.getAdapter().getItem(0);
+        Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
         extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
-        extras.putBoolean("IS_EDITABLE", isEditable);
+        intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        view.startActivity(TeiDataDetailActivity.class, extras, false, false, options);
+        teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
     }
 
     @Override
@@ -137,6 +149,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

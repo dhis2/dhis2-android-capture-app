@@ -9,10 +9,10 @@
     <item
         android:id="@+id/addnew"
         android:icon="@drawable/ic_note_add"
-        android:title="Add new" />
+        android:title="@string/add_new" />
 
     <item
         android:id="@+id/schedulenew"
         android:icon="@drawable/ic_date_range"
-        android:title="Schedule new" />
+        android:title="@string/schedule_new" />
 </menu>

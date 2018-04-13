@@ -19,7 +19,6 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 07/11/2017.
- *
  */
 
 public class OptionAdapter extends ArrayAdapter<OptionModel> {
@@ -62,4 +61,9 @@ public class OptionAdapter extends ArrayAdapter<OptionModel> {
     public int getCount() {
         return super.getCount() + 1;
     }
+
+    public int getOptionCount() {
+        return options.size();
+    }
+
 }

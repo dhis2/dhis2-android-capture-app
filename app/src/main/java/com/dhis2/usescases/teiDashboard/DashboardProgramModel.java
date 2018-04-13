@@ -5,6 +5,7 @@ import android.databinding.BaseObservable;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
@@ -29,6 +30,7 @@ public class DashboardProgramModel extends BaseObservable {
     private EnrollmentModel currentEnrollment;
     private List<ProgramStageModel> programStages;
     private List<ProgramModel> enrollmentProgramModels;
+    private List<ProgramIndicatorModel> programIndicatorModels;
     private OrganisationUnitModel orgnUnit;
 
 
@@ -121,5 +123,13 @@ public class DashboardProgramModel extends BaseObservable {
 
     public List<ProgramTrackedEntityAttributeModel> getTrackedEntityAttributesModel() {
         return trackedEntityAttributesModel;
+    }
+
+    public void setProgramIndicatorModels(List<ProgramIndicatorModel> programIndicatorModels) {
+        this.programIndicatorModels = programIndicatorModels;
+    }
+
+    public List<ProgramIndicatorModel> getProgramIndicatorModels() {
+        return programIndicatorModels;
     }
 }

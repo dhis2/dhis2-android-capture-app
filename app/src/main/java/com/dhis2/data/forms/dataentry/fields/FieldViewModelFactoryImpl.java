@@ -2,13 +2,18 @@ package com.dhis2.data.forms.dataentry.fields;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.InputType;
 
+import com.dhis2.data.forms.dataentry.fields.age.AgeViewModel;
+import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
+import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
+import static android.text.TextUtils.isEmpty;
 import static com.dhis2.utils.Preconditions.isNull;
 
 public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
@@ -66,36 +71,43 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value) {
         isNull(type, "type must be supplied");
 
-       /* if (!isEmpty(optionSet)) {
-            return createOption(id, label, mandatory, optionSet, value);
-        }*/
+        if (!isEmpty(optionSet)) {
+            return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
+        }
 
         switch (type) {
-            default:
-            case BOOLEAN:
-                return RadioButtonViewModel.fromRawValue(id, label, mandatory, value);
-         /*   case TRUE_ONLY:
-                return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);*/
+           case AGE:
+                return AgeViewModel.create(id, label, mandatory, value);
             case TEXT:
-                return createText(id, label, mandatory, value);
-            case LONG_TEXT:
-                return createLongText(id, label, mandatory, value);
-            /*case NUMBER:
-                return createNumber(id, label, mandatory, value);
+            case EMAIL:
+            case LETTER:
+            case NUMBER:
             case INTEGER:
-                return createInteger(id, label, mandatory, value);
-            case INTEGER_POSITIVE:
-                return createIntegerPositive(id, label, mandatory, value);
+            case USERNAME:
+            case LONG_TEXT:
+            case PERCENTAGE:
+            case PHONE_NUMBER:
             case INTEGER_NEGATIVE:
-                return createIntegerNegative(id, label, mandatory, value);
+            case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
-                return createIntegerZeroOrPositive(id, label, mandatory, value);
+            case UNIT_INTERVAL:
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
+            case TIME:
             case DATE:
-                return createDate(id, label, mandatory, value);
             case DATETIME:
-                return createDateTime(id, label, mandatory, value);
+                return DateTimeViewModel.create(id, label, mandatory, type, value);
+            case FILE_RESOURCE:
+                return FileViewModel.create(id, label, mandatory, value);
+            case COORDINATE:
+                return CoordinateViewModel.create(id, label, mandatory, value);
+            case BOOLEAN:
+            case TRUE_ONLY:
+                return RadioButtonViewModel.fromRawValue(id, label, type,  mandatory, value);
+            case TRACKER_ASSOCIATE:
+            case ORGANISATION_UNIT:
+            case URL:
             default:
-                return TextViewModel.create(id, label, type.toString());*/
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
         }
     }
 
@@ -117,7 +129,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         return OptionsViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
     }*/
 
-    @NonNull
+    /*@NonNull
     private EditTextViewModel createText(@NonNull String id, @NonNull String label,
                                          @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
@@ -127,7 +139,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private EditTextViewModel createLongText(@NonNull String id, @NonNull String label,
                                              @NonNull Boolean mandatory, @Nullable String value) {
         return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
-    }
+    }*/
 
     /*@NonNull
     private EditTextDoubleViewModel createNumber(@NonNull String id, @NonNull String label,

@@ -3,8 +3,10 @@ package com.dhis2.data.forms.dataentry.fields.radiobutton;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.dhis2.data.forms.dataentry.fields.EditableFieldViewModel;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
+
+import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Locale;
 
@@ -12,9 +14,10 @@ import java.util.Locale;
  * Created by frodriguez on 1/24/2018.
  */
 @AutoValue
-public abstract class RadioButtonViewModel extends EditableFieldViewModel<RadioButtonViewModel> {
+public abstract class RadioButtonViewModel extends FieldViewModel {
+
     public enum Value {
-        YES("true"), NO("false"), NONE("");
+        CHECKED("true"), CHECKED_NO("false"), UNCHECKED("");
 
         @NonNull
         private final String value;
@@ -30,16 +33,23 @@ public abstract class RadioButtonViewModel extends EditableFieldViewModel<RadioB
     }
 
     @NonNull
-    public static RadioButtonViewModel fromRawValue(@NonNull String uid, @NonNull String label,
+    public abstract Boolean mandatory();
+
+
+    @NonNull
+    public abstract ValueType valueType();
+
+    @NonNull
+    public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                                     @NonNull Boolean mandatory, @Nullable String value) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(uid, label, mandatory, null);
-        } else if (value.toLowerCase(Locale.US).equals(Value.YES.toString())) {
-            return new AutoValue_RadioButtonViewModel(uid, label, mandatory, null);
-        } else if (value.toLowerCase(Locale.US).equals(Value.NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(uid, label, mandatory, null);
-        } else if (value.isEmpty()) {
-            return new AutoValue_RadioButtonViewModel(uid, label, mandatory, null);
+            return new AutoValue_RadioButtonViewModel(id, label, null, mandatory, type);
+        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), mandatory, type);
+        } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
+            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), mandatory, type);
+        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), mandatory, type);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -24,5 +25,6 @@
         android:text="@{option!=null?option:optionSetName}"
         android:textColor="?colorPrimary"
         android:textSize="16sp"
-        android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"/>
+        android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
+        tools:text="TEXTO"/>
 </layout>

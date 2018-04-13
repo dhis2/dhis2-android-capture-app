@@ -68,7 +68,8 @@
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/full_width_button_bg"
                     android:onClick="@{presenter::onQRClick}"
-                    app:srcCompat="@drawable/ic_qr" />
+                    app:srcCompat="@drawable/ic_qr"
+                    tools:ignore="ContentDescription" />
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/server_url"
@@ -148,15 +149,12 @@
                 android:onClick="onUnlockClick"
                 android:text="@string/unlock_button"
                 android:visibility="gone" />
-
         </LinearLayout>
-
 
         <!-- PIN LAYOUT -->
         <include
             android:id="@+id/pin_layout"
             layout="@layout/pin_layout"
             android:visibility="gone" />
-
     </android.support.constraint.ConstraintLayout>
 </layout>
