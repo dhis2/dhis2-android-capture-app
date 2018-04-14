@@ -63,6 +63,13 @@ class FormPresenterImpl implements FormPresenter {
                 })
                 .subscribe(view.renderReportDate(), Timber::e));
 
+        compositeDisposable.add(formRepository.incidentDate()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .filter(programModel -> programModel.displayIncidentDate())
+                .subscribe(view.renderIncidentDate(), Timber::e)
+        );
+
         compositeDisposable.add(formRepository.sections()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -72,6 +79,11 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeReportDate(), Timber::e));
+
+        compositeDisposable.add(view.incidentDateChanged()
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.storeIncidentDate(), Timber::e));
 
         ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
                 .distinctUntilChanged()

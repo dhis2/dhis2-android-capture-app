@@ -174,4 +174,5 @@
     <string name="hint_month">Months</string>
     <string name="hint_year">Years</string>
     <string name="week">Weeks</string>
+    <string name="incident_date">Incident date</string>
 </resources>

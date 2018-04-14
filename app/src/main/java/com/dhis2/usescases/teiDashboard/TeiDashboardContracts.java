@@ -1,13 +1,15 @@
 package com.dhis2.usescases.teiDashboard;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import io.reactivex.Flowable;
+
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class TeiDashboardContracts {
@@ -43,5 +45,7 @@ public class TeiDashboardContracts {
         void onDettach();
 
         void getData();
+
+        void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);
     }
 }

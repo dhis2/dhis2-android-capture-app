@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
@@ -122,6 +124,11 @@ public class EventRepository implements FormRepository {
                 .distinctUntilChanged();
     }
 
+    @Override
+    public Flowable<ProgramModel> incidentDate() {
+        return null;
+    }
+
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {
@@ -152,6 +159,11 @@ public class EventRepository implements FormRepository {
         };
     }
 
+    @Override
+    public Consumer<String> storeIncidentDate() {
+        return null;
+    }
+
     @NonNull
     @Override
     public Consumer<ReportStatus> storeReportStatus() {
@@ -174,7 +186,7 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Observable<String> useFirstStageDuringRegistration() {
+    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
         return null;
     }
 

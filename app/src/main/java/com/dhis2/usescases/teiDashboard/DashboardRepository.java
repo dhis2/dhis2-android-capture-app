@@ -1,6 +1,9 @@
 package com.dhis2.usescases.teiDashboard;
 
+import com.dhis2.data.tuples.Pair;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
@@ -12,11 +15,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public interface DashboardRepository {
@@ -40,4 +44,8 @@ public interface DashboardRepository {
     Observable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     int setFollowUp(String enrollmentUid, boolean followUp);
+
+    Flowable<List<NoteModel>> getNotes(String programUid);
+
+    Consumer<Pair<String, Boolean>> handleNote();
 }

@@ -52,6 +52,19 @@
                 android:padding="8dp"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/textView_incident_date"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorPrimaryLight"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:hint="@string/incident_date"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:visibility="gone"/>
+
             <com.dhis2.data.forms.AutoHidingTabLayout
                 android:id="@+id/tablayout_data_entry"
                 android:layout_width="match_parent"

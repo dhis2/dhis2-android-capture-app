@@ -1,10 +1,14 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteStatement;
 
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
@@ -16,18 +20,26 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+
+import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class DashboardRepositoryImpl implements DashboardRepository {
+
+    private static final String INSERT_NOTE = "INSERT INTO Note ( " +
+            "enrollment, value, storedBy, storedDate" +
+            ") VALUES (?, ?, ?, ?);";
 
     private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
@@ -168,4 +180,32 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
         return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
     }
+
+    @Override
+    public Flowable<List<NoteModel>> getNotes(String programUid) {
+        return null;
+    }
+
+    @Override
+    public Consumer<Pair<String, Boolean>> handleNote() {
+        return stringBooleanPair -> {
+            if (stringBooleanPair.val1()) {
+
+                SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                        .compileStatement(INSERT_NOTE);
+
+                sqLiteBind(insetNoteStatement, 1, ""); //enrollment //TODO: GET EnrollmentUID
+                sqLiteBind(insetNoteStatement, 2, stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 3, ""); //storeBy //TODO: GET USERNAME
+                sqLiteBind(insetNoteStatement, 4, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+                long inserted =
+                        briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+                insetNoteStatement.clearBindings();
+
+            }
+        };
+    }
+
 }

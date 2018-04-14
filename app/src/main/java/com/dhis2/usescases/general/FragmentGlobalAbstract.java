@@ -11,8 +11,12 @@ import com.dhis2.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.hisp.dhis.android.core.enrollment.note.NoteModel;
+
 import java.lang.reflect.Type;
 import java.util.List;
+
+import io.reactivex.functions.Consumer;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -77,4 +81,5 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     public void showToast(String message){
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 }

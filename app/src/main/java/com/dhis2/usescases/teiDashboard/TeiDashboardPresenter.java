@@ -10,13 +10,16 @@ import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
+import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -79,7 +82,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                                         dashboardProgramModel.setProgramIndicatorModels(programIndicatorModels);
                                                         view.setData(dashboardProgramModel);
                                                     },
-                                                    throwable -> Log.d("ERROR", throwable.getMessage())));
+                                                    throwable -> Log.d("ERROR", throwable.getMessage())), OnErrorHandler.create());
+
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
@@ -91,11 +95,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(view::setDataWithOutProgram,
+                    .subscribe(
+                            view::setDataWithOutProgram,
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         }
     }
-    
+
+
     @Override
     public void onBackPressed() {
         view.back();
@@ -151,4 +157,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onDettach() {
         compositeDisposable.clear();
     }
+
+
+    @Override
+    public void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor) {
+        compositeDisposable.add(noteProcessor
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(dashboardRepository.handleNote(), OnErrorHandler.create()));
+        );
+    }
+
+
 }
