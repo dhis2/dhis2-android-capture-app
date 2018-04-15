@@ -18,6 +18,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -37,7 +38,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
@@ -110,7 +110,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     Date[] dates = DateUtils.getInstance().getDateFromPeriod(currentPeriod);
                     presenter.getEvents(dates[0], dates[1]);
                 }
-            });
+            }, OnErrorHandler.create());
         } else {
             DatePickerDialog pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
                 calendar.set(year, monthOfYear, dayOfMonth);
@@ -194,10 +194,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
 
-        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()){
+        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             CatComboAdapter adapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,

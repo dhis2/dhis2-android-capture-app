@@ -81,6 +81,7 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribe(formRepository.storeReportDate(), Timber::e));
 
         compositeDisposable.add(view.incidentDateChanged()
+                .filter(date -> date != null)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeIncidentDate(), Timber::e));

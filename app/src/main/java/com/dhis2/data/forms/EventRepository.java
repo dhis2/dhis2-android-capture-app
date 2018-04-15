@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -81,9 +80,9 @@ public class EventRepository implements FormRepository {
     private final String eventUid;
 
     public EventRepository(@NonNull BriteDatabase briteDatabase,
-                            @NonNull RuleExpressionEvaluator evaluator,
-                            @NonNull RulesRepository rulesRepository,
-                            @Nullable String eventUid) {
+                           @NonNull RuleExpressionEvaluator evaluator,
+                           @NonNull RulesRepository rulesRepository,
+                           @Nullable String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -126,7 +125,9 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Flowable<ProgramModel> incidentDate() {
-        return null;
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid)
+                .mapToOne(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST)
+                .distinctUntilChanged();
     }
 
     @NonNull
@@ -161,7 +162,9 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Consumer<String> storeIncidentDate() {
-        return null;
+        return data -> {
+            //incident date is only for tracker events
+        };
     }
 
     @NonNull
@@ -187,7 +190,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
-        return null;
+        return Observable.just(null);
     }
 
     @NonNull

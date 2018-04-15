@@ -50,6 +50,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notes, container, false);
         noteAdapter = new NotesAdapter();
         presenter.setNoteProcessor(noteAdapter.asFlowable());
+        presenter.subscribeToNotes(this);
         binding.notesRecycler.setAdapter(noteAdapter);
         binding.buttonAdd.setOnClickListener(this::addNote);
         binding.buttonDelete.setOnClickListener(this::clearNote);

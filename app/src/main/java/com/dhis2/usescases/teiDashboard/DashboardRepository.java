@@ -45,7 +45,9 @@ public interface DashboardRepository {
 
     int setFollowUp(String enrollmentUid, boolean followUp);
 
-    Flowable<List<NoteModel>> getNotes(String programUid);
+    Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 
     Consumer<Pair<String, Boolean>> handleNote();
+
+    void setDashboardDetails(String teiUid, String programUid);
 }

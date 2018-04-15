@@ -11,6 +11,7 @@ import android.view.View;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -51,6 +52,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.view = view;
         this.teUid = teiUid;
         this.programUid = programUid;
+
+        dashboardRepository.setDashboardDetails(teiUid, programUid);
 
         getData();
     }
@@ -165,6 +168,17 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(dashboardRepository.handleNote(), OnErrorHandler.create()));
+    }
+
+    @Override
+    public void subscribeToNotes(NotesFragment notesFragment) {
+        compositeDisposable.add(dashboardRepository.getNotes(programUid, teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        notesFragment.swapNotes(),
+                        OnErrorHandler.create()
+                )
         );
     }
 
