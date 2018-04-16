@@ -118,12 +118,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.progress.setVisibility(View.GONE);
             binding.objectCounter.setText(String.format("%s results found", data.size()));
 
-            if (data.size() < 4) //Only shows data for the selected criteria if there are less than 4 results
-                if (getResources().getBoolean(R.bool.is_tablet)) {
-                    searchTEATabletAdapter.setItems(data, presenter.getProgramList());
-                } else {
-                    searchTEAdapter.setItems(data);
-                }
+            if (getResources().getBoolean(R.bool.is_tablet)) {
+                searchTEATabletAdapter.setItems(data, presenter.getProgramList());
+            } else {
+                searchTEAdapter.setItems(data);
+            }
         };
     }
 
