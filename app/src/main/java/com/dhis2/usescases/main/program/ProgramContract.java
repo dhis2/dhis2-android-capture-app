@@ -49,7 +49,7 @@ public class ProgramContract {
     public interface Presenter {
         void init(View view);
 
-        void onItemClick(ProgramModel homeViewModel);
+        void onItemClick(ProgramModel homeViewModel, Period currentPeriod);
 
         void onOrgUnitButtonClick();
 

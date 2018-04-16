@@ -28,10 +28,12 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -52,13 +54,45 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private Period currentPeriod = Period.DAILY;
     ProgramModel programModel;
 
+    private ArrayList<Date> chosenDateWeek = new ArrayList<>();
+    private ArrayList<Date> chosenDateMonth = new ArrayList<>();
+    private ArrayList<Date> chosenDateYear = new ArrayList<>();
+    SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+    SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new ProgramEventDetailModule()).inject(this);
 
         super.onCreate(savedInstanceState);
-        String programId = getIntent().getStringExtra("PROGRAM_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_event_detail);
+
+        String programId = getIntent().getStringExtra("PROGRAM_UID");
+        Drawable drawable = null;
+        switch (getIntent().getIntExtra("CURRENT_PERIOD",0)){
+            case R.string.DAILY:
+                currentPeriod = Period.DAILY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                break;
+            case R.string.WEEKLY:
+                currentPeriod = Period.WEEKLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                break;
+            case R.string.MONTHLY:
+                currentPeriod = Period.MONTHLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                break;
+            case  R.string.YEARLY:
+                currentPeriod = Period.YEARLY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                break;
+            default:
+                currentPeriod = Period.DAILY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                break;
+        }
+        binding.buttonTime.setImageDrawable(drawable);
+
         binding.setPresenter(presenter);
         presenter.init(this, programId);
     }

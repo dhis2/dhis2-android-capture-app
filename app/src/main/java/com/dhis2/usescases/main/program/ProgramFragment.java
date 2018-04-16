@@ -194,7 +194,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
         }
-
+        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
@@ -235,7 +235,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-        binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
+        binding.programRecycler.setAdapter(new ProgramAdapter(presenter,currentPeriod));
         presenter.init(this);
     }
 
