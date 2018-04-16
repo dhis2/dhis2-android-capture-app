@@ -116,7 +116,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
         return data -> {
             binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setText(String.format("%s results found", data.size()));
+            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.size())));
 
             if (getResources().getBoolean(R.bool.is_tablet)) {
                 searchTEATabletAdapter.setItems(data, presenter.getProgramList());

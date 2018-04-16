@@ -58,6 +58,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private static final int PROGRESS_TIME = 2000;
 
+    public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
+    public static final String REFERRAL = "REFERRAL";
+    public static final String ADDNEW = "ADDNEW";
+    public static final String SCHEDULENEW = "SCHEDULENEW";
+    public static final String PROGRAM_UID = "PROGRAM_UID";
+    public static final String NEW_EVENT = "NEW_EVENT";
+    public static final String EVENT_UID = "EVENT_UID";
+    public static final String ORG_UNIT = "ORG_UNIT";
+
     @Inject
     EventInitialContract.Presenter presenter;
 
@@ -77,16 +86,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private int completionPercent;
     private String eventId;
     private String programId;
+    private String eventCreationType;
     private int totalFields;
     private int totalCompletedFields;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        programId = getIntent().getStringExtra("PROGRAM_UID");
-        isNewEvent = getIntent().getBooleanExtra("NEW_EVENT", true);
-        eventId = getIntent().getStringExtra("EVENT_UID");
-
+        programId = getIntent().getStringExtra(PROGRAM_UID);
+        isNewEvent = getIntent().getBooleanExtra(NEW_EVENT, true);
+        eventId = getIntent().getStringExtra(EVENT_UID);
+        eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
+        String orgUnit = getIntent().getStringExtra(ORG_UNIT);
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventId)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_initial);
@@ -94,6 +105,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setIsNewEvent(isNewEvent);
         binding.date.clearFocus();
         presenter.init(this, programId, eventId);
+
+        if (orgUnit != null){
+            selectedOrgUnit = orgUnit;
+            binding.orgUnit.setVisibility(View.GONE);
+        }
+        else{
+            binding.orgUnit.setVisibility(View.VISIBLE);
+        }
+
         binding.date.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -397,6 +417,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         if (programStageModel != null && programStageModel.hideDueDate())
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+        else {
+            // ONLY FUTURE DATES
+            if (eventCreationType.equals(SCHEDULENEW)) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            }
+            // ONLY PAST DATES AND TODAY
+            else if (eventCreationType.equals(ADDNEW)) {
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+            }
+        }
         datePickerDialog.show();
     }
 

@@ -75,9 +75,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         TEIDataFragment.getInstance().setData(programModel);
         IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
+        ScheduleFragment.getInstance().setData(programUid, program);
         RelationshipFragment.getInstance().setData(program);
-        ScheduleFragment.getInstance().setData(program);
-        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         binding.teiPager.setOffscreenPageLimit(6);
     }
 

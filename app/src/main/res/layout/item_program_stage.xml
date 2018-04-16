@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.Presenter" />
+
+        <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:srcCompat="@drawable/photo_temp"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:gravity="center_horizontal"
+            android:textColor="?colorPrimary"
+            android:layout_marginTop="20dp"
+            tools:text="aaaaaaaaaaaaaaa"
+            android:text='@{programStage.displayName()}'/>
+
+        <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/fake_program_stage_description"/>
+    </LinearLayout>
+</layout>

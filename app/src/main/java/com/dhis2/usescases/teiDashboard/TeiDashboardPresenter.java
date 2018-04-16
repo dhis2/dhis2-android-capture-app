@@ -58,7 +58,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         getData();
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
     public void getData() {
         if (programUid != null)
