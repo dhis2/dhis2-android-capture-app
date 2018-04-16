@@ -14,7 +14,6 @@ import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
-import com.dhis2.usescases.appInfo.AppInfoFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;

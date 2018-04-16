@@ -1,7 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.content.Context;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -11,9 +9,7 @@ import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-import com.dhis2.usescases.teiDashboard.tablet.TeiDashboardTabletActivity;
 
-import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
@@ -33,10 +29,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
-    private final UserRepository userRepository;
     private SearchTEContractsModule.View view;
 
-    private LocationManager locationManager;
     private ProgramModel selectedProgram;
 
     private CompositeDisposable compositeDisposable;
@@ -48,7 +42,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
         Bindings.setMetadataRepository(metadataRepository);
-        this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         compositeDisposable = new CompositeDisposable();
@@ -59,9 +52,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region LIFECYCLE
 
     @Override
-    public void init(SearchTEContractsModule.View view, String trackedEntityType) {
+    public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
         this.view = view;
-        locationManager = (LocationManager) view.getAbstracContext().getSystemService(Context.LOCATION_SERVICE);
 
         compositeDisposable.add(
                 metadataRepository.getTrackedEntity(trackedEntityType)
@@ -70,35 +62,32 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .flatMap(trackedEntity ->
                         {
                             this.trackedEntity = trackedEntity;
-//                            getTrakedEntities(); Should not look for all trackedEntities
                             return searchRepository.programsWithRegistration(trackedEntityType);
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(programModels -> {
                             this.programModels = programModels;
+                            for (ProgramModel programModel : programModels)
+                                if (programModel.uid().equals(initialProgram))
+                                    this.selectedProgram = programModel;
                             view.setPrograms(programModels);
-                            return searchRepository.programAttributes();
+
+                            if (selectedProgram != null)
+                                return searchRepository.programAttributes(selectedProgram.uid());
+                            else
+                                return searchRepository.programAttributes();
+
                         })
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.setForm(data, selectedProgram),
+                                data -> {
+                                    view.setForm(data, selectedProgram);
+                                    getTrakedEntities();
+                                },
                                 Timber::d)
         );
-
-      /*  compositeDisposable.add(view.rowActions()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                            if (!data.value.isEmpty())
-                                queryData.put(data.uid, data.value);
-                            else
-                                queryData.remove(data.uid);
-                            getTrakedEntities();
-                        },
-                        Timber::d)
-        );*/
 
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -125,15 +114,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
 
     private void getTrakedEntities() {
-        if (!queryData.isEmpty())
-            compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
-                    selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
-//                    .subscribeOn(AndroidSchedulers.mainThread())
-//                    .doOnSubscribe(data->view.getProgress().setVisibility(View.VISIBLE))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(view.swapListData(), Timber::d)
-            );
+        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
+                selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view.swapListData(), Timber::d)
+        );
     }
 
     private void getTrackedEntityAttributes() {
@@ -172,12 +158,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     //endregion
-
-
-    @Override
-    public void query(String filter, boolean isAttribute) {
-
-    }
 
     @Override
     public void setProgram(ProgramModel programSelected) {

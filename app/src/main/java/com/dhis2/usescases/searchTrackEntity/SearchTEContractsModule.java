@@ -1,6 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.app.DatePickerDialog;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.dataentry.fields.RowAction;
@@ -25,8 +24,6 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program);
 
-        void showDateDialog(DatePickerDialog.OnDateSetListener listener);
-
         Consumer<List<TrackedEntityInstanceModel>> swapListData();
 
         void setPrograms(List<ProgramModel> programModels);
@@ -40,11 +37,9 @@ public class SearchTEContractsModule {
 
     public interface Presenter {
 
-        void init(SearchTEContractsModule.View view, String trackedEntityType);
+        void init(View view, String trackedEntityType, String initialProgram);
 
         void onDestroy();
-
-        void query(String format, boolean isAttribute);
 
         void setProgram(ProgramModel programSelected);
 

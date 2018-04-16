@@ -66,8 +66,9 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final String SEARCH =
             "SELECT TrackedEntityInstance.*" +
                     " FROM ((" + TrackedEntityInstanceModel.TABLE + " JOIN " + EnrollmentModel.TABLE + " ON " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + ")" +
-                    " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid)" +
+                    "%s)" +
                     " WHERE ";
+    private final String SEARCH_ATTR = " JOIN (ATTR_QUERY) tabla ON tabla.trackedEntityInstance = TrackedEntityInstance.uid";
 
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
@@ -117,19 +118,12 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                @Nullable HashMap<String, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
-        String TEI_FINAL_QUERY = GET_TRACKED_ENTITY_INSTANCES + teiTypeWHERE;
-        if (programUid != null && !programUid.isEmpty()) {
-            String programWHERE = "Enrollment.program = '" + programUid + "'";
-            TEI_FINAL_QUERY += " AND " + programWHERE;
-        }
 
         if (enrollmentDate != null && !enrollmentDate.isEmpty()) {
             String enrollmentDateWHERE = "Enrollment.enrollmentDate = '" + enrollmentDate + "'";
-            TEI_FINAL_QUERY += " AND " + enrollmentDateWHERE;
         }
         if (incidentDate != null && !incidentDate.isEmpty()) {
             String incidentDateWHERE = "Enrollment.incidentData = '" + incidentDate + "'";
-            TEI_FINAL_QUERY += " AND " + incidentDateWHERE;
         }
 
         if (queryData != null && !queryData.isEmpty()) {
@@ -143,22 +137,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             }
             teiAttributeWHERE.append(")");
 
-//            TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
         }
 
-        String valueFilter = "(" + TrackedEntityAttributeValueModel.TABLE + ".trackedEntityAttribute = 'ATTR_ID' AND " + TrackedEntityAttributeValueModel.TABLE + ".value LIKE '%ATTR_VALUE%')";
-        if (queryData != null && !queryData.isEmpty()) {
-            StringBuilder teiAttributeWHERE = new StringBuilder("");
-            for (int i = 0; i < queryData.keySet().size(); i++) {
-                String dataId = queryData.keySet().toArray()[i].toString();
-                String dataValue = queryData.get(dataId);
-                teiAttributeWHERE.append(valueFilter.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
-                if (i < queryData.size() - 1)
-                    teiAttributeWHERE.append(" AND ");
-            }
-
-            TEI_FINAL_QUERY += " AND " + teiAttributeWHERE;
-        }
 
         String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
                 "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
@@ -176,15 +156,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = SEARCH.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
+        String search = String.format(SEARCH,queryData.isEmpty()?"":SEARCH_ATTR);
+        search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
         if (programUid != null && !programUid.isEmpty()) {
             String programWHERE = "Enrollment.program = '" + programUid + "'";
             search += " AND " + programWHERE;
         }
         search += " GROUP BY TrackedEntityInstance.uid";
-
-        TEI_FINAL_QUERY += /*" AND " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.ENROLLMENT_STATUS + " = '" + EnrollmentStatus.ACTIVE.name() + "'" +*/
-                " GROUP BY " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID;
 
         return briteDatabase.createQuery(TEI_TABLE_SET, search)
                 .mapToList(TrackedEntityInstanceModel::create);

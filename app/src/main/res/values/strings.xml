@@ -175,4 +175,6 @@
     <string name="hint_year">Years</string>
     <string name="week">Weeks</string>
     <string name="incident_date">Incident date</string>
+    <string name="local_results">Local results</string>
+    <string name="online_results">Online results</string>
 </resources>

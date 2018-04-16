@@ -8,41 +8,51 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
+import com.dhis2.databinding.ItemSearchTrackedEntityOnlineBinding;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
  * Created by frodriguez on 11/7/2017.
- *
  */
 
-public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
+public class SearchTEAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final MetadataRepository metadataRepository;
+    private final boolean isOnline;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityInstanceModel> trackedEntityInstances;
 
-    SearchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
+    SearchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository, boolean online) {
         this.presenter = presenter;
         this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();
+        this.isOnline = online;
     }
 
     @Override
-    public SearchTEViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemSearchTrackedEntityBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_search_tracked_entity, parent, false);
-        return new SearchTEViewHolder(binding);
+        if (!isOnline) {
+            ItemSearchTrackedEntityBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_search_tracked_entity, parent, false);
+            return new SearchTEViewHolder(binding);
+        } else {
+            ItemSearchTrackedEntityOnlineBinding bindingOnline = DataBindingUtil.inflate(inflater, R.layout.item_search_tracked_entity_online, parent, false);
+            return new SearchTEViewHolderOnline(bindingOnline);
+        }
+
     }
 
     @Override
-    public void onBindViewHolder(SearchTEViewHolder holder, int position) {
-        holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof SearchTEViewHolder)
+            ((SearchTEViewHolder) holder).bind(presenter, trackedEntityInstances.get(position), metadataRepository);
+        else
+            ((SearchTEViewHolderOnline) holder).bind(presenter, trackedEntityInstances.get(position), metadataRepository);
+
     }
 
     @Override
