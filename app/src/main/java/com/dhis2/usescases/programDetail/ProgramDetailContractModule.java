@@ -1,11 +1,13 @@
 package com.dhis2.usescases.programDetail;
 
+import com.dhis2.domain.responses.TrackedEntityInstance;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
 public class ProgramDetailContractModule {
 
     public interface View extends AbstractActivityContracts.View {
-        void swapData(TrackedEntityObject trackedEntityObject);
+        void swapData(List<TrackedEntityInstanceModel> trackedEntityInstances);
 
         void addTree(TreeNode treeNode);
 

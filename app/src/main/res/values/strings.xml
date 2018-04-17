@@ -32,7 +32,7 @@
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
     <string name="schedule_new">Schedule new</string>
-    <string name="lorem">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
+    <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
 
     <!-- Login -->
     <string name="url_hint">Server url</string>
@@ -107,7 +107,7 @@
     <string name="failed_insert_event">Failed to insert new Event</string>
     <string name="event_created">Event created</string>
     <string name="event_updated">Event updated</string>
-    <string name="fake_program_stage_description">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
+    <string name="fake_program_stage_description" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
 
     <!--Event Detail-->
     <string name="event_date">Event date</string>
@@ -118,7 +118,6 @@
     <!--TEI Program list-->
     <string name="programs_list">Programs list</string>
     <string name="active_programs">Active programs</string>
-    <string name="past_programs">Past programs</string>
     <string name="enroll">Enroll</string>
     <string name="last_visit">Last Visit:</string>
     <string name="apply">apply</string>
@@ -177,4 +176,5 @@
     <string name="incident_date">Incident date</string>
     <string name="local_results">Local results</string>
     <string name="online_results">Online results</string>
+    <string name="past_programs">Past programs</string>
 </resources>

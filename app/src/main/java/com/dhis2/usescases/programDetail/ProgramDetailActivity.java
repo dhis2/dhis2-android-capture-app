@@ -21,6 +21,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +58,7 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_detail);
         binding.setPresenter(presenter);
         presenter.init(this, programId);
+        adapter.setProgram(programId);
     }
 
     @Override
@@ -66,13 +68,13 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     }
 
     @Override
-    public void swapData(TrackedEntityObject response) {
+    public void swapData(List<TrackedEntityInstanceModel> response) {
         if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(programModel);
+//            adapter.setProgram(programModel);
             binding.recycler.setAdapter(adapter);
         }
 
-        adapter.addItems(response.getMyTrackedEntityInstances());
+        adapter.addItems(response);
     }
 
     @Override
@@ -85,16 +87,16 @@ public class ProgramDetailActivity extends ActivityGlobalAbstract implements Pro
     @Override
     public void setAttributeOrder(List<ProgramTrackedEntityAttributeModel> programAttributes) {
         if (binding.recycler.getAdapter() == null) {
-            adapter.setProgram(programModel);
+//            adapter.setProgram(programModel);
             binding.recycler.setAdapter(adapter);
         }
 
-        adapter.setAttributesToShow(programAttributes);
+//        adapter.setAttributesToShow(programAttributes);
     }
 
     @Override
     public void setOrgUnitNames(List<OrganisationUnitModel> orgsUnits) {
-        adapter.setOrgUnits(orgsUnits);
+//        adapter.setOrgUnits(orgsUnits);
     }
 
     @Override

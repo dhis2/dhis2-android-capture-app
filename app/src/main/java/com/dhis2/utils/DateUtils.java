@@ -199,7 +199,7 @@ public class DateUtils {
     /**********************
      FORMAT REGION*/
     public String formatDate(Date dateToFormat) {
-        return dateFormat.format(dateToFormat);
+        return uiDateFormat().format(dateToFormat);
     }
 
     public Calendar getCalendar() {
