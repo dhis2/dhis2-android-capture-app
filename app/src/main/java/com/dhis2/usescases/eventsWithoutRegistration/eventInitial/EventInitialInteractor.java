@@ -94,6 +94,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                                         return eventInitialRepository.catCombo(programModel.categoryCombo());
                                     }
                             )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
                                     Timber::d
@@ -115,6 +117,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                                         return eventInitialRepository.catCombo(programModel.categoryCombo());
                                     }
                             )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
                                     Timber::d

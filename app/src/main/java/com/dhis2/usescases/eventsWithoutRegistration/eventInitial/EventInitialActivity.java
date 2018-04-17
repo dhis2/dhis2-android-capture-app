@@ -434,46 +434,48 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
 
-        selectedCatCombo = catCombo;
+        runOnUiThread(() -> {
+            selectedCatCombo = catCombo;
 
-        if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
-            binding.catCombo.setVisibility(View.GONE);
-            binding.catComboLine.setVisibility(View.GONE);
-            if (catComboList != null && !catComboList.isEmpty()) {
-                selectedCatOptionCombo = catComboList.get(0);
-            }
-        } else {
-            binding.catCombo.setVisibility(View.VISIBLE);
-            binding.catComboLine.setVisibility(View.VISIBLE);
-        }
-
-        categoryOptionComboModels = catComboList;
-
-        CatComboAdapter2 adapter = new CatComboAdapter2(this,
-                R.layout.spinner_layout,
-                R.id.spinner_text,
-                catComboList,
-                getString(R.string.category_option));
-
-        binding.catCombo.setAdapter(adapter);
-        binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (catComboList.size() > position - 1 && position > 0)
-                    selectedCatOptionCombo = catComboList.get(position - 1);
-                else
-                    selectedCatOptionCombo = null;
-                checkActionButtonVisibility();
+            if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
+                binding.catCombo.setVisibility(View.GONE);
+                binding.catComboLine.setVisibility(View.GONE);
+                if (catComboList != null && !catComboList.isEmpty()) {
+                    selectedCatOptionCombo = catComboList.get(0);
+                }
+            } else {
+                binding.catCombo.setVisibility(View.VISIBLE);
+                binding.catComboLine.setVisibility(View.VISIBLE);
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            categoryOptionComboModels = catComboList;
 
-            }
+            CatComboAdapter2 adapter = new CatComboAdapter2(EventInitialActivity.this,
+                    R.layout.spinner_layout,
+                    R.id.spinner_text,
+                    catComboList,
+                    getString(R.string.category_option));
+
+            binding.catCombo.setAdapter(adapter);
+            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (catComboList.size() > position - 1 && position > 0)
+                        selectedCatOptionCombo = catComboList.get(position - 1);
+                    else
+                        selectedCatOptionCombo = null;
+                    checkActionButtonVisibility();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            presenter.getCatOption(eventModel.attributeOptionCombo());
+            checkActionButtonVisibility();
         });
-
-        presenter.getCatOption(eventModel.attributeOptionCombo());
-        checkActionButtonVisibility();
     }
 
     @Override
