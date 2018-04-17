@@ -11,7 +11,9 @@ import android.view.View;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -77,15 +79,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             (dashboardProgramModel) ->
-                                    dashboardRepository.getIndicators(programUid)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(
-                                                    (programIndicatorModels) -> {
-                                                        dashboardProgramModel.setProgramIndicatorModels(programIndicatorModels);
-                                                        view.setData(dashboardProgramModel);
-                                                    },
-                                                    throwable -> Log.d("ERROR", throwable.getMessage())), OnErrorHandler.create());
+                                    view.setData(dashboardProgramModel),
+                            throwable -> Log.d("ERROR", throwable.getMessage())
+                    );
 
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
@@ -104,11 +100,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         }
     }
 
-
-    @Override
-    public void onBackPressed() {
-        view.back();
-    }
 
     @Override
     public void onEnrollmentSelectorClick() {
@@ -161,6 +152,31 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.clear();
     }
 
+    @Override
+    public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
+        compositeDisposable.add(dashboardRepository.getIndicators(programUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        indicatorsFragment.swapIndicators(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
+
+    @Override
+    public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
+        compositeDisposable.add(dashboardRepository.getScheduleEvents(programUid, teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        scheduleFragment.swapEvents(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
 
     @Override
     public void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor) {
@@ -180,6 +196,22 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         OnErrorHandler.create()
                 )
         );
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        view.back();
+    }
+
+    @Override
+    public String getTeUid() {
+        return teUid;
+    }
+
+    @Override
+    public String getProgramUid() {
+        return programUid;
     }
 
 

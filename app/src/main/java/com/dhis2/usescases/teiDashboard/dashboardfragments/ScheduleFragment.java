@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
@@ -17,8 +18,15 @@ import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+
+import org.hisp.dhis.android.core.event.EventModel;
+
+import java.util.List;
+
+import io.reactivex.functions.Consumer;
 
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
@@ -37,8 +45,9 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     FragmentScheduleBinding binding;
 
     static ScheduleFragment instance;
-    private static DashboardProgramModel program;
+    private ScheduleAdapter adapter;
     private static String programUid;
+    TeiDashboardContracts.Presenter presenter;
 
     public static ScheduleFragment getInstance() {
         if (instance == null)
@@ -46,24 +55,31 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         return instance;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
-        if (program!= null)
-            binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), program.getEvents()));
+        adapter = new ScheduleAdapter();
+        binding.scheduleRecycler.setAdapter(new ScheduleAdapter());
         binding.scheduleFilter.setOnClickListener(this);
+
         binding.fab.setOptionsClick(integer -> {
             if (integer == null)
                 return;
 
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, programUid);
-            bundle.putString(TRACKED_ENTITY_INSTANCE, program.getTei().uid());
-            bundle.putString("ORG_UNIT", program.getOrgUnit().uid());
+            bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
+            bundle.putString("ORG_UNIT", presenter.getProgramUid());
             bundle.putBoolean(NEW_EVENT, true);
 
-            switch (integer){
+            switch (integer) {
                 case R.id.referral:
                     bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
                     break;
@@ -77,15 +93,18 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
 
             startActivity(EventInitialActivity.class, bundle, false, false, null);
         });
+
+        presenter.subscribeToScheduleEvents(this);
+
         return binding.getRoot();
     }
 
-    public void setData(String mProgramUid, DashboardProgramModel mprogram) {
+   /* public void setData(String mProgramUid, DashboardProgramModel mprogram) {
         programUid = mProgramUid;
         program = mprogram;
-        binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), program.getEvents()));
+        binding.scheduleRecycler.setAdapter(new ScheduleAdapter());
         binding.scheduleFilter.setOnClickListener(this);
-    }
+    }*/
 
     @Override
     public void onClick(View view) {
@@ -107,5 +126,11 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         }
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         binding.scheduleFilter.setImageDrawable(drawable);
+    }
+
+    public Consumer<List<EventModel>> swapEvents() {
+        return noteModels -> {
+            adapter.setScheduleEvents(noteModels);
+        };
     }
 }

@@ -3,7 +3,9 @@ package com.dhis2.usescases.teiDashboard;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -47,8 +49,23 @@ public class TeiDashboardContracts {
 
         void getData();
 
+        //Data Fragment
+
+        //RelationshipFragment
+
+        //IndicatorsFragment
+        void subscribeToIndicators(IndicatorsFragment indicatorsFragment);
+
+        //ScheduleFragment
+        void subscribeToScheduleEvents(ScheduleFragment scheduleFragment);
+
+        //NoteFragment
         void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);
 
         void subscribeToNotes(NotesFragment notesFragment);
+
+        String getTeUid();
+
+        String getProgramUid();
     }
 }

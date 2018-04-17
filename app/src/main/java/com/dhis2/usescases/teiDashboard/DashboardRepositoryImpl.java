@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -128,6 +129,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "Enrollment.uid FROM Enrollment JOIN Program ON Program.uid = Enrollment.program\n" +
             "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
 
+    private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
+            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (?,?)";
+
     public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
@@ -137,6 +141,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public void setDashboardDetails(String teiUid, String programUid) {
         this.teiUid = teiUid;
         this.programUid = programUid;
+    }
+
+    @Override
+    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS, programUid, teUid, EventStatus.SCHEDULE.name(), EventStatus.SKIPPED.name())
+                .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -193,9 +203,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<List<ProgramIndicatorModel>> getIndicators(String programUid) {
+    public Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid) {
         return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_INDICATORS_QUERY + "'" + programUid + "'")
-                .mapToList(ProgramIndicatorModel::create);
+                .mapToList(ProgramIndicatorModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override

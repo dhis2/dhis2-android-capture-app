@@ -41,7 +41,7 @@ public interface DashboardRepository {
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
 
-    Observable<List<ProgramIndicatorModel>> getIndicators(String programUid);
+    Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     int setFollowUp(String enrollmentUid, boolean followUp);
 
@@ -50,4 +50,7 @@ public interface DashboardRepository {
     Consumer<Pair<String, Boolean>> handleNote();
 
     void setDashboardDetails(String teiUid, String programUid);
+
+    Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid);
+
 }

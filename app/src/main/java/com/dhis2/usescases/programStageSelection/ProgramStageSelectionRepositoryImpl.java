@@ -16,8 +16,9 @@ import io.reactivex.Observable;
 
 public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectionRepository {
 
-    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
-            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
+    private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? ORDER BY %s.%s ASC",
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
+            ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
     private final BriteDatabase briteDatabase;
 
@@ -28,7 +29,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @NonNull
     @Override
     public Observable<List<ProgramStageModel>> getProgramStages(String programUid) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY + "'" + programUid + "'")
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programUid)
                 .mapToList(ProgramStageModel::create);
     }
 }
