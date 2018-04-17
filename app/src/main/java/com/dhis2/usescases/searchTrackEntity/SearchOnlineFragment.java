@@ -51,7 +51,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
             binding.scrollView.setVisibility(View.GONE);
 
         } else {
-            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository,true);
+            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository, true);
             binding.scrollView.setAdapter(searchTEAdapter);
             binding.tableView.setVisibility(View.GONE);
         }

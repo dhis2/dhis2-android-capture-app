@@ -3,7 +3,6 @@ package com.dhis2.data.service;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.dhis2.data.dagger.PerService;
 

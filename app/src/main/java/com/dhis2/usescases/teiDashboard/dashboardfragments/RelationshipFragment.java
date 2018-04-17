@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,11 +24,15 @@ import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by ppajuelo on 29/11/2017.
  */
 
 public class RelationshipFragment extends FragmentGlobalAbstract {
+
+    public static final int REQ_ADD_RELATIONSHIP = 1001;
 
     FragmentRelationshipsBinding binding;
     TeiDashboardContracts.Presenter presenter;
@@ -79,5 +84,17 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         return relationshipModels -> {
             relationshipAdapter.addItems(relationshipModels);
         };
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQ_ADD_RELATIONSHIP){
+            if(resultCode == RESULT_OK){
+                if(data != null){
+                    // get TEI Id and add relationship on DB and refresh list
+                }
+            }
+        }
     }
 }

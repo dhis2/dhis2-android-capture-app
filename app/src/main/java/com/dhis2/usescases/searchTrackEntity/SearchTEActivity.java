@@ -1,8 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,10 +15,8 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.utils.NetworkUtils;
 import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
-import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
-import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
+import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;

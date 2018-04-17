@@ -2,15 +2,12 @@ package com.dhis2.data.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.usescases.main.MainActivity;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 
@@ -63,7 +60,8 @@ public class SyncDataService extends JobService implements SyncView {
     }
 
     @Override
-    public boolean onStopJob(JobParameters job) {;
+    public boolean onStopJob(JobParameters job) {
+        ;
         return true;
     }
 
@@ -109,7 +107,7 @@ public class SyncDataService extends JobService implements SyncView {
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                if(job.isRecurring())
+                if (job.isRecurring())
                     jobFinished(job, true);
                 else
                     jobFinished(job, false);

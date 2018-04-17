@@ -11,12 +11,14 @@ import android.view.View;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
@@ -154,6 +156,30 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public void addRelationship() {
+        Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("RELATIONSHIP", true);
+        extras.putString("TRACKED_ENTITY_UID", teUid);
+        extras.putString("PROGRAM_UID", programUid);
+        intent.putExtras(extras);
+        view.getAbstractActivity().startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
+    }
+
+    @Override
+    public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getRelationships(programUid, teUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                relationshipFragment.setRelationships(),
+                                OnErrorHandler.create()
+                        )
+        );
+    }
+
+    @Override
     public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
                 .subscribeOn(Schedulers.io())
@@ -200,6 +226,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
 
+
     @Override
     public void onBackPressed() {
         view.back();
@@ -210,29 +237,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return teUid;
     }
 
+
+
     @Override
     public String getProgramUid() {
         return programUid;
-    }
-
-
-
-    @Override
-    public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
-        compositeDisposable.add(
-                dashboardRepository.getRelationships(programUid, teUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        relationshipFragment.setRelationships(),
-                        OnErrorHandler.create()
-                )
-        );
-    }
-
-    @Override
-    public void addRelationship() {
-        Bundle extras = new Bundle();
-        extras.putString("TEI_UID", teUid);
     }
 }

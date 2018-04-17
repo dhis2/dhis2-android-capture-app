@@ -3,7 +3,6 @@ package com.dhis2.data.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -73,7 +72,7 @@ public class SyncMetadataService extends JobService implements SyncView {
             String channelName = "Sync";
 
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 int importance = NotificationManagerCompat.IMPORTANCE_DEFAULT;
                 NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
                 notificationManager.createNotificationChannel(channel);
@@ -90,7 +89,7 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();
             } else if (result.isSuccess()) {
                 syncPresenter.onDetach();
-                if(job.isRecurring())
+                if (job.isRecurring())
                     jobFinished(job, true);
                 else
                     jobFinished(job, false);
@@ -102,7 +101,7 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();
             } else if (!result.isSuccess()) {
                 syncPresenter.onDetach();
-                if(job.isRecurring())
+                if (job.isRecurring())
                     jobFinished(job, true);
                 else
                     jobFinished(job, false);

@@ -52,7 +52,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract {
             binding.scrollView.setVisibility(View.GONE);
 
         } else {
-            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository,false);
+            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository, false);
             binding.scrollView.setAdapter(searchTEAdapter);
             binding.tableView.setVisibility(View.GONE);
         }

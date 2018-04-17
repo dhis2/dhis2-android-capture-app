@@ -107,7 +107,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onDestroy() {
-        compositeDisposable.clear();
+        compositeDisposable.dispose();
     }
     //endregion
 

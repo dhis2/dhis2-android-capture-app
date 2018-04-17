@@ -42,7 +42,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     private SearchTEContractsModule.Presenter presenter;
     private TrackedEntityInstanceModel tei;
 
-    SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
+    public SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
         compositeDisposable = new CompositeDisposable();

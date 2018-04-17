@@ -9,9 +9,7 @@ import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.ItemSearchTrackedEntityOnlineBinding;
-import com.dhis2.domain.responses.TrackedEntityInstance;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.dhis2.usescases.searchTrackEntity.SearchTEViewHolderOnline;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -61,17 +59,17 @@ public class SearchTEAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return 0;
+        return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
     }
 
-    public void setItems(List<TrackedEntityInstanceModel> items){
+    public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances) {
         this.trackedEntityInstances.clear();
-        this.trackedEntityInstances.addAll(items);
+        this.trackedEntityInstances.addAll(trackedEntityInstances);
         notifyDataSetChanged();
     }
 
     public void clear() {
-        trackedEntityInstances.clear();
+        this.trackedEntityInstances.clear();
         notifyDataSetChanged();
     }
 }
