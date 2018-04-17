@@ -19,6 +19,9 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.NetworkUtils;
+import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;

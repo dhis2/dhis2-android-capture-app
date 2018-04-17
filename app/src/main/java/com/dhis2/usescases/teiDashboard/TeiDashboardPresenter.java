@@ -14,6 +14,7 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
@@ -215,4 +216,23 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
 
+
+    @Override
+    public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getRelationships(programUid, teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        relationshipFragment.setRelationships(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
+    @Override
+    public void addRelationship() {
+        Bundle extras = new Bundle();
+        extras.putString("TEI_UID", teUid);
+    }
 }

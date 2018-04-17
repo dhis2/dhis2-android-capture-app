@@ -16,7 +16,7 @@ public class SearchTEViewHolderOnline extends RecyclerView.ViewHolder {
     private ItemSearchTrackedEntityOnlineBinding binding;
 
 
-    SearchTEViewHolderOnline(ItemSearchTrackedEntityOnlineBinding binding) {
+    public SearchTEViewHolderOnline(ItemSearchTrackedEntityOnlineBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }

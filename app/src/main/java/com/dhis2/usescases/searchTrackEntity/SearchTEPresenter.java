@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -218,5 +219,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 
-
+    @Override
+    public void addRelationship(String TEIuid) {
+        view.showToast("relationship added");
+       /* Intent intent = new Intent();
+        intent.putExtra("TEI_A_UID", TEIuid);
+        view.getAbstractActivity().setResult(Activity.RESULT_OK, intent);
+        view.getAbstractActivity().finish();*/
+    }
 }

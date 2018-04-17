@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="followUp"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="orgUnit"
+            type="java.lang.String" />
+
+        <variable
+            name="attribute"
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
+
+        <variable
+            name="programString"
+            type="java.lang.String" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/tracked_entity_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/photo_temp"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/follow_up"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                app:srcCompat="@drawable/ic_warning_white"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/ic_circle_red"
+                android:padding="8dp"
+                tools:ignore="ContentDescription"
+                android:layout_alignBottom="@id/tracked_entity_image"
+                android:layout_alignEnd="@id/tracked_entity_image"
+                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'/>
+
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:orientation="vertical"
+                android:layout_toEndOf="@id/tracked_entity_image">
+
+                <TextView
+                    android:id="@+id/entity_attribute_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
+
+                <TextView
+                    android:id="@+id/entity_attribute_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
+
+                <TextView
+                    android:id="@+id/entity_attribute_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

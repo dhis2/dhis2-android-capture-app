@@ -8,6 +8,10 @@
         <import type="java.lang.String" />
 
         <variable
+            name="presenter"
+            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+
+        <variable
             name="relationshipType"
             type="java.lang.String" />
     </data>
@@ -35,6 +39,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/relationship_recycler"
                 app:srcCompat="@drawable/ic_add_circle"
+                android:onClick="@{ () -> presenter.addRelationship() }"
                 tools:ignore="ContentDescription" />
 
             <TextView

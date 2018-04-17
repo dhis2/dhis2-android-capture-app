@@ -1,4 +1,4 @@
-package com.dhis2.usescases.searchTrackEntity;
+package com.dhis2.usescases.searchTrackEntity.adapters;
 
 
 import android.annotation.SuppressLint;
@@ -13,6 +13,7 @@ import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemTableCellAttrBinding;
 import com.dhis2.databinding.ItemTableCellProgramBinding;
+import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.usescases.searchTrackEntity.tableHolder.CellHolder;
 import com.dhis2.usescases.searchTrackEntity.tableHolder.HeaderHolder;
 import com.dhis2.usescases.searchTrackEntity.tableHolder.RowHolder;
@@ -40,7 +41,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     private List<ProgramModel> programs;
     private SearchTEContractsModule.Presenter presenter;
 
-    TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
+    public TabletSearchAdapter(Context p_jContext, SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
         super(p_jContext);
 
         this.metadata = metadataRepository;

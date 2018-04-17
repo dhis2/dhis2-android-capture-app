@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentSearchBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
