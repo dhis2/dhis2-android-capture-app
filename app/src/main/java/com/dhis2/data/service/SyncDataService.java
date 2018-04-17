@@ -1,6 +1,7 @@
 package com.dhis2.data.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -26,7 +27,7 @@ public class SyncDataService extends JobService implements SyncView {
     SyncPresenter syncPresenter;
 
     @Inject
-    NotificationManagerCompat notificationManager;
+    NotificationManager notificationManager;
 
     // @NonNull
     SyncResult syncResult;

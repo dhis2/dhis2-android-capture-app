@@ -1,5 +1,6 @@
 package com.dhis2.data.service;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -17,8 +18,8 @@ public class DataServiceModule {
 
     @Provides
     @PerService
-    NotificationManagerCompat notificationManager(@NonNull Context context) {
-        return NotificationManagerCompat.from(context);
+    NotificationManager notificationManager(@NonNull Context context) {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Provides
