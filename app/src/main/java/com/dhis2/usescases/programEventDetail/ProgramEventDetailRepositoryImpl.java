@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,13 @@ import io.reactivex.Observable;
  */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
+
+    private final String EVENT_DATA_VALUES = "SELECT TrackedEntityDataValue.* FROM TrackedEntityDataValue WHERE TrackedEntityDataValue.event = ?\n" +
+            "AND TrackedEntityDataValue.dataElement IN\n" +
+            "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
+            "WHERE ProgramStageDataElement.displayInReports = 1\n" +
+            "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
+            ")";
 
     private final BriteDatabase briteDatabase;
 
@@ -101,5 +109,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + categoryComboUid + "'";
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
                 .mapToList(CategoryOptionComboModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel) {
+        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, EVENT_DATA_VALUES, eventModel.uid())
+                .mapToList(TrackedEntityDataValueModel::create);
     }
 }

@@ -1,11 +1,19 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -16,18 +24,33 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+
+import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class DashboardRepositoryImpl implements DashboardRepository {
+
+    private static final String INSERT_NOTE = "INSERT INTO Note ( " +
+            "enrollment, value, storedBy, storedDate" +
+            ") VALUES (?, ?, ?, ?);";
+    private static final String SELECT_NOTES = "SELECT " +
+            "Note.* FROM Note\n" +
+            "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
+            "WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.program = ?\n" +
+            "ORDER BY Note.storedDate DESC";
 
     private final String PROGRAM_QUERY = String.format("SELECT %s.* FROM %s WHERE %s.%s = ",
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
@@ -97,9 +120,33 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
 
     private final BriteDatabase briteDatabase;
+    private String teiUid;
+    private String programUid;
+
+    private static final String SELECT_USERNAME = "SELECT " +
+            "UserCredentials.displayName FROM UserCredentials";
+    private static final String SELECT_ENROLLMENT = "SELECT " +
+            "Enrollment.uid FROM Enrollment JOIN Program ON Program.uid = Enrollment.program\n" +
+            "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
+
+    private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
+            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (?,?)";
 
     public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
+    }
+
+
+    @Override
+    public void setDashboardDetails(String teiUid, String programUid) {
+        this.teiUid = teiUid;
+        this.programUid = programUid;
+    }
+
+    @Override
+    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS, programUid, teUid, EventStatus.SCHEDULE.name(), EventStatus.SKIPPED.name())
+                .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -156,9 +203,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<List<ProgramIndicatorModel>> getIndicators(String programUid) {
+    public Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid) {
         return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_INDICATORS_QUERY + "'" + programUid + "'")
-                .mapToList(ProgramIndicatorModel::create);
+                .mapToList(ProgramIndicatorModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -168,4 +215,64 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
         return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
     }
+
+    @Override
+    public Flowable<List<NoteModel>> getNotes(String programUid, String teUid) {
+        return briteDatabase.createQuery(NoteModel.TABLE, SELECT_NOTES, teUid, programUid)
+                .mapToList(cursor -> {
+
+                    DbDateColumnAdapter dbDateColumnAdapter = new DbDateColumnAdapter();
+                    int idColumnIndex = cursor.getColumnIndex("_id");
+                    Long id = idColumnIndex != -1 && !cursor.isNull(idColumnIndex) ? Long.valueOf(cursor.getLong(idColumnIndex)) : null;
+                    int enrollmentColumnIndex = cursor.getColumnIndex("enrollment");
+                    String enrollment = enrollmentColumnIndex != -1 && !cursor.isNull(enrollmentColumnIndex) ? cursor.getString(enrollmentColumnIndex) : null;
+                    int valueColumnIndex = cursor.getColumnIndex("value");
+                    String value = valueColumnIndex != -1 && !cursor.isNull(valueColumnIndex) ? cursor.getString(valueColumnIndex) : null;
+                    int storedByColumnIndex = cursor.getColumnIndex("storedBy");
+                    String storedBy = storedByColumnIndex != -1 && !cursor.isNull(storedByColumnIndex) ? cursor.getString(storedByColumnIndex) : null;
+                    Date storedDate = dbDateColumnAdapter.fromCursor(cursor, "storedDate");
+
+                    return NoteModel.builder()
+                            .id(id)
+                            .enrollment(enrollment)
+                            .value(value)
+                            .storedBy(storedBy)
+                            .storedDate(storedDate)
+                            .build();
+
+                }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Consumer<Pair<String, Boolean>> handleNote() {
+        return stringBooleanPair -> {
+            if (stringBooleanPair.val1()) {
+
+                Cursor cursor = briteDatabase.query(SELECT_USERNAME);
+                cursor.moveToFirst();
+                String userName = cursor.getString(0);
+                cursor.close();
+
+                Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid, EnrollmentStatus.ACTIVE.name(), teiUid);
+                cursor1.moveToFirst();
+                String enrollmentUid = cursor1.getString(0);
+
+                SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                        .compileStatement(INSERT_NOTE);
+
+                sqLiteBind(insetNoteStatement, 1, enrollmentUid); //enrollment
+                sqLiteBind(insetNoteStatement, 2, stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 3, userName); //storeBy
+                sqLiteBind(insetNoteStatement, 4, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+                long inserted =
+                        briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+                insetNoteStatement.clearBindings();
+
+            }
+        };
+    }
+
+
 }

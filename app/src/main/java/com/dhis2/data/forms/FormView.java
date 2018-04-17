@@ -2,6 +2,11 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
+
+import org.hisp.dhis.android.core.program.ProgramModel;
+
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -16,6 +21,9 @@ interface FormView {
     Observable<String> reportDateChanged();
 
     @NonNull
+    Observable<String> incidentDateChanged();
+
+    @NonNull
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
     @NonNull
@@ -28,8 +36,10 @@ interface FormView {
     Consumer<ReportStatus> renderStatus();
 
     @NonNull
-    Consumer<String> finishEnrollment();
+    Consumer<Trio<String, String, String>> finishEnrollment();
 
     void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
 
+    @NonNull
+    Consumer<ProgramModel> renderIncidentDate();
 }

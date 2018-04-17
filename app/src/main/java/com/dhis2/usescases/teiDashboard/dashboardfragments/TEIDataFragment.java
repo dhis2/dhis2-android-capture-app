@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -43,11 +44,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         return instance;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
-        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         return binding.getRoot();
     }

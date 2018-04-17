@@ -7,28 +7,26 @@ import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
+import com.dhis2.utils.OnErrorHandler;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 31/10/2017 .
- *
+ * QUADRAM. Created by ppajuelo on 31/10/2017 .
  */
 
 public class ProgramDetailInteractor implements ProgramDetailContractModule.Interactor {
 
+    private final ProgramRepository programRepository;
     private final MetadataRepository metadataRepository;
     private ProgramDetailContractModule.View view;
     private String programId;
@@ -36,10 +34,11 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
     private CompositeDisposable compositeDisposable;
     private ArrayList<OrganisationUnitModel> selectedOrgUnits = new ArrayList<>();
 
-    ProgramDetailInteractor(@NonNull UserRepository userRepository, MetadataRepository metadataRepository) {
+    ProgramDetailInteractor(@NonNull UserRepository userRepository, ProgramRepository programRepository, MetadataRepository metadataRepository) {
         this.userRepository = userRepository;
-        this.metadataRepository = metadataRepository;
+        this.programRepository = programRepository;
         Bindings.setMetadataRepository(metadataRepository);
+        this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -77,8 +76,19 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
 
     @Override
     @SuppressLint("CheckResult")
-    public void getData(){
-        Observable.zip(
+    public void getData() {
+
+        compositeDisposable.add(
+                programRepository.trackedEntityInstances(programId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.swapData(data),
+                                OnErrorHandler.create()
+                        )
+        );
+
+        /*compositeDisposable.add(Observable.zip(
                 metadataRepository.getTrackedEntityInstances(programId),
                 metadataRepository.getProgramTrackedEntityAttributes(programId),
                 (trackedEntityInstanceModelList, programTrackedEntityAttributeModelList) -> {
@@ -92,7 +102,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                     TrackedEntityObject trackedEntityObject = new TrackedEntityObject(myTrackedEntityInstanceList, programTrackedEntityAttributeModelList);
 
                     for (MyTrackedEntityInstance myTrackedEntityInstance : trackedEntityObject.getMyTrackedEntityInstances()) {
-                        compositeDisposable.add(metadataRepository.getTEIAttributeValues(programId, myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
+                        compositeDisposable.add(metadataRepository.getTEIAttributeValues(programId, myTrackedEntityInstance.getTrackedEntityInstance().uid())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
@@ -100,13 +110,13 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                                         Timber::d)
                         );
 
-                        compositeDisposable.add(metadataRepository.getTEIEnrollments(myTrackedEntityInstance.getTrackedEntityInstance().trackedEntityType())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
+                        compositeDisposable.add(metadataRepository.getTEIEnrollments(myTrackedEntityInstance.getTrackedEntityInstance().uid())// myTrackedEntityInstance.getTrackedEntityInstance().uid())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         (enrollments) -> {
                                             myTrackedEntityInstance.setEnrollments(enrollments);
-                                            for (EnrollmentModel enrollmentModel : enrollments){
+                                            for (EnrollmentModel enrollmentModel : enrollments) {
                                                 compositeDisposable.add(metadataRepository.getEnrollmentEvents(enrollmentModel.uid())
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(AndroidSchedulers.mainThread())
@@ -128,7 +138,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                             view.swapData(trackedEntityObject);
                             view.setAttributeOrder(trackedEntityObject.getProgramTrackedEntityAttributes());
                         },
-                        Timber::d);
+                        Timber::d));*/
     }
 
     private void renderTree(List<OrganisationUnitModel> myOrgs) {

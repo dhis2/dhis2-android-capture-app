@@ -8,29 +8,20 @@
 
         <import type="java.lang.String" />
 
-        <variable
-            name="presenter"
-            type="com.dhis2.usescases.programDetail.ProgramDetailContractModule.Presenter" />
+        <import type="com.dhis2.utils.DateUtils" />
 
         <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            name="tei"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
 
         <variable
-            name="orgUnit"
-            type="java.lang.String" />
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
 
         <variable
-            name="attribute"
-            type="java.util.List&lt;String&gt;" />
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
-        <variable
-            name="stage"
-            type="java.lang.String" />
-
-        <variable
-            name="followUp"
-            type="Boolean" />
     </data>
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -54,21 +45,37 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/photo_temp"
+                android:background="@drawable/photo_temp"
+                android:tint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_person"
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/entity_attribute_1"
+                android:id="@+id/enrollment_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="14dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size()>0 ? attribute.get(0) : "" , default="attribute 1"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
+                tools:text="Enrollment Date" />
+
+            <TextView
+                android:id="@+id/entity_attribute_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enrollment_date"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="Attr 1"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/entity_attribute_2"
@@ -76,13 +83,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/entity_attribute_1"
                 android:layout_marginStart="25dp"
-                android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size() > 1 ? attribute.get(1) : "" , default="attribute 2"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
+                android:visibility="gone"
+                tools:text="Attr 2"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/entity_attribute_3"
@@ -90,13 +97,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/entity_attribute_2"
                 android:layout_marginStart="25dp"
-                android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{attribute.size() > 2 ? attribute.get(2) : "", default="attribute 3"}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+                android:visibility="gone"
+                tools:text="Attr 3"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/program_org_unit"
@@ -106,9 +113,10 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:text='@{orgUnit, default="Org Unit" }'
                 android:textColor="@color/black_de0"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:organisationUnitName="@{tei.organisationUnit()}"
+                tools:text="Org Unit" />
 
             <TextView
                 android:id="@+id/program_attribute_2"
@@ -118,9 +126,10 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:layout_toEndOf="@id/tracked_entity_image"
+                android:text="@{programStage.displayName()}"
                 android:textColor="@color/black_de0"
                 android:textSize="16sp"
-                app:programStage="@{stage}" />
+                tools:text="Program Stage" />
 
             <View
                 android:id="@+id/divisor"
@@ -134,13 +143,12 @@
                 tools:ignore="InvalidId" />
 
             <ImageView
+                android:id="@+id/followUp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_alignParentEnd="true"
                 android:layout_margin="10dp"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_warning"
-                android:alpha="0.5"
-                android:visibility='@{followUp ? View.VISIBLE : View.INVISIBLE}'
                 tools:ignore="ContentDescription" />
 
             <LinearLayout
@@ -159,6 +167,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="9dp"
                     android:layout_marginTop="7dp"
+                    app:enrolmentIcon="@{enrollment.enrollmentStatus()}"
                     app:srcCompat="@drawable/ic_lock_open_green"
                     tools:ignore="ContentDescription" />
 
@@ -167,7 +176,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    tools:text="@string/event_open"/>
+                    app:enrolmentText="@{enrollment.enrollmentStatus()}"
+                    tools:text="@string/event_open" />
 
                 <ImageView
                     android:id="@+id/sync_icon"
@@ -176,15 +186,17 @@
                     android:layout_marginBottom="9dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="7dp"
-                    tools:src="@drawable/ic_sync_green"
-                    tools:ignore="ContentDescription" />
+                    app:stateIcon="@{tei.state()}"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_sync_green" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
-                    tools:text="@string/state_synced"/>
+                    app:stateText="@{tei.state()}"
+                    tools:text="@string/state_synced" />
 
             </LinearLayout>
 

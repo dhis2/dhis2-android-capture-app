@@ -8,14 +8,12 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.ItemScheduleBinding;
 
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -26,36 +24,14 @@ import java.util.List;
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
     private List<EventModel> events;
-    private final List<ProgramStageModel> programStageList;
     private Filter currentFilter = Filter.ALL;
 
     public enum Filter {
         OVERDUE, SCHEDULE, ALL
     }
 
-    public ScheduleAdapter(List<ProgramStageModel> programStageList, List<EventModel> eventList) {
-        this.programStageList = programStageList;
-
+    public ScheduleAdapter() {
         this.events = new ArrayList<>();
-        for (EventModel event : eventList)
-            if (event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.SKIPPED)
-                this.events.add(event);
-
-        Collections.sort(events, new Comparator<EventModel>() {
-            @Override
-            public int compare(EventModel eventA, EventModel eventB) {
-
-                if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SCHEDULE)
-                    return eventB.eventDate().compareTo(eventA.eventDate());
-                if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SKIPPED)
-                    return eventB.dueDate().compareTo(eventA.eventDate());
-                if (eventA.status() == EventStatus.SKIPPED && eventB.status() == EventStatus.SCHEDULE)
-                    return eventB.eventDate().compareTo(eventA.dueDate());
-                else
-                    return eventB.dueDate().compareTo(eventA.dueDate());
-            }
-        });
-
     }
 
     @Override
@@ -66,11 +42,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
     @Override
     public void onBindViewHolder(ScheduleViewHolder holder, int position) {
-        ProgramStageModel programStage = null;
-        for (ProgramStageModel stage : programStageList)
-            if (events.get(position).programStage().equals(stage.uid()))
-                programStage = stage;
-        holder.bind(events.get(position), position == 0, position == events.size() - 1, programStage);
+        holder.bind(events.get(position), position == 0, position == events.size() - 1, null);
     }
 
     @Override
@@ -91,5 +63,21 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
                 break;
         }
         return currentFilter;
+    }
+
+    public void setScheduleEvents(List<EventModel> eventList) {
+        this.events = eventList;
+
+        Collections.sort(events, (eventA, eventB) -> {
+
+            if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SCHEDULE)
+                return eventB.eventDate().compareTo(eventA.eventDate());
+            if (eventA.status() == EventStatus.SCHEDULE && eventB.status() == EventStatus.SKIPPED)
+                return eventB.dueDate().compareTo(eventA.eventDate());
+            if (eventA.status() == EventStatus.SKIPPED && eventB.status() == EventStatus.SCHEDULE)
+                return eventB.eventDate().compareTo(eventA.dueDate());
+            else
+                return eventB.dueDate().compareTo(eventA.dueDate());
+        });
     }
 }

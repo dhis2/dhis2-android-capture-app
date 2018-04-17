@@ -10,13 +10,19 @@ import android.view.View;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
+import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -49,10 +55,12 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         this.teUid = teiUid;
         this.programUid = programUid;
 
+        dashboardRepository.setDashboardDetails(teiUid, programUid);
+
         getData();
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
     public void getData() {
         if (programUid != null)
@@ -71,15 +79,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             (dashboardProgramModel) ->
-                                    dashboardRepository.getIndicators(programUid)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(
-                                                    (programIndicatorModels) -> {
-                                                        dashboardProgramModel.setProgramIndicatorModels(programIndicatorModels);
-                                                        view.setData(dashboardProgramModel);
-                                                    },
-                                                    throwable -> Log.d("ERROR", throwable.getMessage())));
+                                    view.setData(dashboardProgramModel),
+                            throwable -> Log.d("ERROR", throwable.getMessage())
+                    );
+
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
@@ -91,15 +94,12 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(view::setDataWithOutProgram,
+                    .subscribe(
+                            view::setDataWithOutProgram,
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         }
     }
-    
-    @Override
-    public void onBackPressed() {
-        view.back();
-    }
+
 
     @Override
     public void onEnrollmentSelectorClick() {
@@ -151,4 +151,68 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onDettach() {
         compositeDisposable.clear();
     }
+
+    @Override
+    public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
+        compositeDisposable.add(dashboardRepository.getIndicators(programUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        indicatorsFragment.swapIndicators(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
+
+    @Override
+    public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
+        compositeDisposable.add(dashboardRepository.getScheduleEvents(programUid, teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        scheduleFragment.swapEvents(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
+
+    @Override
+    public void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor) {
+        compositeDisposable.add(noteProcessor
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(dashboardRepository.handleNote(), OnErrorHandler.create()));
+    }
+
+    @Override
+    public void subscribeToNotes(NotesFragment notesFragment) {
+        compositeDisposable.add(dashboardRepository.getNotes(programUid, teUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        notesFragment.swapNotes(),
+                        OnErrorHandler.create()
+                )
+        );
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        view.back();
+    }
+
+    @Override
+    public String getTeUid() {
+        return teUid;
+    }
+
+    @Override
+    public String getProgramUid() {
+        return programUid;
+    }
+
+
 }

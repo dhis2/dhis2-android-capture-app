@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.dhis2.R"/>
+
+        <import type="com.dhis2.R" />
+
         <variable
             name="theme"
             type="android.content.res.Resources.Theme" />
@@ -16,6 +18,10 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.main.MainContracts.Presenter" />
+
+        <variable
+            name="currentFragment"
+            type="android.databinding.ObservableInt" />
     </data>
 
     <android.support.v4.widget.DrawerLayout
@@ -111,19 +117,26 @@
                         android:id="@+id/menu_done_tasks"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="@string/done_task"
                         android:gravity="center_vertical"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_done_tasks)}"
+                        android:padding="10dp"
+                        android:text="@string/done_task"
                         android:textColor="@color/colorAccent"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_done_tasks)}"/>
+                        android:textSize="18sp"
+                        app:currentFragment="@{currentFragment}" />
 
                     <TextView
                         android:id="@+id/menu_info"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="@string/SYNC_MANAGER"
                         android:gravity="center_vertical"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"
+                        android:padding="10dp"
+                        android:text="@string/SYNC_MANAGER"
                         android:textColor="@color/colorAccent"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"/>
+                        android:textSize="18sp"
+                        app:currentFragment="@{currentFragment}" />
+
                 </LinearLayout>
 
                 <Button
@@ -164,7 +177,7 @@
                 android:id="@+id/indicator_dots"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
             <com.andrognito.pinlockview.PinLockView
                 android:id="@+id/pin_lock_view"

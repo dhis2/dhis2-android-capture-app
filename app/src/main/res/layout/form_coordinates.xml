@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="label"
+            type="java.lang.String" />
 
     </data>
 
@@ -16,8 +18,25 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-
         <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@{label}"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/latlong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textSize="15sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <!--<android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -50,7 +69,7 @@
                 android:inputType="numberDecimal"
                 android:textSize="15sp" />
 
-        </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>-->
 
         <ImageButton
             android:id="@+id/location1"
@@ -69,7 +88,7 @@
             android:layout_margin="10dp"
             android:background="@drawable/selector_gray_button_round_7"
             android:padding="6dp"
-            app:srcCompat="@drawable/ic_place"
+            app:srcCompat="@drawable/ic_map"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 </layout>

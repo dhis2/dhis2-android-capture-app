@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemIndicatorBinding;
-import com.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,8 +21,8 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
 
     private List<ProgramIndicatorModel> programIndicatorModels;
 
-    public IndicatorsAdapter(List<ProgramIndicatorModel> programIndicatorModels) {
-        this.programIndicatorModels = programIndicatorModels;
+    public IndicatorsAdapter() {
+        programIndicatorModels = new ArrayList<>();
     }
 
     @Override
@@ -39,5 +39,10 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
     @Override
     public int getItemCount() {
         return programIndicatorModels != null ? programIndicatorModels.size() : 0;
+    }
+
+    public void setIndicators(List<ProgramIndicatorModel> indicators) {
+        this.programIndicatorModels = indicators;
+        notifyDataSetChanged();
     }
 }

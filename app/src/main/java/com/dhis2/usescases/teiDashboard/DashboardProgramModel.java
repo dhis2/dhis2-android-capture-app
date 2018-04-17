@@ -19,7 +19,6 @@ import java.util.List;
  * Created by ppajuelo on 04/12/2017.
  *
  */
-
 public class DashboardProgramModel extends BaseObservable {
 
     private TrackedEntityInstanceModel tei;
@@ -32,7 +31,6 @@ public class DashboardProgramModel extends BaseObservable {
     private List<ProgramModel> enrollmentProgramModels;
     private List<ProgramIndicatorModel> programIndicatorModels;
     private OrganisationUnitModel orgnUnit;
-
 
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,

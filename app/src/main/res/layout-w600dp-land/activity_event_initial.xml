@@ -295,6 +295,43 @@
                             </LinearLayout>
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:baselineAligned="false"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <RadioGroup
+                                android:id="@+id/temp"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginTop="40dp"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatRadioButton
+                                    android:id="@+id/one_time"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    app:buttonTint="?colorPrimary"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/one_time"/>
+
+                                <android.support.v7.widget.AppCompatRadioButton
+                                    android:id="@+id/permanent"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    app:buttonTint="?colorPrimary"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/permanent"/>
+                            </RadioGroup>
+
+
+                            <VideoView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"/>
+                        </LinearLayout>
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="80dp"/>

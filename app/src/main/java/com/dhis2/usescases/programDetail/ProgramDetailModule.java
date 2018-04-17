@@ -33,14 +33,15 @@ public class ProgramDetailModule {
     @Provides
     @PerActivity
     ProgramDetailContractModule.Interactor provideInteractor(@NonNull UserRepository userRepository,
+                                                             @NonNull ProgramRepository programRepository,
                                                              @NonNull MetadataRepository metadataRepository) {
-        return new ProgramDetailInteractor(userRepository, metadataRepository);
+        return new ProgramDetailInteractor(userRepository, programRepository, metadataRepository);
     }
 
     @Provides
     @PerActivity
-    ProgramDetailAdapter provideProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter) {
-        return new ProgramDetailAdapter(presenter);
+    ProgramDetailAdapter provideProgramDetailAdapter(ProgramDetailContractModule.Presenter presenter, ProgramRepository programRepository) {
+        return new ProgramDetailAdapter(presenter, programRepository);
     }
 
     @Provides

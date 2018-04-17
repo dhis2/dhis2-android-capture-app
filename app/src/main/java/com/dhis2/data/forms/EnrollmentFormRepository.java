@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -53,6 +54,10 @@ class EnrollmentFormRepository implements FormRepository {
             "FROM Enrollment\n" +
             "WHERE Enrollment.uid = ?";
 
+    private static final String SELECT_ENROLLMENT_PROGRAM = "SELECT Program.*\n" +
+            "FROM Program JOIN Enrollment ON Enrollment.program = Program.uid\n" +
+            "WHERE Enrollment.uid = ?";
+
     private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT ProgramStage.uid, " +
             "Program.uid, Enrollment.organisationUnit, ProgramStage.minDaysFromStart \n" +
             "FROM Enrollment\n" +
@@ -60,7 +65,7 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
-    private static final String SELECT_USE_FIRST_STAGE = "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit \n" +
+    private static final String SELECT_USE_FIRST_STAGE = "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
             "FROM Enrollment\n" +
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND Program.useFirstStageDuringRegistration  = 1\n" +
@@ -71,6 +76,13 @@ class EnrollmentFormRepository implements FormRepository {
             "FROM Enrollment\n" +
             "WHERE uid = ?\n" +
             "LIMIT 1;";
+
+    private static final String SELECT_TE_TYPE = "SELECT " +
+            "Program.uid, Enrollment.trackedEntityInstance\n" +
+            "FROM Program\n" +
+            "JOIN Enrollment ON Enrollment.program = Program.uid\n" +
+            "WHERE Enrollment.uid = ? LIMIT 1";
+
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -137,6 +149,14 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
+    public Flowable<ProgramModel> incidentDate() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
+                .mapToOne(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST)
+                .distinctUntilChanged();
+    }
+
+    @NonNull
+    @Override
     public Flowable<ReportStatus> reportStatus() {
         return briteDatabase
                 .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, enrollmentUid)
@@ -160,6 +180,19 @@ class EnrollmentFormRepository implements FormRepository {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
+        };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<String> storeIncidentDate() {
+        return incidentDate -> {
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.DATE_OF_INCIDENT, incidentDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
@@ -219,14 +252,15 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Observable<String> useFirstStageDuringRegistration() {
+    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
         return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid)
                 .map(query -> {
                     Cursor cursor = query.run();
-                    if (cursor != null) {
+                    if (cursor != null && cursor.moveToFirst()) {
                         String programStageUid = cursor.getString(0);
                         String programStageProgram = cursor.getString(1);
                         String enrollmentOrgUnit = cursor.getString(2);
+                        String trackedEntityType = cursor.getString(3);
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(Calendar.getInstance().getTime());
                         Date eventDate = cal.getTime();
@@ -247,9 +281,13 @@ class EnrollmentFormRepository implements FormRepository {
                         if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
                             throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                         }
-                        return event.uid();
-                    } else
-                        return null;
+                        return Trio.create(enrollmentUid, trackedEntityType, event.uid());
+                    } else {
+                        Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid);
+                        tetCursor.moveToFirst();
+
+                        return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
+                    }
                 });
     }
 

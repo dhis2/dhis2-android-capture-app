@@ -2,6 +2,9 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Trio;
+
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -18,11 +21,15 @@ public interface FormRepository {
     @NonNull
     Flowable<String> reportDate();
 
+    Flowable<ProgramModel> incidentDate();
+
     @NonNull
     Flowable<RuleEngine> ruleEngine();
 
     @NonNull
     Consumer<String> storeReportDate();
+
+    Consumer<String> storeIncidentDate();
 
     @NonNull
     Flowable<ReportStatus> reportStatus();
@@ -37,5 +44,6 @@ public interface FormRepository {
     Consumer<String> autoGenerateEvent();
 
     @NonNull
-    Observable<String> useFirstStageDuringRegistration();
+    Observable<Trio<String, String, String>> useFirstStageDuringRegistration();
+
 }

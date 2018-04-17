@@ -2,11 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dhis2">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:name="android.hardware.fingerprint"
@@ -49,31 +50,35 @@
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
         <activity android:name=".usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity" />
+        <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
+
         <service
             android:name=".data.service.SyncService"
             android:enabled="true"
             android:exported="false" />
 
-        <service android:name=".data.service.SyncMetadataService"
-            android:permission="android.permission.BIND_JOB_SERVICE">
-        <intent-filter>
-            <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
-        </intent-filter>
-        </service>
-
-        <service android:name=".data.service.SyncDataService"
+        <service
+            android:name=".data.service.SyncMetadataService"
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".data.service.SyncDataService"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk"/>
+            android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk" />
 
     </application>
 
