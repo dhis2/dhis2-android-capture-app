@@ -21,6 +21,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     static private ProgramEventDetailContract.View view;
     private final ProgramEventDetailContract.Interactor interactor;
     public ProgramModel program;
+    public String programId;
 
     ProgramEventDetailPresenter(ProgramEventDetailContract.Interactor interactor) {
         this.interactor = interactor;
@@ -29,6 +30,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void init(ProgramEventDetailContract.View mview, String programId) {
         view = mview;
+        this.programId=programId;
         interactor.init(view, programId);
     }
 
@@ -49,17 +51,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void setProgram(ProgramModel program) {
+
         this.program = program;
     }
 
     @Override
     public void getEvents(Date fromDate, Date toDate) {
-        interactor.getEvents(program.uid(), fromDate, toDate);
+        interactor.getEvents(programId, fromDate, toDate);
     }
 
     @Override
     public void getProgramEventsWithDates(List<Date> dates, Period period) {
-        interactor.getProgramEventsWithDates(program.uid(), dates, period);
+        interactor.getProgramEventsWithDates(programId, dates, period);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onEventClick(String eventId) {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putString("PROGRAM_UID", programId);
         bundle.putString("EVENT_UID", eventId);
         bundle.putBoolean("NEW_EVENT", false);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
@@ -88,7 +91,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     public void addEvent() {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putString("PROGRAM_UID", programId);
         bundle.putBoolean("NEW_EVENT", true);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
