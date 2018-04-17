@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programStageSelection;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_STAGE_UID;
 
 /**
  * Created by ppajuelo on 31/10/2017.
@@ -37,13 +38,9 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule()).inject(this);
         super.onCreate(savedInstanceState);
         String programId = getIntent().getStringExtra("PROGRAM_UID");
-        String orgUnit = getIntent().getStringExtra("ORG_UNIT");
-        String eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
         binding.setPresenter(presenter);
         presenter.getProgramStages(programId, this);
-        presenter.setEventCreationType(eventCreationType);
-        presenter.setOrgUnit(orgUnit);
         int columnCount = getResources().getBoolean(R.bool.is_tablet) ? 3 : 2;
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         adapter = new ProgramStageSelectionAdapter(presenter);
@@ -60,5 +57,13 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     public void setData(List<ProgramStageModel> programStageModels) {
         adapter.setProgramStageModels(programStageModels);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setResult(String programStageUid) {
+        Intent data = new Intent();
+        data.putExtra(PROGRAM_STAGE_UID, programStageUid);
+        setResult(RESULT_OK, data);
+        finish();
     }
 }

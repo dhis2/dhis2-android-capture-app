@@ -13,6 +13,8 @@ public class ProgramStageSelectionContract {
     public interface View extends AbstractActivityContracts.View {
 
         void setData(List<ProgramStageModel> programStageModels);
+
+        void setResult(String programStageUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -22,9 +24,5 @@ public class ProgramStageSelectionContract {
         void getProgramStages(@NonNull String programUid, @NonNull View view);
 
         void onProgramStageClick(ProgramStageModel programStage);
-
-        void setEventCreationType(String eventCreationType);
-
-        void setOrgUnit(String orgUnit);
     }
 }

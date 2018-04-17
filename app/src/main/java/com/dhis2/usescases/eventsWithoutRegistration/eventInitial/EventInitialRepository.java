@@ -2,6 +2,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -31,16 +32,22 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date);
 
-    Observable<String> createEvent(@NonNull Context context, @NonNull String program,
-                     @NonNull String programStage, @NonNull String date,
-                     @NonNull String orgUnitUid, @NonNull String catComboUid,
-                     @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+    Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
+                                   @NonNull Context context, @NonNull String program,
+                                   @NonNull String programStage, @NonNull String date,
+                                   @NonNull String orgUnitUid, @NonNull String catComboUid,
+                                   @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+
+    Observable<Void> updateTrackedEntityInstance(String trackedEntityInstanceUid, String orgUnitUid);
 
     @NonNull
     Observable<EventModel> newlyCreatedEvent(long rowId);
 
     @NonNull
     Observable<ProgramStageModel> programStage(String programUid);
+
+    @NonNull
+    Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
     @NonNull
     Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);

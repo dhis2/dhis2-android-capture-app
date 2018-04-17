@@ -60,6 +60,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (teiUid != null && programUid != null)
+            init(teiUid, programUid);
+        else
+            finish();
+    }
+
+    @Override
     public void init(String teiUid, String programUid) {
         presenter.init(this, teiUid, programUid);
     }

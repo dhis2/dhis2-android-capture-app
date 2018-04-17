@@ -15,15 +15,18 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.REFERRAL;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.SCHEDULENEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -54,11 +57,11 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
             if (integer == null)
                 return;
 
-            // TODO CRIS: REDIRECT TO PROGRAM STAGE SELECTION
-
             Bundle bundle = new Bundle();
-            bundle.putString("PROGRAM_UID", programUid);
+            bundle.putString(PROGRAM_UID, programUid);
+            bundle.putString(TRACKED_ENTITY_INSTANCE, program.getTei().uid());
             bundle.putString("ORG_UNIT", program.getOrgUnit().uid());
+            bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer){
                 case R.id.referral:
@@ -72,7 +75,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
                     break;
             }
 
-            startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
+            startActivity(EventInitialActivity.class, bundle, false, false, null);
         });
         return binding.getRoot();
     }
