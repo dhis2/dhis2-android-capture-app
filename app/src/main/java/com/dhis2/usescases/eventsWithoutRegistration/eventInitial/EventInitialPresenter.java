@@ -40,6 +40,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void getProgramStage(String programStageUid) {
+        interactor.getProgramStageWithId(programStageUid);
+    }
+
+    @Override
     public void setProgram(ProgramModel program) {
         this.program = program;
     }
@@ -54,6 +59,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         if (program != null) {
             interactor.createNewEvent(programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
         }
+    }
+
+    @Override
+    public void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+        interactor.createNewEventPermanent(trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
     }
 
     @Override
@@ -87,7 +97,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             }
             return;
         }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> view.setLocation(location.getLatitude(), location.getLongitude()));
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null)
+                view.setLocation(location.getLatitude(), location.getLongitude());
+        });
     }
 
     @Override

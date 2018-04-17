@@ -192,7 +192,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textSize="15sp"
-                                    android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                                     android:focusable="false"/>
 
                             </android.support.design.widget.TextInputLayout>
@@ -275,6 +274,7 @@
                                         android:layout_height="wrap_content"
                                         android:inputType="numberDecimal"
                                         android:textSize="15sp"
+                                        android:focusable="false"
                                         android:text='@{event != null ? event.latitude() : ""}'/>
 
                                 </android.support.design.widget.TextInputLayout>
@@ -293,12 +293,36 @@
                                         android:layout_height="wrap_content"
                                         android:inputType="numberDecimal"
                                         android:textSize="15sp"
+                                        android:focusable="false"
                                         android:text='@{event != null ? event.longitude() : ""}'/>
 
                                 </android.support.design.widget.TextInputLayout>
-
                             </LinearLayout>
 
+                            <RadioGroup
+                                android:id="@+id/temp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="40dp"
+                                android:orientation="horizontal">
+
+                                <android.support.v7.widget.AppCompatRadioButton
+                                    android:id="@+id/one_time"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    app:buttonTint="?colorPrimary"
+                                    android:text="@string/one_time"/>
+
+                                <android.support.v7.widget.AppCompatRadioButton
+                                    android:id="@+id/permanent"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    app:buttonTint="?colorPrimary"
+                                    android:text="@string/permanent"/>
+
+                            </RadioGroup>
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="120dp"/>

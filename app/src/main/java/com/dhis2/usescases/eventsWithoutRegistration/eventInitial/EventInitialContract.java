@@ -55,16 +55,22 @@ public class EventInitialContract {
 
         @NonNull
         Consumer<List<FieldViewModel>> showFields(String sectionUid);
+
+        void showProgramStageSelection();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(EventInitialContract.View view, String programId, String eventId);
+
+        void getProgramStage(String programStageUid);
 
         void setProgram(ProgramModel program);
 
         void onBackClick();
 
         void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+
+        void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
@@ -89,6 +95,8 @@ public class EventInitialContract {
 
         void init(EventInitialContract.View view, String programId, String eventId);
 
+        void getProgramStageWithId(String programStageUid);
+
         void getOrgUnits();
 
         void getCatOption(String categoryOptionComboId);
@@ -96,6 +104,8 @@ public class EventInitialContract {
         void getFilteredOrgUnits(String date);
 
         void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+
+        void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 

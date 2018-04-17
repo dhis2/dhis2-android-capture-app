@@ -113,7 +113,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         return data -> {
 
             binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setText(String.format("%s results found", data.size()));
+            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.size())));
 
             ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList());
 

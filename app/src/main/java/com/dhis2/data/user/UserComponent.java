@@ -27,6 +27,8 @@ import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletComponent;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletModule;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
@@ -86,7 +88,6 @@ public interface UserComponent {
     @NonNull
     ProgramComponent plus(@NonNull ProgramModule programModule);
 
-
     @NonNull
     InfoComponent plus(InfoModule infoModule);
 
@@ -95,4 +96,7 @@ public interface UserComponent {
 
     @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
+
+    @NonNull
+    ProgramStageSelectionComponent plus(ProgramStageSelectionModule programStageSelectionModule);
 }

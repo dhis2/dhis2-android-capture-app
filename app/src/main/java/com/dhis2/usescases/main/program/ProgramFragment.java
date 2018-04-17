@@ -95,7 +95,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     //endregion
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
