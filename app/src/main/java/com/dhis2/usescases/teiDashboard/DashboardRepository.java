@@ -51,6 +51,6 @@ public interface DashboardRepository {
 
     void setDashboardDetails(String teiUid, String programUid);
 
-    Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid);
+    Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter);
 
 }

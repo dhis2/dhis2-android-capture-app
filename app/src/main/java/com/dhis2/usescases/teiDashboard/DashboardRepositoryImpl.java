@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -130,7 +129,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
 
     private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
-            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (?,?)";
+            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)";
 
     public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -144,8 +143,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS, programUid, teUid, EventStatus.SCHEDULE.name(), EventStatus.SKIPPED.name())
+    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter) {
+        String[] filters = filter.split(",");
+        StringBuilder filterQuery = new StringBuilder("");
+        for (String currentFilter : filters) {
+            filterQuery.append("'").append(currentFilter).append("'");
+            if (!currentFilter.equals(filters[filters.length - 1]))
+                filterQuery.append(",");
+        }
+        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS.replace("%s", filterQuery), programUid, teUid)
                 .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 

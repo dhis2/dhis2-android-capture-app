@@ -18,6 +18,7 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
@@ -49,6 +50,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final int DATETIME = 7;
     private final int AGEVIEW = 8;
     private final int YES_NO = 9;
+    private final int ORG_UNIT = 10;
     private int programData = 0;
     private List<TrackedEntityAttributeModel> attributeList;
     private ProgramModel programModel;
@@ -74,6 +76,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(ORG_UNIT, new OrgUnitRow(layoutInflater, processor, false));
     }
 
     @Override
@@ -186,8 +189,9 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case BOOLEAN:
                 case TRUE_ONLY:
                     return YES_NO;
-                case TRACKER_ASSOCIATE:
                 case ORGANISATION_UNIT:
+                    return ORG_UNIT;
+                case TRACKER_ASSOCIATE:
                 case URL:
                 default:
                     return EDITTEXT;

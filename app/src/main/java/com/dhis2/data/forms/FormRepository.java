@@ -46,4 +46,7 @@ public interface FormRepository {
     @NonNull
     Observable<Trio<String, String, String>> useFirstStageDuringRegistration();
 
+    @NonNull
+    Observable<String> autoGenerateEvents(String enrollmentUid);
+
 }

@@ -27,6 +27,8 @@ import org.hisp.dhis.android.core.event.EventModel;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
@@ -48,6 +50,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     private ScheduleAdapter adapter;
     private static String programUid;
     TeiDashboardContracts.Presenter presenter;
+    PublishProcessor<ScheduleAdapter.Filter> currentFilter;
 
     public static ScheduleFragment getInstance() {
         if (instance == null)
@@ -66,8 +69,9 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
         adapter = new ScheduleAdapter();
-        binding.scheduleRecycler.setAdapter(new ScheduleAdapter());
+        binding.scheduleRecycler.setAdapter(adapter);
         binding.scheduleFilter.setOnClickListener(this);
+        currentFilter = PublishProcessor.create();
 
         binding.fab.setOptionsClick(integer -> {
             if (integer == null)
@@ -95,7 +99,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         });
 
         presenter.subscribeToScheduleEvents(this);
-
+        currentFilter.onNext(ScheduleAdapter.Filter.ALL);
         return binding.getRoot();
     }
 
@@ -110,7 +114,9 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     public void onClick(View view) {
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter_list);
         int color;
-        switch (((ScheduleAdapter) binding.scheduleRecycler.getAdapter()).filter()) {
+        ScheduleAdapter.Filter filter = adapter.filter();
+        currentFilter.onNext(filter);
+        switch (filter) {
             case SCHEDULE:
                 color = ContextCompat.getColor(view.getContext(), R.color.green_7ed);
                 break;
@@ -132,5 +138,9 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         return noteModels -> {
             adapter.setScheduleEvents(noteModels);
         };
+    }
+
+    public FlowableProcessor<ScheduleAdapter.Filter> filterProcessor() {
+        return currentFilter;
     }
 }

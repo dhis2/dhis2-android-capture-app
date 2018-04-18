@@ -124,21 +124,17 @@ class FormPresenterImpl implements FormPresenter {
                 .map(reportStatus -> formViewArguments.uid())
                 .observeOn(schedulerProvider.io()).share();
 
-        compositeDisposable.add(enrollmentDoneStream
+     /*   compositeDisposable.add(enrollmentDoneStream
                 .subscribeOn(schedulerProvider.io())
-                .subscribe(formRepository.autoGenerateEvent(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(
+                        formRepository.autoGenerateEvent(),
+                        throwable -> {
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));*/
 
-      /*  compositeDisposable.add(enrollmentDoneStream
-                .subscribeOn(schedulerProvider.ui())
-                .subscribe(view.finishEnrollment(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));*/
-
-        //TODO: if Program has useFirstStageDuringRegistration go to data entry
         compositeDisposable.add(enrollmentDoneStream
-                .flatMap(data -> formRepository.useFirstStageDuringRegistration())
+                .flatMap(formRepository::autoGenerateEvents)
+                .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(view.finishEnrollment(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);

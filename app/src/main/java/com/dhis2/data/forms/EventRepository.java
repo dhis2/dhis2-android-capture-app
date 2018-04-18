@@ -194,6 +194,12 @@ public class EventRepository implements FormRepository {
     }
 
     @NonNull
+    @Override
+    public Observable<String> autoGenerateEvents(String enrollmentUid) {
+        return null;
+    }
+
+    @NonNull
     private Flowable<String> eventProgram() {
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
                 .mapToOne(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);

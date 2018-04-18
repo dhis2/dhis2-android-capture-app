@@ -8,6 +8,7 @@ import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
@@ -76,7 +77,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         }
 
         switch (type) {
-           case AGE:
+            case AGE:
                 return AgeViewModel.create(id, label, mandatory, value);
             case TEXT:
             case EMAIL:
@@ -102,9 +103,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 return CoordinateViewModel.create(id, label, mandatory, value);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type,  mandatory, value);
-            case TRACKER_ASSOCIATE:
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value);
             case ORGANISATION_UNIT:
+                return OrgUnitViewModel.create(id, label, mandatory, value);
+            case TRACKER_ASSOCIATE:
             case URL:
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
