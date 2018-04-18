@@ -296,6 +296,26 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.drawerLayout.openDrawer(Gravity.END);
     }
 
+    @Override
+    public ArrayList<Date> getChosenDateWeek() {
+        return chosenDateWeek;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateMonth() {
+        return chosenDateMonth;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateYear() {
+        return chosenDateYear;
+    }
+
+    @Override
+    public Date getChosenDateDay() {
+        return chosenDateDay;
+    }
+
 
     @Override
     public void apply() {
@@ -326,5 +346,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
+        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
     }
 }

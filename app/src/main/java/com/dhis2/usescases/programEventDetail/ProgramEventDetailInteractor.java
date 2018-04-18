@@ -5,6 +5,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
 import com.dhis2.Bindings.Bindings;
+import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.DateUtils;
@@ -31,6 +32,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static com.dhis2.utils.Period.*;
+import static com.dhis2.utils.Period.DAILY;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -69,12 +73,31 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View view, String programId) {
+    public void init(ProgramEventDetailContract.View view, String programId,Period period) {
         this.view = view;
         this.programId = programId;
         getProgram();
         getOrgUnits(null);
-        getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
+        switch (period){
+            case DAILY:
+                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(view.getChosenDateDay(), period);
+                getEvents(programId, datesToQuery[0], datesToQuery[1]);
+                break;
+            case WEEKLY:
+                getProgramEventsWithDates(programId, view.getChosenDateWeek(), period);
+                break;
+            case MONTHLY:
+                getProgramEventsWithDates(programId, view.getChosenDateMonth(), period);
+                break;
+            case YEARLY:
+                getProgramEventsWithDates(programId, view.getChosenDateYear(), period);
+                break;
+
+            default:
+                getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
+                break;
+        }
+
     }
 
     @SuppressLint("CheckResult")

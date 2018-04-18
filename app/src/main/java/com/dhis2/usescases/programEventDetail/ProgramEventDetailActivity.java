@@ -79,25 +79,29 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         String programId = getIntent().getStringExtra("PROGRAM_UID");
         binding.setPresenter(presenter);
-        presenter.init(this, programId);
+
 
         Drawable drawable = null;
         switch (getIntent().getIntExtra("CURRENT_PERIOD",0)){
             case R.string.DAILY:
                 currentPeriod = Period.DAILY;
+                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateDay= (Date) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
             case R.string.WEEKLY:
                 currentPeriod = Period.WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateWeek= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
             case R.string.MONTHLY:
                 currentPeriod = Period.MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateMonth= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
             case  R.string.YEARLY:
                 currentPeriod = Period.YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateYear= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
             default:
                 currentPeriod = Period.DAILY;
@@ -105,6 +109,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
+        presenter.init(this, programId,currentPeriod);
         currentPeriodConfig();
 
     }
@@ -358,5 +363,25 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 }
             });
         }
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateWeek() {
+        return chosenDateWeek;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateMonth() {
+        return chosenDateMonth;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateYear() {
+        return chosenDateYear;
+    }
+
+    @Override
+    public Date getChosenDateDay() {
+        return chosenDateDay;
     }
 }

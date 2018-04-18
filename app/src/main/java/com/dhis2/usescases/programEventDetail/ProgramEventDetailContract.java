@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,10 +36,15 @@ public class ProgramEventDetailContract {
         void renderError(String message);
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
+
+        ArrayList<Date>  getChosenDateWeek();
+        ArrayList<Date>  getChosenDateMonth();
+        ArrayList<Date>  getChosenDateYear();
+        Date getChosenDateDay();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, String programId);
+        void init(View view, String programId, Period period);
 
         void onTimeButtonClick();
 
@@ -66,7 +72,7 @@ public class ProgramEventDetailContract {
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
-        void init(View view, String programId);
+        void init(View view, String programId, Period period);
 
         void getEvents(String programId, Date fromDate, Date toDate);
 

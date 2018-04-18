@@ -44,6 +44,11 @@ public class ProgramContract {
 
         void openDrawer();
 
+        ArrayList<Date>  getChosenDateWeek();
+        ArrayList<Date>  getChosenDateMonth();
+        ArrayList<Date>  getChosenDateYear();
+        Date getChosenDateDay();
+
     }
 
     public interface Presenter {

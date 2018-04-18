@@ -8,6 +8,7 @@ import com.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,10 +29,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View mview, String programId) {
+    public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
         view = mview;
         this.programId=programId;
-        interactor.init(view, programId);
+
+        interactor.init(view, programId, period);
     }
 
     @Override

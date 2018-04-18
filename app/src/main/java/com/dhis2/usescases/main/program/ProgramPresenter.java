@@ -102,19 +102,19 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         switch (currentPeriod) {
             case DAILY:
                 bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
-                //bundle.putSerializable("CHOOSEN_DAY", );
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
                 break;
             case WEEKLY:
                 bundle.putInt("CURRENT_PERIOD", R.string.WEEKLY);
-                //getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateWeek());
                 break;
             case MONTHLY:
                 bundle.putInt("CURRENT_PERIOD", R.string.MONTHLY);
-                //getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateMonth());
                 break;
             case YEARLY:
                 bundle.putInt("CURRENT_PERIOD", R.string.YEARLY);
-               // getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateYear());
                 break;
         }
 
