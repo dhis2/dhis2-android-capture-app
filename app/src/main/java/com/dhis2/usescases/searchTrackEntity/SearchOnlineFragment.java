@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentSearchBinding;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
@@ -29,8 +30,8 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
     private SearchTEAdapter searchTEAdapter;
     private SearchTEActivity activity;
 
-    public static SearchOnlineFragment getInstance() {
-        if (instance == null)
+    public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context) {
+        if (instance == null || !(instance.activity!=null && context.equals(instance.activity.getAbstracContext())))
             instance = new SearchOnlineFragment();
         return instance;
     }

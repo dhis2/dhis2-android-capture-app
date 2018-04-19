@@ -22,7 +22,9 @@ public class SearchPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return position == 0 ? SearchLocalFragment.getInstance() : SearchOnlineFragment.getInstance();
+        return position == 0 ?
+                SearchLocalFragment.getInstance(context) :
+                SearchOnlineFragment.getInstance(context);
     }
 
     @Override
