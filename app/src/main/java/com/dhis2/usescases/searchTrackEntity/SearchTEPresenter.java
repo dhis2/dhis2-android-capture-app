@@ -1,6 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -107,7 +106,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onDestroy() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
     //endregion
 
@@ -189,10 +188,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (view.isEnabled()) {
-            enroll(selectedProgram.uid(), null);
-        } else
-            this.view.displayMessage("Select a program to enable enrolling");
+        if (selectedProgram.accessDataWrite())
+            if (view.isEnabled()) {
+                enroll(selectedProgram.uid(), null);
+            } else
+                this.view.displayMessage("Select a program to enable enrolling");
+        else
+            this.view.displayMessage("You don't have the requiered permission");
     }
 
     @Override

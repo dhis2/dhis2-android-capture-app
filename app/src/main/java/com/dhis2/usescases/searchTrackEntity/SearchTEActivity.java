@@ -58,7 +58,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setPresenter(presenter);
 
         //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new SearchPagerAdapter(this);
         pagerAdapter.setOnline(NetworkUtils.isOnline(this));
         binding.resultsPager.setAdapter(pagerAdapter);
         binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);

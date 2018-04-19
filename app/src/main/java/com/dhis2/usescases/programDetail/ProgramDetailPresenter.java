@@ -81,6 +81,11 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     }
 
     @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
+
+    @Override
     public void onTEIClick(String TEIuid, String programUid) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", TEIuid);

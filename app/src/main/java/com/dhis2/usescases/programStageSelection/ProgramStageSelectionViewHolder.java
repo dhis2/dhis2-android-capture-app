@@ -24,6 +24,11 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();
-        itemView.setOnClickListener(view -> presenter.onProgramStageClick(programStage));
+        itemView.setOnClickListener(view -> {
+            if (programStage.accessDataWrite())
+                presenter.onProgramStageClick(programStage);
+            else
+                presenter.displayMessage("You don't have the required permission to perform this action");
+        });
     }
 }

@@ -38,4 +38,9 @@ public class EventSummaryPresenter implements EventSummaryContract.Presenter {
     public void onDettach() {
         interactor.onDettach();
     }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }

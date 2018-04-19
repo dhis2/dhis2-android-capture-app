@@ -11,6 +11,10 @@
         <variable
             name="dataValue"
             type="org.hisp.dhis.android.core.program.ProgramStageDataElementModel" />
+
+        <variable
+            name="isEditable"
+            type="android.databinding.ObservableBoolean" />
     </data>
 
 
@@ -24,9 +28,10 @@
             android:id="@+id/form_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="@{isEditable,default=false}"
             android:imeOptions="actionNext"
-            android:textSize="16sp"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:textSize="16sp" />
     </android.support.design.widget.TextInputLayout>
 
 </layout>

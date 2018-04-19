@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.user.UserRepository;
+import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
@@ -57,6 +59,26 @@ final class DataValueStore implements DataEntryStore {
                     return Flowable.just(insert(uid, value, userCredentials.username()));
                 })
                 .switchMap(id -> updateEvent(id));
+    }
+
+    @Override
+    public void updateEventStatus(EventModel eventModel) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        String eventStatus = null;
+        switch (eventModel.status()) {
+            case COMPLETED:
+                eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
+                break;
+            default:
+                eventStatus = EventStatus.COMPLETED.name();
+                break;
+
+        }
+        contentValues.put(EventModel.Columns.STATUS, eventStatus);
+
+        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
     }
 
     private long update(@NonNull String uid, @Nullable String value) {

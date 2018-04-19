@@ -6,7 +6,9 @@
     <data>
 
         <import type="android.view.View" />
-        <import type="org.hisp.dhis.android.core.event.EventStatus"/>
+
+        <import type="org.hisp.dhis.android.core.event.EventStatus" />
+
         <variable
             name="event"
             type="org.hisp.dhis.android.core.event.EventModel" />
@@ -18,9 +20,10 @@
         <variable
             name="islast"
             type="java.lang.Boolean" />
+
         <variable
             name="stage"
-            type="org.hisp.dhis.android.core.program.ProgramStageModel"/>
+            type="java.lang.String" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -67,8 +70,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/schedule_circle_green"
             app:scheduleColor="@{event.status()}"
+            app:srcCompat="@drawable/schedule_circle_green"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -81,8 +84,8 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toTopOf="@id/event_status"
-            tools:text="ANC4"
-            android:text='@{stage.displayName, default="Stage Name"}'/>
+            app:programStage="@{stage}"
+            tools:text="ANC4" />
 
         <TextView
             android:id="@+id/event_date"
@@ -92,11 +95,11 @@
             android:textColor="#444444"
             android:textSize="14sp"
             android:textStyle="normal"
+            app:date='@{event.dueDate()}'
             app:layout_constraintBottom_toBottomOf="@id/event_status"
             app:layout_constraintStart_toEndOf="@id/event_status"
             app:layout_constraintTop_toBottomOf="@id/event_name"
-            tools:text="03/10/2017 "
-            app:date='@{event.status()==EventStatus.SCHEDULE ? event.eventDate() : event.dueDate()}'/>
+            tools:text="03/10/2017 " />
 
 
     </android.support.constraint.ConstraintLayout>

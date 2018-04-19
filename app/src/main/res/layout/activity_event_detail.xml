@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -103,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:visibility="@{isEditable ? View.VISIBLE : View.INVISIBLE}"
                     app:backgroundTint="?colorPrimary"
+                    android:onClick="@{()->presenter.editData()}"
                     app:srcCompat="@drawable/ic_edit" />
             </RelativeLayout>
 
@@ -229,21 +229,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="30dp"
                         android:gravity="end"
-                        android:layout_marginBottom="30dp">
-                        <Button
-                            android:id="@+id/complete_button"
-                            android:layout_width="125dp"
-                            android:layout_height="34dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginEnd="22.5dp"
-                            android:background="@drawable/selector_button_round_7"
-                            android:minHeight="0dp"
-                            android:text="COMPLETE"
-                            android:textColor="@color/white_faf"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/deactivate_button" />
+                        android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/deactivate_button"
@@ -256,7 +244,8 @@
                             android:text="DEACTIVATE"
                             android:textColor="@color/white_faf"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:onClick="@{()->presenter.eventStatus(event,stage)}"/>
                     </LinearLayout>
 
                 </LinearLayout>

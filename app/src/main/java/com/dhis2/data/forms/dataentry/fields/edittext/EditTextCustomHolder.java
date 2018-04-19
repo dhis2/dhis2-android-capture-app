@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -86,12 +87,12 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 .takeUntil(RxView.detaches(parent))
                 .publish();
 
-     /*   editTextObservable
+        editTextObservable
                 .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
                         && model.hasValue() ? model.getValue().label() : "")
                 .subscribe(hint -> inputLayout.setHint(hint), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
-                });*/
+                });
 
         disposable.add(RxTextView.textChanges(editText)
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())

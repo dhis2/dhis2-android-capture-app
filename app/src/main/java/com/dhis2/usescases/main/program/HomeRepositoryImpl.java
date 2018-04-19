@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -29,7 +28,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final static String PROGRAMS_EVENT_DATES_2 = "" +
             "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
-            "INNER JOIN Event ON Event.program = Program.uid "+
+            "INNER JOIN Event ON Event.program = Program.uid " +
             "WHERE (%s) " +
             "GROUP BY Program.uid";
 
@@ -39,6 +38,18 @@ class HomeRepositoryImpl implements HomeRepository {
                     " INNER JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid)" +
                     " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)" +
                     " GROUP BY Program.uid";
+
+    private final static String SELECT_PROGRAMS = "SELECT " +
+            "Program.* FROM Program " +
+            "JOIN Event ON Event.program = Program.uid " +
+            "WHERE (%s) " +
+            "AND Event.organisationUnit IN (%s) " +
+            "GROUP BY Program.uid ORDER BY Program.displayName";
+
+    private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
+            "WHERE (%s) " +
+            "AND Event.organisationUnit IN (%s) " +
+            "AND Event.program = ?";
 
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
@@ -50,6 +61,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
 
     private final BriteDatabase briteDatabase;
+    private String orgUnits;
 
     HomeRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -81,6 +93,7 @@ class HomeRepositoryImpl implements HomeRepository {
     public Flowable<List<ProgramModel>> programs(List<Date> dates, Period period, String orgUnitsId) {
         this.dates = dates;
         this.period = period;
+        this.orgUnits = orgUnitsId;
 
         StringBuilder dateQuery = new StringBuilder();
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
@@ -91,7 +104,7 @@ class HomeRepositoryImpl implements HomeRepository {
                 dateQuery.append("OR ");
         }
 
-        return briteDatabase.createQuery(SELECT_SET, String.format(SELECT, dateQuery, orgUnitsId))
+        return briteDatabase.createQuery(SELECT_SET, String.format(SELECT_PROGRAMS, dateQuery, orgUnitsId))
                 .mapToList(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -105,14 +118,15 @@ class HomeRepositoryImpl implements HomeRepository {
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
 
-        String queryFinal = String.format(Locale.US, query , EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM, dateQuery);
+        String queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
+//        String queryFinal = String.format(Locale.US, query, EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM, dateQuery);
 
-        return briteDatabase.createQuery(EventModel.TABLE, queryFinal).mapToList(EventModel::create);
+        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, programUid).mapToList(EventModel::create);
     }
 
     @NonNull

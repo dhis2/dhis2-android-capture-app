@@ -111,4 +111,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void onDettach() {
         interactor.onDettach();
     }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }

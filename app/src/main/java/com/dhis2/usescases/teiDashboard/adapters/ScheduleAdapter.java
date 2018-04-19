@@ -10,7 +10,6 @@ import com.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +41,12 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
 
     @Override
     public void onBindViewHolder(ScheduleViewHolder holder, int position) {
-        holder.bind(events.get(position), position == 0, position == events.size() - 1, null);
+        holder.bind(events.get(position), position == 0, position == events.size() - 1, events.get(position).programStage());
     }
 
     @Override
     public int getItemCount() {
-        return events != null ? events.size() : 0;
+        return events.size();
     }
 
     public Filter filter() {
@@ -66,7 +65,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
     }
 
     public void setScheduleEvents(List<EventModel> eventList) {
-        this.events = eventList;
+        this.events.clear();
+        this.events.addAll(eventList);
 
         Collections.sort(events, (eventA, eventB) -> {
 
@@ -79,5 +79,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {
             else
                 return eventB.dueDate().compareTo(eventA.dueDate());
         });
+
+        notifyDataSetChanged();
     }
 }

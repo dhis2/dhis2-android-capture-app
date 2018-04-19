@@ -34,4 +34,9 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     public void onDettach() {
         interactor.onDettach();
     }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }

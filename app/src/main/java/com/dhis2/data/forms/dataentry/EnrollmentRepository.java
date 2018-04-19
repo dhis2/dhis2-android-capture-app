@@ -85,6 +85,6 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue);
+                cursor.getString(4), dataValue, null);
     }
 }

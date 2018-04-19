@@ -11,6 +11,7 @@ import android.view.View;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
@@ -22,6 +23,7 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import io.reactivex.Flowable;
@@ -43,6 +45,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private String teUid;
     private String teType;
     private String programUid;
+    private boolean programWritePermission;
 
     private CompositeDisposable compositeDisposable;
 
@@ -82,6 +85,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             (dashboardProgramModel) -> {
+                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
@@ -196,13 +200,23 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
-        compositeDisposable.add(dashboardRepository.getScheduleEvents(programUid, teUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        scheduleFragment.swapEvents(),
-                        OnErrorHandler.create()
-                )
+        compositeDisposable.add(
+                scheduleFragment.filterProcessor()
+                        .map(filter -> {
+                            if (filter == ScheduleAdapter.Filter.SCHEDULE)
+                                return EventStatus.SCHEDULE.name();
+                            else if (filter == ScheduleAdapter.Filter.OVERDUE)
+                                return EventStatus.SKIPPED.name();
+                            else
+                                return EventStatus.SCHEDULE.name() + "," + EventStatus.SKIPPED.name();
+                        })
+                        .flatMap(filter -> dashboardRepository.getScheduleEvents(programUid, teUid, filter))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                scheduleFragment.swapEvents(),
+                                OnErrorHandler.create()
+                        )
         );
     }
 
@@ -238,9 +252,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return teUid;
     }
 
-
     @Override
     public String getProgramUid() {
         return programUid;
     }
+
+    @Override
+    public Boolean hasProgramWritePermission() {
+        return programWritePermission;
+    }
+
+
 }

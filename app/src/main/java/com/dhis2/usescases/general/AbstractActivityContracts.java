@@ -40,6 +40,8 @@ public class AbstractActivityContracts {
 
     public interface Presenter {
         void onDettach();
+
+        void displayMessage(String message);
     }
 
     public interface Interactor {
