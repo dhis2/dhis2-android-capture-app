@@ -25,12 +25,14 @@ import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -162,14 +164,23 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void addRelationship() {
-        Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
-        Bundle extras = new Bundle();
-        extras.putBoolean("RELATIONSHIP", true);
-        extras.putString("TRACKED_ENTITY_UID", teType);
-        extras.putString("PROGRAM_UID", programUid);
-        intent.putExtras(extras);
-        view.getAbstractActivity().startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
+    public void goToAddRelationship() {
+        if(programWritePermission){
+            Fragment relationshipFragment = RelationshipFragment.getInstance();
+            Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
+            Bundle extras = new Bundle();
+            extras.putBoolean("FROM_RELATIONSHIP", true);
+            extras.putString("TRACKED_ENTITY_UID", teType);
+            extras.putString("PROGRAM_UID", programUid);
+            intent.putExtras(extras);
+            relationshipFragment.startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
+        } else
+            view.displayMessage("You don't have the required permission for this action");
+    }
+
+    @Override
+    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+        dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
     }
 
     @Override
@@ -180,7 +191,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 relationshipFragment.setRelationships(),
-                                OnErrorHandler.create()
+                                Timber::d
                         )
         );
     }

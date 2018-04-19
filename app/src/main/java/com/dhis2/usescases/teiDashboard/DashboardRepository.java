@@ -41,6 +41,8 @@ public interface DashboardRepository {
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
 
+    void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
+
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     int setFollowUp(String enrollmentUid, boolean followUp);

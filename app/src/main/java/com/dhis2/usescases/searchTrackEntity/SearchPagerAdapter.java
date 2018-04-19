@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
@@ -14,17 +15,19 @@ public class SearchPagerAdapter extends FragmentStatePagerAdapter {
 
     private final ActivityGlobalAbstract context;
     private int maxData = 2;
+    private boolean fromRelationship;
 
-    public SearchPagerAdapter(ActivityGlobalAbstract context) {
+    public SearchPagerAdapter(ActivityGlobalAbstract context, boolean fromRelationship) {
         super(context.getSupportFragmentManager());
         this.context = context;
+        this.fromRelationship = fromRelationship;
     }
 
     @Override
     public Fragment getItem(int position) {
         return position == 0 ?
-                SearchLocalFragment.getInstance(context) :
-                SearchOnlineFragment.getInstance(context);
+                SearchLocalFragment.getInstance(context, fromRelationship):
+                SearchOnlineFragment.getInstance(context, fromRelationship);
     }
 
     @Override

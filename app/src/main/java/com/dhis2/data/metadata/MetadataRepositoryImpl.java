@@ -148,10 +148,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
 
     private final String RELATIONSHIP_TYPE_QUERY = String.format("SELECT %s.* FROM %s " +
-                    "INNER JOIN %s ON %s.%s = %s.%s  " +
+                    "JOIN %s ON %s.%s = %s.%s  " +
                     "WHERE %s.%s = ",
             RelationshipTypeModel.TABLE, RelationshipTypeModel.TABLE,
-            ProgramModel.TABLE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE,
+            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID,
             ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
@@ -288,10 +288,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<RelationshipTypeModel> getRelationshipType(String relationshipTypeUid) {
+    public Observable<RelationshipTypeModel> getRelationshipType(String programID) {
         return briteDatabase
-                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + relationshipTypeUid + "'")
-                .mapToOneOrDefault(RelationshipTypeModel::create, RelationshipTypeModel.builder().build());
+                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + programID + "'")
+                .mapToOne(RelationshipTypeModel::create);
 
     }
 

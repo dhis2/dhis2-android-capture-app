@@ -7,6 +7,7 @@ import com.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
@@ -57,9 +58,21 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
             );
         //endregion
 
+        compositeDisposable.add(
+                metadataRepository.getRelationshipType(presenter.getProgramModel().uid())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setRelationshipType, OnErrorHandler.create())
+        );
+
         binding.executePendingBindings();
 
-        //itemView.setOnClickListener(view -> presenter.addRelationship(trackedEntityInstanceModel.uid()));
+        binding.buttonAdd.setOnClickListener(view -> presenter.addRelationship(trackedEntityInstanceModel.uid()));
+    }
+
+    private void setRelationshipType(RelationshipTypeModel relationshipTypeModel) {
+        binding.setRelationship(relationshipTypeModel.aIsToB());
+        binding.executePendingBindings();
     }
 
     private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {

@@ -14,24 +14,17 @@
             type="com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
         <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
-
-        <variable
             name="followUp"
             type="java.lang.Boolean" />
-
-        <variable
-            name="orgUnit"
-            type="java.lang.String" />
 
         <variable
             name="attribute"
             type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
 
         <variable
-            name="programString"
-            type="java.lang.String" />
+            name="relationship"
+            type="java.lang.String"/>
+
     </data>
 
     <android.support.v7.widget.CardView
@@ -68,11 +61,12 @@
 
 
             <LinearLayout
-
-                android:layout_width="match_parent"
+                android:id="@+id/attributes_layout"
+                android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:orientation="vertical"
-                android:layout_toEndOf="@id/tracked_entity_image">
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:layout_toStartOf="@id/button_add">
 
                 <TextView
                     android:id="@+id/entity_attribute_1"
@@ -107,6 +101,22 @@
                     android:textStyle="bold"
                     android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/button_add"
+                android:layout_width="wrap_content"
+                android:layout_height="27dp"
+                android:layout_marginEnd="9dp"
+                android:layout_marginTop="9dp"
+                android:background="@drawable/button_selector"
+                android:paddingEnd="23dp"
+                android:paddingStart="23dp"
+                android:text="@{@string/add_relation_button(relationship)}"
+                android:textColor="?colorAccent"
+                android:textSize="12sp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                tools:text="@string/add_relation_button"/>
 
         </RelativeLayout>
 

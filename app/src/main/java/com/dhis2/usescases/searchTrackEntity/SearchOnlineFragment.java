@@ -30,7 +30,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
     private SearchTEAdapter searchTEAdapter;
     private SearchTEActivity activity;
 
-    public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context) {
+    public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
         if (instance == null || !(instance.activity!=null && context.equals(instance.activity.getAbstracContext())))
             instance = new SearchOnlineFragment();
         return instance;

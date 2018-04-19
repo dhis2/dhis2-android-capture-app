@@ -92,7 +92,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         if(requestCode == REQ_ADD_RELATIONSHIP){
             if(resultCode == RESULT_OK){
                 if(data != null){
-                    // get TEI Id and add relationship on DB and refresh list
+                    String tei_a = data.getStringExtra("TEI_A_UID");
+                    String relationshipType = data.getStringExtra("RELATIONSHIP_TYPE_UID");
+
+                    presenter.addRelationship(tei_a, relationshipType);
                 }
             }
         }
