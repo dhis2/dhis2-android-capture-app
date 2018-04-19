@@ -10,7 +10,11 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentSearchBinding;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -27,10 +31,17 @@ public class SearchLocalFragment extends FragmentGlobalAbstract {
     private SearchTEActivity activity;
     private TabletSearchAdapter searchTEATabletAdapter;
     private SearchTEAdapter searchTEAdapter;
+    private SearchRelationshipAdapter searchRelationshipAdapter;
+    private boolean fromRelationship;
 
-    public static SearchLocalFragment getInstance() {
-        if (instance == null)
+    public static SearchLocalFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
+        if (instance == null || !(instance.activity!=null && context.equals(instance.activity.getAbstracContext()))) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("fromRelationship", fromRelationship);
+
             instance = new SearchLocalFragment();
+            instance.setArguments(bundle);
+        }
         return instance;
     }
 
@@ -44,29 +55,43 @@ public class SearchLocalFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        fromRelationship = getArguments().getBoolean("fromRelationship");
+
         if (getResources().getBoolean(R.bool.is_tablet)) {
             searchTEATabletAdapter = new TabletSearchAdapter(activity, activity.presenter, activity.metadataRepository);
             binding.tableView.setAdapter(searchTEATabletAdapter);
             binding.scrollView.setVisibility(View.GONE);
 
         } else {
-            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository,false);
-            binding.scrollView.setAdapter(searchTEAdapter);
+            if(fromRelationship) {
+                searchRelationshipAdapter = new SearchRelationshipAdapter(activity.presenter, activity.metadataRepository, false);
+                binding.scrollView.setAdapter(searchRelationshipAdapter);
+            } else {
+                searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository, false);
+                binding.scrollView.setAdapter(searchTEAdapter);
+            }
             binding.tableView.setVisibility(View.GONE);
         }
         return binding.getRoot();
     }
 
     public void setItems(List<TrackedEntityInstanceModel> data, List<ProgramModel> programList) {
+
         if (getResources().getBoolean(R.bool.is_tablet)) {
             searchTEATabletAdapter.setItems(data, programList);
         } else {
-            searchTEAdapter.setItems(data);
+            if(fromRelationship){
+                searchRelationshipAdapter.setItems(data);
+            } else {
+                searchTEAdapter.setItems(data);
+            }
         }
     }
 
     public void clear() {
         if (searchTEAdapter != null)
             searchTEAdapter.clear();
+        if(searchRelationshipAdapter != null)
+            searchRelationshipAdapter.clear();
     }
 }

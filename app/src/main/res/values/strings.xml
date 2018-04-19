@@ -157,6 +157,11 @@
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">SYNC Manager</string>
+    <string name="last_data_sync_date">Last sync on: %s</string>
+    <string name="last_metadata_sync_date">Last sync on: %s</string>
+
+    <!-- SEARCH TRACK ENTITY -->
+    <string name="add_relation_button">Add as %s</string>
 
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>

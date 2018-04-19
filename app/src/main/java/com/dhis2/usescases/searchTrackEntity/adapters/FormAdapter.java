@@ -1,4 +1,4 @@
-package com.dhis2.usescases.searchTrackEntity;
+package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -60,7 +60,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final List<Row> rows;
 
-    FormAdapter(LayoutInflater layoutInflater) {
+    public FormAdapter(LayoutInflater layoutInflater) {
         setHasStableIds(true);
         //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
@@ -221,7 +221,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     }
 
     @NonNull
-    FlowableProcessor<RowAction> asFlowableRA() {
+    public FlowableProcessor<RowAction> asFlowableRA() {
         return processor;
     }
 }

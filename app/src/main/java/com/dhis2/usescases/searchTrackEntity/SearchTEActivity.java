@@ -15,6 +15,7 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 02/11/2017 .
@@ -43,6 +45,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String initialProgram;
     private String tEType;
     private SearchPagerAdapter pagerAdapter;
+    private boolean fromRelationship = false;
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -56,16 +59,23 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
 
+        initialProgram = getIntent().getStringExtra("PROGRAM_UID");
+        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
+
+        try {
+            fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
+        } catch (Exception e){
+            Timber.d(e.getMessage());
+        }
+
         //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(this);
+        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
         pagerAdapter.setOnline(NetworkUtils.isOnline(this));
         binding.resultsPager.setAdapter(pagerAdapter);
         binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
         binding.searchTab.setupWithViewPager(binding.resultsPager);
-
         binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
-        initialProgram = getIntent().getStringExtra("PROGRAM_UID");
-        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
+
     }
 
     @Override

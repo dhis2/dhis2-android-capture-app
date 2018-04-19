@@ -12,8 +12,10 @@ import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
+import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
@@ -23,12 +25,14 @@ import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -41,6 +45,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private TeiDashboardContracts.View view;
 
     private String teUid;
+    private String teType;
     private String programUid;
     private boolean programWritePermission;
 
@@ -85,6 +90,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             (dashboardProgramModel) -> {
                                 this.dashboardProgramModel = dashboardProgramModel;
                                 this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
                             throwable -> Log.d("ERROR", throwable.getMessage())
@@ -162,6 +168,39 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onDettach() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void goToAddRelationship() {
+        if(programWritePermission){
+            Fragment relationshipFragment = RelationshipFragment.getInstance();
+            Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
+            Bundle extras = new Bundle();
+            extras.putBoolean("FROM_RELATIONSHIP", true);
+            extras.putString("TRACKED_ENTITY_UID", teType);
+            extras.putString("PROGRAM_UID", programUid);
+            intent.putExtras(extras);
+            relationshipFragment.startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
+        } else
+            view.displayMessage("You don't have the required permission for this action");
+    }
+
+    @Override
+    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+        dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+    }
+
+    @Override
+    public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getRelationships(programUid, teUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                relationshipFragment.setRelationships(),
+                                Timber::d
+                        )
+        );
     }
 
     @Override

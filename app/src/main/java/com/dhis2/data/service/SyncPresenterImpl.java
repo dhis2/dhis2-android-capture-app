@@ -51,6 +51,20 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
+    public void syncMetaData() {
+        disposable.add(metadata()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(SyncState.METADATA), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+    }
+
+    @Override
     public void syncEvents() {
         disposable.add(events()
                 .subscribeOn(Schedulers.io())

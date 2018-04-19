@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentSearchBinding;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -27,8 +30,8 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
     private SearchTEAdapter searchTEAdapter;
     private SearchTEActivity activity;
 
-    public static SearchOnlineFragment getInstance() {
-        if (instance == null)
+    public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
+        if (instance == null || !(instance.activity!=null && context.equals(instance.activity.getAbstracContext())))
             instance = new SearchOnlineFragment();
         return instance;
     }
@@ -49,7 +52,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
             binding.scrollView.setVisibility(View.GONE);
 
         } else {
-            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository,true);
+            searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository, true);
             binding.scrollView.setAdapter(searchTEAdapter);
             binding.tableView.setVisibility(View.GONE);
         }

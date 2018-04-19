@@ -11,6 +11,7 @@ import com.dhis2.databinding.ItemRelationshipBinding;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
     private List<RelationshipModel> relationships;
 
     public RelationshipAdapter() {
-
+        relationships = new ArrayList<>();
     }
 
     @Override

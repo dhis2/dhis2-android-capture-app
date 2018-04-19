@@ -1,4 +1,4 @@
-package com.dhis2.usescases.searchTrackEntity;
+package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.PopupMenu;
@@ -13,6 +13,7 @@ import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
+import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -41,7 +42,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     private SearchTEContractsModule.Presenter presenter;
     private TrackedEntityInstanceModel tei;
 
-    SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
+    public SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
         compositeDisposable = new CompositeDisposable();

@@ -111,7 +111,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             RelationshipModel.TABLE, ProgramModel.TABLE,
             ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE, RelationshipModel.TABLE, RelationshipModel.Columns.RELATIONSHIP_TYPE,
             ProgramModel.TABLE, ProgramModel.Columns.UID,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);
+            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B);
+
+    private final String INSERT_RELATIONSHIP = String.format(
+            "INSERT INTO %s (%s, %s, %s) " +
+                    "VALUES (?, ?, ?);",
+            RelationshipModel.TABLE,
+            RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
+    );
+
     private static final Set<String> RELATIONSHIP_TABLE = new HashSet<>(Arrays.asList(RelationshipModel.TABLE, ProgramModel.TABLE));
 
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
@@ -205,7 +213,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid) {
         return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, programUid, teiUid)
                 .mapToList(RelationshipModel::create);
+    }
 
+    @Override
+    public void saveRelationship(String teuid_a, String teuid_b, String relationshipType) {
+        SQLiteStatement statement = briteDatabase.getWritableDatabase()
+                .compileStatement(INSERT_RELATIONSHIP);
+
+        sqLiteBind(statement, 1, teuid_a);
+        sqLiteBind(statement, 2, teuid_b);
+        sqLiteBind(statement, 3, relationshipType);
+
+        briteDatabase.executeInsert(RelationshipModel.TABLE, statement);
     }
 
     @Override

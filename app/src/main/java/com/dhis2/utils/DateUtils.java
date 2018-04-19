@@ -226,7 +226,7 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat dateTimeFormat() {
-        return new SimpleDateFormat("yyyy-mm-dd HH:mm", Locale.US);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
     }
 
     @NonNull

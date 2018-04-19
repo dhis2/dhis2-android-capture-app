@@ -1,13 +1,13 @@
 package com.dhis2.data.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -26,7 +26,7 @@ public class SyncService extends Service implements SyncView {
     SyncPresenter syncPresenter;
 
     @Inject
-    NotificationManagerCompat notificationManager;
+    NotificationManager notificationManager;
 
     // @NonNull
     SyncResult syncResult;
@@ -69,9 +69,9 @@ public class SyncService extends Service implements SyncView {
         return result -> {
             Notification notification;
             syncResult = result;
-
+            String channelId = "dhis";
             if (result.inProgress()) {
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getTextForNotification(syncState))
                         .setContentText(getString(R.string.sync_text))
@@ -80,14 +80,14 @@ public class SyncService extends Service implements SyncView {
                         .build();
             } else if (result.isSuccess()) {
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))

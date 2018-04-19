@@ -1,14 +1,13 @@
 package com.dhis2.data.service;
 
 import android.app.Notification;
-import android.content.Intent;
+import android.app.NotificationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.usescases.main.MainActivity;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 
@@ -25,7 +24,7 @@ public class SyncDataService extends JobService implements SyncView {
     SyncPresenter syncPresenter;
 
     @Inject
-    NotificationManagerCompat notificationManager;
+    NotificationManager notificationManager;
 
     // @NonNull
     SyncResult syncResult;
@@ -53,6 +52,8 @@ public class SyncDataService extends JobService implements SyncView {
         syncPresenter.onAttach(this);
         syncResult = SyncResult.idle();
         if (!syncResult.inProgress()) {
+            Log.d("SyncDataService", "Job tag " + job.getTag());
+            Log.d("SyncDataService", "Job Started");
             syncPresenter.syncEvents();
         }
         return true;
@@ -60,6 +61,7 @@ public class SyncDataService extends JobService implements SyncView {
 
     @Override
     public boolean onStopJob(JobParameters job) {
+        ;
         return true;
     }
 
@@ -69,9 +71,9 @@ public class SyncDataService extends JobService implements SyncView {
         return result -> {
             Notification notification;
             syncResult = result;
-
+            String channelId = "dhis";
             if (result.inProgress()) {
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getTextForNotification(syncState))
                         .setContentText(getString(R.string.sync_text))
@@ -80,14 +82,14 @@ public class SyncDataService extends JobService implements SyncView {
                         .build();
             } else if (result.isSuccess()) {
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
             } else if (!result.isSuccess()) { // NOPMD
                 next(syncState);
-                notification = new NotificationCompat.Builder(getApplicationContext())
+                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))
@@ -101,14 +103,14 @@ public class SyncDataService extends JobService implements SyncView {
 
     private void next(SyncState syncState) {
         switch (syncState) {
-            case METADATA:
-                syncPresenter.syncEvents();
-                break;
             case EVENTS:
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                jobFinished(job, true);
+                if (job.isRecurring())
+                    jobFinished(job, true);
+                else
+                    jobFinished(job, false);
                 syncPresenter.onDetach();
                 break;
         }
@@ -116,8 +118,6 @@ public class SyncDataService extends JobService implements SyncView {
 
     public String getTextForNotification(SyncState syncState) {
         switch (syncState) {
-            case METADATA:
-                return getString(R.string.sync_metadata);
             case EVENTS:
                 return getString(R.string.sync_events);
             default:
@@ -127,8 +127,6 @@ public class SyncDataService extends JobService implements SyncView {
 
     public int getNotId(SyncState syncState) {
         switch (syncState) {
-            case METADATA:
-                return NOTIFICATION_ID;
             case EVENTS:
                 return NOTIFICATION_ID_EVENT;
             case TEI:

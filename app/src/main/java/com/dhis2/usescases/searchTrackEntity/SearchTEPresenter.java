@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -20,6 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by ppajuelo on 02/11/2017.
@@ -221,5 +224,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 
-
+    @Override
+    public void addRelationship(String TEIuid) {
+        Intent intent = new Intent();
+        intent.putExtra("TEI_A_UID", TEIuid);
+        intent.putExtra("RELATIONSHIP_TYPE_UID",selectedProgram.relationshipType());
+        view.getAbstractActivity().setResult(RESULT_OK, intent);
+        view.getAbstractActivity().finish();
+    }
 }

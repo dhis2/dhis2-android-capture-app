@@ -58,5 +58,7 @@ public class SearchTEContractsModule {
         ProgramModel getProgramModel();
 
         List<ProgramModel> getProgramList();
+
+        void addRelationship(String TEIuid);
     }
 }
