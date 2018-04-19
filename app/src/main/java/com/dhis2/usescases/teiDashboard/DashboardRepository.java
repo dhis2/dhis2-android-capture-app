@@ -55,4 +55,6 @@ public interface DashboardRepository {
 
     Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter);
 
+    Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
+
 }

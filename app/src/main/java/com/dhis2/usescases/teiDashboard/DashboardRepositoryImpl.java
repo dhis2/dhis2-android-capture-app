@@ -138,6 +138,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
             "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)";
+    private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute IN " +
+            "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +
+            "AND TrackedEntityAttributeValue.trackedEntityInstance = ?";
 
     public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -161,6 +165,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         }
         return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS.replace("%s", filterQuery), programUid, teUid)
                 .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
+                .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
     @Override
