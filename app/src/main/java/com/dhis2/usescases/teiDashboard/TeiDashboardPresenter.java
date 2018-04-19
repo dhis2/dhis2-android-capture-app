@@ -14,11 +14,10 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
-import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
@@ -42,6 +41,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private TeiDashboardContracts.View view;
 
     private String teUid;
+    private String teType;
     private String programUid;
 
     private CompositeDisposable compositeDisposable;
@@ -81,8 +81,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (dashboardProgramModel) ->
-                                    view.setData(dashboardProgramModel),
+                            (dashboardProgramModel) -> {
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                                view.setData(dashboardProgramModel);
+                            },
                             throwable -> Log.d("ERROR", throwable.getMessage())
                     );
 
@@ -160,7 +162,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
         Bundle extras = new Bundle();
         extras.putBoolean("RELATIONSHIP", true);
-        extras.putString("TRACKED_ENTITY_UID", teUid);
+        extras.putString("TRACKED_ENTITY_UID", teType);
         extras.putString("PROGRAM_UID", programUid);
         intent.putExtras(extras);
         view.getAbstractActivity().startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
@@ -226,7 +228,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
 
-
     @Override
     public void onBackPressed() {
         view.back();
@@ -236,7 +237,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public String getTeUid() {
         return teUid;
     }
-
 
 
     @Override
