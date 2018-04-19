@@ -9,7 +9,11 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dhis2.R;
@@ -113,7 +117,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void displayMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
+        ((TextView) layout.findViewById(R.id.toast_message)).setText(message);
+        Toast toast = new Toast(this);
+        toast.setView(layout);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
+//        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

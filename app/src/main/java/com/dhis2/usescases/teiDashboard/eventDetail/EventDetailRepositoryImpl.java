@@ -6,6 +6,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -15,7 +16,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public class EventDetailRepositoryImpl implements EventDetailRepository {
@@ -73,5 +73,15 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         String SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID = "SELECT * FROM " + TrackedEntityDataValueModel.TABLE + " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + "=";
         return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, SELECT_TRACKED_ENTITY_DATA_VALUE_WITH_EVENT_UID + "'" + eventUid + "'")
                 .mapToList(TrackedEntityDataValueModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<ProgramStageModel> programStage(String eventUid) {
+        String query = "SELECT ProgramStage.* FROM ProgramStage " +
+                "JOIN Event ON Event.programStage = ProgramStage.uid " +
+                "WHERE Event.uid = ? LIMIT 1";
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, query, eventUid)
+                .mapToOne(ProgramStageModel::create);
     }
 }

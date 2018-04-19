@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
@@ -51,6 +52,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     private static String programUid;
     TeiDashboardContracts.Presenter presenter;
     PublishProcessor<ScheduleAdapter.Filter> currentFilter;
+    ActivityGlobalAbstract activity;
 
     public static ScheduleFragment getInstance() {
         if (instance == null)
@@ -61,6 +63,7 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        activity = (ActivityGlobalAbstract) context;
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
@@ -96,19 +99,13 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
             }
 
             startActivity(EventInitialActivity.class, bundle, false, false, null);
+
         });
 
         presenter.subscribeToScheduleEvents(this);
         currentFilter.onNext(ScheduleAdapter.Filter.ALL);
         return binding.getRoot();
     }
-
-   /* public void setData(String mProgramUid, DashboardProgramModel mprogram) {
-        programUid = mProgramUid;
-        program = mprogram;
-        binding.scheduleRecycler.setAdapter(new ScheduleAdapter());
-        binding.scheduleFilter.setOnClickListener(this);
-    }*/
 
     @Override
     public void onClick(View view) {

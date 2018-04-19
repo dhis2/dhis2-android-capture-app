@@ -95,32 +95,38 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
 
     @Override
     public void onButtonActionClick(DashboardProgramModel dashboardProgramModel) {
-        //TODO: SET ENROLLMENT STATUS
-        Flowable<Long> flowable = null;
-        switch (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()) {
-            case ACTIVE:
-                flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED);//TODO: SET STATUS TO COMPLETED
-                break;
-            case COMPLETED:
-                flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
-                break;
-            case CANCELLED:
-                flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
-                break;
-        }
+        if (dashboardProgramModel.getCurrentProgram().accessDataWrite()) {
+            Flowable<Long> flowable = null;
+            switch (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()) {
+                case ACTIVE:
+                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED);//TODO: SET STATUS TO COMPLETED
+                    break;
+                case COMPLETED:
+                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
+                    break;
+                case CANCELLED:
+                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
+                    break;
+            }
 
-        disposable.add(flowable
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> view.getAbstracContext().recreate()));
+            disposable.add(flowable
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> view.getAbstracContext().recreate()));
+        } else
+            view.displayMessage("You don't have the required permission to perform this action");
     }
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
-        disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> view.getAbstracContext().recreate()));
+        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+            disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> view.getAbstracContext().recreate()));
+        else
+            view.displayMessage("You don't have the required permission to perform this action");
+
     }
 
 }

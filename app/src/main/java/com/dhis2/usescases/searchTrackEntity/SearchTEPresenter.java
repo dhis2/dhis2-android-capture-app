@@ -188,10 +188,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (view.isEnabled()) {
-            enroll(selectedProgram.uid(), null);
-        } else
-            this.view.displayMessage("Select a program to enable enrolling");
+        if (selectedProgram.accessDataWrite())
+            if (view.isEnabled()) {
+                enroll(selectedProgram.uid(), null);
+            } else
+                this.view.displayMessage("Select a program to enable enrolling");
+        else
+            this.view.displayMessage("You don't have the requiered permission");
     }
 
     @Override

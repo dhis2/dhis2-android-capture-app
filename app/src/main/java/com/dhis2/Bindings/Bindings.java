@@ -110,7 +110,7 @@ public class Bindings {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> textView.setText(DateUtils.getInstance().formatDate(data.get(0).lastUpdated())),
+                        data -> textView.setText(DateUtils.uiDateFormat().format(data.get(0).eventDate())),
                         Timber::d);
     }
 

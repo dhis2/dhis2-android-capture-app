@@ -307,7 +307,7 @@ public final class RulesRepository {
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
             case HIDEPROGRAMSTAGE:
-//                return RuleActionCreateEvent.create(content, data, programStage);TODO: CHECK THIS
+                return RuleActionCreateEvent.create(content, data, programStage);
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));

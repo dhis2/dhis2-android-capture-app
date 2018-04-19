@@ -9,7 +9,7 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class OrgUnitViewModel extends FieldViewModel {
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value) {
-        return new AutoValue_OrgUnitViewModel(id, label, mandatory, value);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section) {
+        return new AutoValue_OrgUnitViewModel(id, label, mandatory, value,section);
     }
 }

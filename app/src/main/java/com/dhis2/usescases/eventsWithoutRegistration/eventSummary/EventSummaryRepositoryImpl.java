@@ -78,7 +78,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name\n" +
+            "  Option.name,\n" +
+            "  Field.section\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -195,7 +196,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue);
+                cursor.getString(4), dataValue, cursor.getString(7));
     }
 
     @NonNull

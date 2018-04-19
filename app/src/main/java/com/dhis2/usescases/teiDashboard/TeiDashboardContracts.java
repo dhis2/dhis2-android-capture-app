@@ -67,5 +67,7 @@ public class TeiDashboardContracts {
         String getTeUid();
 
         String getProgramUid();
+
+        Boolean hasProgramWritePermission();
     }
 }

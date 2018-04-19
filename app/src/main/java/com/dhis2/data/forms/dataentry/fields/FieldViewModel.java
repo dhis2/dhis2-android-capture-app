@@ -16,4 +16,7 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String value();
+
+    @Nullable
+    public abstract String programStageSection();
 }

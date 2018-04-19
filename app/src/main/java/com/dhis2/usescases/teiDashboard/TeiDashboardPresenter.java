@@ -42,6 +42,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private String teUid;
     private String programUid;
+    private boolean programWritePermission;
 
     private CompositeDisposable compositeDisposable;
 
@@ -80,8 +81,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            (dashboardProgramModel) ->
-                                    view.setData(dashboardProgramModel),
+                            (dashboardProgramModel) -> {
+                                this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
+                                view.setData(dashboardProgramModel);
+                            },
                             throwable -> Log.d("ERROR", throwable.getMessage())
                     );
 
@@ -224,6 +227,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public String getProgramUid() {
         return programUid;
+    }
+
+    @Override
+    public Boolean hasProgramWritePermission() {
+        return programWritePermission;
     }
 
 

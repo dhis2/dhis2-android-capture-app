@@ -269,6 +269,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         return date -> {
             if (onIncidentDateChanged != null) {
                 onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+
             }
         };
     }

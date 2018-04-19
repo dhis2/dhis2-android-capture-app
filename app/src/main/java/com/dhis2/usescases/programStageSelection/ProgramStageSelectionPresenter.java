@@ -11,7 +11,6 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 31/10/2017.
- *
  */
 
 public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.Presenter {
@@ -45,6 +44,11 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     @Override
     public void onDettach() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
     }
 
     @Override

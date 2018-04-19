@@ -9,5 +9,5 @@ public interface FieldViewModelFactory {
 
     @NonNull
     FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType valueType,
-                          @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value);
+                          @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value, @Nullable String programStageSection);
 }

@@ -120,6 +120,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
+
+    @Override
     public void filterOrgUnits(String date) {
         interactor.getFilteredOrgUnits(date);
     }

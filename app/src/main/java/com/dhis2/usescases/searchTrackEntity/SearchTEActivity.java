@@ -1,8 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -60,7 +57,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.setPresenter(presenter);
 
         //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new SearchPagerAdapter(this);
         pagerAdapter.setOnline(NetworkUtils.isOnline(this));
         binding.resultsPager.setAdapter(pagerAdapter);
         binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
