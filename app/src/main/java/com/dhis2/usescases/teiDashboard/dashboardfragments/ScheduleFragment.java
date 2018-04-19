@@ -16,9 +16,9 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
-import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -81,9 +81,10 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
                 return;
 
             Bundle bundle = new Bundle();
-            bundle.putString(PROGRAM_UID, programUid);
+            bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
-            bundle.putString("ORG_UNIT", presenter.getProgramUid());
+            bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString("ENROLLMENT_UID", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
             bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
@@ -98,7 +99,9 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
                     break;
             }
 
-            startActivity(EventInitialActivity.class, bundle, false, false, null);
+//            startActivity(EventInitialActivity.class, bundle, false, false, null);
+
+            startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
 
         });
 

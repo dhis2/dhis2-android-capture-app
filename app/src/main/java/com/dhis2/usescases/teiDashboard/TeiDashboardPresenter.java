@@ -45,6 +45,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private boolean programWritePermission;
 
     private CompositeDisposable compositeDisposable;
+    private DashboardProgramModel dashboardProgramModel;
 
     TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
@@ -82,6 +83,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             (dashboardProgramModel) -> {
+                                this.dashboardProgramModel = dashboardProgramModel;
                                 this.programWritePermission = dashboardProgramModel.getCurrentProgram().accessDataWrite();
                                 view.setData(dashboardProgramModel);
                             },
@@ -103,6 +105,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             view::setDataWithOutProgram,
                             throwable -> Log.d("ERROR", throwable.getMessage()));
         }
+    }
+
+    @Override
+    public DashboardProgramModel getDashBoardData() {
+        return dashboardProgramModel;
     }
 
 

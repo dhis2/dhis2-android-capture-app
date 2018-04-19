@@ -23,7 +23,6 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
-import com.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import com.dhis2.utils.CatComboAdapter2;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
@@ -549,11 +548,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showProgramStageSelection() {
-        Bundle bundle = new Bundle();
+        /*Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
         Intent intent = new Intent(this, ProgramStageSelectionActivity.class);
         intent.putExtras(bundle);
-        startActivityForResult(intent, RQ_PROGRAM_STAGE);
+        startActivityForResult(intent, RQ_PROGRAM_STAGE);*/
+        presenter.getProgramStage(getIntent().getStringExtra(PROGRAM_STAGE_UID));
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {

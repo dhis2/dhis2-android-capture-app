@@ -1,6 +1,5 @@
 package com.dhis2.usescases.programStageSelection;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityProgramStageSelectionBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -17,11 +17,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_STAGE_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
 
 /**
  * Created by ppajuelo on 31/10/2017.
- *
  */
 
 public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implements ProgramStageSelectionContract.View {
@@ -37,14 +40,23 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule()).inject(this);
         super.onCreate(savedInstanceState);
-        String programId = getIntent().getStringExtra("PROGRAM_UID");
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
         binding.setPresenter(presenter);
-        presenter.getProgramStages(programId, this);
         int columnCount = getResources().getBoolean(R.bool.is_tablet) ? 3 : 2;
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         adapter = new ProgramStageSelectionAdapter(presenter);
         binding.recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String programId = getIntent().getStringExtra("PROGRAM_UID");
+        String enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
+
+        presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
+
     }
 
     @Override
@@ -61,9 +73,15 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
 
     @Override
     public void setResult(String programStageUid) {
-        Intent data = new Intent();
-        data.putExtra(PROGRAM_STAGE_UID, programStageUid);
-        setResult(RESULT_OK, data);
-        finish();
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, getIntent().getStringExtra("PROGRAM_UID"));
+        bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra("TRACKED_ENTITY_INSTANCE"));
+        bundle.putString("ORG_UNIT", getIntent().getStringExtra("ORG_UNIT"));
+        bundle.putString("ENROLLMENT_UID", getIntent().getStringExtra("ENROLLMENT_UID"));
+        bundle.putBoolean(NEW_EVENT, getIntent().getBooleanExtra("NEW_EVENT", true));
+        bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra("EVENT_CREATION_TYPE"));
+        bundle.putString(PROGRAM_STAGE_UID, programStageUid);
+
+        startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 }

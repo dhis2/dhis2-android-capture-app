@@ -31,9 +31,9 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
     }
 
     @Override
-    public void getProgramStages(@NonNull String programUid, @NonNull ProgramStageSelectionContract.View view) {
+    public void getProgramStages(String programId, @NonNull String uid, @NonNull ProgramStageSelectionContract.View view) {
         this.view = view;
-        compositeDisposable.add(programStageSelectionRepository.getProgramStages(programUid)
+        compositeDisposable.add(programStageSelectionRepository.enrollmentProgramStages(programId, uid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
