@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.domain.responses.Relationship;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -120,6 +121,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
     );
 
+    private static final String DELETE_WHERE_RELATIONSHIP = String.format(
+            "%s.%s = ",
+            RelationshipModel.TABLE, RelationshipModel.Columns.ID
+    );
+
     private static final Set<String> RELATIONSHIP_TABLE = new HashSet<>(Arrays.asList(RelationshipModel.TABLE, ProgramModel.TABLE));
 
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
@@ -225,6 +231,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         sqLiteBind(statement, 3, relationshipType);
 
         briteDatabase.executeInsert(RelationshipModel.TABLE, statement);
+    }
+
+    @Override
+    public void deleteRelationship(long relationshipId) {
+        briteDatabase.delete(RelationshipModel.TABLE, DELETE_WHERE_RELATIONSHIP + "" + relationshipId + "");
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemRelationshipBinding;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -20,11 +21,12 @@ import java.util.List;
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
-
+    private TeiDashboardContracts.Presenter presenter;
     private List<RelationshipModel> relationships;
 
-    public RelationshipAdapter() {
-        relationships = new ArrayList<>();
+    public RelationshipAdapter(TeiDashboardContracts.Presenter presenter) {
+        this.presenter = presenter;
+        this.relationships = new ArrayList<>();
     }
 
     @Override
@@ -35,7 +37,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
 
     @Override
     public void onBindViewHolder(RelationshipViewHolder holder, int position) {
-        holder.bind(relationships.get(position));
+        holder.bind(presenter, relationships.get(position));
     }
 
     @Override

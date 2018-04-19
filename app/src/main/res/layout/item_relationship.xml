@@ -7,6 +7,10 @@
         <variable
             name="relationship"
             type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -53,6 +57,7 @@
             android:id="@+id/clear_relationship_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:onClick="@{ () -> presenter.deleteRelationship(relationship.id)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_clear_red"

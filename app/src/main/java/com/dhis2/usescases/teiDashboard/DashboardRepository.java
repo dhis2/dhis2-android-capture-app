@@ -43,6 +43,8 @@ public interface DashboardRepository {
 
     void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
 
+    void deleteRelationship(long relationshipId);
+
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     int setFollowUp(String enrollmentUid, boolean followUp);
@@ -54,5 +56,4 @@ public interface DashboardRepository {
     void setDashboardDetails(String teiUid, String programUid);
 
     Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter);
-
 }

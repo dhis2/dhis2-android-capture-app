@@ -58,7 +58,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
-        relationshipAdapter = new RelationshipAdapter();
+        relationshipAdapter = new RelationshipAdapter(presenter);
         binding.setPresenter(presenter);
         presenter.subscribeToRelationships(this);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
