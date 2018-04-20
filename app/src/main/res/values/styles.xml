@@ -109,4 +109,9 @@
         <item name="android:background">@drawable/full_width_button_bg</item>
     </style>
 
+   <!-- <style name="seekBar" parent="Theme.AppCompat.Light">
+        <item name="android:colorControlActivated">#ffffff</item>
+        <item name="android:colorControlNormal">#4fa8d1</item>
+    </style>-->
+
 </resources>
