@@ -191,6 +191,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public void deleteRelationship(long relationshipId) {
+        dashboardRepository.deleteRelationship(relationshipId);
+    }
+
+    @Override
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
                 dashboardRepository.getRelationships(programUid, teUid)

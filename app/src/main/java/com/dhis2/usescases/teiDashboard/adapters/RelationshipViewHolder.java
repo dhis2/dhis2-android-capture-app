@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.BR;
 import com.dhis2.databinding.ItemRelationshipBinding;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -22,8 +23,9 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(RelationshipModel relationship) {
-        binding.setVariable(BR.relationship, relationship);
+    public void bind(TeiDashboardContracts.Presenter presenter, RelationshipModel relationship) {
+        binding.setPresenter(presenter);
+        binding.setRelationship(relationship);
         binding.executePendingBindings();
     }
 }
