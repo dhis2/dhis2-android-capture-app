@@ -16,19 +16,13 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 29/11/2017.
- *
  */
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {

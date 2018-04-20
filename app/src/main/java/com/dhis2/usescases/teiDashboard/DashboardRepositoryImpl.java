@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.domain.responses.Relationship;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -144,7 +143,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
             "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)";
-    private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+    private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.* FROM TrackedEntityAttributeValue " +
             "WHERE TrackedEntityAttributeValue.trackedEntityAttribute IN " +
             "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +
             "AND TrackedEntityAttributeValue.trackedEntityInstance = ?";
