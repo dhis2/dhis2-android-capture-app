@@ -50,6 +50,8 @@ public class TeiDashboardContracts {
 
         void getData();
 
+        DashboardProgramModel getDashBoardData();
+
         //Data Fragment
 
         //RelationshipFragment

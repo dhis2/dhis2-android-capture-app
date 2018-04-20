@@ -16,4 +16,7 @@ public interface ProgramStageSelectionRepository {
 
     @NonNull
     Observable<List<ProgramStageModel>> getProgramStages(String programStages);
+
+    @NonNull
+    Observable<List<ProgramStageModel>> enrollmentProgramStages(String programId, String enrollmentUid);
 }
