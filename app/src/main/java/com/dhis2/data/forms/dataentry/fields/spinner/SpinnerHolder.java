@@ -35,7 +35,10 @@ public class SpinnerHolder extends RecyclerView.ViewHolder {
                     processor.onNext(
                             RowAction.create(model.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
                     );
-                }
+                } else
+                    processor.onNext(
+                            RowAction.create(model.uid(), null)
+                    );
                 if (view != null)
                     ((TextView) view).setTextColor(isBackgroundTransparent ? Color.BLACK : Color.WHITE);
             }
@@ -56,10 +59,11 @@ public class SpinnerHolder extends RecyclerView.ViewHolder {
             binding.setLabel(viewModel.label());
             binding.setOptionSet(viewModel.optionSet());
             binding.executePendingBindings();
-            if (viewModel.value() != null && binding.spinner.getAdapter() != null) {
+        } else {
+            if (viewModel.value() != null) {
                 for (int i = 0; i < ((OptionAdapter) binding.spinner.getAdapter()).getOptionCount(); i++) {
                     if (((OptionModel) binding.spinner.getAdapter().getItem(i)).displayName().equals(viewModel.value()))
-                        binding.spinner.setSelection(i, false);
+                        binding.spinner.setSelection(i);
                 }
             }
         }

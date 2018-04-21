@@ -76,9 +76,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         this.dashboardProgramModel = nprogram;
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
-
+            binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(new EventAdapter(presenter, nprogram.getProgramStages(), nprogram.getEvents()));
-
             binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(nprogram.getCurrentEnrollment());
             binding.setProgram(nprogram.getCurrentProgram());

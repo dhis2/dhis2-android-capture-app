@@ -21,8 +21,8 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     public void update(OrgUnitViewModel viewModel) {
-        binding.setLabel(viewModel.label());
+       /* binding.setLabel(viewModel.label());
         if (viewModel.value() != null)
-            binding.formButton.setText(viewModel.value());
+            binding.formButton.setText(viewModel.value());*/
     }
 }

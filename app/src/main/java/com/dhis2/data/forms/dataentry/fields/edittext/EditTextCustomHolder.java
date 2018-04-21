@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -76,7 +75,8 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
                     editText.setSelection(editText.getText() == null ?
                             0 : editText.getText().length());
-                    inputLayout.setHint(isEmpty(editText.getText()) ? editTextModel.label() : "");
+                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label()))
+                        inputLayout.setHint(editTextModel.label());
 
                 }
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
@@ -86,13 +86,13 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
         ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
                 .publish();
-
-        editTextObservable
+/*
+        disposable.add(editTextObservable
                 .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
                         && model.hasValue() ? model.getValue().label() : "")
-                .subscribe(hint -> inputLayout.setHint(hint), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                });
+                .subscribe(
+                        hint -> inputLayout.setHint(hint),
+                        Timber::d));*/
 
         disposable.add(RxTextView.textChanges(editText)
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())

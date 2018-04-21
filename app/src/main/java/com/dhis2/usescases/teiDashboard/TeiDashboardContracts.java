@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.widget.TextView;
+
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
@@ -79,5 +81,7 @@ public class TeiDashboardContracts {
         String getProgramUid();
 
         Boolean hasProgramWritePermission();
+
+        void subscribeToMainAttr(String teiUid, TextView textView);
     }
 }

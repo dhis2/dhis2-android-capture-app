@@ -209,7 +209,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text='@{program.incidentDateLabel(),default="Incident date"}'
+                            android:text='@{program.incidentDateLabel()}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toTopOf="parent"
@@ -220,7 +220,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text='@{program.enrollmentDateLabel(),default="Enrolment date"}'
+                            android:text='@{program.enrollmentDateLabel()}'
                             android:textColor="@color/icon_color"
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/incident_date_label"

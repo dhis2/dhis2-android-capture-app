@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
@@ -18,6 +19,7 @@ import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -27,7 +29,9 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.internal.operators.observable.ObservableFromIterable;
 import io.reactivex.schedulers.Schedulers;
+import rx.Observable;
 
 /**
  * Created by frodriguez on 11/7/2017.

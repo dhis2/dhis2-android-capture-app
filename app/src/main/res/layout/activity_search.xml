@@ -16,20 +16,6 @@
         android:layout_height="match_parent">
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="15dp"
-            android:onClick="@{(view)->presenter.onEnrollClick(view)}"
-            android:tint="@color/yellow_fdd"
-            android:visibility="gone"
-            app:backgroundTint="?attr/colorPrimary"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_add" />
-
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -38,6 +24,7 @@
             <!--SCROLLING VIEW-->
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/enrollmentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -120,7 +107,8 @@
                         android:id="@+id/program_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:background="@android:color/transparent" />
+                        android:background="@android:color/transparent"
+                        android:padding="10dp"/>
 
 
                     <android.support.v7.widget.RecyclerView

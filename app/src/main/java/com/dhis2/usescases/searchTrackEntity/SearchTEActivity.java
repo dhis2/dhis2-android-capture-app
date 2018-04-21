@@ -134,9 +134,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
-        ((SearchLocalFragment) pagerAdapter.getItem(0)).clear();
+       /* ((SearchLocalFragment) pagerAdapter.getItem(0)).clear();
         if (NetworkUtils.isOnline(this))
-            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();
+            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();*/
+       if(uid==null)
+           binding.programSpinner.setSelection(0);
     }
     //endregion
 
@@ -153,8 +155,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.objectCounter.setText("");
                 if (pos > 0) {
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
+                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                 } else {
                     presenter.setProgram(null);
+                    binding.enrollmentButton.setVisibility(View.GONE);
                 }
             }
 

@@ -11,8 +11,6 @@ import com.dhis2.data.service.MetadataServiceComponent;
 import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
-import com.dhis2.usescases.appInfo.InfoComponent;
-import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -89,10 +87,6 @@ public interface UserComponent {
 
     @NonNull
     ProgramComponent plus(@NonNull ProgramModule programModule);
-
-
-    @NonNull
-    InfoComponent plus(InfoModule infoModule);
 
     @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);

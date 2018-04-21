@@ -7,12 +7,13 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
+import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
@@ -25,7 +26,6 @@ import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -172,7 +172,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void goToAddRelationship() {
-        if(programWritePermission){
+        if (programWritePermission) {
             Fragment relationshipFragment = RelationshipFragment.getInstance();
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
@@ -283,6 +283,27 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public Boolean hasProgramWritePermission() {
         return programWritePermission;
+    }
+
+    @Override
+    public void subscribeToMainAttr(String teiUid, TextView textView) {
+        compositeDisposable.add(
+                dashboardRepository.getTEIAttributeValues(programUid, teiUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(attrs -> {
+                                    StringBuilder attrText = new StringBuilder("");
+                                    if (attrs.size() > 1)
+                                        attrText.append(attrs.get(0).value());
+                                    if (attrs.size() > 2)
+                                        attrText.append("\n").append(attrs.get(1).value());
+                                    if (attrs.isEmpty())
+                                        attrText.append(teiUid);
+                                    textView.setText(attrText);
+                                },
+                                Timber::d)
+
+        );
     }
 
 
