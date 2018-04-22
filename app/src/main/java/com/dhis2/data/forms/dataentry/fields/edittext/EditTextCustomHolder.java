@@ -75,8 +75,12 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
                     editText.setSelection(editText.getText() == null ?
                             0 : editText.getText().length());
-                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label()))
-                        inputLayout.setHint(editTextModel.label());
+                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
+                        StringBuilder label = new StringBuilder(editTextModel.label());
+                        if(editTextModel.mandatory())
+                            label.append("*");
+                        inputLayout.setHint(label);
+                    }
 
                 }
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));

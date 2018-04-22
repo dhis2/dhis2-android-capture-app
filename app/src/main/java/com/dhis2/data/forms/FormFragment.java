@@ -190,7 +190,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     @NonNull
     @Override
     public Consumer<String> renderTitle() {
-        return title -> Log.d("d", title);
+        return title -> toolbar.setTitle(title);
     }
 
     @NonNull

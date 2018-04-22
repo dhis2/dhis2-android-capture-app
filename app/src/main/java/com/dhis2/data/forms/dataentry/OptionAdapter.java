@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 
 import com.dhis2.R;
 import com.dhis2.databinding.SpinnerLayoutBinding;
+import com.dhis2.databinding.SpinnerLayoutItemsBinding;
 
 import org.hisp.dhis.android.core.option.OptionModel;
 
@@ -49,7 +50,7 @@ public class OptionAdapter extends ArrayAdapter<OptionModel> {
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SpinnerLayoutBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_layout, parent, false);
+        SpinnerLayoutItemsBinding binding = DataBindingUtil.inflate(inflater, R.layout.spinner_layout_items, parent, false);
         if (position != 0)
             binding.setOption(options.get(position - 1).displayName());
 

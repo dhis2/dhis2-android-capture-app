@@ -44,6 +44,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
 
     private OnAgeSet listener;
     private LayoutInflater inflater;
+    private String label;
 
     public AgeView(Context context) {
         super(context);
@@ -67,6 +68,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
     }
 
     public void setLabel(String label) {
+        this.label = label;
         if (binding instanceof AgeCustomViewAccentBinding)
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
         else
@@ -91,6 +93,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
                 month,
                 day);
         dateDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
+        dateDialog.setTitle(label);
         dateDialog.show();
     }
 

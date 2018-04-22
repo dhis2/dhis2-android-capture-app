@@ -18,12 +18,6 @@
         app:pressedTranslationZ="8dp"
         app:srcCompat="@drawable/ic_menu" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"
-        />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/content_frame"
@@ -68,8 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:layout_collapseMode="pin"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:titleTextColor="@android:color/white" />
 
@@ -87,9 +81,9 @@
             <TextView
                 android:id="@+id/textview_report_date"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="42dp"
                 android:layout_margin="8dp"
+                android:layout_weight="1"
                 android:background="@color/colorPrimaryLight"
                 android:gravity="center_vertical"
                 android:hint="@string/report_date"
@@ -99,9 +93,9 @@
             <TextView
                 android:id="@+id/textView_incident_date"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="42dp"
                 android:layout_margin="8dp"
+                android:layout_weight="1"
                 android:background="@color/colorPrimaryLight"
                 android:gravity="center_vertical"
                 android:hint="@string/incident_date"

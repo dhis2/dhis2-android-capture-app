@@ -1,11 +1,13 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormSpinnerBinding;
@@ -28,6 +30,10 @@ public class SpinnerHolder extends RecyclerView.ViewHolder {
         super(binding.getRoot());
         this.binding = binding;
         this.binding.setIsBgTransparent(isBackgroundTransparent);
+        if (isBackgroundTransparent)
+            binding.hintLabel.setTextColor(Color.BLACK);//TODO: Change color to primary
+        else
+            binding.hintLabel.setTextColor(ContextCompat.getColor(binding.hintLabel.getContext(), R.color.colorAccent));
         binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {

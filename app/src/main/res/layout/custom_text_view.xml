@@ -16,9 +16,9 @@
             android:id="@+id/input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:hint="hint"
             android:textColorHint="@drawable/edit_text_hint_primary"
-            android:theme="@style/loginInputText">
+            android:theme="@style/loginInputText"
+            tools:hint="hint">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_editText"
