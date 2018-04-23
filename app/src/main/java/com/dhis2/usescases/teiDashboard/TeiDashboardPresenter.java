@@ -20,12 +20,16 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -170,9 +174,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.clear();
     }
 
+    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid){
+        return dashboardRepository.mainTrackedEntityAttributes(teiUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
     @Override
     public void goToAddRelationship() {
-        if (programWritePermission) {
+        if(programWritePermission){
             Fragment relationshipFragment = RelationshipFragment.getInstance();
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
@@ -264,6 +275,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         );
     }
 
+    @Override
+    public void openDashboard(String teiUid) {
+        Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", teiUid);
+        bundle.putString("PROGRAM_UID", programUid);
+        intent.putExtras(bundle);
+        view.getAbstractActivity().startActivity(intent);
+        //view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+    }
 
     @Override
     public void onBackPressed() {
@@ -283,27 +304,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public Boolean hasProgramWritePermission() {
         return programWritePermission;
-    }
-
-    @Override
-    public void subscribeToMainAttr(String teiUid, TextView textView) {
-        compositeDisposable.add(
-                dashboardRepository.getTEIAttributeValues(programUid, teiUid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(attrs -> {
-                                    StringBuilder attrText = new StringBuilder("");
-                                    if (attrs.size() > 1)
-                                        attrText.append(attrs.get(0).value());
-                                    if (attrs.size() > 2)
-                                        attrText.append("\n").append(attrs.get(1).value());
-                                    if (attrs.isEmpty())
-                                        attrText.append(teiUid);
-                                    textView.setText(attrText);
-                                },
-                                Timber::d)
-
-        );
     }
 
 
