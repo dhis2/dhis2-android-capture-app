@@ -287,6 +287,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public void subscribeToMainAttr(String teiUid, TextView textView) {
+
+    }
+
+    @Override
     public void onBackPressed() {
         view.back();
     }

@@ -196,7 +196,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
+            binding.catCombo.setVisibility(View.GONE);
         } else {
+            binding.catCombo.setVisibility(View.VISIBLE);
             CatComboAdapter adapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,

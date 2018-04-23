@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -55,6 +54,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private @LastSearchType
     int lastSearchType;
+    private CategoryComboModel mCatCombo;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -162,18 +162,14 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
-                .filter(categoryComboModel -> !Objects.equals(categoryComboModel.uid(), CategoryComboModel.DEFAULT_UID))
+                .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
+                .flatMap(catCombo -> {
+                    mCatCombo = catCombo;
+                    return programEventDetailRepository.catCombo(programModel.categoryCombo());
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (catCombo) -> compositeDisposable.add(programEventDetailRepository.catCombo(programModel.categoryCombo())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        (catComboOptions) -> view.setCatComboOptions(catCombo, catComboOptions),
-                                        Timber::d)
-                        ),
-                        Timber::d)
+                .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
         );
     }
 

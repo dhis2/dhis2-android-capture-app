@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
+import static android.text.TextUtils.isEmpty;
 
 /**
  * Created by ppajuelo on 02/11/2017.
@@ -38,8 +39,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private TrackedEntityTypeModel trackedEntity;
-    private String enrollmentDate;
-    private String incidentDate;
     private List<ProgramModel> programModels;
     private HashMap<String, String> queryData;
 
@@ -96,7 +95,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            if (!data.value().isEmpty())
+                            if (!isEmpty(data.value()))
                                 queryData.put(data.id(), data.value());
                             else
                                 queryData.remove(data.id());
@@ -118,7 +117,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getTrakedEntities() {
         compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
-                selectedProgram != null ? selectedProgram.uid() : null, enrollmentDate, incidentDate, queryData)
+                selectedProgram != null ? selectedProgram.uid() : null, queryData)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.swapListData(), Timber::d)
@@ -177,6 +176,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onClearClick() {
+        queryData.clear();
         setProgram(null);
     }
 
@@ -228,7 +228,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void addRelationship(String TEIuid) {
         Intent intent = new Intent();
         intent.putExtra("TEI_A_UID", TEIuid);
-        intent.putExtra("RELATIONSHIP_TYPE_UID",selectedProgram.relationshipType());
+        intent.putExtra("RELATIONSHIP_TYPE_UID", selectedProgram.relationshipType());
         view.getAbstractActivity().setResult(RESULT_OK, intent);
         view.getAbstractActivity().finish();
     }

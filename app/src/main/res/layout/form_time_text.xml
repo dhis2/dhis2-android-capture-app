@@ -7,13 +7,19 @@
         <variable
             name="label"
             type="java.lang.String" />
+
+        <variable
+            name="initData"
+            type="java.lang.String" />
     </data>
 
     <com.dhis2.utils.CustomViews.TimeView
         android:id="@+id/timeView"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:initData="@{initData}"
         app:label="@{label}"
+
         />
 
 </layout>

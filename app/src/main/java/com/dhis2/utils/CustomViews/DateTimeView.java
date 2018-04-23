@@ -3,6 +3,7 @@ package com.dhis2.utils.CustomViews;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,10 +11,12 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import com.dhis2.databinding.DateTimeViewBinding;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by frodriguez on 1/15/2018.
@@ -28,6 +31,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     private DateFormat dateFormat;
     private LayoutInflater inflater;
     private boolean isBgTransparent;
+    private OnDateSelected listener;
 
     public DateTimeView(Context context) {
         super(context);
@@ -54,6 +58,10 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         binding.executePendingBindings();
     }
 
+    public void initData(String data) {
+        editText.setText(data);
+    }
+
     public void setIsBgTransparent(boolean isBgTransparent) {
         this.isBgTransparent = isBgTransparent;
         setLayout();
@@ -74,6 +82,10 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
             onClick(view);
     }
 
+    public void setDateListener(OnDateSelected listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
@@ -91,6 +103,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
                 year,
                 month,
                 day);
+        dateDialog.setTitle(binding.getLabel());
         dateDialog.show();
     }
 
@@ -104,12 +117,15 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
                 timePicker, hourOfDay, minutes) -> {
             selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             selectedCalendar.set(Calendar.MINUTE, minutes);
-            String result = dateFormat.format(selectedCalendar.getTime());
+            Date selectedDate = selectedCalendar.getTime();
+            String result = dateFormat.format(selectedDate);
             editText.setText(result);
+            listener.onDateSelected(selectedDate);
         },
                 hour,
                 minute,
                 is24HourFormat);
+        dialog.setTitle(binding.getLabel());
         dialog.show();
     }
 }

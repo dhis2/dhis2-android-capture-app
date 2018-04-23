@@ -61,7 +61,6 @@ public class SyncDataService extends JobService implements SyncView {
 
     @Override
     public boolean onStopJob(JobParameters job) {
-        ;
         return true;
     }
 
@@ -107,10 +106,7 @@ public class SyncDataService extends JobService implements SyncView {
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                if (job.isRecurring())
-                    jobFinished(job, true);
-                else
-                    jobFinished(job, false);
+                jobFinished(job, job.isRecurring());
                 syncPresenter.onDetach();
                 break;
         }

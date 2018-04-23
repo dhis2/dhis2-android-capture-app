@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:text="@{label}"
             android:layout_alignParentTop="true"
+            android:visibility="invisible"
             tools:text="Spinner hint" />
 
         <android.support.v7.widget.AppCompatSpinner

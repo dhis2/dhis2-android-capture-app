@@ -40,6 +40,9 @@ import io.reactivex.processors.PublishProcessor;
 
 public class FormAdapter extends RecyclerView.Adapter {
 
+    private long ENROLLMENT_DATE_ID = 1;
+    private long INCIDENT_DATE_ID = 2;
+
     private final int EDITTEXT = 0;
     private final int BUTTON = 1;
     private final int CHECKBOX = 2;
@@ -91,34 +94,34 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         if (position < programData) {
 //            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
-            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null,null);
+            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null, null);
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null, attr.displayShortName(), 1, attr.valueType(),null);
+                    viewModel = EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null, attr.displayShortName(), 1, attr.valueType(), null);
                     break;
                 case BUTTON:
-                    viewModel = FileViewModel.create(attr.uid(), attr.displayShortName(), false, null,null);
+                    viewModel = FileViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 case CHECKBOX:
                 case YES_NO:
-                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), attr.displayShortName(), attr.valueType(), false, null,null);
+                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), attr.displayShortName(), attr.valueType(), false, null, null);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null,null);
+                    viewModel = SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null, null);
                     break;
                 case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(), attr.displayShortName(), false, null,null);
+                    viewModel = CoordinateViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 case TIME:
                 case DATE:
                 case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), attr.displayShortName(), false, attr.valueType(), null,null);
+                    viewModel = DateTimeViewModel.create(attr.uid(), attr.displayShortName(), false, attr.valueType(), null, null);
                     break;
                 case AGEVIEW:
-                    viewModel = AgeViewModel.create(attr.uid(), attr.displayShortName(), false, null,null);
+                    viewModel = AgeViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported viewType " +
@@ -144,7 +147,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public long getItemId(int position) {
         if (position < programData) {
-            return programModel.id() + position;
+            return position == 0 ? ENROLLMENT_DATE_ID : INCIDENT_DATE_ID;
         } else {
             return attributeList.get(position - programData).uid().hashCode();
         }

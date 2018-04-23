@@ -30,6 +30,8 @@ import java.util.Set;
 
 import io.reactivex.Observable;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
@@ -113,17 +115,19 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
                                                                                @Nullable String programUid,
-                                                                               @Nullable String enrollmentDate,
-                                                                               @Nullable String incidentDate,
                                                                                @Nullable HashMap<String, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
 
-        if (enrollmentDate != null && !enrollmentDate.isEmpty()) {
-            String enrollmentDateWHERE = "Enrollment.enrollmentDate = '" + enrollmentDate + "'";
+        String enrollmentDateWHERE = null;
+        String incidentDateWHERE = null;
+        if (queryData != null && !isEmpty(queryData.get("1"))) {
+            enrollmentDateWHERE = " Enrollment.enrollmentDate = '" + queryData.get("1") + "'";
+            queryData.remove("1");
         }
-        if (incidentDate != null && !incidentDate.isEmpty()) {
-            String incidentDateWHERE = "Enrollment.incidentData = '" + incidentDate + "'";
+        if (queryData != null && !isEmpty(queryData.get("2"))) {
+            incidentDateWHERE = " Enrollment.incidentData = '" + queryData.get("2") + "'";
+            queryData.remove("2");
         }
 
         if (queryData != null && !queryData.isEmpty()) {
@@ -156,12 +160,16 @@ public class SearchRepositoryImpl implements SearchRepository {
                 attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
         }
 
-        String search = String.format(SEARCH,queryData.isEmpty()?"":SEARCH_ATTR);
+        String search = String.format(SEARCH, queryData.isEmpty() ? "" : SEARCH_ATTR);
         search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
         if (programUid != null && !programUid.isEmpty()) {
             String programWHERE = "Enrollment.program = '" + programUid + "'";
             search += " AND " + programWHERE;
         }
+        if (enrollmentDateWHERE != null)
+            search += " AND" + enrollmentDateWHERE;
+        if (incidentDateWHERE != null)
+            search += " AND" + incidentDateWHERE;
         search += " GROUP BY TrackedEntityInstance.uid";
 
         return briteDatabase.createQuery(TEI_TABLE_SET, search)

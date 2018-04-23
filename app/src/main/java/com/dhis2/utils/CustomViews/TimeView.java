@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import com.dhis2.databinding.DateTimeViewBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -28,6 +30,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     private DateTimeViewBinding binding;
     private LayoutInflater inflater;
     private boolean isBgTransparent;
+    private OnDateSelected listener;
 
     public TimeView(Context context) {
         super(context);
@@ -68,6 +71,14 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         binding.executePendingBindings();
     }
 
+    public void initData(String data) {
+        editText.setText(data);
+    }
+
+    public void setDateListener(OnDateSelected listener) {
+        this.listener = listener;
+    }
+
     private void onFocusChanged(View view, boolean b) {
         if (b)
             onClick(view);
@@ -86,16 +97,19 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minutes);
+            Date selectedDate = calendar.getTime();
             String calendarTime;
 
             if (is24HourFormat) {
-                calendarTime = twentyFourHourFormat.format(calendar.getTime());
+                calendarTime = twentyFourHourFormat.format(selectedDate);
                 editText.setText(calendarTime);
             } else {
-                calendarTime = twelveHourFormat.format(calendar.getTime());
+                calendarTime = twelveHourFormat.format(selectedDate);
                 editText.setText(calendarTime);
             }
+            listener.onDateSelected(selectedDate);
         }, hour, minute, is24HourFormat);
+        dialog.setTitle(binding.getLabel());
         dialog.show();
     }
 }

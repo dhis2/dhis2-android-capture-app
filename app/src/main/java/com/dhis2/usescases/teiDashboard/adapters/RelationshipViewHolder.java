@@ -42,7 +42,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         binding.setRelationship(relationship);
         binding.executePendingBindings();
 
-        presenter.subscribeToMainAttr(relationship.trackedEntityInstanceA(), binding.relationShipAttr);
+        presenter.subscribeToMainAttr(relationship.trackedEntityInstanceA(), binding.indicatorName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {

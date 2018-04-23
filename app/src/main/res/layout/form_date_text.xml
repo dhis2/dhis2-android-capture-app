@@ -6,6 +6,9 @@
         <variable
             name="label"
             type="java.lang.String" />
+        <variable
+            name="initData"
+            type="java.lang.String"/>
     </data>
 
     <com.dhis2.utils.CustomViews.DateView
@@ -13,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:label="@{label}"
+        app:initData="@{initData}"
         />
 
 </layout>
