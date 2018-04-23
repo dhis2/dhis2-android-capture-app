@@ -23,7 +23,7 @@
             android:gravity="center"
             android:maxLines="3"
             android:minHeight="50dp"
-            tools:text="You don't have the required permission" />
+            tools:text="@string/permission_denied" />
     </RelativeLayout>
 
     <ImageView

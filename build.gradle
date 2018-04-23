@@ -5,6 +5,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven {url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -16,6 +17,7 @@ buildscript {
         // without breaking incremental compilation
         classpath "hu.supercluster:paperwork-plugin:1.2.7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'io.fabric.tools:gradle:1.+'
 
     }
 }

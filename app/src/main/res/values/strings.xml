@@ -161,7 +161,6 @@
     <string name="last_metadata_sync_date">Last sync on: %s</string>
 
     <!-- SEARCH TRACK ENTITY -->
-    <string name="add_relation_button">Add as %s</string>
 
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>
@@ -185,4 +184,8 @@
     <string name="local_results">Local results</string>
     <string name="online_results">Online results</string>
     <string name="past_programs">Past programs</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">You don\'t have the required permission to perform this action</string>
+    <string name="add_relation_button">Add as %s</string>
 </resources>

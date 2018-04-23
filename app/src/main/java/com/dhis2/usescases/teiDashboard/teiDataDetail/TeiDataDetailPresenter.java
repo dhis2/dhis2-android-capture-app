@@ -114,7 +114,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> view.getAbstracContext().recreate()));
         } else
-            view.displayMessage("You don't have the required permission to perform this action");
+            view.displayMessage(null);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> view.getAbstracContext().recreate()));
         else
-            view.displayMessage("You don't have the required permission to perform this action");
+            view.displayMessage(null);
 
     }
 

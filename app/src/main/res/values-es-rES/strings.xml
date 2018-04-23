@@ -134,4 +134,11 @@
     <string name="incident_date">Fecha de incidencia</string>
     <string name="local_results">Resultados locales</string>
     <string name="online_results">Resultados online</string>
+    <string name="permanent">Permanente</string>
+    <string name="one_time">Una vez</string>
+    <string name="last_data_sync_date">Última sincronización: %s</string>
+    <string name="last_metadata_sync_date">Última sincronización: %s</string>
+    <string name="add_relation_button">Añadir como %s</string>
+    <string name="permission_denied">No tienes los permisos necesarios para realizar esta acción</string>
+    <string name="referral">Remitir</string>
 </resources>

@@ -28,7 +28,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
             if (programStage.accessDataWrite())
                 presenter.onProgramStageClick(programStage);
             else
-                presenter.displayMessage("You don't have the required permission to perform this action");
+                presenter.displayMessage(null);
         });
     }
 }

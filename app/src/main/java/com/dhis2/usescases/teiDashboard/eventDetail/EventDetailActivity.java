@@ -96,7 +96,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             isEditable.set(!isEditable.get());
             binding.dataLayout.invalidate();
         } else
-            displayMessage("You don't have the required permission to perform this action");
+            displayMessage(null);
     }
 
     private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {

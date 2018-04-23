@@ -78,7 +78,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (stageModel.accessDataWrite())
             dataEntryStore.updateEventStatus(eventModel);
         else
-            view.displayMessage("You don't have the required permission to perform this action");
+            view.displayMessage(null);
     }
 
     @Override

@@ -117,6 +117,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void displayMessage(String message) {
+        if (message == null)
+            message = getString(R.string.permission_denied);
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
         ((TextView) layout.findViewById(R.id.toast_message)).setText(message);

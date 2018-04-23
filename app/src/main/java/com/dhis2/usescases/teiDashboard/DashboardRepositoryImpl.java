@@ -19,7 +19,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -38,7 +37,7 @@ import io.reactivex.functions.Consumer;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 /**
- * Created by ppajuelo on 30/11/2017.
+ * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
 public class DashboardRepositoryImpl implements DashboardRepository {
@@ -273,7 +272,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     DbDateColumnAdapter dbDateColumnAdapter = new DbDateColumnAdapter();
                     int idColumnIndex = cursor.getColumnIndex("_id");
-                    Long id = idColumnIndex != -1 && !cursor.isNull(idColumnIndex) ? Long.valueOf(cursor.getLong(idColumnIndex)) : null;
+                    Long id = idColumnIndex != -1 && !cursor.isNull(idColumnIndex) ? cursor.getLong(idColumnIndex) : null;
                     int enrollmentColumnIndex = cursor.getColumnIndex("enrollment");
                     String enrollment = enrollmentColumnIndex != -1 && !cursor.isNull(enrollmentColumnIndex) ? cursor.getString(enrollmentColumnIndex) : null;
                     int valueColumnIndex = cursor.getColumnIndex("value");
@@ -315,8 +314,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 sqLiteBind(insetNoteStatement, 3, userName); //storeBy
                 sqLiteBind(insetNoteStatement, 4, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
 
-                long inserted =
-                        briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+                briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
                 insetNoteStatement.clearBindings();
 
