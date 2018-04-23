@@ -44,12 +44,17 @@ public class ProgramContract {
 
         void openDrawer();
 
+        ArrayList<Date>  getChosenDateWeek();
+        ArrayList<Date>  getChosenDateMonth();
+        ArrayList<Date>  getChosenDateYear();
+        Date getChosenDateDay();
+
     }
 
     public interface Presenter {
         void init(View view);
 
-        void onItemClick(ProgramModel homeViewModel);
+        void onItemClick(ProgramModel homeViewModel, Period currentPeriod);
 
         void onOrgUnitButtonClick();
 

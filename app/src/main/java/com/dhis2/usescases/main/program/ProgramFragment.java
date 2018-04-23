@@ -195,7 +195,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
         }
-
+        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
@@ -236,7 +236,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-        binding.programRecycler.setAdapter(new ProgramAdapter(presenter));
+        binding.programRecycler.setAdapter(new ProgramAdapter(presenter,currentPeriod));
         presenter.init(this);
     }
 
@@ -291,10 +291,32 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
     }
 
+
     @Override
     public void openDrawer() {
         binding.drawerLayout.openDrawer(Gravity.END);
     }
+
+    @Override
+    public ArrayList<Date> getChosenDateWeek() {
+        return chosenDateWeek;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateMonth() {
+        return chosenDateMonth;
+    }
+
+    @Override
+    public ArrayList<Date> getChosenDateYear() {
+        return chosenDateYear;
+    }
+
+    @Override
+    public Date getChosenDateDay() {
+        return chosenDateDay;
+    }
+
 
     @Override
     public void apply() {
@@ -325,5 +347,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
+        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
     }
 }

@@ -94,10 +94,31 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void onItemClick(ProgramModel programModel) {
+    public void onItemClick(ProgramModel programModel, Period currentPeriod) {
+
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programModel.uid());
         bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
+
+        switch (currentPeriod) {
+            case DAILY:
+                bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
+                break;
+            case WEEKLY:
+                bundle.putInt("CURRENT_PERIOD", R.string.WEEKLY);
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateWeek());
+                break;
+            case MONTHLY:
+                bundle.putInt("CURRENT_PERIOD", R.string.MONTHLY);
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateMonth());
+                break;
+            case YEARLY:
+                bundle.putInt("CURRENT_PERIOD", R.string.YEARLY);
+                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateYear());
+                break;
+        }
+
 
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
             if (programModel.displayFrontPageList()) {

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramBinding;
+import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -24,10 +25,20 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     private List<ProgramModel> programList;
     private ProgramContract.Presenter presenter;
+    private Period currentPeriod;
 
-    ProgramAdapter(ProgramContract.Presenter presenter) {
+    ProgramAdapter(ProgramContract.Presenter presenter, Period currentPeriod) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
+        this.currentPeriod=currentPeriod;
+    }
+
+    public Period getCurrentPeriod() {
+        return currentPeriod;
+    }
+
+    public void setCurrentPeriod(Period currentPeriod) {
+        this.currentPeriod = currentPeriod;
     }
 
     @Override
@@ -39,7 +50,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     @Override
     public void onBindViewHolder(ProgramViewHolder holder, int position) {
-        holder.bind(presenter, getItemAt(position));
+        holder.bind(presenter, getItemAt(position), currentPeriod);
     }
 
     public void setData(List<ProgramModel> program) {

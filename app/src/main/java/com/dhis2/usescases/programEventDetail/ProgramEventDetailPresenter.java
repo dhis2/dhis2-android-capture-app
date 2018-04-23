@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,15 +26,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     static private ProgramEventDetailContract.View view;
     private final ProgramEventDetailContract.Interactor interactor;
     public ProgramModel program;
+    public String programId;
 
     ProgramEventDetailPresenter(ProgramEventDetailContract.Interactor interactor) {
         this.interactor = interactor;
     }
 
     @Override
-    public void init(ProgramEventDetailContract.View mview, String programId) {
+    public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
         view = mview;
-        interactor.init(view, programId);
+        this.programId=programId;
+
+        interactor.init(view, programId, period);
     }
 
     @Override
@@ -53,17 +57,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void setProgram(ProgramModel program) {
+
         this.program = program;
     }
 
     @Override
     public void getEvents(Date fromDate, Date toDate) {
-        interactor.getEvents(program.uid(), fromDate, toDate);
+        interactor.getEvents(programId, fromDate, toDate);
     }
 
     @Override
     public void getProgramEventsWithDates(List<Date> dates, Period period) {
-        interactor.getProgramEventsWithDates(program.uid(), dates, period);
+        interactor.getProgramEventsWithDates(programId, dates, period);
     }
 
     @Override
@@ -79,7 +84,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onEventClick(String eventId) {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putString("PROGRAM_UID", programId);
         bundle.putString("EVENT_UID", eventId);
         bundle.putBoolean("NEW_EVENT", false);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
@@ -97,7 +102,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     public void addEvent() {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", program.uid());
+        bundle.putString("PROGRAM_UID", programId);
         bundle.putBoolean("NEW_EVENT", true);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
