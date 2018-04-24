@@ -15,6 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by frodriguez on 12/13/2017.
@@ -43,7 +44,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         this.view = view;
 
         if (programUid != null)
-            Observable.zip(
+            disposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getEnrollment(programUid, uid),
                     dashboardRepository.getProgramStages(programUid),
@@ -58,10 +59,11 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()));
+                            throwable -> Log.d("ERROR", throwable.getMessage()))
+            );
         else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
-            Observable.zip(
+            disposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(uid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, uid),
@@ -71,7 +73,8 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setData,
-                            throwable -> Log.d("ERROR", throwable.getMessage()));
+                            throwable -> Log.d("ERROR", throwable.getMessage()))
+            );
         }
     }
 
@@ -90,7 +93,10 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         disposable.add(dataEntryStore.save(programAttr.trackedEntityAttribute(), s)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+                .subscribe(
+                        data -> Log.d("SAVE", "Saved " + data),
+                        Timber::d
+                ));
     }
 
     @Override
@@ -112,7 +118,10 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             disposable.add(flowable
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(result -> view.getAbstracContext().recreate()));
+                    .subscribe(
+                            result -> view.getAbstracContext().recreate(),
+                            Timber::d)
+            );
         } else
             view.displayMessage(null);
     }
@@ -123,7 +132,10 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(result -> view.getAbstracContext().recreate()));
+                    .subscribe(
+                            result -> view.getAbstracContext().recreate(),
+                            Timber::d)
+            );
         else
             view.displayMessage(null);
 

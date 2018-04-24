@@ -24,6 +24,7 @@ import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -191,7 +192,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEvent(String programStageModelUid, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEvent(String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         compositeDisposable.add(
                 eventInitialRepository.createEvent(null, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
                         .subscribeOn(Schedulers.io())
@@ -201,7 +202,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModelUid, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         compositeDisposable.add(
                 eventInitialRepository.createEvent(trackedEntityInstanceUid, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
                         .subscribeOn(Schedulers.io())

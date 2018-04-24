@@ -14,6 +14,8 @@ import com.google.android.gms.location.LocationServices;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.Date;
+
 /**
  * Created by Cristian on 01/03/2018.
  *
@@ -55,14 +57,14 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createEvent(String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         if (program != null) {
             interactor.createNewEvent(programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
         }
     }
 
     @Override
-    public void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         interactor.createNewEventPermanent(trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
     }
 

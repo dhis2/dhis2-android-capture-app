@@ -1,6 +1,5 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
@@ -11,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormFragment;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityTeidataDetailBinding;
 import com.dhis2.databinding.FormEditTextTeiDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -33,10 +34,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new TeiDataDetailModule(getIntent().getStringExtra("ENROLLMENT_UID"))).inject(this);
+
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_teidata_detail);
         binding.setPresenter(presenter);
+
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
     }
 
@@ -50,9 +53,18 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
         binding.executePendingBindings();
-        setUpAttr(program);
+//        setUpAttr(program);
+
         supportStartPostponedEnterTransition();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.dataFragment, FormFragment.newInstance(
+                        FormViewArguments.createForEnrollment(program.getCurrentEnrollment().uid()),
+                        false))
+                .commit();
+
     }
+
 
     @Override
     public void setDataEditable() {
@@ -104,4 +116,5 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         setResult(RESULT_OK);
         super.onBackPressed();
     }
+
 }

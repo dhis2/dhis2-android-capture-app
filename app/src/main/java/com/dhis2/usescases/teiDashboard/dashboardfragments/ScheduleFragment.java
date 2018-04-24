@@ -49,7 +49,6 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
 
     static ScheduleFragment instance;
     private ScheduleAdapter adapter;
-    private static String programUid;
     TeiDashboardContracts.Presenter presenter;
     PublishProcessor<ScheduleAdapter.Filter> currentFilter;
     ActivityGlobalAbstract activity;

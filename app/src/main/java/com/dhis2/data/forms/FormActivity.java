@@ -33,7 +33,7 @@ public class FormActivity extends ActivityGlobalAbstract {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.dashboard, FormFragment.newInstance(
-                        getIntent().getParcelableExtra(ARGUMENTS)))
+                        getIntent().getParcelableExtra(ARGUMENTS),true))
                 .commit();
 
     }

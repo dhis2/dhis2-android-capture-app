@@ -40,6 +40,7 @@ import io.reactivex.subjects.PublishSubject;
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView {
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
+    private static final String FORM_VIEW_ACTIONBAR = "formViewActionbar";
 
     View fab;
     ViewPager viewPager;
@@ -61,10 +62,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         // Required empty public constructor
     }
 
-    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments) {
+    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments, boolean showActionBar) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelable(FORM_VIEW_ARGUMENTS, formViewArguments);
+        args.putBoolean(FORM_VIEW_ACTIONBAR, showActionBar);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,6 +85,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
+        View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
         reportDate = view.findViewById(R.id.textview_report_date);
         incidentDate = view.findViewById(R.id.textView_incident_date);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
@@ -90,7 +93,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        setupActionBar();
+        if (getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
+            setupActionBar();
+        else {
+            appBarLayout.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
+        }
         initReportDatePicker();
     }
 
