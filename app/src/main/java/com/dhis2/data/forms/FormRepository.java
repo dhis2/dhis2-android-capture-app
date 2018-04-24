@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Trio;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -29,7 +30,11 @@ public interface FormRepository {
     @NonNull
     Consumer<String> storeReportDate();
 
+    @NonNull
     Consumer<String> storeIncidentDate();
+
+    @NonNull
+    Consumer<LatLng> storeCoordinates();
 
     @NonNull
     Flowable<ReportStatus> reportStatus();

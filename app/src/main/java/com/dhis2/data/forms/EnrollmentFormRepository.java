@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.DateUtils;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
@@ -104,11 +105,9 @@ class EnrollmentFormRepository implements FormRepository {
                              @NonNull RuleExpressionEvaluator expressionEvaluator,
                              @NonNull RulesRepository rulesRepository,
                              @NonNull CodeGenerator codeGenerator,
-//            @NonNull CurrentDateProvider currentDateProvider,
                              @NonNull String enrollmentUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
-//        this.currentDateProvider = currentDateProvider;
         this.enrollmentUid = enrollmentUid;
 
         // We don't want to rebuild RuleEngine on each request, since metadata of
@@ -152,7 +151,8 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Flowable<ProgramModel> incidentDate() {
         return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
-                .mapToOne(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(ProgramModel::create)
+                .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
@@ -182,6 +182,19 @@ class EnrollmentFormRepository implements FormRepository {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
+        };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<LatLng> storeCoordinates() {
+        return latLng -> {
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.latitude);
+            enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.longitude); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid);

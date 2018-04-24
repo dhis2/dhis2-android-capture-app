@@ -13,15 +13,18 @@ import static com.dhis2.utils.Preconditions.isNull;
 
 public class FormActivity extends ActivityGlobalAbstract {
     private static String ARGUMENTS = "formViewArguments";
+    private static String IS_ENROLLMENT = "isEnrollment";
 
     @NonNull
     public static Intent create(@NonNull Activity activity,
-                                @NonNull FormViewArguments formViewArguments) {
+                                @NonNull FormViewArguments formViewArguments,
+                                boolean isEnrollment) {
         isNull(activity, "activity must not be null");
         isNull(formViewArguments, "formViewArguments must not be null");
 
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(ARGUMENTS, formViewArguments);
+        intent.putExtra(IS_ENROLLMENT, isEnrollment);
         return intent;
     }
 
@@ -32,8 +35,11 @@ public class FormActivity extends ActivityGlobalAbstract {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.dashboard, FormFragment.newInstance(
-                        getIntent().getParcelableExtra(ARGUMENTS)))
+                .replace(
+                        R.id.dashboard,
+                        FormFragment.newInstance(
+                                getIntent().getParcelableExtra(ARGUMENTS),
+                                getIntent().getBooleanExtra(IS_ENROLLMENT, false)))
                 .commit();
 
     }

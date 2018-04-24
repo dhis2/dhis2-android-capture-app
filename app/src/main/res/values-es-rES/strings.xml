@@ -123,6 +123,8 @@
     <string name="write_new_note">Escribir nota nueva</string>
     <string name="clear">Limpiar</string>
     <string name="add_note">Añadir nota</string>
+    <string name="revert">Deshacer</string>
+    <string name="activated">Activado</string>
     <string name="section_list">Lista de secciones</string>
     <string name="event_summary_header">%s preguntas de %s completadas</string>
     <string name="event_summary_sections_header">%s de %s completados</string>

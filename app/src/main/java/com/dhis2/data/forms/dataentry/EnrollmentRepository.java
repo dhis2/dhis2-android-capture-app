@@ -16,7 +16,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 import static android.text.TextUtils.isEmpty;
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 final class EnrollmentRepository implements DataEntryRepository {
     private static final String QUERY = "SELECT \n" +

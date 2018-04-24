@@ -420,7 +420,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid){
         FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
-        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
+        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
         finish();
     }
 

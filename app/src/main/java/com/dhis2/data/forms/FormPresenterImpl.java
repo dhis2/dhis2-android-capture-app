@@ -86,6 +86,12 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeIncidentDate(), Timber::e));
 
+        compositeDisposable.add(view.reportCoordinatesChanged()
+                .filter(latLng -> latLng != null)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.storeCoordinates(), Timber::e));
+
         ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
                 .distinctUntilChanged()
                 .publish();

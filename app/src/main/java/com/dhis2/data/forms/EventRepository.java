@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.tuples.Trio;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
@@ -160,10 +161,19 @@ public class EventRepository implements FormRepository {
         };
     }
 
+    @NonNull
     @Override
     public Consumer<String> storeIncidentDate() {
         return data -> {
             //incident date is only for tracker events
+        };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<LatLng> storeCoordinates() {
+        return data -> {
+            //coordinates are only for tracker events
         };
     }
 
