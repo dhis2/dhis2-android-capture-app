@@ -210,7 +210,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
                                     FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments));
+                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments, true));
                                 },
                                 Timber::d)
         );

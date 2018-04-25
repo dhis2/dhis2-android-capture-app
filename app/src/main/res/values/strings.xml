@@ -168,6 +168,8 @@
     <string name="write_new_note">Write new note</string>
     <string name="clear">clear</string>
     <string name="add_note">Add note</string>
+    <string name="revert">Revert</string>
+    <string name="activated">Activated</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>

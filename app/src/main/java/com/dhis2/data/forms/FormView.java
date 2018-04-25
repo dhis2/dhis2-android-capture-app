@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -22,6 +23,9 @@ interface FormView {
 
     @NonNull
     Observable<String> incidentDateChanged();
+
+    @NonNull
+    Observable<LatLng> reportCoordinatesChanged();
 
     @NonNull
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
