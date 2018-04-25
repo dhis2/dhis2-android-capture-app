@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
-import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 @SuppressWarnings("PMD")
@@ -76,22 +75,22 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe(dataEntryView.showFields(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(dataEntryView.showFields(),
+                        Timber::d
+                ));
 
-        disposable.add(dataEntryView.rowActions()
-                .debounce(1500, TimeUnit.MILLISECONDS)
+        disposable.add(dataEntryView.rowActions().debounce(1500, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .switchMap(action -> {
-                    Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
-                            action.id(), action.value());
-                    return dataEntryStore.save(action.id(), action.value());
-                })
-                .subscribe(result -> Timber.d(result.toString()), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .switchMap(action ->
+                        {
+                            Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
+                                    action.id(), action.value());
+                            return dataEntryStore.save(action.id(), action.value());
+                        }
+                ).subscribe(result -> Timber.d(result.toString()),
+                        Timber::d)
+        );
     }
 
     @Override

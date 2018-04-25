@@ -597,8 +597,8 @@ public class Bindings {
                 );
     }
 
-    @BindingAdapter({"optionSet", "label"})
-    public static void setOptionSet(Spinner spinner, String optionSet, String label) {
+    @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
+    public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
         if (metadataRepository != null && optionSet != null)
             metadataRepository.optionSet(optionSet)
                     .subscribeOn(Schedulers.io())
@@ -612,6 +612,11 @@ public class Bindings {
                                         label);
                                 spinner.setAdapter(adapter);
                                 spinner.setPrompt(label);
+                                if (initialValue != null) {
+                                    for (int i = 0; i < optionModels.size(); i++)
+                                        if (optionModels.get(i).displayName().equals(initialValue))
+                                            spinner.setSelection(i + 1);
+                                }
                             },
                             Timber::d);
     }

@@ -246,8 +246,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             String formattedDate = null;
             Date date = null;
             try {
-                DateFormat dateFormat = DateFormat.getDateTimeInstance();
-                date = dateFormat.parse(selectedDate);
+                date = DateUtils.uiDateFormat().parse(selectedDate);
                 formattedDate = DateUtils.databaseDateFormat().format(date);
             } catch (Exception e) {
                 Timber.e(e);

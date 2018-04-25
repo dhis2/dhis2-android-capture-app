@@ -201,7 +201,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
-        dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+        if (!trackEntityInstance_A.equals(teUid))
+            dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+        else
+            view.displayMessage("It's not possible to add this relationship");
     }
 
     @Override

@@ -6,14 +6,6 @@
     <data>
 
         <variable
-            name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
-
-        <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
-
-        <variable
             name="label"
             type="java.lang.String" />
 
@@ -24,6 +16,10 @@
         <variable
             name="isBgTransparent"
             type="java.lang.Boolean" />
+
+        <variable
+            name="initialValue"
+            type="java.lang.String"/>
     </data>
 
     <RelativeLayout
@@ -54,7 +50,10 @@
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
             app:label="@{label}"
-            app:optionSet="@{optionSet}" />
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:optionSet="@{optionSet}"
+            app:initialValue="@{initialValue}"/>
 
     </RelativeLayout>
 </layout>

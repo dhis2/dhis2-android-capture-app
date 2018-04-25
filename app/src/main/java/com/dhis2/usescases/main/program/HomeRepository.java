@@ -24,6 +24,12 @@ interface HomeRepository {
     Flowable<List<ProgramModel>> programs(List<Date> dates, Period period, String orgUnitsIdQuery);
 
     @NonNull
+    Observable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period);
+
+    @NonNull
+    Flowable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period, String orgUnitsIdQuery);
+
+    @NonNull
     Observable<List<EventModel>> eventModels(String programUid);
 
     @NonNull

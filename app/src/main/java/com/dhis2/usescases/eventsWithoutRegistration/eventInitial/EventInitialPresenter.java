@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
+import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -18,7 +20,6 @@ import java.util.Date;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialPresenter implements EventInitialContract.Presenter {
@@ -28,6 +29,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private final EventInitialContract.Interactor interactor;
     public ProgramModel program;
     private FusedLocationProviderClient mFusedLocationClient;
+    private String eventId;
 
 
     EventInitialPresenter(EventInitialContract.Interactor interactor) {
@@ -37,6 +39,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void init(EventInitialContract.View mview, String programId, String eventId) {
         view = mview;
+        this.eventId = eventId;
         interactor.init(view, programId, eventId);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
     }
@@ -134,6 +137,14 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onDetach() {
         interactor.onDetach();
+    }
+
+    @Override
+    public void goToSummary() {
+        Bundle bundle = new Bundle();
+        bundle.putString("event_id", eventId);
+        bundle.putString("program_id", program.uid());
+        view.startActivity(EventSummaryActivity.class, bundle, false, false, null);
     }
 
     @Override

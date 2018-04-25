@@ -26,7 +26,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.text.TextUtils.isEmpty;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {

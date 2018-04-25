@@ -8,7 +8,6 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.DashboardRepository;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -26,19 +25,16 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
     private final CompositeDisposable disposable;
-    private final AttrEntryStore dataEntryStore;
     private final EnrollmentStatusStore enrollmentStore;
     private TeiDataDetailContracts.View view;
 
-    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, AttrEntryStore dataEntryStore, EnrollmentStatusStore enrollmentStatusStore) {
+    TeiDataDetailPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
-        this.dataEntryStore = dataEntryStore;
         this.enrollmentStore = enrollmentStatusStore;
         disposable = new CompositeDisposable();
     }
 
-    @SuppressLint("CheckResult")
     @Override
     public void init(TeiDataDetailContracts.View view, String uid, String programUid) {
         this.view = view;
@@ -86,17 +82,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     @Override
     public void editData() {
         view.setDataEditable();
-    }
-
-    @Override
-    public void saveData(ProgramTrackedEntityAttributeModel programAttr, String s) {
-        disposable.add(dataEntryStore.save(programAttr.trackedEntityAttribute(), s)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> Log.d("SAVE", "Saved " + data),
-                        Timber::d
-                ));
     }
 
     @Override

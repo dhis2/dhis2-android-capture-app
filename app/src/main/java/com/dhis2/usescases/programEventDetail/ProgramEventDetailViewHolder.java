@@ -40,7 +40,8 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                         trackedEntityDataValueModels -> {
                             StringBuilder stringBuilder = new StringBuilder("");
                             for (TrackedEntityDataValueModel dataValue : trackedEntityDataValueModels) {
-                                stringBuilder.append(dataValue.value()).append("\n");
+                                if (dataValue.value() != null)
+                                    stringBuilder.append(dataValue.value()).append("\n");
                             }
                             binding.dataValue.setText(stringBuilder);
                         },

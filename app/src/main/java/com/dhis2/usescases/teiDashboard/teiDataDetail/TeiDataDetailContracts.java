@@ -24,20 +24,9 @@ public class TeiDataDetailContracts {
 
         void editData();
 
-        void saveData(ProgramTrackedEntityAttributeModel programAttr, String s);
-
         void onButtonActionClick(DashboardProgramModel dashboardProgramModel);
 
         void onDeactivate(DashboardProgramModel dashboardProgramModel);
-    }
-
-    public interface Interactor {
-        void init(View view, String uid, String programUid);
-
-        void getTrackedEntityInstance(String teiUid);
-
-        void getProgramData(String programId);
-
     }
 
 }

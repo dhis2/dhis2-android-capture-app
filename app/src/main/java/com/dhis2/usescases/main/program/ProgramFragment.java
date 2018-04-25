@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.Components;
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.CustomViews.OrgUnitButton;

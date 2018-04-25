@@ -79,6 +79,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 RowAction.create(model.getValue().uid(), date != null ? DateUtils.databaseDateFormat().format(date) : null)
         );
 
-        editText.focusSearch(View.FOCUS_DOWN).requestFocus();
+        if (editText.focusSearch(View.FOCUS_DOWN) != null)
+            editText.focusSearch(View.FOCUS_DOWN).requestFocus();
     }
 }

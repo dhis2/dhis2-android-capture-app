@@ -74,17 +74,20 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
         compositeDisposable.add(homeRepository.programs(dates, period)
+//                .flatMap(data->homeRepository.toDoPrograms(dates, period))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.swapProgramData(),
                         throwable -> view.renderError(throwable.getMessage())));
+
     }
 
 
     @Override
     public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
         compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
+//                .flatMap(data->homeRepository.toDoPrograms(dates, period, orgUnitQuery))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

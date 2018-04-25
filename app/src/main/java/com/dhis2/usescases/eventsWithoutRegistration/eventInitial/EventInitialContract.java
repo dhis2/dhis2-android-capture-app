@@ -22,7 +22,6 @@ import io.reactivex.functions.Consumer;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialContract {
@@ -90,6 +89,9 @@ public class EventInitialContract {
         void getSectionCompletion(@Nullable String sectionUid);
 
         void onDetach();
+
+        void goToSummary();
+
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

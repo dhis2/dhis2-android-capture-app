@@ -53,13 +53,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
         binding.executePendingBindings();
-//        setUpAttr(program);
 
         supportStartPostponedEnterTransition();
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, FormFragment.newInstance(
-                        FormViewArguments.createForEnrollment(program.getCurrentEnrollment().uid()),
+                        FormViewArguments.createForEnrollment(program.getCurrentEnrollment().uid()), true,
                         false))
                 .commit();
 
@@ -69,45 +68,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public void setDataEditable() {
         isEditable.set(!isEditable.get());
-        binding.dataLayout.invalidate();
-    }
-
-    private void setUpAttr(DashboardProgramModel programModel) {
-        for (ProgramTrackedEntityAttributeModel programAttr : programModel.getTrackedEntityAttributesModel()) {
-
-            FormEditTextTeiDataBinding editTextBinding = DataBindingUtil.inflate(
-                    LayoutInflater.from(this), R.layout.form_edit_text_tei_data, binding.dataLayout, false
-            );
-            editTextBinding.setAttrModel(programAttr);
-            editTextBinding.setIsEditable(isEditable);
-            FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setFlexBasisPercent(1f);
-            binding.dataLayout.addView(editTextBinding.getRoot(), params);
-
-            for (TrackedEntityAttributeValueModel dataValueModel : programModel.getTrackedEntityAttributeValues()) {
-                if (dataValueModel.trackedEntityAttribute().equals(programAttr.trackedEntityAttribute()))
-                    editTextBinding.setAttr(dataValueModel);
-
-            }
-
-            editTextBinding.formEdittext.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    presenter.saveData(programAttr, s.toString());
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-        }
-
         binding.dataLayout.invalidate();
     }
 

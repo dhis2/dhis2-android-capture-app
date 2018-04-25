@@ -30,14 +30,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid " +
             "WHERE (%s) " +
-            "GROUP BY Program.uid";
-
-    private final static String SELECT =
-            "SELECT *, Program.uid, Event.uid AS event_uid FROM ((Program" +
-                    " INNER JOIN Event ON Event.program = Program.uid)" +
-                    " INNER JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid)" +
-                    " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)" +
-                    " GROUP BY Program.uid";
+            "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_PROGRAMS = "SELECT " +
             "Program.* FROM Program " +
@@ -100,6 +93,38 @@ class HomeRepositoryImpl implements HomeRepository {
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
             dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            if (i < dates.size() - 1)
+                dateQuery.append("OR ");
+        }
+
+        return briteDatabase.createQuery(SELECT_SET, String.format(SELECT_PROGRAMS, dateQuery, orgUnitsId))
+                .mapToList(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period) {
+        StringBuilder dateQuery = new StringBuilder();
+        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+        for (int i = 0; i < dates.size(); i++) {
+            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+            dateQuery.append(String.format(queryFormat, "Event.dueDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            if (i < dates.size() - 1)
+                dateQuery.append("OR ");
+        }
+
+        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES_2, dateQuery))
+                .mapToList(ProgramModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period, String orgUnitsId) {
+        StringBuilder dateQuery = new StringBuilder();
+        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+        for (int i = 0; i < dates.size(); i++) {
+            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+            dateQuery.append(String.format(queryFormat, "Event.dueDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
