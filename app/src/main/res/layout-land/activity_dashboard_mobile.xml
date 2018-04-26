@@ -7,6 +7,13 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="dashboardModel"
+            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -36,6 +43,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 android:textColor="?colorAccent"
                 tools:text="TEI NAME" />
 
@@ -44,6 +52,7 @@
                 android:layout_height="match_parent"
                 android:padding="10dp"
                 app:srcCompat="@drawable/ic_program_border"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>
@@ -64,6 +73,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary"
+            app:tabBackground="?colorPrimary"
+            app:tabIndicatorColor="?colorAccent"
+            app:tabSelectedTextColor="?colorAccent"
+            app:tabTextColor="?colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
         <android.support.v4.view.ViewPager
             android:id="@+id/tei_pager"
             android:layout_width="0dp"
@@ -71,7 +93,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

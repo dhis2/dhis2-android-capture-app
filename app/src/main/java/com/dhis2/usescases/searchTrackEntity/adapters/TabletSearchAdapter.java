@@ -28,9 +28,10 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 07/03/2018.
+ * QUADRAM. Created by ppajuelo on 07/03/2018.
  */
 
 public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEntityInstanceModel, String> {
@@ -69,7 +70,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(Schedulers.io())
-                .subscribe(data -> setCellItems(cellItems));
+                .subscribe(data -> setCellItems(cellItems), Timber::d);
 
         setRowHeaderItems(teis);
         setColumnHeaderItems(headers);
@@ -141,5 +142,9 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     @Override
     public View onCreateCornerView() {
         return null;
+    }
+
+    public TrackedEntityInstanceModel getTEI(int position){
+        return teis.get(position);
     }
 }

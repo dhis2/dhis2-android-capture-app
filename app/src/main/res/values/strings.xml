@@ -192,4 +192,12 @@
     <string name="add_relation_button">Add as %s</string>
 
     <string name="date_dialog_clear">Clear</string>
+    <string name="period">Period</string>
+    <string name="org_unit_filter">(%d) Org Unit</string>
+    <string name="tuto_main_1">Welcome to dhis2</string>
+    <string name="tuto_main_2">Here you can see your programs</string>
+    <string name="tuto_main_3">You can apply a filter…</string>
+    <string name="tuto_main_4">…by changing the period and selecting dates…</string>
+    <string name="tuto_main_5">…or filter by Organisation Unit</string>
+    <string name="tuto_main_6">Check other actions on the main menu</string>
 </resources>

@@ -14,7 +14,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:openDrawer="end">
 
         <LinearLayout
@@ -34,6 +33,7 @@
                 android:visibility="gone">
 
                 <LinearLayout
+                    android:id="@+id/periodLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     tools:ignore="UseCompoundDrawables">
@@ -45,7 +45,7 @@
                         android:background="@drawable/period_button"
                         android:onClick="@{()->presenter.onTimeButtonClick()}"
                         android:padding="7dp"
-                        app:srcCompat="@drawable/ic_view_day"
+                        app:srcCompat="@drawable/ic_view_none"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -60,7 +60,7 @@
                         android:minWidth="70dp"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:padding="7dp"
-                        android:text="@string/DAILY"
+                        android:text="@string/period"
                         android:textColor="?colorAccent" />
                 </LinearLayout>
 
@@ -113,7 +113,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:background="@color/white_faf"
-            android:fitsSystemWindows="false"
             app:itemTextColor="?colorPrimary">
 
             <LinearLayout

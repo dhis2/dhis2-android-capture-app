@@ -7,6 +7,7 @@ import com.dhis2.R;
  */
 
 public enum Period {
+    NONE(R.string.period),
     DAILY (R.string.DAILY),
     WEEKLY(R.string.WEEKLY),
     MONTHLY(R.string.MONTHLY),

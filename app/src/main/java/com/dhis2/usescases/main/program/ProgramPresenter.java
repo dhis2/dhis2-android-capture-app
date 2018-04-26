@@ -55,9 +55,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .map(
                                 orgUnits -> {
                                     this.myOrgs = orgUnits;
-                                    ArrayList<Date> today = new ArrayList<>();
-                                    today.add(DateUtils.getInstance().getToday());
-                                    return homeRepository.programs(today, Period.DAILY, orgUnitQuery());
+                                    return homeRepository.programs(orgUnitQuery());
                                 }
                         )
                         .subscribeOn(Schedulers.io())
@@ -97,6 +95,18 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
+    public void getAllPrograms(String orgUnitQuery) {
+        compositeDisposable.add(
+                homeRepository.programs(orgUnitQuery)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.swapProgramData(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
+    }
+
+    @Override
     public void onItemClick(ProgramModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();
@@ -104,6 +114,9 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
 
         switch (currentPeriod) {
+            case NONE:
+                bundle.putInt("CURRENT_PERIOD", R.string.period);
+                bundle.putSerializable("CHOOSEN_DATE", null);
             case DAILY:
                 bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
                 bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());

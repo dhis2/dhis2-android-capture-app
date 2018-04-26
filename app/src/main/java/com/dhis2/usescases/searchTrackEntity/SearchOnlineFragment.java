@@ -3,7 +3,9 @@ package com.dhis2.usescases.searchTrackEntity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
+import com.evrencoskun.tableview.listener.ITableViewListener;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -24,7 +27,7 @@ import java.util.List;
  * QUADRAM. Created by ppajuelo on 16/04/2018.
  */
 
-public class SearchOnlineFragment extends FragmentGlobalAbstract {
+public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITableViewListener {
     private static SearchOnlineFragment instance;
     private TabletSearchAdapter searchTEATabletAdapter;
     private SearchTEAdapter searchTEAdapter;
@@ -70,5 +73,18 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract {
     public void clear() {
         if (searchTEAdapter != null)
             searchTEAdapter.clear();
+    }
+    @Override
+    public void onCellClicked(@NonNull RecyclerView.ViewHolder p_jCellView, int p_nXPosition, int p_nYPosition) {
+    }
+
+    @Override
+    public void onColumnHeaderClicked(@NonNull RecyclerView.ViewHolder p_jColumnHeaderView, int p_nXPosition) {
+
+    }
+
+    @Override
+    public void onRowHeaderClicked(@NonNull RecyclerView.ViewHolder p_jRowHeaderView, int p_nYPosition) {
+
     }
 }

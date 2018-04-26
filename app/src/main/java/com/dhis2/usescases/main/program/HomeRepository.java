@@ -16,6 +16,8 @@ import io.reactivex.Observable;
 
 interface HomeRepository {
 
+    @NonNull
+    Observable<List<ProgramModel>> programs(String orgUnitsIdQuery);
 
     @NonNull
     Observable<List<ProgramModel>> programs(List<Date> dates, Period period);

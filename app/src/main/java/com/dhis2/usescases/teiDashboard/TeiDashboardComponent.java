@@ -12,5 +12,5 @@ import dagger.Subcomponent;
 @PerActivity
 @Subcomponent(modules = TeiDashboardModule.class)
 public interface TeiDashboardComponent {
-    void inject(TeiDashboardMobileActivity mobileActivity);
+    void inject(TeiDashboardActivity mobileActivity);
 }

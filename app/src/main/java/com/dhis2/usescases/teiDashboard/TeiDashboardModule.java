@@ -17,7 +17,7 @@ import dagger.Provides;
 public class TeiDashboardModule {
     @Provides
     @PerActivity
-    TeiDashboardContracts.View provideView(TeiDashboardMobileActivity mobileActivity) {
+    TeiDashboardContracts.View provideView(TeiDashboardActivity mobileActivity) {
         return mobileActivity;
     }
 

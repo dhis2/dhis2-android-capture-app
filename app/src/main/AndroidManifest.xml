@@ -40,7 +40,6 @@
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity android:name=".usescases.searchTrackEntity.SearchTEActivity" />
         <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
-        <activity android:name=".usescases.teiDashboard.tablet.TeiDashboardTabletActivity" />
         <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
@@ -54,6 +53,7 @@
         <activity
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
 
         <service
             android:name=".data.service.SyncService"
