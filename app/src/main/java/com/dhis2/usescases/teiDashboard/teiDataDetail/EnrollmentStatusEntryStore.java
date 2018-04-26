@@ -10,4 +10,7 @@ public interface EnrollmentStatusEntryStore {
 
     @NonNull
     Flowable<Long> save(@NonNull String uid, @NonNull EnrollmentStatus value);
+
+    @NonNull
+    Flowable<EnrollmentStatus> enrollmentStatus(@NonNull String enrollmentUid);
 }

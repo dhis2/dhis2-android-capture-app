@@ -3,25 +3,22 @@ package com.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.View;
 
 import com.dhis2.App;
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.FormFragment;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityTeidataDetailBinding;
-import com.dhis2.databinding.FormEditTextTeiDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
-import com.google.android.flexbox.FlexboxLayout;
 
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
     ActivityTeidataDetailBinding binding;
@@ -40,12 +37,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding = DataBindingUtil.setContentView(this, R.layout.activity_teidata_detail);
         binding.setPresenter(presenter);
 
-        init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"));
+        init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"), getIntent().getStringExtra("ENROLLMENT_UID"));
     }
 
     @Override
-    public void init(String teiUid, String programUid) {
-        presenter.init(this, teiUid, programUid);
+    public void init(String teiUid, String programUid, String enrollmentUid) {
+        presenter.init(this, teiUid, programUid, enrollmentUid);
     }
 
     @Override
@@ -69,6 +66,14 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     public void setDataEditable() {
         isEditable.set(!isEditable.get());
         binding.dataLayout.invalidate();
+    }
+
+    @Override
+    public Consumer<EnrollmentStatus> handleStatus() {
+        return enrollmentStatus -> {
+            Bindings.setEnrolmentAction(binding.buttonProfile, enrollmentStatus);
+            binding.buttonDelete.setVisibility(enrollmentStatus == EnrollmentStatus.ACTIVE ? View.VISIBLE : View.GONE);
+        };
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -36,10 +35,10 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     }
 
     @Override
-    public void init(TeiDataDetailContracts.View view, String uid, String programUid) {
+    public void init(TeiDataDetailContracts.View view, String uid, String programUid, String enrollmentUid) {
         this.view = view;
 
-        if (programUid != null)
+        if (programUid != null) {
             disposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(uid),
                     dashboardRepository.getEnrollment(programUid, uid),
@@ -57,7 +56,17 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
                             view::setData,
                             throwable -> Log.d("ERROR", throwable.getMessage()))
             );
-        else {
+
+            disposable.add(
+                    enrollmentStore.enrollmentStatus(enrollmentUid)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    view.handleStatus(),
+                                    throwable -> Log.d("ERROR", throwable.getMessage()))
+
+            );
+        } else {
             //TODO: NO SE HA SELECCIONADO PROGRAMA
             disposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(uid),
@@ -88,23 +97,28 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
     public void onButtonActionClick(DashboardProgramModel dashboardProgramModel) {
         if (dashboardProgramModel.getCurrentProgram().accessDataWrite()) {
             Flowable<Long> flowable = null;
+            EnrollmentStatus newStatus;
             switch (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()) {
                 case ACTIVE:
-                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED);//TODO: SET STATUS TO COMPLETED
+                    newStatus = EnrollmentStatus.COMPLETED;
                     break;
                 case COMPLETED:
-                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
+                    newStatus = EnrollmentStatus.ACTIVE;
                     break;
                 case CANCELLED:
-                    flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE);//TODO: SET STATUS TO ACTIVE
+                    newStatus = EnrollmentStatus.ACTIVE;
+                    break;
+                default:
+                    newStatus = EnrollmentStatus.ACTIVE;
                     break;
             }
-
+            flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), newStatus);
             disposable.add(flowable
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map(result -> newStatus)
                     .subscribe(
-                            result -> view.getAbstracContext().recreate(),
+                            view.handleStatus(),
                             Timber::d)
             );
         } else
@@ -117,8 +131,9 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map(result->EnrollmentStatus.CANCELLED)
                     .subscribe(
-                            result -> view.getAbstracContext().recreate(),
+                            view.handleStatus(),
                             Timber::d)
             );
         else

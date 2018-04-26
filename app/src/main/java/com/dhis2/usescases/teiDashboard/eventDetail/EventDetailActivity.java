@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormFragment;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivityEventDetailBinding;
 import com.dhis2.databinding.FormEditTextDataBinding;
@@ -87,6 +89,12 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
 
         supportStartPostponedEnterTransition();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.dataFragment, FormFragment.newInstance(
+                        FormViewArguments.createForEvent(eventUid), false,
+                        false))
+                .commit();
 
     }
 

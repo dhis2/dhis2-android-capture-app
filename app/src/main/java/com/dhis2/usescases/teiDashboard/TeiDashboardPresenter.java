@@ -146,7 +146,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
-        extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
+        if (dashboardProgramModel.getCurrentEnrollment() != null)
+            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());

@@ -8,7 +8,6 @@ import com.dhis2.usescases.programDetail.ProgramDetailActivity;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -147,12 +146,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 view.startActivity(SearchTEActivity.class, bundle, false, false, null);
             }
         } else {
-            if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                // TODO CRIS: CRREATE TABLET ACTIVITY
-                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-            } else {
-                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-            }
+            view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
         }
     }
 
