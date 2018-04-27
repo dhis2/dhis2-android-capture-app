@@ -84,7 +84,9 @@
                         android:id="@+id/server_url_edit"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:imeOptions="actionNext"
                         android:inputType="textUri"
+                        android:maxLines="1"
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:padding="5dp"
                         android:textColor="?colorPrimaryDark"
@@ -106,7 +108,9 @@
                         android:id="@+id/user_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:imeOptions="actionNext"
                         android:inputType="textPersonName"
+                        android:maxLines="1"
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:textColor="?colorPrimaryDark"
                         android:textSize="17sp" />
@@ -127,7 +131,10 @@
                     <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
+                        android:imeActionLabel="@string/log_in_button"
+                        android:maxLines="1"
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:textColor="?colorPrimaryDark"
                         android:textSize="17sp" />
