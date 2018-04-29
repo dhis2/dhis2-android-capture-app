@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -82,14 +83,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Observable<String> createEvent(@NonNull Context context, @NonNull String programUid,
+    public Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
+                            @NonNull Context context, @NonNull String programUid,
                             @NonNull String programStage, @NonNull String date,
                             @NonNull String orgUnitUid, @NonNull String catComboUid,
                             @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
 
         Date createDate = Calendar.getInstance().getTime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
 
         Date eventDate = createDate;
 
@@ -109,6 +110,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .organisationUnit(orgUnitUid)
                 .status(EventStatus.ACTIVE)
                 .state(State.TO_POST)
+                .trackedEntityInstance(trackedEntityInstanceUid)
                 // TODO CRIS: CHECK IF THESE ARE WORKING...
 //                .latitude(latitude)
 //                .longitude(longitude)
@@ -126,6 +128,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             return Observable.just(eventModel.uid());
     }
 
+    @Override
+    public Observable<Void> updateTrackedEntityInstance(String trackedEntityInstanceUid, String orgUnitUid) {
+        return null;
+    }
+
 
     @NonNull
     @Override
@@ -139,6 +146,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<ProgramStageModel> programStage(String programUid) {
         String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.PROGRAM + " = '" + programUid + "'";
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE)
+                .mapToOne(ProgramStageModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<ProgramStageModel> programStageWithId(String programStageUid) {
+        String SELECT_PROGRAM_STAGE_WITH_ID = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.UID + " = '" + programStageUid + "'";
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE_WITH_ID)
                 .mapToOne(ProgramStageModel::create);
     }
 

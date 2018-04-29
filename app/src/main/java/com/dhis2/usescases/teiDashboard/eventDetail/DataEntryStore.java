@@ -3,6 +3,8 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.hisp.dhis.android.core.event.EventModel;
+
 import io.reactivex.Flowable;
 
 /**
@@ -13,4 +15,6 @@ public interface DataEntryStore {
 
     @NonNull
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
+
+    void updateEventStatus(EventModel eventModel);
 }

@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -109,4 +110,8 @@ public interface MetadataRepository {
 
     /*OPTION SET*/
     Observable<List<OptionModel>> optionSet(String optionSetId);
+
+    /*RESOURCE*/
+    Observable<ResourceModel> getLastSync(int resourceId);
+
 }

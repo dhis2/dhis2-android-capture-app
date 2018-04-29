@@ -1,24 +1,28 @@
 package com.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.databinding.ViewDataBinding;
-
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
-import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
+import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.databinding.FormButtonBinding;
 
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import io.reactivex.processors.FlowableProcessor;
 
 /**
  * Created by ppajuelo on 19/03/2018.
  */
 
 public class OrgUnitHolder extends FormViewHolder {
+    FormButtonBinding binding;
 
-    public OrgUnitHolder(ViewDataBinding binding) {
+    public OrgUnitHolder(FormButtonBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+
+        binding.formButton.setOnClickListener(view -> {
+        });
     }
 
-    /*@Override
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableOnject) {
-
-    }*/
+    public void update(OrgUnitViewModel viewModel) {
+       /* binding.setLabel(viewModel.label());
+        if (viewModel.value() != null)
+            binding.formButton.setText(viewModel.value());*/
+    }
 }

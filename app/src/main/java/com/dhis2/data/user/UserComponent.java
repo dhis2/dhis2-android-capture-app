@@ -11,8 +11,6 @@ import com.dhis2.data.service.MetadataServiceComponent;
 import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
-import com.dhis2.usescases.appInfo.InfoComponent;
-import com.dhis2.usescases.appInfo.InfoModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -27,8 +25,12 @@ import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletComponent;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletModule;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
+import com.dhis2.usescases.syncManager.SyncManagerComponent;
+import com.dhis2.usescases.syncManager.SyncManagerModule;
 import com.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailComponent;
@@ -86,13 +88,15 @@ public interface UserComponent {
     @NonNull
     ProgramComponent plus(@NonNull ProgramModule programModule);
 
-
-    @NonNull
-    InfoComponent plus(InfoModule infoModule);
-
     @NonNull
     EventInitialComponent plus(EventInitialModule eventInitialModule);
 
     @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
+
+    @NonNull
+    SyncManagerComponent plus(SyncManagerModule syncManagerModule);
+
+    @NonNull
+    ProgramStageSelectionComponent plus(ProgramStageSelectionModule programStageSelectionModule);
 }

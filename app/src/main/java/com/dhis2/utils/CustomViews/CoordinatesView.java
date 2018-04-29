@@ -14,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dhis2.R;
+import com.dhis2.databinding.FormCoordinatesAccentBinding;
+import com.dhis2.databinding.FormCoordinatesBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -27,8 +29,9 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class CoordinatesView extends RelativeLayout implements View.OnClickListener {
 
     private ViewDataBinding binding;
-    private TextView latitude;
-    private TextView longitude;
+    /*  private TextView latitude;
+      private TextView longitude;*/
+    private TextView latLong;
     private ImageButton position;
     private ImageButton map;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -64,8 +67,9 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
 
-        latitude = findViewById(R.id.lat);
-        longitude = findViewById(R.id.lon);
+        /*latitude = findViewById(R.id.lat);
+        longitude = findViewById(R.id.lon);*/
+        latLong = findViewById(R.id.latlong);
         position = findViewById(R.id.location1);
         map = findViewById(R.id.location2);
 
@@ -75,6 +79,17 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
     public void setMapListener(OnMapPositionClick listener) {
         this.listener = listener;
+    }
+
+    public void setLabel(String label) {
+        if (binding instanceof FormCoordinatesBinding)
+            ((FormCoordinatesBinding) binding).setLabel(label);
+        else
+            ((FormCoordinatesAccentBinding) binding).setLabel(label);
+    }
+
+    public void setInitialValue(String initialValue) {
+        this.latLong.setText(initialValue.replace("[", "").replace("]", ""));
     }
 
     @Override
@@ -118,8 +133,9 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void updateLocation(double latitude, double longitude) {
-        this.latitude.setText(String.valueOf(latitude));
-        this.longitude.setText(String.valueOf(longitude));
+ /*       this.latitude.setText(String.valueOf(latitude));
+        this.longitude.setText(String.valueOf(longitude));*/
+        this.latLong.setText(String.format("%s, %s", latitude, longitude));
         invalidate();
     }
 

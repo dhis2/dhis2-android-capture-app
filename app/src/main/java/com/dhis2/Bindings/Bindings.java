@@ -67,6 +67,22 @@ public class Bindings {
 
     }
 
+    @BindingAdapter("currentFragment")
+    public static void setCurrentFragment(TextView textView, int currentFragmentId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = textView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        int colorPrimary = a.getColor(0, 0);
+        a.recycle();
+        int colorAccent = ContextCompat.getColor(textView.getContext(), R.color.colorAccent);
+        if (currentFragmentId == textView.getId()) {
+            textView.setTextColor(colorPrimary);
+            textView.setBackgroundColor(colorAccent);
+        } else {
+            textView.setTextColor(colorAccent);
+            textView.setBackgroundColor(colorPrimary);
+        }
+    }
+
     @BindingAdapter("date")
     public static void parseDate(TextView textView, Date date) {
         if (date != null) {
@@ -94,7 +110,7 @@ public class Bindings {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> textView.setText(DateUtils.getInstance().formatDate(data.get(0).lastUpdated())),
+                        data -> textView.setText(DateUtils.uiDateFormat().format(data.get(0).eventDate())),
                         Timber::d);
     }
 

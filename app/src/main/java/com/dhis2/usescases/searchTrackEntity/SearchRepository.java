@@ -30,8 +30,6 @@ public interface SearchRepository {
 
     Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
                                                                         @Nullable String programUid,
-                                                                        @Nullable String enrollmentDate,
-                                                                        @Nullable String incidentDate,
                                                                         @Nullable HashMap<String, String> queryData);
 
     @NonNull

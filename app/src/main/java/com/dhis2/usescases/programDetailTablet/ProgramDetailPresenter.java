@@ -73,4 +73,9 @@ public class ProgramDetailPresenter implements ProgramDetailContractModule.Prese
     public void onDettach() {
         interactor.onDettach();
     }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }

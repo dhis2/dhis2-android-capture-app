@@ -8,6 +8,7 @@ import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
@@ -68,16 +69,16 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             "PMD.StdCyclomaticComplexity"
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value) {
+                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,@Nullable String section) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
-            return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value);
+            return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section);
         }
 
         switch (type) {
-           case AGE:
-                return AgeViewModel.create(id, label, mandatory, value);
+            case AGE:
+                return AgeViewModel.create(id, label, mandatory, value, section);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -91,23 +92,24 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section);
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section);
             case FILE_RESOURCE:
-                return FileViewModel.create(id, label, mandatory, value);
+                return FileViewModel.create(id, label, mandatory, value, section);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value);
+                return CoordinateViewModel.create(id, label, mandatory, value, section);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type,  mandatory, value);
-            case TRACKER_ASSOCIATE:
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section);
             case ORGANISATION_UNIT:
+                return OrgUnitViewModel.create(id, label, mandatory, value, section);
+            case TRACKER_ASSOCIATE:
             case URL:
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section);
         }
     }
 

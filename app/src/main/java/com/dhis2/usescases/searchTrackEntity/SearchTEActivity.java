@@ -1,6 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,18 +15,20 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
+import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 02/11/2017 .
@@ -41,11 +42,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Inject
     MetadataRepository metadataRepository;
 
-    private SearchTEAdapter searchTEAdapter;
-    private TabletSearchAdapter searchTEATabletAdapter;
-
     private String initialProgram;
     private String tEType;
+    private SearchPagerAdapter pagerAdapter;
+    private boolean fromRelationship = false;
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -59,28 +59,31 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
 
-        if (getResources().getBoolean(R.bool.is_tablet)) {
-            searchTEATabletAdapter = new TabletSearchAdapter(this, presenter, metadataRepository);
-            binding.tableView.setAdapter(searchTEATabletAdapter);
-            binding.scrollView.setVisibility(View.GONE);
-
-        } else {
-            binding.scrollView.setNestedScrollingEnabled(false);
-            searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
-            binding.scrollView.setAdapter(searchTEAdapter);
-            binding.tableView.setVisibility(View.GONE);
-        }
-
-        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
+
+        try {
+            fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
+        } catch (Exception e){
+            Timber.d(e.getMessage());
+        }
+
+        //Pager configuration based on network
+        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
+        pagerAdapter.setOnline(NetworkUtils.isOnline(this));
+        binding.resultsPager.setAdapter(pagerAdapter);
+        binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
+        binding.searchTab.setupWithViewPager(binding.resultsPager);
+        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, tEType);
+        presenter.init(this, tEType, initialProgram);
     }
+
 
     @Override
     protected void onPause() {
@@ -115,14 +118,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
         return data -> {
-            binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setText(String.format("%s results found", data.size()));
 
-            if (getResources().getBoolean(R.bool.is_tablet)) {
-                searchTEATabletAdapter.setItems(data, presenter.getProgramList());
-            } else {
-                searchTEAdapter.setItems(data);
-            }
+            binding.progress.setVisibility(View.GONE);
+            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.size())));
+
+            ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList());
+
+            if (NetworkUtils.isOnline(this))
+                ((SearchOnlineFragment) pagerAdapter.getItem(1)).setItems(data, presenter.getProgramList());
+
         };
     }
 
@@ -130,17 +134,13 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
-        if (searchTEAdapter != null)
-            searchTEAdapter.clear();
+       /* ((SearchLocalFragment) pagerAdapter.getItem(0)).clear();
+        if (NetworkUtils.isOnline(this))
+            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();*/
+       if(uid==null)
+           binding.programSpinner.setSelection(0);
     }
     //endregion
-
-    @Override
-    public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
-        Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
-    }
 
     @Override
     public void setPrograms(List<ProgramModel> programModels) {
@@ -155,8 +155,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.objectCounter.setText("");
                 if (pos > 0) {
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
+                    binding.enrollmentButton.setVisibility(View.VISIBLE);
                 } else {
                     presenter.setProgram(null);
+                    binding.enrollmentButton.setVisibility(View.GONE);
                 }
             }
 

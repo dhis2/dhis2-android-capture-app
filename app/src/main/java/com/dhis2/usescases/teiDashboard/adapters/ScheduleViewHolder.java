@@ -20,11 +20,11 @@ class ScheduleViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(EventModel eventModel, boolean isFirst, boolean isLast, ProgramStageModel programStage) {
+    public void bind(EventModel eventModel, boolean isFirst, boolean isLast, String programStageUid) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.isfirst, isFirst);
         binding.setVariable(BR.islast, isLast);
-        binding.setVariable(BR.stage, programStage);
+        binding.setVariable(BR.stage, programStageUid);
         binding.executePendingBindings();
     }
 }

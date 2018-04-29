@@ -61,7 +61,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
                 break;
         }
 
-        return new DateTimeHolder(binding);
+        return new DateTimeHolder(binding, processor);
     }
 
     @Override

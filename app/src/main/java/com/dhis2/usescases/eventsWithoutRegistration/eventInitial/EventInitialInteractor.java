@@ -94,6 +94,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                                         return eventInitialRepository.catCombo(programModel.categoryCombo());
                                     }
                             )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
                                     Timber::d
@@ -115,24 +117,37 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                                         return eventInitialRepository.catCombo(programModel.categoryCombo());
                                     }
                             )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
                                     Timber::d
                             )
             );
         getOrgUnits();
-        getProgramStage(programId);
+        getProgramStages(programId);
         if (eventUid != null)
             getEventSections(eventUid);
     }
 
-    private void getProgramStage(String programUid) {
+    private void getProgramStages(String programUid) {
         compositeDisposable.add(eventInitialRepository.programStage(programUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         programStageModel -> view.setProgramStage(programStageModel),
-                        throwable -> view.renderError(throwable.getMessage())
+                        throwable -> view.showProgramStageSelection()
+                ));
+    }
+
+    @Override
+    public void getProgramStageWithId(String programStageUid) {
+        compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programStageModel -> view.setProgramStage(programStageModel),
+                        throwable -> view.showProgramStageSelection()
                 ));
     }
 
@@ -177,25 +192,32 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
     @Override
     public void createNewEvent(String programStageModelUid, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
-
         compositeDisposable.add(
-                eventInitialRepository.createEvent(view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                eventInitialRepository.createEvent(null, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
         );
-      /*  if (rowId < 0) {
-            String message = view.getContext().getString(R.string.failed_insert_event);
-            view.showToast(message);
-        } else {
-            compositeDisposable.add(eventInitialRepository.newlyCreatedEvent(rowId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            eventModel -> view.onEventCreated(eventModel.uid()),
-                            throwable -> view.renderError(throwable.getMessage())
-                    ));
-        }*/
+    }
+
+    @Override
+    public void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModelUid, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+        compositeDisposable.add(
+                eventInitialRepository.createEvent(trackedEntityInstanceUid, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                (eventUid) -> {
+                                    compositeDisposable.add(eventInitialRepository.updateTrackedEntityInstance(trackedEntityInstanceUid, orgUnitUid)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(
+                                                    (Void) -> view.onEventCreated(eventUid),
+                                                    t -> view.renderError(t.getMessage())));
+
+                                },
+                                t -> view.renderError(t.getMessage()))
+        );
     }
 
 

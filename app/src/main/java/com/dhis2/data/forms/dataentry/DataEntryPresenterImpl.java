@@ -13,6 +13,7 @@ import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -159,10 +160,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.remove(hideField.field());
             } else if (ruleAction instanceof RuleActionDisplayText) {
                 String uid = codeGenerator.generate();
-
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT);
+                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
@@ -173,6 +173,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                         displayText.content(), displayText.data());
 
                 fieldViewModels.put(uid, textViewModel);*/
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
+                for (String uidKey : fieldViewModels.keySet()) {
+                    if (fieldViewModels.get(uidKey).programStageSection().equals(hideSection.programStageSection()))
+                        fieldViewModels.remove(uidKey);
+                }
+
             }
         }
     }

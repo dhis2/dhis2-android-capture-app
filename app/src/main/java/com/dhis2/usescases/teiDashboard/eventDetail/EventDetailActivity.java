@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +27,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian E. on 18/12/2017.
- *
  */
 
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
@@ -36,6 +36,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     EventDetailContracts.Presenter presenter;
 
     private String eventUid;
+    private ObservableBoolean isEditable = new ObservableBoolean(false);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
         binding.setEvent(eventDetailModel.getEventModel());
+        binding.setStage(eventDetailModel.getProgramStage());
         binding.executePendingBindings();
 
         if (!eventDetailModel.getStageSections().isEmpty()) {
@@ -88,6 +90,15 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     }
 
+    @Override
+    public void setDataEditable() {
+        if (binding.getStage().accessDataWrite()) {
+            isEditable.set(!isEditable.get());
+            binding.dataLayout.invalidate();
+        } else
+            displayMessage(null);
+    }
+
     private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {
 
         for (ProgramStageDataElementModel dataValueModel : eventDetailModel.getDataElementsForSection(sectionUid)) {
@@ -98,6 +109,8 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             editTextBinding.setDataValue(dataValueModel);
 
             editTextBinding.formEdittext.setText(eventDetailModel.getValueForDE(dataValueModel.dataElement()));
+
+            editTextBinding.setIsEditable(isEditable);
 
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setFlexBasisPercent(1f);

@@ -5,11 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--SCROLLING VIEW-->
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_complete_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        app:backgroundTint="?colorPrimary"
+        app:elevation="8dp"
+        app:pressedTranslationZ="8dp"
+        app:srcCompat="@drawable/ic_menu" />
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="true"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+ -->
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager_dataentry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+        <!--</FrameLayout>-->
+    </android.support.v4.widget.NestedScrollView>
+
+    <!--END OF SCROLLING VIEW-->
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout_data_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:background="?colorPrimary">
         <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -17,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:titleEnabled="false">
 
             <android.support.v7.widget.Toolbar
@@ -34,65 +71,48 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:orientation="vertical">
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <TextView
                 android:id="@+id/textview_report_date"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="42dp"
-                android:layout_marginBottom="8dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
                 android:background="@color/colorPrimaryLight"
-                android:focusable="true"
                 android:gravity="center_vertical"
                 android:hint="@string/report_date"
                 android:padding="8dp"
                 android:textSize="16sp" />
 
-            <com.dhis2.data.forms.AutoHidingTabLayout
-                android:id="@+id/tablayout_data_entry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:tabMode="scrollable" />
+            <TextView
+                android:id="@+id/textView_incident_date"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryLight"
+                android:gravity="center_vertical"
+                android:hint="@string/incident_date"
+                android:padding="8dp"
+                android:textSize="16sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
+        <com.dhis2.data.forms.AutoHidingTabLayout
+            android:id="@+id/tablayout_data_entry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:tabMode="scrollable" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewpager_dataentry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white" />
-
-        </FrameLayout>
-    </android.support.v4.widget.NestedScrollView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_complete_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:backgroundTint="?colorPrimary"
-        app:elevation="8dp"
-        app:layout_anchor="@+id/content_frame"
-        app:layout_anchorGravity="bottom|right|end"
-        app:pressedTranslationZ="8dp"
-        app:srcCompat="@drawable/ic_menu" />
 </android.support.design.widget.CoordinatorLayout>

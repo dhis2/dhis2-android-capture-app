@@ -61,6 +61,8 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
         programList.clear();
         programList.addAll(program);
         diffResult.dispatchUpdatesTo(this);
+
+        notifyDataSetChanged();
     }
 
     private ProgramModel getItemAt(int position) {

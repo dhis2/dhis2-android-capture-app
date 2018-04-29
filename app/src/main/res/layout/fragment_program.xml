@@ -78,11 +78,11 @@
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                     android:paddingEnd="15dp"
                     android:paddingStart="15dp"
+                    android:text="@string/org_unit"
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
                     android:textColor="?colorAccent"
-                    android:textSize="15sp"
-                    android:text="@string/org_unit" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -113,25 +113,29 @@
 
         <android.support.design.widget.NavigationView
             android:id="@+id/org_unit_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:layout_marginStart="-50dp"
             android:background="@color/white_faf"
-            android:fitsSystemWindows="false"
-            app:itemTextColor="?colorPrimary">
+            android:fitsSystemWindows="true"
+            app:itemTextColor="?colorPrimary"
+            tools:visibility="visible"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                >
 
                 <RelativeLayout
                     android:id="@+id/tree_view_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:paddingStart="20dp"
                     android:paddingEnd="0dp"
+                    android:paddingStart="20dp"
                     android:paddingTop="40dp" />
 
                 <Button

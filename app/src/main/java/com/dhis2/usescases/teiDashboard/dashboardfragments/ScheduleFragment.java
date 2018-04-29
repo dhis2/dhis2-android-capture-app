@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
@@ -15,9 +16,28 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentScheduleBinding;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+
+import org.hisp.dhis.android.core.event.EventModel;
+
+import java.util.List;
+
+import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.REFERRAL;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.SCHEDULENEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -28,7 +48,11 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
     FragmentScheduleBinding binding;
 
     static ScheduleFragment instance;
-    private static DashboardProgramModel program;
+    private ScheduleAdapter adapter;
+    private static String programUid;
+    TeiDashboardContracts.Presenter presenter;
+    PublishProcessor<ScheduleAdapter.Filter> currentFilter;
+    ActivityGlobalAbstract activity;
 
     public static ScheduleFragment getInstance() {
         if (instance == null)
@@ -36,25 +60,63 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         return instance;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = (ActivityGlobalAbstract) context;
+        presenter = ((TeiDashboardMobileActivity) context).getPresenter();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false);
-        if (program!= null)
-            binding.scheduleRecycler.setAdapter(new ScheduleAdapter(program.getProgramStages(), program.getEvents()));
+        adapter = new ScheduleAdapter();
+        binding.scheduleRecycler.setAdapter(adapter);
         binding.scheduleFilter.setOnClickListener(this);
-        return binding.getRoot();
-    }
+        currentFilter = PublishProcessor.create();
 
-    public void setData(DashboardProgramModel mprogram) {
-        program = mprogram;
+        binding.fab.setOptionsClick(integer -> {
+            if (integer == null)
+                return;
+
+            Bundle bundle = new Bundle();
+            bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
+            bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
+            bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString("ENROLLMENT_UID", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putBoolean(NEW_EVENT, true);
+
+            switch (integer) {
+                case R.id.referral:
+                    bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
+                    break;
+                case R.id.addnew:
+                    bundle.putString(EVENT_CREATION_TYPE, ADDNEW);
+                    break;
+                case R.id.schedulenew:
+                    bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
+                    break;
+            }
+
+//            startActivity(EventInitialActivity.class, bundle, false, false, null);
+
+            startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
+
+        });
+
+        presenter.subscribeToScheduleEvents(this);
+        currentFilter.onNext(ScheduleAdapter.Filter.ALL);
+        return binding.getRoot();
     }
 
     @Override
     public void onClick(View view) {
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_filter_list);
         int color;
-        switch (((ScheduleAdapter) binding.scheduleRecycler.getAdapter()).filter()) {
+        ScheduleAdapter.Filter filter = adapter.filter();
+        currentFilter.onNext(filter);
+        switch (filter) {
             case SCHEDULE:
                 color = ContextCompat.getColor(view.getContext(), R.color.green_7ed);
                 break;
@@ -70,5 +132,15 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
         }
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         binding.scheduleFilter.setImageDrawable(drawable);
+    }
+
+    public Consumer<List<EventModel>> swapEvents() {
+        return noteModels -> {
+            adapter.setScheduleEvents(noteModels);
+        };
+    }
+
+    public FlowableProcessor<ScheduleAdapter.Filter> filterProcessor() {
+        return currentFilter;
     }
 }

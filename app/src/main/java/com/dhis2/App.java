@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.dagger.PerServer;
 import com.dhis2.data.dagger.PerUser;
@@ -29,6 +30,8 @@ import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by ppajuelo on 27/09/2017.
@@ -72,7 +75,7 @@ public class App extends MultiDexApplication implements Components {
         super.onCreate();
 
         Stetho.initializeWithDefaults(this);
-
+        Fabric.with(this, new Crashlytics());
         this.instance = this;
 
         setUpAppComponent();

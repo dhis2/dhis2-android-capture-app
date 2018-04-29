@@ -16,18 +16,13 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 import javax.inject.Inject;
 
 /**
  * Created by ppajuelo on 29/11/2017.
- *
  */
 
 public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implements TeiDashboardContracts.View {
@@ -60,6 +55,15 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        /*if (teiUid != null && programUid != null)
+            init(teiUid, programUid);
+        else
+            finish();*/
+    }
+
+    @Override
     public void init(String teiUid, String programUid) {
         presenter.init(this, teiUid, programUid);
     }
@@ -71,20 +75,18 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
+        binding.tabLayout.setVisibility(View.VISIBLE);
         binding.executePendingBindings();
         this.programModel = program;
         TEIDataFragment.getInstance().setData(programModel);
-        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         RelationshipFragment.getInstance().setData(program);
-        ScheduleFragment.getInstance().setData(program);
-        IndicatorsFragment.getInstance().setData(program.getProgramIndicatorModels());
         binding.teiPager.setOffscreenPageLimit(6);
     }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
-        binding.teiPager.setAdapter(new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet)));
-        binding.teiPager.setOffscreenPageLimit(6);
+        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
+        binding.teiPager.setAdapter(adapter);
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
@@ -92,6 +94,8 @@ public class TeiDashboardMobileActivity extends ActivityGlobalAbstract implement
         binding.executePendingBindings();
         this.programModel = program;
         TEIDataFragment.getInstance().setData(programModel);
+        binding.teiPager.setOffscreenPageLimit(6);
+
     }
 
     @Override

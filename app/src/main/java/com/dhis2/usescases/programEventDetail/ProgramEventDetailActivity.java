@@ -18,6 +18,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -43,7 +44,6 @@ import static com.dhis2.utils.Period.WEEKLY;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
@@ -202,7 +202,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     //getSelectedPrograms(date, currentPeriod, orgUnitFilter.toString());
 
                 }
-            });
+            }, OnErrorHandler.create());
         } else {
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);
@@ -341,10 +341,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
 
-        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()){
+        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
-        }
-        else {
+            binding.catCombo.setVisibility(View.GONE);
+        } else {
+            binding.catCombo.setVisibility(View.VISIBLE);
             CatComboAdapter adapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,

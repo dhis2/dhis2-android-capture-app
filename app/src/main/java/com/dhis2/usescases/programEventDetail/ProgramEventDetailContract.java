@@ -8,10 +8,13 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * Created by Cristian on 13/02/2017.
@@ -69,6 +72,8 @@ public class ProgramEventDetailContract {
         void clearCatComboFilters();
 
         void onEventClick(String eventId);
+
+        Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -81,5 +86,7 @@ public class ProgramEventDetailContract {
         void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
 
         void updateFilters(CategoryOptionComboModel categoryOptionComboModel);
+
+        Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
     }
 }

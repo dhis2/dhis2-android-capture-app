@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:padding="5dp"
-        tools:background="@color/colorPrimary">
+        tools:background="?attr/colorPrimary">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout"

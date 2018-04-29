@@ -19,7 +19,7 @@ public abstract class AgeViewModel extends FieldViewModel {
     @Nullable
     public abstract String value();
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value) {
-        return new AutoValue_AgeViewModel(id, label, mandatory, value);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section) {
+        return new AutoValue_AgeViewModel(id, label, section, mandatory, value);
     }
 }

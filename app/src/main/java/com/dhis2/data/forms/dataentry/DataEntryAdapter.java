@@ -21,6 +21,8 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
@@ -45,6 +47,7 @@ final class DataEntryAdapter extends Adapter {
     private static final int DATETIME = 7;
     private static final int AGEVIEW = 8;
     private static final int YES_NO = 9;
+    private static final int ORG_UNIT = 10;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -73,6 +76,8 @@ final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
+        rows.add(ORG_UNIT, new OrgUnitRow(layoutInflater, processor, false));
+
     }
 
     @Override
@@ -115,6 +120,8 @@ final class DataEntryAdapter extends Adapter {
             return AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {
             return BUTTON;
+        } else if (viewModel instanceof OrgUnitViewModel) {
+            return ORG_UNIT;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());

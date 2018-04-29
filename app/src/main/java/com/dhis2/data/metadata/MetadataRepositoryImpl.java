@@ -1,6 +1,7 @@
 package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -146,10 +148,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
 
     private final String RELATIONSHIP_TYPE_QUERY = String.format("SELECT %s.* FROM %s " +
-                    "INNER JOIN %s ON %s.%s = %s.%s  " +
+                    "JOIN %s ON %s.%s = %s.%s  " +
                     "WHERE %s.%s = ",
             RelationshipTypeModel.TABLE, RelationshipTypeModel.TABLE,
-            ProgramModel.TABLE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE,
+            ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE, RelationshipTypeModel.TABLE, RelationshipTypeModel.Columns.UID,
             ProgramModel.TABLE, ProgramModel.Columns.UID);
 
     private Set<String> RELATIONSHIP_TYPE_TABLES = new HashSet<>(Arrays.asList(RelationshipTypeModel.TABLE, ProgramModel.TABLE));
@@ -173,6 +175,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
+
+    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.ID);
 
     private final BriteDatabase briteDatabase;
 
@@ -283,10 +288,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<RelationshipTypeModel> getRelationshipType(String relationshipTypeUid) {
+    public Observable<RelationshipTypeModel> getRelationshipType(String programID) {
         return briteDatabase
-                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + relationshipTypeUid + "'")
-                .mapToOneOrDefault(RelationshipTypeModel::create, RelationshipTypeModel.builder().build());
+                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + programID + "'")
+                .mapToOne(RelationshipTypeModel::create);
 
     }
 
@@ -403,5 +408,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + programUid + "'")
                 .mapToOne(ProgramModel::create);
+    }
+
+    @Override
+    public Observable<ResourceModel> getLastSync(int resourceId) {
+        return briteDatabase
+                .createQuery(ResourceModel.TABLE, RESOURCES_QUERY + resourceId)
+                .mapToOne(ResourceModel::create);
     }
 }

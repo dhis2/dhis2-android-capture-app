@@ -14,8 +14,10 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -57,6 +58,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private @LastSearchType
     int lastSearchType;
+    private CategoryComboModel mCatCombo;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -162,6 +164,11 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         }
     }
 
+    @Override
+    public Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event) {
+        return programEventDetailRepository.eventDataValues(event);
+    }
+
 
     private void getProgram() {
         compositeDisposable.add(metadataRepository.getProgramWithId(programId)
@@ -178,18 +185,14 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
     private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
-                .filter(categoryComboModel -> !Objects.equals(categoryComboModel.uid(), CategoryComboModel.DEFAULT_UID))
+                .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
+                .flatMap(catCombo -> {
+                    mCatCombo = catCombo;
+                    return programEventDetailRepository.catCombo(programModel.categoryCombo());
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (catCombo) -> compositeDisposable.add(programEventDetailRepository.catCombo(programModel.categoryCombo())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        (catComboOptions) -> view.setCatComboOptions(catCombo, catComboOptions),
-                                        Timber::d)
-                        ),
-                        Timber::d)
+                .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
         );
     }
 

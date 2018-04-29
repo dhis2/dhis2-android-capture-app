@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import rx.exceptions.OnErrorNotImplementedException;
+import timber.log.Timber;
 
 final class SyncPresenterImpl implements SyncPresenter {
 
@@ -45,9 +45,22 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncState.METADATA), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(SyncState.METADATA),
+                        Timber::d
+                ));
+    }
+
+    @Override
+    public void syncMetaData() {
+        disposable.add(metadata()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(SyncState.METADATA),
+                        Timber::d));
     }
 
     @Override
@@ -59,9 +72,8 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncState.EVENTS), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(SyncState.EVENTS),
+                        Timber::d));
     }
 
     @Override
@@ -74,9 +86,9 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SyncState.TEI), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(SyncState.TEI),
+                        Timber::d
+                ));
 
     }
 

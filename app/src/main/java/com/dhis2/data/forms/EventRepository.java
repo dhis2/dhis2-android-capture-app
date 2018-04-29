@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.tuples.Trio;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
@@ -79,9 +80,9 @@ public class EventRepository implements FormRepository {
     private final String eventUid;
 
     public EventRepository(@NonNull BriteDatabase briteDatabase,
-                            @NonNull RuleExpressionEvaluator evaluator,
-                            @NonNull RulesRepository rulesRepository,
-                            @Nullable String eventUid) {
+                           @NonNull RuleExpressionEvaluator evaluator,
+                           @NonNull RulesRepository rulesRepository,
+                           @Nullable String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -122,6 +123,13 @@ public class EventRepository implements FormRepository {
                 .distinctUntilChanged();
     }
 
+    @Override
+    public Flowable<ProgramModel> incidentDate() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid)
+                .mapToOne(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST)
+                .distinctUntilChanged();
+    }
+
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {
@@ -152,6 +160,13 @@ public class EventRepository implements FormRepository {
         };
     }
 
+    @Override
+    public Consumer<String> storeIncidentDate() {
+        return data -> {
+            //incident date is only for tracker events
+        };
+    }
+
     @NonNull
     @Override
     public Consumer<ReportStatus> storeReportStatus() {
@@ -174,7 +189,13 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Observable<String> useFirstStageDuringRegistration() {
+    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
+        return Observable.just(null);
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> autoGenerateEvents(String enrollmentUid) {
         return null;
     }
 

@@ -1,13 +1,25 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.widget.TextView;
+
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+
+import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 30/11/2017.
- *
  */
 
 public class TeiDashboardContracts {
@@ -43,5 +55,41 @@ public class TeiDashboardContracts {
         void onDettach();
 
         void getData();
+
+        DashboardProgramModel getDashBoardData();
+
+        //Data Fragment
+
+        //RelationshipFragment
+        Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid);
+
+        void subscribeToRelationships(RelationshipFragment relationshipFragment);
+
+        void goToAddRelationship();
+
+        void addRelationship(String trackEntityInstance_A, String relationshipType);
+
+        void deleteRelationship(long relationshipId);
+
+        //IndicatorsFragment
+        void subscribeToIndicators(IndicatorsFragment indicatorsFragment);
+
+        //ScheduleFragment
+        void subscribeToScheduleEvents(ScheduleFragment scheduleFragment);
+
+        //NoteFragment
+        void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);
+
+        void subscribeToNotes(NotesFragment notesFragment);
+
+        String getTeUid();
+
+        String getProgramUid();
+
+        Boolean hasProgramWritePermission();
+
+        void openDashboard(String teiUid);
+
+        void subscribeToMainAttr(String teiUid, TextView textView);
     }
 }

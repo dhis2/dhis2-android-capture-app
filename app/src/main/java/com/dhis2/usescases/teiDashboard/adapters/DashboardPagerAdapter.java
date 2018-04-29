@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 /**
  * Created by ppajuelo on 29/11/2017.
- *
  */
 
 public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
@@ -35,18 +34,20 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
             pagerFragments.add(TEIDataFragment.getInstance());
             pagerFragmentsTitle.add("Program");
         }
-        if (dashboardProgram.getCurrentEnrollment()!=null && dashboardProgram.getCurrentProgram().relationshipType() != null) {
-            pagerFragments.add(RelationshipFragment.getInstance());
-            pagerFragmentsTitle.add("Relationships");
+        if (program.getCurrentProgram() != null) {
+            if (dashboardProgram.getCurrentEnrollment() != null && dashboardProgram.getCurrentProgram().relationshipType() != null) {
+                pagerFragments.add(RelationshipFragment.getInstance());
+                pagerFragmentsTitle.add("Relationships");
+            }
+            pagerFragments.add(IndicatorsFragment.getInstance());
+            pagerFragmentsTitle.add("Indicators");
+
+            pagerFragments.add(ScheduleFragment.getInstance());
+            pagerFragmentsTitle.add("Schedule");
+
+            pagerFragments.add(NotesFragment.getInstance());
+            pagerFragmentsTitle.add("Notes");
         }
-        pagerFragments.add(IndicatorsFragment.getInstance());
-        pagerFragmentsTitle.add("Indicators");
-
-        pagerFragments.add(ScheduleFragment.getInstance());
-        pagerFragmentsTitle.add("Schedule");
-
-        pagerFragments.add(NotesFragment.getInstance());
-        pagerFragmentsTitle.add("Notes");
 
     }
 

@@ -18,6 +18,7 @@ import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.utils.CustomViews.OrgUnitButton;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
@@ -95,7 +96,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     //endregion
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -281,7 +282,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
-            }else if(treeView.getSelected().size()>1){
+            } else if (treeView.getSelected().size() > 1) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
             }

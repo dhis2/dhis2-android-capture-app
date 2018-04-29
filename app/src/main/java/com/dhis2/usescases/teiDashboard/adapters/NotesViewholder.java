@@ -3,6 +3,9 @@ package com.dhis2.usescases.teiDashboard.adapters;
 import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.databinding.ItemNotesBinding;
+import com.dhis2.utils.DateUtils;
+
+import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 
 /**
  * Created by Administrador on 18/12/2017.
@@ -17,8 +20,10 @@ public class NotesViewholder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(String s) {
-        binding.noteText.setText(s);
+    public void bind(NoteModel note) {
+        binding.date.setText(DateUtils.uiDateFormat().format(note.storedDate()));
+        binding.noteText.setText(note.value());
+        binding.storeBy.setText(note.storedBy());
         binding.executePendingBindings();
     }
 }

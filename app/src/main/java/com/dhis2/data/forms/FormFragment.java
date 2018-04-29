@@ -20,11 +20,14 @@ import android.widget.TextView;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
@@ -48,9 +51,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     private FormSectionAdapter formSectionAdapter;
     private PublishSubject<String> onReportDateChanged;
+    private PublishSubject<String> onIncidentDateChanged;
     private TextView reportDate;
     PublishSubject<ReportStatus> undoObservable;
     private CoordinatorLayout coordinatorLayout;
+    private TextView incidentDate;
 
     public FormFragment() {
         // Required empty public constructor
@@ -79,6 +84,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
         reportDate = view.findViewById(R.id.textview_report_date);
+        incidentDate = view.findViewById(R.id.textView_incident_date);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
@@ -111,6 +117,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     public Observable<String> reportDateChanged() {
         onReportDateChanged = PublishSubject.create();
         return onReportDateChanged;
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> incidentDateChanged() {
+        onIncidentDateChanged = PublishSubject.create();
+        return onIncidentDateChanged;
     }
 
     @Override
@@ -167,8 +180,17 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     @NonNull
     @Override
+    public Consumer<ProgramModel> renderIncidentDate() {
+        return programModel -> {
+            incidentDate.setHint(programModel.incidentDateLabel());
+            incidentDate.setVisibility(View.VISIBLE);
+        };
+    }
+
+    @NonNull
+    @Override
     public Consumer<String> renderTitle() {
-        return title -> Log.d("d", title);
+        return title -> toolbar.setTitle(title);
     }
 
     @NonNull
@@ -179,11 +201,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     @NonNull
     @Override
-    public Consumer<String> finishEnrollment() {
-        return eventUid -> {//TODO: CHECK
-            if (eventUid != null) {
-                FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
+    public Consumer<Trio<String, String, String>> finishEnrollment() {
+        return trio -> {
+            if (!trio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
+                FormViewArguments formViewArguments = FormViewArguments.createForEvent(trio.val2());
                 startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments));
+            } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                Bundle bundle = new Bundle();
+                bundle.putString("PROGRAM_UID", trio.val0());
+                bundle.putString("TEI_UID", trio.val1());
+                startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
             }
             getActivity().finish();
 
@@ -209,6 +236,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
                 .show();
     }
 
+
     private ReportStatus getReportStatusFromFab() {
         return fab.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
@@ -219,6 +247,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
+
+        incidentDate.setOnClickListener(v -> {
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+            dialog.show(getFragmentManager());
+            dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
+        });
     }
 
     @NonNull
@@ -226,6 +260,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         return date -> {
             if (onReportDateChanged != null) {
                 onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+            }
+        };
+    }
+
+    @NonNull
+    private DatePickerDialogFragment.FormattedOnDateSetListener publishIncidentDateChange() {
+        return date -> {
+            if (onIncidentDateChanged != null) {
+                onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
+
             }
         };
     }

@@ -63,6 +63,13 @@ class FormPresenterImpl implements FormPresenter {
                 })
                 .subscribe(view.renderReportDate(), Timber::e));
 
+        compositeDisposable.add(formRepository.incidentDate()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .filter(programModel -> programModel.displayIncidentDate())
+                .subscribe(view.renderIncidentDate(), Timber::e)
+        );
+
         compositeDisposable.add(formRepository.sections()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -72,6 +79,12 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeReportDate(), Timber::e));
+
+        compositeDisposable.add(view.incidentDateChanged()
+                .filter(date -> date != null)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(formRepository.storeIncidentDate(), Timber::e));
 
         ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
                 .distinctUntilChanged()
@@ -111,21 +124,17 @@ class FormPresenterImpl implements FormPresenter {
                 .map(reportStatus -> formViewArguments.uid())
                 .observeOn(schedulerProvider.io()).share();
 
-        compositeDisposable.add(enrollmentDoneStream
+     /*   compositeDisposable.add(enrollmentDoneStream
                 .subscribeOn(schedulerProvider.io())
-                .subscribe(formRepository.autoGenerateEvent(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(
+                        formRepository.autoGenerateEvent(),
+                        throwable -> {
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));*/
 
-      /*  compositeDisposable.add(enrollmentDoneStream
-                .subscribeOn(schedulerProvider.ui())
-                .subscribe(view.finishEnrollment(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));*/
-
-        //TODO: if Program has useFirstStageDuringRegistration go to data entry
         compositeDisposable.add(enrollmentDoneStream
-                .flatMap(data -> formRepository.useFirstStageDuringRegistration())
+                .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
+                .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(view.finishEnrollment(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);

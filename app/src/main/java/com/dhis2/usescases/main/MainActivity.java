@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableInt;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,6 @@ import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
-import com.dhis2.usescases.appInfo.AppInfoFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
@@ -32,6 +32,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     private ProgramFragment programFragment;
 
+    ObservableInt currentFragment = new ObservableInt(R.id.menu_done_tasks);
+
     //-------------------------------------
     //region LIFECYCLE
 
@@ -46,6 +48,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
+        binding.setCurrentFragment(currentFragment);
         binding.filter.setOnLongClickListener(view -> {
             presenter.sync();
             return true;
@@ -133,21 +136,21 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void changeFragment(int id) {
-        Fragment fragment = null;
-        String tag = null;
+        Fragment fragment;
+        String tag;
         if (id == R.id.menu_done_tasks) {
             fragment = new ProgramFragment();
             programFragment = (ProgramFragment) fragment;
             tag = "Done Task";
             binding.filter.setVisibility(View.VISIBLE);
         } else {
-            /*fragment = new AppInfoFragment();
-            tag = "Info";*/
             fragment = new SyncManagerFragment();
             tag = "SYNC Manager";
-
             binding.filter.setVisibility(View.GONE);
         }
+
+        currentFragment.set(id);
+
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
         binding.title.setText(tag);
         binding.drawerLayout.closeDrawers();

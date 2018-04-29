@@ -1,11 +1,17 @@
 package com.dhis2.data.forms.dataentry.fields.spinner;
 
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormSpinnerBinding;
@@ -28,12 +34,32 @@ public class SpinnerHolder extends RecyclerView.ViewHolder {
         super(binding.getRoot());
         this.binding = binding;
         this.binding.setIsBgTransparent(isBackgroundTransparent);
+        if (isBackgroundTransparent) {
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = binding.spinner.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+            int color = a.getColor(0, 0);
+            a.recycle();
+            binding.hintLabel.setTextColor(color);//TODO: Change color to primary
+            ViewCompat.setBackgroundTintList(binding.spinner, ColorStateList.valueOf(color));
+        } else {
+            binding.hintLabel.setTextColor(ContextCompat.getColor(binding.hintLabel.getContext(), R.color.colorAccent));
+            ViewCompat.setBackgroundTintList(binding.spinner, ColorStateList.valueOf(
+                    ContextCompat.getColor(binding.spinner.getContext(), R.color.colorAccent)
+            ));
+        }
         binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (position > 0) {
+                    binding.hintLabel.setVisibility(View.VISIBLE);
                     processor.onNext(
                             RowAction.create(model.uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
+                    );
+                } else {
+                    binding.hintLabel.setVisibility(View.INVISIBLE);
+
+                    processor.onNext(
+                            RowAction.create(model.uid(), null)
                     );
                 }
                 if (view != null)
@@ -56,10 +82,11 @@ public class SpinnerHolder extends RecyclerView.ViewHolder {
             binding.setLabel(viewModel.label());
             binding.setOptionSet(viewModel.optionSet());
             binding.executePendingBindings();
-            if (viewModel.value() != null && binding.spinner.getAdapter() != null) {
+        } else {
+            if (viewModel.value() != null) {
                 for (int i = 0; i < ((OptionAdapter) binding.spinner.getAdapter()).getOptionCount(); i++) {
                     if (((OptionModel) binding.spinner.getAdapter().getItem(i)).displayName().equals(viewModel.value()))
-                        binding.spinner.setSelection(i, false);
+                        binding.spinner.setSelection(i);
                 }
             }
         }

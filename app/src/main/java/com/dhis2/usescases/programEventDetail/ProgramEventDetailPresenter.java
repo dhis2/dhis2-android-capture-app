@@ -6,11 +6,15 @@ import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialAc
 import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -87,6 +91,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
+    public Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event) {
+        return interactor.getEventDataValue(event);
+    }
+
+    @Override
     public ProgramModel getCurrentProgram() {
         return program;
     }
@@ -106,5 +115,10 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onDettach() {
         interactor.onDettach();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
     }
 }

@@ -25,13 +25,15 @@
                 android:background="@drawable/gray_border_box"
                 android:gravity="start"
                 android:hint="@string/write_new_note"
-                android:maxHeight="195dp"
+                android:maxHeight="200dp"
                 android:padding="16dp"
                 android:textColor="@color/gray_444"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:inputType="text"/>
+                tools:text="@tools:sample/lorem/random"
+                android:inputType="textMultiLine"
+                android:fadeScrollbars="true"/>
 
             <Button
                 android:id="@+id/button_delete"

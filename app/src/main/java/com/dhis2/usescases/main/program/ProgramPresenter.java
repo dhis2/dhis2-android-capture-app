@@ -50,23 +50,24 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         this.view = view;
         this.view = view;
 
-        compositeDisposable.add(homeRepository.orgUnits()
-                .map(
-                        myOrgs -> {
-                            this.myOrgs = myOrgs;
-                            ArrayList<Date> today = new ArrayList<>();
-                            today.add(DateUtils.getInstance().getToday());
-                            return homeRepository.programs(today, Period.DAILY, orgUnitQuery());
-                        }
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            view.swapProgramData().accept(data.blockingFirst());
-                            renderTree(myOrgs);
-                        },
-                        throwable -> view.renderError(throwable.getMessage())));
+        compositeDisposable.add(
+                homeRepository.orgUnits()
+                        .map(
+                                orgUnits -> {
+                                    this.myOrgs = orgUnits;
+                                    ArrayList<Date> today = new ArrayList<>();
+                                    today.add(DateUtils.getInstance().getToday());
+                                    return homeRepository.programs(today, Period.DAILY, orgUnitQuery());
+                                }
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {
+                                    view.swapProgramData().accept(data.blockingFirst());
+                                    renderTree(myOrgs);
+                                },
+                                throwable -> view.renderError(throwable.getMessage())));
     }
 
 
@@ -214,7 +215,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         return homeRepository.eventModels(programModel.uid());
     }
 
-    private String orgUnitQuery(){
+    private String orgUnitQuery() {
         StringBuilder orgUnitFilter = new StringBuilder();
         for (int i = 0; i < myOrgs.size(); i++) {
             orgUnitFilter.append("'");

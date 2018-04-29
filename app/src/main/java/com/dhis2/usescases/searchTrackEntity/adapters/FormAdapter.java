@@ -1,4 +1,4 @@
-package com.dhis2.usescases.searchTrackEntity;
+package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +18,7 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
@@ -39,6 +40,9 @@ import io.reactivex.processors.PublishProcessor;
 
 public class FormAdapter extends RecyclerView.Adapter {
 
+    private long ENROLLMENT_DATE_ID = 1;
+    private long INCIDENT_DATE_ID = 2;
+
     private final int EDITTEXT = 0;
     private final int BUTTON = 1;
     private final int CHECKBOX = 2;
@@ -49,6 +53,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final int DATETIME = 7;
     private final int AGEVIEW = 8;
     private final int YES_NO = 9;
+    private final int ORG_UNIT = 10;
     private int programData = 0;
     private List<TrackedEntityAttributeModel> attributeList;
     private ProgramModel programModel;
@@ -58,7 +63,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final List<Row> rows;
 
-    FormAdapter(LayoutInflater layoutInflater) {
+    public FormAdapter(LayoutInflater layoutInflater) {
         setHasStableIds(true);
         //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
@@ -74,6 +79,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
+        rows.add(ORG_UNIT, new OrgUnitRow(layoutInflater, processor, false));
     }
 
     @Override
@@ -88,34 +94,34 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         if (position < programData) {
 //            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
-            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null);
+            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null, null);
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null, attr.displayShortName(), 1, attr.valueType());
+                    viewModel = EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null, attr.displayShortName(), 1, attr.valueType(), null);
                     break;
                 case BUTTON:
-                    viewModel = FileViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    viewModel = FileViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 case CHECKBOX:
                 case YES_NO:
-                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), attr.displayShortName(), attr.valueType(), false, null);
+                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), attr.displayShortName(), attr.valueType(), false, null, null);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null);
+                    viewModel = SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null, null);
                     break;
                 case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    viewModel = CoordinateViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 case TIME:
                 case DATE:
                 case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), attr.displayShortName(), false, attr.valueType(), null);
+                    viewModel = DateTimeViewModel.create(attr.uid(), attr.displayShortName(), false, attr.valueType(), null, null);
                     break;
                 case AGEVIEW:
-                    viewModel = AgeViewModel.create(attr.uid(), attr.displayShortName(), false, null);
+                    viewModel = AgeViewModel.create(attr.uid(), attr.displayShortName(), false, null, null);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported viewType " +
@@ -141,7 +147,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public long getItemId(int position) {
         if (position < programData) {
-            return programModel.id() + position;
+            return position == 0 ? ENROLLMENT_DATE_ID : INCIDENT_DATE_ID;
         } else {
             return attributeList.get(position - programData).uid().hashCode();
         }
@@ -186,8 +192,9 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case BOOLEAN:
                 case TRUE_ONLY:
                     return YES_NO;
-                case TRACKER_ASSOCIATE:
                 case ORGANISATION_UNIT:
+                    return ORG_UNIT;
+                case TRACKER_ASSOCIATE:
                 case URL:
                 default:
                     return EDITTEXT;
@@ -217,7 +224,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     }
 
     @NonNull
-    FlowableProcessor<RowAction> asFlowableRA() {
+    public FlowableProcessor<RowAction> asFlowableRA() {
         return processor;
     }
 }

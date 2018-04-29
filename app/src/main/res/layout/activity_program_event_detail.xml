@@ -139,7 +139,8 @@
                             android:textAlignment="textStart"
                             android:textAllCaps="false"
                             android:textColor="?colorAccent"
-                            android:textSize="15sp"/>
+                            android:textSize="15sp"
+                            android:visibility="gone"/>
                     </LinearLayout>
 
                     <RelativeLayout

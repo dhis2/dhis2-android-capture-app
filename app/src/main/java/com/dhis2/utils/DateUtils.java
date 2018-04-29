@@ -2,8 +2,6 @@ package com.dhis2.utils;
 
 import android.support.annotation.NonNull;
 
-import org.joda.time.DateTime;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -113,6 +111,11 @@ public class DateUtils {
         Calendar calendar = getCalendar();
 
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         return calendar.getTime();
     }
 
@@ -120,6 +123,11 @@ public class DateUtils {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         return calendar.getTime();
     }
 
@@ -128,6 +136,11 @@ public class DateUtils {
 
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
         return calendar.getTime();
@@ -137,6 +150,11 @@ public class DateUtils {
 
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
         calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
@@ -147,6 +165,11 @@ public class DateUtils {
     public Date getFirstDayOfMonth(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
@@ -154,6 +177,11 @@ public class DateUtils {
     public Date getLastDayOfMonth(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.add(Calendar.MONTH, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -163,6 +191,11 @@ public class DateUtils {
     public Date getFirstDayOfYear(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         return calendar.getTime();
     }
@@ -170,6 +203,11 @@ public class DateUtils {
     public Date getLastDayOfYear(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         calendar.set(Calendar.DAY_OF_YEAR, 1);
         calendar.add(Calendar.YEAR, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -188,7 +226,7 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat dateTimeFormat() {
-        return new SimpleDateFormat("yyyy-mm-dd HH:mm", Locale.US);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
     }
 
     @NonNull
@@ -199,7 +237,7 @@ public class DateUtils {
     /**********************
      FORMAT REGION*/
     public String formatDate(Date dateToFormat) {
-        return dateFormat.format(dateToFormat);
+        return uiDateFormat().format(dateToFormat);
     }
 
     public Calendar getCalendar() {
