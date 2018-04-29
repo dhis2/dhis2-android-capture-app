@@ -132,6 +132,7 @@ dependencies {
 
     // Google dagger
     implementation 'com.google.dagger:dagger:2.14.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
 
     // Google's auto-value. Annotations are used only during compilation time, as well as
@@ -165,13 +166,13 @@ dependencies {
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
 
     //VISION (QR SCANNER)
-    implementation ("com.google.android.gms:play-services-vision:${libraries.gmsVersion}"){
+    implementation("com.google.android.gms:play-services-vision:${libraries.gmsVersion}") {
         force = true
     }
 
     //LOCATION
-    implementation ("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
-    implementation ("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
+    implementation("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
+    implementation("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
@@ -180,7 +181,7 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     //CRASHLYTICS
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar'){
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true;
     }
 
@@ -204,6 +205,10 @@ dependencies {
 
     //JODA-TIME
     implementation 'joda-time:joda-time:2.9.9'
+
+    // Zxing library
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
 
 
 }

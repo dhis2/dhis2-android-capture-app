@@ -157,6 +157,7 @@
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">SYNC Manager</string>
+    <string name="QR_SCANNER">QR Scanner</string>
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
 
@@ -190,4 +191,7 @@
     <string name="add_relation_button">Add as %s</string>
 
     <string name="date_dialog_clear">Clear</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

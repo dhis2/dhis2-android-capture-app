@@ -17,6 +17,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
+import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
 
 import javax.inject.Inject;
@@ -138,7 +139,39 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void changeFragment(int id) {
         Fragment fragment;
         String tag;
-        if (id == R.id.menu_done_tasks) {
+        switch (id){
+            case R.id.menu_done_tasks:
+                {
+                fragment = new ProgramFragment();
+                programFragment = (ProgramFragment) fragment;
+                tag = "Done Task";
+                binding.filter.setVisibility(View.VISIBLE);
+                break;
+                }
+            case R.id.sync_manager:
+            {
+                fragment = new SyncManagerFragment();
+                tag = "SYNC Manager";
+                binding.filter.setVisibility(View.GONE);
+                break;
+            }
+            case R.id.qr_scan:
+            {
+                fragment = new QrReaderFragment();
+                tag = "SYNC Manager";
+                binding.filter.setVisibility(View.GONE);
+                break;
+            }
+            default:
+                fragment = new ProgramFragment();
+                programFragment = (ProgramFragment) fragment;
+                tag = "Done Task";
+                binding.filter.setVisibility(View.VISIBLE);
+                break;
+
+
+        }
+       /* if (id == R.id.menu_done_tasks) {
             fragment = new ProgramFragment();
             programFragment = (ProgramFragment) fragment;
             tag = "Done Task";
@@ -147,7 +180,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             fragment = new SyncManagerFragment();
             tag = "SYNC Manager";
             binding.filter.setVisibility(View.GONE);
-        }
+        }*/
 
         currentFragment.set(id);
 
