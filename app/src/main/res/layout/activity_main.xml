@@ -28,7 +28,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:openDrawer="start">
 
         <!--Main Content-->
@@ -89,7 +88,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="?colorPrimary"
-            android:fitsSystemWindows="false"
             app:itemTextColor="?colorPrimary">
 
             <RelativeLayout

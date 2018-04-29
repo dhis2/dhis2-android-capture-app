@@ -8,6 +8,14 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="dashboardModel"
+            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -38,6 +46,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
+                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 tools:text="TEI NAME" />
 
             <ImageView
@@ -45,6 +54,7 @@
                 android:layout_height="match_parent"
                 android:padding="10dp"
                 app:srcCompat="@drawable/ic_program_border"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>

@@ -40,6 +40,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     List<String> urls;
     private boolean isSyncing;
 
+
     enum SyncState {
         METADATA, EVENTS, TEI
     }

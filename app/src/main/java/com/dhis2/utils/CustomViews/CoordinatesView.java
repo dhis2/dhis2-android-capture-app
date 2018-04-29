@@ -29,13 +29,10 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class CoordinatesView extends RelativeLayout implements View.OnClickListener {
 
     private ViewDataBinding binding;
-    /*  private TextView latitude;
-      private TextView longitude;*/
     private TextView latLong;
-    private ImageButton position;
-    private ImageButton map;
     private FusedLocationProviderClient mFusedLocationClient;
     private OnMapPositionClick listener;
+    private OnCurrentLocationClick listener2;
     private boolean isBgTransparent;
     private LayoutInflater inflater;
 
@@ -67,11 +64,10 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         else
             binding = DataBindingUtil.inflate(inflater, R.layout.form_coordinates_accent, this, true);
 
-        /*latitude = findViewById(R.id.lat);
-        longitude = findViewById(R.id.lon);*/
         latLong = findViewById(R.id.latlong);
-        position = findViewById(R.id.location1);
-        map = findViewById(R.id.location2);
+
+        ImageButton position = findViewById(R.id.location1);
+        ImageButton map = findViewById(R.id.location2);
 
         position.setOnClickListener(this);
         map.setOnClickListener(this);
@@ -79,6 +75,10 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
     public void setMapListener(OnMapPositionClick listener) {
         this.listener = listener;
+    }
+
+    public void setCurrentLocationListener(OnCurrentLocationClick listener) {
+        this.listener2 = listener;
     }
 
     public void setLabel(String label) {
@@ -117,7 +117,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
             mFusedLocationClient.getLastLocation().
                     addOnSuccessListener(location -> {
-                        updateLocation(location.getLatitude(), location.getLongitude());
+                        if (location != null)
+                            updateLocation(location.getLatitude(), location.getLongitude());
                     });
         }
     }
@@ -132,12 +133,14 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         void onMapPositionClick(CoordinatesView coordinatesView);
     }
 
-    public void updateLocation(double latitude, double longitude) {
- /*       this.latitude.setText(String.valueOf(latitude));
-        this.longitude.setText(String.valueOf(longitude));*/
-        this.latLong.setText(String.format("%s, %s", latitude, longitude));
-        invalidate();
+    public interface OnCurrentLocationClick {
+        void onCurrentLocationClick(double latitude, double longitude);
     }
 
+    public void updateLocation(double latitude, double longitude) {
+        this.latLong.setText(String.format("%s, %s", latitude, longitude));
+        listener2.onCurrentLocationClick(latitude, longitude);
+        invalidate();
+    }
 }
 

@@ -103,7 +103,7 @@ public class Bindings {
         }
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("lastEventDate")
     public static void setLastEventDate(TextView textView, Observable<List<EventModel>> listObservable) {
         listObservable
@@ -114,7 +114,7 @@ public class Bindings {
                         Timber::d);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("numberOfEvents")
     public static void setNumberOfEvents(TextView textView, Observable<List<EventModel>> listObservable) {
         listObservable
@@ -128,7 +128,7 @@ public class Bindings {
                         Timber::d);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("enrollmentLastEventDate")
     public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
         metadataRepository.getEnrollmentLastEvent(enrollmentUid)
@@ -139,7 +139,7 @@ public class Bindings {
                         Timber::d);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("eventLabel")
     public static void setEventLabel(TextView textView, String programUid) {
         metadataRepository.getProgramWithId(programUid)
@@ -218,7 +218,7 @@ public class Bindings {
         progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programStage")
     public static void getStageName(TextView textView, String stageId) {
         metadataRepository.programStage(stageId)
@@ -230,7 +230,7 @@ public class Bindings {
                 );
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programStageDescription")
     public static void getStageDescription(TextView textView, String stageId) {
         metadataRepository.programStage(stageId)
@@ -398,7 +398,7 @@ public class Bindings {
         view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), drawable));
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programName")
     public static void setProgramName(TextView textView, String programUid) {
         metadataRepository.getProgramWithId(programUid)
@@ -410,7 +410,7 @@ public class Bindings {
                 );
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("organisationUnitName")
     public static void setOrganisationUnitName(TextView textView, String organisationUnitUid) {
         metadataRepository.getOrganisationUnit(organisationUnitUid)
@@ -422,7 +422,7 @@ public class Bindings {
                 );
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("categoryOptionName")
     public static void setCategoryOptionName(TextView textView, String categoryOptionId) {
         metadataRepository.getCategoryOptionWithId(categoryOptionId)
@@ -434,7 +434,7 @@ public class Bindings {
                 );
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("categoryOptionComboName")
     public static void setCategoryOptionComboName(TextView textView, String categoryOptionComboId) {
         metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
@@ -540,7 +540,7 @@ public class Bindings {
         metadataRepository = metadata;
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("dataElementHint")
     public static void setDataElementName(TextInputLayout view, String dataElementUid) {
         metadataRepository.getDataElement(dataElementUid)
@@ -552,7 +552,7 @@ public class Bindings {
                 );
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("attrHint")
     public static void setAttrName(TextInputLayout view, String teAttribute) {
         metadataRepository.getTrackedEntityAttribute(teAttribute)
@@ -575,7 +575,7 @@ public class Bindings {
         spinner.setAdapter(adapter);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("eventCompletion")
     public static void setEventCompletion(TextView textView, EventModel eventModel) {
         metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
@@ -597,8 +597,8 @@ public class Bindings {
                 );
     }
 
-    @BindingAdapter({"optionSet", "label"})
-    public static void setOptionSet(Spinner spinner, String optionSet, String label) {
+    @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
+    public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
         if (metadataRepository != null && optionSet != null)
             metadataRepository.optionSet(optionSet)
                     .subscribeOn(Schedulers.io())
@@ -612,6 +612,11 @@ public class Bindings {
                                         label);
                                 spinner.setAdapter(adapter);
                                 spinner.setPrompt(label);
+                                if (initialValue != null) {
+                                    for (int i = 0; i < optionModels.size(); i++)
+                                        if (optionModels.get(i).displayName().equals(initialValue))
+                                            spinner.setSelection(i + 1);
+                                }
                             },
                             Timber::d);
     }

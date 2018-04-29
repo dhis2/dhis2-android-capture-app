@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -34,7 +35,7 @@ public interface EventInitialRepository {
 
     Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
-                                   @NonNull String programStage, @NonNull String date,
+                                   @NonNull String programStage, @NonNull Date date,
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,
                                    @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 

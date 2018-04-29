@@ -174,11 +174,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
        /* if (id == R.id.menu_done_tasks) {
             fragment = new ProgramFragment();
             programFragment = (ProgramFragment) fragment;
-            tag = "Done Task";
+            tag = getString(R.string.done_task);
             binding.filter.setVisibility(View.VISIBLE);
         } else {
             fragment = new SyncManagerFragment();
-            tag = "SYNC Manager";
+            tag = getString(R.string.SYNC_MANAGER);
             binding.filter.setVisibility(View.GONE);
         }*/
 

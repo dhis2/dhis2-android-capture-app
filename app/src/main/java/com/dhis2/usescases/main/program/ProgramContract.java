@@ -1,6 +1,5 @@
 package com.dhis2.usescases.main.program;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
@@ -8,7 +7,6 @@ import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -70,6 +68,7 @@ public class ProgramContract {
         void getProgramsOrgUnit(List<Date> dates, Period period,String orgUnitQuery);
 
 
+        void getAllPrograms(String orgUnitQuery);
     }
 
 

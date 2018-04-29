@@ -26,6 +26,7 @@ import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
+import com.dhis2.utils.DateUtils;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -37,7 +38,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,7 +53,6 @@ import static com.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
@@ -120,37 +119,33 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.clearFocus();
         presenter.init(this, programId, eventId);
 
-        if (eventCreationType.equals(REFERRAL)){
+        if (eventCreationType.equals(REFERRAL)) {
             binding.temp.setVisibility(View.VISIBLE);
             binding.oneTime.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked){
+                if (isChecked) {
                     tempCreate = ONE_TIME;
-                }
-                else{
+                } else {
                     tempCreate = null;
                 }
                 checkActionButtonVisibility();
             });
             binding.permanent.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked){
+                if (isChecked) {
                     tempCreate = PERMANENT;
-                }
-                else{
+                } else {
                     tempCreate = null;
                 }
                 checkActionButtonVisibility();
             });
-        }
-        else {
+        } else {
             binding.temp.setVisibility(View.GONE);
         }
 
-        if (eventCreationType.equals(ADDNEW) || eventCreationType.equals(SCHEDULENEW)){
+        if (eventCreationType.equals(ADDNEW) || eventCreationType.equals(SCHEDULENEW)) {
             fixedOrgUnit = true;
             selectedOrgUnit = orgUnit;
             binding.orgUnit.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             fixedOrgUnit = false;
             binding.orgUnit.setVisibility(View.VISIBLE);
             binding.orgUnit.setOnClickListener(v -> {
@@ -230,7 +225,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         initProgressBar();
 
-        if (isNewEvent){
+        if (isNewEvent) {
             binding.actionButton.setText(R.string.create);
         } else {
             binding.actionButton.setText(R.string.update);
@@ -242,32 +237,29 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 //            permanent: cambia también la orgUnit de la trackedEntityInstance
 
 
-
 //            Bundle bundle = new Bundle();
 //            bundle.putString(EventSummaryActivity.EVENT_ID, eventId);
 //            bundle.putString(EventSummaryActivity.PROGRAM_ID, programId);
 //            Intent intent = new Intent(this, EventSummaryActivity.class);
 //            intent.putExtras(bundle);
 //            startActivity(intent);
-            if (isNewEvent){
-                if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)){
-                    presenter.createEventPermanent(getTrackedEntityInstance, programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-                }
-                else {
-                    presenter.createEvent(programStageModel.uid(), selectedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
-                }
+            String formattedDate = null;
+            Date date = null;
+            try {
+                date = DateUtils.uiDateFormat().parse(selectedDate);
+                formattedDate = DateUtils.databaseDateFormat().format(date);
+            } catch (Exception e) {
+                Timber.e(e);
             }
-            else {
-                try {
-                    DateFormat dateFormat = DateFormat.getDateTimeInstance();
-                    Date date = dateFormat.parse(selectedDate);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    String formattedDate = simpleDateFormat.format(date);
-                    presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+
+            if (isNewEvent) {
+                if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
+                    presenter.createEventPermanent(getTrackedEntityInstance, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                } else {
+                    presenter.createEvent(programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
                 }
-                catch (Exception e){
-                    Timber.e(e);
-                }
+            } else {
+                presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
             }
         });
     }
@@ -290,25 +282,25 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int)(completionPercent * interpolatedTime);
+        int progress = (int) (completionPercent * interpolatedTime);
         String text = String.valueOf(progress) + "%";
         binding.progress.setText(text);
     }
 
-    private void checkActionButtonVisibility(){
-        if (isFormCompleted()){
+    private void checkActionButtonVisibility() {
+        if (isFormCompleted()) {
             binding.actionButton.setVisibility(View.VISIBLE);
         } else {
             binding.actionButton.setVisibility(View.GONE);
         }
     }
 
-    private boolean isFormCompleted(){
+    private boolean isFormCompleted() {
         return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
                 ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
     }
 
-    private boolean isCompleted(String field){
+    private boolean isCompleted(String field) {
         return field != null && !field.isEmpty();
     }
 
@@ -316,10 +308,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setProgram(@NonNull ProgramModel program) {
         presenter.setProgram(program);
         String activityTitle;
-        if (eventCreationType.equals(REFERRAL)){
+        if (eventCreationType.equals(REFERRAL)) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
-        }
-        else {
+        } else {
             activityTitle = isNewEvent ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         }
         binding.setName(activityTitle);
@@ -356,27 +347,29 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            treeView.selectNode(node, node.isSelected());
-            ArrayList<String> childIds = new ArrayList<>();
-            childIds.add(((OrganisationUnitModel) value).uid());
-            for (TreeNode childNode : node.getChildren()) {
-                childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
-                for (TreeNode childNode2 : childNode.getChildren()) {
-                    childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
-                    for (TreeNode childNode3 : childNode2.getChildren()) {
-                        childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
+            if(node.isSelectable()) {
+                treeView.selectNode(node, node.isSelected());
+                ArrayList<String> childIds = new ArrayList<>();
+                childIds.add(((OrganisationUnitModel) value).uid());
+                for (TreeNode childNode : node.getChildren()) {
+                    childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
+                    for (TreeNode childNode2 : childNode.getChildren()) {
+                        childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
+                        for (TreeNode childNode3 : childNode2.getChildren()) {
+                            childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
+                        }
                     }
                 }
+                if (!fixedOrgUnit)
+                    binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+                binding.drawerLayout.closeDrawers();
             }
-            if (!fixedOrgUnit)
-                binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
-            binding.drawerLayout.closeDrawers();
         });
 
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
             binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
-        } else if (!fixedOrgUnit){
+        } else if (!fixedOrgUnit) {
             binding.orgUnit.setText(getString(R.string.org_unit));
         }
         checkActionButtonVisibility();
@@ -418,9 +411,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         startFormActivity(eventUid);
     }
 
-    private void startFormActivity(String eventUid){
+    private void startFormActivity(String eventUid) {
         FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
-        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments));
+        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
         finish();
     }
 
@@ -525,11 +518,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
             setLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
         }
-        if (requestCode == RQ_PROGRAM_STAGE){
-            if (resultCode == RESULT_OK){
+        if (requestCode == RQ_PROGRAM_STAGE) {
+            if (resultCode == RESULT_OK) {
                 presenter.getProgramStage(data.getStringExtra(PROGRAM_STAGE_UID));
-            }
-            else {
+            } else {
                 finish();
             }
         }
@@ -537,7 +529,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
-        for (FormSectionViewModel formSectionViewModel : formSectionViewModels){
+        for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
             presenter.getSectionCompletion(formSectionViewModel.sectionUid());
         }
     }
@@ -570,9 +562,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.progressGains.startAnimation(gainAnim);
     }
 
-    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates){
+    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates){
+        for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
                 total++;
         }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -25,10 +26,12 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -143,7 +146,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
         extras.putString("PROGRAM_UID", programUid);
-        extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
+        if (dashboardProgramModel.getCurrentEnrollment() != null)
+            extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
         teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
@@ -174,7 +178,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.clear();
     }
 
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid){
+    public Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid) {
         return dashboardRepository.mainTrackedEntityAttributes(teiUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -183,7 +187,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void goToAddRelationship() {
-        if(programWritePermission){
+        if (programWritePermission) {
             Fragment relationshipFragment = RelationshipFragment.getInstance();
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
@@ -198,7 +202,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
-        dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+        if (!trackEntityInstance_A.equals(teUid))
+            dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+        else
+            view.displayMessage("It's not possible to add this relationship");
     }
 
     @Override
@@ -236,6 +243,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
         compositeDisposable.add(
                 scheduleFragment.filterProcessor()
+                        .startWith(ScheduleAdapter.Filter.ALL)
                         .map(filter -> {
                             if (filter == ScheduleAdapter.Filter.SCHEDULE)
                                 return EventStatus.SCHEDULE.name();
@@ -245,11 +253,21 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 return EventStatus.SCHEDULE.name() + "," + EventStatus.SKIPPED.name();
                         })
                         .flatMap(filter -> dashboardRepository.getScheduleEvents(programUid, teUid, filter))
+                        .map(eventModels -> {
+                            for (EventModel eventModel : eventModels) {
+                                if (DateUtils.isToday(eventModel.dueDate().getTime())) { //If a event dueDate is Today, mark as Active
+                                    dashboardRepository.updateState(eventModel, EventStatus.ACTIVE);
+                                } else if (eventModel.dueDate().before(Calendar.getInstance().getTime()) && eventModel.status() != EventStatus.SKIPPED) { //If a event dueDate is before today and its status is not skipped, the event is skipped
+                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
+                                }
+                            }
+                            return eventModels;
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 scheduleFragment.swapEvents(),
-                                OnErrorHandler.create()
+                                Timber::d
                         )
         );
     }

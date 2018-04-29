@@ -16,6 +16,7 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import com.dhis2.utils.DateUtils;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -81,6 +82,13 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void initData(String data) {
+        Date date = null;
+        try {
+            date = DateUtils.uiDateFormat().parse(data);
+        } catch (ParseException e) {
+        }
+
+        data = DateUtils.timeFormat().format(date);
         editText.setText(data);
     }
 
@@ -123,4 +131,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         dateDialog.show();
     }
 
+    public TextInputEditText getEditText() {
+        return editText;
+    }
 }

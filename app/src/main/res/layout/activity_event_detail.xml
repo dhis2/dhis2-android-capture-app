@@ -224,7 +224,15 @@
                         android:layout_marginBottom="20dp"
                         app:alignContent="stretch"
                         app:alignItems="stretch"
-                        app:flexWrap="wrap" />
+                        app:flexWrap="wrap"
+                        android:visibility="gone"/>
+
+                    <FrameLayout
+                        android:id="@+id/dataFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -241,7 +249,7 @@
                             android:layout_marginEnd="22.5dp"
                             android:background="@drawable/button_delete_selector"
                             android:minHeight="0dp"
-                            android:text="DEACTIVATE"
+                            android:text="@string/deactivate"
                             android:textColor="@color/white_faf"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

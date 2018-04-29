@@ -21,23 +21,21 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
+import static android.text.TextUtils.isEmpty;
+
 class HomeRepositoryImpl implements HomeRepository {
 
     private List<Date> dates;
     private Period period;
 
+    private final static String PROGRAMS = "" +
+            "SELECT Program.* FROM Program";
+
     private final static String PROGRAMS_EVENT_DATES_2 = "" +
             "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid " +
             "WHERE (%s) " +
-            "GROUP BY Program.uid";
-
-    private final static String SELECT =
-            "SELECT *, Program.uid, Event.uid AS event_uid FROM ((Program" +
-                    " INNER JOIN Event ON Event.program = Program.uid)" +
-                    " INNER JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid)" +
-                    " WHERE (%s) AND OrganisationUnitProgramLink.organisationUnit IN (%s)" +
-                    " GROUP BY Program.uid";
+            "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_PROGRAMS = "SELECT " +
             "Program.* FROM Program " +
@@ -49,6 +47,10 @@ class HomeRepositoryImpl implements HomeRepository {
     private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
             "WHERE (%s) " +
             "AND Event.organisationUnit IN (%s) " +
+            "AND Event.program = ?";
+
+    private final static String SELECT_EVENTS_NO_DATE = "SELECT Event.* FROM Event " +
+            "WHERE Event.organisationUnit IN (%s) " +
             "AND Event.program = ?";
 
 
@@ -67,6 +69,20 @@ class HomeRepositoryImpl implements HomeRepository {
         this.briteDatabase = briteDatabase;
     }
 
+
+    @NonNull
+    @Override
+    public Observable<List<ProgramModel>> programs(String orgUnitsIdQuery) {
+        this.dates = null;
+        this.period = null;
+        this.orgUnits = orgUnitsIdQuery;
+        String finalQuery = PROGRAMS;
+        if (!isEmpty(orgUnitsIdQuery)) {
+            finalQuery += String.format(" JOIN Event ON Event.program = Program.uid WHERE Event.organisationUnit IN (%s)", orgUnitsIdQuery);
+        }
+        return briteDatabase.createQuery(SELECT_SET_2, finalQuery + " GROUP BY Program.uid")
+                .mapToList(ProgramModel::create);
+    }
 
     @NonNull
     @Override
@@ -110,21 +126,52 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Observable<List<EventModel>> eventModels(String programUid) {
-        String query = "SELECT * FROM %s WHERE %s.%s = 'programUid' AND (%s)";
-        query = query.replace("programUid", programUid);
-
+    public Observable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period) {
         StringBuilder dateQuery = new StringBuilder();
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
         for (int i = 0; i < dates.size(); i++) {
             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+            dateQuery.append(String.format(queryFormat, "Event.dueDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
             if (i < dates.size() - 1)
                 dateQuery.append("OR ");
         }
 
-        String queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
-//        String queryFinal = String.format(Locale.US, query, EventModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM, dateQuery);
+        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES_2, dateQuery))
+                .mapToList(ProgramModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<ProgramModel>> toDoPrograms(List<Date> dates, Period period, String orgUnitsId) {
+        StringBuilder dateQuery = new StringBuilder();
+        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+        for (int i = 0; i < dates.size(); i++) {
+            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+            dateQuery.append(String.format(queryFormat, "Event.dueDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
+            if (i < dates.size() - 1)
+                dateQuery.append("OR ");
+        }
+
+        return briteDatabase.createQuery(SELECT_SET, String.format(SELECT_PROGRAMS, dateQuery, orgUnitsId))
+                .mapToList(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<EventModel>> eventModels(String programUid) {
+        String queryFinal;
+        if (dates != null) {
+            StringBuilder dateQuery = new StringBuilder();
+            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+            for (int i = 0; i < dates.size(); i++) {
+                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+                if (i < dates.size() - 1)
+                    dateQuery.append("OR ");
+            }
+            queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
+        } else
+            queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
 
         return briteDatabase.createQuery(EventModel.TABLE, queryFinal, programUid).mapToList(EventModel::create);
     }

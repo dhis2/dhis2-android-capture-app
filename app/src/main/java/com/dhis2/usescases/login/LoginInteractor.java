@@ -11,7 +11,6 @@ import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.main.MainActivity;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
@@ -112,9 +111,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.EVENTS), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(LoginActivity.SyncState.EVENTS),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
     }
 
     @Override
@@ -127,9 +126,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.TEI), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(LoginActivity.SyncState.TEI),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
 
     }
 

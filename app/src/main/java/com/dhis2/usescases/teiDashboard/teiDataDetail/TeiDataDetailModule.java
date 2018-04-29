@@ -33,23 +33,14 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository,
-                                                      AttrEntryStore dataEntryStore, EnrollmentStatusStore enrollmentStatusStore) {
-        return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, dataEntryStore, enrollmentStatusStore);
+    TeiDataDetailContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, EnrollmentStatusStore enrollmentStatusStore) {
+        return new TeiDataDetailPresenter(dashboardRepository, metadataRepository, enrollmentStatusStore);
     }
 
     @Provides
     @PerActivity
     DashboardRepository dashboardRepository(BriteDatabase briteDatabase) {
         return new DashboardRepositoryImpl(briteDatabase);
-    }
-
-    @Provides
-    @PerActivity
-    AttrEntryStore dataEntryRepository(@NonNull BriteDatabase briteDatabase) {
-
-        return new AttrValueStore(briteDatabase, enrollmentUid);
-
     }
 
     @Provides

@@ -24,7 +24,7 @@ android {
     defaultConfig {
         applicationId "com.dhis2"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -209,6 +209,8 @@ dependencies {
     // Zxing library
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    //FancyShowCase
+    compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
 
 }

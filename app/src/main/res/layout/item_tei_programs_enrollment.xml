@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -47,7 +48,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
@@ -59,7 +60,7 @@
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="ANC PROGRAM" />
+                    tools:text="ANC PROGRAMffffffffffffffffffff" />
 
 
                 <LinearLayout
@@ -75,7 +76,8 @@
                         android:layout_marginTop="8dp"
                         android:textColor="@color/gray_9b9"
                         android:textSize="14sp"
-                        app:organisationUnitName='@{enrollment.organisationUnit()}'/>
+                        app:organisationUnitName='@{enrollment.organisationUnit()}'
+                        tools:text="ORG UNIT"/>
 
 
                     <TextView

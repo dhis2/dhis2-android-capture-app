@@ -8,6 +8,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -92,6 +93,15 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                     return Flowable.just(updated);
                 })
                 .switchMap(this::updateEnrollment);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<EnrollmentStatus> enrollmentStatus(@NonNull String enrollmentUid) {
+        String query = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ?";
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, query, enrollmentUid)
+                .mapToOne(EnrollmentModel::create)
+                .map(EnrollmentModel::enrollmentStatus).toFlowable(BackpressureStrategy.LATEST);
     }
 
     private long update(EnrollmentStatus value) {

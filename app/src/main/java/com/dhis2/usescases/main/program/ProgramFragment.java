@@ -3,9 +3,11 @@ package com.dhis2.usescases.main.program;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -18,7 +20,6 @@ import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.utils.CustomViews.OrgUnitButton;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
@@ -38,9 +39,14 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseQueue;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 import static com.dhis2.utils.Period.DAILY;
 import static com.dhis2.utils.Period.MONTHLY;
+import static com.dhis2.utils.Period.NONE;
 import static com.dhis2.utils.Period.WEEKLY;
 import static com.dhis2.utils.Period.YEARLY;
 
@@ -54,7 +60,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Inject
     ProgramContract.Presenter presenter;
 
-    private Period currentPeriod = DAILY;
+    private Period currentPeriod = NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();
 
     private AndroidTreeView treeView;
@@ -69,9 +75,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     //-------------------------------------------
     //region LIFECYCLE
 
-    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
-        this.orgUnitFilter = orgUnitFilter;
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -88,13 +91,16 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         chosenDateWeek.add(new Date());
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
-        binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(new Date()));
         setUpRecycler();
 
         return binding.getRoot();
     }
 
     //endregion
+
+    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
+        this.orgUnitFilter = orgUnitFilter;
+    }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
     @Override
@@ -105,7 +111,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         String week = getString(R.string.week);
         SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
 
-        if (currentPeriod != DAILY) {
+        if (currentPeriod != DAILY && currentPeriod != NONE) {
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                 if (!selectedDates.isEmpty()) {
                     String textToShow;
@@ -154,7 +160,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                 }
             });
-        } else {
+        } else if (currentPeriod == DAILY) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);
             DatePickerDialog pickerDialog;
@@ -178,6 +184,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         String textToShow = "";
 
         switch (currentPeriod) {
+            case NONE:
+                currentPeriod = DAILY;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                break;
             case DAILY:
                 currentPeriod = WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
@@ -191,14 +201,18 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
                 break;
             case YEARLY:
-                currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                currentPeriod = NONE;
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
                 break;
         }
         ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
+            case NONE:
+                getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
+                textToShow = getString(R.string.period);
+                break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
@@ -236,16 +250,19 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-        binding.programRecycler.setAdapter(new ProgramAdapter(presenter,currentPeriod));
+        binding.programRecycler.setAdapter(new ProgramAdapter(presenter, currentPeriod));
         presenter.init(this);
     }
 
     @Override
     public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
-        if (orgUnitQuery.isEmpty())
-            presenter.getProgramsWithDates(dates, period);
+        if (dates != null)
+            if (orgUnitQuery.isEmpty())
+                presenter.getProgramsWithDates(dates, period);
+            else
+                presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
         else
-            presenter.getProgramsOrgUnit(dates, period, orgUnitQuery);
+            presenter.getAllPrograms(orgUnitQuery);
     }
 
     @Override
@@ -253,6 +270,69 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         return programs -> {
             binding.programProgress.setVisibility(View.GONE);
             ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
+            SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                    "com.dhis2", Context.MODE_PRIVATE);
+            if (!prefs.getBoolean("TUTO_SHOWN", false)) {
+                prefs.edit().putBoolean("TUTO_SHOWN",true).apply();
+                new Handler().postDelayed(() -> {
+                    FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_1))
+                            .closeOnTouch(true)
+                            .build();
+                    FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_2))
+                            .closeOnTouch(true)
+                            .build();
+
+                    FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_3))
+                            .focusOn(getAbstractActivity().findViewById(R.id.filter))
+                            .closeOnTouch(true)
+                            .dismissListener(new DismissListener() {
+                                @Override
+                                public void onDismiss(String id) {
+                                    getAbstractActivity().findViewById(R.id.filter).performClick();
+                                }
+
+                                @Override
+                                public void onSkipped(String id) {
+
+                                }
+                            })
+                            .build();
+
+                    FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_4))
+                            .focusOn(binding.periodLayout)
+                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                            .closeOnTouch(true)
+                            .build();
+
+                    FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_5))
+                            .focusOn(binding.buttonOrgUnit)
+                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                            .closeOnTouch(true)
+                            .build();
+
+                    FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_6))
+                            .focusOn(getAbstractActivity().findViewById(R.id.menu))
+                            .closeOnTouch(true)
+                            .build();
+
+                    FancyShowCaseQueue fancyShowCaseQueue = new FancyShowCaseQueue()
+                            .add(tuto1)
+                            .add(tuto2)
+                            .add(tuto3)
+                            .add(tuto4)
+                            .add(tuto5)
+                            .add(tuto6);
+
+                    fancyShowCaseQueue.show();
+                },500);
+
+            }
         };
     }
 
@@ -281,14 +361,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
-                binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
-                binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+                binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
 
-        binding.buttonOrgUnit.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+        binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
     }
 
 
@@ -332,6 +412,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
 
         switch (currentPeriod) {
+            case NONE:
+                getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
+                break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);

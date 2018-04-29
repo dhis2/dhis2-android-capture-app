@@ -15,13 +15,13 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventInitialContract {
@@ -68,9 +68,9 @@ public class EventInitialContract {
 
         void onBackClick();
 
-        void createEvent(String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createEvent(String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
@@ -89,6 +89,9 @@ public class EventInitialContract {
         void getSectionCompletion(@Nullable String sectionUid);
 
         void onDetach();
+
+        void goToSummary();
+
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -103,9 +106,9 @@ public class EventInitialContract {
 
         void getFilteredOrgUnits(String date);
 
-        void createNewEvent(String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createNewEvent(String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModel, String programUid, String date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 

@@ -5,6 +5,7 @@ import com.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -59,4 +60,5 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
 
+    EventModel updateState(EventModel eventModel, EventStatus newStatus);
 }

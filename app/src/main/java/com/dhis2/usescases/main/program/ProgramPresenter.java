@@ -8,7 +8,6 @@ import com.dhis2.usescases.programDetail.ProgramDetailActivity;
 import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -55,9 +54,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .map(
                                 orgUnits -> {
                                     this.myOrgs = orgUnits;
-                                    ArrayList<Date> today = new ArrayList<>();
-                                    today.add(DateUtils.getInstance().getToday());
-                                    return homeRepository.programs(today, Period.DAILY, orgUnitQuery());
+                                    return homeRepository.programs(orgUnitQuery());
                                 }
                         )
                         .subscribeOn(Schedulers.io())
@@ -74,23 +71,38 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
         compositeDisposable.add(homeRepository.programs(dates, period)
+//                .flatMap(data->homeRepository.toDoPrograms(dates, period))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.swapProgramData(),
                         throwable -> view.renderError(throwable.getMessage())));
+
     }
 
 
     @Override
     public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
         compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
+//                .flatMap(data->homeRepository.toDoPrograms(dates, period, orgUnitQuery))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view.swapProgramData(),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
+    }
+
+    @Override
+    public void getAllPrograms(String orgUnitQuery) {
+        compositeDisposable.add(
+                homeRepository.programs(orgUnitQuery)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.swapProgramData(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));
     }
 
     @Override
@@ -101,6 +113,9 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
 
         switch (currentPeriod) {
+            case NONE:
+                bundle.putInt("CURRENT_PERIOD", R.string.period);
+                bundle.putSerializable("CHOOSEN_DATE", null);
             case DAILY:
                 bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
                 bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
@@ -131,12 +146,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 view.startActivity(SearchTEActivity.class, bundle, false, false, null);
             }
         } else {
-            if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                // TODO CRIS: CRREATE TABLET ACTIVITY
-                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-            } else {
-                view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
-            }
+            view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
         }
     }
 

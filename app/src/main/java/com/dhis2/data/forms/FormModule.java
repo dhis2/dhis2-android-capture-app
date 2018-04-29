@@ -17,7 +17,7 @@ public class FormModule {
     @NonNull
     private final FormViewArguments formViewArguments;
 
-    FormModule(@NonNull FormViewArguments formViewArguments) {
+    public FormModule(@NonNull FormViewArguments formViewArguments) {
         this.formViewArguments = formViewArguments;
     }
 

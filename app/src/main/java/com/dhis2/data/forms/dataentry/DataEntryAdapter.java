@@ -36,7 +36,7 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-final class DataEntryAdapter extends Adapter {
+public final class DataEntryAdapter extends Adapter {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -58,7 +58,7 @@ final class DataEntryAdapter extends Adapter {
     @NonNull
     private final List<Row> rows;
 
-    DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
+    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                      @NonNull FragmentManager fragmentManager,
                      @NonNull DataEntryArguments dataEntryArguments) {
         setHasStableIds(true);
@@ -138,7 +138,7 @@ final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    void swap(@NonNull List<FieldViewModel> updates) {
+    public void swap(@NonNull List<FieldViewModel> updates) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
                 new DataEntryDiffCallback(viewModels, updates));
 

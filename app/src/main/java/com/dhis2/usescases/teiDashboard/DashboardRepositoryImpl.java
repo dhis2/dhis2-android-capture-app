@@ -8,11 +8,13 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -180,6 +182,28 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
         return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
+    }
+
+    @Override
+    public EventModel updateState(EventModel eventModel, EventStatus newStatus) {
+
+        EventModel event = EventModel.builder()
+                .id(eventModel.id())
+                .uid(eventModel.uid())
+                .created(eventModel.created())
+                .lastUpdated(Calendar.getInstance().getTime())
+                .eventDate(eventModel.eventDate())
+                .dueDate(eventModel.dueDate())
+                .enrollmentUid(eventModel.enrollmentUid())
+                .program(eventModel.program())
+                .programStage(eventModel.programStage())
+                .organisationUnit(eventModel.organisationUnit())
+                .status(newStatus)
+                .state(State.TO_UPDATE)
+                .build();
+
+        briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
+        return event;
     }
 
     @Override

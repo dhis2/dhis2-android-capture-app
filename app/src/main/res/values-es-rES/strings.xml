@@ -33,7 +33,7 @@
     <string name="syncing_data_shortly">Tus datos estaran disponibles pronto</string>
     <string name="syncing_data">Sincronizando tus datos</string>
     <string name="configuration_ready">Tu configuracion esta lista</string>
-    <string name="data_ready">Tus datos estan disponibles</string>
+    <string name="data_ready">Tus datos están disponibles</string>
     <string name="configuration_sync_failed">Error en la sincronizacion de configuracion</string>
     <string name="data_sync_failed">Error en la sincronizacion de datos</string>
     <string name="DAILY">Diario</string>
@@ -71,12 +71,12 @@
     <string name="state_to_delete">Para borrar</string>
     <string name="state_error">Error</string>
     <string name="action_sync">Sincronizar</string>
-    <string name="completion">Completitud</string>
+    <string name="completion">Completado</string>
     <string name="create">Crear</string>
     <string name="update">Actualizar</string>
     <string name="date">Fecha</string>
     <string name="org_unit">Unidad Organizativa</string>
-    <string name="category_option">Opcion de categoria</string>
+    <string name="category_option">Opcion de categoría</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="new_event">Evento nuevo</string>
@@ -106,11 +106,11 @@
     <string name="app_info">Informacion</string>
     <string name="log_out">Cerrar Sesion</string>
     <string name="block_session">Bloquear sesion</string>
-    <string name="select_location">Seleccione ubicacion</string>
+    <string name="select_location">Seleccione ubicación</string>
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
     <string name="a_hour">1 hora</string>
-    <string name="a_day">1 dia</string>
+    <string name="a_day">1 día</string>
     <string name="Automatic_Sync_Data">Sincronizacion de datos automatica cada:</string>
     <string name="Manual">Manual (por defecto)</string>
     <string name="Automatic_Sync_Metadata">Sincronizacion de configuracion automatica cada:</string>
@@ -123,6 +123,8 @@
     <string name="write_new_note">Escribir nota nueva</string>
     <string name="clear">Limpiar</string>
     <string name="add_note">Añadir nota</string>
+    <string name="revert">Deshacer</string>
+    <string name="activated">Activado</string>
     <string name="section_list">Lista de secciones</string>
     <string name="event_summary_header">%s preguntas de %s completadas</string>
     <string name="event_summary_sections_header">%s de %s completados</string>
@@ -142,4 +144,12 @@
     <string name="permission_denied">No tienes los permisos necesarios para realizar esta acción</string>
     <string name="referral">Remitir</string>
     <string name="date_dialog_clear">Limpiar</string>
+    <string name="period">Periodo</string>
+    <string name="org_unit_filter">(%d) Unidad Org.</string>
+    <string name="tuto_main_1">Bienvenido a dhis2</string>
+    <string name="tuto_main_2">Aquí aparecerán tus programas</string>
+    <string name="tuto_main_3">Puedes aplicar un filtro…</string>
+    <string name="tuto_main_4">…seleccionar un periodo y distintas fechas…</string>
+    <string name="tuto_main_5">…o filtrar por Unidad Organizativa</string>
+    <string name="tuto_main_6">En el menú principal podrás realizar más acciones</string>
 </resources>

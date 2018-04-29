@@ -17,15 +17,12 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 /**
  * Created by Cristian on 22/03/2018.
@@ -84,27 +81,18 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @Override
     public Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
-                            @NonNull Context context, @NonNull String programUid,
-                            @NonNull String programStage, @NonNull String date,
-                            @NonNull String orgUnitUid, @NonNull String catComboUid,
-                            @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
+                                          @NonNull Context context, @NonNull String programUid,
+                                          @NonNull String programStage, @NonNull Date date,
+                                          @NonNull String orgUnitUid, @NonNull String catComboUid,
+                                          @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
 
         Date createDate = Calendar.getInstance().getTime();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
-        Date eventDate = createDate;
-
-        try {
-            eventDate = simpleDateFormat.parse(date);
-        } catch (ParseException e) {
-            Timber.e(e);
-        }
 
         EventModel eventModel = EventModel.builder()
                 .uid(codeGenerator.generate())
                 .created(createDate)
                 .lastUpdated(createDate)
-                .eventDate(eventDate)
+                .eventDate(date)
                 .program(programUid)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)

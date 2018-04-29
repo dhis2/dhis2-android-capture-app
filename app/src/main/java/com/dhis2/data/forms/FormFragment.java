@@ -1,6 +1,7 @@
 package com.dhis2.data.forms;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,8 +23,12 @@ import com.dhis2.R;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.dhis2.utils.Preconditions;
+import com.google.android.gms.maps.model.LatLng;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
@@ -38,8 +43,10 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
 
-public class FormFragment extends FragmentGlobalAbstract implements FormView {
+public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
+    private static final String FORM_VIEW_ACTIONBAR = "formViewActionbar";
+    private static final String IS_ENROLLMENT = "isEnrollment";
 
     View fab;
     ViewPager viewPager;
@@ -52,19 +59,24 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
     private FormSectionAdapter formSectionAdapter;
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
+    private PublishSubject<LatLng> onCoordinatesChanged;
     private TextView reportDate;
     PublishSubject<ReportStatus> undoObservable;
     private CoordinatorLayout coordinatorLayout;
     private TextView incidentDate;
+    private CoordinatesView coordinatesView;
+    private boolean isEnrollment;
 
     public FormFragment() {
         // Required empty public constructor
     }
 
-    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments) {
+    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments,boolean isEnrollment, boolean showActionBar) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelable(FORM_VIEW_ARGUMENTS, formViewArguments);
+        args.putBoolean(IS_ENROLLMENT, isEnrollment);
+        args.putBoolean(FORM_VIEW_ACTIONBAR, showActionBar);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,12 +95,29 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
+        View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
         reportDate = view.findViewById(R.id.textview_report_date);
         incidentDate = view.findViewById(R.id.textView_incident_date);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        if (getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
+            setupActionBar();
+        else {
+            appBarLayout.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
+        }
+        coordinatesView = view.findViewById(R.id.coordinates_view);
+        if (!isEnrollment){
+            coordinatesView.setVisibility(View.GONE);
+        }
+        else {
+            coordinatesView.setIsBgTransparent(false);
+            coordinatesView.setMapListener(this);
+            coordinatesView.setCurrentLocationListener(this);
+        }
 
         setupActionBar();
         initReportDatePicker();
@@ -121,6 +150,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
 
     @NonNull
     @Override
+    public Observable<LatLng> reportCoordinatesChanged() {
+        onCoordinatesChanged = PublishSubject.create();
+        return onCoordinatesChanged;
+    }
+
+    @NonNull
+    @Override
     public Observable<String> incidentDateChanged() {
         onIncidentDateChanged = PublishSubject.create();
         return onIncidentDateChanged;
@@ -135,12 +171,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         ((App) getActivity().getApplicationContext())
                 .createFormComponent(new FormModule(arguments))
                 .inject(this);
+
+        this.isEnrollment = getArguments().getBoolean(IS_ENROLLMENT);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
         ((App) getActivity().getApplicationContext())
                 .releaseFormComponent();
     }
@@ -166,16 +203,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
                 Log.d("EMPTY", "Show empty state");
                 // TODO: Show empty state
             }
-
         };
     }
 
     @NonNull
     @Override
     public Consumer<String> renderReportDate() {
-        return date -> {
-            reportDate.setText(date);
-        };
+        return date -> reportDate.setText(date);
     }
 
     @NonNull
@@ -184,6 +218,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         return programModel -> {
             incidentDate.setHint(programModel.incidentDateLabel());
             incidentDate.setVisibility(View.VISIBLE);
+            if (isEnrollment && programModel.captureCoordinates()){
+                coordinatesView.setVisibility(View.VISIBLE);
+            }
+            else{
+                coordinatesView.setVisibility(View.GONE);
+            }
         };
     }
 
@@ -205,7 +245,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         return trio -> {
             if (!trio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
                 FormViewArguments formViewArguments = FormViewArguments.createForEvent(trio.val2());
-                startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments));
+                startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment));
             } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                 Bundle bundle = new Bundle();
                 bundle.putString("PROGRAM_UID", trio.val0());
@@ -213,17 +253,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
                 startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
             }
             getActivity().finish();
-
         };
     }
 
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
-        String snackBarMessage = reportStatus == ReportStatus.COMPLETED ?
-                "Completed" : "Activated";
+        String snackBarMessage = reportStatus == ReportStatus.COMPLETED ? getString(R.string.completed) : getString(R.string.activated);
 
         Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
-                .setAction("Revert", v1 -> {
+                .setAction(getString(R.string.revert), v1 -> {
                     if (undoObservable == null) {
                         return;
                     }
@@ -269,8 +307,36 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView {
         return date -> {
             if (onIncidentDateChanged != null) {
                 onIncidentDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
-
             }
         };
+    }
+
+    @Override
+    public void onMapPositionClick(CoordinatesView coordinatesView) {
+        this.coordinatesView = coordinatesView;
+        startActivityForResult(MapSelectorActivity.create(getActivity()), Constants.RQ_MAP_LOCATION_VIEW);
+    }
+
+    @Override
+    public void onCurrentLocationClick(double latitude, double longitude) {
+        publishCoordinatesChanged(latitude, longitude);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Constants.RQ_MAP_LOCATION_VIEW:
+                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                this.coordinatesView = null;
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    void publishCoordinatesChanged(Double lat, Double lon){
+        if (onCoordinatesChanged != null) {
+            onCoordinatesChanged.onNext(new LatLng(lat, lon));
+        }
     }
 }

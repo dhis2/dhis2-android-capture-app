@@ -19,5 +19,6 @@
         android:paddingEnd="0dp"
         android:text="@string/add_file"
         android:textAlignment="viewStart"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:focusable="true"/>
 </layout>

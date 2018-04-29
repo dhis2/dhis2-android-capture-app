@@ -13,7 +13,9 @@ import android.widget.RelativeLayout;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import com.dhis2.databinding.DateTimeViewBinding;
+import com.dhis2.utils.DateUtils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,6 +74,13 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void initData(String data) {
+        Date date = null;
+        try {
+            date = DateUtils.timeFormat().parse(data);
+        } catch (ParseException e) {
+        }
+
+        data = DateUtils.timeFormat().format(date);
         editText.setText(data);
     }
 
@@ -111,5 +120,9 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         }, hour, minute, is24HourFormat);
         dialog.setTitle(binding.getLabel());
         dialog.show();
+    }
+
+    public TextInputEditText getEditText() {
+        return editText;
     }
 }

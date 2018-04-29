@@ -72,36 +72,47 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:focusableInTouchMode="true"
-            android:orientation="horizontal"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:focusableInTouchMode="true">
 
-            <TextView
-                android:id="@+id/textview_report_date"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:background="@color/colorPrimaryLight"
-                android:gravity="center_vertical"
-                android:hint="@string/report_date"
-                android:padding="8dp"
-                android:textSize="16sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView_incident_date"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:background="@color/colorPrimaryLight"
-                android:gravity="center_vertical"
-                android:hint="@string/incident_date"
-                android:padding="8dp"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/textview_report_date"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryLight"
+                    android:gravity="center_vertical"
+                    android:hint="@string/report_date"
+                    android:padding="8dp"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView_incident_date"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryLight"
+                    android:gravity="center_vertical"
+                    android:hint="@string/incident_date"
+                    android:padding="8dp"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <com.dhis2.utils.CustomViews.CoordinatesView
+                android:id="@+id/coordinates_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -110,6 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            app:tabTextColor="@color/colorAccent"
             app:tabMode="scrollable" />
 
     </android.support.design.widget.AppBarLayout>

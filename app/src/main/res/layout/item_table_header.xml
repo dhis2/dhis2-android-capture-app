@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tool="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -10,11 +10,11 @@
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+        android:layout_width="95dp"
         android:layout_height="match_parent"
         android:background="@color/gray_b2e"
         android:minHeight="40dp"
-        android:minWidth="137dp"
+        android:minWidth="65dp"
         android:paddingEnd="5dp"
         android:paddingStart="5dp">
 
@@ -29,6 +29,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tool:text="@{headerTitle}" />
+            android:maxLines="2"
+            android:text="@{headerTitle}"
+            tools:text="@tools:sample/lorem/random"/>
     </android.support.constraint.ConstraintLayout>
 </layout>
