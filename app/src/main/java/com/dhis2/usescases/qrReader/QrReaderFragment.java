@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.main.MainActivity;
 import com.google.zxing.Result;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -36,6 +37,10 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void handleResult(Result result) {
+        //Event
+        assert ((MainActivity)getActivity()) != null;
+        ((MainActivity)getActivity()).changeFragment(R.id.events);
+
 
     }
 

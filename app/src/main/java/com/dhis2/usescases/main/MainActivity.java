@@ -17,6 +17,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.main.program.ProgramFragment;
+import com.dhis2.usescases.qrReader.EventQR.EventQrFragment;
 import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
 
@@ -144,28 +145,35 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 {
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;
-                tag = "Done Task";
+                tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
                 }
             case R.id.sync_manager:
             {
                 fragment = new SyncManagerFragment();
-                tag = "SYNC Manager";
+                tag = getString(R.string.SYNC_MANAGER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
             case R.id.qr_scan:
             {
                 fragment = new QrReaderFragment();
-                tag = "SYNC Manager";
+                tag = getString(R.string.QR_SCANNER);
+                binding.filter.setVisibility(View.GONE);
+                break;
+            }
+            case R.id.events:
+            {
+                fragment = new EventQrFragment();
+                tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
             default:
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;
-                tag = "Done Task";
+                tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
 
@@ -187,6 +195,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
         binding.title.setText(tag);
         binding.drawerLayout.closeDrawers();
+    }
+
+    public void setTitle(String title){
+        binding.title.setText(title);
     }
 
 }
