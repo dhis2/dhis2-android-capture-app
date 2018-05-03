@@ -1,6 +1,8 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -25,6 +27,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private final DataEntryStore dataEntryStore;
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
+
+    private boolean changedEventStatus = false;
 
     EventDetailPresenter(EventDetailRepository eventDetailRepository, MetadataRepository metadataRepository, DataEntryStore dataEntryStore) {
         this.metadataRepository = metadataRepository;
@@ -70,13 +74,19 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void back() {
+        if(changedEventStatus){
+            Intent intent = new Intent();
+            view.getAbstractActivity().setResult(Activity.RESULT_OK, intent);
+        }
         view.back();
     }
 
     @Override
     public void eventStatus(EventModel eventModel, ProgramStageModel stageModel) {
-        if (stageModel.accessDataWrite())
+        if (stageModel.accessDataWrite()) {
             dataEntryStore.updateEventStatus(eventModel);
+            changedEventStatus = true;
+        }
         else
             view.displayMessage(null);
     }

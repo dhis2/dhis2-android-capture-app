@@ -143,4 +143,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        presenter.back();
+    }
 }

@@ -42,6 +42,18 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        init(teiUid, programUid);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onDettach();
+    }
+
+    @Override
     public void init(String teiUid, String programUid) {
         presenter.init(this, teiUid, programUid);
     }

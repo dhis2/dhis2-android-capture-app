@@ -25,6 +25,7 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
+import com.fasterxml.jackson.databind.util.EnumValues;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -125,6 +126,35 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return dashboardProgramModel;
     }
 
+    @Override
+    public void getTEIEvents(TEIDataFragment teiFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                teiFragment.setEvents(),
+                                OnErrorHandler.create()
+                        )
+        );
+    }
+
+    @Override
+    public void areEventsCompleted(TEIDataFragment teiDataFragment) {
+        compositeDisposable.add(
+                dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
+                        .map( events ->
+                                Observable.fromIterable(events)
+                                        .all(event -> event.status() == EventStatus.COMPLETED)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                teiDataFragment.areEventsCompleted(),
+                                Timber::d
+                        )
+        );
+    }
 
     @Override
     public void onEnrollmentSelectorClick() {
@@ -150,16 +180,19 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             extras.putString("ENROLLMENT_UID", dashboardProgramModel.getCurrentEnrollment().uid());
         intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "user_info");
-        teiFragment.startActivityForResult(intent, TEIDataFragment.getRequestCode(), options.toBundle());
+        teiFragment.startActivityForResult(intent, TEIDataFragment.getDetailsRequestCode(), options.toBundle());
     }
 
     @Override
     public void onEventSelected(String uid, View sharedView) {
+        Fragment teiFragment = view.getAdapter().getItem(0);
+        Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("EVENT_UID", uid);
         extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+        intent.putExtras(extras);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-        view.startActivity(EventDetailActivity.class, extras, false, false, options);
+        teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
     }
 
     @Override

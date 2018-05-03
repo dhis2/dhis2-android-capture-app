@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
@@ -20,6 +21,19 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.CustomViews.RxDialog;
+import com.dhis2.utils.OnErrorHandler;
+
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,12 +44,16 @@ import static android.app.Activity.RESULT_OK;
 public class TEIDataFragment extends FragmentGlobalAbstract {
 
     private static final int REQ_DETAILS = 1001;
+    private static final int REQ_EVENT = 2001;
 
     FragmentTeiDataBinding binding;
 
     static TEIDataFragment instance;
     TeiDashboardContracts.Presenter presenter;
     private DashboardProgramModel dashboardProgramModel;
+
+    private EventAdapter adapter;
+    private List<EventModel> events = new ArrayList<>();
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -70,14 +88,17 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         setData(dashboardProgramModel);
+        presenter.getTEIEvents(this);
     }
 
     public void setData(DashboardProgramModel nprogram) {
         this.dashboardProgramModel = nprogram;
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
+            this.events = new ArrayList<>();
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events);
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
-            binding.teiRecycler.setAdapter(new EventAdapter(presenter, nprogram.getProgramStages(), nprogram.getEvents()));
+            binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(nprogram.getCurrentEnrollment());
             binding.setProgram(nprogram.getCurrentProgram());
@@ -96,8 +117,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
 
     }
 
-    public static int getRequestCode() {
+    public static int getDetailsRequestCode() {
         return REQ_DETAILS;
+    }
+
+    public static int getEventRequestCode() {
+        return REQ_EVENT;
     }
 
     @SuppressLint("CheckResult")
@@ -109,5 +134,24 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
                 presenter.getData();
             }
         }
+        if(requestCode == REQ_EVENT) {
+            if(resultCode == RESULT_OK){
+                presenter.getTEIEvents(this);
+                presenter.areEventsCompleted(this);
+            }
+        }
+    }
+
+    public Consumer<List<EventModel>> setEvents() {
+        return events -> adapter.swapItems(events);
+    }
+
+
+    public Consumer<Single<Boolean>> areEventsCompleted() {
+        return eventsCompleted -> {
+            if (eventsCompleted.blockingGet())
+
+                Toast.makeText(getAbstractActivity(), "All events are completed, show dialog to close program", Toast.LENGTH_LONG).show();
+        };
     }
 }

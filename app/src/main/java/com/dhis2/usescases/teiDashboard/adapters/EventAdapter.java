@@ -56,4 +56,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public int getItemCount() {
         return events != null ? events.size() : 0;
     }
+
+    public void swapItems(List<EventModel> events){
+        this.events.clear();
+        this.events.addAll(events);
+        notifyDataSetChanged();
+    }
 }
