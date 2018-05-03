@@ -60,6 +60,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     }
 
     @Override
+    public void showDescription(String description){
+        getAbstractActivity().showDescription(description);
+    }
+
+    @Override
     public <T> void saveListToPreference(String key, List<T> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);

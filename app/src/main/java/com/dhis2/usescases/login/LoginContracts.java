@@ -50,6 +50,10 @@ public class LoginContracts {
 
         @NonNull
         Consumer<SyncResult> update(LoginActivity.SyncState syncState);
+
+        void saveTheme(Integer themeId);
+
+        void saveFlag(String s);
     }
 
     public interface Presenter {

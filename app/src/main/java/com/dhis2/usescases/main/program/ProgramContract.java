@@ -60,6 +60,7 @@ public class ProgramContract {
 
         void onTimeButtonClick();
 
+        void showDescription(String description);
 
         Observable<List<EventModel>> getEvents(ProgramModel programModel);
 
