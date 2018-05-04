@@ -97,5 +97,7 @@ public class TeiDashboardContracts {
         void openDashboard(String teiUid);
 
         void subscribeToMainAttr(String teiUid, TextView textView);
+
+        void completeEnrollment(TEIDataFragment teiDataFragment);
     }
 }

@@ -21,9 +21,12 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.CustomViews.RxDialog;
+import com.dhis2.utils.DialogClickListener;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
@@ -41,7 +44,7 @@ import static android.app.Activity.RESULT_OK;
  * -Created by ppajuelo on 29/11/2017.
  */
 
-public class TEIDataFragment extends FragmentGlobalAbstract {
+public class TEIDataFragment extends FragmentGlobalAbstract implements DialogClickListener {
 
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
@@ -149,9 +152,34 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
 
     public Consumer<Single<Boolean>> areEventsCompleted() {
         return eventsCompleted -> {
-            if (eventsCompleted.blockingGet())
+            if (eventsCompleted.blockingGet()) {
+                CustomDialog dialog = new CustomDialog(
+                        getContext(),
+                        "Events Completed",
+                        "All events in this program are completed. Would you like to close the program as well?",
+                        "Ok",
+                        "Cancel",
+                        this);
+                dialog.show();
+            }
 
-                Toast.makeText(getAbstractActivity(), "All events are completed, show dialog to close program", Toast.LENGTH_LONG).show();
         };
+    }
+
+    public Consumer<EnrollmentStatus> enrollmentCompleted() {
+        return enrollmentStatus -> {
+            if(enrollmentStatus == EnrollmentStatus.COMPLETED)
+                presenter.getData();
+        };
+    }
+
+    @Override
+    public void onPositive() {
+        presenter.completeEnrollment(this);
+    }
+
+    @Override
+    public void onNegative() {
+
     }
 }

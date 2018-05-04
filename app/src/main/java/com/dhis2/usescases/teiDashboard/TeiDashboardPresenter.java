@@ -27,6 +27,7 @@ import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
 import com.fasterxml.jackson.databind.util.EnumValues;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -362,5 +363,22 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         return programWritePermission;
     }
 
+    @Override
+    public void completeEnrollment(TEIDataFragment teiDataFragment) {
+        if (programWritePermission) {
+            Flowable<Long> flowable = null;
+            EnrollmentStatus newStatus = EnrollmentStatus.COMPLETED;
 
+            flowable = dashboardRepository.updateEnrollmentStatus(dashboardProgramModel.getCurrentEnrollment().uid(), newStatus);
+            compositeDisposable.add(flowable
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(result -> newStatus)
+                    .subscribe(
+                            teiDataFragment.enrollmentCompleted(),
+                            Timber::d)
+            );
+        } else
+            view.displayMessage(null);
+    }
 }

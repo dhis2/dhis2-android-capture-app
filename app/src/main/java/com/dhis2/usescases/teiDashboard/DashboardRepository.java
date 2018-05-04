@@ -1,8 +1,11 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.tuples.Pair;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -61,4 +64,6 @@ public interface DashboardRepository {
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
 
     EventModel updateState(EventModel eventModel, EventStatus newStatus);
+
+    Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value);
 }

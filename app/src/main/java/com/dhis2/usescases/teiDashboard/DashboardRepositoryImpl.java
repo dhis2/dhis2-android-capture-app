@@ -3,11 +3,13 @@ package com.dhis2.usescases.teiDashboard;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -23,12 +25,14 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -140,6 +144,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private final BriteDatabase briteDatabase;
     private String teiUid;
     private String programUid;
+    private String enrollmentUid;
 
     private static final String SELECT_USERNAME = "SELECT " +
             "UserCredentials.displayName FROM UserCredentials";
@@ -347,4 +352,61 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
 
+    @Override
+    public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {
+        return Flowable
+                .defer(() -> {
+                    long updated = update(uid, value);
+                    return Flowable.just(updated);
+                })
+                .switchMap(this::updateEnrollment);
+    }
+
+    private long update(String uid, EnrollmentStatus value) {
+        this.enrollmentUid = uid;
+        String UPDATE = "UPDATE Enrollment\n" +
+                "SET lastUpdated = ?, status = ?\n" +
+                "WHERE uid = ?;";
+
+        SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(UPDATE);
+        sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                .format(Calendar.getInstance().getTime()));
+        sqLiteBind(updateStatement, 2, value);
+        sqLiteBind(updateStatement, 3, enrollmentUid);
+
+        long updated = briteDatabase.executeUpdateDelete(
+                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+        updateStatement.clearBindings();
+
+        return updated;
+    }
+
+    @NonNull
+    private Flowable<Long> updateEnrollment(long status) {
+        String SELECT_TEI = "SELECT *\n" +
+                "FROM TrackedEntityInstance\n" +
+                "WHERE uid IN (\n" +
+                "  SELECT trackedEntityInstance\n" +
+                "  FROM Enrollment\n" +
+                "  WHERE Enrollment.uid = ?\n" +
+                ") LIMIT 1;";
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollmentUid)
+                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .switchMap(tei -> {
+                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
+                            State.ERROR.equals(tei.state())) {
+                        ContentValues values = tei.toContentValues();
+                        values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
+
+                        if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
+                                TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
+
+                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
+                                    "has not been successfully updated", tei.uid()));
+                        }
+                    }
+                    return Flowable.just(status);
+                });
+    }
 }
