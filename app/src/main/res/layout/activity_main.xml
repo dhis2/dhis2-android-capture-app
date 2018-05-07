@@ -124,16 +124,29 @@
                         app:currentFragment="@{currentFragment}" />
 
                     <TextView
-                        android:id="@+id/menu_info"
+                        android:id="@+id/sync_manager"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_info)}"
+                        android:onClick="@{()->presenter.changeFragment(R.id.sync_manager)}"
                         android:padding="10dp"
                         android:text="@string/SYNC_MANAGER"
                         android:textColor="@color/colorAccent"
                         android:textSize="18sp"
                         app:currentFragment="@{currentFragment}" />
+
+                    <TextView
+                        android:id="@+id/qr_scan"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:onClick="@{()->presenter.changeFragment(R.id.qr_scan)}"
+                        android:padding="10dp"
+                        android:text="@string/QR_SCANNER"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="18sp"
+                        app:currentFragment="@{currentFragment}" />
+
 
                 </LinearLayout>
 

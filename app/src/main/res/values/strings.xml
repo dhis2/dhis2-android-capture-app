@@ -157,6 +157,7 @@
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">SYNC Manager</string>
+
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
 
@@ -200,4 +201,8 @@
     <string name="tuto_main_4">…by changing the period and selecting dates…</string>
     <string name="tuto_main_5">…or filter by Organisation Unit</string>
     <string name="tuto_main_6">Check other actions on the main menu</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">QR Scanner</string>
+    <string name="SAVE">Save</string>
 </resources>
