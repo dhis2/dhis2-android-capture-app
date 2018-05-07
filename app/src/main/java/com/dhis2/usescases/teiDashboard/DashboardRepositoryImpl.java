@@ -89,7 +89,24 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
+
+    private final String EVENTS_DISPLAY_BOX = String.format(
+            "SELECT Event.* FROM %s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "WHERE %s.%s = ? " +
+                    "AND %s.%s = ? " +
+                    "AND %s.%s = ?",
+            EventModel.TABLE,
+            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
+            ProgramStageModel.TABLE, ProgramStageModel.Columns.DISPLAY_GENERATE_EVENT_BOX);
+
+
     private static final Set<String> EVENTS_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
+    private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE, ProgramStageModel.TABLE));
 
     private final String ATTRIBUTE_VALUES_QUERY = String.format(
             "SELECT TrackedEntityAttributeValue.* FROM %s " +
@@ -244,6 +261,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid) {
         return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, programUid, teiUid)
+                .mapToList(EventModel::create);
+    }
+
+    @Override
+    public Observable<List<EventModel>> getEnrollmentEventsWithDisplay(String programUid, String teiUid) {
+        return briteDatabase.createQuery(EVENTS_PROGRAM_STAGE_TABLE, EVENTS_DISPLAY_BOX, programUid, teiUid, "1")
                 .mapToList(EventModel::create);
     }
 

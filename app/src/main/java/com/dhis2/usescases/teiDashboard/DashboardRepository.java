@@ -41,6 +41,8 @@ public interface DashboardRepository {
 
     Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid);
 
+    Observable<List<EventModel>> getEnrollmentEventsWithDisplay(String programUid, String teiUid);
+
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
     Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
