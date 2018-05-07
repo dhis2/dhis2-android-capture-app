@@ -67,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonSyncData"
                 android:layout_marginTop="10dp"
+                style="@style/FullWidthButton"
                 android:text="@string/SYNC_DATA"
                 android:onClick="@{()->presenter.syncData(0)}"/>
 
@@ -111,6 +112,7 @@
                 tools:text="@string/last_metadata_sync_date"/>
 
             <Button
+                style="@style/FullWidthButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonSyncMeta"

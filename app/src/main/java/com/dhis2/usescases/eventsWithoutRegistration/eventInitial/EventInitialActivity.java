@@ -347,21 +347,23 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            treeView.selectNode(node, node.isSelected());
-            ArrayList<String> childIds = new ArrayList<>();
-            childIds.add(((OrganisationUnitModel) value).uid());
-            for (TreeNode childNode : node.getChildren()) {
-                childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
-                for (TreeNode childNode2 : childNode.getChildren()) {
-                    childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
-                    for (TreeNode childNode3 : childNode2.getChildren()) {
-                        childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
+            if(node.isSelectable()) {
+                treeView.selectNode(node, node.isSelected());
+                ArrayList<String> childIds = new ArrayList<>();
+                childIds.add(((OrganisationUnitModel) value).uid());
+                for (TreeNode childNode : node.getChildren()) {
+                    childIds.add(((OrganisationUnitModel) childNode.getValue()).uid());
+                    for (TreeNode childNode2 : childNode.getChildren()) {
+                        childIds.add(((OrganisationUnitModel) childNode2.getValue()).uid());
+                        for (TreeNode childNode3 : childNode2.getChildren()) {
+                            childIds.add(((OrganisationUnitModel) childNode3.getValue()).uid());
+                        }
                     }
                 }
+                if (!fixedOrgUnit)
+                    binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+                binding.drawerLayout.closeDrawers();
             }
-            if (!fixedOrgUnit)
-                binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
-            binding.drawerLayout.closeDrawers();
         });
 
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {

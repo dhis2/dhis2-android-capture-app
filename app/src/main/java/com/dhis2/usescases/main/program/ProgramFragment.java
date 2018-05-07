@@ -273,7 +273,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                     "com.dhis2", Context.MODE_PRIVATE);
             if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                prefs.edit().putBoolean("TUTO_SHOWN",true);
+                prefs.edit().putBoolean("TUTO_SHOWN",true).apply();
                 new Handler().postDelayed(() -> {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                             .title(getString(R.string.tuto_main_1))

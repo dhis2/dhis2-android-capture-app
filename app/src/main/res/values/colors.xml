@@ -16,6 +16,11 @@
     <color name="colorPrimaryDarkGreen">#178259</color>
     <color name="colorPrimaryLightGreen">#7ffe9b</color>
 
+    <!--ORANGE THEME-->
+    <color name="colorPrimaryOrange">#e95911</color>
+    <color name="colorPrimaryDarkOrange">#ba4205</color>
+    <color name="colorPrimaryLightOrange">#e98f62</color>
+
     <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_f5c">#f5c641</color>

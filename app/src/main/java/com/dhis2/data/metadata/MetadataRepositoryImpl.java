@@ -1,8 +1,9 @@
 package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
-import android.support.v4.content.res.ResourcesCompat;
 
+import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -20,6 +21,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.resource.ResourceModel;
+import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -415,5 +417,30 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ResourceModel.TABLE, RESOURCES_QUERY + resourceId)
                 .mapToOne(ResourceModel::create);
+    }
+
+    @Override
+    public Observable<Pair<String, Integer>> getTheme() {
+        final String[] flatTheme = new String[]{"", "light_blue"};
+        return briteDatabase
+                .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE + " WHERE key = 'style'")
+                .mapToList(SystemSettingModel::create)
+                .map(systemSettingModels -> {
+                    for (SystemSettingModel settingModel : systemSettingModels)
+                        if (settingModel.key().equals("style"))
+                            flatTheme[0] = settingModel.value();
+                        else
+                            flatTheme[1] = settingModel.value() != null ? settingModel.value() : "light_blue";
+
+                    if (flatTheme[1].contains("green"))
+                        return Pair.create(flatTheme[0], R.style.GreenTheme);
+                    if (flatTheme[1].contains("india"))
+                        return Pair.create(flatTheme[0], R.style.OrangeTheme);
+                    if (flatTheme[1].contains("myanmar"))
+                        return Pair.create(flatTheme[0], R.style.RedTheme);
+                    else
+                        return Pair.create(flatTheme[0], R.style.AppTheme);
+                });
+
     }
 }

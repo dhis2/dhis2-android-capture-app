@@ -1,6 +1,8 @@
 package com.dhis2.usescases.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -208,6 +210,21 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 throw new IllegalStateException();
             }
         };
+    }
+
+    @Override
+    public void saveTheme(Integer themeId) {
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        prefs.edit().putInt("THEME", themeId).apply();
+        setTheme(themeId);
+    }
+
+    @Override
+    public void saveFlag(String s) {
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        prefs.edit().putString("FLAG", s).apply();
     }
 
     @Override
