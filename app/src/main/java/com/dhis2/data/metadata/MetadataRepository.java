@@ -2,6 +2,8 @@ package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
+
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -113,5 +115,8 @@ public interface MetadataRepository {
 
     /*RESOURCE*/
     Observable<ResourceModel> getLastSync(int resourceId);
+
+    /*SETINGS*/
+    Observable<Pair<String, Integer>> getTheme();
 
 }

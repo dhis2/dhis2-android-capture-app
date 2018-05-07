@@ -166,6 +166,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         view.showTimeUnitPicker();
     }
 
+    @Override
+    public void showDescription(String description) {
+        view.showDescription(description);
+    }
+
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();

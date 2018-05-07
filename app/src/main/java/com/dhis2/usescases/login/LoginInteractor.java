@@ -7,11 +7,11 @@ import android.support.annotation.UiThread;
 import android.view.View;
 
 import com.dhis2.App;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.main.MainActivity;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
@@ -29,6 +29,7 @@ import timber.log.Timber;
 
 public class LoginInteractor implements LoginContracts.Interactor {
 
+    private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
@@ -36,10 +37,11 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @NonNull
     private final CompositeDisposable disposable;
 
-    LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository) {
+    LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.view = view;
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
+        this.metadataRepository = metadataRepository;
         init();
     }
 
@@ -97,24 +99,32 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.METADATA), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(
+                        update(LoginActivity.SyncState.METADATA),
+                        throwable -> {
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));
 
     }
 
     @Override
     public void syncEvents() {
-        disposable.add(events()
-                .subscribeOn(Schedulers.io())
-                .map(response -> SyncResult.success())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.EVENTS), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+        disposable.add(
+                metadataRepository.getTheme()
+                        .flatMap(flagTheme -> {
+                            view.saveFlag(flagTheme.val0());
+                            view.saveTheme(flagTheme.val1());
+                            return events();
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .map(response -> SyncResult.success())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> SyncResult.failure(
+                                throwable.getMessage() == null ? "" : throwable.getMessage()))
+                        .startWith(SyncResult.progress())
+                        .subscribe(update(LoginActivity.SyncState.EVENTS),
+                                throwable -> view.displayMessage(throwable.getMessage())
+                        ));
     }
 
     @Override
@@ -127,9 +137,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.TEI), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(update(LoginActivity.SyncState.TEI),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
 
     }
 

@@ -2,6 +2,7 @@ package com.dhis2.usescases.general;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,16 +26,15 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Random;
 
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 /**
- * Created by Javi on 28/07/2017.
+ * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick{
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
@@ -49,19 +49,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Random r = new Random();
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
 
-        switch (r.nextInt(3)) {
-            case 0:
-                setTheme(R.style.RedTheme);
-                break;
-            case 1:
-                setTheme(R.style.GreenTheme);
-                break;
-            default:
-                setTheme(R.style.AppTheme);
-                break;
-        }
+        setTheme(prefs.getInt("THEME", R.style.AppTheme));
 
         super.onCreate(savedInstanceState);
 
@@ -189,5 +180,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showDescription(String description) {
+
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
+        ((TextView) layout.findViewById(R.id.toast_message)).setText(description);
+        Toast toast = new Toast(this);
+        toast.setView(layout);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

@@ -6,16 +6,16 @@ import android.content.SharedPreferences;
 import android.databinding.ObservableField;
 import android.view.View;
 
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.qrScanner.QRActivity;
 import com.dhis2.utils.Constants;
 
-import org.hisp.dhis.android.core.D2;
-
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
+    private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
     private LoginContracts.Interactor interactor;
 
@@ -23,14 +23,15 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
 
-    LoginPresenter(ConfigurationRepository configurationRepository) {
+    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.configurationRepository = configurationRepository;
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
     public void init(LoginContracts.View view) {
         this.view = view;
-        this.interactor = new LoginInteractor(view, configurationRepository);
+        this.interactor = new LoginInteractor(view, configurationRepository, metadataRepository);
     }
 
     @Override

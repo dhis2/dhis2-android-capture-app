@@ -36,6 +36,8 @@ public class AbstractActivityContracts {
         void hideKeyboard();
 
         void showToast(String message);
+
+        void showDescription(String description);
     }
 
     public interface Presenter {
