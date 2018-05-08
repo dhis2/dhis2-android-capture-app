@@ -202,4 +202,7 @@
     <string name="tuto_main_4">…by changing the period and selecting dates…</string>
     <string name="tuto_main_5">…or filter by Organisation Unit</string>
     <string name="tuto_main_6">Check other actions on the main menu</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Create relationship</string>
 </resources>

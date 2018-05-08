@@ -35,10 +35,9 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
             pagerFragmentsTitle.add("Program");
         }
         if (program.getCurrentProgram() != null) {
-            if (dashboardProgram.getCurrentEnrollment() != null && dashboardProgram.getCurrentProgram().relationshipType() != null) {
-                pagerFragments.add(RelationshipFragment.getInstance());
-                pagerFragmentsTitle.add("Relationships");
-            }
+            pagerFragments.add(RelationshipFragment.getInstance());
+            pagerFragmentsTitle.add("Relationships");
+
             pagerFragments.add(IndicatorsFragment.getInstance());
             pagerFragmentsTitle.add("Indicators");
 
