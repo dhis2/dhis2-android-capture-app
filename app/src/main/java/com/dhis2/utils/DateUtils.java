@@ -1,6 +1,11 @@
 package com.dhis2.utils;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import org.hisp.dhis.android.core.period.PeriodModel;
+import org.hisp.dhis.android.core.period.PeriodType;
+import org.joda.time.Days;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -252,8 +257,91 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date dueDate) {
-        return dueDate.before(getToday());
+    public boolean hasExpired(@NonNull Date completedDate, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType){
+        Calendar expiredDate = Calendar.getInstance();
+        expiredDate.setTime(completedDate);
+
+        if(expiryPeriodType == null){
+            if(completeEventExpiryDays > 0)
+                expiredDate.add(Calendar.DAY_OF_YEAR, completeEventExpiryDays);
+            return expiredDate.getTime().before(getToday());
+        } else {
+            switch (expiryPeriodType){
+                case Daily:
+                    break;
+                case Weekly:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    break;
+                case WeeklyWednesday:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                    break;
+                case WeeklyThursday:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                    break;
+                case WeeklySaturday:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                    break;
+                case WeeklySunday:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    expiredDate.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                    break;
+                case BiWeekly:
+                    expiredDate.add(Calendar.WEEK_OF_YEAR, 2);
+                    expiredDate.set(Calendar.DAY_OF_WEEK, expiredDate.getFirstDayOfWeek());
+                    break;
+                case Monthly:
+                    expiredDate.add(Calendar.MONTH, 1);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case BiMonthly:
+                    expiredDate.add(Calendar.MONTH, 2);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case Quarterly:
+                    expiredDate.add(Calendar.MONTH, 3);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case SixMonthly:
+                    expiredDate.add(Calendar.MONTH, 6);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case SixMonthlyApril:
+                    expiredDate.add(Calendar.MONTH, 6);
+                    expiredDate.set(Calendar.MONTH, Calendar.APRIL);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case Yearly:
+                    expiredDate.add(Calendar.YEAR, 1);
+                    expiredDate.set(Calendar.DAY_OF_YEAR, 1);
+                    break;
+                case FinancialApril:
+                    expiredDate.add(Calendar.YEAR, 1);
+                    expiredDate.set(Calendar.MONTH, Calendar.APRIL);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case FinancialJuly:
+                    expiredDate.add(Calendar.YEAR, 1);
+                    expiredDate.set(Calendar.MONTH, Calendar.JULY);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case FinancialOct:
+                    expiredDate.add(Calendar.YEAR, 1);
+                    expiredDate.add(Calendar.MONTH, Calendar.OCTOBER);
+                    expiredDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+            }
+            if(expiryDays > 0)
+                expiredDate.add(Calendar.DAY_OF_YEAR, expiryDays);
+            return expiredDate.getTime().before(getToday());
+        }
     }
 
     public Date toDate(String date) {

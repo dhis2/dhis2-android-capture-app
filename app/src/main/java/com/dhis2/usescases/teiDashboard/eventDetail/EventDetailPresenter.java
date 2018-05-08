@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -61,6 +62,19 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
+    public void getExpiryDate(String eventUid) {
+        disposable.add(
+                metadataRepository.getExpiryDateFromEvent(eventUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::isEventExpired,
+                                OnErrorHandler.create()
+                        )
+        );
+    }
+
+    @Override
     public void saveData(String uid, String value) {
         disposable.add(dataEntryStore.save(uid, value)
                 .subscribeOn(Schedulers.io())
@@ -74,7 +88,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void back() {
-        if(changedEventStatus){
+        if (changedEventStatus) {
             Intent intent = new Intent();
             view.getAbstractActivity().setResult(Activity.RESULT_OK, intent);
         }
@@ -86,8 +100,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         if (stageModel.accessDataWrite()) {
             dataEntryStore.updateEventStatus(eventModel);
             changedEventStatus = true;
-        }
-        else
+        } else
             view.displayMessage(null);
     }
 

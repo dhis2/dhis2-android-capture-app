@@ -56,9 +56,11 @@
     <string name="program_inactive">Programo suspendido</string>
     <string name="event_open">Abierto</string>
     <string name="event_completed">Evento completado</string>
+    <string name="event_expired">Evento expirado</string>
     <string name="event_editing_expired">Edicion expirada</string>
     <string name="event_accepted">Evento aceptado</string>
     <string name="event_approved">Evento aprobado</string>
+    <string name="event_inactive">Evento inactivo</string>
     <string name="read_only">Solo lectura</string>
     <string name="complete">Completar</string>
     <string name="completed">Completado</string>

@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     app:srcCompat="@drawable/ic_edit"
-                    app:eventIcon="@{event.status()}"
+                    app:eventStatusIcon="@{event}"
                     tools:ignore="ContentDescription" />
 
                 <android.support.v7.widget.AppCompatTextView
@@ -110,7 +110,7 @@
                     android:textColor="@color/icon_color"
                     android:textSize="12sp"
                     tools:text="Read only"
-                    app:eventText='@{event.status()}'/>
+                    app:eventStatusText='@{event}'/>
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
