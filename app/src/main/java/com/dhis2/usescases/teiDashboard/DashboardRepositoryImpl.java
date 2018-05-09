@@ -84,11 +84,15 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "SELECT Event.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
-                    "AND %s.%s = ?",
+                    "AND %s.%s = ? " +
+                    "ORDER BY CASE WHEN %s.%s > %s.%s " +
+                    "THEN %s.%s ELSE %s.%s END DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
             "SELECT Event.* FROM %s " +

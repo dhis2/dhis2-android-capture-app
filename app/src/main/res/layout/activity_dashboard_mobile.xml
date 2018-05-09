@@ -45,7 +45,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:textSize="20sp"
-                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
+                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2) + " - " + dashboardModel.currentProgram.displayShortName() }'
                 android:textColor="?colorAccent"
                 tools:text="TEI NAME" />
 

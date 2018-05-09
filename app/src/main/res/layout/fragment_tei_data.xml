@@ -201,8 +201,8 @@
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="5dp"
-                        android:layout_marginBottom="5dp">
+                        android:layout_marginBottom="5dp"
+                        android:padding="5dp">
 
                         <TextView
                             android:id="@+id/incident_date_label"
@@ -294,6 +294,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tei_data"
             tools:listitem="@layout/item_event" />
+
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/schedule_content_options"
+            app:expanded_background_color="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

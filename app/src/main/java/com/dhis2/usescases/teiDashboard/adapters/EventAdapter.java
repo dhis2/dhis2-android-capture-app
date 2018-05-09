@@ -10,7 +10,6 @@ import com.dhis2.databinding.ItemEventBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
@@ -18,21 +17,16 @@ import java.util.List;
 
 /**
  * Created by ppajuelo on 29/11/2017.
- *
  */
 
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
     private final TeiDashboardContracts.Presenter presenter;
-    private List<EventModel> events;
+    private List<EventModel> events = new ArrayList<>();
 
     public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList) {
-        this.events = new ArrayList<>();
-        for (EventModel event : eventList)
-            if (event.status() == EventStatus.ACTIVE || event.status() == EventStatus.COMPLETED)
-                this.events.add(event);
-
+        this.events = eventList;
         this.programStageList = programStageList;
         this.presenter = presenter;
     }
@@ -57,7 +51,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         return events != null ? events.size() : 0;
     }
 
-    public void swapItems(List<EventModel> events){
+    public void swapItems(List<EventModel> events) {
         this.events.clear();
         this.events.addAll(events);
         notifyDataSetChanged();

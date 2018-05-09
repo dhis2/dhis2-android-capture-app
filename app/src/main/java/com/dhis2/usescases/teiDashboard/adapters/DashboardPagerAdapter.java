@@ -8,7 +8,6 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
         if (!isTablet) {
             pagerFragments.add(TEIDataFragment.getInstance());
-            pagerFragmentsTitle.add("Program");
+            pagerFragmentsTitle.add("Overview");
         }
         if (program.getCurrentProgram() != null) {
             pagerFragments.add(RelationshipFragment.getInstance());
@@ -40,9 +39,6 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
             pagerFragments.add(IndicatorsFragment.getInstance());
             pagerFragmentsTitle.add("Indicators");
-
-            pagerFragments.add(ScheduleFragment.getInstance());
-            pagerFragmentsTitle.add("Schedule");
 
             pagerFragments.add(NotesFragment.getInstance());
             pagerFragmentsTitle.add("Notes");

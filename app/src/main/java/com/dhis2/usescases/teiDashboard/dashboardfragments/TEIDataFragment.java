@@ -11,34 +11,37 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.CustomViews.CustomDialog;
-import com.dhis2.utils.CustomViews.RxDialog;
+import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.REFERRAL;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.SCHEDULENEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
 
 /**
  * -Created by ppajuelo on 29/11/2017.
@@ -76,6 +79,33 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
+
+        binding.fab.setOptionsClick(integer -> {
+            if (integer == null)
+                return;
+
+            Bundle bundle = new Bundle();
+            bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
+            bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
+            bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString("ENROLLMENT_UID", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putBoolean(NEW_EVENT, true);
+
+            switch (integer) {
+                case R.id.referral:
+                    bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
+                    break;
+                case R.id.addnew:
+                    bundle.putString(EVENT_CREATION_TYPE, ADDNEW);
+                    break;
+                case R.id.schedulenew:
+                    bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
+                    break;
+            }
+
+            startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
+
+        });
         return binding.getRoot();
     }
 
@@ -132,13 +162,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQ_DETAILS){
-            if(resultCode == RESULT_OK){
+        if (requestCode == REQ_DETAILS) {
+            if (resultCode == RESULT_OK) {
                 presenter.getData();
             }
         }
-        if(requestCode == REQ_EVENT) {
-            if(resultCode == RESULT_OK){
+        if (requestCode == REQ_EVENT) {
+            if (resultCode == RESULT_OK) {
                 presenter.getTEIEvents(this);
                 presenter.areEventsCompleted(this);
             }
@@ -146,7 +176,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     }
 
     public Consumer<List<EventModel>> setEvents() {
-        return events -> adapter.swapItems(events);
+        return events -> {
+            adapter.swapItems(events);
+            for (EventModel event : events) {
+                if (event.eventDate().after(DateUtils.getInstance().getToday())) {
+                    binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                }
+            }
+        };
     }
 
 
@@ -168,7 +205,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
-            if(enrollmentStatus == EnrollmentStatus.COMPLETED)
+            if (enrollmentStatus == EnrollmentStatus.COMPLETED)
                 presenter.getData();
         };
     }

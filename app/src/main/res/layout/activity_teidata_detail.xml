@@ -47,7 +47,8 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/title"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
@@ -63,7 +64,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="5dp"
             android:fillViewport="true"
-            app:layout_constraintBottom_toTopOf="@id/button_delete"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -131,9 +132,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="20dp"
                             app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
-                            app:layout_constraintEnd_toStartOf="@id/icon_container"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:srcCompat="@drawable/ic_lock_open_green"
-                            tools:ignore="ContentDescription" />
+                            tools:ignore="ContentDescription"
+                            tools:layout_editor_absoluteY="5dp" />
 
                         <TextView
                             android:id="@+id/program_lock_text"
@@ -150,26 +152,6 @@
                             app:layout_constraintStart_toStartOf="@id/program_lock"
                             app:layout_constraintTop_toBottomOf="@id/program_lock"
                             tools:text="Abierto" />
-
-                        <RelativeLayout
-                            android:id="@+id/icon_container"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="@+id/program_lock_text"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/program_lock">
-
-                            <android.support.design.widget.FloatingActionButton
-                                android:id="@+id/edit_mode_"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:onClick="@{ () -> presenter.editData() }"
-                                android:visibility="@{dashboardModel.currentEnrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE ? View.VISIBLE : View.GONE}"
-                                app:backgroundTint="?colorPrimary"
-                                app:fabSize="mini"
-                                app:srcCompat="@drawable/ic_edit"
-                                app:tint="@color/colorAccent" />
-                        </RelativeLayout>
 
                     </android.support.constraint.ConstraintLayout>
 
@@ -272,35 +254,19 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
-        <Button
-            android:id="@+id/button_profile"
-            android:layout_width="125dp"
-            android:layout_height="34dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="22.5dp"
-            android:background="@drawable/selector_button_round_7"
-            android:minHeight="0dp"
-            android:onClick="@{()->presenter.onButtonActionClick(dashboardModel)}"
-            android:textColor="@color/white_faf"
-            app:enrolmentAction='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/tei_detail_options"
+            app:expanded_background_color="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/button_delete" />
-
-        <Button
-            android:id="@+id/button_delete"
-            android:layout_width="125dp"
-            android:layout_height="34dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="22.5dp"
-            android:background="@drawable/button_delete_selector"
-            android:minHeight="0dp"
-            android:onClick="@{()->presenter.onDeactivate(dashboardModel)}"
-            android:text="@string/deactivate"
-            android:textAllCaps="true"
-            android:textColor="@color/white_faf"
-            android:visibility='@{dashboardModel.currentEnrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE ? View.VISIBLE : View.GONE}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
 
     </android.support.constraint.ConstraintLayout>
 
