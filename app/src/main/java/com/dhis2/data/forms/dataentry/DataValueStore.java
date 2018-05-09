@@ -24,14 +24,10 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ?";
+            " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     @NonNull
     private final BriteDatabase briteDatabase;
-
-   /* @NonNull
-    private final CurrentDateProvider currentDateProvider;
-*/
     @NonNull
     private final Flowable<UserCredentialsModel> userCredentials;
 
@@ -40,10 +36,8 @@ final class DataValueStore implements DataEntryStore {
 
     DataValueStore(@NonNull BriteDatabase briteDatabase,
             @NonNull UserRepository userRepository,
-//            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
-//        this.currentDateProvider = currentDateProvider;
         this.eventUid = eventUid;
 
         // we want to re-use results of the user credentials query
@@ -63,7 +57,7 @@ final class DataValueStore implements DataEntryStore {
 
                     return Flowable.just(insert(uid, value, userCredentials.username()));
                 })
-                .switchMap(id -> updateEvent(id));
+                .switchMap(this::updateEvent);
     }
 
     private long update(@NonNull String uid, @Nullable String value) {
@@ -101,7 +95,7 @@ final class DataValueStore implements DataEntryStore {
 
     private Flowable<Long> updateEvent(long status) {
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(cursor -> EventModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
                             State.ERROR.equals(eventModel.state())) {

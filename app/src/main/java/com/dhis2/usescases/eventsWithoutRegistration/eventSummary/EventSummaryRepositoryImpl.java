@@ -15,6 +15,7 @@ import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -69,7 +70,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ?\n" +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -110,6 +112,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  dueDate\n" +
             "FROM Event\n" +
             "WHERE uid = ?\n" +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n"+
             "LIMIT 1;";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -119,7 +122,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL;";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
 
     public EventSummaryRepositoryImpl(@NonNull Context context,

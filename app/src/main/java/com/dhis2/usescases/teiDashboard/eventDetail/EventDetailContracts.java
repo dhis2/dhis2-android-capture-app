@@ -19,6 +19,9 @@ public class EventDetailContracts {
 
         void setDataEditable();
 
+        void showConfirmDeleteEvent();
+
+        void showEventWasDeleted();
     }
 
     public interface Presenter {
@@ -34,6 +37,9 @@ public class EventDetailContracts {
 
         void editData();
 
+        void confirmDeleteEvent();
+
+        void deleteEvent();
     }
 
 

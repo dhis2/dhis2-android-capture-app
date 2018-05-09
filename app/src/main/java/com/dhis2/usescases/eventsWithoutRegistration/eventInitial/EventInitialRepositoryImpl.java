@@ -42,7 +42,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<EventModel> event(String eventId) {
-        String SELECT_EVENT_WITH_ID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.UID + " = '" + eventId + "'";
+        String SELECT_EVENT_WITH_ID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.UID + " = '" + eventId + "' AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ID)
                 .mapToOne(EventModel::create);
     }
@@ -125,7 +125,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<EventModel> newlyCreatedEvent(long rowId) {
-        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'";
+        String SELECT_EVENT_WITH_ROWID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.ID + " = '" + rowId + "'" + " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_ROWID).mapToOne(EventModel::create);
     }
 
@@ -133,7 +133,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<ProgramStageModel> programStage(String programUid) {
         String SELECT_PROGRAM_STAGE = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.PROGRAM + " = '" + programUid + "'";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE)
                 .mapToOne(ProgramStageModel::create);
     }
 
@@ -141,7 +141,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @Override
     public Observable<ProgramStageModel> programStageWithId(String programStageUid) {
         String SELECT_PROGRAM_STAGE_WITH_ID = "SELECT * FROM " + ProgramStageModel.TABLE + " WHERE " + ProgramStageModel.Columns.UID + " = '" + programStageUid + "'";
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM_STAGE_WITH_ID)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_WITH_ID)
                 .mapToOne(ProgramStageModel::create);
     }
 

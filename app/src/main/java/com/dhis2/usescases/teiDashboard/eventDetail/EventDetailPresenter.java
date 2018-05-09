@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -27,6 +28,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private final DataEntryStore dataEntryStore;
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
+    private EventDetailModel eventDetailModel;
 
     private boolean changedEventStatus = false;
 
@@ -55,7 +57,10 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> view.setData(data, metadataRepository),
+                        data -> {
+                            eventDetailModel = data;
+                            view.setData(data, metadataRepository);
+                        },
                         throwable -> Log.d("ERROR", throwable.getMessage()))
         );
     }
@@ -96,4 +101,21 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         view.setDataEditable();
     }
 
+    @Override
+    public void confirmDeleteEvent() {
+        view.showConfirmDeleteEvent();
+    }
+
+    @Override
+    public void deleteEvent() {
+        if (eventDetailModel != null && eventDetailModel.getEventModel() != null){
+            if (eventDetailModel.getEventModel().state() == State.TO_POST){
+                eventDetailRepository.deleteNotPostedEvent(eventDetailModel.getEventModel().uid());
+            }
+            else {
+                eventDetailRepository.deletePostedEvent(eventDetailModel.getEventModel());
+            }
+            view.showEventWasDeleted();
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -53,14 +54,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
     private static final String SELECT_ENROLLMENT_EVENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s =",
+            "SELECT * FROM %s WHERE %s.%s != %s AND %s.%s =",
             EventModel.TABLE,
-            EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID);
+            EventModel.TABLE,
+            EventModel.Columns.STATE,
+            State.TO_DELETE,
+            EventModel.TABLE,
+            EventModel.Columns.ENROLLMENT_UID);
 
     private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s DESC LIMIT 1",
+            "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s AND %s.%s != %s DESC LIMIT 1",
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE, EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE
     );
     private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
 
