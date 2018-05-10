@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -48,7 +49,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private static final String FORM_VIEW_ACTIONBAR = "formViewActionbar";
     private static final String IS_ENROLLMENT = "isEnrollment";
 
-    View fab;
+    View nextButton;
     ViewPager viewPager;
     TabLayout tabLayout;
     Toolbar toolbar;
@@ -60,10 +61,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
     private PublishSubject<LatLng> onCoordinatesChanged;
-    private TextView reportDate;
+    private TextInputEditText reportDate;
     PublishSubject<ReportStatus> undoObservable;
     private CoordinatorLayout coordinatorLayout;
-    private TextView incidentDate;
+    private TextInputLayout incidentDateLayout;
+    private TextInputEditText incidentDate;
     private CoordinatesView coordinatesView;
     private boolean isEnrollment;
 
@@ -71,7 +73,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         // Required empty public constructor
     }
 
-    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments,boolean isEnrollment, boolean showActionBar) {
+    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments, boolean isEnrollment, boolean showActionBar) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelable(FORM_VIEW_ARGUMENTS, formViewArguments);
@@ -91,13 +93,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fab = view.findViewById(R.id.fab_complete_event);
+        nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
         View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
-        reportDate = view.findViewById(R.id.textview_report_date);
-        incidentDate = view.findViewById(R.id.textView_incident_date);
+        reportDate = view.findViewById(R.id.report_date);
+        incidentDateLayout = view.findViewById(R.id.incident_date_layout);
+        incidentDate = view.findViewById(R.id.incident_date_text);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
@@ -107,13 +110,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             setupActionBar();
         else {
             appBarLayout.setVisibility(View.GONE);
-            fab.setVisibility(View.GONE);
+            nextButton.setVisibility(View.GONE);
         }
         coordinatesView = view.findViewById(R.id.coordinates_view);
-        if (!isEnrollment){
+        if (!isEnrollment) {
             coordinatesView.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             coordinatesView.setIsBgTransparent(false);
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
@@ -138,7 +140,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public Observable<ReportStatus> eventStatusChanged() {
         undoObservable = PublishSubject.create();
-        return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getReportStatusFromFab()));
+        return undoObservable.mergeWith(RxView.clicks(nextButton).map(o -> getReportStatusFromButton()));
     }
 
     @NonNull
@@ -216,12 +218,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public Consumer<ProgramModel> renderIncidentDate() {
         return programModel -> {
-            incidentDate.setHint(programModel.incidentDateLabel());
-            incidentDate.setVisibility(View.VISIBLE);
-            if (isEnrollment && programModel.captureCoordinates()){
+            incidentDateLayout.setHint(programModel.incidentDateLabel());
+            incidentDateLayout.setVisibility(View.VISIBLE);
+            if (isEnrollment && programModel.captureCoordinates()) {
                 coordinatesView.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 coordinatesView.setVisibility(View.GONE);
             }
         };
@@ -230,13 +231,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @NonNull
     @Override
     public Consumer<String> renderTitle() {
-        return title -> toolbar.setTitle(title);
+        return title -> {
+            if (isEnrollment)
+                toolbar.setTitle(String.format(getString(R.string.enroll_in), title));
+            else
+                toolbar.setTitle(title);
+        };
     }
 
     @NonNull
     @Override
     public Consumer<ReportStatus> renderStatus() {
-        return eventStatus -> fab.setActivated(eventStatus == ReportStatus.COMPLETED);
+        return eventStatus -> nextButton.setActivated(eventStatus == ReportStatus.COMPLETED);
     }
 
     @NonNull
@@ -275,8 +281,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
 
-    private ReportStatus getReportStatusFromFab() {
-        return fab.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
+    private ReportStatus getReportStatusFromButton() {
+        return nextButton.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 
     private void initReportDatePicker() {
@@ -290,6 +296,22 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
+        });
+
+        reportDate.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+                dialog.show(getFragmentManager());
+                dialog.setFormattedOnDateSetListener(publishReportDateChange());
+            }
+        });
+
+        incidentDate.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+                dialog.show(getFragmentManager());
+                dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
+            }
         });
     }
 
@@ -334,7 +356,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    void publishCoordinatesChanged(Double lat, Double lon){
+    void publishCoordinatesChanged(Double lat, Double lon) {
         if (onCoordinatesChanged != null) {
             onCoordinatesChanged.onNext(new LatLng(lat, lon));
         }

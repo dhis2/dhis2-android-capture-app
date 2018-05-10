@@ -172,6 +172,7 @@
     <string name="add_note">Add note</string>
     <string name="revert">Revert</string>
     <string name="activated">Activated</string>
+    <string name="enroll_in">Enroll in %s</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
@@ -205,4 +206,5 @@
 
     <!-- RELATIONSHIPS -->
     <string name="default_relationship_label">Create relationship</string>
+    <string name="next">Next</string>
 </resources>
