@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <import type="java.lang.String" />
@@ -18,61 +19,32 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        tools:ignore="UseCompoundDrawables"
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
-            tools:ignore="UseCompoundDrawables">
-
-            <TextView
-                android:id="@+id/program_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:textAllCaps="true"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:programName="@{enrollment.program()}"
-                tools:text="ANCAAfffffffggggffffffff" />
-
-            <ImageView
-                android:id="@+id/program_image"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                app:tintRandomColor="@{enrollment.program()}"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/program_image"
             android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            app:tintRandomColor="@{enrollment.program()}"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/program_shape"/>
+
+        <TextView
+            android:id="@+id/program_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/program_last_update_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@string/last_visit"
-                android:textSize="14sp"
-                tools:text="Last visit: " />
-
-            <TextView
-                android:id="@+id/program_last_update_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:textSize="14sp"
-                tools:text="YYYY-MM-dd"/>
-        </LinearLayout>
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:textAllCaps="true"
+            android:maxLines="2"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:programName="@{enrollment.program()}"
+            tools:text="ANCAAfffffffggggfffffffffffffffffffffffffffff" />
 
     </LinearLayout>
+
 
 </layout>

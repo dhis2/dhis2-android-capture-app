@@ -71,7 +71,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
                 searchRelationshipAdapter = new SearchRelationshipAdapter(activity.presenter, activity.metadataRepository, false);
                 binding.scrollView.setAdapter(searchRelationshipAdapter);
             } else {
-                searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository, false);
+                searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository);
                 binding.scrollView.setAdapter(searchTEAdapter);
             }
             binding.tableView.setVisibility(View.GONE);

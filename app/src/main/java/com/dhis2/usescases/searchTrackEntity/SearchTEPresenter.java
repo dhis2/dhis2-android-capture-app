@@ -2,21 +2,30 @@ package com.dhis2.usescases.searchTrackEntity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.dhis2.Bindings.Bindings;
+import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -33,6 +42,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
+    private final D2 d2;
     private SearchTEContractsModule.View view;
 
     private ProgramModel selectedProgram;
@@ -42,10 +52,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private List<ProgramModel> programModels;
     private HashMap<String, String> queryData;
 
-    public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+    private HashMap<String, View> selectedTeiToDownloadIcon;
+    private HashMap<String, View> selectedTeiToDownloadProgress;
+    private HashMap<String, Integer> selectedTeiToDownloadPosition;
+
+    public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
+        this.d2 = d2;
         compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
     }
@@ -91,6 +106,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 Timber::d)
         );
 
+
         compositeDisposable.add(view.rowActionss()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -114,13 +130,47 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     //------------------------------------------
     //region DATA
-
-    private void getTrakedEntities() {
+    @Override
+    public void getTrakedEntities() {
         compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
                 selectedProgram != null ? selectedProgram.uid() : null, queryData)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.swapListData(), Timber::d)
+        );
+
+
+    }
+
+    @Override
+    public void getOnlineTrackedEntities(SearchOnlineFragment onlineFragment) {
+        compositeDisposable.add(
+                view.onlinePage()
+                        .startWith(0)
+                        .flatMap(page -> {
+                            List<String> filterList = new ArrayList<>();
+                            for (String key : queryData.keySet()) {
+                                filterList.add(key + ":LIKE:" + queryData.get(key));
+                            }
+                            List<String> orgUnits = new ArrayList<>();
+                            orgUnits.add("DiszpKrYNg8");
+                            TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
+                                    .program(selectedProgram.uid())
+                                    .page(page)
+                                    .pageSize(10)
+                                    .paging(true)
+                                    .filter(filterList)
+                                    .orgUnits(orgUnits) //TODO:SET USER ORG UNITS
+                                    .build();
+                            return io.reactivex.Observable.fromCallable(d2.queryTrackedEntityInstances(query)).toFlowable(BackpressureStrategy.BUFFER)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(Schedulers.io());
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(data -> onlineFragment.setItems(data, programModels),
+                                t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
+                        )
         );
     }
 
@@ -188,6 +238,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.back();
     }
 
+    @Override
+    public void onFabClick(View view, boolean downloadMode) {
+        if (downloadMode)
+            onDownloadClick(view);
+        else
+            onEnrollClick(view);
+    }
 
     @Override
     public void onEnrollClick(View view) {
@@ -198,6 +255,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 this.view.displayMessage("Select a program to enable enrolling");
         else
             this.view.displayMessage("You don't have the requiered permission");
+    }
+
+    @Override
+    public void onDownloadClick(View fab) {
+        for (String teiUid : selectedTeiToDownloadIcon.keySet())
+            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+                    .doOnComplete(() -> selectedTeiToDownloadProgress.get(teiUid).setVisibility(View.GONE))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> view.removeTei(selectedTeiToDownloadPosition.get(teiUid)),
+                            t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+            );
     }
 
     @Override
@@ -231,5 +301,51 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         intent.putExtra("RELATIONSHIP_TYPE_UID", selectedProgram.relationshipType());
         view.getAbstractActivity().setResult(RESULT_OK, intent);
         view.getAbstractActivity().finish();
+    }
+
+    @Override
+    public void downloadTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
+        mView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+                .doOnComplete(() -> progressBar.setVisibility(View.GONE))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> view.removeTei(adapterPosition),
+                        t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+        );
+
+    }
+
+    @Override
+    public boolean selectTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
+
+        ImageView download = (ImageView) mView;
+
+        if (selectedTeiToDownloadIcon == null)
+            selectedTeiToDownloadIcon = new HashMap<>();
+
+        if (selectedTeiToDownloadPosition == null)
+            selectedTeiToDownloadPosition = new HashMap<>();
+
+        if (selectedTeiToDownloadProgress == null)
+            selectedTeiToDownloadProgress = new HashMap<>();
+
+        if (download.getColorFilter() != null) {
+            download.setColorFilter(ContextCompat.getColor(view.getContext(), R.color.green_7ed));
+            selectedTeiToDownloadIcon.put(teiUid, mView);
+            selectedTeiToDownloadProgress.put(teiUid, progressBar);
+            selectedTeiToDownloadPosition.put(teiUid, adapterPosition);
+        } else {
+            download.setColorFilter(null);
+            selectedTeiToDownloadIcon.remove(teiUid);
+            selectedTeiToDownloadProgress.remove(teiUid);
+            selectedTeiToDownloadPosition.remove(teiUid);
+        }
+
+        view.handleTeiDownloads(selectedTeiToDownloadIcon.isEmpty());
+
+        return false;
     }
 }

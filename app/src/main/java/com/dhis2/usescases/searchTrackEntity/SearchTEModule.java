@@ -8,6 +8,8 @@ import com.dhis2.data.user.UserRepository;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -27,8 +29,8 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEContractsModule.Presenter providePresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
-        return new SearchTEPresenter(searchRepository, userRepository, metadataRepository);
+    SearchTEContractsModule.Presenter providePresenter(D2 d2, SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository) {
+        return new SearchTEPresenter(searchRepository, userRepository, metadataRepository,d2);
     }
 
     @Provides

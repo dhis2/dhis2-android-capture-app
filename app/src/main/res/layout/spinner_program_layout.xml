@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -21,5 +22,9 @@
         android:padding="5dp"
         android:text="@{program.displayName!=null?program.displayName:programTitle}"
         android:textColor="?colorPrimary"
-        android:textSize="16sp" />
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        tools:text="nameddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        tools:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"/>
 </layout>

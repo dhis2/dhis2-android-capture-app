@@ -1,9 +1,17 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.databinding.BindingMethod;
+import android.databinding.BindingMethods;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,9 +39,11 @@ import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 02/11/2017 .
+ * QUADRAM. Created by ppajuelo on 02/11/2017 .
  */
-
+@BindingMethods({
+        @BindingMethod(type = FloatingActionButton.class, attribute = "app:srcCompat", method = "setImageDrawable")
+})
 public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTEContractsModule.View {
 
     ActivitySearchBinding binding;
@@ -46,6 +56,16 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private String tEType;
     private SearchPagerAdapter pagerAdapter;
     private boolean fromRelationship = false;
+    private ObservableBoolean downloadMode = new ObservableBoolean(false);
+    private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (pagerAdapter != null) {
+                pagerAdapter.setOnline(NetworkUtils.isOnline(context));
+                binding.searchTab.setVisibility(NetworkUtils.isOnline(context) ? View.VISIBLE : View.GONE);
+            }
+        }
+    };
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -58,22 +78,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
-
+        binding.setDownloadMode(downloadMode);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
-
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
-        } catch (Exception e){
+        } catch (Exception e) {
             Timber.d(e.getMessage());
         }
 
-        //Pager configuration based on network
+      /*  //Pager configuration based on network
         pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
         pagerAdapter.setOnline(NetworkUtils.isOnline(this));
         binding.resultsPager.setAdapter(pagerAdapter);
         binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
-        binding.searchTab.setupWithViewPager(binding.resultsPager);
+        binding.searchTab.setupWithViewPager(binding.resultsPager);*/
         binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
 
     }
@@ -82,12 +101,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     protected void onResume() {
         super.onResume();
         presenter.init(this, tEType, initialProgram);
+        registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
 
 
     @Override
     protected void onPause() {
         presenter.onDestroy();
+        unregisterReceiver(networkReceiver);
         super.onPause();
     }
 
@@ -99,16 +120,28 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program) {
 
+        //Form has been set.
+        //Pager configuration based on network
+        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
+        pagerAdapter.setOnline(NetworkUtils.isOnline(this));
+        binding.resultsPager.setAdapter(pagerAdapter);
+        binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
+        binding.searchTab.setupWithViewPager(binding.resultsPager);
+
         binding.buttonAdd.setVisibility(program == null ? View.GONE : View.VISIBLE);
 
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-
         formAdapter.setList(trackedEntityAttributeModels, program);
     }
 
     @NonNull
     public Flowable<RowAction> rowActionss() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
+    }
+
+    @Override
+    public Flowable<Integer> onlinePage() {
+        return ((SearchOnlineFragment) pagerAdapter.getItem(1)).pageAction();
     }
 
     //endregion
@@ -124,12 +157,18 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList());
 
-            if (NetworkUtils.isOnline(this))
-                ((SearchOnlineFragment) pagerAdapter.getItem(1)).setItems(data, presenter.getProgramList());
-
         };
     }
 
+    @Override
+    public void removeTei(int adapterPosition) {
+        ((SearchOnlineFragment) pagerAdapter.getItem(1)).getSearchTEAdapter().removeAt(adapterPosition);
+    }
+
+    @Override
+    public void handleTeiDownloads(boolean downloadMode) {
+        this.downloadMode.set(downloadMode);
+    }
 
     @Override
     public void clearList(String uid) {
@@ -137,8 +176,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
        /* ((SearchLocalFragment) pagerAdapter.getItem(0)).clear();
         if (NetworkUtils.isOnline(this))
             ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();*/
-       if(uid==null)
-           binding.programSpinner.setSelection(0);
+        if (uid == null)
+            binding.programSpinner.setSelection(0);
     }
     //endregion
 

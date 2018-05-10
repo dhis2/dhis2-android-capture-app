@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
-/**x
+/**
+ * x
  * Created by ppajuelo on 07/11/2017-sdfghsdfh .
  */
 
@@ -42,7 +44,8 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
             convertView = binding.getRoot();
             if (position > 0)
                 binding.setProgram(options.get(position - 1));
-            binding.setProgramTitle("All "+trackedEntityName);
+            binding.setProgramTitle("All " + trackedEntityName);
+            binding.spinnerText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
         }
         return convertView;

@@ -22,6 +22,10 @@
             type="java.lang.Boolean" />
 
         <variable
+            name="syncState"
+            type="org.hisp.dhis.android.core.common.State"/>
+
+        <variable
             name="orgUnit"
             type="java.lang.String" />
 
@@ -38,12 +42,23 @@
         android:id="@+id/tracked_entity_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="7dp"
         android:layout_margin="5dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:padding="8dp"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:stateIcon="@{syncState}"
+                tools:src="@drawable/ic_sync_green"
+                android:layout_alignParentEnd="true"
+                />
 
             <ImageView
                 android:id="@+id/tracked_entity_image"
@@ -112,12 +127,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tracked_entity_image"
-                android:layout_marginEnd="18dp"
+                android:layout_marginEnd="6dp"
                 android:layout_marginStart="6dp"
                 android:layout_marginTop="5dp"
-                app:alignItems="flex_end"
-                app:flexWrap="wrap"
-                app:justifyContent="space_between">
+                app:alignContent="stretch"
+                app:alignItems="flex_start"
+                app:flexWrap="wrap">
 
             </com.google.android.flexbox.FlexboxLayout>
 

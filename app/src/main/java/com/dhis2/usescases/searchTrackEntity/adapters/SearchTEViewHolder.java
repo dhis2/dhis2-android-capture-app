@@ -7,19 +7,17 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.utils.OnErrorHandler;
+import com.google.android.flexbox.FlexboxLayout;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -29,9 +27,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.internal.operators.observable.ObservableFromIterable;
 import io.reactivex.schedulers.Schedulers;
-import rx.Observable;
 
 /**
  * Created by frodriguez on 11/7/2017.
@@ -96,6 +92,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             );
         //endregion
 
+        binding.setSyncState(tei.state());
+
         binding.executePendingBindings();
 
         itemView.setOnClickListener(view -> presenter.onTEIClick(trackedEntityInstanceModel.uid()));
@@ -152,14 +150,15 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {
-            if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE) {
+            if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE && binding.linearLayout.getChildCount()<2) {
                 TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
                         LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
                 );
                 programsBinding.setEnrollment(enrollment);
                 programsBinding.executePendingBindings();
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                binding.linearLayout.addView(programsBinding.getRoot(), layoutParams);
+                FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setFlexBasisPercent(.5f);
+                binding.linearLayout.addView(programsBinding.getRoot(), params);
                 binding.linearLayout.invalidate();
             }
 
@@ -169,7 +168,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             binding.setFollowUp(isFollowUp);
 
         }
-        binding.viewMore.setVisibility(binding.linearLayout.getChildCount() > 2 ? View.VISIBLE : View.GONE);
+        binding.viewMore.setVisibility(enrollments.size() > 2 ? View.VISIBLE : View.GONE);
 
         binding.executePendingBindings();
     }

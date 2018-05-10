@@ -1,6 +1,5 @@
 package com.dhis2.usescases.searchTrackEntity;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
@@ -26,7 +25,7 @@ public class SearchPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         return position == 0 ?
-                SearchLocalFragment.getInstance(context, fromRelationship):
+                SearchLocalFragment.getInstance(context, fromRelationship) :
                 SearchOnlineFragment.getInstance(context, fromRelationship);
     }
 
@@ -43,5 +42,6 @@ public class SearchPagerAdapter extends FragmentStatePagerAdapter {
 
     void setOnline(Boolean online) {
         this.maxData = online ? 2 : 1;
+        notifyDataSetChanged();
     }
 }

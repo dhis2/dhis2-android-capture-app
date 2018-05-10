@@ -3,6 +3,7 @@ package com.dhis2.Bindings;
 import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
+import android.databinding.BindingMethods;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -122,7 +123,7 @@ public class Bindings {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            String text = data.size() + " " + textView.getContext().getString(R.string.events);
+                            String text = String.valueOf(data.size());
                             textView.setText(text);
                         },
                         Timber::d);
@@ -620,4 +621,5 @@ public class Bindings {
                             },
                             Timber::d);
     }
+
 }

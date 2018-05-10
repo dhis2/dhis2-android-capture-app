@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.dhis2.R;
-import com.dhis2.usescases.programDetail.ProgramDetailActivity;
-import com.dhis2.usescases.programDetailTablet.ProgramDetailTabletActivity;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.Period;
@@ -136,15 +134,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
 
         if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
-            if (programModel.displayFrontPageList()) {
-                if (view.getContext().getResources().getBoolean(R.bool.is_tablet)) {
-                    view.startActivity(ProgramDetailTabletActivity.class, bundle, false, false, null);
-                } else {
-                    view.startActivity(ProgramDetailActivity.class, bundle, false, false, null);
-                }
-            } else {
-                view.startActivity(SearchTEActivity.class, bundle, false, false, null);
-            }
+            view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         } else {
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
         }
