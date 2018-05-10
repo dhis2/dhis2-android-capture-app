@@ -87,6 +87,11 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
+    public void showQR() {
+
+    }
+
+    @Override
     public String getToolbarTitle() {
         return binding.toolbarTitle.getText().toString();
     }

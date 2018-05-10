@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.FragmentSearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -36,9 +37,10 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
     private SearchTEAdapter searchTEAdapter;
     private SearchRelationshipAdapter searchRelationshipAdapter;
     private boolean fromRelationship;
+    FragmentSearchBinding binding;
 
     public static SearchLocalFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
-        if (instance == null || !(instance.activity!=null && context.equals(instance.activity.getAbstracContext()))) {
+        if (instance == null || !(instance.activity != null && context.equals(instance.activity.getAbstracContext()))) {
             Bundle bundle = new Bundle();
             bundle.putBoolean("fromRelationship", fromRelationship);
 
@@ -57,7 +59,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         fromRelationship = getArguments().getBoolean("fromRelationship");
 
         if (getResources().getBoolean(R.bool.is_tablet)) {
@@ -67,7 +69,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
             binding.scrollView.setVisibility(View.GONE);
 
         } else {
-            if(fromRelationship) {
+            if (fromRelationship) {
                 searchRelationshipAdapter = new SearchRelationshipAdapter(activity.presenter, activity.metadataRepository, false);
                 binding.scrollView.setAdapter(searchRelationshipAdapter);
             } else {
@@ -79,23 +81,32 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
         return binding.getRoot();
     }
 
-    public void setItems(List<TrackedEntityInstanceModel> data, List<ProgramModel> programList) {
+    public void setItems(Pair<List<TrackedEntityInstanceModel>, String> mData, List<ProgramModel> programList) {
 
-        if (getResources().getBoolean(R.bool.is_tablet)) {
-            searchTEATabletAdapter.setItems(data, programList);
-        } else {
-            if(fromRelationship){
-                searchRelationshipAdapter.setItems(data);
+        if (mData.val1().isEmpty()) {
+            binding.messageContainer.setVisibility(View.GONE);
+
+            if (getResources().getBoolean(R.bool.is_tablet)) {
+                searchTEATabletAdapter.setItems(mData.val0(), programList);
             } else {
-                searchTEAdapter.setItems(data);
+                if (fromRelationship) {
+                    searchRelationshipAdapter.setItems(mData.val0());
+                } else {
+                    searchTEAdapter.setItems(mData.val0());
+                }
             }
+        } else {
+            binding.messageContainer.setVisibility(View.VISIBLE);
+            binding.message.setText(mData.val1());
         }
+
+
     }
 
     public void clear() {
         if (searchTEAdapter != null)
             searchTEAdapter.clear();
-        if(searchRelationshipAdapter != null)
+        if (searchRelationshipAdapter != null)
             searchRelationshipAdapter.clear();
     }
 

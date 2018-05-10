@@ -114,7 +114,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
-                                                                               @Nullable String programUid,
+                                                                               @Nullable ProgramModel selectedProgram,
                                                                                @Nullable HashMap<String, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
@@ -162,8 +162,8 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         String search = String.format(SEARCH, queryData.isEmpty() ? "" : SEARCH_ATTR);
         search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
-        if (programUid != null && !programUid.isEmpty()) {
-            String programWHERE = "Enrollment.program = '" + programUid + "'";
+        if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
+            String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
             search += " AND " + programWHERE;
         }
         if (enrollmentDateWHERE != null)
@@ -171,6 +171,11 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (incidentDateWHERE != null)
             search += " AND" + incidentDateWHERE;
         search += " GROUP BY TrackedEntityInstance.uid";
+
+        if (selectedProgram != null && !selectedProgram.displayFrontPageList() && selectedProgram.maxTeiCountToReturn() != 0) {
+            String maxResults = String.format(" LIMIT %s", selectedProgram.maxTeiCountToReturn());
+            search += maxResults;
+        }
 
         return briteDatabase.createQuery(TEI_TABLE_SET, search)
                 .mapToList(TrackedEntityInstanceModel::create);

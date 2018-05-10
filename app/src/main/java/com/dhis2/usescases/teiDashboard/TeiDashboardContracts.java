@@ -35,6 +35,8 @@ public class TeiDashboardContracts {
         String getToolbarTitle();
 
         DashboardPagerAdapter getAdapter();
+
+        void showQR();
     }
 
     public interface Presenter {
@@ -43,6 +45,8 @@ public class TeiDashboardContracts {
         void onBackPressed();
 
         void onEnrollmentSelectorClick();
+
+        void onShareQRClick();
 
         void setProgram(ProgramModel program);
 

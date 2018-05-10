@@ -21,6 +21,7 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.ProgramAdapter;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
@@ -149,11 +150,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------
     //region TEI LIST
     @Override
-    public Consumer<List<TrackedEntityInstanceModel>> swapListData() {
+    public Consumer<Pair<List<TrackedEntityInstanceModel>,String>> swapListData() {
         return data -> {
 
             binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.size())));
+            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.val0().size())));
 
             ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList());
 

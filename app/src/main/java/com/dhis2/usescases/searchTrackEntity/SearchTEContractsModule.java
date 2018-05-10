@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.widget.ProgressBar;
 
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -26,7 +27,7 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program);
 
-        Consumer<List<TrackedEntityInstanceModel>> swapListData();
+        Consumer<Pair<List<TrackedEntityInstanceModel>,String>> swapListData();
 
         void setPrograms(List<ProgramModel> programModels);
 

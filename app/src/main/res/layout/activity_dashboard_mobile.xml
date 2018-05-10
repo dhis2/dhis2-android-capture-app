@@ -44,10 +44,19 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:textSize="20sp"
                 android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 android:textColor="?colorAccent"
+                android:textSize="20sp"
                 tools:text="TEI NAME" />
+
+            <ImageView
+                android:id="@+id/shareQR"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_qr"
+                android:onClick="@{()->presenter.onShareQRClick()}"
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/program_selector_button"

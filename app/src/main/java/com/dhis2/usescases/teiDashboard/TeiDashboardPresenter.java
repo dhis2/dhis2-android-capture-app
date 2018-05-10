@@ -134,6 +134,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public void onShareQRClick() {
+        view.showQR();
+    }
+
+    @Override
     public void setProgram(ProgramModel program) {
         this.programUid = program.uid();
         getData();

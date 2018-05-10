@@ -55,7 +55,7 @@
                 android:layout_alignParentEnd="true"
                 android:onClick="@{()->presenter.onClearClick()}"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_clear"
+                app:srcCompat="@drawable/ic_refresh"
                 tools:ignore="ContentDescription" />
 
             <Spinner

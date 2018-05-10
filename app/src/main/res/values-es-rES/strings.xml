@@ -152,4 +152,8 @@
     <string name="tuto_main_4">…seleccionar un periodo y distintas fechas…</string>
     <string name="tuto_main_5">…o filtrar por Unidad Organizativa</string>
     <string name="tuto_main_6">En el menú principal podrás realizar más acciones</string>
+    <string name="search_max_tei_reached">Hay más de %d resultados. Por favor, especifica más tu búsqueda</string>
+    <string name="search_min_num_attr">Es necesario introducir al menos %d de los atributos para iniciar una búsqueda</string>
+    <string name="search_init">Introduce algún criterio de búsqueda</string>
+    <string name="search_criteria_not_met">Tus criterios de búsqueda no devolvieron ningún resultado. Modifícalos o crea una nueva %s</string>
 </resources>

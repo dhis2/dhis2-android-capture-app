@@ -29,7 +29,7 @@ public interface SearchRepository {
     Observable<List<ProgramModel>> programsWithRegistration(String programTypeId);
 
     Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
-                                                                        @Nullable String programUid,
+                                                                        @Nullable ProgramModel selectedProgram,
                                                                         @Nullable HashMap<String, String> queryData);
 
     @NonNull
