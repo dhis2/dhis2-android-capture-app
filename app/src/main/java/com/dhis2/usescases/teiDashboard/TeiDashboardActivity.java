@@ -56,4 +56,9 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     public DashboardPagerAdapter getAdapter() {
         return null;
     }
+
+    @Override
+    public void showQR() {
+
+    }
 }

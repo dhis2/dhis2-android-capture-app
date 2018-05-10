@@ -1,9 +1,12 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -36,6 +39,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     static TEIDataFragment instance;
     TeiDashboardContracts.Presenter presenter;
     private DashboardProgramModel dashboardProgramModel;
+    private boolean mIsBackVisible;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -55,6 +59,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
+        binding.cardBack.cardBack.setAlpha(0f);
         return binding.getRoot();
     }
 
@@ -104,10 +109,33 @@ public class TEIDataFragment extends FragmentGlobalAbstract {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQ_DETAILS){
-            if(resultCode == RESULT_OK){
+        if (requestCode == REQ_DETAILS) {
+            if (resultCode == RESULT_OK) {
                 presenter.getData();
             }
+        }
+    }
+
+    public void flipCard(Bitmap bitmap) {
+        int distance = 8000;
+        float scale = getResources().getDisplayMetrics().density * distance;
+        binding.cardBack.qrImage.setImageBitmap(bitmap);
+        binding.cardFront.cardFront.setCameraDistance(scale);
+        binding.cardBack.cardBack.setCameraDistance(scale);
+        AnimatorSet mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.flip_out_animation);
+        AnimatorSet mSetLeftIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.flip_in_animation);
+        if (!mIsBackVisible) {
+            mSetRightOut.setTarget(binding.cardFront.cardFront);
+            mSetLeftIn.setTarget(binding.cardBack.cardBack);
+            mSetRightOut.start();
+            mSetLeftIn.start();
+            mIsBackVisible = true;
+        } else {
+            mSetRightOut.setTarget(binding.cardBack.cardBack);
+            mSetLeftIn.setTarget(binding.cardFront.cardFront);
+            mSetRightOut.start();
+            mSetLeftIn.start();
+            mIsBackVisible = false;
         }
     }
 }

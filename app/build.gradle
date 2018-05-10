@@ -215,6 +215,8 @@ dependencies {
     // Zxing library
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+
     //FancyShowCase
     compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
