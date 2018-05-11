@@ -75,9 +75,11 @@
 
     <string name="event_open">Open</string>
     <string name="event_completed">Event Completed</string>
+    <string name="event_expired">Event Expired</string>
     <string name="event_editing_expired">Editing Expired</string>
     <string name="event_accepted">Event Accepted</string>
     <string name="event_approved">Event Approved</string>
+    <string name="event_inactive">Event Inactive</string>
     <string name="read_only">Read only</string>
     <string name="complete">Complete</string>
     <string name="completed">Completed</string>
@@ -170,6 +172,7 @@
     <string name="add_note">Add note</string>
     <string name="revert">Revert</string>
     <string name="activated">Activated</string>
+    <string name="enroll_in">Enroll in %s</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
@@ -200,6 +203,10 @@
     <string name="tuto_main_4">…by changing the period and selecting dates…</string>
     <string name="tuto_main_5">…or filter by Organisation Unit</string>
     <string name="tuto_main_6">Check other actions on the main menu</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Create relationship</string>
+    <string name="next">Next</string>
     <string name="search_min_num_attr" >You need to enter at least %d of the attributes to do a search</string>
     <string name="search_max_tei_reached" >There is more than %d results. Please enter further search criteria</string>
     <string name="search_criteria_not_met">Your search criteria didn\'t return any result.\nRevise your criteria or enroll a new %s</string>

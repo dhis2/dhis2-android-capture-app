@@ -27,12 +27,14 @@ import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
@@ -318,45 +320,64 @@ public class Bindings {
         view.setText(text);
     }
 
-    @BindingAdapter("eventIcon")
-    public static void setEventIcon(ImageView view, EventStatus status) {
-        Drawable lock;
+    @BindingAdapter("eventStatusIcon")
+    public static void setEventIcon(ImageView view, EventModel event) {
+        EventStatus status = event.status();
         if (status == null)
             status = EventStatus.ACTIVE;
         switch (status) {
             default:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit);
+                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
                 break;
             case COMPLETED:
-                lock = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility);
+                metadataRepository.getExpiryDateFromEvent(event.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                program -> {
+                                    if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                                    } else {
+                                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                                    }
+                                },
+                                OnErrorHandler.create()
+                        );
                 break;
         }
-
-        view.setImageDrawable(lock);
-
     }
 
-    @BindingAdapter("eventText")//TODO: IT NEEDS ENROLLMENTSTATUS
-    public static void setEventText(TextView view, EventStatus status) {
-        String text;
+    @BindingAdapter("eventStatusText")//TODO: IT NEEDS ENROLLMENTSTATUS
+    public static void setEventText(TextView view, EventModel event) {
+        EventStatus status = event.status();
         if (status == null)
             status = EventStatus.ACTIVE;
         switch (status) {
             case ACTIVE:
-                text = view.getContext().getString(R.string.event_open);
+                view.setText(view.getContext().getString(R.string.event_open));
                 break;
             case COMPLETED:
-                text = view.getContext().getString(R.string.program_completed);
+                metadataRepository.getExpiryDateFromEvent(event.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                program -> {
+                                    if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        view.setText(view.getContext().getString(R.string.event_expired));
+                                    } else {
+                                        view.setText(view.getContext().getString(R.string.event_completed));
+                                    }
+                                },
+                                OnErrorHandler.create()
+                        );
                 break;
             case SCHEDULE:
-                text = view.getContext().getString(R.string.program_inactive);
+                view.setText(view.getContext().getString(R.string.program_inactive));
                 break;
             default:
-                text = view.getContext().getString(R.string.read_only);
+                view.setText(view.getContext().getString(R.string.read_only));
                 break;
         }
-
-        view.setText(text);
     }
 
     @BindingAdapter("eventColor")
@@ -449,45 +470,61 @@ public class Bindings {
 
     @BindingAdapter("eventWithoutRegistrationStatusText")
     public static void setEventWithoutRegistrationStatusText(TextView textView, EventModel eventModel) {
-        if (eventModel.dueDate() != null && !DateUtils.getInstance().hasExpired(eventModel.dueDate())) {
-            textView.setText(textView.getContext().getString(R.string.event_editing_expired));
-            textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
-        } else {
-            switch (eventModel.status()) {
-                case ACTIVE:
-                    textView.setText(textView.getContext().getString(R.string.event_open));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
-                    break;
-                case COMPLETED:
-                    textView.setText(textView.getContext().getString(R.string.event_completed));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
-                    break;
-                default:
-                    // TODO CRIS: HERE CHECK THE EVENT APPROVAL
-                    textView.setText(textView.getContext().getString(R.string.read_only));
-                    textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
-                    break;
-            }
+        switch (eventModel.status()) {
+            case ACTIVE:
+                textView.setText(textView.getContext().getString(R.string.event_open));
+                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
+                break;
+            case COMPLETED:
+                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                program -> {
+                                    if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        textView.setText(textView.getContext().getString(R.string.event_editing_expired));
+                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
+                                    } else {
+                                        textView.setText(textView.getContext().getString(R.string.event_completed));
+                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
+                                    }
+                                },
+                                OnErrorHandler.create()
+                        );
+                break;
+            default:
+                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
+                textView.setText(textView.getContext().getString(R.string.read_only));
+                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
+                break;
         }
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusIcon")
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, EventModel eventModel) {
-        if (eventModel.dueDate() != null && !DateUtils.getInstance().hasExpired(eventModel.dueDate())) {
-            imageView.setImageResource(R.drawable.ic_eye_red);
-        } else {
-            switch (eventModel.status()) {
-                case ACTIVE:
-                    imageView.setImageResource(R.drawable.ic_edit_yellow);
-                    break;
-                case COMPLETED:
-                    imageView.setImageResource(R.drawable.ic_eye_grey);
-                    break;
-                default:
-                    // TODO CRIS: HERE CHECK THE EVENT APPROVAL
-                    imageView.setImageResource(R.drawable.ic_eye_green);
-                    break;
-            }
+        switch (eventModel.status()) {
+            case ACTIVE:
+                imageView.setImageResource(R.drawable.ic_edit_yellow);
+                break;
+            case COMPLETED:
+                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                program -> {
+                                    if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        imageView.setImageResource(R.drawable.ic_eye_red);
+                                    } else {
+                                        imageView.setImageResource(R.drawable.ic_eye_grey);
+                                    }
+                                },
+                                OnErrorHandler.create()
+                        );
+                break;
+            default:
+                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
+                imageView.setImageResource(R.drawable.ic_eye_green);
+                break;
         }
     }
 

@@ -9,7 +9,9 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
+import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -62,6 +64,10 @@ public class TeiDashboardContracts {
 
         DashboardProgramModel getDashBoardData();
 
+        void getTEIEvents(TEIDataFragment teiDataFragment);
+
+        void areEventsCompleted(TEIDataFragment teiDataFragment);
+
         //Data Fragment
 
         //RelationshipFragment
@@ -95,5 +101,7 @@ public class TeiDashboardContracts {
         void openDashboard(String teiUid);
 
         void subscribeToMainAttr(String teiUid, TextView textView);
+
+        void completeEnrollment(TEIDataFragment teiDataFragment);
     }
 }

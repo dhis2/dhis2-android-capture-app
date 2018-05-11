@@ -3,7 +3,6 @@ package com.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
-import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.Bindings.Bindings;
@@ -26,6 +25,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Inject
     TeiDataDetailContracts.Presenter presenter;
 
+    private DashboardProgramModel dashboardProgramModel;
     private ObservableBoolean isEditable = new ObservableBoolean(false);
 
     @Override
@@ -38,6 +38,22 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setPresenter(presenter);
 
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"), getIntent().getStringExtra("ENROLLMENT_UID"));
+
+        binding.fab.setOptionsClick(integer -> {
+            if (integer == null)
+                return;
+
+            switch (integer) {
+                case R.id.edit:
+                    //presenter.editData();
+                    break;
+                case R.id.deactivate:
+                    presenter.onDeactivate(dashboardProgramModel);
+                case R.id.complete:
+                    presenter.onButtonActionClick(dashboardProgramModel);
+                    break;
+            }
+        });
     }
 
     @Override
@@ -47,6 +63,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
     @Override
     public void setData(DashboardProgramModel program) {
+        this.dashboardProgramModel = program;
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
         binding.executePendingBindings();
@@ -71,8 +88,8 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     @Override
     public Consumer<EnrollmentStatus> handleStatus() {
         return enrollmentStatus -> {
-            Bindings.setEnrolmentAction(binding.buttonProfile, enrollmentStatus);
-            binding.buttonDelete.setVisibility(enrollmentStatus == EnrollmentStatus.ACTIVE ? View.VISIBLE : View.GONE);
+            Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatus);
+            Bindings.setEnrolmentText(binding.programLockText, enrollmentStatus);
         };
     }
 

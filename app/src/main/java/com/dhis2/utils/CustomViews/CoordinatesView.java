@@ -20,6 +20,8 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Locale;
+
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
@@ -138,7 +140,9 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void updateLocation(double latitude, double longitude) {
-        this.latLong.setText(String.format("%s, %s", latitude, longitude));
+        String lat = String.format(Locale.getDefault(), "%.5f", latitude);
+        String lon = String.format(Locale.getDefault(), "%.5f", longitude);
+        this.latLong.setText(String.format("%s, %s", lat, lon));
         listener2.onCurrentLocationClick(latitude, longitude);
         invalidate();
     }

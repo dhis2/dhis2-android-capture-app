@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.dhis2.R;
@@ -46,6 +47,20 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         init(teiUid, programUid);
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        binding.toolbarTitle.setLines(1);
+        binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        init(teiUid, programUid);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onDettach();
     }
 
     @Override

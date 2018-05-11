@@ -4,6 +4,7 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 /**
@@ -19,6 +20,7 @@ public class EventDetailContracts {
 
         void setDataEditable();
 
+        void isEventExpired(ProgramModel programModel);
     }
 
     public interface Presenter {
@@ -33,6 +35,8 @@ public class EventDetailContracts {
         void eventStatus(EventModel eventModel, ProgramStageModel stageModel);
 
         void editData();
+
+        void getExpiryDate(String eventUid);
 
     }
 

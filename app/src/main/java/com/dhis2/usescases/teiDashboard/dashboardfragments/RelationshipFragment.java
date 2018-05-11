@@ -17,7 +17,6 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
-import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
 import java.util.List;
@@ -70,13 +69,16 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         super.onResume();
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
-        if(dashboardProgramModel != null)
+        if (dashboardProgramModel != null)
             setData(dashboardProgramModel);
     }
 
     public void setData(DashboardProgramModel dashboardProgramModel) {
         this.dashboardProgramModel = dashboardProgramModel;
-        binding.setRelationshipType(dashboardProgramModel.getCurrentProgram().relationshipText());
+        if (dashboardProgramModel.getCurrentProgram().relationshipText() == null)
+            binding.setRelationshipType(getString(R.string.default_relationship_label));
+        else
+            binding.setRelationshipType(dashboardProgramModel.getCurrentProgram().relationshipText());
         binding.executePendingBindings();
     }
 
@@ -89,9 +91,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQ_ADD_RELATIONSHIP){
-            if(resultCode == RESULT_OK){
-                if(data != null){
+        if (requestCode == REQ_ADD_RELATIONSHIP) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
                     String tei_a = data.getStringExtra("TEI_A_UID");
                     String relationshipType = data.getStringExtra("RELATIONSHIP_TYPE_UID");
 

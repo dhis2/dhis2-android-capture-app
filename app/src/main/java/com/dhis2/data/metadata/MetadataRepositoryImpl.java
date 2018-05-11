@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -62,6 +63,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE
     );
+
     private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
 
 
@@ -180,6 +182,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.ID);
+
+    private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(
+            "SELECT program.* FROM %s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "WHERE %s.%s = ?",
+            ProgramModel.TABLE,
+            EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
+            EventModel.TABLE, EventModel.Columns.UID);
 
     private final BriteDatabase briteDatabase;
 
@@ -442,5 +452,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         return Pair.create(flatTheme[0], R.style.AppTheme);
                 });
 
+    }
+
+    @Override
+    public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
+        return briteDatabase
+                .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid)
+                .mapToOne(ProgramModel::create);
     }
 }

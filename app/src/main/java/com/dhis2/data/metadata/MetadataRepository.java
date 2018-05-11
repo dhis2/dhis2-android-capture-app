@@ -109,6 +109,8 @@ public interface MetadataRepository {
 
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 
+    Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
+
 
     /*OPTION SET*/
     Observable<List<OptionModel>> optionSet(String optionSetId);

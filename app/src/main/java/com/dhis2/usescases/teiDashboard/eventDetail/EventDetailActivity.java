@@ -20,8 +20,12 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivityEventDetailBinding;
 import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.DateUtils;
 import com.google.android.flexbox.FlexboxLayout;
 
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 
@@ -37,6 +41,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Inject
     EventDetailContracts.Presenter presenter;
 
+    EventDetailModel eventDetailModel;
     private String eventUid;
     private ObservableBoolean isEditable = new ObservableBoolean(false);
 
@@ -60,6 +65,8 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
+        this.eventDetailModel = eventDetailModel;
+        presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
         binding.setEvent(eventDetailModel.getEventModel());
         binding.setStage(eventDetailModel.getProgramStage());
         binding.executePendingBindings();
@@ -95,7 +102,15 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                         FormViewArguments.createForEvent(eventUid), false,
                         false))
                 .commit();
+    }
 
+    @Override
+    public void isEventExpired(ProgramModel program) {
+        EventModel event = eventDetailModel.getEventModel();
+        if(event.status() == EventStatus.COMPLETED &&
+                DateUtils.getInstance().hasExpired(eventDetailModel.getEventModel().completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+            // TODO implement event expiration logic
+        }
     }
 
     @Override
@@ -142,5 +157,10 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             });
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        presenter.back();
     }
 }
