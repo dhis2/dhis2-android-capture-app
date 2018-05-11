@@ -85,6 +85,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
+                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'",
+                    "AND %s.%s = ? " +
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
                     "THEN %s.%s ELSE %s.%s END DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
@@ -174,7 +176,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE Program.uid = ? AND Enrollment.status = ? AND Enrollment.trackedEntityInstance = ?";
 
     private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
-            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)";
+            "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)" +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
     private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.* FROM TrackedEntityAttributeValue " +
             "WHERE TrackedEntityAttributeValue.trackedEntityAttribute IN " +
             "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +

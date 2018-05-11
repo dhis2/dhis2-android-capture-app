@@ -21,6 +21,9 @@ public class EventDetailContracts {
         void setDataEditable();
 
         void isEventExpired(ProgramModel programModel);
+        void showConfirmDeleteEvent();
+
+        void showEventWasDeleted();
     }
 
     public interface Presenter {
@@ -38,6 +41,9 @@ public class EventDetailContracts {
 
         void getExpiryDate(String eventUid);
 
+        void confirmDeleteEvent();
+
+        void deleteEvent();
     }
 
 

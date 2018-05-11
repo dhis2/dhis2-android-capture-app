@@ -31,6 +31,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -295,7 +296,7 @@ class EnrollmentFormRepository implements FormRepository {
                     enrollmentDate = DateUtils.databaseDateFormat().parse(cursor.getString(6));
 
                 } catch (Exception e) {
-
+                    Timber.e(e);
                 }
 
 

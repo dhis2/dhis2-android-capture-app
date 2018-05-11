@@ -32,4 +32,8 @@ public interface EventDetailRepository {
 
     @NonNull
     Observable<ProgramStageModel> programStage(String eventUid);
+
+    void deleteNotPostedEvent(String eventUid);
+
+    void deletePostedEvent(EventModel eventModel);
 }

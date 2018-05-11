@@ -99,7 +99,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @NonNull
     @Override
     public Consumer<String> renderUserInfo() {
-        return (userInitials) -> Log.d("dhis", userInitials);
+        return userInitials -> Log.d("dhis", userInitials);
     }
 
     @NonNull
@@ -120,7 +120,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showHideFilter() {
-
         programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
@@ -133,7 +132,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             binding.pinLayout.setVisibility(View.VISIBLE);
         else
             presenter.blockSession(null);
-
     }
 
     @Override
@@ -176,8 +174,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
-
-
         }
 
         currentFragment.set(id);

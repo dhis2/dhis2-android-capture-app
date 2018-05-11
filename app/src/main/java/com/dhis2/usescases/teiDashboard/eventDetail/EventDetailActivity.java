@@ -21,6 +21,8 @@ import com.dhis2.databinding.ActivityEventDetailBinding;
 import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.CustomViews.CustomDialog;
+import com.dhis2.utils.DialogClickListener;
 import com.google.android.flexbox.FlexboxLayout;
 
 import org.hisp.dhis.android.core.event.EventModel;
@@ -86,14 +88,11 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                 binding.dataLayout.addView(sectionTitle, params);
 
                 setSectionDataElements(eventDetailModel, section.uid());
-
-
             }
         } else
             setSectionDataElements(eventDetailModel, null);
 
         binding.dataLayout.invalidate();
-
 
         supportStartPostponedEnterTransition();
 
@@ -103,7 +102,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                         false))
                 .commit();
     }
-
     @Override
     public void isEventExpired(ProgramModel program) {
         EventModel event = eventDetailModel.getEventModel();
@@ -111,7 +109,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                 DateUtils.getInstance().hasExpired(eventDetailModel.getEventModel().completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
             // TODO implement event expiration logic
         }
-    }
+
 
     @Override
     public void setDataEditable() {
@@ -120,6 +118,34 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             binding.dataLayout.invalidate();
         } else
             displayMessage(null);
+    }
+
+    @Override
+    public void showConfirmDeleteEvent() {
+        new CustomDialog(
+                this,
+                getString(R.string.delete_event),
+                getString(R.string.confirm_delete_event),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        presenter.deleteEvent();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        // dismiss
+                    }
+                }
+        ).show();
+    }
+
+    @Override
+    public void showEventWasDeleted() {
+        showToast(getString(R.string.event_was_deleted));
+        finish();
     }
 
     private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {
@@ -142,7 +168,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             editTextBinding.formEdittext.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                    // unused
                 }
 
                 @Override
@@ -153,9 +179,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    // unused
                 }
             });
-
         }
     }
 

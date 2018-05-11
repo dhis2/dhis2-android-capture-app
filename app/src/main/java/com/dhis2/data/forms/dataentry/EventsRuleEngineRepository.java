@@ -7,6 +7,7 @@ import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.RuleDataValue;
@@ -31,6 +32,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "  dueDate\n" +
             "FROM Event\n" +
             "WHERE uid = ?\n" +
+            " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
             "LIMIT 1;";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -40,7 +42,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL;";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     @NonNull
     private final BriteDatabase briteDatabase;

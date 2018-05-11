@@ -35,7 +35,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?colorPrimary">
+            android:background="?colorPrimary"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -54,6 +55,15 @@
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
                 tools:text="TEI NAME" />
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="@{()->presenter.confirmDeleteEvent()}"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_delete"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 

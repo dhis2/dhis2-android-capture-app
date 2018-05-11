@@ -89,6 +89,11 @@
     <string name="due_date">Fecha programada</string>
     <string name="cat_combo">Cat Combo</string>
     <string name="date_default">DD/MM/YYYY</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="delete_event">Eliminar evento</string>
+    <string name="confirm_delete_event">¿Estás seguro de querer eliminar este evento?</string>
+    <string name="event_was_deleted">Evento eliminado</string>
     <string name="programs_list">Listado de programas</string>
     <string name="active_programs">Programas activos</string>
     <string name="past_programs">Programas pasados</string>

@@ -119,6 +119,11 @@
     <string name="due_date">Due date</string>
     <string name="cat_combo">Cat combo</string>
     <string name="date_default">DD/MM/YYYY</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_event">Delete event</string>
+    <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
+    <string name="event_was_deleted">Event deleted successfully</string>
 
     <!--TEI Program list-->
     <string name="programs_list">Programs list</string>

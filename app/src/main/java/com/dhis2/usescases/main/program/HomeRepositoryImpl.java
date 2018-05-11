@@ -6,6 +6,7 @@ import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
@@ -35,6 +36,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
             "INNER JOIN Event ON Event.program = Program.uid " +
             "WHERE (%s) " +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
             "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_PROGRAMS = "SELECT " +
@@ -42,16 +44,19 @@ class HomeRepositoryImpl implements HomeRepository {
             "JOIN Event ON Event.program = Program.uid " +
             "WHERE (%s) " +
             "AND Event.organisationUnit IN (%s) " +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
             "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
             "WHERE (%s) " +
             "AND Event.organisationUnit IN (%s) " +
-            "AND Event.program = ?";
+            "AND Event.program = ? " +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     private final static String SELECT_EVENTS_NO_DATE = "SELECT Event.* FROM Event " +
             "WHERE Event.organisationUnit IN (%s) " +
-            "AND Event.program = ?";
+            "AND Event.program = ? " +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
@@ -78,7 +83,7 @@ class HomeRepositoryImpl implements HomeRepository {
         this.orgUnits = orgUnitsIdQuery;
         String finalQuery = PROGRAMS;
         if (!isEmpty(orgUnitsIdQuery)) {
-            finalQuery += String.format(" JOIN Event ON Event.program = Program.uid WHERE Event.organisationUnit IN (%s)", orgUnitsIdQuery);
+            finalQuery += String.format(" JOIN Event ON Event.program = Program.uid WHERE Event.organisationUnit IN (%s) AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'", orgUnitsIdQuery);
         }
         return briteDatabase.createQuery(SELECT_SET_2, finalQuery + " GROUP BY Program.uid")
                 .mapToList(ProgramModel::create);

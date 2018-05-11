@@ -24,7 +24,8 @@ import io.reactivex.Flowable;
 
 final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ?";
+            " WHERE " + EventModel.Columns.UID + " = ? " +
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -116,7 +117,7 @@ final class DataValueStore implements DataEntryStore {
 
     private Flowable<Long> updateEvent(long status) {
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
-                .mapToOne(cursor -> EventModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
                             State.ERROR.equals(eventModel.state())) {
