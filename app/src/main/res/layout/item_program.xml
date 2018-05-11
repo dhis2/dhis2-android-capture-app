@@ -23,7 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:onClick="@{()->presenter.onItemClick(program, currentPeriod)}">
+        android:onClick="@{()->presenter.onItemClick(program, currentPeriod)}"
+        app:cardElevation="8dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -36,64 +37,68 @@
                 android:layout_height="135dp"
                 app:programTypeIcon='@{program.programType()}'
                 app:randomColor="@{program.uid()}"
-                tools:ignore="ContentDescription"
-                tools:background="@color/colorPrimaryLight"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/events_number"
-                android:layout_marginEnd="10dp"
-                android:visibility="@{program.description()!=null ? View.VISIBLE : View.GONE}"
-                android:onClick="@{()->presenter.showDescription(program.description())}"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?colorPrimary"/>
-
-
-            <TextView
-                android:id="@+id/program_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/program_image"
-                android:layout_marginStart="7.8dp"
-                android:layout_marginTop="5.4dp"
-                android:lines="2"
-                android:text="@{program.shortName()}"
-                android:textColor="@color/gray_666"
-                android:textSize="14sp"
-                tools:text="dasfasdadgfg\n" />
+                tools:background="@color/colorPrimaryLight"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/events_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="7.8dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_above="@id/program_info"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="5.4dp"
-                android:gravity="bottom"
-                android:layout_above="@id/program_name"
+                android:background="@drawable/ic_circle"
+                android:gravity="center"
+                android:padding="5dp"
                 android:textColor="@color/colorAccent"
-                android:background="@drawable/button_round_7"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 app:numberOfEvents="@{presenter.getEvents(program)}"
-                tools:text="15"
-                android:padding="3dp"/>
+                tools:text="155" />
 
-            <TextView
-                android:id="@+id/program_last_date"
+            <LinearLayout
+                android:id="@+id/program_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/events_number"
-                android:layout_marginStart="7.8dp"
-                android:layout_marginTop="5.4dp"
-                android:gravity="bottom"
-                android:textColor="@color/gray_9b9"
-                android:textSize="14sp"
-                android:visibility="gone"
-                app:lastEventDate="@{presenter.getEvents(program)}"
-                tools:text="yyyy-mm-dd" />
+                android:layout_height="50dp"
+                android:layout_below="@id/program_image"
+                android:orientation="horizontal">
 
+
+                <TextView
+                    android:id="@+id/program_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="7.8dp"
+                    android:layout_weight="1"
+                    android:lines="2"
+                    android:padding="5dp"
+                    android:text="@{program.shortName()}"
+                    android:textColor="@color/gray_666"
+                    android:textSize="14sp"
+                    tools:text="dasfasdadgfg\n" />
+
+
+                <TextView
+                    android:id="@+id/program_last_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7.8dp"
+                    android:layout_marginTop="5.4dp"
+                    android:gravity="bottom"
+                    android:textColor="@color/gray_9b9"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:lastEventDate="@{presenter.getEvents(program)}"
+                    tools:text="yyyy-mm-dd" />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="@{()->presenter.showDescription(program.description())}"
+                    android:visibility="@{program.description()!=null ? View.VISIBLE : View.GONE}"
+                    app:srcCompat="@drawable/ic_info_outline"
+                    app:tint="?colorPrimary" />
+            </LinearLayout>
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

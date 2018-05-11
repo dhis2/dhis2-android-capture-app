@@ -105,11 +105,11 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void isEventExpired(ProgramModel program) {
         EventModel event = eventDetailModel.getEventModel();
-        if(event.status() == EventStatus.COMPLETED &&
+        if (event.status() == EventStatus.COMPLETED &&
                 DateUtils.getInstance().hasExpired(eventDetailModel.getEventModel().completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
             // TODO implement event expiration logic
         }
-
+    }
 
     @Override
     public void setDataEditable() {
