@@ -80,7 +80,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
+    public Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                           @NonNull Context context, @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
                                           @NonNull String orgUnitUid, @NonNull String catComboUid,
@@ -90,6 +90,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         EventModel eventModel = EventModel.builder()
                 .uid(codeGenerator.generate())
+                .enrollmentUid(enrollmentUid)
                 .created(createDate)
                 .lastUpdated(createDate)
                 .eventDate(date)

@@ -39,6 +39,7 @@ import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ENROLLMENT_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
@@ -92,7 +93,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
             bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
-            bundle.putString("ENROLLMENT_UID", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
             bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
