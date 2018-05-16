@@ -71,6 +71,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private TreeNode treeNode;
 
     //-------------------------------------------
     //region LIFECYCLE
@@ -175,6 +176,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             pickerDialog.show();
         }
+    }
+
+    public Period getCurrentPeriod() {
+        return currentPeriod;
     }
 
     @Override
@@ -348,6 +353,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void addTree(TreeNode treeNode) {
+        this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
         treeView = new AndroidTreeView(getContext(), treeNode);
@@ -371,6 +377,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
     }
 
+
+    public boolean areAllOrgUnitsSelected(){
+        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
+    }
 
     @Override
     public void openDrawer() {

@@ -68,7 +68,7 @@
                     android:layout_height="match_parent"
                     android:onClick="@{()->presenter.showFilter()}"
                     android:padding="15dp"
-                    app:srcCompat="@drawable/ic_filter_list"
+                    app:srcCompat="@drawable/ic_filter"
                     tools:ignore="ContentDescription" />
 
             </LinearLayout>

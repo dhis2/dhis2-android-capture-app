@@ -50,7 +50,5 @@ public final class MainContracts {
         void showFilter();
 
         void changeFragment(int id);
-
     }
-
 }
