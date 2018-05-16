@@ -107,6 +107,16 @@
                     android:layout_centerInParent="true"
                     app:progressColor="@{@color/colorPrimary}" />
 
+                <TextView
+                    android:id="@+id/emptyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="There is no information for the filters selected.\nPlease try changing them."
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
             </RelativeLayout>
 
         </LinearLayout>

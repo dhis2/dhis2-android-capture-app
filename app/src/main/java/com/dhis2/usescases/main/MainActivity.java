@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
+import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -92,6 +93,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public Consumer<String> renderUsername() {
         return username -> {
             binding.setUserName(username);
+            binding.appVersion.setText(BuildConfig.VERSION_NAME);
             binding.executePendingBindings();
         };
     }
@@ -138,36 +140,42 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public void changeFragment(int id) {
         Fragment fragment;
         String tag;
-        switch (id){
-            case R.id.menu_done_tasks:
-                {
+        switch (id) {
+            case R.id.menu_done_tasks: {
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;
                 tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.VISIBLE);
                 break;
-                }
-            case R.id.sync_manager:
-            {
+            }
+            case R.id.sync_manager: {
                 fragment = new SyncManagerFragment();
                 tag = getString(R.string.SYNC_MANAGER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
-            case R.id.qr_scan:
-            {
+            case R.id.qr_scan: {
                 fragment = new QrReaderFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
-            case R.id.events:
-            {
+            case R.id.events: {
                 fragment = new EventQrFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
+            case R.id.menu_jira:
+                fragment = new ProgramFragment(); //TODO: Change to Jira Issue Creator
+                tag = getString(R.string.done_task);
+                binding.filter.setVisibility(View.GONE);
+                break;
+            case R.id.menu_about:
+                fragment = new ProgramFragment(); //TODO: Chage to Webview
+                tag = getString(R.string.done_task);
+                binding.filter.setVisibility(View.GONE);
+                break;
             default:
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;
@@ -183,7 +191,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding.drawerLayout.closeDrawers();
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         binding.title.setText(title);
     }
 

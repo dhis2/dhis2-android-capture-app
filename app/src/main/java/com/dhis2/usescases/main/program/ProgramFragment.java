@@ -269,11 +269,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public Consumer<List<ProgramModel>> swapProgramData() {
         return programs -> {
             binding.programProgress.setVisibility(View.GONE);
+            binding.emptyView.setVisibility(programs.isEmpty() ? View.VISIBLE : View.GONE);
             ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
+
             SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                     "com.dhis2", Context.MODE_PRIVATE);
             if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                prefs.edit().putBoolean("TUTO_SHOWN",true).apply();
+                prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                 new Handler().postDelayed(() -> {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                             .title(getString(R.string.tuto_main_1))
@@ -330,7 +332,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .add(tuto6);
 
                     fancyShowCaseQueue.show();
-                },500);
+                }, 500);
 
             }
         };

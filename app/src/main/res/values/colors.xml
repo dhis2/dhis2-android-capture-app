@@ -21,6 +21,8 @@
     <color name="colorPrimaryDarkOrange">#ba4205</color>
     <color name="colorPrimaryLightOrange">#e98f62</color>
 
+    <!--OTHER COLORS-->
+
     <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_f5c">#f5c641</color>

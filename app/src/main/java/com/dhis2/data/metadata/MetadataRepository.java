@@ -1,5 +1,6 @@
 package com.dhis2.data.metadata;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
@@ -121,4 +122,5 @@ public interface MetadataRepository {
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();
 
+    Observable<String> getColor(String uid);
 }

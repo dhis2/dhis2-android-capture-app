@@ -1,9 +1,9 @@
 package com.dhis2.Bindings;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingMethods;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -34,7 +34,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
@@ -125,8 +125,10 @@ public class Bindings {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            String text = String.valueOf(data.size());
-                            textView.setText(text);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.size());
+                            valueAnimator.setDuration(500);
+                            valueAnimator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
+                            valueAnimator.start();
                         },
                         Timber::d);
     }
@@ -177,6 +179,28 @@ public class Bindings {
                 }
             });
         }
+    }
+
+    @SuppressLint("RxLeakedSubscription")
+    @BindingAdapter("lightColor")
+    public static void setLightColor(View view, ProgramModel programModel) {
+        metadataRepository.getColor(programModel.uid())
+                .filter(color -> color != null)
+                .map(color -> {
+                    if (color.length() == 4) {//Color is formatted as #fff
+                        char r = color.charAt(1);
+                        char g = color.charAt(2);
+                        char b = color.charAt(3);
+                        return "#" + r + r + g + g + b + b; //formatted to #ffff
+                    } else
+                        return color;
+                })
+                .map(Color::parseColor)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setBackgroundColor,
+                        Timber::d);
     }
 
     @BindingAdapter("randomColor")
@@ -657,6 +681,28 @@ public class Bindings {
                                 }
                             },
                             Timber::d);
+    }
+
+    @BindingAdapter("fromBgColor")
+    public static void setFromBgColor(View view, int color) {
+        String textColor;
+
+        // Counting the perceptive luminance - human eye favors green color...
+        double a = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+
+        if (a < 0.5)
+            textColor = "#000000"; // bright colors - black font
+        else
+            textColor = "#FFFFFF"; // dark colors - white font
+
+        if (view instanceof TextView)
+            ((TextView) view).setTextColor(Color.parseColor(textColor));
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            drawable.setColorFilter(Color.parseColor(textColor), PorterDuff.Mode.SRC_IN);
+            ((ImageView) view).setImageDrawable(drawable);
+        }
+
     }
 
 }

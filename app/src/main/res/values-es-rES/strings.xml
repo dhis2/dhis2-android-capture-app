@@ -109,7 +109,7 @@
     <string name="follow_up_disabled">Seguimiento desactivado</string>
     <string name="deactivate">Desactivar</string>
     <string name="events">Eventos</string>
-    <string name="done_task">Tareas hechas</string>
+    <string name="done_task">Inicio</string>
     <string name="app_info">Informacion</string>
     <string name="log_out">Cerrar Sesion</string>
     <string name="block_session">Bloquear sesion</string>
@@ -163,4 +163,7 @@
     <string name="search_min_num_attr">Es necesario introducir al menos %d de los atributos para iniciar una búsqueda</string>
     <string name="search_init">Introduce algún criterio de búsqueda</string>
     <string name="search_criteria_not_met">Tus criterios de búsqueda no devolvieron ningún resultado. Modifícalos o crea una nueva %s</string>
+    <string name="QR_SCANNER">Escáner QR</string>
+    <string name="about">About</string>
+
 </resources>

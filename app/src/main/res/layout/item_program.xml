@@ -36,8 +36,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
                 app:programTypeIcon='@{program.programType()}'
-                app:randomColor="@{program.uid()}"
-                tools:background="@color/colorPrimaryLight"
+                app:lightColor="@{program}"
+                android:background="?attr/colorPrimaryLight"
+                tools:background="?attr/colorPrimaryLight"
                 tools:ignore="ContentDescription" />
 
             <TextView

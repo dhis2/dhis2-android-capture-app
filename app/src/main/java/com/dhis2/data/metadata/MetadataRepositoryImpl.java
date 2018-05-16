@@ -9,6 +9,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -457,6 +458,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         return Pair.create(flatTheme[0], R.style.AppTheme);
                 });
 
+    }
+
+    @Override
+    public Observable<String> getColor(String uid) {
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT color FROM ObjectStyle WHERE uid = ?",uid)
+                .mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override

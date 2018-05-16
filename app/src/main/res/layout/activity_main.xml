@@ -97,12 +97,22 @@
                 <TextView
                     android:id="@+id/user_info"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="?attr/actionBarSize"
                     android:gravity="center"
-                    android:padding="20dp"
                     android:text="@{userName, default=user_name}"
                     android:textColor="@color/white_dfd"
                     android:textSize="21sp" />
+
+                <TextView
+                    android:id="@+id/appVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:text="v1.0"
+                    android:textColor="@color/white_dfd"
+                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,6 +153,30 @@
                         android:onClick="@{()->presenter.changeFragment(R.id.qr_scan)}"
                         android:padding="10dp"
                         android:text="@string/QR_SCANNER"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="18sp"
+                        app:currentFragment="@{currentFragment}" />
+
+                    <TextView
+                        android:id="@+id/menu_jira"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_jira)}"
+                        android:padding="10dp"
+                        android:text="@string/jira_report"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="18sp"
+                        app:currentFragment="@{currentFragment}" />
+
+                    <TextView
+                        android:id="@+id/menu_about"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:gravity="center_vertical"
+                        android:onClick="@{()->presenter.changeFragment(R.id.menu_about)}"
+                        android:padding="10dp"
+                        android:text="@string/about"
                         android:textColor="@color/colorAccent"
                         android:textSize="18sp"
                         app:currentFragment="@{currentFragment}" />
