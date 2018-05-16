@@ -3,7 +3,6 @@ package com.dhis2.Bindings;
 import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingMethods;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -34,7 +33,6 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
@@ -445,25 +443,26 @@ public class Bindings {
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("categoryOptionName")
-    public static void setCategoryOptionName(TextView textView, String categoryOptionId) {
-        metadataRepository.getCategoryOptionWithId(categoryOptionId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        categoryOptionModel -> textView.setText(categoryOptionModel.displayName()),
-                        Timber::d
-                );
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("categoryOptionComboName")
     public static void setCategoryOptionComboName(TextView textView, String categoryOptionComboId) {
         metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        categoryOptionComboModel -> textView.setText(categoryOptionComboModel.displayName()),
+                        categoryOptionComboModel -> metadataRepository.getCategoryComboWithId(categoryOptionComboModel.categoryCombo())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        categoryOptionModel -> {
+                                            if (!categoryOptionModel.isDefault()) {
+                                                textView.setText(categoryOptionComboModel.displayName());
+                                            }
+                                            else {
+                                                textView.setText("");
+                                            }
+                                        },
+                                        Timber::d
+                                ),
                         Timber::d
                 );
     }
