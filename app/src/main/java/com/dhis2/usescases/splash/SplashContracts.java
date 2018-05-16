@@ -1,13 +1,17 @@
 package com.dhis2.usescases.splash;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.UiThread;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+
+import io.reactivex.functions.Consumer;
 
 public class SplashContracts {
 
     interface View extends AbstractActivityContracts.View {
 
+        Consumer<Integer> renderFlag();
     }
 
     interface Presenter {
