@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.Constants;
 import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import io.reactivex.Observable;
@@ -30,6 +33,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
+    private String eventUid;
 
     private boolean changedEventStatus = false;
 
@@ -48,6 +52,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @SuppressLint("CheckResult")
     @Override
     public void getEventData(String eventUid) {
+        this.eventUid = eventUid;
         disposable.add(Observable.zip(
                 eventDetailRepository.eventModelDetail(eventUid),
                 eventDetailRepository.dataValueModelList(eventUid),
@@ -95,6 +100,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     public void back() {
         if (changedEventStatus) {
             Intent intent = new Intent();
+            if(eventDetailModel.getEventModel().status() == EventStatus.ACTIVE)
+                intent.putExtra(Constants.EVENT_UID, eventUid);
             view.getAbstractActivity().setResult(Activity.RESULT_OK, intent);
         }
         view.back();

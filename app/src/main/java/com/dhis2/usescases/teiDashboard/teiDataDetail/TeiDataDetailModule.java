@@ -6,6 +6,7 @@ import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.DashboardRepository;
 import com.dhis2.usescases.teiDashboard.DashboardRepositoryImpl;
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -39,8 +40,8 @@ public class TeiDataDetailModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(BriteDatabase briteDatabase) {
-        return new DashboardRepositoryImpl(briteDatabase);
+    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+        return new DashboardRepositoryImpl(codeGenerator, briteDatabase);
     }
 
     @Provides

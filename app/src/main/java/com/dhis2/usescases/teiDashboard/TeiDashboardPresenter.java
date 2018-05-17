@@ -27,6 +27,7 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
+import com.fasterxml.jackson.databind.util.EnumValues;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -61,6 +62,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
+    private TEIDataFragment teiDataFragment;
+    private String eventUid;
 
     TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
@@ -145,14 +148,37 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
         compositeDisposable.add(
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teUid)
-                        .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
-                        .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
+                        .flatMap( events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
+                        .map( events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 teiDataFragment.areEventsCompleted(),
                                 Timber::d
                         )
+        );
+    }
+
+    @Override
+    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid){
+        compositeDisposable.add(
+                dashboardRepository.displayGenerateEvent(eventUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        teiDataFragment.displayGenerateEvent(),
+                        OnErrorHandler.create())
+        );
+    }
+
+    @Override
+    public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
+        compositeDisposable.add(
+                dashboardRepository.generateNewEvent(lastModifiedEventUid, standardInterval)
+                        .take(1)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> view.displayMessage(result), OnErrorHandler.create())
         );
     }
 

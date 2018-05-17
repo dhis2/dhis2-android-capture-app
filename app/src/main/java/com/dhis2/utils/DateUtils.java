@@ -3,9 +3,7 @@ package com.dhis2.utils;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.joda.time.Days;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -257,16 +255,18 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date completedDate, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType){
+    public boolean hasExpired(@NonNull Date completedDate, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
+        if (completedDate == null)
+            return false;
         Calendar expiredDate = Calendar.getInstance();
         expiredDate.setTime(completedDate);
 
-        if(expiryPeriodType == null){
-            if(completeEventExpiryDays > 0)
+        if (expiryPeriodType == null) {
+            if (completeEventExpiryDays > 0)
                 expiredDate.add(Calendar.DAY_OF_YEAR, completeEventExpiryDays);
             return expiredDate.getTime().before(getToday());
         } else {
-            switch (expiryPeriodType){
+            switch (expiryPeriodType) {
                 case Daily:
                     break;
                 case Weekly:
@@ -338,7 +338,7 @@ public class DateUtils {
                     expiredDate.set(Calendar.DAY_OF_MONTH, 1);
                     break;
             }
-            if(expiryDays > 0)
+            if (expiryDays > 0)
                 expiredDate.add(Calendar.DAY_OF_YEAR, expiryDays);
             return expiredDate.getTime().before(getToday());
         }

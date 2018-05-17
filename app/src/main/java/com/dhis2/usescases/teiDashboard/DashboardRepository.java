@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -68,4 +69,8 @@ public interface DashboardRepository {
     EventModel updateState(EventModel eventModel, EventStatus newStatus);
 
     Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value);
+
+    Observable<ProgramStageModel> displayGenerateEvent(String eventUid);
+
+    Observable<String>generateNewEvent(String lastModifiedEventUid, Integer standardInterval);
 }

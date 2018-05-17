@@ -24,6 +24,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
     private ImageView imageView;
     private CheckBox checkBox;
     private TreeNode node;
+    private OrganisationUnitModel value;
 
     public OrgUnitHolder(Context context) {
         super(context);
@@ -31,6 +32,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
     @Override
     public View createNodeView(TreeNode node, OrganisationUnitModel value) {
+        this.value = value;
         this.node = node;
         final LayoutInflater layoutInflater = LayoutInflater.from(context);
         final View view = layoutInflater.inflate(R.layout.item_node, null, false);
@@ -45,6 +47,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
 
         if (!node.isSelectable()) {
+            setSelectedSizeText();
             checkBox.setVisibility(View.GONE);
             textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_814));
         } else {
@@ -77,7 +80,20 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
 
     public void update() {
         node.setSelected(!node.isSelected());
+        setSelectedSizeText();
         textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
         checkBox.setChecked(node.isSelected());
+    }
+
+    private void setSelectedSizeText() {
+        int count = 0;
+        for (TreeNode n : node.getChildren()) {
+            if (n.isSelectable())
+                count += 1;
+        }
+        if (count == 0)
+            textView.setText(value.displayName());
+        else
+            textView.setText(value.displayName() + " (" + count + ")");
     }
 }

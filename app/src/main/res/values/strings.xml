@@ -220,6 +220,7 @@
     <!-- QR -->
     <string name="QR_SCANNER">QR Scanner</string>
     <string name="SAVE">Save</string>
+    <string name="button_ok">OK</string>
 
     <string name="jira_report">Jira report</string>
     <string name="about">About</string>

@@ -16,7 +16,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
- *
  */
 
 public interface EventInitialRepository {
@@ -33,7 +32,7 @@ public interface EventInitialRepository {
     @NonNull
     Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date);
 
-    Observable<String> createEvent(@Nullable String trackedEntityInstanceUid,
+    Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull Context context, @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,

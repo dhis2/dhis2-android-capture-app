@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard;
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -29,8 +30,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    DashboardRepository dashboardRepository(BriteDatabase briteDatabase) {
-        return new DashboardRepositoryImpl(briteDatabase);
+    DashboardRepository dashboardRepository(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+        return new DashboardRepositoryImpl(codeGenerator, briteDatabase);
     }
 
 }

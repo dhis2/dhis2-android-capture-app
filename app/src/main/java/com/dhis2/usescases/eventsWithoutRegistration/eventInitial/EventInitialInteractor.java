@@ -192,9 +192,9 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEvent(String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEvent(String enrollmentUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         compositeDisposable.add(
-                eventInitialRepository.createEvent(null, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                eventInitialRepository.createEvent(enrollmentUid, null, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
@@ -202,9 +202,9 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         compositeDisposable.add(
-                eventInitialRepository.createEvent(trackedEntityInstanceUid, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

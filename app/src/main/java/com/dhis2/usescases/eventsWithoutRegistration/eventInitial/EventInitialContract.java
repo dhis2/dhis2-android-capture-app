@@ -68,9 +68,9 @@ public class EventInitialContract {
 
         void onBackClick();
 
-        void createEvent(String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 
@@ -106,9 +106,9 @@ public class EventInitialContract {
 
         void getFilteredOrgUnits(String date);
 
-        void createNewEvent(String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createNewEvent(String enrollmentUid, String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
-        void createNewEventPermanent(String trackedEntityInstanceUid, String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
+        void createNewEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude);
 
         void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
 

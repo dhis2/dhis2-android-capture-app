@@ -26,6 +26,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
     private String message;
     private String positiveText;
     private String negativeText;
+    private int requestCode;
     private DialogClickListener listener;
 
     public CustomDialog(@NonNull Context context,
@@ -33,6 +34,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
                         @NonNull String message,
                         @NonNull String positiveText,
                         @NonNull String negativeText,
+                        int requestCode,
                         @Nullable DialogClickListener listener) {
         super(context);
         this.context = context;
@@ -40,6 +42,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
         this.message = message;
         this.positiveText = positiveText;
         this.negativeText = negativeText;
+        this.requestCode = requestCode;
         this.listener = listener;
     }
 
@@ -71,6 +74,10 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
     public void dismiss() {
         if (dialog != null)
             dialog.dismiss();
+    }
+
+    public int getRequestCode() {
+        return requestCode;
     }
 
 
