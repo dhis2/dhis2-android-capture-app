@@ -53,6 +53,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 "com.dhis2", Context.MODE_PRIVATE);
 
         setTheme(prefs.getInt("THEME", R.style.AppTheme));
+//        setTheme(R.style.OrangeTheme);
 
         super.onCreate(savedInstanceState);
 
