@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.PopupMenu;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -25,7 +27,6 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
-import com.fasterxml.jackson.databind.util.EnumValues;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -144,8 +145,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
         compositeDisposable.add(
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teUid)
-                        .flatMap( events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
-                        .map( events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
+                        .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
+                        .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -153,6 +154,30 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 Timber::d
                         )
         );
+    }
+
+    @Override
+    public void onShareClick(View mView) {
+        PopupMenu menu = new PopupMenu(view.getContext(), mView);
+
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getOrder()) {
+                case 0:
+                    view.showQR();
+                    return true;
+                case 1:
+                    view.displayMessage("This functionality is not ready yet.");
+                    return true;
+                default:
+                    return true;
+
+            }
+        });
+
+        menu.show();
     }
 
     @Override

@@ -29,7 +29,8 @@
             android:layout_height="20dp"
             app:tintRandomColor="@{enrollment.program()}"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/program_shape"/>
+            tools:src="@drawable/ic_program"
+            tools:tint="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/program_name"

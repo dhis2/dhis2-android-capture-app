@@ -196,10 +196,13 @@ public class Bindings {
                         return color;
                 })
                 .map(Color::parseColor)
+                .filter(color->color!=-1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view::setBackgroundColor,
+                        color1 -> {
+                            view.setBackgroundColor(color1);
+                        },
                         Timber::d);
     }
 
@@ -685,21 +688,21 @@ public class Bindings {
 
     @BindingAdapter("fromBgColor")
     public static void setFromBgColor(View view, int color) {
-        String textColor;
+        String tintedColor;
 
         // Counting the perceptive luminance - human eye favors green color...
         double a = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
 
         if (a < 0.5)
-            textColor = "#000000"; // bright colors - black font
+            tintedColor = "#000000"; // bright colors - black font
         else
-            textColor = "#FFFFFF"; // dark colors - white font
+            tintedColor = "#FFFFFF"; // dark colors - white font
 
         if (view instanceof TextView)
-            ((TextView) view).setTextColor(Color.parseColor(textColor));
+            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
-            drawable.setColorFilter(Color.parseColor(textColor), PorterDuff.Mode.SRC_IN);
+            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
 

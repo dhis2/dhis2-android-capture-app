@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.view.View;
 import android.widget.TextView;
 
 import com.dhis2.data.tuples.Pair;
@@ -69,6 +70,7 @@ public class TeiDashboardContracts {
         void areEventsCompleted(TEIDataFragment teiDataFragment);
 
         //Data Fragment
+        void onShareClick(android.view.View view);
 
         //RelationshipFragment
         Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid);

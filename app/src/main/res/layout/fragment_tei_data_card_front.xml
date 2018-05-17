@@ -45,6 +45,12 @@
             android:paddingTop="7dp"
             android:transitionName="user_info">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_share"
+                android:onClick="@{(view)->presenter.onShareClick(view)}"/>
+
             <TextView
                 android:id="@+id/follow_up_text"
                 android:layout_width="wrap_content"
