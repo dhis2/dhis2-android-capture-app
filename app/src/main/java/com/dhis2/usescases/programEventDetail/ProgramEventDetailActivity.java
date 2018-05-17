@@ -3,10 +3,12 @@ package com.dhis2.usescases.programEventDetail;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.View;
@@ -64,6 +66,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private AndroidTreeView treeView;
+    private TreeNode treeNode;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,7 +147,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawer(Gravity.END);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -300,8 +304,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void addTree(TreeNode treeNode) {
         binding.treeViewContainer.removeAllViews();
+        this.treeNode = treeNode;
 
-        AndroidTreeView treeView = new AndroidTreeView(getContext(), treeNode);
+        treeView = new AndroidTreeView(getContext(), treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
@@ -384,5 +389,35 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public Date getChosenDateDay() {
         return chosenDateDay;
+    }
+
+    @Override
+    public void showHideFilter() {
+        binding.filterLayout.setVisibility(binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        checkFilterEnabled();
+    }
+
+    private void checkFilterEnabled() {
+        if (binding.filterLayout.getVisibility() == View.VISIBLE){
+            binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()));
+            binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        }
+        // when filter layout is hidden
+        else {
+            // not applied period filter
+            if (currentPeriod == Period.NONE && areAllOrgUnitsSelected()) {
+                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()));
+                binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            }
+            // applied period filter
+            else {
+                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
+                binding.filter.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+            }
+        }
+    }
+
+    public boolean areAllOrgUnitsSelected(){
+        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
     }
 }
