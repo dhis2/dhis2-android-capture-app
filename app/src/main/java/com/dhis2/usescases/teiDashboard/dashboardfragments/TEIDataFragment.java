@@ -185,9 +185,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         if (requestCode == REQ_EVENT) {
             if (resultCode == RESULT_OK) {
                 presenter.getTEIEvents(this);
-                if(data != null){
+                if (data != null) {
                     lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                    if(lastModifiedEventUid != null)
+                    if (lastModifiedEventUid != null)
                         presenter.displayGenerateEvent(this, lastModifiedEventUid);
                 }
             }
@@ -198,7 +198,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         return events -> {
             adapter.swapItems(events);
             for (EventModel event : events) {
-                if (event.eventDate() != null){
+                if (event.eventDate() != null) {
                     if (event.eventDate().after(DateUtils.getInstance().getToday()))
                         binding.teiRecycler.scrollToPosition(events.indexOf(event));
                 }
@@ -209,7 +209,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public Consumer<ProgramStageModel> displayGenerateEvent() {
         return programStageModel -> {
             this.programStageFromEvent = programStageModel;
-            if(programStageModel.displayGenerateEventBox()){
+            if (programStageModel.displayGenerateEventBox()) {
                 dialog = new CustomDialog(
                         getContext(),
                         "Generate new event",
@@ -219,8 +219,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         RC_GENERATE_EVENT,
                         this);
                 dialog.show();
-            }
-            else
+            } else
                 presenter.areEventsCompleted(this);
         };
     }
@@ -252,7 +251,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     @Override
     public void onPositive() {
-        switch (dialog.getRequestCode()){
+        switch (dialog.getRequestCode()) {
             case RC_EVENTS_COMPLETED:
                 presenter.completeEnrollment(this);
                 break;
@@ -266,7 +265,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     @Override
     public void onNegative() {
-
+        if (dialog.getRequestCode() == RC_GENERATE_EVENT)
+            presenter.areEventsCompleted(this);
     }
 
     public void flipCard(Bitmap bitmap) {
