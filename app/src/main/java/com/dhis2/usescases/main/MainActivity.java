@@ -5,9 +5,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableInt;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -21,6 +23,7 @@ import com.dhis2.usescases.main.program.ProgramFragment;
 import com.dhis2.usescases.qrReader.EventQR.EventQrFragment;
 import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
+import com.dhis2.utils.Period;
 
 import javax.inject.Inject;
 
@@ -123,6 +126,27 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void showHideFilter() {
         programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        checkFilterEnabled();
+    }
+
+    private void checkFilterEnabled() {
+        if (programFragment.binding.filterLayout.getVisibility() == View.VISIBLE){
+            binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()));
+            binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        }
+        // when filter layout is hidden
+        else {
+            // not applied period filter
+            if (programFragment.getCurrentPeriod() == Period.NONE && programFragment.areAllOrgUnitsSelected()) {
+                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()));
+                binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            }
+            // applied period filter
+            else {
+                binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
+                binding.filter.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+            }
+        }
     }
 
     @Override

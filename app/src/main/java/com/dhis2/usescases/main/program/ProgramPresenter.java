@@ -212,7 +212,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         }
 
         view.addTree(root);
-
     }
 
     @Override
