@@ -145,7 +145,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
         compositeDisposable.add(
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teUid)
-                        .flatMap( events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.just(events))
+                        .flatMap( events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
                         .map( events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
