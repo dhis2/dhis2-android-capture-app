@@ -103,5 +103,9 @@ public class TeiDashboardContracts {
         void subscribeToMainAttr(String teiUid, TextView textView);
 
         void completeEnrollment(TEIDataFragment teiDataFragment);
+
+        void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid);
+
+        void generateEvent(String lastModifiedEventUid, Integer integer);
     }
 }

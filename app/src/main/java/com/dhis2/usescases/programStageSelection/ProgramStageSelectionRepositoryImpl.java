@@ -57,8 +57,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         isSelectable = true;
                         for (ProgramStageModel enrollmentStage : enrollmentStages) {
                             if (enrollmentStage.uid().equals(programStage.uid())) {
-                                //TODO: DISCUSS THIS WITH THE TEAM
-                                isSelectable = programStage.repeatable() == true ? true : true;
+                                isSelectable = programStage.repeatable();
                             }
                         }
 

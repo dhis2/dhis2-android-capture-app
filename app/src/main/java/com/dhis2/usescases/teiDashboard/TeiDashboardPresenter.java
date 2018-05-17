@@ -60,6 +60,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
+    private TEIDataFragment teiDataFragment;
+    private String eventUid;
 
     TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.dashboardRepository = dashboardRepository;
@@ -152,6 +154,29 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 teiDataFragment.areEventsCompleted(),
                                 Timber::d
                         )
+        );
+    }
+
+    @Override
+    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid){
+        compositeDisposable.add(
+                dashboardRepository.displayGenerateEvent(eventUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        teiDataFragment.displayGenerateEvent(),
+                        OnErrorHandler.create())
+        );
+    }
+
+    @Override
+    public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
+        compositeDisposable.add(
+                dashboardRepository.generateNewEvent(lastModifiedEventUid, standardInterval)
+                        .take(1)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> view.displayMessage(result), OnErrorHandler.create())
         );
     }
 

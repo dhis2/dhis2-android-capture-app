@@ -128,6 +128,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                 getString(R.string.confirm_delete_event),
                 getString(R.string.delete),
                 getString(R.string.cancel),
+                0,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
