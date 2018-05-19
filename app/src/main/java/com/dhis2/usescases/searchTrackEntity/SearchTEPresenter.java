@@ -138,7 +138,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 selectedProgram != null ? selectedProgram : null, queryData)
                 .map(teiList -> {
                     String messageId = "";
-                    if (selectedProgram != null && !selectedProgram.displayFrontPageList())
+                    if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
                         if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
                             messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                         else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
@@ -147,6 +147,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                         else if (teiList.isEmpty() && queryData.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
+                    } else {
+                        if (teiList.isEmpty() && !queryData.isEmpty())
+                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                        else if (teiList.isEmpty() && queryData.isEmpty())
+                            messageId = view.getContext().getString(R.string.search_init);
+                    }
                     return Pair.create(teiList, messageId);
                 })
                 .subscribeOn(Schedulers.io())

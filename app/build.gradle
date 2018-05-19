@@ -27,7 +27,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "0.5"
+        versionName "0.5.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -75,7 +75,7 @@ android {
             signingConfig = signingConfigs.debug
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             ext.enableCrashlytics = true
         }
@@ -220,5 +220,6 @@ dependencies {
     //FancyShowCase
     compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
+    implementation 'com.airbnb.android:lottie:2.5.4'
 
 }

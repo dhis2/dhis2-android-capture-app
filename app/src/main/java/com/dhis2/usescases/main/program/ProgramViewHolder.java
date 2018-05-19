@@ -21,12 +21,6 @@ public class ProgramViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramContract.Presenter presenter, HomeViewModel bindableObject) {
-        binding.setVariable(BR.presenter, presenter);
-        binding.setVariable(BR.program, bindableObject);
-        binding.executePendingBindings();
-    }
-
     public void bind(ProgramContract.Presenter presenter, ProgramModel bindableObject, Period currentPeriod) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, bindableObject);

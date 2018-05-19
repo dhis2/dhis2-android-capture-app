@@ -165,5 +165,11 @@
     <string name="search_criteria_not_met">Tus criterios de búsqueda no devolvieron ningún resultado. Modifícalos o crea una nueva %s</string>
     <string name="QR_SCANNER">Escáner QR</string>
     <string name="about">About</string>
+    <string name="enroll_in">Enrolar en %s</string>
+    <string name="default_relationship_label">Añadir relación</string>
+    <string name="next">Siguiente</string>
+    <string name="SAVE">Guardar</string>
+    <string name="button_ok">OK</string>
+    <string name="jira_report">Reportar en Jira</string>
 
 </resources>

@@ -15,6 +15,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.OnErrorHandler;
@@ -43,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -134,6 +139,61 @@ public class Bindings {
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    @BindingAdapter("numberOfRecords")
+    public static void setNumberOfRecords(TextView textView, Observable<Pair<Integer, String>> listObservable) {
+        listObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.val0());
+                            valueAnimator.setDuration(500);
+                            valueAnimator.addUpdateListener(animation -> textView.setText(recordsPlusType((int) animation.getAnimatedValue(), data.val1())));
+                            valueAnimator.start();
+                        },
+                        Timber::d);
+    }
+
+    private static String recordsPlusType(int numberOfRecords, String recordType) {
+        String finalText = String.format(Locale.getDefault(), "%d %s", numberOfRecords, recordType);
+        SpannableStringBuilder sp = new SpannableStringBuilder(finalText);
+        sp.setSpan(new AbsoluteSizeSpan(20), 0, String.valueOf(numberOfRecords).length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        return sp.toString();
+    }
+
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    @BindingAdapter("programSyncState")
+    public static void setProgramSyncState(ImageView imageView, Flowable<State> stateObservable) {
+        stateObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        state -> {
+                            switch (state) {
+                                case TO_POST:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case TO_UPDATE:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case TO_DELETE:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case ERROR:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
+                                    break;
+                                case SYNCED:
+                                    imageView.setImageResource(R.drawable.ic_sync);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        Timber::d);
+    }
+
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("enrollmentLastEventDate")
     public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
         metadataRepository.getEnrollmentLastEvent(enrollmentUid)
@@ -160,7 +220,7 @@ public class Bindings {
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
         RecyclerView.LayoutManager recyclerLayout;
         if (!horizontal)
-            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 2, LinearLayoutManager.VERTICAL, false);
+            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 1, LinearLayoutManager.VERTICAL, false);
         else
             recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 4, LinearLayoutManager.VERTICAL, false);
 
@@ -196,7 +256,7 @@ public class Bindings {
                         return color;
                 })
                 .map(Color::parseColor)
-                .filter(color->color!=-1)
+                .filter(color -> color != -1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -485,8 +545,7 @@ public class Bindings {
                                         categoryOptionModel -> {
                                             if (!categoryOptionModel.isDefault()) {
                                                 textView.setText(categoryOptionComboModel.displayName());
-                                            }
-                                            else {
+                                            } else {
                                                 textView.setText("");
                                             }
                                         },
