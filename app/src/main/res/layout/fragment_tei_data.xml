@@ -37,10 +37,6 @@
             android:id="@+id/tei_data"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="30dp"
-            android:paddingEnd="4dp"
-            android:paddingStart="4dp"
-            android:paddingTop="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

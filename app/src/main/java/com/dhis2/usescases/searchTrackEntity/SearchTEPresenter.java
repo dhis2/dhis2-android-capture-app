@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -100,11 +101,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
-                                    view.setForm(data, selectedProgram);
-                                    if (selectedProgram != null && selectedProgram.displayFrontPageList())
-                                        getTrakedEntities();
-                                },
+                                data -> view.setForm(data, selectedProgram),
                                 Timber::d)
         );
 
@@ -118,6 +115,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             else
                                 queryData.remove(data.id());
                             getTrakedEntities();
+                            view.restartOnlineFragment();
                         },
                         Timber::d)
         );
@@ -134,8 +132,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public void getTrakedEntities() {
-        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
-                selectedProgram != null ? selectedProgram : null, queryData)
+        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData)
+                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
                 .map(teiList -> {
                     String messageId = "";
                     if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {

@@ -151,7 +151,8 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginStart="13.5dp"
                     app:srcCompat="@drawable/ic_add_circle"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/view_more"

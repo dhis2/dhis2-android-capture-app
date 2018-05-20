@@ -77,4 +77,9 @@ public class SearchTEOnlineAdapter extends RecyclerView.Adapter<SearchTEViewHold
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, trackedEntityInstances.size());
     }
+
+    public void clearData() {
+        trackedEntityInstances.clear();
+        notifyDataSetChanged();
+    }
 }

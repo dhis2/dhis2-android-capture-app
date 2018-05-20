@@ -171,5 +171,6 @@
     <string name="SAVE">Guardar</string>
     <string name="button_ok">OK</string>
     <string name="jira_report">Reportar en Jira</string>
+    <string name="programs_to_enroll">Programas para enrolar</string>
 
 </resources>

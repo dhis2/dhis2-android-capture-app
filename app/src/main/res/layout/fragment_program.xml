@@ -96,6 +96,7 @@
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     app:initGrid="@{false}"
+                    app:spanCount="@{1}"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
                     tools:listitem="@layout/item_program" />
 

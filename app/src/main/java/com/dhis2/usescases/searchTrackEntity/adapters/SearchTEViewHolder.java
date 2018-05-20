@@ -28,6 +28,7 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by frodriguez on 11/7/2017.
@@ -60,14 +61,15 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 metadataRepository.getTEIEnrollments(trackedEntityInstanceModel.uid())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(data -> {
+                        .subscribe(this::setEnrollment, Timber::d));
+                        /*.flatMap(data -> {
                             setEnrollment(data);
                             return metadataRepository.getTEIProgramsToEnroll(trackedEntityInstanceModel.trackedEntityType());
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::setPopUp, OnErrorHandler.create())
-        );
+        );*/
 
         //endregion
 
@@ -120,7 +122,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 }
             }
 
-            if (found) {//TODO: ENROLLMENT STATUS
+            if (found) {
                 if (!active && !programModel.onlyEnrollOnce())
                     possibleEnrollmentPrograms.add(programModel);
             } else
@@ -150,7 +152,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {
-            if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE && binding.linearLayout.getChildCount()<2) {
+            if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE && binding.linearLayout.getChildCount() < 2) {
                 TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
                         LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
                 );

@@ -216,13 +216,13 @@ public class Bindings {
     }
 
 
-    @BindingAdapter("initGrid")
-    public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
+    @BindingAdapter(value = {"initGrid", "spanCount"}, requireAll = false)
+    public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal, int spanCount) {
         RecyclerView.LayoutManager recyclerLayout;
-        if (!horizontal)
-            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 1, LinearLayoutManager.VERTICAL, false);
-        else
-            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 4, LinearLayoutManager.VERTICAL, false);
+        if (spanCount == -1)
+            spanCount = 1;
+
+        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, LinearLayoutManager.VERTICAL, false);
 
         recyclerView.setLayoutManager(recyclerLayout);
 

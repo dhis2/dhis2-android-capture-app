@@ -31,6 +31,7 @@
         android:id="@+id/card_back"
         android:layout_width="match_parent"
         android:layout_height="230dp"
+        android:clipToPadding="false"
         android:focusableInTouchMode="true"
         app:cardCornerRadius="1.8dp"
         app:cardElevation="8dp"
@@ -44,13 +45,13 @@
                 android:id="@+id/qrImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:onClick="@{()->presenter.onShareQRClick()}"
+                android:padding="5dp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 app:tint="?attr/colorPrimary" />
         </RelativeLayout>

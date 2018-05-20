@@ -2,6 +2,7 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ import java.util.List;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEnrollmentViewHolder> {
@@ -26,21 +27,24 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     private List<EnrollmentModel> activeEnrollments;
     private List<EnrollmentModel> inactiveEnrollments;
     private List<ProgramModel> programs;
+    private List<ProgramModel> possibleEnrollmentPrograms;
 
     TeiProgramListAdapter(TeiProgramListContract.Presenter presenter) {
         this.presenter = presenter;
         this.listItems = new ArrayList<>();
         this.activeEnrollments = new ArrayList<>();
         this.inactiveEnrollments = new ArrayList<>();
+        this.possibleEnrollmentPrograms = new ArrayList<>();
         this.programs = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public TeiProgramListEnrollmentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TeiProgramListEnrollmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding binding;
 
-        switch (viewType){
+        switch (viewType) {
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_active_title, parent, false);
                 break;
@@ -55,6 +59,12 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment_inactive, parent, false);
+                break;
+            case TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE:
+                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_active_title, parent, false);
+                break;
+            case TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL:
+                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_programs, parent, false);
                 break;
             default:
                 // TODO CRIS
@@ -71,8 +81,8 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     }
 
     @Override
-    public void onBindViewHolder(TeiProgramListEnrollmentViewHolder holder, int position) {
-        switch (listItems.get(position).getViewType()){
+    public void onBindViewHolder(@NonNull TeiProgramListEnrollmentViewHolder holder, int position) {
+        switch (listItems.get(position).getViewType()) {
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
                 holder.bind(presenter, null, null);
                 break;
@@ -88,6 +98,12 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             case TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT:
                 holder.bind(presenter, listItems.get(position).getEnrollmentModel(), null);
                 break;
+            case TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE:
+                holder.bind(presenter, null, null);
+                break;
+            case TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL:
+                holder.bind(presenter, null, listItems.get(position).getProgramModel());
+                break;
             default:
                 break;
         }
@@ -98,37 +114,32 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         return listItems != null ? listItems.size() : 0;
     }
 
-    void setActiveEnrollments(List<EnrollmentModel> enrollments){
+    void setActiveEnrollments(List<EnrollmentModel> enrollments) {
         this.activeEnrollments.clear();
         this.activeEnrollments.addAll(enrollments);
         orderList();
     }
 
-    void setOtherEnrollments(List<EnrollmentModel> enrollments){
+    void setOtherEnrollments(List<EnrollmentModel> enrollments) {
         this.inactiveEnrollments.clear();
         this.inactiveEnrollments.addAll(enrollments);
         orderList();
     }
 
-    void setPrograms(List<ProgramModel> programs){
+    void setPrograms(List<ProgramModel> programs) {
         this.programs.clear();
         this.programs.addAll(programs);
         orderList();
     }
 
-    private void orderList(){
+    private void orderList() {
         this.listItems.clear();
 
         TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
         this.listItems.add(firstTeiProgramListItem);
 
-        for (EnrollmentModel enrollmentModel : activeEnrollments){
+        for (EnrollmentModel enrollmentModel : activeEnrollments) {
             TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT);
-            listItems.add(teiProgramListItem);
-        }
-
-        for (ProgramModel programModel : programs){
-            TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programModel, TeiProgramListItem.TeiProgramListItemViewType.PROGRAM);
             listItems.add(teiProgramListItem);
         }
 
@@ -138,6 +149,46 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
             for (EnrollmentModel enrollmentModel : inactiveEnrollments) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT);
+                listItems.add(teiProgramListItem);
+            }
+        }
+
+        boolean found;
+        boolean active;
+        for (ProgramModel programModel : programs) {
+            TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programModel, TeiProgramListItem.TeiProgramListItemViewType.PROGRAM);
+            listItems.add(teiProgramListItem);
+
+            found = false;
+            active = false;
+            for (EnrollmentModel enrollment : activeEnrollments) {
+                if (programModel.uid().equals(enrollment.program())) {
+                    found = true;
+                    active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                }
+            }
+
+            if (!found)
+                for (EnrollmentModel enrollment : inactiveEnrollments) {
+                    if (programModel.uid().equals(enrollment.program())) {
+                        found = true;
+                        active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                    }
+                }
+
+            if (found) {
+                if (!active && !programModel.onlyEnrollOnce())
+                    possibleEnrollmentPrograms.add(programModel);
+            } else
+                possibleEnrollmentPrograms.add(programModel);
+        }
+
+        if (!possibleEnrollmentPrograms.isEmpty()) {
+            TeiProgramListItem thirdTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE);
+            this.listItems.add(thirdTeiProgramListItem);
+
+            for (ProgramModel programToEnroll : possibleEnrollmentPrograms) {
+                TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programToEnroll, TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL);
                 listItems.add(teiProgramListItem);
             }
         }
