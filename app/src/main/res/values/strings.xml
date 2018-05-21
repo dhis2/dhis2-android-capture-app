@@ -144,7 +144,7 @@
 
     <!--DONE TASKS-->
     <string name="events">events</string>
-    <string name="done_task">Done Task</string>
+    <string name="done_task">Home</string>
     <string name="app_info">App Info</string>
     <string name="log_out">Log Out</string>
     <string name="block_session">Block Session</string>
@@ -221,4 +221,8 @@
     <string name="QR_SCANNER">QR Scanner</string>
     <string name="SAVE">Save</string>
     <string name="button_ok">OK</string>
+
+    <string name="jira_report">Jira report</string>
+    <string name="about">About</string>
+    <string name="programs_to_enroll">Programs to enroll</string>
 </resources>

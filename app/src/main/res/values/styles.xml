@@ -9,6 +9,7 @@
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
 
     </style>
 
@@ -20,6 +21,7 @@
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLightRed</item>
 
     </style>
 
@@ -31,6 +33,7 @@
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeGreen</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLightGreen</item>
     </style>
 
     <style name="OrangeTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -38,6 +41,7 @@
         <item name="colorPrimary">@color/colorPrimaryOrange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLightOrange</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerThemeOrange</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerThemeOrange</item>
         <item name="android:windowContentTransitions">true</item>

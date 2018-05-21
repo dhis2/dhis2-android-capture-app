@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.PopupMenu;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -177,6 +179,30 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(result -> view.displayMessage(result), OnErrorHandler.create())
         );
+    }
+
+    @Override
+    public void onShareClick(View mView) {
+        PopupMenu menu = new PopupMenu(view.getContext(), mView);
+
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
+        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getOrder()) {
+                case 0:
+                    view.showQR();
+                    return true;
+                case 1:
+                    view.displayMessage("This functionality is not ready yet.");
+                    return true;
+                default:
+                    return true;
+
+            }
+        });
+
+        menu.show();
     }
 
     @Override

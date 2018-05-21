@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -20,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -90,6 +93,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
+
 
     @Override
     public void getAllPrograms(String orgUnitQuery) {
@@ -212,13 +216,23 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         }
 
         view.addTree(root);
-
     }
 
     @Override
     public Observable<List<EventModel>> getEvents(ProgramModel programModel) {
         return homeRepository.eventModels(programModel.uid());
     }
+
+    @Override
+    public Observable<Pair<Integer, String>> getNumberOfRecords(ProgramModel programModel) {
+        return homeRepository.numberOfRecords(programModel);
+    }
+
+    @Override
+    public Flowable<State> syncState(ProgramModel program) {
+        return homeRepository.syncState(program);
+    }
+
 
     private String orgUnitQuery() {
         StringBuilder orgUnitFilter = new StringBuilder();

@@ -10,6 +10,14 @@
         android:layout_height="match_parent"
         android:background="?colorPrimary">
 
+        <ImageView
+            android:id="@+id/flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/sierra_leone"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:id="@+id/logo"
             android:layout_width="wrap_content"
@@ -19,6 +27,7 @@
 
             <include layout="@layout/logo_dhis" />
         </RelativeLayout>
+
 
         <ProgressBar
             android:layout_width="wrap_content"

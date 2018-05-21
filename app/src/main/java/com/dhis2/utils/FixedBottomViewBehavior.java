@@ -34,10 +34,10 @@ public class FixedBottomViewBehavior extends CoordinatorLayout.Behavior<View> {
             int bottomMargin = ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).bottomMargin;
             int xDelta = 0;
             if (dependency.getTop() > parent.getBottom() - child.getHeight() - 2 * bottomMargin - 150) {
-                child.setY(dependency.getTop() + bottomMargin-150);
-                xDelta = dependency.getTop() - parent.getBottom() + child.getWidth() + 2 * bottomMargin;
+                child.setY(dependency.getTop() + bottomMargin);
+                xDelta = dependency.getTop() - parent.getBottom() + child.getWidth() + 2 * bottomMargin +150;
             } else {
-                child.setY(parent.getBottom() - child.getHeight() - bottomMargin-150);
+                child.setY(parent.getBottom() - child.getHeight() - bottomMargin - 150);
                 xDelta = 0;
             }
 

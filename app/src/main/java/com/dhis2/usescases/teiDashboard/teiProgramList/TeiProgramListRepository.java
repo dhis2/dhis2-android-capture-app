@@ -11,7 +11,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
- *
  */
 
 public interface TeiProgramListRepository {
@@ -27,4 +26,5 @@ public interface TeiProgramListRepository {
 
     @NonNull
     Observable<List<ProgramModel>> alreadyEnrolledPrograms(String trackedEntityId);
+
 }

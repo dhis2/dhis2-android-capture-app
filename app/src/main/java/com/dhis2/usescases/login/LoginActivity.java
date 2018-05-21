@@ -1,18 +1,24 @@
 package com.dhis2.usescases.login;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.Bindings.Bindings;
@@ -123,6 +129,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             params.height = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
+            binding.lottieView2.setVisibility(View.VISIBLE);
+            binding.lottieView3.setVisibility(View.VISIBLE);
+            binding.lottieView2.setRepeatMode(LottieDrawable.REVERSE);
+            binding.lottieView3.setRepeatMode(LottieDrawable.REVERSE);
+            binding.lottieView2.playAnimation();
+            binding.lottieView3.playAnimation();
+
         }
     }
 
@@ -218,6 +231,19 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 "com.dhis2", Context.MODE_PRIVATE);
         prefs.edit().putInt("THEME", themeId).apply();
         setTheme(themeId);
+
+        //TODO: Change color of bg with animation
+        int startColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        int endColor = a.getColor(0, 0);
+        a.recycle();
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
+        colorAnimation.setDuration(2000); // milliseconds
+        colorAnimation.addUpdateListener(animator -> binding.logo.setBackgroundColor((int) animator.getAnimatedValue()));
+        colorAnimation.start();
+
     }
 
     @Override
@@ -225,6 +251,15 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
         prefs.edit().putString("FLAG", s).apply();
+
+        binding.logoFlag.setImageResource(getResources().getIdentifier(s, "drawable", getPackageName()));
+        ValueAnimator alphaAnimator = ValueAnimator.ofFloat(0f, 1f);
+        alphaAnimator.setDuration(2000);
+        alphaAnimator.addUpdateListener(animation -> {
+            binding.logoFlag.setAlpha((float) animation.getAnimatedValue());
+        });
+        alphaAnimator.start();
+
     }
 
     @Override

@@ -57,7 +57,7 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     }
 
     public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances) {
-//        this.trackedEntityInstances.clear();
+        this.trackedEntityInstances.clear();
         this.trackedEntityInstances.addAll(trackedEntityInstances);
         notifyDataSetChanged();
     }

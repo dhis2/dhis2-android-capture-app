@@ -93,6 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:initGrid="@{true}"
+                    spanCount="@{4}"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
                     tools:listitem="@layout/item_program" />
 
@@ -102,6 +103,16 @@
                     android:layout_height="100dp"
                     android:layout_centerInParent="true"
                     app:progressColor="@{@color/colorPrimary}" />
+
+                <TextView
+                    android:id="@+id/emptyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="There is no information for the filters selected.\nPlease try changing them."
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
 
             </RelativeLayout>
 

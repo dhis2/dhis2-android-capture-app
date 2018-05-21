@@ -71,6 +71,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", new Locale("es"));
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private TreeNode treeNode;
 
     //-------------------------------------------
     //region LIFECYCLE
@@ -179,6 +180,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         }
     }
 
+    public Period getCurrentPeriod() {
+        return currentPeriod;
+    }
+
     @Override
     public void showTimeUnitPicker() {
 
@@ -273,11 +278,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public Consumer<List<ProgramModel>> swapProgramData() {
         return programs -> {
             binding.programProgress.setVisibility(View.GONE);
+            binding.emptyView.setVisibility(programs.isEmpty() ? View.VISIBLE : View.GONE);
             ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
+
             SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                     "com.dhis2", Context.MODE_PRIVATE);
             if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                prefs.edit().putBoolean("TUTO_SHOWN",true).apply();
+                prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                 new Handler().postDelayed(() -> {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                             .title(getString(R.string.tuto_main_1))
@@ -334,7 +341,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .add(tuto6);
 
                     fancyShowCaseQueue.show();
-                },500);
+                }, 500);
 
             }
         };
@@ -352,6 +359,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void addTree(TreeNode treeNode) {
+        this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
         treeView = new AndroidTreeView(getContext(), treeNode);
@@ -375,6 +383,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
     }
 
+
+    public boolean areAllOrgUnitsSelected(){
+        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
+    }
 
     @Override
     public void openDrawer() {

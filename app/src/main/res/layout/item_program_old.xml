@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="presenter"
+            type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="currentPeriod"
+            type="com.dhis2.utils.Period" />
+    </data>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:onClick="@{()->presenter.onItemClick(program, currentPeriod)}"
+        app:cardElevation="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/program_image"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                app:programTypeIcon='@{program.programType()}'
+                app:lightColor="@{program}"
+                android:background="?attr/colorPrimaryLight"
+                tools:background="?attr/colorPrimaryLight"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/events_number"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_above="@id/program_info"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_circle"
+                app:backgroundTint="?attr/colorPrimary"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp"
+                app:numberOfEvents="@{presenter.getEvents(program)}"
+                tools:text="155" />
+
+            <LinearLayout
+                android:id="@+id/program_info"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/program_image"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/program_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="7.8dp"
+                    android:layout_weight="1"
+                    android:lines="2"
+                    android:padding="5dp"
+                    android:text="@{program.shortName()}"
+                    android:textColor="@color/gray_666"
+                    android:textSize="14sp"
+                    tools:text="dasfasdadgfg\n" />
+
+
+                <TextView
+                    android:id="@+id/program_last_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7.8dp"
+                    android:layout_marginTop="5.4dp"
+                    android:gravity="bottom"
+                    android:textColor="@color/gray_9b9"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:text="yyyy-mm-dd" />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="@{()->presenter.showDescription(program.description())}"
+                    android:visibility="@{program.description()!=null ? View.VISIBLE : View.GONE}"
+                    app:srcCompat="@drawable/ic_info_outline"
+                    app:tint="?colorPrimary" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>
