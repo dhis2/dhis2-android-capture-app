@@ -438,7 +438,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<Pair<String, Integer>> getTheme() {
         return briteDatabase
-                .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE + " WHERE key = 'style'")
+                .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE)
                 .mapToList(SystemSettingModel::create)
                 .map(systemSettingModels -> {
                     String flag = "";
