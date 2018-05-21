@@ -98,7 +98,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public Consumer<String> renderUsername() {
         return username -> {
             binding.setUserName(username);
-            binding.appVersion.setText(BuildConfig.VERSION_NAME);
+            binding.menuJira.setText(String.format(binding.menuJira.getText() + " (%s)", BuildConfig.VERSION_NAME));
             binding.executePendingBindings();
         };
     }
@@ -196,11 +196,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
-            case R.id.menu_jira:
-                fragment = new ProgramFragment(); //TODO: Change to Jira Issue Creator
-                tag = getString(R.string.done_task);
-                binding.filter.setVisibility(View.GONE);
-                break;
             case R.id.menu_about:
                 fragment = new ProgramFragment(); //TODO: Chage to Webview
                 tag = getString(R.string.done_task);

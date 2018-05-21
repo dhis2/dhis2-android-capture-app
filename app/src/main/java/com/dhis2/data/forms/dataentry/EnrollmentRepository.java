@@ -8,12 +8,14 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -87,8 +89,8 @@ final class EnrollmentRepository implements DataEntryRepository {
     private final String enrollment;
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull String enrollment) {
+                         @NonNull FieldViewModelFactory fieldFactory,
+                         @NonNull String enrollment) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.enrollment = enrollment;
@@ -100,6 +102,12 @@ final class EnrollmentRepository implements DataEntryRepository {
         return briteDatabase
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
                 .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
+                .mapToList(OrganisationUnitModel::create);
     }
 
     @NonNull

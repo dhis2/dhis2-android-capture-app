@@ -18,6 +18,7 @@ import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -377,5 +379,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.handleTeiDownloads(selectedTeiToDownloadIcon.isEmpty());
 
         return false;
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return searchRepository.getOrgUnits();
     }
 }

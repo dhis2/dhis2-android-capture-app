@@ -29,10 +29,12 @@ import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -59,8 +61,9 @@ public final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-                     @NonNull FragmentManager fragmentManager,
-                     @NonNull DataEntryArguments dataEntryArguments) {
+                            @NonNull FragmentManager fragmentManager,
+                            @NonNull DataEntryArguments dataEntryArguments,
+                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits) {
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -76,7 +79,7 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(ORG_UNIT, new OrgUnitRow(layoutInflater, processor, false));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits));
 
     }
 

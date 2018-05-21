@@ -94,7 +94,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     private void setUpRecyclerView() {
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), getArguments().getParcelable(ARGUMENTS));
+                getChildFragmentManager(), getArguments().getParcelable(ARGUMENTS),
+                dataEntryPresenter.getOrgUnits());
         dataEntryAdapter.setHasStableIds(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
