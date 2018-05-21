@@ -111,6 +111,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
     public void syncEvents() {
         disposable.add(
                 metadataRepository.getTheme()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(flagTheme -> {
                             view.saveFlag(flagTheme.val0());
                             view.saveTheme(flagTheme.val1());

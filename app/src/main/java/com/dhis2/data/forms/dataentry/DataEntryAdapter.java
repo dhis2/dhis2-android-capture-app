@@ -67,7 +67,7 @@ public final class DataEntryAdapter extends Adapter {
         processor = PublishProcessor.create();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, true));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true));
