@@ -7,6 +7,7 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormButtonBinding;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -68,11 +69,12 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     private String getOrgUnitName(String value) {
-        String orgUnitName = "Unkown";
-        for (OrganisationUnitModel orgUnit : orgUnits) {
-            if (orgUnit.uid().equals(value))
-                orgUnitName = orgUnit.displayName();
-        }
+        String orgUnitName = "Unknown";
+        if (orgUnits != null)
+            for (OrganisationUnitModel orgUnit : orgUnits) {
+                if (orgUnit.uid().equals(value))
+                    orgUnitName = orgUnit.displayName();
+            }
         return orgUnitName;
     }
 }

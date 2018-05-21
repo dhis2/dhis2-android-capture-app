@@ -30,14 +30,27 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final LayoutInflater inflater;
     private final FragmentManager fm;
     private final Observable<List<OrganisationUnitModel>> orgUnits;
+    private final String renderType;
     private FormButtonBinding binding;
 
-    public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
+    public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.fm = fm;
         this.orgUnits = orgUnits;
+        this.renderType = null;
+    }
+
+    public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                      boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
+        this.inflater = layoutInflater;
+        this.processor = processor;
+        this.isBgTransparent = isBgTransparent;
+        this.fm = fm;
+        this.orgUnits = orgUnits;
+        this.renderType = renderType;
     }
 
     @NonNull

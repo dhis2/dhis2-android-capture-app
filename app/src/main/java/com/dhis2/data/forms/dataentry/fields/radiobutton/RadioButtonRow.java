@@ -1,7 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -24,11 +23,21 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    private final String renderType;
 
     public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
+        this.renderType = null;
+
+    }
+
+    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+        this.inflater = layoutInflater;
+        this.processor = processor;
+        this.isBgTransparent = isBgTransparent;
+        this.renderType = renderType;
     }
 
     @NonNull
@@ -37,7 +46,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         FormYesNoBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.form_yes_no, parent, false);
         binding.customYesNo.setIsBgTransparent(isBgTransparent);
-        return new RadioButtonHolder(parent,binding, processor);
+        return new RadioButtonHolder(parent, binding, processor);
     }
 
     @Override

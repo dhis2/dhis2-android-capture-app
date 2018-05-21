@@ -69,17 +69,17 @@ public final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, false));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, dataEntryArguments.renderType()));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, dataEntryArguments.renderType()));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits, dataEntryArguments.renderType()));
 
     }
 

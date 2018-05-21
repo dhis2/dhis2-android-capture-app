@@ -89,7 +89,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
-        return dataEntryAdapter::swap;
+        return updates -> dataEntryAdapter.swap(updates);
     }
 
     private void setUpRecyclerView() {

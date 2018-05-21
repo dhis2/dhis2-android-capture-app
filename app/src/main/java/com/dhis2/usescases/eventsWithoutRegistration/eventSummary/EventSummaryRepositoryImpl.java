@@ -65,7 +65,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
             "  ProgramStageSection.displayName AS programStageSectionDisplayName,\n" +
-            "  ProgramStage.displayName AS programStageDisplayName\n" +
+            "  ProgramStage.displayName AS programStageDisplayName,\n" +
+            "  ProgramStageSection.mobileRenderType AS renderType\n" +
             "FROM Event\n" +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
@@ -161,7 +162,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             return FormSectionViewModel.createForProgramStageWithLabel(eventUid, cursor.getString(4), cursor.getString(1));
         } else {
             // This programstage has sections
-            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3));
+            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3),cursor.getString(5));
         }
     }
 

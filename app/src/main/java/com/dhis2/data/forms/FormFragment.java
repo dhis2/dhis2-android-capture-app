@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
@@ -216,11 +217,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Consumer<ProgramModel> renderIncidentDate() {
-        return programModel -> {
-            incidentDateLayout.setHint(programModel.incidentDateLabel());
+    public Consumer<Pair<ProgramModel, String>> renderIncidentDate() {
+        return programModelAndDate -> {
+            incidentDateLayout.setHint(programModelAndDate.val0().incidentDateLabel());
             incidentDateLayout.setVisibility(View.VISIBLE);
-            if (isEnrollment && programModel.captureCoordinates()) {
+            incidentDate.setText(programModelAndDate.val1());
+            if (isEnrollment && programModelAndDate.val0().captureCoordinates()) {
                 coordinatesView.setVisibility(View.VISIBLE);
             } else {
                 coordinatesView.setVisibility(View.GONE);
