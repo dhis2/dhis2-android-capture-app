@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuer
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -100,11 +101,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> {
-                                    view.setForm(data, selectedProgram);
-                                    if (selectedProgram != null && selectedProgram.displayFrontPageList())
-                                        getTrakedEntities();
-                                },
+                                data -> view.setForm(data, selectedProgram),
                                 Timber::d)
         );
 
@@ -118,6 +115,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             else
                                 queryData.remove(data.id());
                             getTrakedEntities();
+                            view.restartOnlineFragment();
                         },
                         Timber::d)
         );
@@ -134,11 +132,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public void getTrakedEntities() {
-        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(),
-                selectedProgram != null ? selectedProgram : null, queryData)
+        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData)
+                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
                 .map(teiList -> {
                     String messageId = "";
-                    if (selectedProgram != null && !selectedProgram.displayFrontPageList())
+                    if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
                         if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
                             messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                         else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
@@ -147,6 +145,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                         else if (teiList.isEmpty() && queryData.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
+                    } else {
+                        if (teiList.isEmpty() && !queryData.isEmpty())
+                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                        else if (teiList.isEmpty() && queryData.isEmpty())
+                            messageId = view.getContext().getString(R.string.search_init);
+                    }
                     return Pair.create(teiList, messageId);
                 })
                 .subscribeOn(Schedulers.io())
@@ -178,6 +182,19 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             return io.reactivex.Observable.fromCallable(d2.queryTrackedEntityInstances(query)).toFlowable(BackpressureStrategy.BUFFER)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(Schedulers.io());
+                        })
+                        .map(teiList -> {
+                            String messageId = "";
+                            if (selectedProgram != null && !selectedProgram.displayFrontPageList())
+                                if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+                                else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
+                                    messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+                                else if (teiList.isEmpty() && !queryData.isEmpty())
+                                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                else if (teiList.isEmpty() && queryData.isEmpty())
+                                    messageId = view.getContext().getString(R.string.search_init);
+                            return Pair.create(teiList, messageId);
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

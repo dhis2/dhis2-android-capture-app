@@ -3,4 +3,6 @@
     <declare-styleable name="AgeView">
         <attr name="bgTransparent" format="boolean" />
     </declare-styleable>
+
+    <attr name="colorPrimaryLight" format="color"/>
 </resources>

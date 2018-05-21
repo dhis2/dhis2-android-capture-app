@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -79,6 +80,18 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final String PROGRAM_STAGE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM);
+
+    private final String PROGRAM_STAGE_FROM_EVENT = String.format(
+            "SELECT %s.* FROM %s JOIN %s " +
+                    "ON %s.%s = %s.%s " +
+                    "WHERE %s.%s = ?",
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, EventModel.TABLE,
+            ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            EventModel.TABLE, EventModel.Columns.UID);
+
+    private final String GET_EVENT_FROM_UID = String.format(
+            "SELECT * FROM %s WHERE %s.%s = ? ",
+            EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
             "SELECT Event.* FROM %s JOIN %s " +
@@ -164,6 +177,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
 
     private final BriteDatabase briteDatabase;
+    private final CodeGenerator codeGenerator;
+
     private String teiUid;
     private String programUid;
     private String enrollmentUid;
@@ -182,8 +197,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +
             "AND TrackedEntityAttributeValue.trackedEntityInstance = ?";
 
-    public DashboardRepositoryImpl(BriteDatabase briteDatabase) {
+    public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
+        this.codeGenerator = codeGenerator;
     }
 
 
@@ -274,6 +290,41 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<EventModel>> getEnrollmentEventsWithDisplay(String programUid, String teiUid) {
         return briteDatabase.createQuery(EVENTS_PROGRAM_STAGE_TABLE, EVENTS_DISPLAY_BOX, programUid, teiUid, "1")
                 .mapToList(EventModel::create);
+    }
+
+    @Override
+    public Observable<ProgramStageModel> displayGenerateEvent(String eventUid) {
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_FROM_EVENT, eventUid)
+                .mapToOne(ProgramStageModel::create);
+    }
+
+    @Override
+    public Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval) {
+        return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(event -> {
+                        ContentValues values = new ContentValues();
+                        Calendar createdDate = Calendar.getInstance();
+                        Calendar dueDate = Calendar.getInstance();
+                        if(standardInterval != null)
+                            dueDate.add(Calendar.DAY_OF_YEAR, standardInterval);
+
+                        values.put(EventModel.Columns.UID, codeGenerator.generate());
+                        values.put(EventModel.Columns.ENROLLMENT_UID, event.enrollmentUid());
+                        values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                        values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                        values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
+                        values.put(EventModel.Columns.PROGRAM, event.program());
+                        values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
+                        values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
+                        values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
+                        values.put(EventModel.Columns.STATE, State.TO_POST.toString());
+
+                        if(briteDatabase.insert(EventModel.TABLE, values) <= 0) {
+                            throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
+                        }
+                        return Observable.just("Event Created");
+                });
     }
 
     @Override

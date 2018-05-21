@@ -2,6 +2,7 @@ package com.dhis2.usescases.main.program;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -11,6 +12,9 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramType;
+import org.hisp.dhis.android.core.resource.ResourceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -58,6 +62,10 @@ class HomeRepositoryImpl implements HomeRepository {
             "AND Event.program = ? " +
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
+    private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
+            "WHERE TrackedEntityType.uid = ?";
+
+    private final static String PROGRAM_SYNC_STATE = "SELECT " + ResourceModel.TABLE + "." + ResourceModel.Columns.LAST_SYNCED + " FROM " + ResourceModel.TABLE;
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
@@ -183,9 +191,53 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
+    public Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program) {
+        String queryFinal;
+        if (dates != null) {
+            StringBuilder dateQuery = new StringBuilder();
+            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+            for (int i = 0; i < dates.size(); i++) {
+                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+                if (i < dates.size() - 1)
+                    dateQuery.append("OR ");
+            }
+            queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
+        } else
+            queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
+
+        if (program.programType() == ProgramType.WITH_REGISTRATION)
+            queryFinal += " GROUP BY " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT_UID;
+
+        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, program.uid()).mapToList(EventModel::create)
+                .flatMap(data -> {
+                    if (program.programType() == ProgramType.WITH_REGISTRATION)
+                        return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_TYPE_NAME, program.trackedEntityType())
+                                .mapToOne(cursor -> Pair.create(data.size(), cursor.getString(0)));
+                    else
+                        return Observable.just(Pair.create(data.size(), "events"));
+                });
+    }
+
+    @NonNull
+    @Override
+    public Flowable<State> syncState(ProgramModel program) {
+        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_SYNC_STATE)
+                .mapToOne(cursor -> DateUtils.databaseDateFormat().parse(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST)
+                .map(lastSync -> {
+                    if (lastSync.before(program.lastUpdated()))
+                        return State.TO_UPDATE;
+                    else
+                        return State.SYNCED;
+                });
+    }
+
+    @NonNull
+    @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
+
 
 }

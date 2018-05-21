@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.FragmentSearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -42,8 +43,10 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     private TabletSearchAdapter searchTEATabletAdapter;
     private SearchTEOnlineAdapter searchTEAdapter;
     private SearchTEActivity activity;
+    FragmentSearchBinding binding;
 
     private static PublishProcessor<Integer> onlinePagerProcessor;
+    private String message;
 
     public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
         if (instance == null) {
@@ -62,7 +65,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
 
         if (getResources().getBoolean(R.bool.is_tablet)) {
             searchTEATabletAdapter = new TabletSearchAdapter(activity, activity.presenter, activity.metadataRepository);
@@ -87,24 +90,34 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
         return binding.getRoot();
     }
 
-    public void setItems(List<TrackedEntityInstance> data, List<ProgramModel> programList) {
-        HashMap<String, List<String>> teiAttributes = new HashMap<>();
-        List<TrackedEntityInstanceModel> modelData = new ArrayList<>();
-        TrackedEntityInstanceModelBuilder modelBuilder = new TrackedEntityInstanceModelBuilder();
-        for (TrackedEntityInstance tei : data) {
-            modelData.add(modelBuilder.buildModel(tei));
-            List<String> attr = new ArrayList<>();
-            if (tei.trackedEntityAttributeValues() != null)
-                for (TrackedEntityAttributeValue teiAttr : tei.trackedEntityAttributeValues()) {
-                    attr.add(teiAttr.value());
-                }
-            teiAttributes.put(tei.uid(), attr);
-        }
+    public void setItems(Pair<List<TrackedEntityInstance>, String> mData, List<ProgramModel> programList) {
+        if (mData.val1().isEmpty()) {
+            message = null;
+            binding.messageContainer.setVisibility(View.GONE);
 
-        if (getResources().getBoolean(R.bool.is_tablet)) {
-            searchTEATabletAdapter.setItems(modelData, programList);
+            HashMap<String, List<String>> teiAttributes = new HashMap<>();
+            List<TrackedEntityInstanceModel> modelData = new ArrayList<>();
+            TrackedEntityInstanceModelBuilder modelBuilder = new TrackedEntityInstanceModelBuilder();
+            for (TrackedEntityInstance tei : mData.val0()) {
+                modelData.add(modelBuilder.buildModel(tei));
+                List<String> attr = new ArrayList<>();
+                if (tei.trackedEntityAttributeValues() != null)
+                    for (TrackedEntityAttributeValue teiAttr : tei.trackedEntityAttributeValues()) {
+                        attr.add(teiAttr.value());
+                    }
+                teiAttributes.put(tei.uid(), attr);
+            }
+
+            if (getResources().getBoolean(R.bool.is_tablet)) {
+                searchTEATabletAdapter.setItems(modelData, programList);
+            } else {
+                searchTEAdapter.setItems(modelData, teiAttributes);
+            }
         } else {
-            searchTEAdapter.setItems(modelData, teiAttributes);
+
+            binding.messageContainer.setVisibility(View.VISIBLE);
+            binding.message.setText(mData.val1());
+
         }
     }
 

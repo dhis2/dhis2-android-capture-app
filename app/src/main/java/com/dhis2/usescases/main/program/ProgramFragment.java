@@ -69,7 +69,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+    SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", new Locale("es"));
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private TreeNode treeNode;
 
@@ -122,7 +122,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         if (selectedDates.size() > 1)
                             textToShow += "... " /*+ weeklyFormat.format(selectedDates.get(1))*/;
                     } else if (currentPeriod == MONTHLY) {
-                        textToShow = monthFormat.format(selectedDates.get(0));
+                        String dateFormatted = monthFormat.format(selectedDates.get(0));
+                        textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
                         chosenDateMonth = (ArrayList<Date>) selectedDates;
                         if (selectedDates.size() > 1)
                             textToShow += "... " /*+ monthFormat.format(selectedDates.get(1))*/;
@@ -148,7 +149,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             chosenDateWeek = date;
                             break;
                         case MONTHLY:
-                            text = monthFormat.format(date.get(0));
+                            String dateFormatted = monthFormat.format(date.get(0));
+                            text = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
                             chosenDateMonth = date;
                             break;
                         case YEARLY:
@@ -236,8 +238,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
-                if (!chosenDateMonth.isEmpty())
-                    textToShow = monthFormat.format(chosenDateMonth.get(0));
+                if (!chosenDateMonth.isEmpty()) {
+                    String dateFormatted = monthFormat.format(chosenDateMonth.get(0));
+                    textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
+                }
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
                 getSelectedPrograms(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -274,11 +278,13 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public Consumer<List<ProgramModel>> swapProgramData() {
         return programs -> {
             binding.programProgress.setVisibility(View.GONE);
+            binding.emptyView.setVisibility(programs.isEmpty() ? View.VISIBLE : View.GONE);
             ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
+
             SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                     "com.dhis2", Context.MODE_PRIVATE);
             if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                prefs.edit().putBoolean("TUTO_SHOWN",true).apply();
+                prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                 new Handler().postDelayed(() -> {
                     FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                             .title(getString(R.string.tuto_main_1))
@@ -335,7 +341,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                             .add(tuto6);
 
                     fancyShowCaseQueue.show();
-                },500);
+                }, 500);
 
             }
         };

@@ -101,7 +101,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(
-                recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        /*recyclerView.addItemDecoration(new DividerItemDecoration(
+                recyclerView.getContext(), DividerItemDecoration.VERTICAL));*/
     }
 }

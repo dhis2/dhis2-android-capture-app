@@ -9,6 +9,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
@@ -436,27 +437,34 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<Pair<String, Integer>> getTheme() {
-        final String[] flatTheme = new String[]{"", "light_blue"};
         return briteDatabase
                 .createQuery(SystemSettingModel.TABLE, "SELECT * FROM " + SystemSettingModel.TABLE + " WHERE key = 'style'")
                 .mapToList(SystemSettingModel::create)
                 .map(systemSettingModels -> {
+                    String flag = "";
+                    String style = "";
                     for (SystemSettingModel settingModel : systemSettingModels)
                         if (settingModel.key().equals("style"))
-                            flatTheme[0] = settingModel.value();
+                            style = settingModel.value();
                         else
-                            flatTheme[1] = settingModel.value() != null ? settingModel.value() : "light_blue";
+                            flag = settingModel.value();
 
-                    if (flatTheme[1].contains("green"))
-                        return Pair.create(flatTheme[0], R.style.GreenTheme);
-                    if (flatTheme[1].contains("india"))
-                        return Pair.create(flatTheme[0], R.style.OrangeTheme);
-                    if (flatTheme[1].contains("myanmar"))
-                        return Pair.create(flatTheme[0], R.style.RedTheme);
+                    if (style.contains("green"))
+                        return Pair.create(flag, R.style.GreenTheme);
+                    if (style.contains("india"))
+                        return Pair.create(flag, R.style.OrangeTheme);
+                    if (style.contains("myanmar"))
+                        return Pair.create(flag, R.style.RedTheme);
                     else
-                        return Pair.create(flatTheme[0], R.style.AppTheme);
+                        return Pair.create(flag, R.style.AppTheme);
                 });
 
+    }
+
+    @Override
+    public Observable<String> getColor(String uid) {
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT color FROM ObjectStyle WHERE uid = ?",uid)
+                .mapToOne(cursor -> cursor.getString(0));
     }
 
     @Override

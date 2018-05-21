@@ -42,6 +42,8 @@ public class SearchTEContractsModule {
         void removeTei(int adapterPosition);
 
         void handleTeiDownloads(boolean empty);
+
+        void restartOnlineFragment();
     }
 
     public interface Presenter {

@@ -1,7 +1,6 @@
 package com.dhis2.usescases.main.program;
 
 import android.databinding.DataBindingUtil;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,12 +12,10 @@ import com.dhis2.utils.Period;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by ppajuelo on 18/10/2017.
- *
  */
 
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
@@ -30,7 +27,8 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
     ProgramAdapter(ProgramContract.Presenter presenter, Period currentPeriod) {
         this.presenter = presenter;
         this.programList = new ArrayList<>();
-        this.currentPeriod=currentPeriod;
+        this.currentPeriod = currentPeriod;
+        setHasStableIds(true);
     }
 
     public Period getCurrentPeriod() {
@@ -55,12 +53,17 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     public void setData(List<ProgramModel> program) {
 
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
+//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
         programList.clear();
         programList.addAll(program);
-        diffResult.dispatchUpdatesTo(this);
+//        diffResult.dispatchUpdatesTo(this);
 
         notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return programList.get(position).uid().hashCode();
     }
 
     private ProgramModel getItemAt(int position) {

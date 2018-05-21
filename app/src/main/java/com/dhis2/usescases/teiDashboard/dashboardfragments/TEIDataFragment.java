@@ -24,12 +24,14 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import com.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,7 @@ import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ENROLLMENT_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
@@ -55,15 +58,22 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private static final int REQ_DETAILS = 1001;
     private static final int REQ_EVENT = 2001;
 
+    private static final int RC_GENERATE_EVENT = 1501;
+    private static final int RC_EVENTS_COMPLETED = 1601;
+
+
     FragmentTeiDataBinding binding;
 
     static TEIDataFragment instance;
     TeiDashboardContracts.Presenter presenter;
+
     private DashboardProgramModel dashboardProgramModel;
     private boolean mIsBackVisible;
-
     private EventAdapter adapter;
     private List<EventModel> events = new ArrayList<>();
+    private CustomDialog dialog;
+    private String lastModifiedEventUid;
+    private ProgramStageModel programStageFromEvent;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -92,7 +102,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
             bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
-            bundle.putString("ENROLLMENT_UID", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
             bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
@@ -175,7 +185,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         if (requestCode == REQ_EVENT) {
             if (resultCode == RESULT_OK) {
                 presenter.getTEIEvents(this);
-                presenter.areEventsCompleted(this);
+                if(data != null){
+                    lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
+                    if(lastModifiedEventUid != null)
+                        presenter.displayGenerateEvent(this, lastModifiedEventUid);
+                }
             }
         }
     }
@@ -184,10 +198,30 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         return events -> {
             adapter.swapItems(events);
             for (EventModel event : events) {
-                if (event.eventDate().after(DateUtils.getInstance().getToday())) {
-                    binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                if (event.eventDate() != null){
+                    if (event.eventDate().after(DateUtils.getInstance().getToday()))
+                        binding.teiRecycler.scrollToPosition(events.indexOf(event));
                 }
             }
+        };
+    }
+
+    public Consumer<ProgramStageModel> displayGenerateEvent() {
+        return programStageModel -> {
+            this.programStageFromEvent = programStageModel;
+            if(programStageModel.displayGenerateEventBox()){
+                dialog = new CustomDialog(
+                        getContext(),
+                        "Generate new event",
+                        "Do you want to create another event?",
+                        "Ok",
+                        "Cancel",
+                        RC_GENERATE_EVENT,
+                        this);
+                dialog.show();
+            }
+            else
+                presenter.areEventsCompleted(this);
         };
     }
 
@@ -195,12 +229,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public Consumer<Single<Boolean>> areEventsCompleted() {
         return eventsCompleted -> {
             if (eventsCompleted.blockingGet()) {
-                CustomDialog dialog = new CustomDialog(
+                dialog = new CustomDialog(
                         getContext(),
                         "Events Completed",
                         "All events in this program are completed. Would you like to close the program as well?",
                         "Ok",
                         "Cancel",
+                        RC_EVENTS_COMPLETED,
                         this);
                 dialog.show();
             }
@@ -217,7 +252,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     @Override
     public void onPositive() {
-        presenter.completeEnrollment(this);
+        switch (dialog.getRequestCode()){
+            case RC_EVENTS_COMPLETED:
+                presenter.completeEnrollment(this);
+                break;
+            case RC_GENERATE_EVENT:
+                presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

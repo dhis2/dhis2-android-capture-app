@@ -150,7 +150,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     //---------------------------------------------------------------------
     //region TEI LIST
     @Override
-    public Consumer<Pair<List<TrackedEntityInstanceModel>,String>> swapListData() {
+    public Consumer<Pair<List<TrackedEntityInstanceModel>, String>> swapListData() {
         return data -> {
 
             binding.progress.setVisibility(View.GONE);
@@ -169,6 +169,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void handleTeiDownloads(boolean downloadMode) {
         this.downloadMode.set(downloadMode);
+    }
+
+    @Override
+    public void restartOnlineFragment() {
+        ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();
+
     }
 
     @Override

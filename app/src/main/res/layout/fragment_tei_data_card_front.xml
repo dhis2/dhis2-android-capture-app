@@ -32,7 +32,8 @@
         android:focusableInTouchMode="true"
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="1.8dp">
+        app:cardCornerRadius="1.8dp"
+        android:clipToPadding="false">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/card_data"
@@ -44,6 +45,12 @@
             android:paddingStart="12dp"
             android:paddingTop="7dp"
             android:transitionName="user_info">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_share"
+                android:onClick="@{(view)->presenter.onShareClick(view)}"/>
 
             <TextView
                 android:id="@+id/follow_up_text"

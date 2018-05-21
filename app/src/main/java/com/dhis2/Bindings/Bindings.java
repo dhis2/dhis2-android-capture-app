@@ -1,5 +1,6 @@
 package com.dhis2.Bindings;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
@@ -14,6 +15,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,6 +28,7 @@ import android.widget.TextView;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.OnErrorHandler;
@@ -33,6 +38,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
@@ -41,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -123,8 +130,65 @@ public class Bindings {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            String text = String.valueOf(data.size());
-                            textView.setText(text);
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.size());
+                            valueAnimator.setDuration(500);
+                            valueAnimator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
+                            valueAnimator.start();
+                        },
+                        Timber::d);
+    }
+
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    @BindingAdapter("numberOfRecords")
+    public static void setNumberOfRecords(TextView textView, Observable<Pair<Integer, String>> listObservable) {
+        listObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.val0());
+                            valueAnimator.setDuration(500);
+                            valueAnimator.addUpdateListener(animation -> textView.setText(recordsPlusType((int) animation.getAnimatedValue(), data.val1())));
+                            valueAnimator.start();
+                        },
+                        Timber::d);
+    }
+
+    private static String recordsPlusType(int numberOfRecords, String recordType) {
+        String finalText = String.format(Locale.getDefault(), "%d %s", numberOfRecords, recordType);
+        SpannableStringBuilder sp = new SpannableStringBuilder(finalText);
+        sp.setSpan(new AbsoluteSizeSpan(20), 0, String.valueOf(numberOfRecords).length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        return sp.toString();
+    }
+
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    @BindingAdapter("programSyncState")
+    public static void setProgramSyncState(ImageView imageView, Flowable<State> stateObservable) {
+        stateObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        state -> {
+                            switch (state) {
+                                case TO_POST:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case TO_UPDATE:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case TO_DELETE:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    break;
+                                case ERROR:
+                                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
+                                    break;
+                                case SYNCED:
+                                    imageView.setImageResource(R.drawable.ic_sync);
+                                    break;
+                                default:
+                                    break;
+                            }
                         },
                         Timber::d);
     }
@@ -152,13 +216,13 @@ public class Bindings {
     }
 
 
-    @BindingAdapter("initGrid")
-    public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal) {
+    @BindingAdapter(value = {"initGrid", "spanCount"}, requireAll = false)
+    public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal, int spanCount) {
         RecyclerView.LayoutManager recyclerLayout;
-        if (!horizontal)
-            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 2, LinearLayoutManager.VERTICAL, false);
-        else
-            recyclerLayout = new GridLayoutManager(recyclerView.getContext(), 4, LinearLayoutManager.VERTICAL, false);
+        if (spanCount == -1)
+            spanCount = 1;
+
+        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, LinearLayoutManager.VERTICAL, false);
 
         recyclerView.setLayoutManager(recyclerLayout);
 
@@ -175,6 +239,31 @@ public class Bindings {
                 }
             });
         }
+    }
+
+    @SuppressLint("RxLeakedSubscription")
+    @BindingAdapter("lightColor")
+    public static void setLightColor(View view, ProgramModel programModel) {
+        metadataRepository.getColor(programModel.uid())
+                .filter(color -> color != null)
+                .map(color -> {
+                    if (color.length() == 4) {//Color is formatted as #fff
+                        char r = color.charAt(1);
+                        char g = color.charAt(2);
+                        char b = color.charAt(3);
+                        return "#" + r + r + g + g + b + b; //formatted to #ffff
+                    } else
+                        return color;
+                })
+                .map(Color::parseColor)
+                .filter(color -> color != -1)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        color1 -> {
+                            view.setBackgroundColor(color1);
+                        },
+                        Timber::d);
     }
 
     @BindingAdapter("randomColor")
@@ -456,8 +545,7 @@ public class Bindings {
                                         categoryOptionModel -> {
                                             if (!categoryOptionModel.isDefault()) {
                                                 textView.setText(categoryOptionComboModel.displayName());
-                                            }
-                                            else {
+                                            } else {
                                                 textView.setText("");
                                             }
                                         },
@@ -656,6 +744,28 @@ public class Bindings {
                                 }
                             },
                             Timber::d);
+    }
+
+    @BindingAdapter("fromBgColor")
+    public static void setFromBgColor(View view, int color) {
+        String tintedColor;
+
+        // Counting the perceptive luminance - human eye favors green color...
+        double a = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+
+        if (a < 0.5)
+            tintedColor = "#000000"; // bright colors - black font
+        else
+            tintedColor = "#FFFFFF"; // dark colors - white font
+
+        if (view instanceof TextView)
+            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            ((ImageView) view).setImageDrawable(drawable);
+        }
+
     }
 
 }

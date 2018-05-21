@@ -60,15 +60,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent(String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
         if (program != null) {
-            interactor.createNewEvent(programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+            interactor.createNewEvent(enrollmentUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
         }
     }
 
     @Override
-    public void createEventPermanent(String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
-        interactor.createNewEventPermanent(trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+        interactor.createNewEventPermanent(enrollmentUid, trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
     }
 
     @Override

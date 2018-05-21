@@ -37,7 +37,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,6 +69,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public static final String ORG_UNIT = "ORG_UNIT";
     public static final String ONE_TIME = "ONE_TIME";
     public static final String PERMANENT = "PERMANENT";
+    public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
 
     @Inject
     EventInitialContract.Presenter presenter;
@@ -97,6 +97,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String tempCreate;
     private boolean fixedOrgUnit;
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
+    private String enrollmentUid;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +108,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         eventId = getIntent().getStringExtra(EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
         getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
+        enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         if (eventCreationType == null)
             eventCreationType = "DEFAULT";
         String orgUnit = getIntent().getStringExtra(ORG_UNIT);
@@ -254,9 +256,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (isNewEvent) {
                 if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
-                    presenter.createEventPermanent(getTrackedEntityInstance, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                    presenter.createEventPermanent(enrollmentUid, getTrackedEntityInstance, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
                 } else {
-                    presenter.createEvent(programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                    presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
                 }
             } else {
                 presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
@@ -347,7 +349,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if(node.isSelectable()) {
+            if (node.isSelectable()) {
                 treeView.selectNode(node, node.isSelected());
                 ArrayList<String> childIds = new ArrayList<>();
                 childIds.add(((OrganisationUnitModel) value).uid());
