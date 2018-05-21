@@ -27,7 +27,6 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
-import com.fasterxml.jackson.databind.util.EnumValues;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
