@@ -24,6 +24,8 @@ public interface FormRepository {
 
     Flowable<ProgramModel> incidentDate();
 
+    Flowable<ProgramModel> getAllowDatesInFuture();
+
     @NonNull
     Flowable<RuleEngine> ruleEngine();
 
