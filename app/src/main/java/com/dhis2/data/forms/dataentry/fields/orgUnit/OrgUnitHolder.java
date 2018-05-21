@@ -15,14 +15,15 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public OrgUnitHolder(FormButtonBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        this.binding = binding;
 
         binding.formButton.setOnClickListener(view -> {
         });
     }
 
     public void update(OrgUnitViewModel viewModel) {
-       /* binding.setLabel(viewModel.label());
+        binding.setLabel(viewModel.label());
         if (viewModel.value() != null)
-            binding.formButton.setText(viewModel.value());*/
+            binding.formButton.setText(viewModel.value());
     }
 }
