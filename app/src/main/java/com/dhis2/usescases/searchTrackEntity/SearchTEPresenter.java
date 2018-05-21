@@ -16,6 +16,7 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -304,10 +305,36 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid, String uid) {
-        //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
 
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        orgUnitDialog.setTitle("Enrollment Org Unit")
+                .setPossitiveListener(view -> {
+                    enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(view -> {
+                    orgUnitDialog.dismiss();
+                });
+
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid, queryData)
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
