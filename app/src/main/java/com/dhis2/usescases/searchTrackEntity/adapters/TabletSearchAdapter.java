@@ -147,4 +147,5 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     public TrackedEntityInstanceModel getTEI(int position){
         return teis.get(position);
     }
+
 }

@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
 

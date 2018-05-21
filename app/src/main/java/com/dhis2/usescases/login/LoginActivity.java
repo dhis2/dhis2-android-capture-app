@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.Bindings.Bindings;
@@ -127,6 +129,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             params.height = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
+            binding.lottieView2.setVisibility(View.VISIBLE);
+            binding.lottieView3.setVisibility(View.VISIBLE);
+            binding.lottieView2.setRepeatMode(LottieDrawable.REVERSE);
+            binding.lottieView3.setRepeatMode(LottieDrawable.REVERSE);
+            binding.lottieView2.playAnimation();
+            binding.lottieView3.playAnimation();
+
         }
     }
 

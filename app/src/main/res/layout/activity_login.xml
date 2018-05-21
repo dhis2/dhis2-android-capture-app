@@ -28,8 +28,28 @@
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?colorPrimary"
-                android:padding="20dp">
+                android:background="?colorPrimary">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:lottie_rawRes="@raw/lottie_test"
+                    app:lottie_loop="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:lottie_autoPlay="false"/>
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:lottie_rawRes="@raw/lottie_test"
+                    app:lottie_loop="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:rotation="180"
+                    app:lottie_autoPlay="false"/>
 
                 <include
                     android:id="@+id/logo_layout"
@@ -47,6 +67,7 @@
                     android:alpha="0"/>
 
                 <LinearLayout
+                    android:layout_margin="20dp"
                     android:id="@+id/sync_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

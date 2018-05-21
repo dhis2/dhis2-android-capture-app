@@ -13,7 +13,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by ppajuelo on 02/11/2017.
- *
  */
 
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
@@ -27,7 +26,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentModel>> activeEnrollments(String trackedEntityId) {
-        String SELECT_ACTIVE_ENROLLMENTS_WITH_TEI_ID = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' AND " + EnrollmentModel.Columns.ENROLLMENT_STATUS + "='ACTIVE'" ;
+        String SELECT_ACTIVE_ENROLLMENTS_WITH_TEI_ID = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' AND " + EnrollmentModel.Columns.ENROLLMENT_STATUS + "='ACTIVE'";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_ACTIVE_ENROLLMENTS_WITH_TEI_ID, trackedEntityId))
                 .mapToList(EnrollmentModel::create);
     }
@@ -35,7 +34,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<EnrollmentModel>> otherEnrollments(String trackedEntityId) {
-        String SELECT_ENROLLMENTS_WITH_TEI_ID = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' AND " + EnrollmentModel.Columns.ENROLLMENT_STATUS + "!='ACTIVE'" ;
+        String SELECT_ENROLLMENTS_WITH_TEI_ID = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' AND " + EnrollmentModel.Columns.ENROLLMENT_STATUS + "!='ACTIVE'";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_ENROLLMENTS_WITH_TEI_ID, trackedEntityId))
                 .mapToList(EnrollmentModel::create);
     }
@@ -43,7 +42,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramModel>> allPrograms(String trackedEntityId) {
-        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "='%s'" ;
+        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "='%s'";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId))
                 .mapToList(ProgramModel::create);
     }
