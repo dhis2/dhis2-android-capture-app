@@ -121,4 +121,9 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
+
+    @Override
+    public void showFilter() {
+        view.showHideFilter();
+    }
 }

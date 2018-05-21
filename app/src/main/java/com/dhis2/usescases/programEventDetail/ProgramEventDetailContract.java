@@ -44,6 +44,8 @@ public class ProgramEventDetailContract {
         ArrayList<Date>  getChosenDateMonth();
         ArrayList<Date>  getChosenDateYear();
         Date getChosenDateDay();
+
+        void showHideFilter();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -74,6 +76,8 @@ public class ProgramEventDetailContract {
         void onEventClick(String eventId);
 
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
+
+        void showFilter();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
