@@ -55,9 +55,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         super.onResume();
         String programId = getIntent().getStringExtra("PROGRAM_UID");
         String enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
-
         presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
-
     }
 
     @Override
@@ -68,8 +66,15 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
 
     @Override
     public void setData(List<ProgramStageModel> programStageModels) {
-        adapter.setProgramStageModels(programStageModels);
-        adapter.notifyDataSetChanged();
+        if (programStageModels != null && !programStageModels.isEmpty()) {
+            adapter.setProgramStageModels(programStageModels);
+            adapter.notifyDataSetChanged();
+        }
+        else{
+            // if there are no program stages to select, the event cannot be added
+            displayMessage(getString(R.string.program_not_allow_events));
+            finish();
+        }
     }
 
     @Override

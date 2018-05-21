@@ -51,15 +51,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
-
         setTheme(prefs.getInt("THEME", R.style.AppTheme));
-//        setTheme(R.style.OrangeTheme);
-
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -122,7 +117,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         toast.setGravity(Gravity.BOTTOM, 0, 0);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.show();
-//        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -177,18 +171,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Constants.RQ_MAP_LOCATION_VIEW:
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
-                this.coordinatesView = null;
-                break;
+        if (requestCode == Constants.RQ_MAP_LOCATION_VIEW) {
+            coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+            this.coordinatesView = null;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void showDescription(String description) {
-
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
         ((TextView) layout.findViewById(R.id.toast_message)).setText(description);

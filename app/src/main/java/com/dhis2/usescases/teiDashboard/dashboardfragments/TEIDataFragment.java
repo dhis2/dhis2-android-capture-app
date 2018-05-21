@@ -115,6 +115,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 case R.id.schedulenew:
                     bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
                     break;
+                default:
+                    break;
             }
 
             startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
