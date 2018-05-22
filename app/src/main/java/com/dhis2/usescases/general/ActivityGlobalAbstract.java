@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
@@ -50,7 +51,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (!BuildConfig.DEBUG)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);

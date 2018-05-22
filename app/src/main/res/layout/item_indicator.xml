@@ -4,45 +4,57 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="indicator"
-            type="org.hisp.dhis.android.core.program.ProgramIndicatorModel"/>
+            type="org.hisp.dhis.android.core.program.ProgramIndicatorModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="19.5dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="29dp"
-        android:paddingTop="19.5dp">
+        android:layout_height="50dp"
+        android:background="@drawable/indicator_bg">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6"
+            />
 
         <TextView
             android:id="@+id/indicator_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:fontFamily="sans-serif"
+            android:gravity="center|start"
+            android:padding="5dp"
+            android:text='@{indicator.displayShortName()}'
             android:textColor="#787878"
             android:textSize="14.2sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text='@{indicator.displayShortName()}'/>
+            tools:text="Indicator Name" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:fontFamily="sans-serif"
+            android:gravity="center"
             android:textColor="#444444"
             android:textSize="13.3sp"
             android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indicator_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="James Johnson"
-            android:visibility="gone"/>
+            tools:background="@color/red_060"
+            tools:text="James Johnson" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

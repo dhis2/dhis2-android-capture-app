@@ -181,16 +181,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.handleSync();
             sync();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-            view.hideProgress();
             view.renderUnexpectedError();
         } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            view.hideProgress();
             view.renderServerError();
         }
     }
@@ -200,10 +196,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
         Timber.e(throwable);
 
         if (throwable instanceof IOException) {
-            view.hideProgress();
             view.renderInvalidServerUrlError();
         } else {
-            view.hideProgress();
             view.renderUnexpectedError();
         }
     }

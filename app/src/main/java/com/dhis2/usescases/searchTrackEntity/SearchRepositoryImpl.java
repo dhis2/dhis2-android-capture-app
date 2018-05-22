@@ -253,6 +253,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
                     .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                    .followUp(false)
                     .state(State.TO_POST)
                     .build();
 

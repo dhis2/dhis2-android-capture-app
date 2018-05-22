@@ -74,6 +74,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private CustomDialog dialog;
     private String lastModifiedEventUid;
     private ProgramStageModel programStageFromEvent;
+    private List<Bitmap> bitmaps;
+    private int currentQrPosition;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -269,10 +271,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             presenter.areEventsCompleted(this);
     }
 
-    public void flipCard(Bitmap bitmap) {
+    public void flipCard(List<Bitmap> bitmaps) {
+        this.bitmaps = bitmaps;
         int distance = 8000;
         float scale = getResources().getDisplayMetrics().density * distance;
-        binding.cardBack.qrImage.setImageBitmap(bitmap);
+        binding.cardBack.qrImage.setImageBitmap(bitmaps.get(0));
         binding.cardFront.cardFront.setCameraDistance(scale);
         binding.cardBack.cardBack.setCameraDistance(scale);
         AnimatorSet mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.flip_out_animation);
@@ -291,4 +294,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             mIsBackVisible = false;
         }
     }
+
+    public void nextQR() {
+        if (currentQrPosition < bitmaps.size() - 1) {
+            currentQrPosition++;
+            binding.cardBack.qrImage.setImageBitmap(bitmaps.get(currentQrPosition));
+        } else
+            displayMessage("The are no more QR");
+    }
+
 }
