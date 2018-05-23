@@ -94,7 +94,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.resultsPager.setAdapter(pagerAdapter);
         binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
         binding.searchTab.setupWithViewPager(binding.resultsPager);*/
-        binding.formRecycler.setAdapter(new FormAdapter(LayoutInflater.from(this)));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(),LayoutInflater.from(this),presenter.getOrgUnits()));
 
     }
 

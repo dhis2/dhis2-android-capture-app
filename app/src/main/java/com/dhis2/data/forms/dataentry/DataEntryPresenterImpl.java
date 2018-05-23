@@ -9,6 +9,7 @@ import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.Result;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
@@ -96,6 +98,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @Override
     public void onDetach() {
         disposable.clear();
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return dataEntryRepository.getOrgUnits();
     }
 
     @NonNull

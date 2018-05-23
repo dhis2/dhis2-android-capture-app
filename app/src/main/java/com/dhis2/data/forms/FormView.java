@@ -45,7 +45,7 @@ interface FormView {
     void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
 
     @NonNull
-    Consumer<ProgramModel> renderIncidentDate();
+    Consumer<Pair<ProgramModel, String>> renderIncidentDate();
 
     void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates);
 }

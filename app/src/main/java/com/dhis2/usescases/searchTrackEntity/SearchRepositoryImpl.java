@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -252,6 +253,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
                     .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                    .followUp(false)
                     .state(State.TO_POST)
                     .build();
 
@@ -263,5 +265,11 @@ public class SearchRepositoryImpl implements SearchRepository {
 
             return Observable.just(enrollmentModel.uid());
         });
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
+                .mapToList(OrganisationUnitModel::create);
     }
 }

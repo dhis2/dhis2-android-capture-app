@@ -8,9 +8,12 @@ import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.CustomFormCoordinateBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
+import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+
+import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -30,6 +33,15 @@ public class CoordinateHolder extends FormViewHolder {
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) ->
+                processor.onNext(
+                        RowAction.create(model.getValue().uid(),
+                                String.format(Locale.getDefault(),
+                                        "[%.5f,%.5f]", latitude, longitude))
+                ));
+        binding.formCoordinates.setMapListener(
+                (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
+        );
         CompositeDisposable disposable = new CompositeDisposable();
         model = BehaviorProcessor.create();
 
@@ -41,16 +53,8 @@ public class CoordinateHolder extends FormViewHolder {
         }, OnErrorHandler.create()));
     }
 
-   /* @Override
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityAttributeModel bindableObject) {
-        this.presenter = presenter;
-        this.bindableObject = bindableObject;
-        binding.setVariable(BR.attribute, bindableObject);
-        binding.executePendingBindings();
-    }*/
-
     void update(CoordinateViewModel viewModel) {
-
         model.onNext(viewModel);
     }
+
 }

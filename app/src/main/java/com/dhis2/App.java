@@ -13,6 +13,7 @@ import com.dhis2.data.database.DbModule;
 import com.dhis2.data.forms.FormComponent;
 import com.dhis2.data.forms.FormModule;
 import com.dhis2.data.metadata.MetadataModule;
+import com.dhis2.data.qr.QRModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.schedulers.SchedulersProviderImpl;
 import com.dhis2.data.server.ServerComponent;
@@ -35,7 +36,6 @@ import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by ppajuelo on 27/09/2017.
- *
  */
 
 public class App extends MultiDexApplication implements Components {
@@ -117,6 +117,7 @@ public class App extends MultiDexApplication implements Components {
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()))
                 .metadataModule(new MetadataModule())
+                .qrModule(new QRModule())
                 .utilModule(new UtilsModule());
     }
 

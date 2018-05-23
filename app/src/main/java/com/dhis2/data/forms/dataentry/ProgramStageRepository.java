@@ -9,6 +9,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.Locale;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -86,6 +87,12 @@ final class ProgramStageRepository implements DataEntryRepository {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
+                .mapToList(OrganisationUnitModel::create);
     }
 
     @NonNull

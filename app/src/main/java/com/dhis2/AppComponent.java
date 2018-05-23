@@ -2,6 +2,7 @@ package com.dhis2;
 
 import com.dhis2.data.database.DbModule;
 import com.dhis2.data.metadata.MetadataModule;
+import com.dhis2.data.qr.QRModule;
 import com.dhis2.data.schedulers.SchedulerModule;
 import com.dhis2.data.server.ServerComponent;
 import com.dhis2.data.server.ServerModule;
@@ -21,7 +22,7 @@ import dagger.Component;
  */
 @Singleton
 @Component(modules = {
-        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class, MetadataModule.class
+        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class, MetadataModule.class, QRModule.class
 })
 public interface AppComponent {
 
@@ -32,6 +33,7 @@ public interface AppComponent {
         Builder schedulerModule (SchedulerModule schedulerModule);
         Builder utilModule(UtilsModule utilsModule);
         Builder metadataModule(MetadataModule metadataModule);
+        Builder qrModule(QRModule qrModule);
         AppComponent build();
     }
 

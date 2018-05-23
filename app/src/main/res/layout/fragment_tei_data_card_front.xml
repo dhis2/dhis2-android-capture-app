@@ -52,7 +52,7 @@
                 app:srcCompat="@drawable/ic_share"
                 android:onClick="@{(view)->presenter.onShareClick(view)}"/>
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/follow_up_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:textStyle="normal"
                 app:layout_constraintEnd_toStartOf="@id/follow_up"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="SmallSp" />
+                tools:ignore="SmallSp" />-->
 
 
             <ImageView

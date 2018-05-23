@@ -33,7 +33,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
                     .forEvent(viewModel.uid()));
         } else if (viewModel.type().equals(FormSectionViewModel.Type.SECTION)) {
             return DataEntryFragment.create(DataEntryArguments
-                    .forEventSection(viewModel.uid(), viewModel.sectionUid()));
+                    .forEventSection(viewModel.uid(), viewModel.sectionUid(), viewModel.renderType()));
         } else {
             throw new IllegalArgumentException("Unsupported page type");
         }
