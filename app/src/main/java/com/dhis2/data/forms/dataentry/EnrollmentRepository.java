@@ -25,7 +25,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name\n" +
+            "  Option.name,\n" +
+            "  Field.allowFutureDate\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -34,7 +35,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.valueType AS type,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
-            "        ProgramTrackedEntityAttribute.mandatory AS mandatory\n" +
+            "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
+            "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -113,6 +115,6 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, null);
+                cursor.getString(4), dataValue, null, cursor.getString(7).equals("1"));
     }
 }

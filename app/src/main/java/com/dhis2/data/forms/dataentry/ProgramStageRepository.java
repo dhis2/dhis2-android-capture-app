@@ -33,7 +33,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
             "  Option.name,\n" +
-            "  Field.section\n" +
+            "  Field.section,\n" +
+            "  Field.allowFutureDate\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -44,7 +45,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageDataElement.programStageSection AS section\n" +
+            "        ProgramStageDataElement.programStageSection AS section,\n" +
+            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
@@ -97,7 +99,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7));
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1);
     }
 
     @NonNull

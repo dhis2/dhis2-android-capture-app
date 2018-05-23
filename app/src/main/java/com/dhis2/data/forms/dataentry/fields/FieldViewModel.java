@@ -19,4 +19,7 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String programStageSection();
+
+    @Nullable
+    public abstract Boolean allowFutureDate();
 }

@@ -10,6 +10,6 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class FileViewModel extends FieldViewModel {
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value,String section) {
-        return new AutoValue_FileViewModel(id, label, mandatory, value, section);
+        return new AutoValue_FileViewModel(id, label, mandatory, value, section, null);
     }
 }
