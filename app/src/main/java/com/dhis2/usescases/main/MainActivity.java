@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.andrognito.pinlockview.PinLockListener;
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.App;
 import com.dhis2.BuildConfig;
 import com.dhis2.R;

@@ -60,6 +60,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private HashMap<String, View> selectedTeiToDownloadIcon;
     private HashMap<String, View> selectedTeiToDownloadProgress;
     private HashMap<String, Integer> selectedTeiToDownloadPosition;
+    private List<OrganisationUnitModel> orgUnits;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
@@ -106,6 +107,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 data -> view.setForm(data, selectedProgram),
                                 Timber::d)
+        );
+
+        compositeDisposable.add(
+                metadataRepository.getOrganisationUnits()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(
+                                orgUnits -> this.orgUnits = orgUnits,
+                                Timber::d
+                        )
         );
 
 
@@ -172,17 +183,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             for (String key : queryData.keySet()) {
                                 filterList.add(key + ":LIKE:" + queryData.get(key));
                             }
-                            List<String> orgUnits = new ArrayList<>();
-                            orgUnits.add("DiszpKrYNg8");
+                            List<String> orgUnitsUids = new ArrayList<>();
+                            for (OrganisationUnitModel orgUnit : orgUnits)
+                                orgUnitsUids.add(orgUnit.uid());
                             TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
                                     .program(selectedProgram.uid())
                                     .page(page)
                                     .pageSize(10)
                                     .paging(true)
                                     .filter(filterList)
-                                    .orgUnits(orgUnits) //TODO:SET USER ORG UNITS
+                                    .orgUnits(orgUnitsUids)
                                     .build();
-                            return io.reactivex.Observable.fromCallable(d2.queryTrackedEntityInstances(query)).toFlowable(BackpressureStrategy.BUFFER)
+                            return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(Schedulers.io());
                         })
@@ -201,7 +213,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(data -> onlineFragment.setItems(data, programModels),
+                        .subscribe(data -> onlineFragment.setItems(
+                                data, programModels),
                                 t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
                         )
         );
