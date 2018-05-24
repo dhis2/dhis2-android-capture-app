@@ -12,6 +12,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -333,13 +334,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.catCombo.setVisibility(View.VISIBLE);
             binding.catCombo.setAdapter(adapter);
 
-            binding.catCombo.setOnItemClickListener((parent, view, position, id) -> {
-                if (position == 0) {
+            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0) {
+                        isFilteredByCatCombo = false;
+                        presenter.clearCatComboFilters(orgUnitFilter.toString());
+                    } else {
+                        isFilteredByCatCombo = true;
+                        presenter.onCatComboSelected(adapter.getItem(position - 1), orgUnitFilter.toString());
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
                     isFilteredByCatCombo = false;
                     presenter.clearCatComboFilters(orgUnitFilter.toString());
-                } else {
-                    isFilteredByCatCombo = true;
-                    presenter.onCatComboSelected(adapter.getItem(position - 1), orgUnitFilter.toString());
                 }
             });
         }

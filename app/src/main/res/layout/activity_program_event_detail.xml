@@ -117,7 +117,7 @@
                         <Button
                             android:id="@+id/button_org_unit"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
                             android:layout_marginEnd="5dp"
                             android:layout_marginStart="15dp"
                             android:background="@drawable/selector_button_round_20"
@@ -140,14 +140,13 @@
                             android:layout_marginStart="5dp"
                             android:background="@drawable/selector_button_round_20"
                             android:maxLines="1"
-                            android:minHeight="40dp"
                             android:minWidth="100dp"
-                            android:padding="3dp"
+                            android:padding="6dp"
                             android:textAlignment="textStart"
                             android:textAllCaps="false"
                             android:textColor="?colorAccent"
                             android:textSize="15sp"
-                            android:visibility="visible"/>
+                            android:visibility="gone"/>
                     </LinearLayout>
 
                     <RelativeLayout
