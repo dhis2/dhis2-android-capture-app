@@ -31,25 +31,14 @@
                 android:background="?colorPrimary">
 
                 <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottieView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:lottie_rawRes="@raw/lottie_test"
-                    app:lottie_loop="true"
+                    android:id="@+id/lottieView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:visibility="gone"
-                    app:lottie_autoPlay="false"/>
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottieView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:lottie_rawRes="@raw/lottie_test"
+                    app:lottie_autoPlay="false"
                     app:lottie_loop="true"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone"
-                    android:rotation="180"
-                    app:lottie_autoPlay="false"/>
+                    app:lottie_rawRes="@raw/world_lottie" />
 
                 <include
                     android:id="@+id/logo_layout"
@@ -63,15 +52,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    tools:src="@drawable/sierra_leone"
-                    android:alpha="0"/>
+                    android:alpha="0"
+                    tools:src="@drawable/sierra_leone" />
 
                 <LinearLayout
-                    android:layout_margin="20dp"
                     android:id="@+id/sync_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@id/logo_layout"
+                    android:layout_margin="20dp"
                     android:layout_marginBottom="20dp"
                     android:layout_marginTop="20dp"
                     android:gravity="center"
@@ -201,19 +190,6 @@
                 android:text="@string/unlock_button"
                 android:visibility="gone" />
         </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/primaryAlpha"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
 
         <!-- PIN LAYOUT -->
 

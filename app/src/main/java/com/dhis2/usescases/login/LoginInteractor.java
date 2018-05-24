@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.App;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
@@ -79,6 +80,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
         disposable.add(configurationRepository.configure(baseUrl)
                 .map((config) -> ((App) view.getContext().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap((userManager) -> {
+                    Crashlytics.setString("SERVER", serverUrl);
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
@@ -181,16 +183,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.handleSync();
             sync();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-            view.hideProgress();
             view.renderUnexpectedError();
         } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            view.hideProgress();
             view.renderServerError();
         }
     }
@@ -200,10 +198,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
         Timber.e(throwable);
 
         if (throwable instanceof IOException) {
-            view.hideProgress();
             view.renderInvalidServerUrlError();
         } else {
-            view.hideProgress();
             view.renderUnexpectedError();
         }
     }

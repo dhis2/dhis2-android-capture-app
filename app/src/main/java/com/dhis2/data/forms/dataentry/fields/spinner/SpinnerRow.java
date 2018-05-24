@@ -22,10 +22,18 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBackgroundTransparent;
+    private final String renderType;
 
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
+        this.renderType = null;
+    }
+
+    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
+        this.processor = processor;
+        this.isBackgroundTransparent = isBackgroundTransparent;
+        this.renderType = renderType;
     }
 
     @NonNull

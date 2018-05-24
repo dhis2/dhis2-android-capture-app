@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -123,4 +124,6 @@ public interface MetadataRepository {
     Observable<Pair<String, Integer>> getTheme();
 
     Observable<String> getColor(String uid);
+
+    Observable<List<OrganisationUnitModel>> getOrganisationUnits();
 }

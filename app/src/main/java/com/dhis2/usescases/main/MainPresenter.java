@@ -3,15 +3,19 @@ package com.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 
+import com.dhis2.R;
 import com.dhis2.data.service.SyncService;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.login.LoginActivity;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
+
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -90,7 +94,13 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void changeFragment(int id) {
-        view.changeFragment(id);
+        if (id == R.id.menu_jira) {
+            String url = String.format(Locale.getDefault(),
+                    "https://jira.dhis2.org/secure/CreateIssueDetails!init.jspa?pid=%d&issuetype=%d", 10200,1);
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            view.getContext().startActivity(browserIntent);
+        } else
+            view.changeFragment(id);
     }
 
     @Override

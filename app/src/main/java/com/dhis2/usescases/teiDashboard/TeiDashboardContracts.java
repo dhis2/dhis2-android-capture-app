@@ -1,6 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
-import android.view.View;
+import android.graphics.Bitmap;
 import android.widget.TextView;
 
 import com.dhis2.data.tuples.Pair;
@@ -12,7 +12,6 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -20,6 +19,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -39,7 +39,10 @@ public class TeiDashboardContracts {
 
         DashboardPagerAdapter getAdapter();
 
-        void showQR();
+        Consumer<List<Bitmap>> showQR();
+
+        void nextQR();
+
     }
 
     public interface Presenter {
@@ -71,6 +74,8 @@ public class TeiDashboardContracts {
 
         //Data Fragment
         void onShareClick(android.view.View view);
+
+        void nextQr();
 
         //RelationshipFragment
         Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid);

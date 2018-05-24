@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -25,12 +26,14 @@ import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -63,7 +66,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final List<Row> rows;
 
-    public FormAdapter(LayoutInflater layoutInflater) {
+    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits) {
         setHasStableIds(true);
         //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
@@ -79,7 +82,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, false));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, false));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, false));
-        rows.add(ORG_UNIT, new OrgUnitRow(layoutInflater, processor, false));
+        rows.add(ORG_UNIT, new OrgUnitRow(fm, layoutInflater, processor, false, orgUnits));
     }
 
     @Override
@@ -114,7 +117,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), null, null);
                     break;
                 case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(),label, false, null, null);
+                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, null, null);
                     break;
                 case TIME:
                 case DATE:
