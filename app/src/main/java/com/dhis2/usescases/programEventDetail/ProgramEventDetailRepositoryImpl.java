@@ -48,20 +48,29 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @NonNull
     private Observable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period) {
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
-                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
-        StringBuilder dateQuery = new StringBuilder();
-        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-        for (int i = 0; i < dates.size(); i++) {
-            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-            if (i < dates.size() - 1)
-                dateQuery.append("OR ");
+        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
+                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+        if (dates != null) {
+            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + " AND (%s) ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
+            StringBuilder dateQuery = new StringBuilder();
+            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+            for (int i = 0; i < dates.size(); i++) {
+                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+                dateQuery.append(String.format(queryFormat, EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+                if (i < dates.size() - 1)
+                    dateQuery.append("OR ");
+            }
+
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, dateQuery))
+                    .mapToList(EventModel::create);
+        }
+        else {
+            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid))
+                    .mapToList(EventModel::create);
         }
 
-        return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, dateQuery))
-                .mapToList(EventModel::create);
+
     }
 
     @NonNull
@@ -83,7 +92,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (categoryOptionComboModel == null) {
             return programEvents(programUid, dates, period);
         }
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s) " +
+        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
                 "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
         StringBuilder dateQuery = new StringBuilder();
         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
@@ -94,7 +103,13 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 dateQuery.append("OR ");
         }
 
-        return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO, programUid, categoryOptionComboModel.uid(), dateQuery))
+        if (categoryOptionComboModel != null && categoryOptionComboModel.uid() != null) {
+            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + " AND (%s)";
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO, programUid, categoryOptionComboModel.uid(), dateQuery))
+                    .mapToList(EventModel::create);
+        }
+
+        return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO, programUid, dateQuery))
                 .mapToList(EventModel::create);
     }
 

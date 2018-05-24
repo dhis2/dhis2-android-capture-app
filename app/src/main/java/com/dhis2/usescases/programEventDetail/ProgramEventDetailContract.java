@@ -40,12 +40,11 @@ public class ProgramEventDetailContract {
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
 
-        ArrayList<Date>  getChosenDateWeek();
-        ArrayList<Date>  getChosenDateMonth();
-        ArrayList<Date>  getChosenDateYear();
-        Date getChosenDateDay();
+        void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
         void showHideFilter();
+
+        void apply();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -65,32 +64,34 @@ public class ProgramEventDetailContract {
 
         void setProgram(ProgramModel program);
 
-        void getEvents(Date fromDate, Date toDate);
+        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
 
-        void getProgramEventsWithDates(List<Date> dates, Period period);
-
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel);
-
-        void clearCatComboFilters();
+        void clearCatComboFilters(String orgUnitQuery);
 
         void onEventClick(String eventId);
 
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
 
         void showFilter();
+
+
+
+        void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(View view, String programId, Period period);
 
-        void getEvents(String programId, Date fromDate, Date toDate);
+        void getEvents(String programId, Date fromDate, Date toDate, String orgUnitQuery);
 
         void getOrgUnits(Date date);
 
-        void getProgramEventsWithDates(String programId, List<Date> dates, Period period);
-
-        void updateFilters(CategoryOptionComboModel categoryOptionComboModel);
+        void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
 
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
+
+
+
+        void getProgramEventsWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery);
     }
 }

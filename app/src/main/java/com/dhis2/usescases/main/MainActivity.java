@@ -3,7 +3,6 @@ package com.dhis2.usescases.main;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableInt;
 import android.graphics.PorterDuff;
@@ -12,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 
 import com.andrognito.pinlockview.PinLockListener;
@@ -132,10 +130,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     private void checkFilterEnabled() {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int color = a.getColor(0, 0);
-        a.recycle();
+        int color = getPrimaryColor();
         if (programFragment.binding.filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(color);
             binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);

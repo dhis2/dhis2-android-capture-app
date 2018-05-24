@@ -72,7 +72,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
         compositeDisposable.add(homeRepository.programs(dates, period)
-//                .flatMap(data->homeRepository.toDoPrograms(dates, period))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
