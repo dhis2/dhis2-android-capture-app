@@ -69,88 +69,17 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.programId = programId;
         getProgram();
         getOrgUnits(null);
-        switch (period) {
-            case DAILY:
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(view.getChosenDateDay(), period);
-                getEvents(programId, datesToQuery[0], datesToQuery[1]);
-                break;
-            case WEEKLY:
-                getProgramEventsWithDates(programId, view.getChosenDateWeek(), period);
-                break;
-            case MONTHLY:
-                getProgramEventsWithDates(programId, view.getChosenDateMonth(), period);
-                break;
-            case YEARLY:
-                getProgramEventsWithDates(programId, view.getChosenDateYear(), period);
-                break;
-
-            default:
-                getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
-                break;
-        }
-
-    }
-
-    @SuppressLint("CheckResult")
-    @Override
-    public void getEvents(String programId, Date fromDate, Date toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        lastSearchType = LastSearchType.DATES;
-        Observable.just(programEventDetailRepository.filteredProgramEvents(programId,
-                DateUtils.getInstance().formatDate(fromDate),
-                DateUtils.getInstance().formatDate(toDate),
-                categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setData,
-                        Timber::e));
     }
 
     @Override
     public void getOrgUnits(Date date) {
         compositeDisposable.add(programEventDetailRepository.orgUnits()
-               /* .debounce(500, TimeUnit.MILLISECONDS)
-                .flatMapIterable(organisationUnitModels -> organisationUnitModels)
-                .filter(orgUnit -> orgUnit.openingDate() != null && orgUnit.closedDate() != null)
-                .filter(orgUnit -> orgUnit.openingDate().compareTo(date) <= 0 && orgUnit.closedDate().compareTo(date) >= 0)
-                .toList()*/
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
-    }
-
-    @Override
-    public void getProgramEventsWithDates(String programId, List<Date> dates, Period period) {
-        this.dates = dates;
-        this.period = period;
-        lastSearchType = LastSearchType.DATE_RANGES;
-        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setData,
-                        throwable -> view.renderError(throwable.getMessage())));
-    }
-
-    @Override
-    public void updateFilters(CategoryOptionComboModel categoryOptionComboModel) {
-        this.categoryOptionComboModel = categoryOptionComboModel;
-        switch (lastSearchType) {
-            case LastSearchType.DATES:
-                getEvents(programId, this.fromDate, this.toDate);
-                break;
-            case LastSearchType.DATE_RANGES:
-                getProgramEventsWithDates(programId, this.dates, this.period);
-                break;
-            default:
-                getEvents(programId, DateUtils.getInstance().getToday(), DateUtils.getInstance().getToday());
-                break;
-        }
     }
 
     @Override
@@ -164,7 +93,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (programModel) -> {
+                        programModel -> {
                             view.setProgram(programModel);
                             getCatCombo(programModel);
                         },
@@ -188,5 +117,64 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     @Override
     public void onDettach() {
         compositeDisposable.clear();
+    }
+
+    @Override
+    public void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+        this.categoryOptionComboModel = categoryOptionComboModel;
+        switch (lastSearchType) {
+            case LastSearchType.DATES:
+                getEvents(programId, this.fromDate, this.toDate, orgUnitQuery);
+                break;
+            case LastSearchType.DATE_RANGES:
+                getProgramEventsWithDates(programId, this.dates, this.period, orgUnitQuery);
+                break;
+            default:
+                getProgramEventsWithDates(programId, null, this.period, orgUnitQuery);
+                break;
+        }
+    }
+
+    @Override
+    public void getProgramEventsWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery) {
+        this.dates = dates;
+        this.period = period;
+        lastSearchType = LastSearchType.DATE_RANGES;
+        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setData,
+                        throwable -> view.renderError(throwable.getMessage())));
+    }
+
+    @SuppressLint("CheckResult")
+    @Override
+    public void getEvents(String programId, Date fromDate, Date toDate, String orgUnitQuery) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        lastSearchType = LastSearchType.DATES;
+        Observable.just(programEventDetailRepository.filteredProgramEvents(programId,
+                DateUtils.getInstance().formatDate(fromDate),
+                DateUtils.getInstance().formatDate(toDate),
+                categoryOptionComboModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setData,
+                        Timber::e));
+    }
+
+    private String orgUnitQuery(List<OrganisationUnitModel> myOrgs) {
+        StringBuilder orgUnitFilter = new StringBuilder();
+        for (int i = 0; i < myOrgs.size(); i++) {
+            orgUnitFilter.append("'");
+            orgUnitFilter.append(myOrgs.get(i).uid());
+            orgUnitFilter.append("'");
+            if (i < myOrgs.size() - 1)
+                orgUnitFilter.append(", ");
+        }
+        view.setOrgUnitFilter(orgUnitFilter);
+        return orgUnitFilter.toString();
     }
 }

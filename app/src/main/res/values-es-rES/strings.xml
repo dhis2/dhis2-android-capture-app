@@ -108,6 +108,7 @@
     <string name="follow_up_enabled">Seguimiento activado</string>
     <string name="follow_up_disabled">Seguimiento desactivado</string>
     <string name="deactivate">Desactivar</string>
+    <string name="program_not_allow_events">Este programa no admite más eventos</string>
     <string name="events">Eventos</string>
     <string name="done_task">Inicio</string>
     <string name="app_info">Informacion</string>
