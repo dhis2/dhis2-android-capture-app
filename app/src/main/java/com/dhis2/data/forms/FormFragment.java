@@ -123,7 +123,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
 
         setupActionBar();
-        initReportDatePicker();
     }
 
     private void setupActionBar() {
@@ -287,22 +286,23 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return nextButton.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 
-    private void initReportDatePicker() {
+    @Override
+    public void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates) {
         reportDate.setOnClickListener(v -> {
-            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
 
         incidentDate.setOnClickListener(v -> {
-            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
         });
 
         reportDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(reportAllowFutureDates);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishReportDateChange());
             }
@@ -310,7 +310,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
         incidentDate.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.create(incidentAllowFutureDates);
                 dialog.show(getFragmentManager());
                 dialog.setFormattedOnDateSetListener(publishIncidentDateChange());
             }

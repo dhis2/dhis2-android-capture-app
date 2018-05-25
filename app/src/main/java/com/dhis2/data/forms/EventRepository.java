@@ -43,6 +43,14 @@ public class EventRepository implements FormRepository {
             "WHERE uid =?\n" +
             "LIMIT 1;";
 
+    private static final String SELECT_PROGRAM_FROM_EVENT = String.format(
+            "SELECT %s.* from %s JOIN %s " +
+                    "ON %s.%s = %s.%s " +
+                    "WHERE %s.%s = ?",
+            ProgramModel.TABLE, ProgramModel.TABLE, EventModel.TABLE,
+            EventModel.TABLE, EventModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
+            EventModel.TABLE, EventModel.Columns.UID);
+
     private static final String SELECT_TITLE = "SELECT\n" +
             "  Program.displayName,\n" +
             "  ProgramStage.displayName\n" +
@@ -134,6 +142,13 @@ public class EventRepository implements FormRepository {
                 .map(programModel -> Pair.create(programModel, ""))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
+    }
+
+    @Override
+    public Flowable<ProgramModel> getAllowDatesInFuture() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_FROM_EVENT, eventUid)
+                .mapToOne(ProgramModel::create)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

@@ -60,8 +60,13 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 model.subscribe(
                         dateTimeViewModel -> {
                             binding.setVariable(BR.label, dateTimeViewModel.label());
-                            if (!isEmpty(dateTimeViewModel.value()))
+                            if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
+                            }
+                            if(binding instanceof FormDateTextBinding)
+                                ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
+                            if(binding instanceof FormDateTimeTextBinding)
+                                ((FormDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
                             binding.executePendingBindings();
                         },
                         Timber::d)

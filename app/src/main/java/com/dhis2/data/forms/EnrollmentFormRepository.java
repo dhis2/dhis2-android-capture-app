@@ -164,6 +164,13 @@ class EnrollmentFormRepository implements FormRepository {
                 .distinctUntilChanged();
     }
 
+    @Override
+    public Flowable<ProgramModel> getAllowDatesInFuture() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
+                .mapToOne(ProgramModel::create)
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
     @NonNull
     @Override
     public Flowable<ReportStatus> reportStatus() {

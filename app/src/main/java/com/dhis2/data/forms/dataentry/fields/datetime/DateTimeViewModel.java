@@ -17,7 +17,7 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     @NonNull
     public abstract ValueType valueType();
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value,String section) {
-        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, type);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value,String section, Boolean allowFutureDates) {
+        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates, type);
     }
 }

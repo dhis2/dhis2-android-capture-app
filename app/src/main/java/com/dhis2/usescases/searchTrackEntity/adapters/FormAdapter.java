@@ -97,7 +97,14 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         if (position < programData) {
 //            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
-            viewModel = DateTimeViewModel.create(String.valueOf(programModel.id() + position), holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), false, ValueType.DATE, null, null);
+            viewModel = DateTimeViewModel.create(String.valueOf(
+                    programModel.id() + position),
+                    holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(),
+                    false,
+                    ValueType.DATE,
+                    null,
+                    null,
+                    holder.getAdapterPosition() == 0 ? programModel.selectEnrollmentDatesInFuture() : programModel.selectIncidentDatesInFuture());
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
@@ -122,7 +129,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case TIME:
                 case DATE:
                 case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), null, null);
+                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), null, null, true);
                     break;
                 case AGEVIEW:
                     viewModel = AgeViewModel.create(attr.uid(), label, false, null, null);

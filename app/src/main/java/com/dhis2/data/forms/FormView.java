@@ -46,4 +46,6 @@ interface FormView {
 
     @NonNull
     Consumer<Pair<ProgramModel, String>> renderIncidentDate();
+
+    void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates);
 }

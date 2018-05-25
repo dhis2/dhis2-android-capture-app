@@ -34,6 +34,8 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     private LayoutInflater inflater;
     private boolean isBgTransparent;
     private OnDateSelected listener;
+    private boolean allowFutureDates;
+    DatePickerDialog dateDialog;
 
     public DateTimeView(Context context) {
         super(context);
@@ -76,6 +78,10 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         setLayout();
     }
 
+    public void setAllowFutureDates(boolean allowFutureDates){
+        this.allowFutureDates = allowFutureDates;
+    }
+
     private void setLayout() {
         binding = DateTimeViewBinding.inflate(inflater, this, true);
         editText = findViewById(R.id.inputEditText);
@@ -102,7 +108,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
+        dateDialog = new DatePickerDialog(getContext(), (
                 (datePicker, year1, month1, day1) -> {
                     selectedCalendar.set(Calendar.YEAR, year1);
                     selectedCalendar.set(Calendar.MONTH, month1);
@@ -113,6 +119,9 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
                 month,
                 day);
         dateDialog.setTitle(binding.getLabel());
+        if (!allowFutureDates) {
+            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
         dateDialog.show();
     }
 
