@@ -88,13 +88,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.d(e.getMessage());
         }
 
-      /*  //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
-        pagerAdapter.setOnline(NetworkUtils.isOnline(this));
-        binding.resultsPager.setAdapter(pagerAdapter);
-        binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
-        binding.searchTab.setupWithViewPager(binding.resultsPager);*/
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(),LayoutInflater.from(this),presenter.getOrgUnits()));
+
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits()));
 
     }
 

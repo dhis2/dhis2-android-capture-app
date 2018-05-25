@@ -9,9 +9,9 @@ import android.support.annotation.Nullable;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -32,10 +32,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
+    private final DatabaseAdapter databaseAdapter;
 
-    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
+        this.databaseAdapter = databaseAdapter;
     }
 
 
@@ -58,10 +60,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
-        String SELECT_CATEGORY_COMBO = "SELECT * FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
-                " ON " + CategoryOptionComboModel.TABLE + "." + CategoryOptionComboModel.Columns.CATEGORY_COMBO + " = " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID
-                + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + categoryComboUid + "'";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
+        String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
+                CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, categoryComboUid)
                 .mapToList(CategoryOptionComboModel::create);
     }
 
@@ -83,38 +84,48 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                           @NonNull Context context, @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
-                                          @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                          @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
+                                          @NonNull String orgUnitUid, @Nullable String catComboUid,
+                                          @Nullable String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
 
         Date createDate = Calendar.getInstance().getTime();
 
+        String uid = codeGenerator.generate();
+
         EventModel eventModel = EventModel.builder()
-                .uid(codeGenerator.generate())
+                .uid(uid)
                 .enrollmentUid(enrollmentUid)
                 .created(createDate)
                 .lastUpdated(createDate)
-                .eventDate(date)
+//                .createdAtClient()
+//                .lastUpdatedAtClient()
+                .status(EventStatus.ACTIVE)
+//                .latitude(latitude)
+//                .longitude(longitude)
                 .program(programUid)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-                .status(EventStatus.ACTIVE)
+                .eventDate(date)
+                .completedDate(null)
+                .dueDate(null)
                 .state(State.TO_POST)
-                .trackedEntityInstance(trackedEntityInstanceUid)
-                // TODO CRIS: CHECK IF THESE ARE WORKING...
-//                .latitude(latitude)
-//                .longitude(longitude)
-//                .attributeCategoryOptions(catOptionUid)
-//                .attributeOptionCombo(catComboUid)
+                .attributeCategoryOptions(catComboUid)
+                .attributeOptionCombo(catOptionUid)
+//                .trackedEntityInstance(trackedEntityInstanceUid)
                 .build();
 
+       /* long insert = new EventStoreImpl(databaseAdapter).insert(
+                uid, enrollmentUid, createDate, createDate, null, null,
+                EventStatus.ACTIVE, null, null, programUid, programStage, orgUnitUid,
+                date, null, null, State.TO_POST, catOptionUid, catComboUid, trackedEntityInstanceUid);*/
+
         if (briteDatabase.insert(EventModel.TABLE,
-                eventModel.toContentValues()) < 0) {
+                eventModel.toContentValues())/*insert*/ < 0) {
             String message = String.format(Locale.US, "Failed to insert new event " +
                             "instance for organisationUnit=[%s] and programStage=[%s]",
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else
-            return Observable.just(eventModel.uid());
+            return Observable.just(uid);
     }
 
     @Override

@@ -57,7 +57,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 view.renderTeiInfo("You already have access to this TEI", false);
                 cursor.close();
             } else
-                view.renderTeiInfo(teiUid, true);
+                view.renderTeiInfo(null, true);
 
         }
 

@@ -12,18 +12,13 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.dhis2.R;
-import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.databinding.DialogOrgunitBinding;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
-import com.unnamed.b.atv.model.TreeNode;
+import com.dhis2.utils.OrgUnitUtils;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -98,57 +93,8 @@ public class OrgUnitDialog extends DialogFragment {
 
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
-        HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
-
-        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
-        allOrgs.addAll(myOrgs);
-        for (OrganisationUnitModel myorg : myOrgs) {
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] pathUid = myorg.path().split("/");
-            for (int i = myorg.level() - 1; i > 0; i--) {
-                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(pathUid[i])
-                        .level(i)
-                        .parent(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-                if (!allOrgs.contains(orgToAdd))
-                    allOrgs.add(orgToAdd);
-            }
-        }
-
-        Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
-
-        for (int i = 0; i < myOrgs.get(0).level(); i++) {
-            subLists.put(i + 1, new ArrayList<>());
-        }
-
-        //Separamos las orunits en listas por nivel
-        for (OrganisationUnitModel orgs : allOrgs) {
-            ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(getContext()));
-            treeNode.setSelectable(orgs.path() != null);
-            treeNode.setSelected(false);
-            sublist.add(treeNode);
-            subLists.put(orgs.level(), sublist);
-        }
-
-        TreeNode root = TreeNode.root();
-        root.addChildren(subLists.get(1));
-
-        for (int level = myOrgs.get(0).level(); level > 1; level--) {
-            for (TreeNode treeNode : subLists.get(level - 1)) {
-                for (TreeNode treeNodeLevel : subLists.get(level)) {
-                    if (((OrganisationUnitModel) treeNodeLevel.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                        treeNode.addChild(treeNodeLevel);
-                }
-            }
-        }
-
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), root);
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(getContext(), myOrgs));
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);

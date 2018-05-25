@@ -8,6 +8,10 @@
         <variable
             name="indicator"
             type="org.hisp.dhis.android.core.program.ProgramIndicatorModel" />
+
+        <variable
+            name="value"
+            type="java.lang.String" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -20,8 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.6"
-            />
+            app:layout_constraintGuide_percent="0.6" />
 
         <TextView
             android:id="@+id/indicator_name"
@@ -46,6 +49,7 @@
             android:layout_marginStart="10dp"
             android:fontFamily="sans-serif"
             android:gravity="center"
+            android:text="@{value}"
             android:textColor="#444444"
             android:textSize="13.3sp"
             android:textStyle="normal"

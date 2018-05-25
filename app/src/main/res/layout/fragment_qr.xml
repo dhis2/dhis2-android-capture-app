@@ -21,31 +21,36 @@
         <android.support.v7.widget.CardView
             android:id="@+id/teiInfo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_margin="5dp"
-            app:cardBackgroundColor="@color/white_apha"
             app:cardCornerRadius="7dp"
             app:cardUseCompatPadding="true"
             app:elevation="8dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/info"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Scan first QR"
+                    android:textColor="?colorPrimary"
+                    tools:text="Scan first QR" />
 
-                    <TextView
-                        android:id="@+id/info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        tools:text="TEI UID" />
+                <TextView
+                    android:id="@+id/enrollments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:textColor="?colorPrimary"
+                    tools:text="TEI UID" />
 
-                </RelativeLayout>
-            </ScrollView>
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.design.widget.FloatingActionButton

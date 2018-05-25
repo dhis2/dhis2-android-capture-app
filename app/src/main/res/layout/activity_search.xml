@@ -178,7 +178,8 @@
                     android:id="@+id/searchTab"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:tabSelectedTextColor="@color/colorAccent"
+                    app:tabBackground="@drawable/selector_tab"
+                    app:tabSelectedTextColor="?colorPrimary"
                     app:tabTextAppearance="@style/TextAppearance.AppCompat"
                     app:tabTextColor="@color/colorAccent">
 

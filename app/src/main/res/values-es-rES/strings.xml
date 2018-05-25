@@ -172,5 +172,8 @@
     <string name="button_ok">OK</string>
     <string name="jira_report">Reportar en Jira</string>
     <string name="programs_to_enroll">Programas para enrolar</string>
+    <string name="select_all">Selecionar todo</string>
+    <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
+    <string name="share">Compartir</string>
 
 </resources>

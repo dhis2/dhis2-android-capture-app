@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="presenter"
             type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
-
 
     </data>
 
@@ -96,8 +94,8 @@
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     app:initGrid="@{false}"
-                    app:spanCount="@{1}"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                    app:spanCount="@{1}"
                     tools:listitem="@layout/item_program" />
 
                 <ProgressBar
@@ -112,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="There is no information for the filters selected.\nPlease try changing them."
+                    android:text="@string/empty_program_list"
                     android:textColor="@color/colorPrimary"
                     android:textSize="18sp"
                     android:visibility="gone" />
@@ -131,7 +129,7 @@
             android:background="@color/white_faf"
             app:itemTextColor="?colorPrimary">
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -140,17 +138,33 @@
                     android:id="@+id/tree_view_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
                     android:paddingEnd="0dp"
                     android:paddingStart="20dp"
-                    android:paddingTop="40dp" />
+                    android:paddingTop="40dp"
+                    app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/org_unit_all"
+                    style="@style/TextButton"
+                    android:text="@string/select_all"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@string/cancel" />
+
+                <Button
+                    android:id="@+id/org_unit_cancel"
+                    style="@style/TextButton"
+                    android:text="@string/cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/org_unit_apply" />
 
                 <Button
                     android:id="@+id/org_unit_apply"
-                    style="@style/FullWidthButton"
-                    android:layout_gravity="bottom"
-                    android:text="@string/button_ok" />
-            </LinearLayout>
+                    style="@style/TextButton"
+                    android:text="@string/action_accept"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </android.support.constraint.ConstraintLayout>
         </android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
 </layout>

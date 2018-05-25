@@ -6,17 +6,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
 import com.dhis2.App;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.main.MainActivity;
 
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -80,7 +81,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
         disposable.add(configurationRepository.configure(baseUrl)
                 .map((config) -> ((App) view.getContext().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap((userManager) -> {
-                    Crashlytics.setString("SERVER", serverUrl);
+                    SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
+                            "com.dhis2", Context.MODE_PRIVATE);
+                    prefs.edit().putString("SERVER", serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
@@ -153,14 +156,14 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     @NonNull
-    private Observable<Response> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(50)));
+    private Observable<List<TrackedEntityInstance>> trackerData() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(500, false)));
     }
 
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(100)));
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(500)));
     }
 
     @NonNull

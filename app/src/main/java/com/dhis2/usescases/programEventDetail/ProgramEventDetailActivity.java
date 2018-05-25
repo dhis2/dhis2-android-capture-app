@@ -12,6 +12,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -86,26 +87,30 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
 
         Drawable drawable = null;
-        switch (getIntent().getIntExtra("CURRENT_PERIOD",0)){
+        switch (getIntent().getIntExtra("CURRENT_PERIOD", 0)) {
             case R.string.DAILY:
                 currentPeriod = Period.DAILY;
-                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateDay= (Date) getIntent().getSerializableExtra("CHOOSEN_DATE");
+                if (getIntent().getSerializableExtra("CHOOSEN_DATE") != null)
+                    chosenDateDay = (Date) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
                 break;
             case R.string.WEEKLY:
                 currentPeriod = Period.WEEKLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
-                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateWeek= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
+                if (getIntent().getSerializableExtra("CHOOSEN_DATE") != null)
+                    chosenDateWeek = (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
             case R.string.MONTHLY:
                 currentPeriod = Period.MONTHLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
-                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateMonth= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
+                if (getIntent().getSerializableExtra("CHOOSEN_DATE") != null)
+                    chosenDateMonth = (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
-            case  R.string.YEARLY:
+            case R.string.YEARLY:
                 currentPeriod = Period.YEARLY;
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
-                if(getIntent().getSerializableExtra("CHOOSEN_DATE")!=null) chosenDateYear= (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
+                if (getIntent().getSerializableExtra("CHOOSEN_DATE") != null)
+                    chosenDateYear = (ArrayList<Date>) getIntent().getSerializableExtra("CHOOSEN_DATE");
                 break;
             default:
                 currentPeriod = Period.DAILY;
@@ -113,7 +118,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 break;
         }
         binding.buttonTime.setImageDrawable(drawable);
-        presenter.init(this, programId,currentPeriod);
+        presenter.init(this, programId, currentPeriod);
         currentPeriodConfig();
 
     }
@@ -257,9 +262,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         currentPeriodConfig();
     }
 
-    private void currentPeriodConfig()
-        {
-            String textToShow = "";
+    private void currentPeriodConfig() {
+        String textToShow = "";
 
         switch (currentPeriod) {
             case DAILY:
@@ -292,7 +296,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateYear.isEmpty())
                     textToShow = yearFormat.format(chosenDateYear.get(0));
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
-               // getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                // getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod);
                 break;
         }
@@ -361,13 +365,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.catCombo.setVisibility(View.VISIBLE);
             binding.catCombo.setAdapter(adapter);
 
-            binding.catCombo.setOnItemClickListener((parent, view, position, id) -> {
-                if (position == 0) {
-                    presenter.clearCatComboFilters();
-                } else {
-                    presenter.onCatComboSelected(adapter.getItem(position - 1));
+            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0) {
+                        presenter.clearCatComboFilters();
+                    } else {
+                        presenter.onCatComboSelected(adapter.getItem(position - 1));
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
+
         }
     }
 
@@ -398,7 +410,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     }
 
     private void checkFilterEnabled() {
-        if (binding.filterLayout.getVisibility() == View.VISIBLE){
+        if (binding.filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()));
             binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         }
@@ -417,7 +429,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         }
     }
 
-    public boolean areAllOrgUnitsSelected(){
+    public boolean areAllOrgUnitsSelected() {
         return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
     }
 }

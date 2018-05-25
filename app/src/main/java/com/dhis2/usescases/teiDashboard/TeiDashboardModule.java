@@ -6,6 +6,8 @@ import com.dhis2.data.qr.QRInterface;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -23,8 +25,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository, QRInterface qrInterface) {
-        return new TeiDashboardPresenter(dashboardRepository, metadataRepository, qrInterface);
+    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, QRInterface qrInterface) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, qrInterface);
     }
 
     @Provides

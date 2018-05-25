@@ -38,6 +38,7 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
 
         disposable.add(model.subscribe(checkBoxViewModel -> {
                     binding.setLabel(checkBoxViewModel.label());
+                    binding.setValueType(checkBoxViewModel.valueType());
                     if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
                         binding.customYesNo.getRadioGroup().check(R.id.yes);
                     else if (checkBoxViewModel.value() != null)

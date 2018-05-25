@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.usescases.map.MapSelectorActivity;
@@ -58,6 +59,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 "com.dhis2", Context.MODE_PRIVATE);
 
         setTheme(prefs.getInt("THEME", R.style.AppTheme));
+        Crashlytics.setString("SERVER", prefs.getString("SERVER", null));
 //        setTheme(R.style.OrangeTheme);
 
         super.onCreate(savedInstanceState);

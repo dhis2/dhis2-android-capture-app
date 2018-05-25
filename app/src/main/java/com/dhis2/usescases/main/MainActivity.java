@@ -16,12 +16,12 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.andrognito.pinlockview.PinLockListener;
-import com.crashlytics.android.Crashlytics;
 import com.dhis2.App;
 import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.jira.JiraFragment;
 import com.dhis2.usescases.main.program.ProgramFragment;
 import com.dhis2.usescases.qrReader.EventQR.EventQrFragment;
 import com.dhis2.usescases.qrReader.QrReaderFragment;
@@ -191,6 +191,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 binding.filter.setVisibility(View.GONE);
                 break;
             }
+            case R.id.menu_jira:
+                fragment = new JiraFragment();
+                tag = getString(R.string.jira_report);
+                binding.filter.setVisibility(View.GONE);
+                break;
             case R.id.events: {
                 fragment = new EventQrFragment();
                 tag = getString(R.string.QR_SCANNER);

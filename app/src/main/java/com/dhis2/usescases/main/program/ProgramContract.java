@@ -9,6 +9,7 @@ import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -80,6 +81,8 @@ public class ProgramContract {
         Flowable<State> syncState(ProgramModel program);
 
         void getAllPrograms(String orgUnitQuery);
+
+        List<OrganisationUnitModel> getOrgUnits();
     }
 
 

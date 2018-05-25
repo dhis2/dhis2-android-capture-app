@@ -3,14 +3,13 @@ package com.dhis2.usescases.teiDashboard.adapters;
 import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.BR;
-import com.dhis2.databinding.ItemEventBinding;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemIndicatorBinding;
 
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 /**
  * Created by ppajuelo on 29/11/2017.
- *
  */
 
 class IndicatorViewHolder extends RecyclerView.ViewHolder {
@@ -21,8 +20,9 @@ class IndicatorViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(ProgramIndicatorModel programIndicatorModel) {
-        binding.setVariable(BR.indicator, programIndicatorModel);
+    public void bind(Pair<ProgramIndicatorModel, String> programIndicatorModel) {
+        binding.setVariable(BR.indicator, programIndicatorModel.val0());
+        binding.setVariable(BR.value, programIndicatorModel.val1());
         binding.executePendingBindings();
     }
 }

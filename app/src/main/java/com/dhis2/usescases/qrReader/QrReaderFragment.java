@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -129,6 +130,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void renderTeiInfo(String info, boolean isOk) {
+        if (info == null)
+            info = "Read next QR add information";
         binding.info.setText(info);
         if (isOk) {
             //TODO: Show download message if network connection is avaible
@@ -140,7 +143,6 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void renderAttrInfo(ArrayList<Trio<String, String, Boolean>> attributes) {
-        binding.info.append("\nAttributes info");
         for (Trio trio : attributes) {
             binding.info.append(String.format("\n%s: %s %s", trio.val0(), trio.val1(), (boolean) trio.val2() ? "" : "Can't be saved"));
         }
@@ -148,10 +150,10 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void renderEnrollmentInfo(ArrayList<Pair<String, Boolean>> enrollment) {
-        binding.info.append("\nEnrollment info");
-        for (Pair pair : enrollment) {
+        /*for (Pair pair : enrollment) {
             binding.info.append(String.format("\nEnrollment for %s %s", pair.val0(), (boolean) pair.val1() ? "" : "Can't be saved"));
-        }
+        }*/
+        binding.info.append(String.format(Locale.getDefault(), "Enrollments : %d", enrollment.size()));
     }
 
     @Override

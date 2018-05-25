@@ -305,15 +305,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onDownloadClick(View fab) {
-        for (String teiUid : selectedTeiToDownloadIcon.keySet())
-            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+       /* for (String teiUid : selectedTeiToDownloadIcon.keySet())
+            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(selectedTeiToDownloadIcon.keySet()))
                     .doOnComplete(() -> selectedTeiToDownloadProgress.get(teiUid).setVisibility(View.GONE))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             data -> view.removeTei(selectedTeiToDownloadPosition.get(teiUid)),
                             t -> Log.d("ONLINE_SEARCH", t.getMessage()))
-            );
+            );*/
     }
 
     @Override
@@ -379,7 +379,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void downloadTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
         mView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+        List<String> teiUids = new ArrayList<>();
+        teiUids.add(teiUid);
+        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
                 .doOnComplete(() -> progressBar.setVisibility(View.GONE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

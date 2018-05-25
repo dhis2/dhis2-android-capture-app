@@ -235,16 +235,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         binding.actionButton.setOnClickListener(v -> {
 
-//            one time: pone la orgUnit selecionada solo al evento que vas a crear
-//            permanent: cambia también la orgUnit de la trackedEntityInstance
-
-
-//            Bundle bundle = new Bundle();
-//            bundle.putString(EventSummaryActivity.EVENT_ID, eventId);
-//            bundle.putString(EventSummaryActivity.PROGRAM_ID, programId);
-//            Intent intent = new Intent(this, EventSummaryActivity.class);
-//            intent.putExtras(bundle);
-//            startActivity(intent);
             String formattedDate = null;
             Date date = null;
             try {
@@ -256,9 +246,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (isNewEvent) {
                 if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
-                    presenter.createEventPermanent(enrollmentUid, getTrackedEntityInstance, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                    presenter.createEventPermanent(enrollmentUid, getTrackedEntityInstance,
+                            programStageModel.uid(), date, selectedOrgUnit,
+                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatOptionCombo.uid(),
+                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatCombo.uid(),
+                            selectedLat, selectedLon);
                 } else {
-                    presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedCatCombo.uid(), selectedLat, selectedLon);
+                    presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
+                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatOptionCombo.uid(),
+                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatCombo.uid(),
+                            selectedLat, selectedLon);
                 }
             } else {
                 presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
@@ -298,8 +295,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private boolean isFormCompleted() {
-        return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
-                ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
+
+        if (selectedCatCombo!=null && !selectedCatCombo.isDefault())
+            return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
+                    ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
+        else
+            return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) &&
+                    ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
     }
 
     private boolean isCompleted(String field) {
@@ -429,15 +431,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
 
         runOnUiThread(() -> {
+
             selectedCatCombo = catCombo;
 
             if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
                 binding.catCombo.setVisibility(View.GONE);
                 binding.catComboLine.setVisibility(View.GONE);
-                if (catComboList != null && !catComboList.isEmpty()) {
+            } else {
+
+                if (!catComboList.isEmpty()) {
                     selectedCatOptionCombo = catComboList.get(0);
                 }
-            } else {
                 binding.catCombo.setVisibility(View.VISIBLE);
                 binding.catComboLine.setVisibility(View.VISIBLE);
             }
@@ -448,7 +452,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     R.layout.spinner_layout,
                     R.id.spinner_text,
                     catComboList,
-                    getString(R.string.category_option));
+                    catCombo.displayName() != null ? catCombo.displayName() : getString(R.string.category_option));
 
             binding.catCombo.setAdapter(adapter);
             binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

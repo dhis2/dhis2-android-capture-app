@@ -1,14 +1,13 @@
 package com.dhis2.usescases.main.program;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
+import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Period;
-import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -17,9 +16,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -63,7 +60,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .subscribe(
                                 data -> {
                                     view.swapProgramData().accept(data.blockingFirst());
-                                    renderTree(myOrgs);
+                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs));
                                 },
                                 throwable -> view.renderError(throwable.getMessage())));
     }
@@ -72,7 +69,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
         compositeDisposable.add(homeRepository.programs(dates, period)
-//                .flatMap(data->homeRepository.toDoPrograms(dates, period))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -85,7 +81,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
         compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
-//                .flatMap(data->homeRepository.toDoPrograms(dates, period, orgUnitQuery))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -105,6 +100,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                 view.swapProgramData(),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
+    }
+
+    @Override
+    public List<OrganisationUnitModel> getOrgUnits() {
+        return myOrgs;
     }
 
     @Override
@@ -163,59 +163,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
-    }
-
-    private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
-
-        HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
-
-        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
-        allOrgs.addAll(myOrgs);
-        for (OrganisationUnitModel myorg : myOrgs) {
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] pathUid = myorg.path().split("/");
-            for (int i = myorg.level() - 1; i > 0; i--) {
-                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(pathUid[i])
-                        .level(i)
-                        .parent(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-                if (!allOrgs.contains(orgToAdd))
-                    allOrgs.add(orgToAdd);
-            }
-        }
-
-        Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
-
-        for (int i = 0; i < myOrgs.get(0).level(); i++) {
-            subLists.put(i + 1, new ArrayList<>());
-        }
-
-        //Separamos las orunits en listas por nivel
-        for (OrganisationUnitModel orgs : allOrgs) {
-            ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(view.getContext()));
-            treeNode.setSelectable(orgs.path() != null);
-            sublist.add(treeNode);
-            subLists.put(orgs.level(), sublist);
-        }
-
-        TreeNode root = TreeNode.root();
-        root.addChildren(subLists.get(1));
-
-        for (int level = myOrgs.get(0).level(); level > 1; level--) {
-            for (TreeNode treeNode : subLists.get(level - 1)) {
-                for (TreeNode treeNodeLevel : subLists.get(level)) {
-                    if (((OrganisationUnitModel) treeNodeLevel.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                        treeNode.addChild(treeNodeLevel);
-                }
-            }
-        }
-
-        view.addTree(root);
     }
 
     @Override
