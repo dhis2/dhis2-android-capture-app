@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -70,6 +71,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public static final String ONE_TIME = "ONE_TIME";
     public static final String PERMANENT = "PERMANENT";
     public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
+    public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
+    public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
 
     @Inject
     EventInitialContract.Presenter presenter;
@@ -98,6 +101,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean fixedOrgUnit;
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
     private String enrollmentUid;
+    private boolean isRepeatable;
+    private PeriodType periodType;
+    private String programStageUid;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +118,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == null)
             eventCreationType = "DEFAULT";
         String orgUnit = getIntent().getStringExtra(ORG_UNIT);
+        isRepeatable = getIntent().getBooleanExtra(EVENT_REPEATABLE, false);
+        periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
+        programStageUid = getIntent().getStringExtra(PROGRAM_STAGE_UID);
 
         ((App) getApplicationContext()).userComponent().plus(new EventInitialModule(eventId)).inject(this);
 
@@ -316,7 +325,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             activityTitle = isNewEvent ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
         }
         binding.setName(activityTitle);
-        binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
+
+        if(periodType == null)
+            binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
@@ -379,6 +390,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEvent(EventModel event) {
+        if(event.eventDate() != null)
+            binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
+        else
+            binding.setEventDate("");
+
         binding.setEvent(event);
         eventModel = event;
     }
@@ -467,6 +483,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             });
 
+            if(periodType != null)
+                presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
+
             presenter.getCatOption(eventModel.attributeOptionCombo());
             checkActionButtonVisibility();
         });
@@ -549,7 +568,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         Intent intent = new Intent(this, ProgramStageSelectionActivity.class);
         intent.putExtras(bundle);
         startActivityForResult(intent, RQ_PROGRAM_STAGE);*/
-        presenter.getProgramStage(getIntent().getStringExtra(PROGRAM_STAGE_UID));
+        presenter.getProgramStage(programStageUid);
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
@@ -571,5 +590,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 total++;
         }
         return total;
+    }
+
+    @Override
+    public void setReportDate(String date) {
+        selectedDate = date;
+        binding.date.setText(selectedDate);
+        binding.executePendingBindings();
+        checkActionButtonVisibility();
     }
 }

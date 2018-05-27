@@ -51,4 +51,7 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+
+    @NonNull
+    Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
 }

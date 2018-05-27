@@ -12,6 +12,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -57,6 +58,8 @@ public class EventInitialContract {
         Consumer<List<FieldViewModel>> showFields(String sectionUid);
 
         void showProgramStageSelection();
+
+        void setReportDate(String format);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -92,6 +95,8 @@ public class EventInitialContract {
 
         void goToSummary();
 
+        void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);
+
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -117,5 +122,7 @@ public class EventInitialContract {
         void getSectionCompletion(@Nullable String sectionUid);
 
         void onDetach();
+
+        void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);
     }
 }

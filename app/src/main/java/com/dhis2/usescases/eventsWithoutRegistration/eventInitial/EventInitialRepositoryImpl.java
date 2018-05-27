@@ -12,6 +12,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -161,5 +162,30 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
         return event(eventUid);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid) {
+         String EVENTS_QUERY = String.format(
+                "SELECT Event.* FROM %s JOIN %s " +
+                        "ON %s.%s = %s.%s " +
+                        "WHERE %s.%s = ? " +
+                        "AND %s.%s = ? " +
+                        "AND %s.%s = ? " +
+                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'"+
+                        "AND " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " > DATE() " +
+                        "ORDER BY CASE WHEN %s.%s > %s.%s " +
+                        "THEN %s.%s ELSE %s.%s END ASC",
+                EventModel.TABLE, EnrollmentModel.TABLE,
+                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+                EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
+                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID,
+                EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
+                EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
+
+         return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid, enrollmentUid, programStageUid)
+                 .mapToList(EventModel::create);
     }
 }
