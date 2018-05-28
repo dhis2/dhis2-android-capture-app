@@ -296,7 +296,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private boolean isFormCompleted() {
 
-        if (selectedCatCombo!=null && !selectedCatCombo.isDefault())
+        if (selectedCatCombo != null && !selectedCatCombo.isDefault())
             return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
@@ -424,6 +424,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgramStage(ProgramStageModel programStage) {
         this.programStageModel = programStage;
+        if (programStageModel.captureCoordinates()) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        }
         binding.setProgramStage(programStage);
     }
 

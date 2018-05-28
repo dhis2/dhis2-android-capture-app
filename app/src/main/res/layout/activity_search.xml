@@ -176,12 +176,10 @@
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/searchTab"
+                    style="@style/DhisTabLayout"
+                    app:tabTextAppearance="@style/DhisTabText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:tabBackground="@drawable/selector_tab"
-                    app:tabSelectedTextColor="?colorPrimary"
-                    app:tabTextAppearance="@style/TextAppearance.AppCompat"
-                    app:tabTextColor="@color/colorAccent">
+                    android:layout_height="wrap_content">
 
                     <android.support.design.widget.TabItem
                         android:layout_width="match_parent"

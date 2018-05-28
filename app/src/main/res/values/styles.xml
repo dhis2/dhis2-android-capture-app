@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
         <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
         <item name="android:windowContentTransitions">true</item>
@@ -86,6 +87,20 @@
     <style name="TimePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorPrimaryOrange</item>
         <item name="android:colorAccent">@color/colorPrimaryOrange</item>
+    </style>
+
+    <style name="DhisTabLayout" parent="Base.Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">?attr/colorAccent</item>
+        <item name="tabIndicatorHeight">8dp</item>
+        <item name="tabTextAppearance">@style/DhisTabText</item>
+        <item name="tabSelectedTextColor">?colorAccent</item>
+        <item name="tabBackground">?colorPrimary</item>
+        <item name="android:background">?colorPrimary</item>
+    </style>
+
+    <style name="DhisTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">?colorAccentAlpha</item>
+        <item name="textAllCaps">false</item>
     </style>
 
     <style name="loginInputText"><!--parent="TextAppearance.AppCompat"-->

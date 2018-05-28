@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.FragmentIndicatorsBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
@@ -72,7 +73,7 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
         super.onDestroy();
     }
 
-    public Consumer<List<Pair<ProgramIndicatorModel, String>>> swapIndicators() {
+    public Consumer<List<Trio<ProgramIndicatorModel, String, String>>> swapIndicators() {
         return indicators -> {
             adapter.setIndicators(indicators);
         };

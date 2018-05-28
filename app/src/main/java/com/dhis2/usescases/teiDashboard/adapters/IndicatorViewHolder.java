@@ -1,9 +1,10 @@
 package com.dhis2.usescases.teiDashboard.adapters;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.BR;
-import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.ItemIndicatorBinding;
 
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
@@ -20,9 +21,10 @@ class IndicatorViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(Pair<ProgramIndicatorModel, String> programIndicatorModel) {
+    public void bind(Trio<ProgramIndicatorModel, String, String> programIndicatorModel) {
         binding.setVariable(BR.indicator, programIndicatorModel.val0());
         binding.setVariable(BR.value, programIndicatorModel.val1());
+        binding.setVariable(BR.colorBg, programIndicatorModel.val2().isEmpty() ? -1 : Color.parseColor(programIndicatorModel.val2()));
         binding.executePendingBindings();
     }
 }

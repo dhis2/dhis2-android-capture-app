@@ -58,9 +58,9 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
 
         List<String> headers = new ArrayList<>();
         headers.add("Attr1");
-        for (ProgramModel programModel : programs) {
+        /*for (ProgramModel programModel : programs) {
             headers.add(programModel.displayShortName());
-        }
+        }*/
 
         List<List<String>> cellItems = new ArrayList<>();
         Observable.fromIterable(teis)

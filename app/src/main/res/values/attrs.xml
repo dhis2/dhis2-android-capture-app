@@ -5,4 +5,5 @@
     </declare-styleable>
 
     <attr name="colorPrimaryLight" format="color"/>
+    <attr name="colorAccentAlpha" format="color"/>
 </resources>

@@ -12,6 +12,7 @@ import com.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 

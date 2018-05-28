@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -18,6 +19,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.legendset.LegendModel;
+import org.hisp.dhis.android.core.legendset.ProgramIndicatorLegendSetLinkModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -98,7 +101,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'"+
+                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
                     "THEN %s.%s ELSE %s.%s END DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
@@ -196,6 +199,19 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             "WHERE TrackedEntityAttributeValue.trackedEntityAttribute IN " +
             "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +
             "AND TrackedEntityAttributeValue.trackedEntityInstance = ?";
+
+    private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
+                    "JOIN %s ON %s.%s = %s.%s\n" +
+                    "JOIN %s ON %s.%s = %s.%s\n" +
+                    "WHERE %s.%s = ?\n" +
+                    "AND %s.%s <= ?\n" +
+                    "AND %s.%s > ?",
+            LegendModel.TABLE, LegendModel.Columns.COLOR, LegendModel.TABLE,
+            ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.Columns.LEGEND_SET, LegendModel.TABLE, LegendModel.Columns.LEGEND_SET,
+            ProgramIndicatorModel.TABLE, ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.UID, ProgramIndicatorLegendSetLinkModel.TABLE, ProgramIndicatorLegendSetLinkModel.Columns.PROGRAM_INDICATOR,
+            ProgramIndicatorModel.TABLE, ProgramIndicatorModel.Columns.UID,
+            LegendModel.TABLE, LegendModel.Columns.START_VALUE,
+            LegendModel.TABLE, LegendModel.Columns.END_VALUE);
 
     public DashboardRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
@@ -303,28 +319,38 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
-                        ContentValues values = new ContentValues();
-                        Calendar createdDate = Calendar.getInstance();
-                        Calendar dueDate = Calendar.getInstance();
-                        if(standardInterval != null)
-                            dueDate.add(Calendar.DAY_OF_YEAR, standardInterval);
+                    ContentValues values = new ContentValues();
+                    Calendar createdDate = Calendar.getInstance();
+                    Calendar dueDate = Calendar.getInstance();
+                    if (standardInterval != null)
+                        dueDate.add(Calendar.DAY_OF_YEAR, standardInterval);
 
-                        values.put(EventModel.Columns.UID, codeGenerator.generate());
-                        values.put(EventModel.Columns.ENROLLMENT_UID, event.enrollmentUid());
-                        values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                        values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
-                        values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
-                        values.put(EventModel.Columns.PROGRAM, event.program());
-                        values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
-                        values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
-                        values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
-                        values.put(EventModel.Columns.STATE, State.TO_POST.toString());
+                    values.put(EventModel.Columns.UID, codeGenerator.generate());
+                    values.put(EventModel.Columns.ENROLLMENT_UID, event.enrollmentUid());
+                    values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
+                    values.put(EventModel.Columns.PROGRAM, event.program());
+                    values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
+                    values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
+                    values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
+                    values.put(EventModel.Columns.STATE, State.TO_POST.toString());
 
-                        if(briteDatabase.insert(EventModel.TABLE, values) <= 0) {
-                            throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
-                        }
-                        return Observable.just("Event Created");
+                    if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
+                        throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
+                    }
+                    return Observable.just("Event Created");
                 });
+    }
+
+    @Override
+    public Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel indicator, String value) {
+        Cursor cursor = briteDatabase.query(SELECT_LEGEND, indicator.uid(), value, value);
+        String color = "";
+        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+            color = cursor.getString(0);
+        }
+        return Observable.just(Trio.create(indicator, value, color));
     }
 
     @Override

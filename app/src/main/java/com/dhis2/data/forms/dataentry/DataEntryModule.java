@@ -13,6 +13,8 @@ import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 
+import org.hisp.dhis.android.core.D2;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -72,12 +74,12 @@ public class DataEntryModule {
 
     @Provides
     @PerFragment
-    DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase) {
+    DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase,@NonNull D2 d2) {
         if (!isEmpty(arguments.event())) { // NOPMD
             return new ProgramStageRepository(briteDatabase, modelFactory,
                     arguments.event(), arguments.section());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
-            return new EnrollmentRepository(briteDatabase, modelFactory, arguments.enrollment());
+            return new EnrollmentRepository(briteDatabase, modelFactory, arguments.enrollment(),d2);
         } else {
             throw new IllegalArgumentException("Unsupported entity type");
         }

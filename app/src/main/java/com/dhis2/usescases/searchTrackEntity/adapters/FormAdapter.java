@@ -111,7 +111,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), label, false, null, label, 1, attr.valueType(), null);
+                    viewModel = EditTextViewModel.create(attr.uid(), label, false, null, label, 1, attr.valueType(), null,!attr.generated());
                     break;
                 case BUTTON:
                     viewModel = FileViewModel.create(attr.uid(), label, false, null, null);

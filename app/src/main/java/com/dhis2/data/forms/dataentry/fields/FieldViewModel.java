@@ -22,4 +22,7 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract Boolean allowFutureDate();
+
+    @Nullable
+    public abstract Boolean editable();
 }

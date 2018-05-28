@@ -40,7 +40,6 @@ import static android.text.TextUtils.isEmpty;
 
 /**
  * Created by Cristian on 22/03/2018.
- *
  */
 
 public class EventSummaryRepositoryImpl implements EventSummaryRepository {
@@ -115,7 +114,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  dueDate\n" +
             "FROM Event\n" +
             "WHERE uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n"+
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
             "LIMIT 1;";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -164,7 +163,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             return FormSectionViewModel.createForProgramStageWithLabel(eventUid, cursor.getString(4), cursor.getString(1));
         } else {
             // This programstage has sections
-            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3),cursor.getString(5));
+            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(5));
         }
     }
 
@@ -202,7 +201,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1);
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true);
     }
 
     @NonNull
@@ -212,10 +211,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 .switchMap(this::queryEvent)
                 .switchMap(
                         event -> formRepository.ruleEngine()
-                                    .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event))
-                                    .map(Result::success)
-                                    .onErrorReturn(error -> Result.failure(new Exception(error)))
-                        )
+                                .switchMap(ruleEngine -> Flowable.fromCallable(ruleEngine.evaluate(event))
+                                        .map(Result::success)
+                                        .onErrorReturn(error -> Result.failure(new Exception(error)))
+                                )
                 );
     }
 

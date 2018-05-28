@@ -169,7 +169,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = codeGenerator.generate();
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null);
+                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null, true);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();

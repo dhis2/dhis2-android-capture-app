@@ -77,11 +77,8 @@
             android:id="@+id/tab_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="?colorPrimary"
-            app:tabBackground="?colorPrimary"
-            app:tabIndicatorColor="?colorAccent"
-            app:tabSelectedTextColor="?colorAccent"
-            app:tabTextColor="?colorAccent"
+            style="@style/DhisTabLayout"
+            app:tabTextAppearance="@style/DhisTabText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/toolbar"/>

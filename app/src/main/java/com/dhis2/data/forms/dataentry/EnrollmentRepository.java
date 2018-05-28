@@ -7,6 +7,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -28,7 +29,9 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
             "  Option.name,\n" +
-            "  Field.allowFutureDate\n" +
+            "  Field.allowFutureDate,\n" +
+            "  Field.generated,\n" +
+            "  Enrollment.organisationUnit\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -38,7 +41,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
-            "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate\n" +
+            "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
+            "        TrackedEntityAttribute.generated AS generated\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -50,36 +54,6 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  )\n" +
             "WHERE Enrollment.uid = ?";
 
-    /*private static final String QUERY = "SELECT \n" +
-            "  Field.id,\n" +
-            "  Field.label,\n" +
-            "  Field.type,\n" +
-            "  Field.mandatory,\n" +
-            "  Field.optionSet,\n" +
-            "  Value.value,\n" +
-            "  Option.name,\n" +
-            "  Field.formOrder\n" +
-            "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
-            "  LEFT OUTER JOIN (\n" +
-            "      SELECT\n" +
-            "        TrackedEntityAttribute.uid AS id,\n" +
-            "        TrackedEntityAttribute.displayName AS label,\n" +
-            "        TrackedEntityAttribute.valueType AS type,\n" +
-            "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
-            "        ProgramTrackedEntityAttribute.program AS program,\n" +
-            "        ProgramTrackedEntityAttribute.sortOrder AS formOrder,\n" +
-            "        ProgramTrackedEntityAttribute.mandatory AS mandatory\n" +
-            "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
-            "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
-            "    ) AS Field ON Field.program = Program.uid\n" +
-            "  LEFT OUTER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
-            "    Value.trackedEntityAttribute = Field.id\n" +
-            "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "  LEFT OUTER JOIN Option ON (\n" +
-            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
-            "  )\n" +
-            "WHERE Enrollment.uid = ?\n" +
-            "ORDER BY Field.formOrder ASC;";*/
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -89,13 +63,15 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private final String enrollment;
+    private final D2 d2;
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
                          @NonNull FieldViewModelFactory fieldFactory,
-                         @NonNull String enrollment) {
+                         @NonNull String enrollment, D2 d2) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.enrollment = enrollment;
+        this.d2 = d2;
     }
 
     @NonNull
@@ -114,6 +90,15 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
+        String uid = cursor.getString(0);
+        String label = cursor.getString(1);
+        ValueType valueType = ValueType.valueOf(cursor.getString(2));
+        boolean mandatory = cursor.getInt(3) == 1;
+        String optionSet = cursor.getString(4);
+        boolean allowFutureDates = cursor.getString(7).equals("1");
+        boolean generated = cursor.getString(8).equals("1");
+        String orgUnitUid = cursor.getString(9);
+
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
 
@@ -121,8 +106,15 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
-        return fieldFactory.create(cursor.getString(0), cursor.getString(1),
+        if (generated && dataValue == null) {
+            dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+        }
+
+        return fieldFactory.create(uid,
+                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates, !generated);
+
+      /*  return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, null, cursor.getString(7).equals("1"));
+                cursor.getString(4), dataValue, null, cursor.getString(7).equals("1"));*/
     }
 }

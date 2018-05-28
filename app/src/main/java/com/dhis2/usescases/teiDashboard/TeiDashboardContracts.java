@@ -91,6 +91,8 @@ public class TeiDashboardContracts {
         //IndicatorsFragment
         void subscribeToIndicators(IndicatorsFragment indicatorsFragment);
 
+        void onDescriptionClick(String description);
+
         //ScheduleFragment
         void subscribeToScheduleEvents(ScheduleFragment scheduleFragment);
 

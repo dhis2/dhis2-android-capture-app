@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter.onJiraUserChanged}" />
+                android:onTextChanged="@{presenter::onJiraUserChanged}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textWebPassword"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter.onJiraPassChanged}" />
+                android:onTextChanged="@{presenter::onJiraPassChanged}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:onTextChanged="@{presenter.onSummaryChanged}" />
+                android:onTextChanged="@{presenter::onSummaryChanged}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -95,7 +95,7 @@
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onTextChanged="@{presenter.onDescriptionChanged}"
+                android:onTextChanged="@{presenter::onDescriptionChanged}"
                 tools:text="@string/lorem" />
 
         </android.support.design.widget.TextInputLayout>

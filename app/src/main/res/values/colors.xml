@@ -2,24 +2,25 @@
 <resources>
     <!--DEFAULT THEME-->
     <color name="colorPrimary">#215e8c</color>
-    <color name="colorPrimaryDark">#175482</color>
-    <color name="colorPrimaryLight">#7fcafe</color>
+    <color name="colorPrimaryDark">#16507C</color>
+    <color name="colorPrimaryLight">#BACFFF</color>
     <color name="colorAccent">#ffffff</color>
+    <color name="colorAccentAlpha">#7fffffff</color>
 
     <!--RED THEME-->
     <color name="colorPrimaryRed">#8c2121</color>
-    <color name="colorPrimaryDarkRed">#821917</color>
-    <color name="colorPrimaryLightRed">#fe817f</color>
+    <color name="colorPrimaryDarkRed">#80100E</color>
+    <color name="colorPrimaryLightRed">#FF9493</color>
 
     <!--GREEN THEME-->
     <color name="colorPrimaryGreen">#218c51</color>
-    <color name="colorPrimaryDarkGreen">#178259</color>
-    <color name="colorPrimaryLightGreen">#7ffe9b</color>
+    <color name="colorPrimaryDarkGreen">#14714D</color>
+    <color name="colorPrimaryLightGreen">#8CDD8E</color>
 
     <!--ORANGE THEME-->
     <color name="colorPrimaryOrange">#e95911</color>
-    <color name="colorPrimaryDarkOrange">#ba4205</color>
-    <color name="colorPrimaryLightOrange">#e98f62</color>
+    <color name="colorPrimaryDarkOrange">#CF4500</color>
+    <color name="colorPrimaryLightOrange">#FFA77B</color>
 
     <!--OTHER COLORS-->
 

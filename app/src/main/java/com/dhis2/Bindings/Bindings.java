@@ -439,6 +439,7 @@ public class Bindings {
         EventStatus status = event.status();
         if (status == null)
             status = EventStatus.ACTIVE;
+
         switch (status) {
             case ACTIVE:
                 view.setText(view.getContext().getString(R.string.event_open));

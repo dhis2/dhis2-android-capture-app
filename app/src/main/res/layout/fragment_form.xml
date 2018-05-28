@@ -151,7 +151,8 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:tabMode="scrollable"
-            app:tabTextColor="@color/colorAccent" />
+            style="@style/DhisTabLayout"
+            app:tabTextAppearance="@style/DhisTabText" />
 
     </android.support.design.widget.AppBarLayout>
 

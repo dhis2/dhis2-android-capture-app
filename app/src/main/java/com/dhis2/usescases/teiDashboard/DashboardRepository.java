@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -21,7 +22,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -72,5 +72,7 @@ public interface DashboardRepository {
 
     Observable<ProgramStageModel> displayGenerateEvent(String eventUid);
 
-    Observable<String>generateNewEvent(String lastModifiedEventUid, Integer standardInterval);
+    Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval);
+
+    Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel programIndicator, String value);
 }

@@ -69,7 +69,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             "PMD.StdCyclomaticComplexity"
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,@Nullable String section, @Nullable Boolean allowFutureDates) {
+                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,@Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
@@ -92,7 +92,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section,editable);
             case TIME:
             case DATE:
             case DATETIME:
@@ -109,7 +109,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TRACKER_ASSOCIATE:
             case URL:
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section,editable);
         }
     }
 

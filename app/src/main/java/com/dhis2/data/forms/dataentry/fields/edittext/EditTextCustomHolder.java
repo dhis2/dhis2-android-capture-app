@@ -58,7 +58,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(editTextModel -> {
-
+                    editText.setEnabled(editTextModel.editable());
                     editText.setText(editTextModel.value() == null ?
                             null : valueOf(editTextModel.value()));
 
@@ -77,7 +77,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                             0 : editText.getText().length());
                     if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
                         StringBuilder label = new StringBuilder(editTextModel.label());
-                        if(editTextModel.mandatory())
+                        if (editTextModel.mandatory())
                             label.append("*");
                         inputLayout.setHint(label);
                     }

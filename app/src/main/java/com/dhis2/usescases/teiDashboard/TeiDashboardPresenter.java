@@ -333,7 +333,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
                 .map(indicators -> Observable.fromIterable(indicators)
-                        .filter(indicator->indicator.displayInForm())
+                        .filter(indicator -> indicator.displayInForm())
                         .map(indicator -> {
                             String indcatorValue = d2.evaluateProgramIndicator(
                                     dashboardProgramModel.getCurrentEnrollment().uid(),
@@ -342,16 +342,26 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
                         })
                         .filter(pair -> !pair.val1().isEmpty())
+                        .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))
                         .toList()
                 )
                 .flatMap(Single::toFlowable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .map(data -> {
+                    Log.d("INDICATOR SIZE", "IS" + data.size());
+                    return data;
+                })
                 .subscribe(
                         indicatorsFragment.swapIndicators(),
                         Timber::d
                 )
         );
+    }
+
+    @Override
+    public void onDescriptionClick(String description) {
+        view.showDescription(description);
     }
 
 
