@@ -84,8 +84,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                           @NonNull Context context, @NonNull String programUid,
                                           @NonNull String programStage, @NonNull Date date,
-                                          @NonNull String orgUnitUid, @Nullable String catComboUid,
-                                          @Nullable String catOptionUid, @NonNull String latitude, @NonNull String longitude) {
+                                          @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
+                                          @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
 
         Date createDate = Calendar.getInstance().getTime();
 
@@ -108,8 +108,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .completedDate(null)
                 .dueDate(null)
                 .state(State.TO_POST)
-                .attributeCategoryOptions(catComboUid)
-                .attributeOptionCombo(catOptionUid)
+                .attributeCategoryOptions(categoryOptionsUid)
+                .attributeOptionCombo(categoryOptionComboUid)
 //                .trackedEntityInstance(trackedEntityInstanceUid)
                 .build();
 
@@ -160,15 +160,15 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
+    public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.EVENT_DATE, date);
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
         // TODO CRIS: CHECK IF THESE ARE WORKING...
-//        contentValues.put(EventModel.Columns.LATITUDE, latitude);
-//        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
-//        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catComboUid == null ? "default" : catComboUid);
-//        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid == null ? "default" : catComboUid);
+        contentValues.put(EventModel.Columns.LATITUDE, latitude);
+        contentValues.put(EventModel.Columns.LONGITUDE, longitude);
+        contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid);
+        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
 
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
         return event(eventUid);

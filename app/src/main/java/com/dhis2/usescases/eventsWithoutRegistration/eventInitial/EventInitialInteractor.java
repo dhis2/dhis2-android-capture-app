@@ -9,13 +9,10 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
-import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Result;
-import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -24,9 +21,7 @@ import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,9 +188,14 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEvent(String enrollmentUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEvent(String enrollmentUid, String programStageModelUid, String programUid, Date date, String orgUnitUid,
+                               String categoryOptionComboUid, String categoryOptionsUid,
+                               String latitude, String longitude) {
         compositeDisposable.add(
-                eventInitialRepository.createEvent(enrollmentUid, null, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                eventInitialRepository.createEvent(enrollmentUid, null, view.getContext(), programUid,
+                        programStageModelUid, date, orgUnitUid,
+                        categoryOptionComboUid, categoryOptionsUid,
+                        latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
@@ -203,9 +203,15 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     }
 
     @Override
-    public void createNewEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModelUid, String programUid, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createNewEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModelUid,
+                                        String programUid, Date date, String orgUnitUid,
+                                        String categoryOptionComboUid, String categoryOptionsUid,
+                                        String latitude, String longitude) {
         compositeDisposable.add(
-                eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(), programUid, programStageModelUid, date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude)
+                eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstanceUid, view.getContext(),
+                        programUid, programStageModelUid, date, orgUnitUid,
+                        categoryOptionComboUid, categoryOptionsUid,
+                        latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -224,8 +230,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
 
 
     @Override
-    public void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
-        compositeDisposable.add(eventInitialRepository.editEvent(eventUid, date, orgUnitUid, catComboUid, latitude, longitude)
+    public void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
+        compositeDisposable.add(eventInitialRepository.editEvent(eventUid, date, orgUnitUid, catComboUid, catOptionCombo, latitude, longitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

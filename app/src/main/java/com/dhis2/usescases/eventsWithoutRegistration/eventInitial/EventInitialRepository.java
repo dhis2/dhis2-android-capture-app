@@ -50,5 +50,5 @@ public interface EventInitialRepository {
     Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
     @NonNull
-    Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude);
+    Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 }

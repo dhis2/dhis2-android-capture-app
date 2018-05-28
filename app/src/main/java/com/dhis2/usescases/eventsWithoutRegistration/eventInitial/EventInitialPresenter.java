@@ -60,20 +60,27 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
+    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String categoryOptionComboUid, String categoryOptionsUid,
+                            String latitude, String longitude) {
         if (program != null) {
-            interactor.createNewEvent(enrollmentUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+            interactor.createNewEvent(enrollmentUid, programStageModel, program.uid(), date, orgUnitUid, categoryOptionComboUid, categoryOptionsUid, latitude, longitude);
         }
     }
 
     @Override
-    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catComboUid, String catOptionUid, String latitude, String longitude) {
-        interactor.createNewEventPermanent(enrollmentUid, trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid, catComboUid, catOptionUid, latitude, longitude);
+    public void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid,
+                                     String catComboUid, String catOptionUid,
+                                     String latitude, String longitude) {
+        interactor.createNewEventPermanent(enrollmentUid, trackedEntityInstanceUid, programStageModel, program.uid(), date, orgUnitUid,
+                catComboUid, catOptionUid,
+                latitude, longitude);
     }
 
     @Override
-    public void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid, String catComboUid, String latitude, String longitude) {
-        interactor.editEvent(programStageModel, eventUid, date, orgUnitUid, catComboUid, latitude, longitude);
+    public void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid,
+                          String catComboUid, String catOptionCombo,
+                          String latitude, String longitude) {
+        interactor.editEvent(programStageModel, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, latitude, longitude);
     }
 
     @Override

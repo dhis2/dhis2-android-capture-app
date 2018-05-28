@@ -246,19 +246,26 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (isNewEvent) {
                 if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
-                    presenter.createEventPermanent(enrollmentUid, getTrackedEntityInstance,
-                            programStageModel.uid(), date, selectedOrgUnit,
-                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatOptionCombo.uid(),
-                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatCombo.uid(),
+                    presenter.createEventPermanent(
+                            enrollmentUid,
+                            getTrackedEntityInstance,
+                            programStageModel.uid(),
+                            date,
+                            selectedOrgUnit,
+                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
+                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 } else {
                     presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
-                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatOptionCombo.uid(),
-                            (selectedCatCombo == null || selectedCatCombo.isDefault()) ? null : selectedCatCombo.uid(),
+                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
+                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 }
             } else {
-                presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit, selectedCatOptionCombo.uid(), selectedLat, selectedLon);
+                presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit,
+                        null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
+                        (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                        selectedLat, selectedLon);
             }
         });
     }
@@ -296,7 +303,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private boolean isFormCompleted() {
 
-        if (selectedCatCombo != null && !selectedCatCombo.isDefault())
+        if (selectedCatCombo != null && !CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()))
             return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
@@ -439,7 +446,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             selectedCatCombo = catCombo;
 
-            if (catCombo.isDefault() || catComboList == null || catComboList.isEmpty()) {
+            if (CategoryComboModel.DEFAULT_UID.equals(catCombo.uid()) || catComboList == null || catComboList.isEmpty()) {
                 binding.catCombo.setVisibility(View.GONE);
                 binding.catComboLine.setVisibility(View.GONE);
             } else {

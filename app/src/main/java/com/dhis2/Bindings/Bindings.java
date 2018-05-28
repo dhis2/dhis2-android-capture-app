@@ -33,7 +33,9 @@ import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -544,7 +546,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         categoryOptionModel -> {
-                                            if (!categoryOptionModel.isDefault()) {
+                                            if (!CategoryComboModel.DEFAULT_UID.equals(categoryOptionModel.uid())) {
                                                 textView.setText(categoryOptionComboModel.displayName());
                                             } else {
                                                 textView.setText("");
