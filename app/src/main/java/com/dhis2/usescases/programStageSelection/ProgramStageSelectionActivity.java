@@ -11,6 +11,7 @@ import com.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
@@ -19,6 +20,8 @@ import javax.inject.Inject;
 
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ENROLLMENT_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_PERIOD_TYPE;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_REPEATABLE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_STAGE_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
@@ -78,7 +81,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     }
 
     @Override
-    public void setResult(String programStageUid) {
+    public void setResult(String programStageUid, boolean repeatable, @Nullable PeriodType periodType) {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra("PROGRAM_UID"));
         bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra("TRACKED_ENTITY_INSTANCE"));
@@ -86,6 +89,8 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putString(ENROLLMENT_UID, getIntent().getStringExtra("ENROLLMENT_UID"));
         bundle.putBoolean(NEW_EVENT, getIntent().getBooleanExtra("NEW_EVENT", true));
         bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra("EVENT_CREATION_TYPE"));
+        bundle.putBoolean(EVENT_REPEATABLE, repeatable);
+        bundle.putSerializable(EVENT_PERIOD_TYPE, periodType);
         bundle.putString(PROGRAM_STAGE_UID, programStageUid);
 
         startActivity(EventInitialActivity.class, bundle, true, false, null);

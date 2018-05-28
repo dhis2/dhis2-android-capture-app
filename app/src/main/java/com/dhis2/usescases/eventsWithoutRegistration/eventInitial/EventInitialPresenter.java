@@ -14,6 +14,7 @@ import com.dhis2.utils.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Date;
@@ -157,5 +158,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
         interactor.getSectionCompletion(sectionUid);
+    }
+
+    @Override
+    public void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType) {
+        interactor.getEvents(programUid, enrollmentUid, programStageUid, periodType);
     }
 }

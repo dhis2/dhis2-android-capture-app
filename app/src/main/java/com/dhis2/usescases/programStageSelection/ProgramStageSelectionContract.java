@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class ProgramStageSelectionContract {
 
         void setData(List<ProgramStageModel> programStageModels);
 
-        void setResult(String programStageUid);
+        void setResult(String programStageUid, boolean repeatable, PeriodType periodType);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

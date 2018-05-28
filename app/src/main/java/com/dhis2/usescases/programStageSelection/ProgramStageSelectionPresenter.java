@@ -53,6 +53,6 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
     @Override
     public void onProgramStageClick(ProgramStageModel programStage) {
-        view.setResult(programStage.uid());
+        view.setResult(programStage.uid(), programStage.repeatable(), programStage.periodType());
     }
 }

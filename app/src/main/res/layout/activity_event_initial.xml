@@ -27,6 +27,11 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
+
+        <variable
+            name="eventDate"
+            type="java.lang.String"/>
+
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -181,8 +186,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
-                                    android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'
-                                    android:textSize="15sp" />
+                                    android:textSize="15sp"
+                                    app:date='@{ eventDate ?? "" }'/>
+                                    <!--android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'-->
+
                             </android.support.design.widget.TextInputLayout>
                         </LinearLayout>
 
