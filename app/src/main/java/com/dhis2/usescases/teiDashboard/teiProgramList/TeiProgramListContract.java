@@ -23,10 +23,12 @@ public class TeiProgramListContract {
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view, String trackedEntityId);
         void onBackClick();
-        void onEnrollClick(String enrollmentId);
+        void onEnrollClick(ProgramModel program);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(TeiProgramListContract.View mview, String trackedEntityId);
+
+        void enroll(String programUid, String uid);
     }
 }

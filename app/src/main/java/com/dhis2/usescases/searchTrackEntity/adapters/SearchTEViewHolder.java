@@ -62,15 +62,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::setEnrollment, Timber::d));
-                        /*.flatMap(data -> {
-                            setEnrollment(data);
-                            return metadataRepository.getTEIProgramsToEnroll(trackedEntityInstanceModel.trackedEntityType());
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::setPopUp, OnErrorHandler.create())
-        );*/
-
         //endregion
 
 

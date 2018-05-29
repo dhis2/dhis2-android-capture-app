@@ -50,7 +50,7 @@
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                app:programName='@{program.uid}'
+                android:text='@{program.displayShortName}'
                 android:textColor="@color/black_de0"
                 android:textSize="16sp"
                 tools:text="ANC PROGRAM"/>
@@ -67,7 +67,7 @@
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:text="@string/enroll"
-                android:onClick="@{()->presenter.onEnrollClick(program.uid)}"/>
+                android:onClick="@{()->presenter.onEnrollClick(program)}"/>
         </LinearLayout>
 
         <View
