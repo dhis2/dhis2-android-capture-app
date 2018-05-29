@@ -63,12 +63,14 @@
             android:layout_height="0dp"
             android:paddingEnd="6dp"
             android:paddingStart="6dp"
+            android:clipToPadding="false"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tei_data"
-            tools:listitem="@layout/item_event" />
+            tools:listitem="@layout/item_event"
+            android:paddingBottom="200dp"/>
 
         <com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fab"

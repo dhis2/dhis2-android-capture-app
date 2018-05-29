@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemIndicatorBinding;
 
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
@@ -19,10 +20,10 @@ import java.util.List;
 
 public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder> {
 
-    private List<ProgramIndicatorModel> programIndicatorModels;
+    private List<Pair<ProgramIndicatorModel, String>> programIndicators;
 
     public IndicatorsAdapter() {
-        programIndicatorModels = new ArrayList<>();
+        programIndicators = new ArrayList<>();
     }
 
     @Override
@@ -33,16 +34,16 @@ public class IndicatorsAdapter extends RecyclerView.Adapter<IndicatorViewHolder>
 
     @Override
     public void onBindViewHolder(IndicatorViewHolder holder, int position) {
-        holder.bind(programIndicatorModels.get(position));
+        holder.bind(programIndicators.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return programIndicatorModels != null ? programIndicatorModels.size() : 0;
+        return programIndicators != null ? programIndicators.size() : 0;
     }
 
-    public void setIndicators(List<ProgramIndicatorModel> indicators) {
-        this.programIndicatorModels = indicators;
+    public void setIndicators(List<Pair<ProgramIndicatorModel, String>> indicators) {
+        this.programIndicators = indicators;
         notifyDataSetChanged();
     }
 }

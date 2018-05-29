@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.DateUtils;
@@ -60,6 +61,8 @@ class EnrollmentFormRepository implements FormRepository {
     private static final String SELECT_ENROLLMENT_PROGRAM = "SELECT Program.*\n" +
             "FROM Program JOIN Enrollment ON Enrollment.program = Program.uid\n" +
             "WHERE Enrollment.uid = ?";
+
+    private static final String SELECT_INCIDENT_DATE = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ?";
 
     private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT ProgramStage.uid, " +
             "Program.uid, Enrollment.organisationUnit, ProgramStage.minDaysFromStart, ProgramStage.generatedByEnrollmentDate, Enrollment.incidentDate, Enrollment.enrollmentDate \n" +
@@ -150,11 +153,22 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<ProgramModel> incidentDate() {
+    public Flowable<Pair<ProgramModel, String>> incidentDate() {
         return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
                 .mapToOne(ProgramModel::create)
+                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid)
+                        .mapToOne(EnrollmentModel::create)
+                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.dateOfIncident() != null ?
+                                DateUtils.uiDateFormat().format(enrollmentModel.dateOfIncident()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
+    }
+
+    @Override
+    public Flowable<ProgramModel> getAllowDatesInFuture() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid)
+                .mapToOne(ProgramModel::create)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

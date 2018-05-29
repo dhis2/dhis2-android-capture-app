@@ -15,6 +15,8 @@ import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialCo
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryModule;
+import com.dhis2.usescases.jira.JiraComponent;
+import com.dhis2.usescases.jira.JiraModule;
 import com.dhis2.usescases.main.MainComponent;
 import com.dhis2.usescases.main.MainModule;
 import com.dhis2.usescases.main.program.ProgramComponent;
@@ -27,6 +29,8 @@ import com.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import com.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
 import com.dhis2.usescases.programStageSelection.ProgramStageSelectionModule;
+import com.dhis2.usescases.qrReader.QrReaderComponent;
+import com.dhis2.usescases.qrReader.QrReaderModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import com.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import com.dhis2.usescases.syncManager.SyncManagerComponent;
@@ -99,4 +103,10 @@ public interface UserComponent {
 
     @NonNull
     ProgramStageSelectionComponent plus(ProgramStageSelectionModule programStageSelectionModule);
+
+    @NonNull
+    QrReaderComponent plus(QrReaderModule qrReaderModule);
+
+    @NonNull
+    JiraComponent plus(JiraModule jiraModule);
 }

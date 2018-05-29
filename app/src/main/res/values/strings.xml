@@ -141,6 +141,7 @@
     <string name="follow_up_enabled">Follow up enabled</string>
     <string name="follow_up_disabled">Follow up disabled</string>
     <string name="deactivate">Deactivate</string>
+    <string name="program_not_allow_events">This program does not allow more events</string>
 
     <!--DONE TASKS-->
     <string name="events">events</string>
@@ -225,4 +226,7 @@
     <string name="jira_report">Jira report</string>
     <string name="about">About</string>
     <string name="programs_to_enroll">Programs to enroll</string>
+    <string name="select_all">select all</string>
+    <string name="empty_program_list">There is no information for the filters selected. Please try changing them.</string>
+    <string name="share">Share</string>
 </resources>

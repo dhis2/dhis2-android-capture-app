@@ -12,10 +12,12 @@ import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.usescases.main.MainActivity;
 
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -79,6 +81,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
         disposable.add(configurationRepository.configure(baseUrl)
                 .map((config) -> ((App) view.getContext().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap((userManager) -> {
+                    SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
+                            "com.dhis2", Context.MODE_PRIVATE);
+                    prefs.edit().putString("SERVER", serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
@@ -151,14 +156,14 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     @NonNull
-    private Observable<Response> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(50)));
+    private Observable<List<TrackedEntityInstance>> trackerData() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(500, false)));
     }
 
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(100)));
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(500)));
     }
 
     @NonNull
@@ -181,16 +186,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.handleSync();
             sync();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
-            view.hideProgress();
             view.renderInvalidCredentialsError();
         } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-            view.hideProgress();
             view.renderUnexpectedError();
         } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            view.hideProgress();
             view.renderServerError();
         }
     }
@@ -200,10 +201,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
         Timber.e(throwable);
 
         if (throwable instanceof IOException) {
-            view.hideProgress();
             view.renderInvalidServerUrlError();
         } else {
-            view.hideProgress();
             view.renderUnexpectedError();
         }
     }

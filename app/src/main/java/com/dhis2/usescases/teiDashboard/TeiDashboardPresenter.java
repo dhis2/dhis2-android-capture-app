@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.qr.QRInterface;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
@@ -28,6 +29,7 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.OnErrorHandler;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -52,6 +55,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
+    private final QRInterface qrInterface;
+    private final D2 d2;
     private TeiDashboardContracts.View view;
 
     private String teUid;
@@ -64,9 +69,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private TEIDataFragment teiDataFragment;
     private String eventUid;
 
-    TeiDashboardPresenter(DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, QRInterface qrInterface) {
+        this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
+        this.qrInterface = qrInterface;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -147,8 +154,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
         compositeDisposable.add(
                 dashboardRepository.getEnrollmentEventsWithDisplay(programUid, teUid)
-                        .flatMap( events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
-                        .map( events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
+                        .flatMap(events -> events.isEmpty() ? dashboardRepository.getTEIEnrollmentEvents(programUid, teUid) : Observable.empty())
+                        .map(events -> Observable.fromIterable(events).all(event -> event.status() == EventStatus.COMPLETED))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -159,14 +166,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid){
+    public void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid) {
         compositeDisposable.add(
                 dashboardRepository.displayGenerateEvent(eventUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        teiDataFragment.displayGenerateEvent(),
-                        OnErrorHandler.create())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                teiDataFragment.displayGenerateEvent(),
+                                OnErrorHandler.create())
         );
     }
 
@@ -191,7 +198,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
                 case 0:
-                    view.showQR();
+                    qrInterface.teiQRs(teUid)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view.showQR(), Timber::d);
                     return true;
                 case 1:
                     view.displayMessage("This functionality is not ready yet.");
@@ -203,6 +213,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         });
 
         menu.show();
+    }
+
+    @Override
+    public void nextQr() {
+        view.nextQR();
     }
 
     @Override
@@ -251,7 +266,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(), !dashboardProgramModel.getCurrentEnrollment().followUp());
+        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(),
+                dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
         if (success > 0) {
             view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ?
                     view.getContext().getString(R.string.follow_up_enabled) :
@@ -316,11 +332,24 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void subscribeToIndicators(IndicatorsFragment indicatorsFragment) {
         compositeDisposable.add(dashboardRepository.getIndicators(programUid)
+                .map(indicators -> Observable.fromIterable(indicators)
+                        .filter(indicator->indicator.displayInForm())
+                        .map(indicator -> {
+                            String indcatorValue = d2.evaluateProgramIndicator(
+                                    dashboardProgramModel.getCurrentEnrollment().uid(),
+                                    null,
+                                    indicator.uid());
+                            return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
+                        })
+                        .filter(pair -> !pair.val1().isEmpty())
+                        .toList()
+                )
+                .flatMap(Single::toFlowable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         indicatorsFragment.swapIndicators(),
-                        OnErrorHandler.create()
+                        Timber::d
                 )
         );
     }

@@ -1,6 +1,7 @@
 package com.dhis2.data.database;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
@@ -52,5 +53,10 @@ class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     @Override
     public Transaction beginNewTransaction() {
         return new SqlBriteTransaction(sqlBriteDatabase.newTransaction());
+    }
+
+    @Override
+    public SQLiteDatabase database() {
+        return sqlBriteDatabase.getReadableDatabase();
     }
 }

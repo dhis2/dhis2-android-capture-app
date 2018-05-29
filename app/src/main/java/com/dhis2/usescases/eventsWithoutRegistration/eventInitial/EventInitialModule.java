@@ -17,6 +17,7 @@ import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -24,7 +25,6 @@ import dagger.Provides;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 @PerActivity
 @Module
@@ -81,8 +81,8 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase);
+    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
+        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, databaseAdapter);
     }
 
     @Provides

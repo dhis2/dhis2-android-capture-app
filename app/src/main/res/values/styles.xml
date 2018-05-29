@@ -134,6 +134,13 @@
         <item name="android:background">@drawable/full_width_button_bg</item>
     </style>
 
+    <style name="TextButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
     <style name="TextView.InputLabel" parent="TextAppearance.AppCompat.Caption">
         <item name="android:textColor">?android:textColorHint</item>
         <item name="android:paddingLeft">4dp</item>

@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
@@ -55,6 +55,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        else
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
         LoginComponent loginComponent = ((App) getApplicationContext()).loginComponent();
         if (loginComponent == null) {
             // in case if we don't have cached presenter
@@ -85,16 +90,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public ActivityLoginBinding getBinding() {
         return binding;
-    }
-
-    @Override
-    public void showProgress() {
-        binding.progress.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideProgress() {
-        binding.progress.setVisibility(View.GONE);
     }
 
     @Override
@@ -129,13 +124,12 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             params.height = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
-            binding.lottieView2.setVisibility(View.VISIBLE);
-            binding.lottieView3.setVisibility(View.VISIBLE);
-            binding.lottieView2.setRepeatMode(LottieDrawable.REVERSE);
-            binding.lottieView3.setRepeatMode(LottieDrawable.REVERSE);
-            binding.lottieView2.playAnimation();
-            binding.lottieView3.playAnimation();
+            binding.lottieView.setVisibility(View.VISIBLE);
+            binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
+            binding.lottieView.useHardwareAcceleration(true);
+            binding.lottieView.enableMergePathsForKitKatAndAbove(true);
 
+            binding.lottieView.playAnimation();
         }
     }
 

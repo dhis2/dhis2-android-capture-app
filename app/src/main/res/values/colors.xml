@@ -50,7 +50,8 @@
     <color name="red_060">#e06060</color>
     <color name="red_a14">#a14545</color>
     <color name="gray_f6f">#f6f6f6</color>
-
+    <color name="white_apha">#64ffffff</color>
+    <color name="gray_e7e">#e7e7e7</color>
     <color name="yellow_ffd">#ffd55d</color>
 
     <color name="event_green">#e9fdd2</color>

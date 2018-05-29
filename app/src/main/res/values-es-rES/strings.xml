@@ -109,6 +109,7 @@
     <string name="follow_up_enabled">Seguimiento activado</string>
     <string name="follow_up_disabled">Seguimiento desactivado</string>
     <string name="deactivate">Desactivar</string>
+    <string name="program_not_allow_events">Este programa no admite más eventos</string>
     <string name="events">Eventos</string>
     <string name="done_task">Inicio</string>
     <string name="app_info">Informacion</string>
@@ -173,5 +174,8 @@
     <string name="button_ok">OK</string>
     <string name="jira_report">Reportar en Jira</string>
     <string name="programs_to_enroll">Programas para enrolar</string>
+    <string name="select_all">Selecionar todo</string>
+    <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
+    <string name="share">Compartir</string>
 
 </resources>

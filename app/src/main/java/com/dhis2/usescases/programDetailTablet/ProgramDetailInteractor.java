@@ -6,6 +6,7 @@ import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
+import com.dhis2.utils.OrgUnitUtils;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.D2;
@@ -14,9 +15,6 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-
-import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,7 +28,6 @@ import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 31/10/2017 .
- *
  */
 
 public class ProgramDetailInteractor implements ProgramDetailContractModule.Interactor {
@@ -80,7 +77,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                 .subscribe(
                         orgsUnits -> {
                             view.setOrgUnitNames(orgsUnits);
-                            renderTree(orgsUnits);
+                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgsUnits));
                         },
                         Timber::d)
         );
@@ -132,46 +129,6 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
             }
         });
 
-    }
-
-    private void renderTree(List<OrganisationUnitModel> myOrgs) {
-
-        selectedOrgUnits.addAll(myOrgs);
-
-        getData(1);
-
-        TreeNode root = TreeNode.root();
-        ArrayList<TreeNode> allTreeNodes = new ArrayList<>();
-        ArrayList<TreeNode> treeNodesToRemove = new ArrayList<>();
-
-        int maxLevel = -1;
-        int minLevel = 999;
-        for (OrganisationUnitModel orgUnit : myOrgs) {
-            maxLevel = orgUnit.level() > maxLevel ? orgUnit.level() : maxLevel;
-            minLevel = orgUnit.level() < minLevel ? orgUnit.level() : minLevel;
-            allTreeNodes.add(new TreeNode(orgUnit).setViewHolder(new OrgUnitHolder(view.getContext())));
-        }
-
-        for (TreeNode treeNodeParent : allTreeNodes) {
-            for (TreeNode treeNodeChild : allTreeNodes) {
-                OrganisationUnitModel parentOU = ((OrganisationUnitModel) treeNodeParent.getValue());
-                OrganisationUnitModel childOU = ((OrganisationUnitModel) treeNodeChild.getValue());
-
-                if (childOU.parent().equals(parentOU.uid())) {
-                    treeNodeParent.addChildren(treeNodeChild);
-                    treeNodesToRemove.add(treeNodeChild);
-                }
-            }
-        }
-
-        allTreeNodes.remove(treeNodesToRemove);
-
-        for (TreeNode treeNode : allTreeNodes) {
-            root.addChild(treeNode);
-        }
-
-
-        view.addTree(root);
     }
 
     @Override

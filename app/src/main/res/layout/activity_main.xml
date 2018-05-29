@@ -103,16 +103,6 @@
                     android:textColor="@color/white_dfd"
                     android:textSize="21sp" />
 
-                <TextView
-                    android:id="@+id/appVersion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center"
-                    android:text="v1.0"
-                    android:textColor="@color/white_dfd"
-                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

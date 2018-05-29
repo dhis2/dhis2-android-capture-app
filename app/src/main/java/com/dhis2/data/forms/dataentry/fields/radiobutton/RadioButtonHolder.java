@@ -8,10 +8,10 @@ import android.widget.RadioGroup;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormYesNoBinding;
-import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxRadioGroup;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import timber.log.Timber;
@@ -27,33 +27,45 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
     private
     BehaviorProcessor<RadioButtonViewModel> model;
     final RadioGroup radioGroup;
+    private CompositeDisposable disposable;
 
     RadioButtonHolder(ViewGroup parent, FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding.getRoot());
+        disposable = new CompositeDisposable();
         radioGroup = binding.customYesNo.getRadioGroup();
 
         model = BehaviorProcessor.create();
 
-        model.subscribe(checkBoxViewModel -> {
-            binding.setLabel(checkBoxViewModel.label());
-            if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
-                binding.customYesNo.getRadioGroup().check(R.id.yes);
-            else if (checkBoxViewModel.value() != null)
-                binding.customYesNo.getRadioGroup().check(R.id.no);
-            else
-                binding.customYesNo.getRadioGroup().check(R.id.no_value);
-        });
+        disposable.add(model.subscribe(checkBoxViewModel -> {
+                    binding.setLabel(checkBoxViewModel.label());
+                    binding.setValueType(checkBoxViewModel.valueType());
+                    if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
+                        binding.customYesNo.getRadioGroup().check(R.id.yes);
+                    else if (checkBoxViewModel.value() != null)
+                        binding.customYesNo.getRadioGroup().check(R.id.no);
+                    else
+                        binding.customYesNo.getRadioGroup().check(R.id.no_value);
+                },
+                Timber::d)
+        );
 
-        RxRadioGroup.checkedChanges(radioGroup).takeUntil(RxView.detaches(parent))
-                .map(checkId -> binding.customYesNo.getRadioGroup().getCheckedRadioButtonId() == checkId ? RadioButtonViewModel.Value.CHECKED :
-                        RadioButtonViewModel.Value.UNCHECKED)
-                .filter(value -> model.hasValue())
-                .filter(value -> !Preconditions.equals(
-                        model.getValue().value(), value))
-                .map(value -> RowAction.create(model.getValue().uid(), value.toString()))
+        disposable.add(RxRadioGroup.checkedChanges(radioGroup).takeUntil(RxView.detaches(parent))
+                .filter(checkIc -> model.hasValue())
+                .map(checkId ->
+                        {
+                            switch (checkId) {
+                                case R.id.yes:
+                                    return RowAction.create(model.getValue().uid(), String.valueOf(true));
+                                case R.id.no:
+                                    return RowAction.create(model.getValue().uid(), String.valueOf(false));
+                                default:
+                                    return RowAction.create(model.getValue().uid(), null);
+                            }
+                        }
+                )
                 .subscribe(
                         processor::onNext,
-                        Timber::d);
+                        Timber::d));
     }
 
     public void update(RadioButtonViewModel viewModel) {

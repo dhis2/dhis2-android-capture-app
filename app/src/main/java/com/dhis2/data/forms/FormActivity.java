@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.dhis2.R;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.CustomViews.CoordinatesView;
 
 import static com.dhis2.utils.Preconditions.isNull;
 

@@ -10,6 +10,7 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
+import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Result;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -174,7 +175,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this::renderTree,
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -185,7 +186,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        this::renderTree,
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
                         throwable -> view.renderError(throwable.getMessage())
 
                 ));
@@ -237,66 +238,6 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
     @Override
     public void onDetach() {
         compositeDisposable.dispose();
-    }
-
-
-    private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
-
-        HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
-
-        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
-        allOrgs.addAll(myOrgs);
-        for (OrganisationUnitModel myorg : myOrgs) {
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] path = myorg.path().split("/");
-            for (int i = myorg.level() - 1; i > 0; i--) {
-                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(path[i])
-                        .level(i)
-                        .parent(path[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-                if (!allOrgs.contains(orgToAdd))
-                    allOrgs.add(orgToAdd);
-            }
-        }
-
-        Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
-
-        if (!myOrgs.isEmpty() && myOrgs.get(0).level() != null) {
-            for (int i = 0; i < myOrgs.get(0).level(); i++) {
-                subLists.put(i + 1, new ArrayList<>());
-            }
-        }
-
-        //Separamos las orunits en listas por nivel
-        for (OrganisationUnitModel orgs : allOrgs) {
-            ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(view.getContext()));
-            treeNode.setSelectable(orgs.path() != null);
-            sublist.add(treeNode);
-            subLists.put(orgs.level(), sublist);
-        }
-
-        TreeNode root = TreeNode.root();
-        if (subLists.size() > 0) {
-            root.addChildren(subLists.get(1));
-        }
-
-        if (!myOrgs.isEmpty() && myOrgs.get(0).level() != null) {
-            for (int level = myOrgs.get(0).level(); level > 1; level--) {
-                for (TreeNode treeNode : subLists.get(level - 1)) {
-                    for (TreeNode treeNodeLevel : subLists.get(level)) {
-                        if (((OrganisationUnitModel) treeNodeLevel.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                            treeNode.addChild(treeNodeLevel);
-                    }
-                }
-            }
-        }
-
-        view.addTree(root);
     }
 
 

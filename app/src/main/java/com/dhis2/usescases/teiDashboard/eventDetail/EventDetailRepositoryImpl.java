@@ -98,7 +98,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 "%s.%s = ",
                 EventModel.TABLE, EventModel.Columns.UID
         );
-        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE + "" + eventUid + "");
+        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE + "'" + eventUid + "'");
     }
 
     @Override

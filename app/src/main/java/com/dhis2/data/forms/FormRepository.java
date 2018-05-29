@@ -2,6 +2,7 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -22,7 +23,9 @@ public interface FormRepository {
     @NonNull
     Flowable<String> reportDate();
 
-    Flowable<ProgramModel> incidentDate();
+    Flowable<Pair<ProgramModel, String>> incidentDate();
+
+    Flowable<ProgramModel> getAllowDatesInFuture();
 
     @NonNull
     Flowable<RuleEngine> ruleEngine();

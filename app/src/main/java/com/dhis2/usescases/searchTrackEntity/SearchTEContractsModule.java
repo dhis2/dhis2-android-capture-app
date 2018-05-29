@@ -7,6 +7,7 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -16,6 +17,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -83,5 +85,7 @@ public class SearchTEContractsModule {
         void downloadTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
 
         boolean selectTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
+
+        Observable<List<OrganisationUnitModel>> getOrgUnits();
     }
 }

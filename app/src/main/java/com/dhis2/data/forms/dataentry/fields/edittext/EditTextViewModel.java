@@ -20,18 +20,18 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
                                            @NonNull Integer lines, @NonNull ValueType valueType,@Nullable String section) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, section, hint, lines, InputType.TYPE_CLASS_TEXT, valueType, null, null);
+                value, section, null, hint, lines, InputType.TYPE_CLASS_TEXT, valueType, null, null);
     }
 
     @NonNull
     public EditTextViewModel withWarning(@NonNull String warning) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(),programStageSection(), hint(), maxLines(), inputType(),valueType(), warning, error());
+                value(),programStageSection(), null, hint(), maxLines(), inputType(),valueType(), warning, error());
     }
 
     @NonNull
     public EditTextViewModel withError(@NonNull String error) {
         return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
-                value(),programStageSection(), hint(), maxLines(), inputType(),valueType(), warning(), error);
+                value(),programStageSection(), null, hint(), maxLines(), inputType(),valueType(), warning(), error);
     }
 }

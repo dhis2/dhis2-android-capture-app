@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -32,10 +33,12 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     private Calendar selectedCalendar;
     private boolean isBgTransparent;
     private LayoutInflater inflater;
+    DatePickerDialog dateDialog;
 
     private OnDateSelected listener;
 
     private String label;
+    private boolean allowFutureDates;
 
     public DateView(Context context) {
         super(context);
@@ -81,6 +84,10 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         binding.executePendingBindings();
     }
 
+    public void setAllowFutureDates(boolean allowFutureDates){
+        this.allowFutureDates = allowFutureDates;
+    }
+
     public void initData(String data) {
         Date date = null;
         try {
@@ -108,7 +115,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
+        dateDialog = new DatePickerDialog(getContext(), (
                 (datePicker, year1, month1, day1) -> {
                     selectedCalendar.set(Calendar.YEAR, year1);
                     selectedCalendar.set(Calendar.MONTH, month1);
@@ -124,6 +131,9 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
                 month,
                 day);
         dateDialog.setTitle(label);
+        if (!allowFutureDates) {
+            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             editText.setText(null);
             listener.onDateSelected(null);

@@ -89,12 +89,13 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
-        return dataEntryAdapter::swap;
+        return updates -> dataEntryAdapter.swap(updates);
     }
 
     private void setUpRecyclerView() {
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), getArguments().getParcelable(ARGUMENTS));
+                getChildFragmentManager(), getArguments().getParcelable(ARGUMENTS),
+                dataEntryPresenter.getOrgUnits());
         dataEntryAdapter.setHasStableIds(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),

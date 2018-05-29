@@ -19,12 +19,6 @@ public class LoginContracts {
         ActivityLoginBinding getBinding();
 
         @UiThread
-        void showProgress();
-
-        @UiThread
-        void hideProgress();
-
-        @UiThread
         void renderInvalidServerUrlError();
 
         @UiThread

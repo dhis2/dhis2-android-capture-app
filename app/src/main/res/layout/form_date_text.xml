@@ -9,6 +9,9 @@
         <variable
             name="initData"
             type="java.lang.String"/>
+        <variable
+            name="allowFutureDates"
+            type="java.lang.Boolean"/>
     </data>
 
     <com.dhis2.utils.CustomViews.DateView

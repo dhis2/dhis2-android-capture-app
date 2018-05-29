@@ -66,10 +66,16 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(formRepository.incidentDate()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .filter(programModel -> programModel.displayIncidentDate())
+                .filter(programModelAndDate -> programModelAndDate.val0().displayIncidentDate())
                 .subscribe(view.renderIncidentDate(), Timber::e)
         );
 
+        compositeDisposable.add(formRepository.getAllowDatesInFuture()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
+                        Timber::e)
+        );
         compositeDisposable.add(formRepository.sections()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())

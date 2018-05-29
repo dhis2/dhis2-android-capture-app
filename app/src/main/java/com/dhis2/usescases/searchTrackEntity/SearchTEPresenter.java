@@ -16,8 +16,10 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -57,6 +60,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private HashMap<String, View> selectedTeiToDownloadIcon;
     private HashMap<String, View> selectedTeiToDownloadProgress;
     private HashMap<String, Integer> selectedTeiToDownloadPosition;
+    private List<OrganisationUnitModel> orgUnits;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
@@ -103,6 +107,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(
                                 data -> view.setForm(data, selectedProgram),
                                 Timber::d)
+        );
+
+        compositeDisposable.add(
+                metadataRepository.getOrganisationUnits()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(
+                                orgUnits -> this.orgUnits = orgUnits,
+                                Timber::d
+                        )
         );
 
 
@@ -169,17 +183,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             for (String key : queryData.keySet()) {
                                 filterList.add(key + ":LIKE:" + queryData.get(key));
                             }
-                            List<String> orgUnits = new ArrayList<>();
-                            orgUnits.add("DiszpKrYNg8");
+                            List<String> orgUnitsUids = new ArrayList<>();
+                            for (OrganisationUnitModel orgUnit : orgUnits)
+                                orgUnitsUids.add(orgUnit.uid());
                             TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
                                     .program(selectedProgram.uid())
                                     .page(page)
                                     .pageSize(10)
                                     .paging(true)
                                     .filter(filterList)
-                                    .orgUnits(orgUnits) //TODO:SET USER ORG UNITS
+                                    .orgUnits(orgUnitsUids)
                                     .build();
-                            return io.reactivex.Observable.fromCallable(d2.queryTrackedEntityInstances(query)).toFlowable(BackpressureStrategy.BUFFER)
+                            return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(Schedulers.io());
                         })
@@ -198,7 +213,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(data -> onlineFragment.setItems(data, programModels),
+                        .subscribe(data -> onlineFragment.setItems(
+                                data, programModels),
                                 t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
                         )
         );
@@ -289,23 +305,49 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onDownloadClick(View fab) {
-        for (String teiUid : selectedTeiToDownloadIcon.keySet())
-            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+       /* for (String teiUid : selectedTeiToDownloadIcon.keySet())
+            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(selectedTeiToDownloadIcon.keySet()))
                     .doOnComplete(() -> selectedTeiToDownloadProgress.get(teiUid).setVisibility(View.GONE))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             data -> view.removeTei(selectedTeiToDownloadPosition.get(teiUid)),
                             t -> Log.d("ONLINE_SEARCH", t.getMessage()))
-            );
+            );*/
     }
 
     @Override
     public void enroll(String programUid, String uid) {
-        //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
 
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        orgUnitDialog.setTitle("Enrollment Org Unit")
+                .setPossitiveListener(view -> {
+                    enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(view -> {
+                    orgUnitDialog.dismiss();
+                });
+
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), "DiszpKrYNg8", programUid, uid, queryData)
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
@@ -337,7 +379,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void downloadTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
         mView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(teiUid))
+        List<String> teiUids = new ArrayList<>();
+        teiUids.add(teiUid);
+        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
                 .doOnComplete(() -> progressBar.setVisibility(View.GONE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -377,5 +421,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         view.handleTeiDownloads(selectedTeiToDownloadIcon.isEmpty());
 
         return false;
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return searchRepository.getOrgUnits();
     }
 }

@@ -65,7 +65,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
             "  ProgramStageSection.displayName AS programStageSectionDisplayName,\n" +
-            "  ProgramStage.displayName AS programStageDisplayName\n" +
+            "  ProgramStage.displayName AS programStageDisplayName,\n" +
+            "  ProgramStageSection.mobileRenderType AS renderType\n" +
             "FROM Event\n" +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
@@ -81,7 +82,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
             "  Option.name,\n" +
-            "  Field.section\n" +
+            "  Field.section,\n" +
+            "  Field.allowFutureDate\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -92,7 +94,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageDataElement.programStageSection AS section\n" +
+            "        ProgramStageDataElement.programStageSection AS section,\n" +
+            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
@@ -161,7 +164,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             return FormSectionViewModel.createForProgramStageWithLabel(eventUid, cursor.getString(4), cursor.getString(1));
         } else {
             // This programstage has sections
-            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3));
+            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3),cursor.getString(5));
         }
     }
 
@@ -199,7 +202,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7));
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1);
     }
 
     @NonNull

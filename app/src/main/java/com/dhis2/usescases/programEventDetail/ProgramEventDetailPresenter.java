@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import io.reactivex.Observable;
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
-    static private ProgramEventDetailContract.View view;
+    private ProgramEventDetailContract.View view;
     private final ProgramEventDetailContract.Interactor interactor;
     public ProgramModel program;
     public String programId;
@@ -62,23 +61,18 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getEvents(Date fromDate, Date toDate) {
-        interactor.getEvents(programId, fromDate, toDate);
+    public void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery) {
+        interactor.getProgramEventsWithDates(programId, dates, period, orgUnitQuery);
     }
 
     @Override
-    public void getProgramEventsWithDates(List<Date> dates, Period period) {
-        interactor.getProgramEventsWithDates(programId, dates, period);
+    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+        interactor.updateFilters(categoryOptionComboModel, orgUnitQuery);
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
-        interactor.updateFilters(categoryOptionComboModel);
-    }
-
-    @Override
-    public void clearCatComboFilters() {
-        interactor.updateFilters(null);
+    public void clearCatComboFilters(String orgUnitQuery) {
+        interactor.updateFilters(null, orgUnitQuery);
     }
 
     @Override

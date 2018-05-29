@@ -2,7 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -25,15 +27,16 @@
             name="program"
             type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
+
     <android.support.v7.widget.CardView
         android:id="@+id/card_front"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
         android:focusableInTouchMode="true"
+        app:cardCornerRadius="8dp"
         app:cardElevation="8dp"
-        app:cardUseCompatPadding="true"
-        app:cardCornerRadius="1.8dp"
-        android:clipToPadding="false">
+        app:cardUseCompatPadding="true">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/card_data"
@@ -47,40 +50,59 @@
             android:transitionName="user_info">
 
             <ImageView
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:src="@color/gray_e7e"
+                app:layout_constraintTop_toBottomOf="@id/data_layout" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".5" />
+
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_share"
-                android:onClick="@{(view)->presenter.onShareClick(view)}"/>
+                android:onClick="@{(view)->presenter.onShareClick(view)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/divider">
 
-            <TextView
-                android:id="@+id/follow_up_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="6dp"
-                android:layout_marginTop="14dp"
-                android:fontFamily="sans-serif"
-                android:gravity="center_horizontal"
-                android:lines="1"
-                android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
-                android:text="@string/follow_up"
-                android:textSize="9sp"
-                android:textStyle="normal"
-                app:layout_constraintEnd_toStartOf="@id/follow_up"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="SmallSp" />
+                <ImageView
+                    android:id="@+id/shareIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_share" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/share"
+                    android:textColor="?colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/shareIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/follow_up"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="10dp"
                 android:background='@{enrollment.followUp() ? @drawable/ic_circle_red : @drawable/ic_circle}'
                 android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
-                android:padding="10dp"
-                app:layout_constraintEnd_toStartOf="@id/program_lock_layout"
+                android:padding="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_warning_white"
                 tools:background="@drawable/ic_circle"
@@ -91,13 +113,13 @@
                 android:id="@+id/program_lock_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/follow_up"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/program_lock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginEnd="10dp"
                     app:enrolmentIcon='@{enrollment.enrollmentStatus()}'
@@ -113,12 +135,11 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/program_lock"
                     android:layout_centerHorizontal="true"
-                    android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
                     android:lines="1"
                     android:maxWidth="80dp"
                     android:textColor="#787878"
-                    android:textSize="12sp"
+                    android:textSize="9sp"
                     android:textStyle="normal"
                     app:enrolmentText='@{enrollment.enrollmentStatus()}'
                     app:layout_constraintEnd_toEndOf="parent"
@@ -127,18 +148,39 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/view_tei"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/viewMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
                 android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
-                android:text="@string/see_details"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider">
+
+                <ImageView
+                    android:id="@+id/viewMoreIcon"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginEnd="10dp"
+                    app:srcCompat="@drawable/ic_visibility"
+                    app:tint="?colorPrimary"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/view_tei"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/see_details"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/viewMoreIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
 
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/data_layout"
@@ -148,10 +190,10 @@
                 app:alignContent="stretch"
                 app:alignItems="stretch"
                 app:flexWrap="wrap"
-                app:layout_constraintBottom_toTopOf="@id/view_tei"
+                app:layout_constraintBottom_toTopOf="@id/viewMore"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/program_lock_layout">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="wrap_content"
@@ -160,8 +202,8 @@
 
                     <ImageView
                         android:id="@+id/tei_image"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:srcCompat="@drawable/photo_temp"
                         tools:ignore="ContentDescription" />
@@ -173,7 +215,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
-                        android:textColor="@color/gray_444"
+                        android:textColor="?colorPrimary"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@id/tei_image"
                         app:layout_constraintTop_toTopOf="parent"
@@ -185,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text='@{dashboardModel.getAttributeBySortOrder(3)}'
-                        android:textColor="@color/gray_444"
+                        android:textColor="?colorPrimary"
                         android:textSize="14sp"
                         android:visibility="@{dashboardModel.trackedEntityAttributeValues.size()>2 ? View.VISIBLE : View.GONE}"
                         app:layout_constraintStart_toEndOf="@id/tei_image"

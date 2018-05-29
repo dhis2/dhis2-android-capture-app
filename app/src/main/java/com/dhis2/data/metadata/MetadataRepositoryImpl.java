@@ -14,7 +14,6 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -463,8 +462,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<String> getColor(String uid) {
-        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT color FROM ObjectStyle WHERE uid = ?",uid)
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT color FROM ObjectStyle WHERE uid = ?", uid)
                 .mapToOne(cursor -> cursor.getString(0));
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrganisationUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit")
+                .mapToList(OrganisationUnitModel::create);
     }
 
     @Override

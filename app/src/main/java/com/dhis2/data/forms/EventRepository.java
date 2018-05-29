@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -42,6 +43,14 @@ public class EventRepository implements FormRepository {
             "WHERE uid =?\n" +
             "LIMIT 1;";
 
+    private static final String SELECT_PROGRAM_FROM_EVENT = String.format(
+            "SELECT %s.* from %s JOIN %s " +
+                    "ON %s.%s = %s.%s " +
+                    "WHERE %s.%s = ?",
+            ProgramModel.TABLE, ProgramModel.TABLE, EventModel.TABLE,
+            EventModel.TABLE, EventModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
+            EventModel.TABLE, EventModel.Columns.UID);
+
     private static final String SELECT_TITLE = "SELECT\n" +
             "  Program.displayName,\n" +
             "  ProgramStage.displayName\n" +
@@ -54,7 +63,8 @@ public class EventRepository implements FormRepository {
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
-            "  ProgramStageSection.displayName AS programStageDisplayName\n" +
+            "  ProgramStageSection.displayName AS programStageDisplayName,\n" +
+            "  ProgramStageSection.mobileRenderType AS renderType\n" +
             "FROM Event\n" +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
@@ -124,11 +134,21 @@ public class EventRepository implements FormRepository {
                 .distinctUntilChanged();
     }
 
+    @NonNull
     @Override
-    public Flowable<ProgramModel> incidentDate() {
+    public Flowable<Pair<ProgramModel, String>> incidentDate() {
         return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid)
-                .mapToOne(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(ProgramModel::create)
+                .map(programModel -> Pair.create(programModel, ""))
+                .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
+    }
+
+    @Override
+    public Flowable<ProgramModel> getAllowDatesInFuture() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_FROM_EVENT, eventUid)
+                .mapToOne(ProgramModel::create)
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
@@ -224,7 +244,7 @@ public class EventRepository implements FormRepository {
         } else {
             // This programstage has sections
             return FormSectionViewModel.createForSection(
-                    eventUid, cursor.getString(2), cursor.getString(3));
+                    eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(4));
         }
     }
 }

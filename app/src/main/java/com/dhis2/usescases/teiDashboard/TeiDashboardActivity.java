@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -7,7 +8,11 @@ import com.dhis2.App;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
+import java.util.List;
+
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by ppajuelo on 26/04/2018.
@@ -58,7 +63,13 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    public void showQR() {
+    public Consumer<List<Bitmap>> showQR() {
+        return data -> {
+        };
+    }
+
+    @Override
+    public void nextQR() {
 
     }
 }

@@ -366,16 +366,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
+        treeView.setUseAutoToggle(false);
 
         binding.treeViewContainer.addView(treeView.getView());
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
@@ -384,8 +383,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
 
-    public boolean areAllOrgUnitsSelected(){
-        return treeNode != null && treeNode.getChildren().size() == treeView.getSelected().size();
+    public boolean areAllOrgUnitsSelected() {
+        return treeNode != null && presenter.getOrgUnits().size() == treeView.getSelected().size();
     }
 
     @Override

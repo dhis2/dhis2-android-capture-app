@@ -90,6 +90,7 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void changeFragment(int id) {
+
         view.changeFragment(id);
     }
 
