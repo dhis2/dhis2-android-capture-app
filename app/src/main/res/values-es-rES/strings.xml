@@ -97,6 +97,7 @@
     <string name="programs_list">Listado de programas</string>
     <string name="enrollment_list">Listado de admisiones</string>
     <string name="active_programs">Programas activos</string>
+    <string name="to_enroll_programs">Programas para admitir</string>
     <string name="past_programs">Programas pasados</string>
     <string name="enroll">Admitir</string>
     <string name="last_visit">Ultima visita:</string>

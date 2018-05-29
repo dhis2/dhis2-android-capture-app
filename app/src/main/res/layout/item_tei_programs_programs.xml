@@ -50,7 +50,7 @@
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                app:programName='@{program.uid}'
+                android:text='@{program.displayShortName}'
                 android:textColor="@color/black_de0"
                 android:textSize="16sp"
                 tools:text="ANC PROGRAM"/>

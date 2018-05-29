@@ -3,7 +3,6 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -12,13 +11,12 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,8 +55,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramModel>> allPrograms(String trackedEntityId) {
-        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "='%s'";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId))
+        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT " + ProgramModel.TABLE + ".* FROM " + ProgramModel.TABLE + " JOIN " + TrackedEntityInstanceModel.TABLE + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID +
+                " NOT IN (SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.PROGRAM + " FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s')" +
+                " AND " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "=" + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE +
+                " AND " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + "='%s'";
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId, trackedEntityId))
                 .mapToList(ProgramModel::create);
     }
 
@@ -74,64 +75,24 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, @Nullable HashMap<String, String> queryData) {
+    public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
-            TrackedEntityInstanceModel trackedEntityInstanceModel = null;
-            if (teiUid == null) {
-                String generatedUid = codeGenerator.generate();
-                trackedEntityInstanceModel =
-                        TrackedEntityInstanceModel.builder()
-                                .uid(generatedUid)
-                                .created(currentDate)
-                                .lastUpdated(currentDate)
-                                .organisationUnit(orgUnit)
-                                .trackedEntityType(teiType)
-                                .state(State.TO_POST)
-                                .build();
 
-                if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
-                        trackedEntityInstanceModel.toContentValues()) < 0) {
-                    String message = String.format(Locale.US, "Failed to insert new tracked entity " +
-                                    "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                            orgUnit, teiType);
-                    return Observable.error(new SQLiteConstraintException(message));
-                }
+            ContentValues dataValue = new ContentValues();
 
-                for (String key : queryData.keySet()) {
-                    TrackedEntityAttributeValueModel attributeValueModel =
-                            TrackedEntityAttributeValueModel.builder()
-                                    .created(currentDate)
-                                    .lastUpdated(currentDate)
-                                    .value(queryData.get(key))
-                                    .trackedEntityAttribute(key)
-                                    .trackedEntityInstance(generatedUid)
-                                    .build();
-                    if (briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
-                            attributeValueModel.toContentValues()) < 0) {
-                        String message = String.format(Locale.US, "Failed to insert new trackedEntityAttributeValue " +
-                                        "instance for organisationUnit=[%s] and trackedEntity=[%s]",
-                                orgUnit, teiType);
-                        return Observable.error(new SQLiteConstraintException(message));
-                    }
-                }
+            // renderSearchResults time stamp
+            dataValue.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED,
+                    BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
+            dataValue.put(TrackedEntityInstanceModel.Columns.STATE,
+                    State.TO_POST.toString());
 
-            } else {
-                ContentValues dataValue = new ContentValues();
-
-                // renderSearchResults time stamp
-                dataValue.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED,
-                        BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
-                dataValue.put(TrackedEntityInstanceModel.Columns.STATE,
-                        State.TO_POST.toString());
-
-                if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, dataValue,
-                        TrackedEntityInstanceModel.Columns.UID + " = ? ", teiUid) <= 0) {
-                    String message = String.format(Locale.US, "Failed to update tracked entity " +
-                                    "instance for uid=[%s]",
-                            teiUid);
-                    return Observable.error(new SQLiteConstraintException(message));
-                }
+            if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, dataValue,
+                    TrackedEntityInstanceModel.Columns.UID + " = ? ", teiUid) <= 0) {
+                String message = String.format(Locale.US, "Failed to update tracked entity " +
+                                "instance for uid=[%s]",
+                        teiUid);
+                return Observable.error(new SQLiteConstraintException(message));
             }
 
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
@@ -141,8 +102,9 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     .dateOfEnrollment(currentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
-                    .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
+                    .trackedEntityInstance(teiUid)
                     .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                    .followUp(false)
                     .state(State.TO_POST)
                     .build();
 
@@ -154,5 +116,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
             return Observable.just(enrollmentModel.uid());
         });
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
+                .mapToList(OrganisationUnitModel::create);
     }
 }

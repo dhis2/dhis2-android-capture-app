@@ -1,26 +1,14 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteConstraintException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -56,9 +44,33 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     @Override
     public void enroll(String programUid, String uid) {
-        //TODO: NEED TO SELECT ORG UNIT AND THEN SAVE AND CREATE ENROLLMENT BEFORE DOING THIS: FOR DEBUG USE ORG UNIT DiszpKrYNg8
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        orgUnitDialog.setTitle("Enrollment Org Unit")
+                .setPossitiveListener(v -> {
+                    enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(v -> orgUnitDialog.dismiss());
+
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String teiUid) {
         compositeDisposable.add(
-                teiProgramListRepository.saveToEnroll(trackedEntityId, "DiszpKrYNg8", programUid, uid, null)
+                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
@@ -67,6 +79,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                                 },
                                 Timber::d)
         );
+    }
+
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return teiProgramListRepository.getOrgUnits();
     }
 
     private void getActiveEnrollments(){

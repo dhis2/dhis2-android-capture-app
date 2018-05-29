@@ -3,7 +3,6 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;

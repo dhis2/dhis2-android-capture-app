@@ -128,6 +128,7 @@
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
     <string name="active_programs">Active programs</string>
+    <string name="to_enroll_programs">Programs to enroll</string>
     <string name="enroll">Enroll</string>
     <string name="last_visit">Last Visit:</string>
     <string name="apply">apply</string>
