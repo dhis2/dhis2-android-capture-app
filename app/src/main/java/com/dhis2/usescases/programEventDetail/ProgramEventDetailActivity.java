@@ -22,7 +22,6 @@ import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
-import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -41,6 +40,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 import static com.dhis2.utils.Period.DAILY;
 import static com.dhis2.utils.Period.MONTHLY;
@@ -184,7 +185,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     // TODO
                     presenter.getProgramEventsWithDates(date, currentPeriod, orgUnitFilter.toString());
                 }
-            }, OnErrorHandler.create());
+            },
+                    Timber::d);
         } else {
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);

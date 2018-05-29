@@ -31,11 +31,9 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.DateUtils;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -430,7 +428,7 @@ public class Bindings {
                                         view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
                                     }
                                 },
-                                OnErrorHandler.create()
+                                Timber::d
                         );
                 break;
         }
@@ -458,7 +456,7 @@ public class Bindings {
                                         view.setText(view.getContext().getString(R.string.event_completed));
                                     }
                                 },
-                                OnErrorHandler.create()
+                                Timber::d
                         );
                 break;
             case SCHEDULE:
@@ -579,7 +577,7 @@ public class Bindings {
                                         textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_b2b));
                                     }
                                 },
-                                OnErrorHandler.create()
+                                Timber::d
                         );
                 break;
             default:
@@ -608,7 +606,7 @@ public class Bindings {
                                         imageView.setImageResource(R.drawable.ic_eye_grey);
                                     }
                                 },
-                                OnErrorHandler.create()
+                                Timber::d
                         );
                 break;
             default:

@@ -27,7 +27,6 @@ import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -145,7 +144,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 teiFragment.setEvents(),
-                                OnErrorHandler.create()
+                                Timber::d
                         )
         );
     }
@@ -173,7 +172,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 teiDataFragment.displayGenerateEvent(),
-                                OnErrorHandler.create())
+                                Timber::d
+                        )
         );
     }
 
@@ -184,7 +184,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .take(1)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(result -> view.displayMessage(result), OnErrorHandler.create())
+                        .subscribe(
+                                result -> view.displayMessage(result),
+                                Timber::d
+                        )
         );
     }
 
@@ -201,7 +204,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     qrInterface.teiQRs(teUid)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(view.showQR(), Timber::d);
+                            .subscribe(
+                                    view.showQR(),
+                                    Timber::d
+                            );
                     return true;
                 case 1:
                     view.displayMessage("This functionality is not ready yet.");
@@ -404,7 +410,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         compositeDisposable.add(noteProcessor
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(dashboardRepository.handleNote(), OnErrorHandler.create()));
+                .subscribe(
+                        dashboardRepository.handleNote(),
+                        Timber::d
+                ));
     }
 
     @Override
@@ -414,7 +423,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         notesFragment.swapNotes(),
-                        OnErrorHandler.create()
+                        Timber::d
                 )
         );
     }
@@ -468,7 +477,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .map(result -> newStatus)
                     .subscribe(
                             teiDataFragment.enrollmentCompleted(),
-                            Timber::d)
+                            Timber::d
+                    )
             );
         } else
             view.displayMessage(null);
