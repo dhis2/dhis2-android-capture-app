@@ -3,6 +3,7 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -33,7 +34,6 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule()).inject(this);
-
         super.onCreate(savedInstanceState);
         String trackedEntityId = getIntent().getStringExtra("TEI_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);

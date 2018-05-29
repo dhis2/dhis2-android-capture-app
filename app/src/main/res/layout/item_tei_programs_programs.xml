@@ -67,7 +67,7 @@
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:text="@string/enroll"
-                android:onClick="@{()->presenter.onEnrollClick(program.uid)}"/>
+                android:onClick="@{()->presenter.onEnrollClick(program)}"/>
         </LinearLayout>
 
         <View

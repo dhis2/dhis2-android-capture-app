@@ -95,6 +95,7 @@
     <string name="confirm_delete_event">¿Estás seguro de querer eliminar este evento?</string>
     <string name="event_was_deleted">Evento eliminado</string>
     <string name="programs_list">Listado de programas</string>
+    <string name="enrollment_list">Listado de admisiones</string>
     <string name="active_programs">Programas activos</string>
     <string name="past_programs">Programas pasados</string>
     <string name="enroll">Admitir</string>

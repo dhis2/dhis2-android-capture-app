@@ -1,10 +1,12 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -27,4 +29,6 @@ public interface TeiProgramListRepository {
     @NonNull
     Observable<List<ProgramModel>> alreadyEnrolledPrograms(String trackedEntityId);
 
+    @NonNull
+    Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, @Nullable HashMap<String, String> queryData);
 }

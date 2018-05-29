@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import org.hisp.dhis.android.core.program.ProgramModel;
+
 /**
  * Created by Cristian on 06/03/2018.
  *
@@ -26,8 +28,11 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
-    public void onEnrollClick(String enrollmentId) {
-        // TODO CRIS
+    public void onEnrollClick(ProgramModel program) {
+        if (program.accessDataWrite())
+            interactor.enroll(program.uid(), null);
+        else
+            view.displayMessage("You don't have the requiered permission");
     }
 
     @Override

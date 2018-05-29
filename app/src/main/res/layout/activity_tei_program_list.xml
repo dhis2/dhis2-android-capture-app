@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="@string/programs_list"
+                android:text="@string/enrollment_list"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
