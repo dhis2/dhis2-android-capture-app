@@ -1,10 +1,16 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormViewArguments;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
+
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -36,14 +42,55 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         getPrograms();
     }
 
+    @Override
+    public void enroll(String programUid, String uid) {
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        orgUnitDialog.setTitle("Enrollment Org Unit")
+                .setPossitiveListener(v -> {
+                    enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(v -> orgUnitDialog.dismiss());
+
+        compositeDisposable.add(getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            if (orgUnits.size() > 1) {
+                                orgUnitDialog.setOrgUnits(orgUnits);
+                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                            } else
+                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String teiUid) {
+        compositeDisposable.add(
+                teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(enrollmentUid -> {
+                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
+                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments, true));
+                                },
+                                Timber::d)
+        );
+    }
+
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return teiProgramListRepository.getOrgUnits();
+    }
+
     private void getActiveEnrollments(){
         compositeDisposable.add(teiProgramListRepository.activeEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (enrollments) -> {
-                            view.setActiveEnrollments(enrollments);
-                        },
+                        view::setActiveEnrollments,
                         Timber::d)
         );
     }
@@ -53,7 +100,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (enrollments) -> view.setOtherEnrollments(enrollments),
+                        view::setOtherEnrollments,
                         Timber::d)
         );
     }
@@ -73,7 +120,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (alreadyEnrolledPrograms) -> deleteRepeatedPrograms(programs, alreadyEnrolledPrograms),
+                        alreadyEnrolledPrograms -> deleteRepeatedPrograms(programs, alreadyEnrolledPrograms),
                         Timber::d)
         );
     }

@@ -318,16 +318,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid, String uid) {
-
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
-                .setPossitiveListener(view -> {
+                .setPossitiveListener(v -> {
                     enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
                     orgUnitDialog.dismiss();
                 })
-                .setNegativeListener(view -> {
-                    orgUnitDialog.dismiss();
-                });
+                .setNegativeListener(v -> orgUnitDialog.dismiss());
 
         compositeDisposable.add(getOrgUnits()
                 .subscribeOn(Schedulers.io())

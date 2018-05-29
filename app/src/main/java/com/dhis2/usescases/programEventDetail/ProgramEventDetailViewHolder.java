@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.dhis2.databinding.ItemProgramEventBinding;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -12,6 +11,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Cristian on 13/02/2018.
@@ -45,7 +45,8 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                             }
                             binding.dataValue.setText(stringBuilder);
                         },
-                        OnErrorHandler.create()));
+                        Timber::d
+                ));
 
         itemView.setOnClickListener(view -> presenter.onEventClick(event.uid()));
     }

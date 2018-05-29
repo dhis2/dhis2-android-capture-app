@@ -40,8 +40,5 @@ public class SearchTEViewHolderOnline extends RecyclerView.ViewHolder {
 
         binding.entityAttribute1.setText(attr1);
         binding.entityAttribute2.setText(attr2);
-
     }
-
-
 }

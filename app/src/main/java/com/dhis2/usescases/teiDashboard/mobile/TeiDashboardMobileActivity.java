@@ -78,6 +78,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
+        String title = program.getAttributeBySortOrder(1) +" "+ program.getAttributeBySortOrder(2) + " - " + program.getCurrentProgram().displayShortName();
+        binding.setTitle(title);
+
         binding.tabLayout.setVisibility(View.VISIBLE);
         binding.executePendingBindings();
         this.programModel = program;
@@ -93,6 +96,8 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
+        String title = program.getAttributeBySortOrder(1) +" "+ program.getAttributeBySortOrder(2);
+        binding.setTitle(title);
         binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
         this.programModel = program;
@@ -108,9 +113,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public Consumer<List<Bitmap>> showQR() {
-        return bitmaps -> {
-            TEIDataFragment.getInstance().flipCard(bitmaps);
-        };
+        return bitmaps -> TEIDataFragment.getInstance().flipCard(bitmaps);
 
     }
 

@@ -7,11 +7,11 @@ import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormAgeCustomBinding;
 import com.dhis2.utils.DateUtils;
-import com.dhis2.utils.OnErrorHandler;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -34,7 +34,8 @@ public class AgeHolder extends FormViewHolder {
             if (!isEmpty(ageViewModel.value()))
                 binding.customAgeview.setInitialValue(ageViewModel.value());
             binding.executePendingBindings();
-        }, OnErrorHandler.create()));
+        },
+                Timber::d));
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     processor.onNext(RowAction.create(model.getValue().uid(), DateUtils.databaseDateFormat().format(ageDate)));

@@ -165,17 +165,4 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
                         view::setData,
                         Timber::e));
     }
-
-    private String orgUnitQuery(List<OrganisationUnitModel> myOrgs) {
-        StringBuilder orgUnitFilter = new StringBuilder();
-        for (int i = 0; i < myOrgs.size(); i++) {
-            orgUnitFilter.append("'");
-            orgUnitFilter.append(myOrgs.get(i).uid());
-            orgUnitFilter.append("'");
-            if (i < myOrgs.size() - 1)
-                orgUnitFilter.append(", ");
-        }
-        view.setOrgUnitFilter(orgUnitFilter);
-        return orgUnitFilter.toString();
-    }
 }

@@ -27,10 +27,5 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
         binding.setVariable(BR.program, programModel);
         binding.setVariable(BR.presenter, presenter);
         binding.executePendingBindings();
-
-        // TODO CRIS: ON ITEMS CLICK?
-//        itemView.setOnClickListener(view -> presenter.onEnrollmentClick(enrollment.uid()));
     }
-
-
 }

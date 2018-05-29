@@ -1,13 +1,24 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 
@@ -18,9 +29,11 @@ import io.reactivex.Observable;
 public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
 
     private final BriteDatabase briteDatabase;
+    private final CodeGenerator codeGenerator;
 
-    TeiProgramListRepositoryImpl(BriteDatabase briteDatabase) {
+    TeiProgramListRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
+        this.codeGenerator = codeGenerator;
     }
 
     @NonNull
@@ -42,8 +55,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     @NonNull
     @Override
     public Observable<List<ProgramModel>> allPrograms(String trackedEntityId) {
-        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT * FROM " + ProgramModel.TABLE + " WHERE " + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "='%s'";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId))
+        String SELECT_PROGRAMS_WITH_TEI_ID = "SELECT " + ProgramModel.TABLE + ".* FROM " + ProgramModel.TABLE + " JOIN " + TrackedEntityInstanceModel.TABLE + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID +
+                " NOT IN (SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.PROGRAM + " FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s')" +
+                " AND " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "=" + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE +
+                " AND " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + "='%s'";
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId, trackedEntityId))
                 .mapToList(ProgramModel::create);
     }
 
@@ -55,5 +71,56 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s' GROUP BY " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID;
         return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_ENROLLED_PROGRAMS_WITH_TEI_ID, trackedEntityId))
                 .mapToList(ProgramModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid) {
+        Date currentDate = Calendar.getInstance().getTime();
+        return Observable.defer(() -> {
+
+            ContentValues dataValue = new ContentValues();
+
+            // renderSearchResults time stamp
+            dataValue.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED,
+                    BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
+            dataValue.put(TrackedEntityInstanceModel.Columns.STATE,
+                    State.TO_POST.toString());
+
+            if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, dataValue,
+                    TrackedEntityInstanceModel.Columns.UID + " = ? ", teiUid) <= 0) {
+                String message = String.format(Locale.US, "Failed to update tracked entity " +
+                                "instance for uid=[%s]",
+                        teiUid);
+                return Observable.error(new SQLiteConstraintException(message));
+            }
+
+            EnrollmentModel enrollmentModel = EnrollmentModel.builder()
+                    .uid(codeGenerator.generate())
+                    .created(currentDate)
+                    .lastUpdated(currentDate)
+                    .dateOfEnrollment(currentDate)
+                    .program(programUid)
+                    .organisationUnit(orgUnit)
+                    .trackedEntityInstance(teiUid)
+                    .enrollmentStatus(EnrollmentStatus.ACTIVE)
+                    .followUp(false)
+                    .state(State.TO_POST)
+                    .build();
+
+            if (briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues()) < 0) {
+                String message = String.format(Locale.US, "Failed to insert new enrollment " +
+                        "instance for organisationUnit=[%s] and program=[%s]", orgUnit, programUid);
+                return Observable.error(new SQLiteConstraintException(message));
+            }
+
+            return Observable.just(enrollmentModel.uid());
+        });
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
+                .mapToList(OrganisationUnitModel::create);
     }
 }

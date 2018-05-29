@@ -13,7 +13,6 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-import com.dhis2.utils.OnErrorHandler;
 import com.google.android.flexbox.FlexboxLayout;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -62,15 +61,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::setEnrollment, Timber::d));
-                        /*.flatMap(data -> {
-                            setEnrollment(data);
-                            return metadataRepository.getTEIProgramsToEnroll(trackedEntityInstanceModel.trackedEntityType());
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::setPopUp, OnErrorHandler.create())
-        );*/
-
         //endregion
 
 
@@ -81,7 +71,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     metadataRepository.getTEIAttributeValues(trackedEntityInstanceModel.uid())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData, OnErrorHandler.create())
+                            .subscribe(this::setTEIData, Timber::d)
 
             );
         else
@@ -89,7 +79,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                     metadataRepository.getTEIAttributeValues(presenter.getProgramModel().uid(), trackedEntityInstanceModel.uid())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData, OnErrorHandler.create())
+                            .subscribe(this::setTEIData, Timber::d)
 
             );
         //endregion

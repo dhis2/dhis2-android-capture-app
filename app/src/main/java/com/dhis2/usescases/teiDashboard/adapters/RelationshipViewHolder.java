@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 
 import com.dhis2.databinding.ItemRelationshipBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -12,6 +11,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 05/12/2017.
@@ -34,7 +34,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
                 presenter.getTEIMainAttributes(relationship.trackedEntityInstanceA())
                 .subscribe(
                         this::setAttributes,
-                        OnErrorHandler.create()
+                        Timber::d
                 )
         );
 

@@ -125,9 +125,10 @@
     <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
     <string name="event_was_deleted">Event deleted successfully</string>
 
-    <!--TEI Program list-->
-    <string name="programs_list">Programs list</string>
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Enrollment List</string>
     <string name="active_programs">Active programs</string>
+    <string name="to_enroll_programs">Programs to enroll</string>
     <string name="enroll">Enroll</string>
     <string name="last_visit">Last Visit:</string>
     <string name="apply">apply</string>

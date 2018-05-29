@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.usescases.programDetail.ProgramRepository;
 import com.dhis2.usescases.programDetail.ProgramRepositoryImpl;
+import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -44,13 +45,13 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new TeiProgramListRepositoryImpl(briteDatabase);
+    TeiProgramListRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, @NonNull BriteDatabase briteDatabase) {
+        return new TeiProgramListRepositoryImpl(codeGenerator, briteDatabase);
     }
 
     @Provides
     @PerActivity
-    ProgramRepository homeRepository(BriteDatabase briteDatabase) {
+    ProgramRepository homeRepository(@NonNull BriteDatabase briteDatabase) {
         return new ProgramRepositoryImpl(briteDatabase);
     }
 }

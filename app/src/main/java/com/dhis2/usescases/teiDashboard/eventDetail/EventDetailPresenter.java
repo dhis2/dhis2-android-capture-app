@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.Constants;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -79,7 +77,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 view::isEventExpired,
-                                OnErrorHandler.create()
+                                Timber::d
                         )
         );
     }

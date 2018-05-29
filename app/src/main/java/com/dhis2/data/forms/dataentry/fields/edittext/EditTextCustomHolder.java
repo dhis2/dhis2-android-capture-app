@@ -15,7 +15,6 @@ import android.widget.EditText;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.utils.OnErrorHandler;
 import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -30,6 +29,7 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
@@ -102,8 +102,10 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .filter(data -> model.getValue() != null)
                 .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
-                .subscribe(processor::onNext,
-                        OnErrorHandler.create(), () ->
+                .subscribe(
+                        processor::onNext,
+                        Timber::d,
+                        () ->
                         {
                             if (valueHasChanged()) {
                                 processor.onNext(RowAction.create(model.getValue().uid(),

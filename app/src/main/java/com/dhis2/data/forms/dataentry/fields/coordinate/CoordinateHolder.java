@@ -9,7 +9,6 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.CustomFormCoordinateBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.utils.CustomViews.CoordinatesView;
-import com.dhis2.utils.OnErrorHandler;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -18,6 +17,7 @@ import java.util.Locale;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -50,7 +50,8 @@ public class CoordinateHolder extends FormViewHolder {
             if (!isEmpty(coordinateViewModel.value()))
                 binding.formCoordinates.setInitialValue(coordinateViewModel.value());
             binding.executePendingBindings();
-        }, OnErrorHandler.create()));
+        },
+                Timber::d));
     }
 
     void update(CoordinateViewModel viewModel) {

@@ -61,13 +61,12 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment_inactive, parent, false);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE:
-                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_active_title, parent, false);
+                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_to_enroll_title, parent, false);
                 break;
             case TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_programs, parent, false);
                 break;
             default:
-                // TODO CRIS
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_enrollment, parent, false);
                 break;
         }
@@ -133,10 +132,10 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     }
 
     private void orderList() {
-        this.listItems.clear();
+        listItems.clear();
 
         TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
-        this.listItems.add(firstTeiProgramListItem);
+        listItems.add(firstTeiProgramListItem);
 
         for (EnrollmentModel enrollmentModel : activeEnrollments) {
             TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT);
@@ -145,7 +144,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
         if (!inactiveEnrollments.isEmpty()) {
             TeiProgramListItem secondTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.SECOND_TITLE);
-            this.listItems.add(secondTeiProgramListItem);
+            listItems.add(secondTeiProgramListItem);
 
             for (EnrollmentModel enrollmentModel : inactiveEnrollments) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT);
@@ -156,9 +155,6 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         boolean found;
         boolean active;
         for (ProgramModel programModel : programs) {
-            TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programModel, TeiProgramListItem.TeiProgramListItemViewType.PROGRAM);
-            listItems.add(teiProgramListItem);
-
             found = false;
             active = false;
             for (EnrollmentModel enrollment : activeEnrollments) {
@@ -185,7 +181,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
         if (!possibleEnrollmentPrograms.isEmpty()) {
             TeiProgramListItem thirdTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE);
-            this.listItems.add(thirdTeiProgramListItem);
+            listItems.add(thirdTeiProgramListItem);
 
             for (ProgramModel programToEnroll : possibleEnrollmentPrograms) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programToEnroll, TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL);

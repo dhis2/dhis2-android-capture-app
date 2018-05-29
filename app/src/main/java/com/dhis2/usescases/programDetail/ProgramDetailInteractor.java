@@ -7,7 +7,6 @@ import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
-import com.dhis2.utils.OnErrorHandler;
 import com.unnamed.b.atv.model.TreeNode;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -84,7 +83,7 @@ public class ProgramDetailInteractor implements ProgramDetailContractModule.Inte
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> view.swapData(data),
-                                OnErrorHandler.create()
+                                Timber::d
                         )
         );
 
