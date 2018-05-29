@@ -9,13 +9,11 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
-import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Result;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -79,14 +77,18 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                             .flatMap(
                                     (eventModel) -> {
                                         view.setEvent(eventModel);
-                                        return metadataRepository.getProgramWithId(programId);
+                                        return metadataRepository.getProgramWithId(programId)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread());
                                     }
                             )
                             .flatMap(
                                     programModel -> {
                                         this.programModel = programModel;
                                         view.setProgram(programModel);
-                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo());
+                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread());
                                     }
                             )
                             .flatMap(
@@ -99,7 +101,7 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
-                                    Timber::d
+                                    error -> Timber.log(1, error)
                             )
             );
         else
@@ -338,8 +340,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                         .map(events -> DateUtils.getInstance().getNewDate(events, periodType))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe( date ->
-                                view.setReportDate(DateUtils.uiDateFormat().format(date)),
+                        .subscribe(date ->
+                                        view.setReportDate(DateUtils.uiDateFormat().format(date)),
                                 Timber::d
                         )
         );

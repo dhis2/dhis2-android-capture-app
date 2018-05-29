@@ -10,6 +10,7 @@ import com.dhis2.App;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -150,6 +151,24 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     }
 
+    @Override
+    public void syncReservedValues() {
+        disposable.add(metadataRepository.getReserveUids()
+                .map(pairs -> {
+                    for (Pair<String, String> pair : pairs) {
+                        userManager.getD2().popTrackedEntityAttributeReservedValue(pair.val0(), pair.val1());
+                    }
+                    return true;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        data -> Timber.log(1, "DONE"),
+                        Timber::d
+                )
+        );
+    }
+
     @NonNull
     private Observable<Response> metadata() {
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
@@ -163,7 +182,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @NonNull
     private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(500)));
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(50)));
     }
 
     @NonNull

@@ -335,7 +335,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        if(periodType == null)
+        if (periodType == null)
             binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
 
         if (program.captureCoordinates()) {
@@ -399,7 +399,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEvent(EventModel event) {
-        if(event.eventDate() != null)
+        if (event.eventDate() != null)
             binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
         else
             binding.setEventDate("");
@@ -421,8 +421,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.valueOf(latitude));
-        binding.lon.setText(String.valueOf(longitude));
+        binding.lat.setText(String.format(Locale.getDefault(), "%.5f", latitude));
+        binding.lon.setText(String.format(Locale.getDefault(), "%.5f", longitude));
         checkActionButtonVisibility();
     }
 
@@ -499,7 +499,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             });
 
-            if(periodType != null)
+            if (periodType != null)
                 presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
 
             presenter.getCatOption(eventModel.attributeOptionCombo());

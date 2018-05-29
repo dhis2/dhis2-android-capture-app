@@ -87,6 +87,8 @@ public class LoginContracts {
 
         void syncTrackedEntities();
 
+        void syncReservedValues();
+
         void onDestroy();
     }
 

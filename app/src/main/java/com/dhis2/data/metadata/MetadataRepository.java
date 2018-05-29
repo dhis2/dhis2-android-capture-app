@@ -1,6 +1,5 @@
 package com.dhis2.data.metadata;
 
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
@@ -27,11 +26,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 
 
 /**
- * Created by ppajuelo on 04/12/2017.
+ * QUADRAM. Created by ppajuelo on 04/12/2017.
  */
 
 public interface MetadataRepository {
@@ -126,4 +124,6 @@ public interface MetadataRepository {
     Observable<String> getColor(String uid);
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
+
+    Observable<List<Pair<String,String>>> getReserveUids();
 }

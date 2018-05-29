@@ -92,6 +92,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 interactor.syncEvents();
                 break;
             case EVENTS:
+                interactor.syncReservedValues();
                 interactor.syncTrackedEntities();
                 break;
             case TEI:

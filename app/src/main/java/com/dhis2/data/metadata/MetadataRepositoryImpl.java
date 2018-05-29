@@ -1,5 +1,6 @@
 package com.dhis2.data.metadata;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.dhis2.R;
@@ -30,6 +31,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -195,6 +197,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramModel.TABLE,
             EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
             EventModel.TABLE, EventModel.Columns.UID);
+
+    private final String RESERVED_UIDS = "SELECT DISTINCT\n" +
+            "ProgramTrackedEntityAttribute.trackedEntityAttribute,\n" +
+            "OrganisationUnitProgramLink.organisationUnit\n" +
+            "FROM ProgramTrackedEntityAttribute\n" +
+            "JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = ProgramTrackedEntityAttribute.program\n" +
+            "WHERE TrackedEntityAttribute.generated = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -470,6 +480,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     public Observable<List<OrganisationUnitModel>> getOrganisationUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit")
                 .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public Observable<List<Pair<String, String>>> getReserveUids() {
+        Cursor cursor = briteDatabase.query(RESERVED_UIDS, "1");
+        List<Pair<String, String>> pairs = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                pairs.add(Pair.create(cursor.getString(0), cursor.getString(1)));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        return Observable.just(pairs);
     }
 
     @Override
