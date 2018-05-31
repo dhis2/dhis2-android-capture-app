@@ -52,7 +52,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         binding.setVariable(BR.renderType, renderType);
         binding.executePendingBindings();
         return new EditTextCustomHolder(viewGroup, binding
-                , processor, isBgTransparent);
+                , processor, isBgTransparent, renderType);
     }
 
     @Override

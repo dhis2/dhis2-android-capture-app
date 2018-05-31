@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +17,8 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.Preconditions;
+
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
 
@@ -93,13 +95,18 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     }
 
     private void setUpRecyclerView() {
+        DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), getArguments().getParcelable(ARGUMENTS),
+                getChildFragmentManager(), arguments,
                 dataEntryPresenter.getOrgUnits());
         dataEntryAdapter.setHasStableIds(true);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.VERTICAL, false);
+        RecyclerView.LayoutManager layoutManager;
+        if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+            layoutManager = new GridLayoutManager(getActivity(), 2);
+        } else
+            layoutManager = new LinearLayoutManager(getActivity(),
+                    LinearLayoutManager.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
         /*recyclerView.addItemDecoration(new DividerItemDecoration(

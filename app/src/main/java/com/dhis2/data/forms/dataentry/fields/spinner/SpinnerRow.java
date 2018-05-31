@@ -40,7 +40,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         FormSpinnerBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_spinner, parent, false);
-        return new SpinnerHolder(binding, processor, isBackgroundTransparent);
+        return new SpinnerHolder(binding, processor, isBackgroundTransparent, renderType);
     }
 
     @Override

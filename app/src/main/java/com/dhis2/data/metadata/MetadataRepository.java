@@ -7,6 +7,7 @@ import com.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -121,7 +122,7 @@ public interface MetadataRepository {
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();
 
-    Observable<String> getColor(String uid);
+    Observable<ObjectStyleModel> getObjectStyle(String uid);
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
 

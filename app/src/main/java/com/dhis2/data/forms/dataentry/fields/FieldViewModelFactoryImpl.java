@@ -8,11 +8,13 @@ import com.dhis2.data.forms.dataentry.fields.coordinate.CoordinateViewModel;
 import com.dhis2.data.forms.dataentry.fields.datetime.DateTimeViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import static android.text.TextUtils.isEmpty;
 import static com.dhis2.utils.Preconditions.isNull;
@@ -69,11 +71,15 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             "PMD.StdCyclomaticComplexity"
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
-                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,@Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable) {
+                                 @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
+                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
-            return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section);
+            if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
+                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section);
+            else
+                return ImageViewModel.create(id, label, optionSet, value, section);
         }
 
         switch (type) {
@@ -92,7 +98,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section,editable);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
             case TIME:
             case DATE:
             case DATETIME:
@@ -109,7 +115,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TRACKER_ASSOCIATE:
             case URL:
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section,editable);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
         }
     }
 

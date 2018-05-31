@@ -43,13 +43,13 @@ public abstract class RadioButtonViewModel extends FieldViewModel {
     public static RadioButtonViewModel fromRawValue(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                                     @NonNull Boolean mandatory, @Nullable String value, @Nullable String section) {
         if (value == null) {
-            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, true, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, null, section, null, true,null, mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, true, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED.toString(), section, null, true,null, mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, true, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.UNCHECKED.toString(), section, null, true,null, mandatory, type);
         } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED_NO.toString())) {
-            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, true, mandatory, type);
+            return new AutoValue_RadioButtonViewModel(id, label, Value.CHECKED_NO.toString(), section, null, true,null, mandatory, type);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }

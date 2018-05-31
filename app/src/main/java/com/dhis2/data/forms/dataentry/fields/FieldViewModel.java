@@ -25,4 +25,7 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract Boolean editable();
+
+    @Nullable
+    public abstract String optionSet();
 }

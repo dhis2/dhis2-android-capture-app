@@ -2,6 +2,7 @@ package com.dhis2.Bindings;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
@@ -43,6 +44,7 @@ import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -244,24 +246,33 @@ public class Bindings {
     @SuppressLint("RxLeakedSubscription")
     @BindingAdapter("lightColor")
     public static void setLightColor(View view, ProgramModel programModel) {
-        metadataRepository.getColor(programModel.uid())
-                .filter(color -> color != null)
-                .map(color -> {
+        metadataRepository.getObjectStyle(programModel.uid())
+                .filter(objectStyleModel -> objectStyleModel != null)
+                .map(objectStyleModel -> {
+                    String color = objectStyleModel.color();
                     if (color.length() == 4) {//Color is formatted as #fff
                         char r = color.charAt(1);
                         char g = color.charAt(2);
                         char b = color.charAt(3);
-                        return "#" + r + r + g + g + b + b; //formatted to #ffff
-                    } else
-                        return color;
+                        color = "#" + r + r + g + g + b + b; //formatted to #ffff
+                    }
+
+                    Resources resources = view.getContext().getResources();
+                    String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                    return Pair.create(Color.parseColor(color), icon);
+
                 })
-                .map(Color::parseColor)
-                .filter(color -> color != -1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        color1 -> {
-                            view.setBackgroundColor(color1);
+                        colorAndIcon -> {
+                            if (colorAndIcon.val0() != -1)
+                                view.setBackgroundColor(colorAndIcon.val0());
+                            if (view instanceof ImageView && colorAndIcon.val1() != -1) {
+                                ((ImageView) view).setImageResource(colorAndIcon.val1());
+                                setFromResBgColor(view, colorAndIcon.val0());
+                            }
                         },
                         Timber::d);
     }
@@ -740,33 +751,130 @@ public class Bindings {
                                 spinner.setPrompt(label);
                                 if (initialValue != null) {
                                     for (int i = 0; i < optionModels.size(); i++)
-                                        if (optionModels.get(i).displayName().equals(initialValue))
+                                        if (optionModels.get(i).uid().equals(initialValue))
                                             spinner.setSelection(i + 1);
                                 }
                             },
                             Timber::d);
     }
 
-    @BindingAdapter("fromBgColor")
-    public static void setFromBgColor(View view, int color) {
+    @BindingAdapter("fromResBgColor")
+    public static void setFromResBgColor(View view, int color) {
         String tintedColor;
 
-        // Counting the perceptive luminance - human eye favors green color...
-        double a = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
 
-        if (a < 0.5)
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        if (L > 0.179d)
             tintedColor = "#000000"; // bright colors - black font
         else
             tintedColor = "#FFFFFF"; // dark colors - white font
 
-        if (view instanceof TextView)
+        if (view instanceof TextView) {
             ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
             drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
-
     }
 
+    @BindingAdapter("fromHexBgColor")
+    public static void setFromHexBgColor(View view, String hexColor) {
+
+        int color = Color.parseColor(hexColor);
+
+        String tintedColor;
+
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
+
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        if (L > 0.179d)
+            tintedColor = "#000000"; // bright colors - black font
+        else
+            tintedColor = "#FFFFFF"; // dark colors - white font
+
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        }
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            ((ImageView) view).setImageDrawable(drawable);
+        }
+    }
+
+    @SuppressLint("RxLeakedSubscription")
+    @BindingAdapter({"objectStyle", "itemView"})
+    public static void setObjectStyle(View view, View itemView, String uid) {
+        metadataRepository.getObjectStyle(uid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            if (data.icon() != null) {
+                                Resources resources = view.getContext().getResources();
+                                String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
+                                int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                                if (view instanceof ImageView)
+                                    ((ImageView) view).setImageResource(icon);
+                            }
+
+                            if (data.color() != null) {
+                                String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
+                                int colorRes = Color.parseColor(color);
+                                itemView.setBackgroundColor(colorRes);
+                                setFromResBgColor(view, colorRes);
+                            }
+                        },
+                        Timber::d
+                );
+
+
+    }
 }

@@ -39,7 +39,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
         this.renderType = null;
     }
 
-    public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, int time, boolean isBgTransparent, String renderType) {
+    public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent, String renderType) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;

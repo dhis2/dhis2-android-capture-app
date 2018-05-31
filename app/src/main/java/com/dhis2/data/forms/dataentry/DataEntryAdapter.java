@@ -21,6 +21,8 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
+import com.dhis2.data.forms.dataentry.fields.image.ImageRow;
+import com.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
@@ -50,6 +52,7 @@ public final class DataEntryAdapter extends Adapter {
     private static final int AGEVIEW = 8;
     private static final int YES_NO = 9;
     private static final int ORG_UNIT = 10;
+    private static final int IMAGE = 11;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -59,6 +62,7 @@ public final class DataEntryAdapter extends Adapter {
 
     @NonNull
     private final List<Row> rows;
+    private final DataEntryArguments dataEntryArguments;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -68,6 +72,8 @@ public final class DataEntryAdapter extends Adapter {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
+
+        this.dataEntryArguments = dataEntryArguments;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
@@ -80,12 +86,16 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return rows.get(viewType).onCreate(parent);
+        if (viewType == IMAGE)
+            return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount());
+        else
+            return rows.get(viewType).onCreate(parent);
     }
 
     @Override
@@ -125,6 +135,8 @@ public final class DataEntryAdapter extends Adapter {
             return BUTTON;
         } else if (viewModel instanceof OrgUnitViewModel) {
             return ORG_UNIT;
+        } else if (viewModel instanceof ImageViewModel) {
+            return IMAGE;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());

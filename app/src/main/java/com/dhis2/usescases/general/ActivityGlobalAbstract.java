@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +36,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -39,10 +44,13 @@ import rx.subjects.BehaviorSubject;
  * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, SensorEventListener {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
+    private SensorManager sensorManager;
+    private long lastUpdate;
+    public FancyShowCaseQueue fancyShowCaseQueue;
 
     public enum Status {
         ON_PAUSE,
@@ -54,6 +62,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         if (!BuildConfig.DEBUG)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
@@ -61,9 +70,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                 "com.dhis2", Context.MODE_PRIVATE);
         setTheme(prefs.getInt("THEME", R.style.AppTheme));
         Crashlytics.setString("SERVER", prefs.getString("SERVER", null));
-//        setTheme(R.style.OrangeTheme);
 
         super.onCreate(savedInstanceState);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        lastUpdate = System.currentTimeMillis();
 
     }
 
@@ -71,17 +82,66 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onResume() {
         super.onResume();
         lifeCycleObservable.onNext(Status.ON_RESUME);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         lifeCycleObservable.onNext(Status.ON_PAUSE);
+        sensorManager.unregisterListener(this);
+
     }
-
-
     //****************
     //PUBLIC METHOD REGION
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    private void getAccelerometer(SensorEvent event) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        float accelationSquareRoot = (x * x + y * y + z * z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        long actualTime = event.timestamp;
+        if (accelationSquareRoot >= 2) //
+        {
+            if (actualTime - lastUpdate < 200) {
+                return;
+            }
+            lastUpdate = actualTime;
+
+            showTutorial(true);
+        }
+    }
+
+    @Override
+    public void setTutorial() {
+
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        if (fancyShowCaseQueue != null)
+            fancyShowCaseQueue.show();
+        else
+            displayMessage("The are no information for this screen");
+    }
 
     public Context getContext() {
         return this;
@@ -203,7 +263,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         toast.show();
     }
 
-    protected int getPrimaryColor(){
+    protected int getPrimaryColor() {
         TypedValue typedValue = new TypedValue();
         TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
         int color = a.getColor(0, 0);

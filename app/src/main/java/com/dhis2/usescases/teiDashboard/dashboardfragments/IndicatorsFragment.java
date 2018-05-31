@@ -32,8 +32,6 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
 
     FragmentIndicatorsBinding binding;
 
-    private List<ProgramIndicatorModel> programIndicatorModels;
-
     static IndicatorsFragment instance;
     private IndicatorsAdapter adapter;
 
@@ -44,12 +42,6 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
             instance = new IndicatorsFragment();
         return instance;
     }
-
-   /* public void setData(List<ProgramIndicatorModel> programIndicatorModels) {
-        this.programIndicatorModels = programIndicatorModels;
-        binding.indicatorsRecycler.setLayoutManager(new LinearLayoutManager(context));
-        binding.indicatorsRecycler.setAdapter(new IndicatorsAdapter(programIndicatorModels));
-    }*/
 
     @Override
     public void onAttach(Context context) {

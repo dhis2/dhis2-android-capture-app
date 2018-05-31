@@ -12,13 +12,16 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormSpinnerBinding;
 
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -35,17 +38,27 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
     private final AppCompatSpinner spinner;
     private final FormSpinnerBinding binding;
     private static String currentValue;
+    private final ImageView iconView;
 
     @NonNull
     private BehaviorProcessor<SpinnerViewModel> model;
 
-    SpinnerHolder(FormSpinnerBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
+    SpinnerHolder(FormSpinnerBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
         super(mBinding.getRoot());
         this.binding = mBinding;
         this.spinner = mBinding.spinner;
+        this.iconView = mBinding.renderImage;
         this.processor = processor;
         this.binding.setIsBgTransparent(isBackgroundTransparent);
         this.spinner.setOnItemSelectedListener(this);
+
+        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
+            iconView.setVisibility(View.VISIBLE);
+
+        this.spinner.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                this.spinner.performClick();
+        });
 
         if (isBackgroundTransparent) {
             TypedValue typedValue = new TypedValue();
@@ -83,10 +96,13 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
         if (position > 0) {
             binding.hintLabel.setVisibility(View.VISIBLE);
+            OptionModel option = ((OptionModel) adapterView.getItemAtPosition(position - 1));
             processor.onNext(
-                    RowAction.create(model.getValue().uid(), ((OptionModel) adapterView.getItemAtPosition(position - 1)).displayName())
+                    RowAction.create(model.getValue().uid(), option.uid())
             );
+            Bindings.setObjectStyle(iconView, itemView, option.uid());
         } else {
+            iconView.setVisibility(View.GONE);
             binding.hintLabel.setVisibility(View.INVISIBLE);
             processor.onNext(
                     RowAction.create(model.getValue().uid(), null)

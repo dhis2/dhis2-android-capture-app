@@ -19,25 +19,36 @@
 
         <variable
             name="initialValue"
-            type="java.lang.String"/>
+            type="java.lang.String" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:focusable="true"
+        android:gravity="bottom"
         android:orientation="vertical"
         android:padding="5dp"
-        android:gravity="bottom"
         tools:background="?colorPrimary">
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/hintLabel"
             style="@style/TextView.InputLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/renderImage"
             android:text="@{label}"
-            android:layout_alignParentTop="true"
             android:visibility="invisible"
             tools:text="Spinner hint" />
 
@@ -46,14 +57,15 @@
             style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
-            app:label="@{label}"
+            android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            app:optionSet="@{optionSet}"
-            app:initialValue="@{initialValue}"/>
+            android:spinnerMode="dropdown"
+            app:initialValue="@{initialValue}"
+            app:label="@{label}"
+            app:optionSet="@{optionSet}" />
 
     </RelativeLayout>
 </layout>

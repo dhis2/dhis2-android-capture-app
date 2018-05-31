@@ -9,9 +9,12 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
@@ -20,6 +23,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,21 +47,28 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
     private final TextInputLayout inputLayout;
     private EditText editText;
+    private ImageView icon;
     @NonNull
     private BehaviorProcessor<EditTextModel> model;
 
     private CompositeDisposable disposable;
 
-    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
+    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
         super(binding.getRoot());
 
         editText = binding.getRoot().findViewById(R.id.input_editText);
+        icon = binding.getRoot().findViewById(R.id.renderImage);
+
         inputLayout = binding.getRoot().findViewById(R.id.input_layout);
 
         this.disposable = new CompositeDisposable();
 
+        if (renderType!=null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
+            icon.setVisibility(View.VISIBLE);
+
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(editTextModel -> {
+                    Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
                     editText.setEnabled(editTextModel.editable());
                     editText.setText(editTextModel.value() == null ?
                             null : valueOf(editTextModel.value()));

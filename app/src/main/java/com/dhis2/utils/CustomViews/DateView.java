@@ -95,7 +95,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         } catch (ParseException e) {
         }
 
-        data = DateUtils.timeFormat().format(date);
+        data = DateUtils.uiDateFormat().format(date);
         editText.setText(data);
     }
 

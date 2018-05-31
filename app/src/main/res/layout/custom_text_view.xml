@@ -23,8 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
-            android:visibility="@{renderType==null?View.GONE:View.VISIBLE}"
-            app:srcCompat="@drawable/sierra_leone" />
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout"

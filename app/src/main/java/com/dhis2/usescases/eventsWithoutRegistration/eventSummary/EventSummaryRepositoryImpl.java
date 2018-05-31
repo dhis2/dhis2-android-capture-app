@@ -201,7 +201,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true);
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true,null);
     }
 
     @NonNull

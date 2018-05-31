@@ -3,7 +3,9 @@ package com.dhis2.data.forms.dataentry.fields.datetime;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.view.FocusFinder;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.dhis2.BR;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -63,9 +65,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                             if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
                             }
-                            if(binding instanceof FormDateTextBinding)
+                            if (binding instanceof FormDateTextBinding)
                                 ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
-                            if(binding instanceof FormDateTimeTextBinding)
+                            if (binding instanceof FormDateTimeTextBinding)
                                 ((FormDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
                             binding.executePendingBindings();
                         },
@@ -86,5 +88,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (editText.focusSearch(View.FOCUS_DOWN) != null)
             editText.focusSearch(View.FOCUS_DOWN).requestFocus();
+
+        FocusFinder.getInstance().findNextFocus((ViewGroup) itemView.getParent(), editText, View.FOCUS_DOWN);
     }
 }

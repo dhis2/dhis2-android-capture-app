@@ -11,23 +11,19 @@ import com.dhis2.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.hisp.dhis.android.core.enrollment.note.NoteModel;
-
 import java.lang.reflect.Type;
 import java.util.List;
 
-import io.reactivex.functions.Consumer;
+import me.toptas.fancyshowcase.FancyShowCaseQueue;
 
 import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by ppajuelo on 18/10/2017.
- *
  */
 
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
     public ViewDataBinding binding;
-
 
     @Override
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
@@ -60,7 +56,15 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     }
 
     @Override
-    public void showDescription(String description){
+    public void setTutorial() {
+    }
+
+    @Override
+    public void showTutorial(boolean shacked) {
+    }
+
+    @Override
+    public void showDescription(String description) {
         getAbstractActivity().showDescription(description);
     }
 
@@ -83,7 +87,7 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     }
 
     @Override
-    public void showToast(String message){
+    public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 

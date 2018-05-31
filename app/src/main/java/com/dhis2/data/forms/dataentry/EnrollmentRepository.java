@@ -111,10 +111,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         return fieldFactory.create(uid,
-                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates, !generated);
+                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates, !generated, null);
 
-      /*  return fieldFactory.create(cursor.getString(0), cursor.getString(1),
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, null, cursor.getString(7).equals("1"));*/
     }
 }
