@@ -67,8 +67,6 @@ public class EventInitialContract {
 
         void getProgramStage(String programStageUid);
 
-        void setProgram(ProgramModel program);
-
         void onBackClick();
 
         void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
@@ -103,6 +101,11 @@ public class EventInitialContract {
         void goToSummary();
 
         void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);
+
+        void getOrgUnits();
+
+        void getEventSections(@NonNull String eventId);
+
 
     }
 

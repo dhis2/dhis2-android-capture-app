@@ -42,7 +42,7 @@ public abstract class FormSectionViewModel {
     public static FormSectionViewModel createForProgramStageWithLabel(@NonNull String eventUid,
                                                                       @NonNull String programStageDisplayName,
                                                                       @NonNull String programStageUid) {
-        return new AutoValue_FormSectionViewModel(eventUid, programStageUid, programStageDisplayName, Type.PROGRAM_STAGE, null);
+        return new AutoValue_FormSectionViewModel(eventUid, null, programStageDisplayName, Type.PROGRAM_STAGE, null);
     }
 
     @NonNull

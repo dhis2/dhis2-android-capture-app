@@ -45,19 +45,22 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialContract.Presenter providesPresenter(EventInitialContract.Interactor interactor) {
-        return new EventInitialPresenter(interactor);
+    EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
+                                                     @NonNull EventInitialRepository eventInitialRepository,
+                                                     @NonNull MetadataRepository metadataRepository,
+                                                     @NonNull SchedulerProvider schedulerProvider) {
+        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
     }
 
 
-    @Provides
+   /* @Provides
     @PerActivity
     EventInitialContract.Interactor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
                                                       @NonNull EventInitialRepository eventInitialRepository,
                                                       @NonNull MetadataRepository metadataRepository,
                                                       @NonNull SchedulerProvider schedulerProvider) {
         return new EventInitialInteractor(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
-    }
+    }*/
 
     @Provides
     @PerActivity

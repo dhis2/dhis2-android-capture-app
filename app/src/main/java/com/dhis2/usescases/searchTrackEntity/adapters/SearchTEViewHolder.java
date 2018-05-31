@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,11 +16,9 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -84,6 +81,16 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             );
         //endregion
 
+        //--------------------------
+        //region OVERDUE EVENTS
+        compositeDisposable.add(
+                metadataRepository.hasOverdue(presenter.getProgramModel().uid(), trackedEntityInstanceModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(hasOverDue -> binding.setOverdue(hasOverDue), Timber::d)
+        );
+        //endregion
+
         binding.setSyncState(tei.state());
 
         binding.executePendingBindings();
@@ -94,47 +101,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
         binding.setAttribute(trackedEntityAttributeValueModels);
         binding.executePendingBindings();
-    }
-
-    private void setPopUp(List<ProgramModel> programModels) {
-
-        List<ProgramModel> possibleEnrollmentPrograms = new ArrayList<>();
-
-        boolean found;
-        boolean active;
-        for (ProgramModel programModel : programModels) {
-            found = false;
-            active = false;
-            for (EnrollmentModel enrollment : teiEnrollments) {
-                if (programModel.uid().equals(enrollment.program())) {
-                    found = true;
-                    active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
-                }
-            }
-
-            if (found) {
-                if (!active && !programModel.onlyEnrollOnce())
-                    possibleEnrollmentPrograms.add(programModel);
-            } else
-                possibleEnrollmentPrograms.add(programModel);
-
-        }
-
-        menu = new PopupMenu(binding.addProgram.getContext(), binding.addProgram);
-        for (ProgramModel program : possibleEnrollmentPrograms) {
-            menu.getMenu().add(Menu.NONE, Menu.NONE, Menu.NONE, program.displayShortName());
-        }
-        menu.setOnMenuItemClickListener(item -> {
-            for (ProgramModel programModel : programModels) {
-                if (programModel.displayShortName().equals(item.getTitle())) {
-                    presenter.enroll(programModel.uid(), tei.uid());
-                    return true;
-                }
-            }
-            return true;
-        });
-
-        binding.addProgram.setOnClickListener(view -> menu.show());
     }
 
     private void setEnrollment(List<EnrollmentModel> enrollments) {

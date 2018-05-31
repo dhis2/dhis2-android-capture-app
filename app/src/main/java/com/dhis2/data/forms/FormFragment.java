@@ -122,6 +122,17 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setCurrentLocationListener(this);
         }
 
+        RxView.clicks(nextButton)
+                .subscribe(
+                        o -> {
+                            if (isEnrollment) {
+
+                            } else {
+
+                            }
+                        }
+                );
+
         setupActionBar();
     }
 
@@ -141,6 +152,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public Observable<ReportStatus> eventStatusChanged() {
         undoObservable = PublishSubject.create();
         return undoObservable.mergeWith(RxView.clicks(nextButton).map(o -> getReportStatusFromButton()));
+    }
+
+    @Override
+    public void onNext(ReportStatus reportStatus) {
+        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1)
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+        else
+            getActivity().finish();
     }
 
     @NonNull
@@ -243,20 +262,20 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @NonNull
     @Override
     public Consumer<ReportStatus> renderStatus() {
-        return eventStatus -> nextButton.setActivated(eventStatus == ReportStatus.COMPLETED);
+        return eventStatus -> nextButton.setActivated(/*eventStatus == ReportStatus.COMPLETED*/true);
     }
 
     @NonNull
     @Override
     public Consumer<Trio<String, String, String>> finishEnrollment() {
         return trio -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("PROGRAM_UID", trio.val0());
+            bundle.putString("TEI_UID", trio.val1());
             if (!trio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
                 FormViewArguments formViewArguments = FormViewArguments.createForEvent(trio.val2());
                 startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment));
             } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
-                Bundle bundle = new Bundle();
-                bundle.putString("PROGRAM_UID", trio.val0());
-                bundle.putString("TEI_UID", trio.val1());
                 startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
             }
             getActivity().finish();

@@ -187,7 +187,7 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:textSize="15sp"
-                                    app:date='@{ eventDate ?? "" }'/>
+                                    android:text="@{eventDate}"/>
                                     <!--android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'-->
 
                             </android.support.design.widget.TextInputLayout>

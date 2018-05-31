@@ -126,5 +126,7 @@ public interface MetadataRepository {
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
 
-    Observable<List<Pair<String,String>>> getReserveUids();
+    Observable<List<Pair<String, String>>> getReserveUids();
+
+    Observable<Boolean> hasOverdue(String programUid, String teiUid);
 }

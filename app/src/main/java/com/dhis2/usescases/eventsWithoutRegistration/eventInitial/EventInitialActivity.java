@@ -316,8 +316,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
-            return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) &&
+            return isCompleted(selectedDate) &&
+                    isCompleted(selectedOrgUnit) &&
+                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon)))&&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
+
+
     }
 
     private boolean isCompleted(String field) {
@@ -326,7 +330,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setProgram(@NonNull ProgramModel program) {
-        presenter.setProgram(program);
         String activityTitle;
         if (eventCreationType.equals(REFERRAL)) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
@@ -342,10 +345,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        } else {
-            binding.coordinatesLayout.setVisibility(View.GONE);
-            selectedLat = "0.0";
-            selectedLon = "0.0";
         }
     }
 
@@ -399,12 +398,21 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEvent(EventModel event) {
+        binding.setEvent(event);
+
         if (event.eventDate() != null)
             binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
         else
             binding.setEventDate("");
 
-        binding.setEvent(event);
+        if (event.latitude() != null && event.longitude() != null) {
+            runOnUiThread(() -> {
+                binding.lat.setText(event.latitude());
+                binding.lon.setText(event.longitude());
+            });
+
+        }
+
         eventModel = event;
     }
 
@@ -451,6 +459,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        }else{
+            binding.coordinatesLayout.setVisibility(View.GONE);
         }
         binding.setProgramStage(programStage);
     }
@@ -472,9 +482,40 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
                 binding.catCombo.setVisibility(View.VISIBLE);
                 binding.catComboLine.setVisibility(View.VISIBLE);
+
+                categoryOptionComboModels = catComboList;
+
+                CatComboAdapter2 adapter = new CatComboAdapter2(EventInitialActivity.this,
+                        R.layout.spinner_layout,
+                        R.id.spinner_text,
+                        catComboList,
+                        catCombo.displayName() != null ? catCombo.displayName() : getString(R.string.category_option));
+
+                binding.catCombo.setAdapter(adapter);
+                binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (catComboList.size() > position - 1 && position > 0)
+                            selectedCatOptionCombo = catComboList.get(position - 1);
+                        else
+                            selectedCatOptionCombo = null;
+                        checkActionButtonVisibility();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                if (periodType != null)
+                    presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
+
+                if(eventModel!=null)//TODO: Check all this
+                    presenter.getCatOption(eventModel.attributeOptionCombo());
             }
 
-            categoryOptionComboModels = catComboList;
+            /*categoryOptionComboModels = catComboList;
 
             CatComboAdapter2 adapter = new CatComboAdapter2(EventInitialActivity.this,
                     R.layout.spinner_layout,
@@ -502,7 +543,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (periodType != null)
                 presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
 
-            presenter.getCatOption(eventModel.attributeOptionCombo());
+            if(eventModel!=null)//TODO: Check all this
+            presenter.getCatOption(eventModel.attributeOptionCombo());*/
             checkActionButtonVisibility();
         });
     }
@@ -594,9 +636,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         totalCompletedFields = totalCompletedFields + completedSectionFields;
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         completionPercent = (int) (completionPerone * 100);
-        ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
-        gainAnim.setDuration(PROGRESS_TIME);
-        binding.progressGains.startAnimation(gainAnim);
+
+
+        runOnUiThread(() -> {
+            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
+            gainAnim.setDuration(PROGRESS_TIME);
+            binding.progressGains.startAnimation(gainAnim);
+        });
+
     }
 
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {

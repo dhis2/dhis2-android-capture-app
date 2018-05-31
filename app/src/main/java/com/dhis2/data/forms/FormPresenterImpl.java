@@ -8,6 +8,7 @@ import com.dhis2.utils.DateUtils;
 import java.text.ParseException;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.observables.ConnectableObservable;
@@ -98,11 +99,11 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
 
-        ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
+        /*ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
                 .distinctUntilChanged()
-                .publish();
+                .publish();*/
 
-        compositeDisposable.add(statusObservable
+       /* compositeDisposable.add(statusObservable
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .skip(1)
@@ -117,17 +118,17 @@ class FormPresenterImpl implements FormPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
-        compositeDisposable.add(statusObservable.connect());
+        compositeDisposable.add(statusObservable.connect());*/
 
         ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
-                .distinctUntilChanged()
+//                .distinctUntilChanged()
                 .publish();
 
         compositeDisposable.add(statusChangeObservable
                 .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                 .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportStatus(), throwable -> {
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(/*formRepository.storeReportStatus()*/view::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 

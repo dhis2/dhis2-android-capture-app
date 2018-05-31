@@ -8,7 +8,6 @@ import android.view.MenuItem;
 
 import com.dhis2.R;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.utils.CustomViews.CoordinatesView;
 
 import static com.dhis2.utils.Preconditions.isNull;
 
@@ -26,6 +25,20 @@ public class FormActivity extends ActivityGlobalAbstract {
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(ARGUMENTS, formViewArguments);
         intent.putExtra(IS_ENROLLMENT, isEnrollment);
+        return intent;
+    }
+
+    @NonNull
+    public static Intent create(@NonNull Activity activity,
+                                @NonNull FormViewArguments formViewArguments,
+                                boolean isEnrollment, Bundle bundle) {
+        isNull(activity, "activity must not be null");
+        isNull(formViewArguments, "formViewArguments must not be null");
+
+        Intent intent = new Intent(activity, FormActivity.class);
+        intent.putExtra(ARGUMENTS, formViewArguments);
+        intent.putExtra(IS_ENROLLMENT, isEnrollment);
+        intent.putExtras(bundle);
         return intent;
     }
 

@@ -498,6 +498,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<Boolean> hasOverdue(String programUid, String teiUid) {
+
+        String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
+                "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
+                "WHERE TrackedEntityInstance.uid = ?";
+
+        String overdueProgram = " AND Enrollment.program = ?";
+
+        if (programUid == null)
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid).mapToList(EventModel::create).map(List::isEmpty);
+        else
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, programUid).mapToList(EventModel::create).map(List::isEmpty);
+
+    }
+
+    @Override
     public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid)

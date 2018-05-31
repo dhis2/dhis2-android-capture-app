@@ -65,8 +65,8 @@ public class Bindings {
 
     @BindingAdapter("date")
     public static void setDate(TextView textView, String date) {
-        SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat formatOut = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat formatIn = DateUtils.databaseDateFormat();
+        SimpleDateFormat formatOut = DateUtils.uiDateFormat();
         try {
             Date dateIn = formatIn.parse(date);
             String dateOut = formatOut.format(dateIn);
