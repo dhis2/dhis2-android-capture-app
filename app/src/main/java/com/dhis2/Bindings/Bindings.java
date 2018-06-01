@@ -96,7 +96,7 @@ public class Bindings {
     @BindingAdapter("date")
     public static void parseDate(TextView textView, Date date) {
         if (date != null) {
-            SimpleDateFormat formatOut = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat formatOut = DateUtils.uiDateFormat();
             String dateOut = formatOut.format(date);
             textView.setText(dateOut);
         }

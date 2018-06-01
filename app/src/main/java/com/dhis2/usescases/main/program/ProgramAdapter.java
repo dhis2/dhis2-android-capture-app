@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -39,24 +40,23 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
         this.currentPeriod = currentPeriod;
     }
 
+    @NonNull
     @Override
-    public ProgramViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ProgramViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemProgramBinding itemBinding = DataBindingUtil.inflate(inflater, R.layout.item_program, parent, false);
         return new ProgramViewHolder(itemBinding);
     }
 
     @Override
-    public void onBindViewHolder(ProgramViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProgramViewHolder holder, int position) {
         holder.bind(presenter, getItemAt(position), currentPeriod);
     }
 
     public void setData(List<ProgramModel> program) {
 
-//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramDiffCallback(programList, program));
         programList.clear();
         programList.addAll(program);
-//        diffResult.dispatchUpdatesTo(this);
 
         notifyDataSetChanged();
     }

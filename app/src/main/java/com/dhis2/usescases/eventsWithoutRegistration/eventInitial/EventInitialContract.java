@@ -96,8 +96,6 @@ public class EventInitialContract {
 
         void getSectionCompletion(@Nullable String sectionUid);
 
-        void onDetach();
-
         void goToSummary();
 
         void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);

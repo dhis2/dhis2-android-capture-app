@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +23,7 @@ import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.HelpManager;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -40,7 +42,6 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
@@ -69,9 +70,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", new Locale("es"));
+    SimpleDateFormat monthFormat = new SimpleDateFormat("MMM-yyyy", Locale.getDefault());
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
     private TreeNode treeNode;
+    private Context context;
 
     //-------------------------------------------
     //region LIFECYCLE
@@ -80,13 +82,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         ((Components) getActivity().getApplicationContext()).userComponent()
                 .plus(new ProgramModule()).inject(this);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_program, container, false);
         binding.setPresenter(presenter);
         chosenDateWeek.add(new Date());
@@ -167,7 +170,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);
             DatePickerDialog pickerDialog;
-            pickerDialog = new DatePickerDialog(getContext(), (datePicker, year, monthOfYear, dayOfMonth) -> {
+            pickerDialog = new DatePickerDialog(context, (datePicker, year, monthOfYear, dayOfMonth) -> {
                 calendar.set(year, monthOfYear, dayOfMonth);
                 Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                 ArrayList<Date> day = new ArrayList<>();
@@ -193,23 +196,23 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         switch (currentPeriod) {
             case NONE:
                 currentPeriod = DAILY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_day);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_day);
                 break;
             case DAILY:
                 currentPeriod = WEEKLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_week);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_week);
                 break;
             case WEEKLY:
                 currentPeriod = MONTHLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_month);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_month);
                 break;
             case MONTHLY:
                 currentPeriod = YEARLY;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_year);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_year);
                 break;
             case YEARLY:
                 currentPeriod = NONE;
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_view_none);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                 break;
         }
         ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
@@ -300,7 +303,9 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
-        treeView = new AndroidTreeView(getContext(), treeNode);
+        binding.orgUnitCancel.setOnClickListener(view -> binding.drawerLayout.closeDrawer(Gravity.END));
+        binding.orgUnitAll.setOnClickListener(view -> treeView.selectAll(false));
+        treeView = new AndroidTreeView(context, treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
@@ -408,7 +413,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     .dismissListener(new DismissListener() {
                         @Override
                         public void onDismiss(String id) {
-                            getAbstractActivity().findViewById(R.id.filter).performClick();
+                            if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
+                                getAbstractActivity().findViewById(R.id.filter).performClick();
                         }
 
                         @Override
@@ -438,16 +444,25 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     .closeOnTouch(true)
                     .build();
 
-            getAbstractActivity().fancyShowCaseQueue = new FancyShowCaseQueue()
+            /*getAbstractActivity().fancyShowCaseQueue = new FancyShowCaseQueue()
                     .add(tuto1)
                     .add(tuto2)
                     .add(tuto3)
                     .add(tuto4)
                     .add(tuto5)
-                    .add(tuto6);
+                    .add(tuto6);*/
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+            steps.add(tuto3);
+            steps.add(tuto4);
+            steps.add(tuto5);
+            steps.add(tuto6);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                getAbstractActivity().fancyShowCaseQueue.show();
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
             }
 

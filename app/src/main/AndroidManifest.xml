@@ -13,6 +13,10 @@
         android:name="android.hardware.fingerprint"
         android:required="false" />
 
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -32,8 +36,7 @@
 
         <activity
             android:name=".usescases.login.LoginActivity"
-            android:windowSoftInputMode="adjustPan"
-            />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".usescases.main.MainActivity" />
 

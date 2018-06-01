@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -502,14 +503,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
                 "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
-                "WHERE TrackedEntityInstance.uid = ?";
+                "WHERE TrackedEntityInstance.uid = ? AND Event.status = ?";
 
         String overdueProgram = " AND Enrollment.program = ?";
 
         if (programUid == null)
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid).mapToList(EventModel::create).map(List::isEmpty);
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(List::isEmpty);
         else
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, programUid).mapToList(EventModel::create).map(List::isEmpty);
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(List::isEmpty);
 
     }
 

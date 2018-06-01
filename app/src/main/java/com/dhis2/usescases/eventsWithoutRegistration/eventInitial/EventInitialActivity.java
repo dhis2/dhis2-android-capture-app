@@ -128,7 +128,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         binding.setIsNewEvent(isNewEvent);
         binding.date.clearFocus();
-        presenter.init(this, programId, eventId);
+//        presenter.init(this, programId, eventId);
 
         if (eventCreationType.equals(REFERRAL)) {
             binding.temp.setVisibility(View.VISIBLE);
@@ -277,6 +277,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         selectedLat, selectedLon);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.init(this, programId, eventId);
+
     }
 
     @Override

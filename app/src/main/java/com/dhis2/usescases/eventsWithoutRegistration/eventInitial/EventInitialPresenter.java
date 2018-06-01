@@ -75,13 +75,14 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
         Bindings.setMetadataRepository(metadataRepository);
-        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(EventInitialContract.View mview, String programId, String eventId) {
         view = mview;
         this.eventId = eventId;
+
+        compositeDisposable = new CompositeDisposable();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
@@ -248,7 +249,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         (eventModel) -> view.onEventUpdated(eventModel.uid()),
-                        Timber::e
+                        error -> displayMessage(error.getLocalizedMessage())
 
                 ));
     }
@@ -322,11 +323,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         throwable -> view.renderError(throwable.getMessage())
 
                 ));
-    }
-
-    @Override
-    public void onDetach() {
-        compositeDisposable.dispose();
     }
 
     @Override

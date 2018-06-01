@@ -30,6 +30,7 @@ import com.dhis2.R;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
+import com.dhis2.utils.HelpManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -45,6 +46,12 @@ import rx.subjects.BehaviorSubject;
  */
 
 public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, SensorEventListener {
+
+    private static final float SHAKE_THRESHOLD_GRAVITY = 2.7F;
+    private static final int SHAKE_SLOP_TIME_MS = 500;
+    private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
+    private long mShakeTimestamp;
+    private int mShakeCount;
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
@@ -63,8 +70,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-        if (!BuildConfig.DEBUG)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+       /* if (!BuildConfig.DEBUG)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);TODO:ACTIVATE FOR FINAL BUILD*/
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
@@ -116,15 +123,27 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         float y = values[1];
         float z = values[2];
 
-        float accelationSquareRoot = (x * x + y * y + z * z)
-                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
-        long actualTime = event.timestamp;
-        if (accelationSquareRoot >= 2) //
-        {
-            if (actualTime - lastUpdate < 200) {
+        float gX = x / SensorManager.GRAVITY_EARTH;
+        float gY = y / SensorManager.GRAVITY_EARTH;
+        float gZ = z / SensorManager.GRAVITY_EARTH;
+
+        // gForce will be close to 1 when there is no movement.
+        float gForce = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
+
+        if (gForce > SHAKE_THRESHOLD_GRAVITY) {
+            final long now = System.currentTimeMillis();
+            // ignore shake events too close to each other (500ms)
+            if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
                 return;
             }
-            lastUpdate = actualTime;
+
+            // reset the shake count after 3 seconds of no shakes
+            if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
+                mShakeCount = 0;
+            }
+
+            mShakeTimestamp = now;
+            mShakeCount++;
 
             showTutorial(true);
         }
@@ -137,10 +156,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showTutorial(boolean shaked) {
-        if (fancyShowCaseQueue != null)
-            fancyShowCaseQueue.show();
-        else
-            displayMessage("The are no information for this screen");
+        HelpManager.getInstance().showHelp();
     }
 
     public Context getContext() {
