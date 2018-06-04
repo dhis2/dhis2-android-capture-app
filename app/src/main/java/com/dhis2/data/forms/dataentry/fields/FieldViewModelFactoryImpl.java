@@ -98,6 +98,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_POSITIVE:
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
+            case URL:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
             case TIME:
             case DATE:
@@ -113,7 +114,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section);
             case TRACKER_ASSOCIATE:
-            case URL:
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
         }

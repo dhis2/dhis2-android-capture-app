@@ -9,6 +9,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -63,7 +64,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
         this.disposable = new CompositeDisposable();
 
-        if (renderType!=null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
+        if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
         model = BehaviorProcessor.create();
@@ -74,7 +75,6 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                             null : valueOf(editTextModel.value()));
 
                     setInputType(editTextModel.valueType());
-
 
                     if (!isEmpty(editTextModel.warning())) {
                         inputLayout.setError(editTextModel.warning());
@@ -109,20 +109,38 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                         hint -> inputLayout.setHint(hint),
                         Timber::d));*/
 
+        disposable.add(editTextObservable
+                .filter(hasFocus -> !hasFocus)
+                .filter(focusLost -> model.getValue() != null)
+                .filter(focusLost -> validate())
+                .map(focusLost -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
+                .subscribe(
+                        processor::onNext,
+                        Timber::d,
+                        () ->
+                        {
+                            if (valueHasChanged() && validate()) {
+                                processor.onNext(RowAction.create(model.getValue().uid(),
+                                        editText.getText().toString()));
+                            }
+                        }));
+
+/*
         disposable.add(RxTextView.textChanges(editText)
                 .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .filter(data -> model.getValue() != null)
+                .filter(data -> validate())
                 .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
                 .subscribe(
                         processor::onNext,
                         Timber::d,
                         () ->
                         {
-                            if (valueHasChanged()) {
+                            if (valueHasChanged() && validate()) {
                                 processor.onNext(RowAction.create(model.getValue().uid(),
                                         editText.getText().toString()));
                             }
-                        }));
+                        }));*/
 
         editTextObservable.connect();
     }
@@ -143,7 +161,15 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 break;
             case LETTER:
                 editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
+                editText.setFilters(new InputFilter[]{
+                        new InputFilter.LengthFilter(1),
+                        (source, start, end, dest, dstart, dend) -> {
+                            if (source.equals(""))
+                                return source;
+                            if (source.toString().matches("[a-zA-Z]"))
+                                return source;
+                            return "";
+                        }});
                 break;
             case NUMBER:
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER |
@@ -161,6 +187,12 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 break;
             case UNIT_INTERVAL:
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                break;
+            case PERCENTAGE:
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                break;
+            case URL:
+                editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
                 break;
             default:
                 break;
@@ -180,6 +212,62 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
     void update(@NonNull EditTextModel editTextModel) {
         model.onNext(editTextModel);
+    }
+
+    private boolean validate() {
+        switch (model.getValue().valueType()) {
+            case PHONE_NUMBER:
+                if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
+                    return true;
+                else {
+                    inputLayout.setError("This is not a valid phone number");
+                    return false;
+                }
+            case EMAIL:
+                if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
+                    return true;
+                else {
+                    inputLayout.setError("This is not a valid email");
+                    return false;
+                }
+            case INTEGER_NEGATIVE:
+                if (Integer.valueOf(editText.getText().toString()) < 0)
+                    return true;
+                else {
+                    inputLayout.setError("Only negative numbers are allowed");
+                    return false;
+                }
+            case INTEGER_ZERO_OR_POSITIVE:
+                if (Integer.valueOf(editText.getText().toString()) >= 0)
+                    return true;
+                else {
+                    inputLayout.setError("Only positive numbers or zero allowed");
+                    return false;
+                }
+            case INTEGER_POSITIVE:
+                if (Integer.valueOf(editText.getText().toString()) > 0)
+                    return true;
+                else {
+                    inputLayout.setError("Only positive numbers are allowed");
+                    return false;
+                }
+            case UNIT_INTERVAL:
+                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
+                    return true;
+                else {
+                    inputLayout.setError("Only values from 0 to 1 are allowed");
+                    return false;
+                }
+            case PERCENTAGE:
+                if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
+                    return true;
+                else {
+                    inputLayout.setError("Only values from 0 to 100 are allowed");
+                    return false;
+                }
+            default:
+                return true;
+        }
     }
 
 }

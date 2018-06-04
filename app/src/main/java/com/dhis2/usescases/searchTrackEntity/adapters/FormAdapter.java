@@ -111,7 +111,7 @@ public class FormAdapter extends RecyclerView.Adapter {
             String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), label, false, null, label, 1, attr.valueType(), null,!attr.generated());
+                    viewModel = EditTextViewModel.create(attr.uid(), label, false, null, label, 1, attr.valueType(), null, !attr.generated());
                     break;
                 case BUTTON:
                     viewModel = FileViewModel.create(attr.uid(), label, false, null, null);
@@ -189,6 +189,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case INTEGER_POSITIVE:
                 case INTEGER_ZERO_OR_POSITIVE:
                 case UNIT_INTERVAL:
+                case URL:
                     return EDITTEXT;
                 case TIME:
                     return TIME;
@@ -206,7 +207,6 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case ORGANISATION_UNIT:
                     return ORG_UNIT;
                 case TRACKER_ASSOCIATE:
-                case URL:
                 default:
                     return EDITTEXT;
             }
