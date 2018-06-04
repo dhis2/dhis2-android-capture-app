@@ -1,5 +1,6 @@
 package com.dhis2.usescases.programEventDetail;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.dhis2.utils.DateUtils;
@@ -13,6 +14,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +32,16 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             "WHERE ProgramStageDataElement.displayInReports = 1\n" +
             "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
             ")";
+
+    private final String EVENT_DATA_VALUES_NEW = "SELECT TrackedEntityDataValue.value, DataElement.optionSet FROM TrackedEntityDataValue " +
+            "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
+            "AND TrackedEntityDataValue.dataElement IN\n" +
+            "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
+            "WHERE ProgramStageDataElement.displayInReports = 1\n" +
+            "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
+            ")";
+
+    private final String OPTION = "SELECT Option.displayName FROM Option WHERE Option.uid = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -63,8 +75,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid, dateQuery))
                     .mapToList(EventModel::create);
-        }
-        else{
+        } else {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
@@ -107,8 +118,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO, programUid, categoryOptionComboModel.uid(), dateQuery))
                     .mapToList(EventModel::create);
-        }
-        else{
+        } else {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
@@ -138,7 +148,33 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel) {
+
         return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, EVENT_DATA_VALUES, eventModel.uid())
                 .mapToList(TrackedEntityDataValueModel::create);
+    }
+
+    public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
+        List<String> values = new ArrayList<>();
+        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES_NEW, eventModel.uid());
+        if (cursor != null && cursor.moveToFirst()) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                String value = cursor.getString(0);
+                String optionSet = cursor.getString(1);
+
+                if (optionSet == null)
+                    values.add(value);
+                else if (value != null) {
+                    Cursor option = briteDatabase.query(OPTION, value);
+                    if (option != null && option.moveToFirst()) {
+                        values.add(option.getString(0));
+                    }
+                }
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        return Observable.just(values);
     }
 }

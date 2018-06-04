@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import io.reactivex.Observable;
 
 /**
  * Created by Cristian on 13/02/2017.
- *
  */
 
 public class ProgramEventDetailContract {
@@ -72,11 +70,12 @@ public class ProgramEventDetailContract {
 
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
 
+        Observable<List<String>> getEventDataValueNew(EventModel event);
+
         void showFilter();
 
-
-
         void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery);
+
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -91,6 +90,7 @@ public class ProgramEventDetailContract {
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
 
 
+        Observable<List<String>> getEventDataValueNew(EventModel event);
 
         void getProgramEventsWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery);
     }

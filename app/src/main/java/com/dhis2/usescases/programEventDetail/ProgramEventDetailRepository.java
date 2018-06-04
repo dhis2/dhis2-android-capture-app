@@ -35,4 +35,6 @@ public interface ProgramEventDetailRepository {
 
     @NonNull
     Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel);
+
+    Observable<List<String>> eventDataValuesNew(EventModel eventModel);
 }

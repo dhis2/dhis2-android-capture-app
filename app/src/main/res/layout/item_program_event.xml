@@ -17,8 +17,7 @@
             type="org.hisp.dhis.android.core.event.EventModel" />
     </data>
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp">
@@ -33,10 +32,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="14dp"
-                android:text='@{event.eventDate.toLocaleString()}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                app:date='@{event.eventDate}'
                 tools:text="04/10/2017 - 8:55 AM" />
 
             <TextView
@@ -46,75 +45,75 @@
                 android:layout_below="@id/entity_attribute_1"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
-                app:organisationUnitName='@{event.organisationUnit}'
                 android:textColor="@color/black_de0"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                app:organisationUnitName='@{event.organisationUnit}'
                 tools:text="Org Unit" />
 
             <LinearLayout
                 android:id="@+id/entity_attribute_3"
-                android:layout_below="@id/entity_attribute_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
+                android:layout_below="@id/entity_attribute_2"
                 android:layout_marginEnd="25dp"
+                android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/dataValue"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textColor="@color/black_de0"
                     android:textSize="16sp"
-                    tools:text="Age 25"/>
+                    tools:text="Age 25" />
 
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="end"
                     android:textColor="@color/black_de0"
                     android:textSize="16sp"
                     app:categoryOptionComboName='@{event.attributeOptionCombo}'
-                    tools:text="Cat combo"/>
+                    tools:text="Cat combo" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/program_attribute_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/entity_attribute_3"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10.7dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black_de0"
                     android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
+                    android:textColor="@color/black_de0"
                     android:textSize="16sp"
-                    tools:text="Diagnosis"
-                    app:programStage='@{event.programStage}' />
+                    app:programStage='@{event.programStage}'
+                    tools:text="Diagnosis" />
 
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="25dp"
+                    android:layout_weight="1"
                     android:gravity="end"
                     android:textColor="@color/black_de0"
                     android:textSize="14sp"
-                    app:eventCompletion='@{event}'/>
+                    app:eventCompletion='@{event}' />
 
             </LinearLayout>
 
@@ -155,7 +154,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
                     app:eventWithoutRegistrationStatusText='@{event}'
-                    tools:text="@string/event_open"/>
+                    tools:text="@string/event_open" />
 
                 <ImageView
                     android:id="@+id/sync_icon"

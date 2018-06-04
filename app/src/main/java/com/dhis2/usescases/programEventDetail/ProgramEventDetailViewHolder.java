@@ -33,7 +33,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();
 
-        disposable.add(presenter.getEventDataValue(event)
+      /*  disposable.add(presenter.getEventDataValue(event)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -42,6 +42,21 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                             for (TrackedEntityDataValueModel dataValue : trackedEntityDataValueModels) {
                                 if (dataValue.value() != null)
                                     stringBuilder.append(dataValue.value()).append("\n");
+                            }
+                            binding.dataValue.setText(stringBuilder);
+                        },
+                        Timber::d
+                ));*/
+
+        disposable.add(presenter.getEventDataValueNew(event)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        values -> {
+                            StringBuilder stringBuilder = new StringBuilder("");
+                            for (String dataValue : values) {
+                                if (dataValue != null)
+                                    stringBuilder.append(dataValue).append("\n");
                             }
                             binding.dataValue.setText(stringBuilder);
                         },

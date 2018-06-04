@@ -90,6 +90,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
+    public Observable<List<String>> getEventDataValueNew(EventModel event) {
+        return interactor.getEventDataValueNew(event);
+    }
+
+    @Override
     public ProgramModel getCurrentProgram() {
         return program;
     }

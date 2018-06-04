@@ -88,6 +88,11 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         return programEventDetailRepository.eventDataValues(event);
     }
 
+    @Override
+    public Observable<List<String>> getEventDataValueNew(EventModel event) {
+        return programEventDetailRepository.eventDataValuesNew(event);
+    }
+
 
     private void getProgram() {
         compositeDisposable.add(metadataRepository.getProgramWithId(programId)
