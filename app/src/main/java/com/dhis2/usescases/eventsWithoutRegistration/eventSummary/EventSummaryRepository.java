@@ -6,15 +6,16 @@ import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.utils.Result;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
- *
  */
 
 public interface EventSummaryRepository {
@@ -27,4 +28,8 @@ public interface EventSummaryRepository {
 
     @NonNull
     Flowable<Result<RuleEffect>> calculate();
+
+    Observable<EventModel> changeStatus(String eventUid);
+
+    Flowable<EventModel> getEvent(String eventId);
 }

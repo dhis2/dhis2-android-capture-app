@@ -173,6 +173,7 @@
                     android:paddingBottom="8dp"
                     android:layout_gravity="end"
                     android:layout_marginTop="16dp"
+                    android:onClick="@{()->presenter.onDoAction()}"
                     android:textSize="15sp"
                     android:text="@string/complete_and_close"/>
             </LinearLayout>

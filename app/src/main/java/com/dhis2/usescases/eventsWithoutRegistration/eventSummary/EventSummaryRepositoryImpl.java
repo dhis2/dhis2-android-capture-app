@@ -1,5 +1,6 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,6 +20,7 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -35,6 +38,7 @@ import java.util.Locale;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -126,6 +130,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
             " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
 
+    private static final String EVENT_QUERY = "SELECT * FROM Event WHERE Event.uid = ?";
+    private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
+            "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
+
 
     public EventSummaryRepositoryImpl(@NonNull Context context,
                                       @NonNull BriteDatabase briteDatabase,
@@ -201,7 +209,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true,null);
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true, null);
     }
 
     @NonNull
@@ -216,6 +224,69 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                                         .onErrorReturn(error -> Result.failure(new Exception(error)))
                                 )
                 );
+    }
+
+    @Override
+    public Observable<EventModel> changeStatus(String eventUid) {
+        String lastUpdated = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        Cursor cursor = briteDatabase.query(EVENT_QUERY, eventUid);
+        if (cursor != null && cursor.moveToNext()) {
+
+            EventModel event = EventModel.create(cursor);
+            cursor.close();
+
+            ContentValues values = event.toContentValues();
+            switch (event.status()) {
+                case ACTIVE:
+                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
+                    break;
+                case SKIPPED:
+                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    break;
+                case VISITED:
+                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    break;
+                case SCHEDULE:
+                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    break;
+                case COMPLETED:
+                    values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                    break;
+            }
+
+
+            values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+            values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
+
+            if (briteDatabase.update(EventModel.TABLE, values,
+                    EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+
+                throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
+                        "has not been successfully updated", event.uid()));
+            }
+
+            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid);
+            if (programCursor != null && cursor.moveToNext()) {
+                ProgramModel program = ProgramModel.create(programCursor);
+                programCursor.close();
+                ContentValues programValues = program.toContentValues();
+                values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
+                if (briteDatabase.update(ProgramModel.TABLE, programValues,
+                        ProgramModel.Columns.UID + " = ?", program.uid()) <= 0) {
+
+                    throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
+                            "has not been successfully updated", event.uid()));
+                }
+            }
+            return Observable.just(event);
+        } else
+            return null;
+    }
+
+    @Override
+    public Flowable<EventModel> getEvent(String eventId) {
+        return briteDatabase.createQuery(EventModel.TABLE, EVENT_QUERY, eventId)
+                .mapToOne(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

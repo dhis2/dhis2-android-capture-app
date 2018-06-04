@@ -30,7 +30,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventSummaryInteractor implements EventSummaryContract.Interactor {
@@ -48,7 +47,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
 
     EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                          @NonNull MetadataRepository metadataRepository,
+                           @NonNull MetadataRepository metadataRepository,
                            @NonNull SchedulerProvider schedulerProvider) {
         this.metadataRepository = metadataRepository;
         this.eventSummaryRepository = eventSummaryRepository;
@@ -61,8 +60,19 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     public void init(@NonNull EventSummaryContract.View view, @NonNull String programId, @NonNull String eventId) {
         this.view = view;
         this.eventUid = eventId;
+        getEvent(eventId);
         getProgram(programId);
         getEventSections(eventId);
+    }
+
+    private void getEvent(String eventId) {
+        compositeDisposable.add(eventSummaryRepository.getEvent(eventId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setActionButton,
+                        Timber::e
+                ));
     }
 
     @Override
@@ -93,7 +103,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     }
 
     @Override
-    public void getSectionCompletion(@Nullable String sectionUid){
+    public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation());
@@ -107,6 +117,18 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 .subscribe(view.showFields(sectionUid), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
+    }
+
+    @Override
+    public void onDoAction() {
+        compositeDisposable.add(eventSummaryRepository.changeStatus(eventUid)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                        event -> view.onStatusChanged(event),
+                        throwable -> {
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));
     }
 
     @NonNull

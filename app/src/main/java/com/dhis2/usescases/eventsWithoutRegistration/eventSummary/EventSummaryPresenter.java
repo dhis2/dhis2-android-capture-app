@@ -35,6 +35,11 @@ public class EventSummaryPresenter implements EventSummaryContract.Presenter {
     }
 
     @Override
+    public void onDoAction() {
+        interactor.onDoAction();
+    }
+
+    @Override
     public void onDettach() {
         interactor.onDettach();
     }

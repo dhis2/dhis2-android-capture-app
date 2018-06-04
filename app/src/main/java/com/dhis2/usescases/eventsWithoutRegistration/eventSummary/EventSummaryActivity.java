@@ -2,12 +2,14 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -17,6 +19,7 @@ import com.dhis2.databinding.ActivityEventSummaryBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.HashMap;
@@ -29,7 +32,6 @@ import io.reactivex.functions.Consumer;
 
 /**
  * Created by Cristian on 01/03/2018.
- *
  */
 
 public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
@@ -48,17 +50,17 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private int totalFields;
     private int totalCompletedFields;
     private int fieldsToCompleteBeforeClosing;
+    String eventId;
+    String programId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(EVENT_ID) && getIntent().getExtras().containsKey(PROGRAM_ID)
                 && getIntent().getExtras().getString(EVENT_ID) != null && getIntent().getExtras().getString(PROGRAM_ID) != null) {
-            String eventId = getIntent().getExtras().getString(EVENT_ID);
-            String programId = getIntent().getExtras().getString(PROGRAM_ID);
+            eventId = getIntent().getExtras().getString(EVENT_ID);
+            programId = getIntent().getExtras().getString(PROGRAM_ID);
             ((App) getApplicationContext()).userComponent().plus(new EventSummaryModule(this, eventId)).inject(this);
-            presenter.init(this, programId, eventId);
-        }
-        else {
+        } else {
             finish();
         }
 
@@ -70,13 +72,20 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.init(this, programId, eventId);
+
+    }
+
+    @Override
     public void setProgram(@NonNull ProgramModel program) {
         binding.setName(program.displayName());
     }
 
     @Override
     public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int)(completionPercent * interpolatedTime);
+        int progress = (int) (completionPercent * interpolatedTime);
         String text = String.valueOf(progress) + "%";
         binding.progress.setText(text);
     }
@@ -84,7 +93,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventSections(List<FormSectionViewModel> formSectionViewModels) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        for (FormSectionViewModel formSectionViewModel : formSectionViewModels){
+        for (FormSectionViewModel formSectionViewModel : formSectionViewModels) {
             View inflatedLayout = inflater.inflate(R.layout.event_section_row, null, false);
             ((TextView) inflatedLayout.findViewById(R.id.section_title)).setText(formSectionViewModel.label());
             binding.eventSectionRows.addView(inflatedLayout);
@@ -97,6 +106,33 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public Consumer<List<FieldViewModel>> showFields(String sectionUid) {
         return fields -> swap(fields, sectionUid);
+    }
+
+    @Override
+    public void onStatusChanged(EventModel event) {
+        Toast.makeText(this, getString(R.string.event_updated), Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(this::finish, 1000);
+    }
+
+    @Override
+    public void setActionButton(EventModel eventModel) {
+        switch (eventModel.status()) {
+            case ACTIVE:
+                binding.actionButton.setText(getString(R.string.complete_and_close));
+                break;
+            case SKIPPED:
+                binding.actionButton.setVisibility(View.GONE);
+                break;
+            case VISITED:
+                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                break;
+            case SCHEDULE:
+                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                break;
+            case COMPLETED:
+                binding.actionButton.setText(getString(R.string.re_open));
+                break;
+        }
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
@@ -125,22 +161,22 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         checkButton();
     }
 
-    private void checkButton(){
+    private void checkButton() {
         binding.actionButton.setEnabled(fieldsToCompleteBeforeClosing <= 0);
     }
 
-    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates){
+    private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates){
+        for (FieldViewModel fieldViewModel : updates) {
             if (fieldViewModel.value() != null && !fieldViewModel.value().isEmpty())
                 total++;
         }
         return total;
     }
 
-    private int calculateMandatoryUnansweredFields(@NonNull List<FieldViewModel> updates){
+    private int calculateMandatoryUnansweredFields(@NonNull List<FieldViewModel> updates) {
         int total = 0;
-        for (FieldViewModel fieldViewModel : updates){
+        for (FieldViewModel fieldViewModel : updates) {
             if ((fieldViewModel.value() == null || fieldViewModel.value().isEmpty()) && fieldViewModel.mandatory())
                 total++;
         }

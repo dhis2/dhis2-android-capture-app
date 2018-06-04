@@ -7,6 +7,7 @@ import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
@@ -28,6 +29,10 @@ public class EventSummaryContract {
 
         @NonNull
         Consumer<List<FieldViewModel>> showFields(String sectionUid);
+
+        void onStatusChanged(EventModel event);
+
+        void setActionButton(EventModel eventModel);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -36,6 +41,8 @@ public class EventSummaryContract {
         void onBackClick();
 
         void getSectionCompletion(@Nullable String sectionUid);
+
+        void onDoAction();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -47,5 +54,7 @@ public class EventSummaryContract {
         void getEventSections(@NonNull String programId);
 
         void getSectionCompletion(@Nullable String sectionUid);
+
+        void onDoAction();
     }
 }
