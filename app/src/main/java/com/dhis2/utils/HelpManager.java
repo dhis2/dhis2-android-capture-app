@@ -27,11 +27,12 @@ public class HelpManager {
     }
 
     public void showHelp() {
-        queue = new FancyShowCaseQueue();
-        for (FancyShowCaseView view : help) {
-            queue.add(view);
+        if (help != null) {
+            queue = new FancyShowCaseQueue();
+            for (FancyShowCaseView view : help) {
+                queue.add(view);
+            }
+            queue.show();
         }
-        queue.show();
     }
-
 }

@@ -371,6 +371,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (binding.filterLayout.getVisibility() == View.VISIBLE){
             binding.filter.setBackgroundColor(getPrimaryColor());
             binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            binding.filter.setBackgroundResource(0);
         }
         // when filter layout is hidden
         else {
@@ -378,11 +379,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             if (currentPeriod == Period.NONE && areAllOrgUnitsSelected() && !isFilteredByCatCombo) {
                 binding.filter.setBackgroundColor(getPrimaryColor());
                 binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                binding.filter.setBackgroundResource(0);
             }
             // applied period filter
             else {
                 binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
                 binding.filter.setColorFilter(getPrimaryColor(), PorterDuff.Mode.SRC_IN);
+                binding.filter.setBackgroundResource(R.drawable.white_circle);
             }
         }
     }

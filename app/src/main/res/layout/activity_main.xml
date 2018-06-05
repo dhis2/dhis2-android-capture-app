@@ -64,10 +64,12 @@
 
                 <ImageView
                     android:id="@+id/filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical"
                     android:onClick="@{()->presenter.showFilter()}"
-                    android:padding="15dp"
+                    android:padding="8dp"
+                    android:layout_marginEnd="6dp"
                     app:srcCompat="@drawable/ic_filter"
                     tools:ignore="ContentDescription" />
 

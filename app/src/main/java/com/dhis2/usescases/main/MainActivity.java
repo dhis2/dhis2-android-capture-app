@@ -135,6 +135,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         if (programFragment.binding.filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(color);
             binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            binding.filter.setBackgroundResource(0);
         }
         // when filter layout is hidden
         else {
@@ -142,11 +143,13 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             if (programFragment.getCurrentPeriod() == Period.NONE && programFragment.areAllOrgUnitsSelected()) {
                 binding.filter.setBackgroundColor(color);
                 binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                binding.filter.setBackgroundResource(0);
             }
             // applied period filter
             else {
                 binding.filter.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.white, getTheme()));
                 binding.filter.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                binding.filter.setBackgroundResource(R.drawable.white_circle);
             }
         }
     }
