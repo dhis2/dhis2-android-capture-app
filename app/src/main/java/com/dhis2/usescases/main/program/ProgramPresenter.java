@@ -118,6 +118,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             case NONE:
                 bundle.putInt("CURRENT_PERIOD", R.string.period);
                 bundle.putSerializable("CHOOSEN_DATE", null);
+                break;
             case DAILY:
                 bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
                 bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
