@@ -46,7 +46,7 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
-    Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
+    Observable<List<RelationshipModel>> getRelationships(String teiUid);
 
     void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
 

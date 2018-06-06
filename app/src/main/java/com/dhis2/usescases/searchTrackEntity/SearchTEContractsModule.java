@@ -10,7 +10,6 @@ import com.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
@@ -80,7 +79,7 @@ public class SearchTEContractsModule {
 
         List<ProgramModel> getProgramList();
 
-        void addRelationship(String TEIuid);
+        void addRelationship(String TEIuid, String relationshipTypeUid);
 
         void downloadTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
 
