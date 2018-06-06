@@ -18,7 +18,6 @@ import java.util.Locale;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 public final class AttributeValueStore implements DataEntryStore {
@@ -119,7 +118,7 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {
@@ -133,7 +132,6 @@ public final class AttributeValueStore implements DataEntryStore {
                                     "has not been successfully updated", tei.uid()));
                         }
                     }
-
                     return Flowable.just(status);
                 });
     }

@@ -97,8 +97,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         if (position < programData) {
 //            ((DateTimeFormHolder) holder).bindProgramData(presenter, holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(), holder.getAdapterPosition());
-            viewModel = DateTimeViewModel.create(String.valueOf(
-                    programModel.id() + position),
+            viewModel = DateTimeViewModel.create(
+                    String.valueOf(programModel.id() + position),
                     holder.getAdapterPosition() == 0 ? programModel.enrollmentDateLabel() : programModel.incidentDateLabel(),
                     false,
                     ValueType.DATE,

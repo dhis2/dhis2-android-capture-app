@@ -54,7 +54,7 @@ public interface DashboardRepository {
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
-    int setFollowUp(String enrollmentUid, boolean followUp);
+    int setFollowUp(String programUid, String enrollmentUid, boolean followUp);
 
     Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 
