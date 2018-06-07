@@ -17,7 +17,7 @@ public class UserManagerImpl implements UserManager {
 
     @NonNull
     @Override
-    public Observable<Response<User>> logIn(@NonNull String username, @NonNull String password) {
+    public Observable<User> logIn(@NonNull String username, @NonNull String password) {
         return Observable.defer(() -> Observable.fromCallable(d2.logIn(username, password)));
     }
 

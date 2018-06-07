@@ -11,7 +11,7 @@ import retrofit2.Response;
 public interface UserManager {
 
     @NonNull
-    Observable<Response<User>> logIn(@NonNull String username, @NonNull String password);
+    Observable<User> logIn(@NonNull String username, @NonNull String password);
 
     @NonNull
     Observable<Boolean> isUserLoggedIn();

@@ -13,8 +13,8 @@ import com.dhis2.data.server.UserManager;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
-import org.hisp.dhis.android.core.user.User;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -87,6 +87,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     prefs.edit().putString("SERVER", serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
+                })
+                .map(user -> {
+                    if (user == null)
+                        return Response.error(404, null);
+                    else
+                        return Response.success(null);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -181,8 +187,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
 
     @NonNull
-    private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncSingleData(50)));
+    private Observable<List<Event>> events() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(300, false)));
     }
 
     @NonNull
@@ -194,9 +200,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
         };
     }
 
-
     @Override
-    public void handleResponse(@NonNull Response<User> userResponse) {
+    public void handleResponse(@NonNull Response userResponse) {
         Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
         Timber.d("Authentication response code: %s", userResponse.code());
         if (userResponse.isSuccessful()) {
@@ -214,6 +219,26 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.renderServerError();
         }
     }
+
+    /*@Override
+    public void handleResponse(@NonNull Response<User> userResponse) {
+        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
+        Timber.d("Authentication response code: %s", userResponse.code());
+        if (userResponse.isSuccessful()) {
+            ((App) view.getContext().getApplicationContext()).createUserComponent();
+            view.saveUsersData();
+            view.handleSync();
+            sync();
+        } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            view.renderInvalidCredentialsError();
+        } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
+            view.renderInvalidCredentialsError();
+        } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+            view.renderUnexpectedError();
+        } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            view.renderServerError();
+        }
+    }*/
 
     @Override
     public void handleError(@NonNull Throwable throwable) {
@@ -234,5 +259,18 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void onDestroy() {
         disposable.clear();
+    }
+
+    @Override
+    public void logOut() {
+        if (userManager != null)
+            disposable.add(Observable.fromCallable(userManager.getD2().logout())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe(
+                            data->view.handleLogout(),
+                            Timber::d
+                    )
+            );
     }
 }

@@ -20,6 +20,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import timber.log.Timber;
+
 /**
  * Created by frodriguez on 1/15/2018.
  */
@@ -65,8 +67,9 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     public void initData(String data) {
         Date date = null;
         try {
-            date = DateUtils.dateTimeFormat().parse(data);
+            date = DateUtils.databaseDateFormat().parse(data);
         } catch (ParseException e) {
+            Timber.log(0,e,e.getMessage());
         }
 
         data = DateUtils.dateTimeFormat().format(date);

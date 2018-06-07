@@ -24,6 +24,7 @@ import com.dhis2.data.user.UserModule;
 import com.dhis2.usescases.login.LoginComponent;
 import com.dhis2.usescases.login.LoginModule;
 import com.dhis2.utils.UtilsModule;
+import com.dhis2.utils.timber.DebugTree;
 import com.facebook.stetho.Stetho;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 27/09/2017.
@@ -73,7 +75,8 @@ public class App extends MultiDexApplication implements Components {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        if(BuildConfig.DEBUG)
+            Timber.plant(new DebugTree());
         Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
         this.instance = this;

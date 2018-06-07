@@ -95,8 +95,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSet = cursor.getString(4);
-        boolean allowFutureDates = cursor.getString(7).equals("1");
-        boolean generated = cursor.getString(8).equals("1");
+        boolean allowFutureDates = Boolean.valueOf(cursor.getString(7));
+        boolean generated = Boolean.valueOf(cursor.getString(8));
         String orgUnitUid = cursor.getString(9);
 
         String dataValue = cursor.getString(5);

@@ -21,19 +21,15 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -101,13 +97,6 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
         ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
                 .publish();
-/*
-        disposable.add(editTextObservable
-                .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
-                        && model.hasValue() ? model.getValue().label() : "")
-                .subscribe(
-                        hint -> inputLayout.setHint(hint),
-                        Timber::d));*/
 
         disposable.add(editTextObservable
                 .filter(hasFocus -> !hasFocus)
@@ -124,23 +113,6 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                                         editText.getText().toString()));
                             }
                         }));
-
-/*
-        disposable.add(RxTextView.textChanges(editText)
-                .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                .filter(data -> model.getValue() != null)
-                .filter(data -> validate())
-                .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
-                .subscribe(
-                        processor::onNext,
-                        Timber::d,
-                        () ->
-                        {
-                            if (valueHasChanged() && validate()) {
-                                processor.onNext(RowAction.create(model.getValue().uid(),
-                                        editText.getText().toString()));
-                            }
-                        }));*/
 
         editTextObservable.connect();
     }
@@ -262,6 +234,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
                     return true;
                 else {
+
                     inputLayout.setError("Only values from 0 to 100 are allowed");
                     return false;
                 }

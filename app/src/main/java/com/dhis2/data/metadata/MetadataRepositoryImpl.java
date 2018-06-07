@@ -474,7 +474,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<ObjectStyleModel> getObjectStyle(String uid) {
         return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT * FROM ObjectStyle WHERE uid = ?", uid)
-                .mapToOne(ObjectStyleModel::create);
+                .mapToOneOrDefault((ObjectStyleModel::create),ObjectStyleModel.builder().build());
     }
 
     @Override
