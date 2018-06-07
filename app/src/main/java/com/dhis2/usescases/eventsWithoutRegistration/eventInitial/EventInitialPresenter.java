@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import com.dhis2.Bindings.Bindings;
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
@@ -298,7 +299,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        (catOption) -> view.setCatOption(catOption),
+                        catOption -> view.setCatOption(catOption),
                         Timber::d)
         );
     }
@@ -320,8 +321,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
-                        throwable -> view.renderError(throwable.getMessage())
-
+                        throwable -> view.showNoOrgUnits()
                 ));
     }
 
