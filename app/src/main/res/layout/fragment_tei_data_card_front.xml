@@ -35,8 +35,7 @@
         android:clipToPadding="false"
         android:focusableInTouchMode="true"
         app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
-        app:cardUseCompatPadding="true">
+        app:cardElevation="3dp">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/card_data"

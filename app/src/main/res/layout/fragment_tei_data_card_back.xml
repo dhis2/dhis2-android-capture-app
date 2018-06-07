@@ -34,8 +34,8 @@
         android:clipToPadding="false"
         android:focusableInTouchMode="true"
         app:cardCornerRadius="1.8dp"
-        app:cardElevation="8dp"
-        app:cardUseCompatPadding="true">
+        app:cardElevation="3dp"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"

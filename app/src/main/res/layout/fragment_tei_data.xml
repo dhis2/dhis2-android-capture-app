@@ -31,7 +31,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="3dp">
 
         <RelativeLayout
             android:id="@+id/tei_data"
@@ -41,11 +42,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
             <include
                 android:id="@+id/card_back"
-                app:presenter="@{presenter}"
-                layout="@layout/fragment_tei_data_card_back" />
+                layout="@layout/fragment_tei_data_card_back"
+                app:presenter="@{presenter}" />
 
             <include
                 android:id="@+id/card_front"
@@ -61,16 +61,14 @@
             android:id="@+id/tei_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:paddingEnd="6dp"
-            android:paddingStart="6dp"
             android:clipToPadding="false"
+            android:paddingBottom="200dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tei_data"
-            tools:listitem="@layout/item_event"
-            android:paddingBottom="200dp"/>
+            tools:listitem="@layout/item_event" />
 
         <com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fab"

@@ -9,6 +9,10 @@
         <variable
             name="renderType"
             type="java.lang.String" />
+
+        <variable
+            name="isEditable"
+            type="android.databinding.ObservableBoolean" />
     </data>
 
     <RelativeLayout
@@ -40,10 +44,13 @@
                 android:id="@+id/input_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="@{isEditable.get()}"
                 android:imeOptions="actionNext"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
-                android:textSize="15sp" />
+                android:textColor="?colorAccent"
+                android:textSize="15sp"
+                tools:text="hello" />
 
         </android.support.design.widget.TextInputLayout>
     </RelativeLayout>

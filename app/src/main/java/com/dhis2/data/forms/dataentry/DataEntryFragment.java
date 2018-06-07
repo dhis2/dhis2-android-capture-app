@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry;
 
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -98,7 +99,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
                 getChildFragmentManager(), arguments,
-                dataEntryPresenter.getOrgUnits());
+                dataEntryPresenter.getOrgUnits(),
+                new ObservableBoolean(false));
         dataEntryAdapter.setHasStableIds(true);
 
         RecyclerView.LayoutManager layoutManager;

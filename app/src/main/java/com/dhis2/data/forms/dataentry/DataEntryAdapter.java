@@ -1,5 +1,6 @@
 package com.dhis2.data.forms.dataentry;
 
+import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.util.DiffUtil;
@@ -67,7 +68,8 @@ public final class DataEntryAdapter extends Adapter {
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
-                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits) {
+                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
+                            ObservableBoolean isEditable) { //TODO: Add isEditable to all fields and test if can be changed on the fly
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
@@ -75,7 +77,7 @@ public final class DataEntryAdapter extends Adapter {
 
         this.dataEntryArguments = dataEntryArguments;
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, dataEntryArguments.renderType()));

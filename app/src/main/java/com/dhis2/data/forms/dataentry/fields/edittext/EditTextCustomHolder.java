@@ -1,5 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
+import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -43,6 +44,7 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
     private final TextInputLayout inputLayout;
+    private final ObservableBoolean isEditable;
     private EditText editText;
     private ImageView icon;
     @NonNull
@@ -50,8 +52,10 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
     private CompositeDisposable disposable;
 
-    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         super(binding.getRoot());
+
+        this.isEditable = isEditable;
 
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
@@ -118,56 +122,62 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
     }
 
     private void setInputType(ValueType valueType) {
-        switch (valueType) {
-            case PHONE_NUMBER:
-                editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                break;
-            case EMAIL:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT |
-                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                break;
-            case TEXT:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                editText.setLines(1);
-                editText.setEllipsize(TextUtils.TruncateAt.END);
-                break;
-            case LETTER:
-                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                editText.setFilters(new InputFilter[]{
-                        new InputFilter.LengthFilter(1),
-                        (source, start, end, dest, dstart, dend) -> {
-                            if (source.equals(""))
-                                return source;
-                            if (source.toString().matches("[a-zA-Z]"))
-                                return source;
-                            return "";
-                        }});
-                break;
-            case NUMBER:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER |
-                        InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                        InputType.TYPE_NUMBER_FLAG_SIGNED);
-                break;
-            case INTEGER_NEGATIVE:
-            case INTEGER:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
-                break;
-            case INTEGER_ZERO_OR_POSITIVE:
-            case INTEGER_POSITIVE:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
-                break;
-            case UNIT_INTERVAL:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                break;
-            case PERCENTAGE:
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                break;
-            case URL:
-                editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
-                break;
-            default:
-                break;
+        if (isEditable.get())
+            switch (valueType) {
+                case PHONE_NUMBER:
+                    editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                    break;
+                case EMAIL:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT |
+                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    break;
+                case TEXT:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT);
+                    editText.setLines(1);
+                    editText.setEllipsize(TextUtils.TruncateAt.END);
+                    break;
+                case LETTER:
+                    editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    editText.setFilters(new InputFilter[]{
+                            new InputFilter.LengthFilter(1),
+                            (source, start, end, dest, dstart, dend) -> {
+                                if (source.equals(""))
+                                    return source;
+                                if (source.toString().matches("[a-zA-Z]"))
+                                    return source;
+                                return "";
+                            }});
+                    break;
+                case NUMBER:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER |
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                            InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    break;
+                case INTEGER_NEGATIVE:
+                case INTEGER:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    break;
+                case INTEGER_ZERO_OR_POSITIVE:
+                case INTEGER_POSITIVE:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    editText.setKeyListener(DigitsKeyListener.getInstance(false, false));
+                    break;
+                case UNIT_INTERVAL:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    break;
+                case PERCENTAGE:
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    break;
+                case URL:
+                    editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
+                    break;
+                default:
+                    break;
+            }
+        else {
+            editText.setFocusable(false);
+            editText.setInputType(0);
+            editText.setEnabled(false);
         }
     }
 

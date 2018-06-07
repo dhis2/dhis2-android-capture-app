@@ -320,12 +320,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean isFormCompleted() {
 
         if (selectedCatCombo != null && !CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()))
-            return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
+            return isCompleted(selectedDate) &&
+                    isCompleted(selectedOrgUnit) &&
+                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
+                    selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
             return isCompleted(selectedDate) &&
                     isCompleted(selectedOrgUnit) &&
-                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon)))&&
+                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
 
 
@@ -466,7 +469,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
-        }else{
+        } else {
             binding.coordinatesLayout.setVisibility(View.GONE);
         }
         binding.setProgramStage(programStage);
@@ -518,7 +521,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 if (periodType != null)
                     presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
 
-                if(eventModel!=null)//TODO: Check all this
+                if (eventModel != null)//TODO: Check all this
                     presenter.getCatOption(eventModel.attributeOptionCombo());
             }
 

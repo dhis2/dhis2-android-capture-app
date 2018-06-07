@@ -22,10 +22,10 @@
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="3dp"
         android:onClick="@{()->presenter.onItemClick(program, currentPeriod)}"
         app:cardCornerRadius="5dp"
-        app:cardElevation="8dp">
+        app:cardElevation="1dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -35,12 +35,12 @@
                 android:id="@+id/program_image"
                 android:layout_width="130dp"
                 android:layout_height="100dp"
-                app:programTypeIcon='@{program.programType()}'
                 android:background="?attr/colorPrimaryLight"
+                app:programTypeIcon='@{program.programType()}'
                 tools:background="?attr/colorPrimaryLight"
                 tools:ignore="ContentDescription" />
-           <!-- app:lightColor="@{program}"
-           -->
+            <!-- app:lightColor="@{program}"
+            -->
 
             <TextView
                 android:id="@+id/events_number"
@@ -81,7 +81,7 @@
                 android:layout_margin="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:programSyncState="@{program}"/>
+                app:programSyncState="@{program}" />
 
             <ImageView
                 android:layout_width="wrap_content"

@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -25,19 +26,22 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
     private final String renderType;
+    private final ObservableBoolean isEditable;
 
     public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = null;
+        this.isEditable = new ObservableBoolean(false);
     }
 
-    public EditTextRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
+        this.isEditable = isEditable;
     }
 
     @NonNull
@@ -52,7 +56,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         binding.setVariable(BR.renderType, renderType);
         binding.executePendingBindings();
         return new EditTextCustomHolder(viewGroup, binding
-                , processor, isBgTransparent, renderType);
+                , processor, isBgTransparent, renderType, isEditable);
     }
 
     @Override

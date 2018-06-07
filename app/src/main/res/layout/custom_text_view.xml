@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
             name="renderType"
             type="java.lang.String" />
+
+        <variable
+            name="isEditable"
+            type="android.databinding.ObservableBoolean" />
     </data>
 
     <RelativeLayout
@@ -43,6 +47,8 @@
                 android:maxLines="1"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
+                tools:text="hello"
+                android:textColor="?colorPrimary"
                 android:textSize="15sp" />
 
         </android.support.design.widget.TextInputLayout>
