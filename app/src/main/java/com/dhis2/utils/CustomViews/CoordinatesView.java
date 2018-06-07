@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -18,6 +19,9 @@ import com.dhis2.databinding.FormCoordinatesAccentBinding;
 import com.dhis2.databinding.FormCoordinatesBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.Locale;
@@ -33,6 +37,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     private ViewDataBinding binding;
     private TextView latLong;
     private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
     private OnMapPositionClick listener;
     private OnCurrentLocationClick listener2;
     private boolean isBgTransparent;
@@ -121,6 +127,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
                     addOnSuccessListener(location -> {
                         if (location != null)
                             updateLocation(location.getLatitude(), location.getLongitude());
+                        else
+                            startRequestingLocation();
                     });
         }
     }
@@ -145,6 +153,33 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         this.latLong.setText(String.format("%s, %s", lat, lon));
         listener2.onCurrentLocationClick(latitude, longitude);
         invalidate();
+    }
+
+    private void startRequestingLocation() {
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if(locationResult != null){
+                    Double latitude = locationResult.getLocations().get(0).getLatitude();
+                    Double longitude = locationResult.getLocations().get(0).getLongitude();
+                    updateLocation(latitude, longitude);
+                    mFusedLocationClient.removeLocationUpdates(locationCallback);
+                }
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((ActivityGlobalAbstract) getContext(),
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+        } else
+            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 }
 
