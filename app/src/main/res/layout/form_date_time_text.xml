@@ -7,20 +7,21 @@
         <variable
             name="label"
             type="java.lang.String" />
+
         <variable
             name="initData"
-            type="java.lang.String"/>
+            type="java.lang.String" />
+
         <variable
             name="allowFutureDates"
-            type="java.lang.Boolean"/>
+            type="java.lang.Boolean" />
     </data>
 
     <com.dhis2.utils.CustomViews.DateTimeView
         android:id="@+id/dateTimeView"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        app:label="@{label}"
+        android:layout_height="wrap_content"
         app:initData="@{initData}"
-        />
+        app:label="@{label}" />
 
 </layout>

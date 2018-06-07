@@ -11,6 +11,10 @@
         <variable
             name="initData"
             type="java.lang.String" />
+
+        <variable
+            name="allowFutureDates"
+            type="java.lang.Boolean" />
     </data>
 
     <com.dhis2.utils.CustomViews.TimeView
@@ -18,8 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:initData="@{initData}"
-        app:label="@{label}"
-
-        />
+        app:label="@{label}" />
 
 </layout>

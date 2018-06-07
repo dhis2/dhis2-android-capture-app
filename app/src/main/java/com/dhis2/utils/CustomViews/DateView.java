@@ -89,13 +89,15 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void initData(String data) {
-        Date date = null;
-        try {
-            date = DateUtils.uiDateFormat().parse(data);
-        } catch (ParseException e) {
-        }
+        if(data!=null) {
+            Date date = null;
+            try {
+                date = DateUtils.uiDateFormat().parse(data);
+            } catch (ParseException e) {
+            }
 
-        data = DateUtils.uiDateFormat().format(date);
+            data = DateUtils.uiDateFormat().format(date);
+        }
         editText.setText(data);
     }
 

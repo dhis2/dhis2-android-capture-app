@@ -2,6 +2,8 @@ package com.dhis2.utils.CustomViews;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.format.DateFormat;
@@ -10,9 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.dhis2.BR;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
-import com.dhis2.databinding.DateTimeViewBinding;
 import com.dhis2.utils.DateUtils;
 
 import java.text.ParseException;
@@ -21,18 +23,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * Created by frodriguez on 1/15/2018.
  */
 
 public class TimeView extends RelativeLayout implements View.OnClickListener {
 
-    private TextInputLayout time;
     private TextInputEditText editText;
-    private DateTimeViewBinding binding;
+    private ViewDataBinding binding;
+
     private LayoutInflater inflater;
     private boolean isBgTransparent;
     private OnDateSelected listener;
+
+    private String label;
 
     public TimeView(Context context) {
         super(context);
@@ -56,11 +62,10 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     }
 
     private void setLayout() {
-        binding = DateTimeViewBinding.inflate(inflater, this, true);
-        time = findViewById(R.id.button);
+        binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);
-        time.setOnFocusChangeListener(this::onFocusChanged);
-        time.setOnClickListener(this::onClick);
+        editText.setOnFocusChangeListener(this::onFocusChanged);
+        editText.setOnClickListener(this);
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -69,18 +74,22 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void setLabel(String label) {
-        binding.setLabel(label);
+        this.label = label;
+        binding.setVariable(BR.label, label);
         binding.executePendingBindings();
     }
 
     public void initData(String data) {
-        Date date = null;
-        try {
-            date = DateUtils.timeFormat().parse(data);
-        } catch (ParseException e) {
-        }
+        if(data!=null) {
+            Date date = null;
+            try {
+                date = DateUtils.timeFormat().parse(data);
+            } catch (ParseException e) {
+                Timber.e(e);
+            }
 
-        data = DateUtils.timeFormat().format(date);
+            data = DateUtils.timeFormat().format(date);
+        }
         editText.setText(data);
     }
 
@@ -118,7 +127,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
             }
             listener.onDateSelected(selectedDate);
         }, hour, minute, is24HourFormat);
-        dialog.setTitle(binding.getLabel());
+        dialog.setTitle(label);
         dialog.show();
     }
 
