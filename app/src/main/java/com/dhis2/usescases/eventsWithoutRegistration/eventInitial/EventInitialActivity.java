@@ -33,6 +33,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -310,7 +311,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void checkActionButtonVisibility() {
-        if (isFormCompleted()) {
+        if (isFormCompleted() && isEventOpen()) {
             binding.actionButton.setVisibility(View.VISIBLE);
         } else {
             binding.actionButton.setVisibility(View.GONE);
@@ -318,7 +319,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private boolean isFormCompleted() {
-
         if (selectedCatCombo != null && !CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()))
             return isCompleted(selectedDate) && isCompleted(selectedOrgUnit) && isCompleted(selectedLat) && isCompleted(selectedLon) && selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
@@ -327,8 +327,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     isCompleted(selectedOrgUnit) &&
                     (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon)))&&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
+    }
 
-
+    private boolean isEventOpen(){
+        return isNewEvent || (eventModel != null && eventModel.status() != EventStatus.COMPLETED);
     }
 
     private boolean isCompleted(String field) {
