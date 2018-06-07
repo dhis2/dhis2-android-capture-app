@@ -152,13 +152,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
     private final String RELATIONSHIP_QUERY = String.format(
-            "SELECT Relationship.* FROM %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ?",
-            RelationshipModel.TABLE, ProgramModel.TABLE,
-            ProgramModel.TABLE, ProgramModel.Columns.RELATIONSHIP_TYPE, RelationshipModel.TABLE, RelationshipModel.Columns.RELATIONSHIP_TYPE,
-            ProgramModel.TABLE, ProgramModel.Columns.UID,
+            "SELECT Relationship.* FROM %s " +
+                    "WHERE %s.%s = ?",
+            RelationshipModel.TABLE,
             RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B);
 
     private final String INSERT_RELATIONSHIP = String.format(
@@ -247,11 +243,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public EventModel updateState(EventModel eventModel, EventStatus newStatus) {
 
+        Date currentDate = Calendar.getInstance().getTime();
         EventModel event = EventModel.builder()
                 .id(eventModel.id())
                 .uid(eventModel.uid())
                 .created(eventModel.created())
-                .lastUpdated(Calendar.getInstance().getTime())
+                .lastUpdated(currentDate)
                 .eventDate(eventModel.eventDate())
                 .dueDate(eventModel.dueDate())
                 .enrollmentUid(eventModel.enrollmentUid())
@@ -261,6 +258,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .status(newStatus)
                 .state(State.TO_UPDATE)
                 .build();
+
+        updateProgramTable(currentDate, eventModel.program());
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
         return event;
@@ -339,6 +338,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
                         throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
                     }
+
+                    updateProgramTable(createdDate.getTime(), programUid);
+
                     return Observable.just("Event Created");
                 });
     }
@@ -364,8 +366,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid) {
-        return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, programUid, teiUid)
+    public Observable<List<RelationshipModel>> getRelationships(String teiUid) {
+        return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, teiUid)
                 .mapToList(RelationshipModel::create);
     }
 
@@ -393,9 +395,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public int setFollowUp(String enrollmentUid, boolean followUp) {
+    public int setFollowUp(String programUid, String enrollmentUid, boolean followUp) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+
+        updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
         return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
     }
@@ -514,5 +518,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     }
                     return Flowable.just(status);
                 });
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }

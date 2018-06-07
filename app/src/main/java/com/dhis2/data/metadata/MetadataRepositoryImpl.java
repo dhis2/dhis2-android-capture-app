@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
 import com.squareup.sqlbrite2.BriteDatabase;
+import com.squareup.sqlbrite2.SqlBrite.Query;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -73,7 +74,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     );
 
     private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
-
 
     private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
             ProgramModel.TABLE);
@@ -317,10 +317,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<RelationshipTypeModel> getRelationshipType(String programID) {
+        RelationshipTypeModel defaultRelationshipType = RelationshipTypeModel.builder()
+                .aIsToB("...")
+                .bIsToA("...")
+                .build();
         return briteDatabase
                 .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + programID + "'")
-                .mapToOne(RelationshipTypeModel::create);
-
+                .lift(Query.mapToOneOrDefault(RelationshipTypeModel::create, defaultRelationshipType));
     }
 
     @Override
@@ -519,5 +522,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid)
                 .mapToOne(ProgramModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<ResourceModel>> syncState(ProgramModel program) {
+        String SYNC_STATE = "SELECT * FROM " + ResourceModel.TABLE;
+        return briteDatabase
+                .createQuery(ResourceModel.TABLE, SYNC_STATE)
+                .mapToList(ResourceModel::create);
     }
 }

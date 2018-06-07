@@ -10,7 +10,9 @@ import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -21,6 +23,8 @@ import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
@@ -89,6 +93,7 @@ public class EventRepository implements FormRepository {
 
     @Nullable
     private final String eventUid;
+    private String programUid;
 
     public EventRepository(@NonNull BriteDatabase briteDatabase,
                            @NonNull RuleExpressionEvaluator evaluator,
@@ -177,6 +182,9 @@ public class EventRepository implements FormRepository {
             event.put(EventModel.Columns.EVENT_DATE, reportDate);
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid);
         };
     }
@@ -205,6 +213,9 @@ public class EventRepository implements FormRepository {
             event.put(EventModel.Columns.STATUS, ReportStatus.toEventStatus(reportStatus).name());
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid);
         };
     }
@@ -232,7 +243,10 @@ public class EventRepository implements FormRepository {
     @NonNull
     private Flowable<String> eventProgram() {
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
-                .mapToOne(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);
+                .mapToOne(cursor -> {
+                    programUid = cursor.getString(0);
+                    return programUid;
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
@@ -246,5 +260,11 @@ public class EventRepository implements FormRepository {
             return FormSectionViewModel.createForSection(
                     eventUid, cursor.getString(2), cursor.getString(3), cursor.getString(4));
         }
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }

@@ -35,7 +35,4 @@ interface HomeRepository {
 
     @NonNull
     Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program);
-
-    @NonNull
-    Flowable<State> syncState(ProgramModel program);
 }

@@ -41,6 +41,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +50,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -166,30 +166,20 @@ public class Bindings {
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programSyncState")
-    public static void setProgramSyncState(ImageView imageView, Flowable<State> stateObservable) {
-        stateObservable
+    public static void setProgramSyncState(ImageView imageView, ProgramModel program) {
+        metadataRepository
+                .syncState(program)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        state -> {
-                            switch (state) {
-                                case TO_POST:
-                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                                    break;
-                                case TO_UPDATE:
-                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                                    break;
-                                case TO_DELETE:
-                                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                                    break;
-                                case ERROR:
-                                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
-                                    break;
-                                case SYNCED:
-                                    imageView.setImageResource(R.drawable.ic_sync);
-                                    break;
-                                default:
-                                    break;
+                        resourceModelList -> {
+                            for (ResourceModel resourceModel : resourceModelList) {
+                                if (resourceModel.resourceType().equals(ResourceModel.Type.PROGRAM.name())) {
+                                    if (resourceModel.lastSynced().before(program.lastUpdated()))
+                                        imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                    else
+                                        imageView.setImageResource(R.drawable.ic_sync);
+                                }
                             }
                         },
                         Timber::d);

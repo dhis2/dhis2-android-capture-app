@@ -11,6 +11,7 @@ import com.dhis2.utils.DateUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -105,6 +106,8 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     private final String enrollmentUid;
 
+    private String programUid;
+
     EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
                              @NonNull RuleExpressionEvaluator expressionEvaluator,
                              @NonNull RulesRepository rulesRepository,
@@ -198,6 +201,9 @@ class EnrollmentFormRepository implements FormRepository {
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
@@ -211,6 +217,9 @@ class EnrollmentFormRepository implements FormRepository {
             enrollment.put(EnrollmentModel.Columns.LATITUDE, latLng.latitude);
             enrollment.put(EnrollmentModel.Columns.LONGITUDE, latLng.longitude); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
@@ -224,6 +233,9 @@ class EnrollmentFormRepository implements FormRepository {
             enrollment.put(EnrollmentModel.Columns.DATE_OF_INCIDENT, incidentDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
@@ -238,6 +250,9 @@ class EnrollmentFormRepository implements FormRepository {
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
+
+            updateProgramTable(Calendar.getInstance().getTime(), programUid);
+
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
@@ -264,10 +279,12 @@ class EnrollmentFormRepository implements FormRepository {
                     cal.add(Calendar.DATE, minDaysFromStart);
                     Date eventDate = cal.getTime();
 
+                    Date createdDate = Calendar.getInstance().getTime();
+
                     EventModel event = EventModel.builder()
                             .uid(codeGenerator.generate())
-                            .created(Calendar.getInstance().getTime())
-                            .lastUpdated(Calendar.getInstance().getTime())
+                            .created(createdDate)
+                            .lastUpdated(createdDate)
                             .eventDate(eventDate)
                             .dueDate(eventDate)
                             .enrollmentUid(enrollmentUid)
@@ -278,9 +295,13 @@ class EnrollmentFormRepository implements FormRepository {
                             .state(State.TO_POST)
                             .build();
 
+
                     if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
                         throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                     }
+
+                    updateProgramTable(createdDate, program);
+
                     cursor.moveToNext();
                 }
             }
@@ -326,10 +347,12 @@ class EnrollmentFormRepository implements FormRepository {
                     eventDate = cal.getTime();
                 }
 
+                Date createdDate = Calendar.getInstance().getTime();
+
                 EventModel event = EventModel.builder()
                         .uid(codeGenerator.generate())
-                        .created(Calendar.getInstance().getTime())
-                        .lastUpdated(Calendar.getInstance().getTime())
+                        .created(createdDate)
+                        .lastUpdated(createdDate)
                         .eventDate(eventDate)
                         .dueDate(eventDate)
                         .enrollmentUid(enrollmentUid)
@@ -343,6 +366,9 @@ class EnrollmentFormRepository implements FormRepository {
                 if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
                     throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                 }
+
+                updateProgramTable(createdDate, program);
+
                 cursor.moveToNext();
             }
             cursor.close();
@@ -367,10 +393,11 @@ class EnrollmentFormRepository implements FormRepository {
                         cal.setTime(Calendar.getInstance().getTime());
                         Date eventDate = cal.getTime();
 
+                        Date createdDate = Calendar.getInstance().getTime();
                         EventModel event = EventModel.builder()
                                 .uid(codeGenerator.generate())
-                                .created(Calendar.getInstance().getTime())
-                                .lastUpdated(Calendar.getInstance().getTime())
+                                .created(createdDate)
+                                .lastUpdated(createdDate)
                                 .eventDate(eventDate)
                                 .enrollmentUid(enrollmentUid)
                                 .program(programStageProgram)
@@ -383,6 +410,9 @@ class EnrollmentFormRepository implements FormRepository {
                         if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
                             throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                         }
+
+                        updateProgramTable(createdDate, programStageProgram);
+
                         return Trio.create(enrollmentUid, trackedEntityType, event.uid());
                     } else {
                         Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid);
@@ -396,6 +426,17 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     private Flowable<String> enrollmentProgram() {
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
-                .mapToOne(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);
+                .mapToOne(cursor -> {
+                    programUid = cursor.getString(0);
+                    return programUid;
+                })
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }

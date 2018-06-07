@@ -114,7 +114,7 @@ public final class AttrValueStore implements AttrEntryStore {
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
-                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
                             State.ERROR.equals(tei.state())) {

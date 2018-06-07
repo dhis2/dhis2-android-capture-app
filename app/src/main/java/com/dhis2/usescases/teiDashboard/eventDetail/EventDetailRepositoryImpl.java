@@ -1,22 +1,25 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 /**
  * Created by ppajuelo on 02/11/2017.
@@ -103,11 +106,12 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     @Override
     public void deletePostedEvent(EventModel eventModel) {
+        Date currentDate = Calendar.getInstance().getTime();
         EventModel event = EventModel.builder()
                 .id(eventModel.id())
                 .uid(eventModel.uid())
                 .created(eventModel.created())
-                .lastUpdated(Calendar.getInstance().getTime())
+                .lastUpdated(currentDate)
                 .eventDate(eventModel.eventDate())
                 .dueDate(eventModel.dueDate())
                 .enrollmentUid(eventModel.enrollmentUid())
@@ -119,5 +123,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .build();
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
+
+        updateProgramTable(currentDate, eventModel.program());
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }

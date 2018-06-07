@@ -129,4 +129,8 @@ public interface MetadataRepository {
     Observable<List<Pair<String, String>>> getReserveUids();
 
     Observable<Boolean> hasOverdue(String programUid, String teiUid);
+
+
+    @NonNull
+    Observable<List<ResourceModel>> syncState(ProgramModel program);
 }

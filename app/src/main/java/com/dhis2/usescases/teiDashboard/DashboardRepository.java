@@ -46,7 +46,7 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
-    Observable<List<RelationshipModel>> getRelationships(String programUid, String teiUid);
+    Observable<List<RelationshipModel>> getRelationships(String teiUid);
 
     void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
 
@@ -54,7 +54,7 @@ public interface DashboardRepository {
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
-    int setFollowUp(String enrollmentUid, boolean followUp);
+    int setFollowUp(String programUid, String enrollmentUid, boolean followUp);
 
     Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 

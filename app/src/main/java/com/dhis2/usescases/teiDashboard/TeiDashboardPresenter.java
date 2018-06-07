@@ -100,7 +100,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
                     metadataRepository.getTeiOrgUnit(teUid),
                     metadataRepository.getTeiActivePrograms(teUid),
-                    dashboardRepository.getRelationships(programUid, teUid),
+                    dashboardRepository.getRelationships(teUid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -272,7 +272,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(),
+        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
         if (success > 0) {
             view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ?
@@ -325,7 +325,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
-                dashboardRepository.getRelationships(programUid, teUid)
+                dashboardRepository.getRelationships(teUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
