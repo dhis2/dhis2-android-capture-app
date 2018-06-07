@@ -75,7 +75,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
 
-
     private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
             ProgramModel.TABLE);
 
@@ -523,5 +522,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid)
                 .mapToOne(ProgramModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<ResourceModel>> syncState(ProgramModel program) {
+        String SYNC_STATE = "SELECT * FROM " + ResourceModel.TABLE;
+        return briteDatabase
+                .createQuery(ResourceModel.TABLE, SYNC_STATE)
+                .mapToList(ResourceModel::create);
     }
 }

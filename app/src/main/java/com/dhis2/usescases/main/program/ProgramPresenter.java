@@ -9,7 +9,6 @@ import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Period;
 
-import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -175,12 +173,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public Observable<Pair<Integer, String>> getNumberOfRecords(ProgramModel programModel) {
         return homeRepository.numberOfRecords(programModel);
     }
-
-    @Override
-    public Flowable<State> syncState(ProgramModel program) {
-        return homeRepository.syncState(program);
-    }
-
 
     private String orgUnitQuery() {
         StringBuilder orgUnitFilter = new StringBuilder();

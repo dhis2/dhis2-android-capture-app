@@ -243,11 +243,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public EventModel updateState(EventModel eventModel, EventStatus newStatus) {
 
+        Date currentDate = Calendar.getInstance().getTime();
         EventModel event = EventModel.builder()
                 .id(eventModel.id())
                 .uid(eventModel.uid())
                 .created(eventModel.created())
-                .lastUpdated(Calendar.getInstance().getTime())
+                .lastUpdated(currentDate)
                 .eventDate(eventModel.eventDate())
                 .dueDate(eventModel.dueDate())
                 .enrollmentUid(eventModel.enrollmentUid())
@@ -257,6 +258,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .status(newStatus)
                 .state(State.TO_UPDATE)
                 .build();
+
+        updateProgramTable(currentDate, eventModel.program());
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
         return event;
@@ -335,6 +338,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
                         throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
                     }
+
+                    updateProgramTable(createdDate.getTime(), programUid);
+
                     return Observable.just("Event Created");
                 });
     }
@@ -389,9 +395,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public int setFollowUp(String enrollmentUid, boolean followUp) {
+    public int setFollowUp(String programUid, String enrollmentUid, boolean followUp) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+
+        updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
         return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
     }
@@ -510,5 +518,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     }
                     return Flowable.just(status);
                 });
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }

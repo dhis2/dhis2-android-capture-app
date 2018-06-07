@@ -65,8 +65,6 @@ class HomeRepositoryImpl implements HomeRepository {
     private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
             "WHERE TrackedEntityType.uid = ?";
 
-    private final static String PROGRAM_SYNC_STATE = "SELECT " + ResourceModel.TABLE + "." + ResourceModel.Columns.LAST_SYNCED + " FROM " + ResourceModel.TABLE;
-
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
     private static final Set<String> SELECT_SET = new HashSet<>(Arrays.asList(SELECT_TABLE_NAMES));
@@ -181,22 +179,9 @@ class HomeRepositoryImpl implements HomeRepository {
                 .flatMap(data -> {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_TYPE_NAME, program.trackedEntityType())
-                                .mapToOne(cursor -> Pair.create(data.size(), cursor.getString(0)));
+                                .mapToOne(cursor         -> Pair.create(data.size(), cursor.getString(0)));
                     else
                         return Observable.just(Pair.create(data.size(), "events"));
-                });
-    }
-
-    @NonNull
-    @Override
-    public Flowable<State> syncState(ProgramModel program) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_SYNC_STATE)
-                .mapToOne(cursor -> DateUtils.databaseDateFormat().parse(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST)
-                .map(lastSync -> {
-                    if (lastSync.before(program.lastUpdated()))
-                        return State.TO_UPDATE;
-                    else
-                        return State.SYNCED;
                 });
     }
 

@@ -78,12 +78,8 @@ public class ProgramContract {
 
         void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery);
 
-        Flowable<State> syncState(ProgramModel program);
-
         void getAllPrograms(String orgUnitQuery);
 
         List<OrganisationUnitModel> getOrgUnits();
     }
-
-
 }

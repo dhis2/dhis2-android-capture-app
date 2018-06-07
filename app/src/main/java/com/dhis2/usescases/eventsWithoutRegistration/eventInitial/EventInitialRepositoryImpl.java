@@ -10,12 +10,14 @@ import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
@@ -97,8 +99,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .enrollmentUid(enrollmentUid)
                 .created(createDate)
                 .lastUpdated(createDate)
-//                .createdAtClient()
-//                .lastUpdatedAtClient()
                 .status(EventStatus.ACTIVE)
                 .latitude(latitude)
                 .longitude(longitude)
@@ -111,13 +111,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .state(State.TO_POST)
                 .attributeCategoryOptions(categoryOptionsUid)
                 .attributeOptionCombo(categoryOptionComboUid)
-//                .trackedEntityInstance(trackedEntityInstanceUid)
                 .build();
-
-       /* long insert = new EventStoreImpl(databaseAdapter).insert(
-                uid, enrollmentUid, createDate, createDate, null, null,
-                EventStatus.ACTIVE, null, null, programUid, programStage, orgUnitUid,
-                date, null, null, State.TO_POST, catOptionUid, catComboUid, trackedEntityInstanceUid);*/
 
         if (briteDatabase.insert(EventModel.TABLE,
                 eventModel.toContentValues())/*insert*/ < 0) {
@@ -125,8 +119,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                             "instance for organisationUnit=[%s] and programStage=[%s]",
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
-        } else
+        } else {
+            updateProgramTable(createDate, programUid);
             return Observable.just(uid);
+        }
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 
     @Override
@@ -162,6 +164,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
+
+        Date currentDate = Calendar.getInstance().getTime();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.EVENT_DATE, date);
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
@@ -170,9 +175,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         contentValues.put(EventModel.Columns.LONGITUDE, longitude);
         contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid);
         contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
+        contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
 
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
-        return event(eventUid);
+
+        return event(eventUid).map(eventModel1 -> {
+            updateProgramTable(currentDate, eventModel1.program());
+            return eventModel1;
+        });
     }
 
     @NonNull

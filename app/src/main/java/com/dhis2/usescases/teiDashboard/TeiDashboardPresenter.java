@@ -272,7 +272,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid(),
+        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
         if (success > 0) {
             view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ?

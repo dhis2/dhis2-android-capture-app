@@ -77,6 +77,4 @@ public class ProgramRepositoryImpl implements ProgramRepository {
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_ENROLLMENT_FOR_TEI, programId, teiUid)
                 .mapToList(EnrollmentModel::create);
     }
-
-
 }

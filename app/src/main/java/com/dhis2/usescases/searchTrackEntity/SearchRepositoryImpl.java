@@ -264,6 +264,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 return Observable.error(new SQLiteConstraintException(message));
             }
 
+            updateProgramTable(currentDate, programUid);
+
             return Observable.just(enrollmentModel.uid());
         });
     }
@@ -272,5 +274,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
                 .mapToList(OrganisationUnitModel::create);
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid){
+        ContentValues program = new ContentValues();
+        program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
     }
 }
