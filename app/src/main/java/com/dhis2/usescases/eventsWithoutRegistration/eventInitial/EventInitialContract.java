@@ -60,6 +60,8 @@ public class EventInitialContract {
         void showProgramStageSelection();
 
         void setReportDate(String format);
+
+        void showNoOrgUnits();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
