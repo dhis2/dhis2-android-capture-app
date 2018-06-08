@@ -12,6 +12,7 @@ import com.dhis2.data.forms.dataentry.fields.image.ImageViewModel;
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import com.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -78,8 +79,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
                 return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section);
-            else
-                return ImageViewModel.create(id, label, optionSet, value, section);
+            /*else
+                return ImageViewModel.create(id, label, optionSet, value, section);*/
         }
 
         switch (type) {
@@ -90,7 +91,6 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case LETTER:
             case NUMBER:
             case INTEGER:
-            case USERNAME:
             case LONG_TEXT:
             case PERCENTAGE:
             case PHONE_NUMBER:
@@ -104,16 +104,18 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case DATE:
             case DATETIME:
                 return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates);
-            case FILE_RESOURCE:
-                return FileViewModel.create(id, label, mandatory, value, section);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section);
+            return CoordinateViewModel.create(id, label, mandatory, value, section);
             case BOOLEAN:
             case TRUE_ONLY:
                 return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section);
             case ORGANISATION_UNIT:
                 return OrgUnitViewModel.create(id, label, mandatory, value, section);
+            case FILE_RESOURCE:
+            case IMAGE:
             case TRACKER_ASSOCIATE:
+            case USERNAME:
+                return UnsupportedViewModel.create(id, label, mandatory, value, section);
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
         }

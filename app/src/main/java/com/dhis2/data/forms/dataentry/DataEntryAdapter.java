@@ -29,6 +29,8 @@ import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import com.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
+import com.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -53,6 +55,8 @@ public final class DataEntryAdapter extends Adapter {
     private static final int YES_NO = 9;
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
+    private static final int UNSUPPORTED = 12;
+
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -87,15 +91,17 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits, dataEntryArguments.renderType()));
         rows.add(IMAGE, new ImageRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
+
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == IMAGE)
+        /*if (viewType == IMAGE)
             return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount());
-        else
-            return rows.get(viewType).onCreate(parent);
+        else*/
+        return rows.get(viewType).onCreate(parent);
     }
 
     @Override
@@ -135,8 +141,8 @@ public final class DataEntryAdapter extends Adapter {
             return BUTTON;
         } else if (viewModel instanceof OrgUnitViewModel) {
             return ORG_UNIT;
-        } else if (viewModel instanceof ImageViewModel) {
-            return IMAGE;
+        } else if (viewModel instanceof UnsupportedViewModel) {
+            return UNSUPPORTED;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
