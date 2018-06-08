@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
@@ -134,6 +135,21 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
+    public void handleLogout() {
+        isSyncing = false;
+        if (binding.logo != null) {
+            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+            params.height = WRAP_CONTENT;
+            binding.logo.setLayoutParams(params);
+            binding.syncLayout.setVisibility(View.GONE);
+            binding.lottieView.setVisibility(View.GONE);
+            binding.lottieView.cancelAnimation();
+            binding.lottieView.clearAnimation();
+        }
+        binding.login.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onUnlockClick(View android) {
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
         binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
@@ -201,7 +217,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                     binding.eventsText.setText(getString(R.string.data_ready));
                     Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
                 }
-                presenter.syncNext(syncState);
+                presenter.syncNext(syncState, result);
             } else if (!result.isSuccess()) {
                 if (syncState == SyncState.METADATA) {
                     binding.metadataText.setText(getString(R.string.configuration_sync_failed));
@@ -211,7 +227,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                     binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
                 }
 
-                presenter.syncNext(syncState);
+                presenter.syncNext(syncState, result);
 
             } else {
                 throw new IllegalStateException();
@@ -226,7 +242,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         prefs.edit().putInt("THEME", themeId).apply();
         setTheme(themeId);
 
-        //TODO: Change color of bg with animation
         int startColor = ContextCompat.getColor(this, R.color.colorPrimary);
         TypedValue typedValue = new TypedValue();
         TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
@@ -255,6 +270,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         alphaAnimator.start();
 
     }
+
 
     @Override
     public void onBackPressed() {

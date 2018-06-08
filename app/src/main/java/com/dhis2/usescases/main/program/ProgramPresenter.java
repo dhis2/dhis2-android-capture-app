@@ -1,13 +1,20 @@
 package com.dhis2.usescases.main.program;
 
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.widget.ImageView;
 
 import com.dhis2.R;
+import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Period;
+import com.dhis2.utils.StringUtils;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -22,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -29,21 +37,22 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ProgramPresenter implements ProgramContract.Presenter {
 
+    private final MetadataRepository metadataRepository;
     private ProgramContract.View view;
     private final HomeRepository homeRepository;
-    private final CompositeDisposable compositeDisposable;
+    private CompositeDisposable compositeDisposable;
 
     private List<OrganisationUnitModel> myOrgs;
 
-    ProgramPresenter(HomeRepository homeRepository) {
+    ProgramPresenter(HomeRepository homeRepository, MetadataRepository metadataRepository) {
         this.homeRepository = homeRepository;
-        this.compositeDisposable = new CompositeDisposable();
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
     public void init(ProgramContract.View view) {
         this.view = view;
-        this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
                 homeRepository.orgUnits()
@@ -103,6 +112,55 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public List<OrganisationUnitModel> getOrgUnits() {
         return myOrgs;
+    }
+
+    @Override
+    public void programObjectStyle(ImageView programImageView, ProgramModel programModel) {
+        compositeDisposable.add(
+                metadataRepository.getObjectStyle(programModel.uid())
+                        .filter(objectStyleModel -> objectStyleModel != null)
+                        .map(objectStyleModel -> {
+                            String color = objectStyleModel.color();
+                            if (color != null && color.length() == 4) {//Color is formatted as #fff
+                                char r = color.charAt(1);
+                                char g = color.charAt(2);
+                                char b = color.charAt(3);
+                                color = "#" + r + r + g + g + b + b; //formatted to #ffff
+                            }
+
+                            int icon = -1;
+                            if (objectStyleModel.icon() != null) {
+                                Resources resources = view.getContext().getResources();
+                                String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                                icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                            }
+                            return Pair.create(color!=null?Color.parseColor(color):-1, icon);
+
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                colorAndIcon -> {
+
+                                    if (colorAndIcon.val1() != -1) {
+                                        programImageView.setImageResource(colorAndIcon.val1());
+                                    }
+
+                                    if (colorAndIcon.val0() != -1) {
+                                        programImageView.setBackgroundColor(colorAndIcon.val0());
+                                        StringUtils.setFromResBgColor(programImageView, colorAndIcon.val0());
+
+                                    } else {
+                                        TypedValue typedValue = new TypedValue();
+                                        TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
+                                        int lcolor = a.getColor(0, 0);
+                                        a.recycle();
+                                        programImageView.setBackgroundColor(lcolor);
+                                    }
+
+                                },
+                                Timber::d)
+        );
     }
 
     @Override

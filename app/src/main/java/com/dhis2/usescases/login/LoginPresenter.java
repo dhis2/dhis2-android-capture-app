@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.ObservableField;
+import android.os.Handler;
 import android.view.View;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -86,20 +87,25 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     @Override
-    public void syncNext(LoginActivity.SyncState syncState) {
-        switch (syncState) {
-            case METADATA:
-                interactor.syncEvents();
-                break;
-            case EVENTS:
-                interactor.syncReservedValues();
-                interactor.syncTrackedEntities();
-                break;
-            case TEI:
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                view.getContext().startActivity(intent);
-                break;
+    public void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult) {
+        if (syncResult.isSuccess() || syncState != LoginActivity.SyncState.METADATA)
+            switch (syncState) {
+                case METADATA:
+                    interactor.syncEvents();
+                    break;
+                case EVENTS:
+                    interactor.syncReservedValues();
+                    interactor.syncTrackedEntities();
+                    break;
+                case TEI:
+                    Intent intent = new Intent(view.getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(intent);
+                    break;
+            }
+        else {
+            view.displayMessage("Something went wrong during syncronisation");
+            new Handler().postDelayed(() -> interactor.logOut(), 1500);
         }
 
     }

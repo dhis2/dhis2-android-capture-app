@@ -20,6 +20,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import timber.log.Timber;
+
 /**
  * Created by frodriguez on 1/15/2018.
  */

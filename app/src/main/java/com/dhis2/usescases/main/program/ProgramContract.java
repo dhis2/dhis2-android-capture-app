@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.support.annotation.UiThread;
+import android.widget.ImageView;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
@@ -21,7 +22,7 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by ppajuelo on 18/10/2017.
+ * QUADRAM. Created by ppajuelo on 18/10/2017.
  */
 public class ProgramContract {
 
@@ -81,5 +82,7 @@ public class ProgramContract {
         void getAllPrograms(String orgUnitQuery);
 
         List<OrganisationUnitModel> getOrgUnits();
+
+        void programObjectStyle(ImageView programImageView, ProgramModel programModel);
     }
 }

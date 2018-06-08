@@ -240,16 +240,19 @@ public class Bindings {
                 .filter(objectStyleModel -> objectStyleModel != null)
                 .map(objectStyleModel -> {
                     String color = objectStyleModel.color();
-                    if (color.length() == 4) {//Color is formatted as #fff
+                    if (color != null && color.length() == 4) {//Color is formatted as #fff
                         char r = color.charAt(1);
                         char g = color.charAt(2);
                         char b = color.charAt(3);
                         color = "#" + r + r + g + g + b + b; //formatted to #ffff
                     }
 
-                    Resources resources = view.getContext().getResources();
-                    String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                    int icon = -1;
+                    if (objectStyleModel.icon() != null) {
+                        Resources resources = view.getContext().getResources();
+                        String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                        icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                    }
                     return Pair.create(Color.parseColor(color), icon);
 
                 })
@@ -259,10 +262,20 @@ public class Bindings {
                         colorAndIcon -> {
                             if (colorAndIcon.val0() != -1)
                                 view.setBackgroundColor(colorAndIcon.val0());
-                            if (view instanceof ImageView && colorAndIcon.val1() != -1) {
-                                ((ImageView) view).setImageResource(colorAndIcon.val1());
+
+                            if (view instanceof ImageView) {
+                                if (colorAndIcon.val1() != -1) {
+                                    ((ImageView) view).setImageResource(colorAndIcon.val1());
+                                } else {
+                                    TypedValue typedValue = new TypedValue();
+                                    TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
+                                    int lcolor = a.getColor(0, 0);
+                                    a.recycle();
+                                    view.setBackgroundColor(lcolor);
+                                }
                                 setFromResBgColor(view, colorAndIcon.val0());
                             }
+
                         },
                         Timber::d);
     }
@@ -724,9 +737,11 @@ public class Bindings {
                 );
     }
 
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
     public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
-        if (metadataRepository != null && optionSet != null)
+        if (metadataRepository != null && optionSet != null) {
+            String optionSetLabel = label == null ? "Select option" : label;
             metadataRepository.optionSet(optionSet)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -736,16 +751,17 @@ public class Bindings {
                                         R.layout.spinner_layout,
                                         R.id.spinner_text,
                                         optionModels,
-                                        label);
+                                        optionSetLabel);
                                 spinner.setAdapter(adapter);
-                                spinner.setPrompt(label);
+                                spinner.setPrompt(optionSetLabel);
                                 if (initialValue != null) {
                                     for (int i = 0; i < optionModels.size(); i++)
-                                        if (optionModels.get(i).uid().equals(initialValue))
+                                        if (optionModels.get(i).displayName().equals(initialValue))
                                             spinner.setSelection(i + 1);
                                 }
                             },
                             Timber::d);
+        }
     }
 
     @BindingAdapter("fromResBgColor")

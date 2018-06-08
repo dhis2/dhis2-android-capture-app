@@ -98,7 +98,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
             binding.hintLabel.setVisibility(View.VISIBLE);
             OptionModel option = ((OptionModel) adapterView.getItemAtPosition(position - 1));
             processor.onNext(
-                    RowAction.create(model.getValue().uid(), option.uid())
+                    RowAction.create(model.getValue().uid(), option.displayName())
             );
             Bindings.setObjectStyle(iconView, itemView, option.uid());
         } else {

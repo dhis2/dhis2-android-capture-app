@@ -1,5 +1,13 @@
 package com.dhis2.utils;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,5 +28,94 @@ public class StringUtils {
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public static void setFromResBgColor(View view, int color) {
+        String tintedColor;
+
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
+
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        if (L > 0.179d)
+            tintedColor = "#000000"; // bright colors - black font
+        else
+            tintedColor = "#FFFFFF"; // dark colors - white font
+
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        }
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            ((ImageView) view).setImageDrawable(drawable);
+        }
+    }
+
+    public static void setFromHexBgColor(View view, String hexColor) {
+
+        int color = Color.parseColor(hexColor);
+
+        String tintedColor;
+
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
+
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        if (L > 0.179d)
+            tintedColor = "#000000"; // bright colors - black font
+        else
+            tintedColor = "#FFFFFF"; // dark colors - white font
+
+        if (view instanceof TextView) {
+            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
+        }
+        if (view instanceof ImageView) {
+            Drawable drawable = ((ImageView) view).getDrawable();
+            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            ((ImageView) view).setImageDrawable(drawable);
+        }
     }
 }

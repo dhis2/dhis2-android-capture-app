@@ -48,6 +48,8 @@ public class LoginContracts {
         void saveTheme(Integer themeId);
 
         void saveFlag(String s);
+
+        void handleLogout();
     }
 
     public interface Presenter {
@@ -69,14 +71,15 @@ public class LoginContracts {
 
         void onDestroy();
 
-        void syncNext(LoginActivity.SyncState syncState);
+        void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
     }
 
     public interface Interactor {
         void validateCredentials(@NonNull String serverUrl,
                                  @NonNull String username, @NonNull String password);
 
-        void handleResponse(@NonNull Response<User> userResponse);
+        //        void handleResponse(@NonNull Response<User> userResponse);
+        void handleResponse(@NonNull Response userResponse);
 
         void handleError(@NonNull Throwable throwable);
 
@@ -90,6 +93,8 @@ public class LoginContracts {
         void syncReservedValues();
 
         void onDestroy();
+
+        void logOut();
     }
 
 }

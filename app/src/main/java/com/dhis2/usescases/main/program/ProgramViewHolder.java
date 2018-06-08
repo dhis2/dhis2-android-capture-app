@@ -1,9 +1,9 @@
 package com.dhis2.usescases.main.program;
 
-import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.dhis2.databinding.ItemProgramBinding;
 import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -14,9 +14,9 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 
 public class ProgramViewHolder extends RecyclerView.ViewHolder {
 
-    ViewDataBinding binding;
+    ItemProgramBinding binding;
 
-    public ProgramViewHolder(ViewDataBinding binding) {
+    public ProgramViewHolder(ItemProgramBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
@@ -25,6 +25,7 @@ public class ProgramViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.program, bindableObject);
         binding.setVariable(BR.currentPeriod, currentPeriod);
+        presenter.programObjectStyle(binding.programImage, bindableObject);
         binding.executePendingBindings();
     }
 }

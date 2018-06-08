@@ -35,17 +35,17 @@
                 android:id="@+id/program_image"
                 android:layout_width="130dp"
                 android:layout_height="100dp"
-                android:background="?attr/colorPrimaryLight"
-                app:lightColor="@{program}"
                 app:programTypeIcon='@{program.programType()}'
+                android:background="?attr/colorPrimaryLight"
                 tools:background="?attr/colorPrimaryLight"
                 tools:ignore="ContentDescription" />
+           <!-- app:lightColor="@{program}"
+           -->
 
             <TextView
                 android:id="@+id/events_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/program_info"
                 android:layout_alignParentEnd="true"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"

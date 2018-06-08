@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ppajuelo on 18/10/2017.
+ * QUADRAM. Created by ppajuelo on 18/10/2017.
  */
 
 public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
@@ -50,12 +50,12 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ProgramViewHolder holder, int position) {
-        holder.bind(presenter, getItemAt(position), currentPeriod);
+        holder.bind(presenter, getItemAt(holder.getAdapterPosition()), currentPeriod);
     }
 
     public void setData(List<ProgramModel> program) {
 
-        programList.clear();
+        programList = new ArrayList<>();
         programList.addAll(program);
 
         notifyDataSetChanged();

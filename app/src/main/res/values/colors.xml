@@ -22,7 +22,37 @@
     <color name="colorPrimaryDarkOrange">#CF4500</color>
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
-    <!--OTHER COLORS-->
+    <!--region BACKEND COLOR-->
+    <!--BACKEND 64 COLOR THEMES-->
+    <color      name="colorPrimary_Pink">#ffcdd2</color>
+    <color  name="colorPrimaryDark_Pink">#cb9ca1</color>
+    <color name="colorPrimaryLight_Pink">#ffffff</color>
+
+    <color      name="colorPrimary_e57">#e57373</color>
+    <color  name="colorPrimaryDark_e57">#af4448</color>
+    <color name="colorPrimaryLight_e57">#ffa4a2</color>
+
+    <color      name="colorPrimary_d32">#d32f2f</color>
+    <color  name="colorPrimaryDark_d32">#9a0007</color>
+    <color name="colorPrimaryLight_d32">#ff6659</color>
+
+    <color      name="colorPrimary_c21">#c2185b</color>
+    <color  name="colorPrimaryDark_c21">#8c0032</color>
+    <color name="colorPrimaryLight_c21">#fa5788</color>
+
+    <color      name="colorPrimary_880">#880e4f</color>
+    <color  name="colorPrimaryDark_880">#560027</color>
+    <color name="colorPrimaryLight_880">#bc477b</color>
+
+    <color      name="colorPrimary_f50">#f50057</color>
+    <color  name="colorPrimaryDark_f50">#bb002f</color>
+    <color name="colorPrimaryLight_f50">#ff5983</color>
+
+
+    <!--endregion-->
+
+
+    <!-- region OTHER COLORS-->
 
     <color name="colorBackGround">#c4c4c4</color>
     <color name="yellow_fdd">#fdd35d</color>
@@ -65,6 +95,6 @@
     <color name="gray_979">#979797</color>
     <color name="gray_9b9">#9b9b9b</color>
     <color name="gray_b2e">#b2e3e3e3</color>
-
+    <!--endregion-->
 
 </resources>

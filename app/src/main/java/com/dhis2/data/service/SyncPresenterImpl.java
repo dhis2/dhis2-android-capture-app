@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.util.List;
@@ -112,8 +113,8 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @NonNull
-    private Observable<Response> events() {
-        return Observable.defer(() -> Observable.fromCallable(d2.syncSingleData(300)));
+    private Observable<List<Event>> events() {
+        return Observable.defer(() -> Observable.fromCallable(d2.downloadSingleEvents(300,false)));
     }
 
 
