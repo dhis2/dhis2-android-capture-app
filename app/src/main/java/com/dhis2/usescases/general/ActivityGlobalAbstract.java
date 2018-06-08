@@ -19,13 +19,11 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
@@ -66,6 +64,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     //****************
     //LIFECYCLE REGION
+
+    public void setScreenName(String name) {
+        Crashlytics.setString("SCREEN_NAME", name);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

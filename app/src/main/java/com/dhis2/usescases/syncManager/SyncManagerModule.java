@@ -7,6 +7,8 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 
+import org.hisp.dhis.android.core.D2;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -25,8 +27,8 @@ public final class SyncManagerModule {
 
     @Provides
     @PerFragment
-    SyncManagerContracts.Presenter providePresenter(MetadataRepository metadataRepository){
+    SyncManagerContracts.Presenter providePresenter(MetadataRepository metadataRepository, D2 d2) {
         FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-        return new SyncManagerPresenter(metadataRepository, firebaseJobDispatcher);
+        return new SyncManagerPresenter(metadataRepository, firebaseJobDispatcher, d2);
     }
 }

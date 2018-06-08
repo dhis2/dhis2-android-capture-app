@@ -125,7 +125,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    private void updateProgramTable(Date lastUpdated, String programUid) {
         ContentValues program = new ContentValues();
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
@@ -177,10 +177,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
         contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
 
-        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
+
+        if (briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+            String message = String.format(Locale.US, "Failed to update event for uid=[%s]", eventUid);
+            return Observable.error(new SQLiteConstraintException(message));
+        }
 
         return event(eventUid).map(eventModel1 -> {
-            updateProgramTable(currentDate, eventModel1.program());
+//            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
             return eventModel1;
         });
     }
@@ -188,13 +192,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid) {
-         String EVENTS_QUERY = String.format(
+        String EVENTS_QUERY = String.format(
                 "SELECT Event.* FROM %s JOIN %s " +
                         "ON %s.%s = %s.%s " +
                         "WHERE %s.%s = ? " +
                         "AND %s.%s = ? " +
                         "AND %s.%s = ? " +
-                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'"+
+                        "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
                         "AND " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " > DATE() " +
                         "ORDER BY CASE WHEN %s.%s > %s.%s " +
                         "THEN %s.%s ELSE %s.%s END ASC",
@@ -206,7 +210,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
                 EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
 
-         return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid, enrollmentUid, programStageUid)
-                 .mapToList(EventModel::create);
+        return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid, enrollmentUid, programStageUid)
+                .mapToList(EventModel::create);
     }
 }

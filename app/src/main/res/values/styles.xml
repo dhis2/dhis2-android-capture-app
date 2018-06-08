@@ -162,5 +162,8 @@
         <item name="android:paddingRight">4dp</item>
     </style>
 
+    <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
+        <item name="android:textColor">?colorPrimary</item>
+    </style>
 
 </resources>

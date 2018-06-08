@@ -12,6 +12,7 @@ import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
+import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
@@ -182,13 +183,22 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @NonNull
     private Observable<List<TrackedEntityInstance>> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(500, false)));
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(teiLimit, limityByOU)));
     }
 
 
     @NonNull
     private Observable<List<Event>> events() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(300, false)));
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(eventLimit, limityByOU)));
     }
 
     @NonNull
@@ -268,7 +278,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .subscribe(
-                            data->view.handleLogout(),
+                            data -> view.handleLogout(),
                             Timber::d
                     )
             );

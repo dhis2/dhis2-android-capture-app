@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 
@@ -133,4 +134,6 @@ public interface MetadataRepository {
 
     @NonNull
     Observable<List<ResourceModel>> syncState(ProgramModel program);
+
+    Flowable<Pair<Integer, Integer>> getDownloadedData();
 }

@@ -1,124 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="presenter"
-            type="com.dhis2.usescases.syncManager.SyncManagerContracts.Presenter"/>
+            type="com.dhis2.usescases.syncManager.SyncManagerContracts.Presenter" />
 
     </data>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_margin="20dp">
+            android:padding="20dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/Automatic_Sync_Data"/>
+                android:text="@string/Automatic_Sync_Data" />
 
             <RadioGroup
+                android:id="@+id/radioData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/radioData"
                 tools:checkedButton="@id/dataManual">
 
                 <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/data15"
-                    android:text="@string/fifteen_minute"
-                    android:buttonTint="?colorPrimary"/>
-                <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:buttonTint="?colorPrimary"
+                    android:text="@string/fifteen_minute" />
+
+                <RadioButton
                     android:id="@+id/dataHour"
-                    android:text="@string/a_hour"
-                    android:buttonTint="?colorPrimary"/>
-                <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/a_day"
+                    android:buttonTint="?colorPrimary"
+                    android:text="@string/a_hour" />
+
+                <RadioButton
                     android:id="@+id/dataDay"
-                    android:buttonTint="?colorPrimary"/>
-                <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/Manual"
+                    android:buttonTint="?colorPrimary"
+                    android:text="@string/a_day" />
+
+                <RadioButton
                     android:id="@+id/dataManual"
-                    android:buttonTint="?colorPrimary"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="?colorPrimary"
+                    android:text="@string/Manual" />
             </RadioGroup>
 
             <TextView
                 android:id="@+id/data_last_sync"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="@string/last_data_sync_date"/>
+                tools:text="@string/last_data_sync_date" />
 
             <Button
+                android:id="@+id/buttonSyncData"
+                style="@style/FullWidthButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/buttonSyncData"
                 android:layout_marginTop="10dp"
-                style="@style/FullWidthButton"
-                android:text="@string/SYNC_DATA"
-                android:onClick="@{()->presenter.syncData(0)}"/>
+                android:onClick="@{()->presenter.syncData(0)}"
+                android:text="@string/SYNC_DATA" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="@string/Automatic_Sync_Metadata"/>
+                android:text="@string/Automatic_Sync_Metadata" />
 
             <RadioGroup
+                android:id="@+id/radioMeta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/radioMeta"
                 tools:checkedButton="@id/metaManual">
 
 
                 <RadioButton
+                    android:id="@+id/metaDay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/metaDay"
                     android:layout_marginTop="15dp"
                     android:text="@string/a_day"
-                    android:buttonTint="?colorPrimary"/>
+                    app:buttonTint="?colorPrimary" />
+
                 <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/metaWeek"
-                    android:text="@string/a_week"
-                    android:buttonTint="?colorPrimary"/>
-                <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="@string/a_week"
+                    app:buttonTint="?colorPrimary" />
+
+                <RadioButton
                     android:id="@+id/metaManual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/Manual"
-                    android:buttonTint="?colorPrimary" />
+                    app:buttonTint="?colorPrimary" />
             </RadioGroup>
 
             <TextView
                 android:id="@+id/metadata_last_sync"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="@string/last_metadata_sync_date"/>
+                tools:text="@string/last_metadata_sync_date" />
 
             <Button
+                android:id="@+id/buttonSyncMeta"
                 style="@style/FullWidthButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/buttonSyncMeta"
                 android:layout_marginTop="10dp"
-                android:text="@string/SYNC_META"
-                android:onClick="@{()->presenter.syncMeta(0)}"/>
+                android:onClick="@{()->presenter.syncMeta(0)}"
+                android:text="@string/SYNC_META" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/sync_max_parameters" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="MAX"
+                        android:textColor="?colorPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="CURRENT"
+                        android:textColor="?colorPrimary"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Events"
+                        android:textColor="@color/black_de0"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/event_max_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        tools:text="1000" />
+
+                    <TextView
+                        android:id="@+id/event_current_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="0" />
+                </TableRow>
+
+                <TableRow android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="TEI"
+                        android:textColor="@color/black_de0"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/tei_max_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        tools:text="1000" />
+
+                    <TextView
+                        android:id="@+id/tei_current_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="0" />
+                </TableRow>
+            </TableLayout>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/limitByOrgUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Limit by organisation unit"
+                app:switchPadding="15dp" />
+
+            <Button
+                android:id="@+id/buttonResetParameters"
+                style="@style/FullWidthButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:onClick="@{()->presenter.resetSyncParameters()}"
+                android:text="@string/sync_default_parameters" />
+
+            <Button
+                android:id="@+id/wipeData"
+                style="@style/FullWidthButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:onClick="@{()->presenter.onWipeData()}"
+                android:text="@string/wipe_data" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

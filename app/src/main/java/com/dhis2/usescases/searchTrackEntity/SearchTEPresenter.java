@@ -67,7 +67,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
         this.d2 = d2;
-        compositeDisposable = new CompositeDisposable();
         queryData = new HashMap<>();
     }
 
@@ -77,6 +76,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void init(SearchTEContractsModule.View view, String trackedEntityType, String initialProgram) {
         this.view = view;
+        compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
                 metadataRepository.getTrackedEntity(trackedEntityType)
@@ -366,7 +366,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public void addRelationship(String TEIuid, String relationshipTypeUid) {
         String relationshipType;
-        if(relationshipTypeUid == null)
+        if (relationshipTypeUid == null)
             relationshipType = selectedProgram.relationshipType();
         else
             relationshipType = relationshipTypeUid;

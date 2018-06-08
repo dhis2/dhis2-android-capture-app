@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 
@@ -477,7 +478,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<ObjectStyleModel> getObjectStyle(String uid) {
         return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT * FROM ObjectStyle WHERE uid = ?", uid)
-                .mapToOneOrDefault((ObjectStyleModel::create),ObjectStyleModel.builder().build());
+                .mapToOneOrDefault((ObjectStyleModel::create), ObjectStyleModel.builder().build());
     }
 
     @Override
@@ -531,5 +532,30 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ResourceModel.TABLE, SYNC_STATE)
                 .mapToList(ResourceModel::create);
+    }
+
+    @Override
+    public Flowable<Pair<Integer, Integer>> getDownloadedData() {
+
+        String TEI_COUNT = "SELECT DISTINCT COUNT (uid) FROM TrackedEntityInstance";
+        String EVENT_COUNT = "SELECT DISTINCT COUNT (uid) FROM Event";
+
+        int currentTei = 0;
+        int currentEvent = 0;
+
+        Cursor teiCursor = briteDatabase.query(TEI_COUNT);
+        if (teiCursor != null && teiCursor.moveToFirst()) {
+            currentTei = teiCursor.getInt(0);
+            teiCursor.close();
+        }
+
+        Cursor eventCursor = briteDatabase.query(EVENT_COUNT);
+        if (eventCursor != null && eventCursor.moveToFirst()) {
+            currentEvent = eventCursor.getInt(0);
+            eventCursor.close();
+        }
+
+        return Flowable.just(Pair.create(currentEvent, currentTei));
+
     }
 }

@@ -1,7 +1,6 @@
 package com.dhis2.usescases.jira;
 
 import android.databinding.ObservableField;
-import android.util.Base64;
 
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
@@ -11,16 +10,13 @@ import java.util.ArrayList;
 import javax.crypto.KeyGenerator;
 
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
@@ -106,7 +102,7 @@ public class JiraPresenterImpl implements JiraPresenter {
 
     private interface JiraIssueService {
         @POST("rest/api/2/issue")
-        Call<ResponseBody> createIssue(@Header("Authorization") String auth, @Body IssueRequest issueRequest);
+        Call<ResponseBody> createIssue(@Header("Authorization") String auth, @Body RequestBody issueRequest);
     }
 
     private class IssueRequest {

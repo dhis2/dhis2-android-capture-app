@@ -79,7 +79,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.35" />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/event_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:programStage="@{event.programStage()}"
-                tools:text="ANC 4" />
+                tools:text="ANC 4" />-->
 
             <RelativeLayout
                 android:id="@+id/icon_container"
@@ -110,9 +110,9 @@
                     android:id="@+id/edit_mode_"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="@{()->presenter.editData()}"
                     android:visibility="@{isEditable ? View.VISIBLE : View.INVISIBLE}"
                     app:backgroundTint="?colorPrimary"
-                    android:onClick="@{()->presenter.editData()}"
                     app:srcCompat="@drawable/ic_edit" />
             </RelativeLayout>
 
@@ -166,7 +166,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:hint="@string/event_date"
-                            android:theme="@style/dataInputText"
+                            android:theme="@style/loginInputText"
                             app:layout_flexBasisPercent="50%">
 
                             <android.support.design.widget.TextInputEditText
@@ -182,7 +182,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:hint="@string/due_date"
-                            android:theme="@style/dataInputText"
+                            android:theme="@style/loginInputText"
                             app:layout_flexBasisPercent="50%">
 
                             <android.support.design.widget.TextInputEditText
@@ -197,7 +197,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:hint="@string/cat_combo"
-                            android:theme="@style/dataInputText"
+                            android:theme="@style/loginInputText"
                             app:layout_flexBasisPercent="50%">
 
 
@@ -214,7 +214,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:hint="@string/org_unit"
-                            android:theme="@style/dataInputText"
+                            android:theme="@style/loginInputText"
                             app:layout_flexBasisPercent="50%">
 
                             <EditText
@@ -232,17 +232,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
+                        android:visibility="gone"
                         app:alignContent="stretch"
                         app:alignItems="stretch"
-                        app:flexWrap="wrap"
-                        android:visibility="gone"/>
+                        app:flexWrap="wrap" />
 
                     <FrameLayout
                         android:id="@+id/dataFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        />
+                        android:layout_marginBottom="20dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -259,11 +258,11 @@
                             android:layout_marginEnd="22.5dp"
                             android:background="@drawable/button_delete_selector"
                             android:minHeight="0dp"
+                            android:onClick="@{()->presenter.eventStatus(event,stage)}"
                             android:text="@string/deactivate"
                             android:textColor="@color/white_faf"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:onClick="@{()->presenter.eventStatus(event,stage)}"/>
+                            app:layout_constraintEnd_toEndOf="parent" />
                     </LinearLayout>
 
                 </LinearLayout>

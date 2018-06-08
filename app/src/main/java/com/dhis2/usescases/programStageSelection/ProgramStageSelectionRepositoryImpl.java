@@ -26,6 +26,9 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "JOIN Enrollment ON Enrollment.program = Program.uid " +
             "WHERE Enrollment.uid = ?";
 
+    private final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
+            "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ?)";
+
     private final BriteDatabase briteDatabase;
 
     ProgramStageSelectionRepositoryImpl(BriteDatabase briteDatabase) {
@@ -44,7 +47,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     public Observable<List<ProgramStageModel>> enrollmentProgramStages(String programId, String enrollmentUid) {
         List<ProgramStageModel> enrollmentStages = new ArrayList<>();
         List<ProgramStageModel> selectableStages = new ArrayList<>();
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, ENROLLMENT_PROGRAM_STAGES, enrollmentUid)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, /*ENROLLMENT_PROGRAM_STAGES*/CURRENT_PROGRAM_STAGES, enrollmentUid)
                 .mapToList(ProgramStageModel::create)
                 .flatMap(data -> {
                     enrollmentStages.addAll(data);

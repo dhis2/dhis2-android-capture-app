@@ -3,6 +3,7 @@ package com.dhis2.data.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -116,6 +117,12 @@ public class SyncMetadataService extends JobService implements SyncView {
             }
             notificationManager.notify(getNotId(), notification);
         };
+    }
+
+    @NonNull
+    @Override
+    public Context getContext() {
+        return getApplicationContext();
     }
 
 

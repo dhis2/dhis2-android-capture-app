@@ -167,44 +167,47 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programSyncState")
     public static void setProgramSyncState(ImageView imageView, ProgramModel program) {
-        metadataRepository
-                .syncState(program)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        resourceModelList -> {
-                            for (ResourceModel resourceModel : resourceModelList) {
-                                if (resourceModel.resourceType().equals(ResourceModel.Type.PROGRAM.name())) {
-                                    if (resourceModel.lastSynced().before(program.lastUpdated()))
-                                        imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                                    else
-                                        imageView.setImageResource(R.drawable.ic_sync);
+        if (metadataRepository != null)
+            metadataRepository
+                    .syncState(program)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            resourceModelList -> {
+                                for (ResourceModel resourceModel : resourceModelList) {
+                                    if (resourceModel.resourceType().equals(ResourceModel.Type.PROGRAM.name())) {
+                                        if (resourceModel.lastSynced().before(program.lastUpdated()))
+                                            imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                                        else
+                                            imageView.setImageResource(R.drawable.ic_sync);
+                                    }
                                 }
-                            }
-                        },
-                        Timber::d);
+                            },
+                            Timber::d);
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("enrollmentLastEventDate")
     public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
-        metadataRepository.getEnrollmentLastEvent(enrollmentUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> textView.setText(DateUtils.getInstance().formatDate(data.eventDate())),
-                        Timber::d);
+        if (metadataRepository != null)
+            metadataRepository.getEnrollmentLastEvent(enrollmentUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> textView.setText(DateUtils.getInstance().formatDate(data.eventDate())),
+                            Timber::d);
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("eventLabel")
     public static void setEventLabel(TextView textView, String programUid) {
-        metadataRepository.getProgramWithId(programUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
-                        Timber::d);
+        if (metadataRepository != null)
+            metadataRepository.getProgramWithId(programUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
+                            Timber::d);
     }
 
 
@@ -236,48 +239,49 @@ public class Bindings {
     @SuppressLint("RxLeakedSubscription")
     @BindingAdapter("lightColor")
     public static void setLightColor(View view, ProgramModel programModel) {
-        metadataRepository.getObjectStyle(programModel.uid())
-                .filter(objectStyleModel -> objectStyleModel != null)
-                .map(objectStyleModel -> {
-                    String color = objectStyleModel.color();
-                    if (color != null && color.length() == 4) {//Color is formatted as #fff
-                        char r = color.charAt(1);
-                        char g = color.charAt(2);
-                        char b = color.charAt(3);
-                        color = "#" + r + r + g + g + b + b; //formatted to #ffff
-                    }
+        if (metadataRepository != null)
+            metadataRepository.getObjectStyle(programModel.uid())
+                    .filter(objectStyleModel -> objectStyleModel != null)
+                    .map(objectStyleModel -> {
+                        String color = objectStyleModel.color();
+                        if (color != null && color.length() == 4) {//Color is formatted as #fff
+                            char r = color.charAt(1);
+                            char g = color.charAt(2);
+                            char b = color.charAt(3);
+                            color = "#" + r + r + g + g + b + b; //formatted to #ffff
+                        }
 
-                    int icon = -1;
-                    if (objectStyleModel.icon() != null) {
-                        Resources resources = view.getContext().getResources();
-                        String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                        icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                    }
-                    return Pair.create(Color.parseColor(color), icon);
+                        int icon = -1;
+                        if (objectStyleModel.icon() != null) {
+                            Resources resources = view.getContext().getResources();
+                            String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                            icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                        }
+                        return Pair.create(Color.parseColor(color), icon);
 
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        colorAndIcon -> {
-                            if (colorAndIcon.val0() != -1)
-                                view.setBackgroundColor(colorAndIcon.val0());
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            colorAndIcon -> {
+                                if (colorAndIcon.val0() != -1)
+                                    view.setBackgroundColor(colorAndIcon.val0());
 
-                            if (view instanceof ImageView) {
-                                if (colorAndIcon.val1() != -1) {
-                                    ((ImageView) view).setImageResource(colorAndIcon.val1());
-                                } else {
-                                    TypedValue typedValue = new TypedValue();
-                                    TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-                                    int lcolor = a.getColor(0, 0);
-                                    a.recycle();
-                                    view.setBackgroundColor(lcolor);
+                                if (view instanceof ImageView) {
+                                    if (colorAndIcon.val1() != -1) {
+                                        ((ImageView) view).setImageResource(colorAndIcon.val1());
+                                    } else {
+                                        TypedValue typedValue = new TypedValue();
+                                        TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
+                                        int lcolor = a.getColor(0, 0);
+                                        a.recycle();
+                                        view.setBackgroundColor(lcolor);
+                                    }
+                                    setFromResBgColor(view, colorAndIcon.val0());
                                 }
-                                setFromResBgColor(view, colorAndIcon.val0());
-                            }
 
-                        },
-                        Timber::d);
+                            },
+                            Timber::d);
     }
 
     @BindingAdapter("randomColor")
@@ -325,26 +329,28 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programStage")
     public static void getStageName(TextView textView, String stageId) {
-        metadataRepository.programStage(stageId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programStageModel -> textView.setText(programStageModel.displayName()),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.programStage(stageId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            programStageModel -> textView.setText(programStageModel.displayName()),
+                            Timber::d
+                    );
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programStageDescription")
     public static void getStageDescription(TextView textView, String stageId) {
-        metadataRepository.programStage(stageId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
-                        programStageModel -> textView.setText(textView.getContext().getString(R.string.lorem)),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.programStage(stageId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
+                            programStageModel -> textView.setText(textView.getContext().getString(R.string.lorem)),
+                            Timber::d
+                    );
     }
 
     @BindingAdapter("srcBackGround")
@@ -431,19 +437,20 @@ public class Bindings {
                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
                 break;
             case COMPLETED:
-                metadataRepository.getExpiryDateFromEvent(event.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                program -> {
-                                    if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
-                                    } else {
-                                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
-                                    }
-                                },
-                                Timber::d
-                        );
+                if (metadataRepository != null)
+                    metadataRepository.getExpiryDateFromEvent(event.uid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    program -> {
+                                        if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                                        } else {
+                                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                                        }
+                                    },
+                                    Timber::d
+                            );
                 break;
         }
     }
@@ -459,19 +466,20 @@ public class Bindings {
                 view.setText(view.getContext().getString(R.string.event_open));
                 break;
             case COMPLETED:
-                metadataRepository.getExpiryDateFromEvent(event.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                program -> {
-                                    if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                        view.setText(view.getContext().getString(R.string.event_expired));
-                                    } else {
-                                        view.setText(view.getContext().getString(R.string.event_completed));
-                                    }
-                                },
-                                Timber::d
-                        );
+                if (metadataRepository != null)
+                    metadataRepository.getExpiryDateFromEvent(event.uid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    program -> {
+                                        if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            view.setText(view.getContext().getString(R.string.event_expired));
+                                        } else {
+                                            view.setText(view.getContext().getString(R.string.event_completed));
+                                        }
+                                    },
+                                    Timber::d
+                            );
                 break;
             case SCHEDULE:
                 view.setText(view.getContext().getString(R.string.program_inactive));
@@ -525,49 +533,52 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("programName")
     public static void setProgramName(TextView textView, String programUid) {
-        metadataRepository.getProgramWithId(programUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programModel -> textView.setText(programModel.displayShortName()),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getProgramWithId(programUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            programModel -> textView.setText(programModel.displayShortName()),
+                            Timber::d
+                    );
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("organisationUnitName")
     public static void setOrganisationUnitName(TextView textView, String organisationUnitUid) {
-        metadataRepository.getOrganisationUnit(organisationUnitUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        organisationUnitModel -> textView.setText(organisationUnitModel.displayShortName()),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getOrganisationUnit(organisationUnitUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            organisationUnitModel -> textView.setText(organisationUnitModel.displayShortName()),
+                            Timber::d
+                    );
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("categoryOptionComboName")
     public static void setCategoryOptionComboName(TextView textView, String categoryOptionComboId) {
-        metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        categoryOptionComboModel -> metadataRepository.getCategoryComboWithId(categoryOptionComboModel.categoryCombo())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        categoryOptionModel -> {
-                                            if (!CategoryComboModel.DEFAULT_UID.equals(categoryOptionModel.uid())) {
-                                                textView.setText(categoryOptionComboModel.displayName());
-                                            } else {
-                                                textView.setText("");
-                                            }
-                                        },
-                                        Timber::d
-                                ),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getCategoryOptionComboWithId(categoryOptionComboId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            categoryOptionComboModel -> metadataRepository.getCategoryComboWithId(categoryOptionComboModel.categoryCombo())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            categoryOptionModel -> {
+                                                if (!CategoryComboModel.DEFAULT_UID.equals(categoryOptionModel.uid())) {
+                                                    textView.setText(categoryOptionComboModel.displayName());
+                                                } else {
+                                                    textView.setText("");
+                                                }
+                                            },
+                                            Timber::d
+                                    ),
+                            Timber::d
+                    );
     }
 
     @BindingAdapter("eventWithoutRegistrationStatusText")
@@ -609,19 +620,20 @@ public class Bindings {
                 imageView.setImageResource(R.drawable.ic_edit_yellow);
                 break;
             case COMPLETED:
-                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                        imageView.setImageResource(R.drawable.ic_eye_red);
-                                    } else {
-                                        imageView.setImageResource(R.drawable.ic_eye_grey);
-                                    }
-                                },
-                                Timber::d
-                        );
+                if (metadataRepository != null)
+                    metadataRepository.getExpiryDateFromEvent(eventModel.uid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    program -> {
+                                        if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            imageView.setImageResource(R.drawable.ic_eye_red);
+                                        } else {
+                                            imageView.setImageResource(R.drawable.ic_eye_grey);
+                                        }
+                                    },
+                                    Timber::d
+                            );
                 break;
             default:
                 // TODO CRIS: HERE CHECK THE EVENT APPROVAL
@@ -683,25 +695,27 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("dataElementHint")
     public static void setDataElementName(TextInputLayout view, String dataElementUid) {
-        metadataRepository.getDataElement(dataElementUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        dataModel -> view.setHint(dataModel.displayShortName()),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getDataElement(dataElementUid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            dataModel -> view.setHint(dataModel.displayShortName()),
+                            Timber::d
+                    );
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("attrHint")
     public static void setAttrName(TextInputLayout view, String teAttribute) {
-        metadataRepository.getTrackedEntityAttribute(teAttribute)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        dataModel -> view.setHint(dataModel.displayShortName()),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getTrackedEntityAttribute(teAttribute)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            dataModel -> view.setHint(dataModel.displayShortName()),
+                            Timber::d
+                    );
     }
 
     @BindingAdapter("spinnerOptions")
@@ -718,23 +732,24 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("eventCompletion")
     public static void setEventCompletion(TextView textView, EventModel eventModel) {
-        metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        trackEntityCount -> {
-                                            float perone = (float) trackEntityCount / (float) programStageCount;
-                                            int percent = (int) (perone * 100);
-                                            String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
-                                            textView.setText(completionText);
-                                        },
-                                        Timber::d
-                                ),
-                        Timber::d
-                );
+        if (metadataRepository != null)
+            metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            trackEntityCount -> {
+                                                float perone = (float) trackEntityCount / (float) programStageCount;
+                                                int percent = (int) (perone * 100);
+                                                String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
+                                                textView.setText(completionText);
+                                            },
+                                            Timber::d
+                                    ),
+                            Timber::d
+                    );
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
@@ -858,28 +873,29 @@ public class Bindings {
     @SuppressLint("RxLeakedSubscription")
     @BindingAdapter({"objectStyle", "itemView"})
     public static void setObjectStyle(View view, View itemView, String uid) {
-        metadataRepository.getObjectStyle(uid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            if (data.icon() != null) {
-                                Resources resources = view.getContext().getResources();
-                                String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
-                                int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                                if (view instanceof ImageView)
-                                    ((ImageView) view).setImageResource(icon);
-                            }
+        if (metadataRepository != null)
+            metadataRepository.getObjectStyle(uid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> {
+                                if (data.icon() != null) {
+                                    Resources resources = view.getContext().getResources();
+                                    String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
+                                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                                    if (view instanceof ImageView)
+                                        ((ImageView) view).setImageResource(icon);
+                                }
 
-                            if (data.color() != null) {
-                                String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
-                                int colorRes = Color.parseColor(color);
-                                itemView.setBackgroundColor(colorRes);
-                                setFromResBgColor(view, colorRes);
-                            }
-                        },
-                        Timber::d
-                );
+                                if (data.color() != null) {
+                                    String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
+                                    int colorRes = Color.parseColor(color);
+                                    itemView.setBackgroundColor(colorRes);
+                                    setFromResBgColor(view, colorRes);
+                                }
+                            },
+                            Timber::d
+                    );
 
 
     }

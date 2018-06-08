@@ -103,7 +103,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
-                .mapToList(this::transform)
+                .mapToList(cursor1 -> transform(cursor1))
                 .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.LATEST);
     }

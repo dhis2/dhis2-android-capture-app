@@ -104,7 +104,7 @@
                     tools:text="Diagnosis" />
 
 
-                <TextView
+                <!--<TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -113,7 +113,8 @@
                     android:gravity="end"
                     android:textColor="@color/black_de0"
                     android:textSize="14sp"
-                    app:eventCompletion='@{event}' />
+                    android:visibility="gone"
+                    app:eventCompletion='@{event}' />-->
 
             </LinearLayout>
 

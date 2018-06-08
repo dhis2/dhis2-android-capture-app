@@ -1,6 +1,9 @@
 package com.dhis2.usescases.syncManager;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by lmartin on 21/03/2018.
@@ -12,6 +15,10 @@ public class SyncManagerContracts {
         void setLastDataSyncDate(String date);
 
         void setLastMetaDataSyncDate(String date);
+
+        Consumer<Pair<Integer, Integer>> setSyncData();
+
+        void wipeDatabase();
     }
 
     public interface Presenter {
@@ -21,5 +28,13 @@ public class SyncManagerContracts {
         void syncData(int seconds);
 
         void syncMeta(int seconds);
+
+        void disponse();
+
+        void resetSyncParameters();
+
+        void onWipeData();
+
+        void wipeDb();
     }
 }

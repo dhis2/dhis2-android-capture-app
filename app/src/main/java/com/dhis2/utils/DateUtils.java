@@ -565,8 +565,9 @@ public class DateUtils {
     }
 
     private Date moveWeekly(Calendar date) {
-        date.add(Calendar.WEEK_OF_YEAR, 1);
-        date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek());
+        date.add(Calendar.WEEK_OF_YEAR, 1); //Set to next week
+        date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek()); //Set to first day of next week
+        date.add(Calendar.DAY_OF_YEAR, -1); //Set to last day of this week
         return date.getTime();
     }
 

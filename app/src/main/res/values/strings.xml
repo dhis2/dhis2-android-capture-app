@@ -163,6 +163,12 @@
     <string name="Manual">Manual (Default)</string>
     <string name="Automatic_Sync_Metadata">Automatic Sync Configuration every:</string>
     <string name="a_week">1 Week</string>
+    <string name="sync_max_parameters">Current sync parameters:</string>
+    <string name="sync_default_parameters">Reset to default</string>
+    <string name="wipe_data">Wipe all data</string>
+    <string name="wipe_data_meesage">Database will be deleted.\nYou will be asked to log in again.</string>
+    <string name="wipe_data_ok">Accept</string>
+    <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">SYNC Manager</string>

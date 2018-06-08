@@ -1,20 +1,25 @@
 package com.dhis2.usescases.syncManager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.service.SyncDataService;
 import com.dhis2.data.service.SyncMetadataService;
-import com.dhis2.usescases.main.MainContracts;
+import com.dhis2.data.tuples.Pair;
+import com.dhis2.usescases.login.LoginActivity;
+import com.dhis2.utils.Constants;
 import com.dhis2.utils.DateUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.JobTrigger;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
-import javax.inject.Inject;
+import org.hisp.dhis.android.core.D2;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -24,31 +29,36 @@ import timber.log.Timber;
  * Created by lmartin on 21/03/2018.
  */
 
-public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
+public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     public static final int DATA_RESOURCE = 16;  //Events Resource
     public static final int META_DATA_RESOURCE = 1; // User Resource
+    private final D2 d2;
 
     private MetadataRepository metadataRepository;
     private FirebaseJobDispatcher dispatcher;
     private CompositeDisposable compositeDisposable;
+    private SyncManagerContracts.View view;
 
-    public SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher) {
+    public SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher, D2 d2) {
         this.metadataRepository = metadataRepository;
         this.dispatcher = dispatcher;
-        this.compositeDisposable = new CompositeDisposable();
+        this.d2 = d2;
     }
 
     @Override
     public void init(SyncManagerContracts.View view) {
+        this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
+
         compositeDisposable.add(
                 metadataRepository.getLastSync(META_DATA_RESOURCE)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        resourceModel -> view.setLastMetaDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
-                        Timber::e
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                resourceModel -> view.setLastMetaDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
+                                Timber::e
+                        )
         );
 
         compositeDisposable.add(
@@ -57,6 +67,16 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 resourceModel -> view.setLastDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
+                metadataRepository.getDownloadedData()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.setSyncData(),
                                 Timber::e
                         )
         );
@@ -70,7 +90,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
 
-        if(seconds != 0){
+        if (seconds != 0) {
             isRecurring = true;
             trigger = Trigger.executionWindow(seconds, seconds + 60);
         }
@@ -98,7 +118,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
 
-        if(seconds != 0){
+        if (seconds != 0) {
             isRecurring = true;
             trigger = Trigger.executionWindow(seconds, seconds + 60);
         }
@@ -115,5 +135,50 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter{
                 )
                 .build();
         dispatcher.mustSchedule(metaJob);
+    }
+
+    @Override
+    public void disponse() {
+        compositeDisposable.dispose();
+    }
+
+    @Override
+    public void resetSyncParameters() {
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        editor.putInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        editor.putBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+
+        editor.apply();
+
+        compositeDisposable.add(
+                Observable.just(Pair.create(Constants.EVENT_MAX_DEFAULT, Constants.TEI_MAX_DEFAULT))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.setSyncData(),
+                                Timber::d
+                        )
+        );
+
+    }
+
+    @Override
+    public void onWipeData() {
+
+        view.wipeDatabase();
+
+    }
+
+    @Override
+    public void wipeDb() {
+        try {
+            d2.wipeDB().call();
+            view.startActivity(LoginActivity.class, null, true, true, null);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
     }
 }

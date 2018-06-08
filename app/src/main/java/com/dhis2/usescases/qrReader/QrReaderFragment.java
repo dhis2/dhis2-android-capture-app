@@ -136,7 +136,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         if (isOk) {
             //TODO: Show download message if network connection is avaible
         } else {
-            //TODO: Show warning
+           displayMessage(info);
         }
 
     }

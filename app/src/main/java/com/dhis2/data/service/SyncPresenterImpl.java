@@ -1,7 +1,11 @@
 package com.dhis2.data.service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.event.Event;
@@ -109,12 +113,20 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @NonNull
     private Observable<List<TrackedEntityInstance>> trackerData() {
-        return Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstances(500, false)));
+        SharedPreferences prefs = syncView.getContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        return Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstances(teiLimit, limityByOU)));
     }
 
     @NonNull
     private Observable<List<Event>> events() {
-        return Observable.defer(() -> Observable.fromCallable(d2.downloadSingleEvents(300,false)));
+        SharedPreferences prefs = syncView.getContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        return Observable.defer(() -> Observable.fromCallable(d2.downloadSingleEvents(eventLimit, limityByOU)));
     }
 
 

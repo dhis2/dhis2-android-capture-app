@@ -85,9 +85,15 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
             }
         });
 
-        activity.presenter.getOnlineTrackedEntities(this);
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        activity.presenter.getOnlineTrackedEntities(this);
+
     }
 
     public void setItems(Pair<List<TrackedEntityInstance>, String> mData, List<ProgramModel> programList) {

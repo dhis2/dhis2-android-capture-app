@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
@@ -20,10 +21,12 @@ import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.forms.dataentry.fields.file.FileRow;
 import com.dhis2.data.forms.dataentry.fields.file.FileViewModel;
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitRow;
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
+import com.dhis2.utils.CodeGeneratorImpl;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -135,9 +138,14 @@ public class FormAdapter extends RecyclerView.Adapter {
                 case AGEVIEW:
                     viewModel = AgeViewModel.create(attr.uid(), label, false, null, null);
                     break;
+                case ORG_UNIT:
+                    viewModel = OrgUnitViewModel.create(attr.uid(),label,false,null,null);
+                    break;
                 default:
-                    throw new IllegalArgumentException("Unsupported viewType " +
+                    Crashlytics.log("Unsupported viewType " +
                             "source type: " + holder.getItemViewType());
+                    viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false);
+                    break;
             }
          /*   if (holder.getItemViewType() == EDITTEXT)
                 rows.get(holder.getItemViewType()).onBind(holder, EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null,

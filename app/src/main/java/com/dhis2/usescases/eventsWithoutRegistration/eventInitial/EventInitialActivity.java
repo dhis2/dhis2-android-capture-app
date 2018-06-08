@@ -107,6 +107,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
 
         programId = getIntent().getStringExtra(PROGRAM_UID);
@@ -518,11 +519,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     }
                 });
 
-                if (periodType != null)
-                    presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
 
                 if (eventModel != null)//TODO: Check all this
                     presenter.getCatOption(eventModel.attributeOptionCombo());
+            }
+
+
+            if (periodType != null) {
+                binding.date.setHint(periodType.name());
+                presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
             }
 
             /*categoryOptionComboModels = catComboList;

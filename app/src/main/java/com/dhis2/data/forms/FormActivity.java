@@ -44,6 +44,7 @@ public class FormActivity extends ActivityGlobalAbstract {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setScreenName(this.getLocalClassName());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enrollment);
 

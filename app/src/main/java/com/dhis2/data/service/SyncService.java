@@ -3,6 +3,7 @@ package com.dhis2.data.service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -97,6 +98,12 @@ public class SyncService extends Service implements SyncView {
             }
             notificationManager.notify(getNotId(syncState), notification);
         };
+    }
+
+    @NonNull
+    @Override
+    public Context getContext() {
+        return getApplicationContext();
     }
 
     private void next(SyncState syncState) {

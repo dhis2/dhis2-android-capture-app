@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -76,8 +77,9 @@ public class EventRepository implements FormRepository {
             "WHERE Event.uid = ?";
 
     private static final String SELECT_EVENT_DATE = "SELECT\n" +
-            "  Event.eventDate\n" +
+            "  Event.eventDate, ProgramStage.periodType\n" +
             "FROM Event\n" +
+            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.uid = ?";
 
     private static final String SELECT_EVENT_STATUS = "SELECT\n" +
@@ -135,7 +137,13 @@ public class EventRepository implements FormRepository {
     public Flowable<String> reportDate() {
         return briteDatabase
                 .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid)
-                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(cursor -> {
+                    PeriodType periodType = null;
+                    String eventDate = cursor.getString(0) == null ? "" : cursor.getString(0);
+                    if (cursor.getString(1) != null)
+                        periodType = PeriodType.valueOf(PeriodType.class, cursor.getString(1));
+                    return eventDate;
+                }).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
@@ -262,7 +270,7 @@ public class EventRepository implements FormRepository {
         }
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    private void updateProgramTable(Date lastUpdated, String programUid) {
         ContentValues program = new ContentValues();
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
