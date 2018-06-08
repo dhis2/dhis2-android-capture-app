@@ -33,11 +33,13 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -82,8 +84,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventInitialBinding binding;
     private boolean isNewEvent;
 
-    private String selectedDate;
+    private String selectedDateString;
     private String selectedOrgUnit;
+    private Date selectedOrgUnitOpeningDate;
+    private Date selectedOrgUnitClosedDate;
     private CategoryOptionComboModel selectedCatOptionCombo;
     private CategoryComboModel selectedCatCombo;
     private ProgramStageModel programStageModel;
@@ -174,7 +178,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedDate = s.toString();
+                selectedDateString = s.toString();
                 checkActionButtonVisibility();
             }
 
@@ -248,7 +252,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             String formattedDate = null;
             Date date = null;
             try {
-                date = DateUtils.uiDateFormat().parse(selectedDate);
+                date = DateUtils.uiDateFormat().parse(selectedDateString);
                 formattedDate = DateUtils.databaseDateFormat().format(date);
             } catch (Exception e) {
                 Timber.e(e);
@@ -311,7 +315,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void checkActionButtonVisibility() {
-        if (isFormCompleted()) {
+        if (isFormCompleted() && isEventOpen()) {
             binding.actionButton.setVisibility(View.VISIBLE);
         } else {
             binding.actionButton.setVisibility(View.GONE);
@@ -321,18 +325,37 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean isFormCompleted() {
 
         if (selectedCatCombo != null && !CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()))
-            return isCompleted(selectedDate) &&
+            return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
+                    isSelectedDateBetweenOpeningAndClosedDates() &&
                     (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
                     selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
-            return isCompleted(selectedDate) &&
+            return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
+                    isSelectedDateBetweenOpeningAndClosedDates() &&
                     (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
+    }
 
+    private boolean isEventOpen(){
+        return isNewEvent || (eventModel != null && eventModel.status() != EventStatus.COMPLETED);
+    }
 
+    private boolean isSelectedDateBetweenOpeningAndClosedDates(){
+        if (selectedDateString == null)
+            return false;
+        try {
+            Date selectedDate = DateUtils.uiDateFormat().parse(selectedDateString);
+            boolean isAfterOpening = selectedOrgUnitOpeningDate == null || (selectedOrgUnitOpeningDate != null && selectedDate.after(selectedOrgUnitOpeningDate));
+            boolean isBeforeClosed = selectedOrgUnitClosedDate == null || (selectedOrgUnitClosedDate != null && selectedDate.before(selectedOrgUnitClosedDate));
+            return isAfterOpening && isBeforeClosed;
+
+        } catch (ParseException e) {
+            Timber.e(e);
+            return false;
+        }
     }
 
     private boolean isCompleted(String field) {
@@ -401,6 +424,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
             binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
+            selectedOrgUnitOpeningDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).openingDate();
+            selectedOrgUnitClosedDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).closedDate();
         } else if (!fixedOrgUnit) {
             binding.orgUnit.setText(getString(R.string.org_unit));
         }
@@ -672,8 +697,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setReportDate(String date) {
-        selectedDate = date;
-        binding.date.setText(selectedDate);
+        selectedDateString = date;
+        binding.date.setText(selectedDateString);
+        binding.executePendingBindings();
+        checkActionButtonVisibility();
+    }
+
+    @Override
+    public void showNoOrgUnits(){
+        renderError(getString(R.string.no_org_units));
+        selectedDateString = null;
+        binding.date.setText("");
         binding.executePendingBindings();
         checkActionButtonVisibility();
     }

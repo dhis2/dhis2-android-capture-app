@@ -78,6 +78,7 @@
     <string name="update">Actualizar</string>
     <string name="date">Fecha</string>
     <string name="org_unit">Unidad Organizativa</string>
+    <string name="no_org_units">No hay ninguna Unidad Organizativa abierta para la fecha seleccionada. Por favor, seleccione otra fecha.</string>
     <string name="category_option">Opcion de categoría</string>
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>

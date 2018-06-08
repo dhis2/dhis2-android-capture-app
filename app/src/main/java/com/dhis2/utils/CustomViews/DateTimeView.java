@@ -65,14 +65,15 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     }
 
     public void initData(String data) {
-        Date date = null;
-        try {
-            date = DateUtils.databaseDateFormat().parse(data);
-        } catch (ParseException e) {
-            Timber.log(0,e,e.getMessage());
-        }
+        if(data!=null) {
+            Date date = null;
+            try {
+                date = DateUtils.dateTimeFormat().parse(data);
+            } catch (ParseException e) {
+            }
 
-        data = DateUtils.dateTimeFormat().format(date);
+            data = DateUtils.dateTimeFormat().format(date);
+        }
         editText.setText(data);
     }
 

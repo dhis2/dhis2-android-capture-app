@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="attribute"
-            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
         <variable
             name="label"
             type="java.lang.String" />
@@ -13,28 +11,29 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="5dp"
-        tools:background="?colorPrimary">
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_margin="5dp">
 
-        <EditText
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:hint='@{attribute!=null?attribute.displayShortName:label,default=text}'
-            android:inputType="text"
-            android:imeOptions="actionNext"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/white_faf"
-            android:textColorHint="@color/white_faf"
-            android:textSize="16sp" />
+            android:layout_height="wrap_content"
+            android:hint="@{label}"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText"
+            tools:hint="time label">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/white_faf" />
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/inputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textSize="15sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
     </RelativeLayout>
 </layout>

@@ -270,7 +270,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showDescription(String description) {
-
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
         ((TextView) layout.findViewById(R.id.toast_message)).setText(description);
