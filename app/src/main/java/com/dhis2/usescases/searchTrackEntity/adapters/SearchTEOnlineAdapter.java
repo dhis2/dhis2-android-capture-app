@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -35,8 +36,9 @@ public class SearchTEOnlineAdapter extends RecyclerView.Adapter<SearchTEViewHold
         setHasStableIds(true);
     }
 
+    @NonNull
     @Override
-    public SearchTEViewHolderOnline onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SearchTEViewHolderOnline onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         ItemSearchTrackedEntityOnlineBinding bindingOnline = DataBindingUtil.inflate(inflater, R.layout.item_search_tracked_entity_online, parent, false);
@@ -50,7 +52,7 @@ public class SearchTEOnlineAdapter extends RecyclerView.Adapter<SearchTEViewHold
     }
 
     @Override
-    public void onBindViewHolder(SearchTEViewHolderOnline holder, int position) {
+    public void onBindViewHolder(@NonNull SearchTEViewHolderOnline holder, int position) {
         holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository, teiAttributes.get(trackedEntityInstances.get(position).uid()));
     }
 
@@ -60,8 +62,13 @@ public class SearchTEOnlineAdapter extends RecyclerView.Adapter<SearchTEViewHold
     }
 
     public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances, HashMap<String, List<String>> teiAttributes) {
-//        this.trackedEntityInstances.clear();
-        this.trackedEntityInstances.addAll(trackedEntityInstances);
+        if (getItemCount() > 0)
+            for (TrackedEntityInstanceModel tei : trackedEntityInstances) {
+                if (!this.trackedEntityInstances.contains(tei))
+                    this.trackedEntityInstances.add(tei);
+            }
+        else
+            this.trackedEntityInstances.addAll(trackedEntityInstances);
         this.teiAttributes.putAll(teiAttributes);
         notifyDataSetChanged();
     }
@@ -74,12 +81,6 @@ public class SearchTEOnlineAdapter extends RecyclerView.Adapter<SearchTEViewHold
 
     public void removeAt(int position) {
         trackedEntityInstances.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, trackedEntityInstances.size());
-    }
-
-    public void clearData() {
-        trackedEntityInstances.clear();
         notifyDataSetChanged();
     }
 }

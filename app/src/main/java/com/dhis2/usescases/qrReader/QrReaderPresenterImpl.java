@@ -7,6 +7,7 @@ import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -18,8 +19,14 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.
@@ -28,22 +35,25 @@ import io.reactivex.disposables.CompositeDisposable;
 class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     private final BriteDatabase briteDatabase;
+    private final D2 d2;
     private QrReaderContracts.View view;
-    CompositeDisposable compositeDisposable;
+    private CompositeDisposable compositeDisposable;
 
     private JSONObject teiJson;
     private JSONArray attrJson;
     private JSONArray enrollmentJson;
+    private String teiUid;
 
-    public QrReaderPresenterImpl(BriteDatabase briteDatabase) {
+    QrReaderPresenterImpl(BriteDatabase briteDatabase, D2 d2) {
         this.briteDatabase = briteDatabase;
+        this.d2 = d2;
         this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void handleTeiInfo(JSONObject jsonObject) {
         this.teiJson = jsonObject;
-        String teiUid = null;
+        teiUid = null;
         try {
             teiUid = jsonObject.getString("uid");
 
@@ -54,13 +64,12 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         if (teiUid != null) {
             Cursor cursor = briteDatabase.query("SELECT * FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ?", teiUid);
             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                view.renderTeiInfo("You already have access to this TEI", false);
+                view.goToDashBoard(teiUid);
                 cursor.close();
             } else
-                view.renderTeiInfo(null, true);
-
-        }
-
+                view.renderTeiInfo("Read next QR", true);
+        } else
+            view.renderTeiInfo("This QR is not from a trackedEntityInstance", false);
     }
 
     @Override
@@ -118,7 +127,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     @Override
     public void download() {
 
-        //TODO: If network connection call D2 method ??
         view.initDownload();
 
         TrackedEntityInstanceModel teiModel = null;
@@ -184,6 +192,29 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             }
         }
 
-        view.finishDownload();
+        view.goToDashBoard(teiUid);
+    }
+
+    @Override
+    public void onlineDownload() {
+
+        view.initDownload();
+        List<String> uidToDownload = new ArrayList<>();
+        uidToDownload.add(teiUid);
+        compositeDisposable.add(
+                Observable.defer(() -> io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(uidToDownload))).toFlowable(BackpressureStrategy.LATEST)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.goToDashBoard(data.get(0).uid()),
+                                Timber::d
+                        )
+        );
+
+    }
+
+    @Override
+    public void dispose() {
+        compositeDisposable.dispose();
     }
 }

@@ -23,7 +23,7 @@ public class QrReaderContracts {
 
         void initDownload();
 
-        void finishDownload();
+        void goToDashBoard(String uid);
     }
 
     public interface Presenter {
@@ -37,6 +37,10 @@ public class QrReaderContracts {
         void init(View view);
 
         void download();
+
+        void onlineDownload();
+
+        void dispose();
     }
 
 }

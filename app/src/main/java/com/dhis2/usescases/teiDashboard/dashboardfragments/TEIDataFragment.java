@@ -293,12 +293,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             mSetRightOut.start();
             mSetLeftIn.start();
             mIsBackVisible = true;
+            binding.cardBack.getRoot().setVisibility(View.VISIBLE);
         } else {
             mSetRightOut.setTarget(binding.cardBack.cardBack);
             mSetLeftIn.setTarget(binding.cardFront.cardFront);
             mSetRightOut.start();
             mSetLeftIn.start();
             mIsBackVisible = false;
+            binding.cardBack.getRoot().setVisibility(View.GONE);
         }
     }
 

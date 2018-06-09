@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,8 +19,10 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +42,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
+    private static final String FIND_LOCAL_TEI = "SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ?";
     private final BriteDatabase briteDatabase;
 
     private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ";
@@ -276,7 +280,25 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    @Override
+    public Observable<List<TrackedEntityInstance>> isOnLocalStorage(List<TrackedEntityInstance> teis) {
+        List<TrackedEntityInstance> teiNotFound = new ArrayList<>();
+
+        for (TrackedEntityInstance tei : teis) {
+            Cursor cursor = briteDatabase.query(FIND_LOCAL_TEI, tei.uid());
+            String foundUid = null;
+            if (cursor != null && cursor.moveToFirst()) {
+                foundUid = cursor.getString(0);
+                cursor.close();
+            }
+            if (foundUid == null)
+                teiNotFound.add(tei);
+        }
+
+        return Observable.just(teiNotFound);
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/

@@ -118,7 +118,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     @Override
     public Consumer<List<Bitmap>> showQR() {
         return bitmaps -> TEIDataFragment.getInstance().flipCard(bitmaps);
-
     }
 
     @Override

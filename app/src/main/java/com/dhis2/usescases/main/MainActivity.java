@@ -99,7 +99,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public Consumer<String> renderUsername() {
         return username -> {
             binding.setUserName(username);
-            binding.menuJira.setText(String.format(binding.menuJira.getText() + " (%s)", BuildConfig.VERSION_NAME));
+            binding.menuJira.setText(String.format(getString(R.string.jira_report) + " (%s)", BuildConfig.VERSION_NAME));
             binding.executePendingBindings();
         };
     }

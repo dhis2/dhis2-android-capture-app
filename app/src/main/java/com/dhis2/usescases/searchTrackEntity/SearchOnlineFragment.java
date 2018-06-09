@@ -96,7 +96,24 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     }
 
     public void setItems(Pair<List<TrackedEntityInstance>, String> mData, List<ProgramModel> programList) {
-        if (mData.val1().isEmpty()) {
+        if (!getResources().getBoolean(R.bool.is_tablet) && searchTEAdapter.getItemCount() > 0) {
+
+            HashMap<String, List<String>> teiAttributes = new HashMap<>();
+            List<TrackedEntityInstanceModel> modelData = new ArrayList<>();
+            TrackedEntityInstanceModelBuilder modelBuilder = new TrackedEntityInstanceModelBuilder();
+            for (TrackedEntityInstance tei : mData.val0()) {
+                modelData.add(modelBuilder.buildModel(tei));
+                List<String> attr = new ArrayList<>();
+                if (tei.trackedEntityAttributeValues() != null)
+                    for (TrackedEntityAttributeValue teiAttr : tei.trackedEntityAttributeValues()) {
+                        attr.add(teiAttr.value());
+                    }
+                teiAttributes.put(tei.uid(), attr);
+            }
+
+            searchTEAdapter.setItems(modelData, teiAttributes);
+
+        } else if (searchTEAdapter.getItemCount() == 0 && mData.val1().isEmpty()) {
             message = null;
             binding.messageContainer.setVisibility(View.GONE);
 

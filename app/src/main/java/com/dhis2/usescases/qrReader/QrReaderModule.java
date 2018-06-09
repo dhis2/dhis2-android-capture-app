@@ -3,6 +3,8 @@ package com.dhis2.usescases.qrReader;
 import com.dhis2.data.dagger.PerFragment;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -15,7 +17,7 @@ public class QrReaderModule {
 
     @Provides
     @PerFragment
-    QrReaderContracts.Presenter providePresenter(BriteDatabase briteDatabase) {
-        return new QrReaderPresenterImpl(briteDatabase);
+    QrReaderContracts.Presenter providePresenter(BriteDatabase briteDatabase, D2 d2) {
+        return new QrReaderPresenterImpl(briteDatabase, d2);
     }
 }

@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.FragmentQrBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.main.MainActivity;
+import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.NetworkUtils;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -29,11 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -93,12 +96,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     break;
             }
         } catch (Exception e) {
-
+            Timber.e(e);
         }
-        mScannerView.resumeCameraPreview(this);
-
     }
-
 
     @Override
     public void onResume() {
@@ -127,44 +127,45 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         mScannerView.startCamera();
     }
 
-
     @Override
     public void renderTeiInfo(String info, boolean isOk) {
-        if (info == null)
-            info = "Read next QR add information";
-        binding.info.setText(info);
-        if (isOk) {
-            //TODO: Show download message if network connection is avaible
-        } else {
-           displayMessage(info);
-        }
 
+        if (isOk && NetworkUtils.isOnline(context)) {
+            presenter.onlineDownload();
+        } else {
+            new AlertDialog.Builder(context, R.style.CustomDialog)
+                    .setTitle(getString(R.string.QR_SCANNER))
+                    .setMessage(info)
+                    .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                        dialog.dismiss();
+                        mScannerView.resumeCameraPreview(this);
+                    })
+                    .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
     }
 
     @Override
     public void renderAttrInfo(ArrayList<Trio<String, String, Boolean>> attributes) {
-        for (Trio trio : attributes) {
-            binding.info.append(String.format("\n%s: %s %s", trio.val0(), trio.val1(), (boolean) trio.val2() ? "" : "Can't be saved"));
-        }
+
     }
 
     @Override
     public void renderEnrollmentInfo(ArrayList<Pair<String, Boolean>> enrollment) {
-        /*for (Pair pair : enrollment) {
-            binding.info.append(String.format("\nEnrollment for %s %s", pair.val0(), (boolean) pair.val1() ? "" : "Can't be saved"));
-        }*/
-        binding.info.append(String.format(Locale.getDefault(), "Enrollments : %d", enrollment.size()));
+
     }
 
     @Override
     public void initDownload() {
-        //TODO: Change fab to progress
-        displayMessage("Saving... please wait");
+        binding.progress.setVisibility(View.VISIBLE);
     }
 
+
     @Override
-    public void finishDownload() {
-        //TODO: Prompt user.
-        displayMessage("Done");
+    public void goToDashBoard(String uid) {
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", uid);
+        bundle.putString("PROGRAM_UID", null);
+        startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 }

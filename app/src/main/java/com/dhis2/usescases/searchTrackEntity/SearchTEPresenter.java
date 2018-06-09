@@ -197,9 +197,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .orgUnits(orgUnitsUids)
                                         .build();
                                 return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(Schedulers.io());
+                                        .observeOn(Schedulers.io())
+                                        .subscribeOn(Schedulers.io());
+
                             })
+                            .flatMap(teiList -> searchRepository.isOnLocalStorage(teiList).toFlowable(BackpressureStrategy.LATEST))
                             .map(teiList -> {
                                 String messageId = "";
                                 if (selectedProgram != null && !selectedProgram.displayFrontPageList())
@@ -389,7 +391,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
-                .doOnComplete(() -> progressBar.setVisibility(View.GONE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
