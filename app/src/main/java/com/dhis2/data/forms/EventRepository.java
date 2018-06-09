@@ -271,8 +271,8 @@ public class EventRepository implements FormRepository {
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
-        ContentValues program = new ContentValues();
+        /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
-        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);
+        briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
     }
 }

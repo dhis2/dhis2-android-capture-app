@@ -50,6 +50,8 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
         return instance;
     }
 
+
+    //region LIGECYCLE
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -58,7 +60,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         fromRelationship = getArguments().getBoolean("fromRelationship");
 
@@ -80,6 +82,15 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
         }
         return binding.getRoot();
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        activity = null;
+        instance = null;
+    }
+
+    //endregion
 
     public void setItems(Pair<List<TrackedEntityInstanceModel>, String> mData, List<ProgramModel> programList) {
 

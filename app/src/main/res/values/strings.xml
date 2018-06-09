@@ -172,7 +172,7 @@
     <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_DATA">SYNC Data Now</string>
     <string name="SYNC_META">SYNC Configuration Now</string>
-    <string name="SYNC_MANAGER">SYNC Manager</string>
+    <string name="SYNC_MANAGER">Settings</string>
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
 
@@ -237,4 +237,5 @@
     <string name="select_all">select all</string>
     <string name="empty_program_list">There is no information for the filters selected. Please try changing them.</string>
     <string name="share">Share</string>
+    <string name="teiType_search_online">Search by type is not possible for online search.\nPlease select a program from the list.</string>
 </resources>

@@ -164,6 +164,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
+    public void dispose() {
+        compositeDisposable.dispose();
+    }
+
+    @Override
     public void onItemClick(ProgramModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();

@@ -13,11 +13,17 @@ import dagger.Provides;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 @PerActivity
 @Module
 public class TeiProgramListModule {
+
+
+    private final String teiUid;
+
+    TeiProgramListModule(String teiUid) {
+        this.teiUid = teiUid;
+    }
 
     @Provides
     @PerActivity
@@ -28,7 +34,7 @@ public class TeiProgramListModule {
     @Provides
     @PerActivity
     TeiProgramListContract.Presenter providesPresenter(TeiProgramListContract.Interactor interactor) {
-        return new TeiProgramListPresenter(interactor);
+        return new TeiProgramListPresenter(interactor, teiUid);
     }
 
     @Provides

@@ -2,6 +2,8 @@ package com.dhis2.usescases.teiDashboard;
 
 import android.databinding.BaseObservable;
 
+import com.dhis2.domain.responses.Enrollment;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -30,6 +32,7 @@ public class DashboardProgramModel extends BaseObservable {
     private List<ProgramModel> enrollmentProgramModels;
     private List<ProgramIndicatorModel> programIndicatorModels;
     private OrganisationUnitModel orgnUnit;
+    private List<EnrollmentModel> teiEnrollments;
 
     public DashboardProgramModel(
             TrackedEntityInstanceModel tei,
@@ -57,12 +60,14 @@ public class DashboardProgramModel extends BaseObservable {
                                  List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
                                  List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
                                  OrganisationUnitModel orgnUnit,
-                                 List<ProgramModel> enrollmentProgramModels) {
+                                 List<ProgramModel> enrollmentProgramModels,
+                                 List<EnrollmentModel> teiEnrollments) {
         this.tei = tei;
         this.trackedEntityAttributesModel = trackedEntityAttributeModels;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
         this.orgnUnit = orgnUnit;
         this.enrollmentProgramModels = enrollmentProgramModels;
+        this.teiEnrollments = teiEnrollments;
     }
 
     public TrackedEntityInstanceModel getTei() {
@@ -129,5 +134,12 @@ public class DashboardProgramModel extends BaseObservable {
 
     public List<ProgramIndicatorModel> getProgramIndicatorModels() {
         return programIndicatorModels;
+    }
+
+    public EnrollmentModel getEnrollmentForProgram(String uid) {
+        for (EnrollmentModel enrollment : teiEnrollments)
+            if(enrollment.program().equals(uid))
+                return enrollment;
+        return null;
     }
 }

@@ -175,49 +175,53 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void getOnlineTrackedEntities(SearchOnlineFragment onlineFragment) {
-        compositeDisposable.add(
-                view.onlinePage()
-                        .startWith(0)
-                        .flatMap(page -> {
-                            List<String> filterList = new ArrayList<>();
-                            for (String key : queryData.keySet()) {
-                                filterList.add(key + ":LIKE:" + queryData.get(key));
-                            }
-                            List<String> orgUnitsUids = new ArrayList<>();
-                            for (OrganisationUnitModel orgUnit : orgUnits)
-                                orgUnitsUids.add(orgUnit.uid());
-                            TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
-                                    .program(selectedProgram.uid())
-                                    .page(page)
-                                    .pageSize(10)
-                                    .paging(true)
-                                    .filter(filterList)
-                                    .orgUnits(orgUnitsUids)
-                                    .build();
-                            return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(Schedulers.io());
-                        })
-                        .map(teiList -> {
-                            String messageId = "";
-                            if (selectedProgram != null && !selectedProgram.displayFrontPageList())
-                                if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
-                                    messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                                else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
-                                    messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                                else if (teiList.isEmpty() && !queryData.isEmpty())
-                                    messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                else if (teiList.isEmpty() && queryData.isEmpty())
-                                    messageId = view.getContext().getString(R.string.search_init);
-                            return Pair.create(teiList, messageId);
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(data -> onlineFragment.setItems(
-                                data, programModels),
-                                t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
-                        )
-        );
+        if (selectedProgram != null)
+            compositeDisposable.add(
+                    view.onlinePage()
+                            .filter(page -> page > -1)
+                            .startWith(0)
+                            .flatMap(page -> {
+                                List<String> filterList = new ArrayList<>();
+                                for (String key : queryData.keySet()) {
+                                    filterList.add(key + ":LIKE:" + queryData.get(key));
+                                }
+                                List<String> orgUnitsUids = new ArrayList<>();
+                                for (OrganisationUnitModel orgUnit : orgUnits)
+                                    orgUnitsUids.add(orgUnit.uid());
+                                TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
+                                        .program(selectedProgram.uid())
+                                        .page(page)
+                                        .pageSize(10)
+                                        .paging(true)
+                                        .filter(filterList)
+                                        .orgUnits(orgUnitsUids)
+                                        .build();
+                                return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(Schedulers.io());
+                            })
+                            .map(teiList -> {
+                                String messageId = "";
+                                if (selectedProgram != null && !selectedProgram.displayFrontPageList())
+                                    if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                                        messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
+                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+                                    else if (teiList.isEmpty() && !queryData.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.isEmpty() && queryData.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                return Pair.create(teiList, messageId);
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(data -> onlineFragment.setItems(
+                                    data, programModels),
+                                    t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
+                            )
+            );
+        else
+            onlineFragment.setItems(Pair.create(new ArrayList<>(), view.getContext().getString(R.string.teiType_search_online)), programModels);
     }
 
     private void getTrackedEntityAttributes() {

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -25,14 +26,15 @@ public class DashboardProgramAdapter extends RecyclerView.Adapter<DashboardProgr
         this.presenter = presenter;
     }
 
+    @NonNull
     @Override
-    public DashboardProgramViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DashboardProgramViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemDashboardProgramBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dashboard_program, parent, false);
         return new DashboardProgramViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(DashboardProgramViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DashboardProgramViewHolder holder, int position) {
         holder.bind(presenter, dashboardProgramModel, position);
     }
 

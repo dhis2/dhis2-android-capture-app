@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +19,6 @@ import javax.inject.Inject;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class TeiProgramListActivity extends ActivityGlobalAbstract implements TeiProgramListContract.View {
@@ -32,12 +32,18 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule()).inject(this);
-        super.onCreate(savedInstanceState);
         String trackedEntityId = getIntent().getStringExtra("TEI_UID");
+        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule(trackedEntityId)).inject(this);
+        super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);
-        presenter.init(this, trackedEntityId);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.init(this);
+
     }
 
     @Override
@@ -68,5 +74,23 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
             binding.recycler.setAdapter(adapter);
         }
         adapter.setPrograms(programs);
+    }
+
+    @Override
+    public void goToEnrollmentScreen(String enrollmentUid) {
+        Intent data = new Intent();
+        data.putExtra("GO_TO_ENROLLMENT", enrollmentUid);
+        setResult(RESULT_OK, data);
+
+        finish();
+    }
+
+    @Override
+    public void changeCurrentProgram(String program) {
+        Intent data = new Intent();
+        data.putExtra("CHANGE_PROGRAM", program);
+        setResult(RESULT_OK, data);
+
+        finish();
     }
 }

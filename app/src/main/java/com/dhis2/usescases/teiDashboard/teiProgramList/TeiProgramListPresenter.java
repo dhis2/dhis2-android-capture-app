@@ -1,10 +1,10 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 /**
  * Created by Cristian on 06/03/2018.
- *
  */
 
 public class TeiProgramListPresenter implements TeiProgramListContract.Presenter {
@@ -13,15 +13,16 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     private final TeiProgramListContract.Interactor interactor;
     private String teiUid;
 
-    TeiProgramListPresenter(TeiProgramListContract.Interactor interactor) {
+    TeiProgramListPresenter(TeiProgramListContract.Interactor interactor, String trackedEntityId) {
         this.interactor = interactor;
+        this.teiUid = trackedEntityId;
+
     }
 
     @Override
-    public void init(TeiProgramListContract.View view, String trackedEntityId) {
+    public void init(TeiProgramListContract.View view) {
         this.view = view;
-        this.teiUid = trackedEntityId;
-        interactor.init(view, trackedEntityId);
+        interactor.init(view, teiUid);
     }
 
     @Override
@@ -35,6 +36,11 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
             interactor.enroll(program.uid(), teiUid);
         else
             view.displayMessage("You don't have the requiered permission");
+    }
+
+    @Override
+    public void onActiveEnrollClick(EnrollmentModel enrollmentModel) {
+        view.changeCurrentProgram(enrollmentModel.program());
     }
 
     @Override

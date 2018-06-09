@@ -18,7 +18,6 @@ import timber.log.Timber;
 
 /**
  * Created by Cristian on 06/03/2018.
- *
  */
 
 public class TeiProgramListInteractor implements TeiProgramListContract.Interactor {
@@ -30,13 +29,14 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     TeiProgramListInteractor(TeiProgramListRepository teiProgramListRepository) {
         this.teiProgramListRepository = teiProgramListRepository;
-        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(TeiProgramListContract.View view, String trackedEntityId) {
         this.view = view;
         this.trackedEntityId = trackedEntityId;
+        compositeDisposable = new CompositeDisposable();
+
         getActiveEnrollments();
         getOtherEnrollments();
         getPrograms();
@@ -71,11 +71,10 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String teiUid) {
         compositeDisposable.add(
                 teiProgramListRepository.saveToEnroll(orgUnitUid, programUid, teiUid)
-                        .subscribeOn(Schedulers.computation())
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
-                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments, true));
+                                    view.goToEnrollmentScreen(enrollmentUid);
                                 },
                                 Timber::d)
         );
@@ -85,7 +84,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         return teiProgramListRepository.getOrgUnits();
     }
 
-    private void getActiveEnrollments(){
+    private void getActiveEnrollments() {
         compositeDisposable.add(teiProgramListRepository.activeEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -95,7 +94,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void getOtherEnrollments(){
+    private void getOtherEnrollments() {
         compositeDisposable.add(teiProgramListRepository.otherEnrollments(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -105,7 +104,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void getPrograms(){
+    private void getPrograms() {
         compositeDisposable.add(teiProgramListRepository.allPrograms(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -115,7 +114,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void getAlreadyEnrolledPrograms(List<ProgramModel> programs){
+    private void getAlreadyEnrolledPrograms(List<ProgramModel> programs) {
         compositeDisposable.add(teiProgramListRepository.alreadyEnrolledPrograms(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -125,16 +124,16 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void deleteRepeatedPrograms(List<ProgramModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms){
+    private void deleteRepeatedPrograms(List<ProgramModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms) {
         ArrayList<ProgramModel> programListToPrint = new ArrayList<>();
-        for (ProgramModel programModel1 : allPrograms){
+        for (ProgramModel programModel1 : allPrograms) {
             boolean isAlreadyEnrolled = false;
-            for (ProgramModel programModel2 : alreadyEnrolledPrograms){
-                if (programModel1.uid().equals(programModel2.uid())){
+            for (ProgramModel programModel2 : alreadyEnrolledPrograms) {
+                if (programModel1.uid().equals(programModel2.uid())) {
                     isAlreadyEnrolled = true;
                 }
             }
-            if (!isAlreadyEnrolled || !programModel1.onlyEnrollOnce()){
+            if (!isAlreadyEnrolled || !programModel1.onlyEnrollOnce()) {
                 programListToPrint.add(programModel1);
             }
         }
@@ -143,6 +142,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     @Override
     public void onDettach() {
-        compositeDisposable.clear();
+        compositeDisposable.dispose();
     }
 }

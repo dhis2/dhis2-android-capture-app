@@ -84,7 +84,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         //--------------------------
         //region OVERDUE EVENTS
         compositeDisposable.add(
-                metadataRepository.hasOverdue(presenter.getProgramModel().uid(), trackedEntityInstanceModel.uid())
+                metadataRepository.hasOverdue(presenter.getProgramModel() != null ? presenter.getProgramModel().uid() : null, trackedEntityInstanceModel.uid())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(hasOverDue -> binding.setOverdue(hasOverDue), Timber::d)

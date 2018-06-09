@@ -45,6 +45,7 @@
             <include
                 android:id="@+id/card_back"
                 layout="@layout/fragment_tei_data_card_back"
+                android:visibility="gone"
                 app:presenter="@{presenter}" />
 
             <include
@@ -63,6 +64,7 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingBottom="200dp"
+            android:paddingTop="10dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

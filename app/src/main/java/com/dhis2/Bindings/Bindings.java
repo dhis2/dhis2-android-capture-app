@@ -1,6 +1,5 @@
 package com.dhis2.Bindings;
 
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -52,6 +51,7 @@ import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -125,35 +125,18 @@ public class Bindings {
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("numberOfEvents")
-    public static void setNumberOfEvents(TextView textView, Observable<List<EventModel>> listObservable) {
-        listObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.size());
-                            valueAnimator.setDuration(500);
-                            valueAnimator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
-                            valueAnimator.start();
-                        },
-                        Timber::d);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter("numberOfRecords")
     public static void setNumberOfRecords(TextView textView, Observable<Pair<Integer, String>> listObservable) {
-        listObservable
+        CompositeDisposable disposable = new CompositeDisposable();
+        disposable.add(listObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            ValueAnimator valueAnimator = ValueAnimator.ofInt(0, data.val0());
-                            valueAnimator.setDuration(500);
-                            valueAnimator.addUpdateListener(animation -> textView.setText(recordsPlusType((int) animation.getAnimatedValue(), data.val1())));
-                            valueAnimator.start();
+                            textView.setText(recordsPlusType(data.val0(), data.val1()));
                         },
-                        Timber::d);
+                        Timber::d,
+                        disposable::dispose));
     }
 
     private static String recordsPlusType(int numberOfRecords, String recordType) {

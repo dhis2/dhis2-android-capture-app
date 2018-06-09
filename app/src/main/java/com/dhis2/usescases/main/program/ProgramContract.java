@@ -84,5 +84,7 @@ public class ProgramContract {
         List<OrganisationUnitModel> getOrgUnits();
 
         void programObjectStyle(ImageView programImageView, ProgramModel programModel);
+
+        void dispose();
     }
 }

@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.dhis2.R;
+import com.dhis2.data.forms.FormActivity;
+import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityDashboardMobileBinding;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardActivity;
@@ -18,6 +20,7 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
+import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ import io.reactivex.functions.Consumer;
 
 public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
 
+    private static final int RQ_ENROLLMENTS = 101;
     ActivityDashboardMobileBinding binding;
 
     @Override
@@ -78,7 +82,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
-        String title = program.getAttributeBySortOrder(1) +" "+ program.getAttributeBySortOrder(2) + " - " + program.getCurrentProgram().displayShortName();
+        String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2) + " - " + program.getCurrentProgram().displayShortName();
         binding.setTitle(title);
 
         binding.tabLayout.setVisibility(View.VISIBLE);
@@ -96,7 +100,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
-        String title = program.getAttributeBySortOrder(1) +" "+ program.getAttributeBySortOrder(2);
+        String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2);
         binding.setTitle(title);
         binding.tabLayout.setVisibility(View.GONE);
         binding.executePendingBindings();
@@ -123,6 +127,13 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
+    public void goToEnrollmentList(Bundle extras) {
+        Intent intent = new Intent(this, TeiProgramListActivity.class);
+        intent.putExtras(extras);
+        startActivityForResult(intent, RQ_ENROLLMENTS);
+    }
+
+    @Override
     public String getToolbarTitle() {
         return binding.toolbarTitle.getText().toString();
     }
@@ -133,6 +144,16 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RQ_ENROLLMENTS && resultCode == RESULT_OK) {
+            if (data.hasExtra("GO_TO_ENROLLMENT")) {
+                FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
+                startActivity(FormActivity.create(this, formViewArguments, true));
+            }
+
+            if (data.hasExtra("CHANGE_PROGRAM")) {
+                programUid = data.getStringExtra("CHANGE_PROGRAM");
+                init(teiUid, data.getStringExtra("CHANGE_PROGRAM"));
+            }
+        }
     }
 }

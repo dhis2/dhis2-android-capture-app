@@ -95,9 +95,21 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         chosenDateWeek.add(new Date());
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
-        setUpRecycler();
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpRecycler();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.dispose();
     }
 
     //endregion

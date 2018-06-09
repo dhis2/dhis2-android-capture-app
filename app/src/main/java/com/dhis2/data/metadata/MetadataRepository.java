@@ -1,6 +1,7 @@
 package com.dhis2.data.metadata;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.dhis2.data.tuples.Pair;
 
@@ -129,7 +130,7 @@ public interface MetadataRepository {
 
     Observable<List<Pair<String, String>>> getReserveUids();
 
-    Observable<Boolean> hasOverdue(String programUid, String teiUid);
+    Observable<Boolean> hasOverdue(@Nullable String programUid,@NonNull String teiUid);
 
 
     @NonNull

@@ -56,10 +56,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
         binding.setCurrentFragment(currentFragment);
-        binding.filter.setOnLongClickListener(view -> {
-            presenter.sync();
-            return true;
-        });
         binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
         binding.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
@@ -78,14 +74,20 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             }
         });
 
-        presenter.init(this);
         changeFragment(R.id.menu_done_tasks);
     }
 
     @Override
-    protected void onStop() {
+    protected void onResume() {
+        super.onResume();
+        presenter.init(this);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         presenter.onDetach();
-        super.onStop();
     }
 
     //endregion

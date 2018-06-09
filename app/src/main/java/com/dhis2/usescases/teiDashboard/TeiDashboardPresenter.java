@@ -115,13 +115,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     );
 
         else {
-            //TODO: NO SE HA SELECCIONADO PROGRAMA
             Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
                     metadataRepository.getTeiOrgUnit(teUid),
                     metadataRepository.getTeiActivePrograms(teUid),
+                    metadataRepository.getTEIEnrollments(teUid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -230,7 +230,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEnrollmentSelectorClick() {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
-        view.startActivity(TeiProgramListActivity.class, extras, false, false, null);
+//        view.startActivity(TeiProgramListActivity.class, extras, false, false, null);
+        view.goToEnrollmentList(extras);
     }
 
     @Override
@@ -482,5 +483,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             );
         } else
             view.displayMessage(null);
+    }
+
+    @Override
+    public void showDescription(String description) {
+        view.showDescription(description);
     }
 }

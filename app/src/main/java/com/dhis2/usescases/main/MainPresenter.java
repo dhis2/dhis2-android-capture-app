@@ -56,11 +56,6 @@ final class MainPresenter implements MainContracts.Presenter {
         compositeDisposable.addAll(userObservable.connect());
     }
 
-    public void sync() {
-        view.getContext().startService(new Intent(view.getContext().getApplicationContext(), SyncService.class));
-    }
-
-
     @Override
     public void logOut() {
         try {

@@ -41,8 +41,6 @@ public final class MainContracts {
 
         void onMenuClick();
 
-        void sync();
-
         void logOut();
 
         void blockSession(String pin);

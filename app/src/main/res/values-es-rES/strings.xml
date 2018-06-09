@@ -128,7 +128,7 @@
     <string name="a_week">Semanal</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
     <string name="SYNC_META">Sincronizar configuracion ahora</string>
-    <string name="SYNC_MANAGER">Gestor de sincronizacion</string>
+    <string name="SYNC_MANAGER">Ajustes</string>
     <string name="report_date">Fecha de reporte</string>
     <string name="add_file">Añadir archivo</string>
     <string name="write_new_note">Escribir nota nueva</string>
@@ -179,5 +179,6 @@
     <string name="select_all">Selecionar todo</string>
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
     <string name="share">Compartir</string>
+    <string name="teiType_search_online">La búsqueda por tipo no está disponible de manera online.\nPor favor, seleccione un programa de la lista.</string>
 
 </resources>

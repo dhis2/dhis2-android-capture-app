@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.widget.TextView;
 
 import com.dhis2.data.tuples.Pair;
@@ -43,10 +44,13 @@ public class TeiDashboardContracts {
 
         void nextQR();
 
+        void goToEnrollmentList(Bundle extras);
     }
 
     public interface Presenter {
         void init(View view, String uid, String programUid);
+
+        void showDescription(String description);
 
         void onBackPressed();
 

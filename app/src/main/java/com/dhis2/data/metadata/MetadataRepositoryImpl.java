@@ -2,6 +2,7 @@ package com.dhis2.data.metadata;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
@@ -503,7 +504,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<Boolean> hasOverdue(String programUid, String teiUid) {
+    public Observable<Boolean> hasOverdue(@Nullable String programUid, @NonNull String teiUid) {
 
         String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
                 "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
@@ -512,9 +513,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String overdueProgram = " AND Enrollment.program = ?";
 
         if (programUid == null)
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(List::isEmpty);
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(list->!list.isEmpty());
         else
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(List::isEmpty);
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(list->!list.isEmpty());
 
     }
 

@@ -72,4 +72,11 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     public void nextQR() {
 
     }
+
+    @Override
+    public void goToEnrollmentList(Bundle extras) {
+
+    }
+
+
 }

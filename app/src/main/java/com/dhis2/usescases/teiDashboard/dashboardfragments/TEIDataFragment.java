@@ -10,13 +10,12 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dekoservidoni.omfm.OneMoreFabMenu;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -78,6 +77,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private ProgramStageModel programStageFromEvent;
     private List<Bitmap> bitmaps;
     private int currentQrPosition;
+    private Context context;
 
     static public TEIDataFragment getInstance() {
         if (instance == null)
@@ -89,12 +89,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tei_data, container, false);
         binding.setPresenter(presenter);
 
@@ -142,7 +143,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
         setData(dashboardProgramModel);
-        presenter.getTEIEvents(this);
     }
 
     public void setData(DashboardProgramModel nprogram) {
@@ -157,10 +157,13 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             binding.setEnrollment(nprogram.getCurrentEnrollment());
             binding.setProgram(nprogram.getCurrentProgram());
             binding.setDashboardModel(nprogram);
-        } else if (nprogram != null) {
-            binding.teiRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false));
-            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
+            presenter.getTEIEvents(this);
 
+        } else if (nprogram != null) {
+            binding.fab.setVisibility(View.GONE);
+            binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
+            binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
+            binding.teiRecycler.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
             binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(null);
             binding.setProgram(null);

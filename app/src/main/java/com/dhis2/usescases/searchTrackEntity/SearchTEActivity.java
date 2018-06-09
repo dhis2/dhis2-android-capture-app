@@ -67,6 +67,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             }
         }
     };
+    private ProgramModel program;
 
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
@@ -116,12 +117,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program) {
 
+        this.program = program;
+
         //Form has been set.
         //Pager configuration based on network
         pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
-        pagerAdapter.setOnline(NetworkUtils.isOnline(this));
+        pagerAdapter.setOnline(program != null && NetworkUtils.isOnline(this));
         binding.resultsPager.setAdapter(pagerAdapter);
-        binding.searchTab.setVisibility(NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
+        binding.searchTab.setVisibility(program != null && NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
         binding.searchTab.setupWithViewPager(binding.resultsPager);
 
         binding.buttonAdd.setVisibility(program == null ? View.GONE : View.VISIBLE);
@@ -137,7 +140,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public Flowable<Integer> onlinePage() {
-        return ((SearchOnlineFragment) pagerAdapter.getItem(1)).pageAction();
+        if (program != null)
+            return ((SearchOnlineFragment) pagerAdapter.getItem(1)).pageAction();
+        else
+            return Flowable.just(-1);
     }
 
     //endregion
@@ -158,7 +164,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void removeTei(int adapterPosition) {
-        ((SearchOnlineFragment) pagerAdapter.getItem(1)).getSearchTEAdapter().removeAt(adapterPosition);
+        if (program != null)
+            ((SearchOnlineFragment) pagerAdapter.getItem(1)).getSearchTEAdapter().removeAt(adapterPosition);
     }
 
     @Override
@@ -168,7 +175,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void restartOnlineFragment() {
-        ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();
+        if (program != null)
+            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();
 
     }
 
