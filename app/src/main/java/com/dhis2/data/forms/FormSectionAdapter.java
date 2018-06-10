@@ -3,21 +3,19 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
 import com.dhis2.data.forms.dataentry.DataEntryFragment;
+import com.dhis2.utils.CustomFragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormSectionAdapter extends FragmentStatePagerAdapter {
+public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
-//    private final List<DataEntryFragment> dataEntryFragments;
+    //    private final List<DataEntryFragment> dataEntryFragments;
     private final List<String> sections;
 
     FormSectionAdapter(FragmentManager fragmentManager) {
@@ -57,15 +55,12 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
     }
 
     public int getItemPosition(@NonNull Object item) {
-        DataEntryFragment fragment = (DataEntryFragment)item;
+        DataEntryFragment fragment = (DataEntryFragment) item;
         String section = fragment.getSection();
         int position = sections.indexOf(section);
 
-        if (position >= 0) {
-            return position;
-        } else {
-            return POSITION_NONE;
-        }
+        return position >= 0 ? position : POSITION_NONE;
+
     }
 
 
@@ -74,7 +69,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
 //        dataEntryFragments.clear();
         sections.clear();
         formSectionViewModelList.addAll(models);
-        for(FormSectionViewModel viewModel : models) {
+        for (FormSectionViewModel viewModel : models) {
             sections.add(viewModel.sectionUid());
 //            if (viewModel.type().equals(FormSectionViewModel.Type.ENROLLMENT)) {
 //                dataEntryFragments.add(DataEntryFragment.create(DataEntryArguments
@@ -90,8 +85,8 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public List<FormSectionViewModel> getList() {
-        return formSectionViewModelList;
+    @Override
+    public String getTag(int position) {
+        return sections.get(position);
     }
-
 }
