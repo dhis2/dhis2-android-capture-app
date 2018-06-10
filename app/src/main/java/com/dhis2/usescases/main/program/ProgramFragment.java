@@ -31,6 +31,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,6 +111,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void onPause() {
         super.onPause();
         presenter.dispose();
+        binding.treeViewContainer.removeAllViews();
+        treeView = null;
     }
 
     //endregion
@@ -324,7 +327,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         treeView.setUseAutoToggle(false);
 
         binding.treeViewContainer.addView(treeView.getView());
-        treeView.expandAll();
+//        treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {

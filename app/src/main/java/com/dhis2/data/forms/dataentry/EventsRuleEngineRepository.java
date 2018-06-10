@@ -22,8 +22,6 @@ import java.util.List;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
-
 public final class EventsRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_EVENT = "SELECT uid,\n" +
             "  programStage,\n" +
@@ -53,8 +51,8 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private final String eventUid;
 
-    EventsRuleEngineRepository(@NonNull BriteDatabase briteDatabase,
-                               @NonNull FormRepository formRepository, @NonNull String eventUid) {
+    public EventsRuleEngineRepository(@NonNull BriteDatabase briteDatabase,
+                                      @NonNull FormRepository formRepository, @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
         this.formRepository = formRepository;
         this.eventUid = eventUid;
@@ -92,8 +90,9 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                 TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
+                    String value = cursor.getString(3) != null ? cursor.getString(3) : "";
                     return RuleDataValue.create(eventDate, cursor.getString(1),
-                            cursor.getString(2), cursor.getString(3));
+                            cursor.getString(2), value);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

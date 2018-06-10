@@ -50,6 +50,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @NonNull
     private final CompositeDisposable disposable;
+    private DataEntryView dataEntryView;
 
     DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
                            @NonNull DataEntryStore dataEntryStore,
@@ -66,6 +67,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
+        this.dataEntryView = dataEntryView;
         Flowable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
                 .subscribeOn(schedulerProvider.computation());
@@ -182,11 +184,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.put(uid, textViewModel);*/
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                for (String uidKey : fieldViewModels.keySet()) {
-                    if (fieldViewModels.get(uidKey).programStageSection().equals(hideSection.programStageSection()))
-                        fieldViewModels.remove(uidKey);
-                }
-
+                dataEntryView.removeSection(hideSection.programStageSection());
             }
         }
     }

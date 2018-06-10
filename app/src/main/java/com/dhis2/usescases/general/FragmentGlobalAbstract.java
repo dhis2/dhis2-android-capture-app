@@ -24,10 +24,15 @@ import static android.content.Context.MODE_PRIVATE;
 
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
     public ViewDataBinding binding;
+    public int containerId;
 
     @Override
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
         getAbstracContext().startActivity(destination, bundle, finishCurrent, finishAll, transition);
+    }
+
+    public int getContainerId(){
+        return containerId;
     }
 
     @Override

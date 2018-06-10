@@ -399,7 +399,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeViewContainer.addView(treeView.getView());
-        treeView.expandAll();
+//        treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (node.isSelectable()) {

@@ -2,9 +2,13 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
+import com.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
+import com.dhis2.data.forms.dataentry.RuleEngineRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -19,13 +23,15 @@ public class FormModule {
 
     public FormModule(@NonNull FormViewArguments formViewArguments) {
         this.formViewArguments = formViewArguments;
+
     }
 
     @Provides
     @PerForm
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
+                                @NonNull BriteDatabase briteDatabase,
                                 @NonNull FormRepository formRepository) {
-        return new FormPresenterImpl(formViewArguments, schedulerProvider, formRepository);
+        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase,formRepository);
     }
 
     @Provides
@@ -37,9 +43,9 @@ public class FormModule {
     @Provides
     @PerForm
     FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull RuleExpressionEvaluator evaluator,
-            @NonNull RulesRepository rulesRepository,
-            @NonNull CodeGenerator codeGenerator
+                                  @NonNull RuleExpressionEvaluator evaluator,
+                                  @NonNull RulesRepository rulesRepository,
+                                  @NonNull CodeGenerator codeGenerator
             /*@NonNull CurrentDateProvider currentDateProvider*/) {
         if (formViewArguments.type().equals(FormViewArguments.Type.ENROLLMENT)) {
             return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository,

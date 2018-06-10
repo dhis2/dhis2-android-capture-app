@@ -5,6 +5,7 @@ import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +15,10 @@ import android.view.ViewGroup;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.FormFragment;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
+import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.Preconditions;
 
@@ -37,6 +40,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     DataEntryAdapter dataEntryAdapter;
 
     RecyclerView recyclerView;
+    private Fragment formFragment;
+    private String section;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -52,15 +57,21 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
+        formFragment = ((ActivityGlobalAbstract) context).getSupportFragmentManager().getFragments().get(0);
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
+
+        this.section = args.section();
 
         ((App) getActivity().getApplicationContext())
                 .formComponent()
                 .plus(new DataEntryModule(context, args),
                         new DataEntryStoreModule(args))
                 .inject(this);
+    }
+
+    public String getSection() {
+        return section;
     }
 
     @Nullable
@@ -76,6 +87,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         setUpRecyclerView();
         dataEntryPresenter.onAttach(this);
     }
+
 
     @Override
     public void onDestroyView() {
@@ -93,6 +105,13 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
         return updates -> dataEntryAdapter.swap(updates);
+    }
+
+    @Override
+    public void removeSection(String sectionUid) {
+        if (formFragment instanceof FormFragment) {
+            ((FormFragment) formFragment).hideSections(sectionUid);
+        }
     }
 
     private void setUpRecyclerView() {

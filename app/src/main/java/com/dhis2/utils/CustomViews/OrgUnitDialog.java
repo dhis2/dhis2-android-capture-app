@@ -75,9 +75,8 @@ public class OrgUnitDialog extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_orgunit, container, false);
-
 
         binding.setTitleText(title);
         renderTree(myOrgs);
@@ -98,9 +97,8 @@ public class OrgUnitDialog extends DialogFragment {
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
-
         binding.treeContainer.addView(treeView.getView());
-        treeView.expandAll();
+//        treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             ((OrgUnitHolder) node.getViewHolder()).update();

@@ -99,13 +99,20 @@ public final class RulesRepository {
             "FROM ProgramRuleAction\n" +
             "  INNER JOIN ProgramRule ON ProgramRuleAction.programRule = ProgramRule.uid\n" +
             "WHERE program = ? AND ProgramRuleAction.programRuleActionType IN (\n" +
-            "  \"DISPLAYKEYVALUEPAIR\",\n" +
             "  \"DISPLAYTEXT\",\n" +
+            "  \"DISPLAYKEYVALUEPAIR\",\n" +
             "  \"HIDEFIELD\",\n" +
+            "  \"HIDESECTION\",\n" +
             "  \"ASSIGN\",\n" +
             "  \"SHOWWARNING\",\n" +
-            "  \"SHOWERROR\"" +
+            "  \"WARNINGONCOMPLETE\",\n" +
+            "  \"SHOWERROR\",\n" +
+            "  \"ERRORONCOMPLETE\",\n" +
+            "  \"CREATEEVENT\",\n" +
+            "  \"HIDEPROGRAMSTAGE\",\n" +
+            "  \"SETMANDATORYFIELD\"" +
             ");";
+
 
     @NonNull
     private final BriteDatabase briteDatabase;

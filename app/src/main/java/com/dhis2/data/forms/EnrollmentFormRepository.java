@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.CodeGenerator;
@@ -13,12 +15,15 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -27,6 +32,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -34,6 +40,8 @@ import io.reactivex.Observable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -90,7 +98,41 @@ class EnrollmentFormRepository implements FormRepository {
             "JOIN Enrollment ON Enrollment.program = Program.uid\n" +
             "WHERE Enrollment.uid = ? LIMIT 1";
 
-
+    private static final String SELECT_VALUES = "SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+            "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = TrackedEntityAttributeValue.trackedEntityInstance " +
+            "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?";
+    private static final String QUERY = "SELECT \n" +
+            "  Field.id,\n" +
+            "  Field.label,\n" +
+            "  Field.type,\n" +
+            "  Field.mandatory,\n" +
+            "  Field.optionSet,\n" +
+            "  Value.value,\n" +
+            "  Option.name,\n" +
+            "  Field.allowFutureDate,\n" +
+            "  Field.generated,\n" +
+            "  Enrollment.organisationUnit\n" +
+            "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
+            "  LEFT OUTER JOIN (\n" +
+            "      SELECT\n" +
+            "        TrackedEntityAttribute.uid AS id,\n" +
+            "        TrackedEntityAttribute.displayName AS label,\n" +
+            "        TrackedEntityAttribute.valueType AS type,\n" +
+            "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
+            "        ProgramTrackedEntityAttribute.program AS program,\n" +
+            "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
+            "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
+            "        TrackedEntityAttribute.generated AS generated\n" +
+            "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
+            "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
+            "    ) AS Field ON Field.program = Program.uid\n" +
+            "  LEFT OUTER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
+            "    Value.trackedEntityAttribute = Field.id\n" +
+            "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT OUTER JOIN Option ON (\n" +
+            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "  )\n" +
+            "WHERE Enrollment.uid = ?";
     @NonNull
     private final BriteDatabase briteDatabase;
 
@@ -376,6 +418,44 @@ class EnrollmentFormRepository implements FormRepository {
         }
 
         return Observable.just(enrollmentUid);
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<FieldViewModel>> fieldValues() {
+        return briteDatabase
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid)
+                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    private FieldViewModel transform(@NonNull Cursor cursor) {
+        String uid = cursor.getString(0);
+        String label = cursor.getString(1);
+        ValueType valueType = ValueType.valueOf(cursor.getString(2));
+        boolean mandatory = cursor.getInt(3) == 1;
+        String optionSetUid = cursor.getString(4);
+        String dataValue = cursor.getString(5);
+        String optionCodeName = cursor.getString(6);
+        String section = cursor.getString(7);
+        Boolean allowFutureDates = cursor.getInt(8) == 1;
+
+        if (!isEmpty(optionCodeName)) {
+            dataValue = optionCodeName;
+        }
+
+        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "");
+
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, true, null);
     }
 
     @NonNull

@@ -382,4 +382,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             onCoordinatesChanged.onNext(new LatLng(lat, lon));
         }
     }
+
+    public void hideSections(String uid) {
+        formPresenter.checkSections();
+    }
 }
