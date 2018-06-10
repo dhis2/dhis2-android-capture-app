@@ -79,7 +79,10 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
 
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(viewModel -> {
-                    binding.setLabel(viewModel.label());
+                    StringBuilder label = new StringBuilder(viewModel.label());
+                    if(viewModel.mandatory())
+                        label.append("*");
+                    binding.setLabel(label.toString());
                     binding.setOptionSet(viewModel.optionSet());
                     binding.setInitialValue(viewModel.value());
                     currentValue = viewModel.value();

@@ -30,9 +30,13 @@ public class AgeHolder extends FormViewHolder {
         model = BehaviorProcessor.create();
 
         disposable.add(model.subscribe(ageViewModel -> {
-            binding.customAgeview.setLabel(ageViewModel.label());
-            if (!isEmpty(ageViewModel.value()))
+            StringBuilder label = new StringBuilder(ageViewModel.label());
+            if(ageViewModel.mandatory())
+                label.append("*");
+            binding.customAgeview.setLabel(label.toString());
+            if (!isEmpty(ageViewModel.value())) {
                 binding.customAgeview.setInitialValue(ageViewModel.value());
+            }
             binding.executePendingBindings();
         },
                 Timber::d));

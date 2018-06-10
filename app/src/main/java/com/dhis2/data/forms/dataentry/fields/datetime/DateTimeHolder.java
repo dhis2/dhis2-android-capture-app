@@ -61,7 +61,10 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         disposable.add(
                 model.subscribe(
                         dateTimeViewModel -> {
-                            binding.setVariable(BR.label, dateTimeViewModel.label());
+                            StringBuilder label = new StringBuilder(dateTimeViewModel.label());
+                            if(dateTimeViewModel.mandatory())
+                                label.append("*");
+                            binding.setVariable(BR.label, label.toString());
                             if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
                             }
