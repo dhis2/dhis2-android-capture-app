@@ -1,6 +1,7 @@
 package com.dhis2.usescases.programEventDetail;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -30,15 +31,16 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         this.events = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public ProgramEventDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ProgramEventDetailViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemProgramEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_program_event, parent, false);
         return new ProgramEventDetailViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(ProgramEventDetailViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProgramEventDetailViewHolder holder, int position) {
         EventModel event = events.get(position);
         holder.bind(presenter, event);
     }

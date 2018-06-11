@@ -68,7 +68,8 @@ public class StringUtils {
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
-            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            if (drawable != null)
+                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
     }

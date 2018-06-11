@@ -10,4 +10,6 @@ interface FormPresenter {
 
     @UiThread
     void onDetach();
+
+    void checkSections();
 }

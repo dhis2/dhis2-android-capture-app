@@ -23,7 +23,7 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
+public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  uid,\n" +
             "  incidentDate,\n" +
@@ -58,7 +58,7 @@ final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private final String enrollmentUid;
 
-    EnrollmentRuleEngineRepository(
+    public EnrollmentRuleEngineRepository(
             @NonNull BriteDatabase briteDatabase,
             @NonNull FormRepository formRepository,
             @NonNull String enrollmentUid) {

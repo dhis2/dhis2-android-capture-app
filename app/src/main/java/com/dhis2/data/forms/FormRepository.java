@@ -2,11 +2,14 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -57,4 +60,6 @@ public interface FormRepository {
     @NonNull
     Observable<String> autoGenerateEvents(String enrollmentUid);
 
+    @NonNull
+    Flowable<List<FieldViewModel>> fieldValues();
 }

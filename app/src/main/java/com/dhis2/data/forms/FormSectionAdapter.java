@@ -3,22 +3,27 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
 import com.dhis2.data.forms.dataentry.DataEntryFragment;
+import com.dhis2.utils.CustomFragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormSectionAdapter extends FragmentStatePagerAdapter {
+import timber.log.Timber;
+
+public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
+    private final List<String> sections;
 
     FormSectionAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
         this.formSectionViewModelList = new ArrayList<>();
+        this.sections = new ArrayList<>();
     }
 
     @Override
@@ -41,7 +46,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return formSectionViewModelList.size();
+        return sections.size();
     }
 
     @Override
@@ -49,9 +54,55 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         return formSectionViewModelList.get(position).label();
     }
 
+    public int getItemPosition(@NonNull Object item) {
+        DataEntryFragment fragment = (DataEntryFragment) item;
+        String section = fragment.getSection();
+        int position = sections.indexOf(section);
+
+        return position >= 0 ? position : POSITION_NONE;
+    }
+
+
     void swapData(List<FormSectionViewModel> models) {
-        formSectionViewModelList.clear();
-        formSectionViewModelList.addAll(models);
-        notifyDataSetChanged();
+
+        List<String> newSections = new ArrayList<>();
+        boolean differentSections = false;
+
+        for (int i = 0; i < models.size() - 1; i++) {
+            FormSectionViewModel item = models.get(i);
+            newSections.add(item.sectionUid());
+        }
+
+        if (sections.size() == models.size()) //If previous sections size = new sections size we check if each section is the same
+            for (String section : newSections) {
+                if (!section.equals(sections.get(0)))
+                    differentSections = true;
+            }
+        else
+            differentSections = true;
+
+        if (differentSections || sections.isEmpty()) {
+
+            formSectionViewModelList.clear();
+            sections.clear();
+            formSectionViewModelList.addAll(models);
+            sections.addAll(newSections);
+            notifyDataSetChanged();
+
+        }
+    }
+
+    @Override
+    public String getTag(int position) {
+        return sections.get(position);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        try {
+            super.destroyItem(container, position, object);
+        } catch (IllegalStateException e) {
+            Timber.e(e);
+        }
     }
 }

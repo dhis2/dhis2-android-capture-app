@@ -79,8 +79,8 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
                 return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section);
-            /*else
-                return ImageViewModel.create(id, label, optionSet, value, section);*/
+            else
+                return ImageViewModel.create(id, label, optionSet, value, section); //transforms option set into image option selector
         }
 
         switch (type) {

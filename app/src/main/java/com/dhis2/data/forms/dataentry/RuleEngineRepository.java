@@ -12,4 +12,5 @@ public interface RuleEngineRepository {
 
     @NonNull
     Flowable<Result<RuleEffect>> calculate();
+
 }

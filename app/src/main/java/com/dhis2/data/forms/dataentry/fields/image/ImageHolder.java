@@ -36,7 +36,7 @@ public class ImageHolder extends RecyclerView.ViewHolder {
                     binding.setLabel(viewModel.label());
                     String[] uids = viewModel.uid().split("\\.");
                     Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-                    if (viewModel.value() != null && viewModel.value().equals(uids[1]))
+                    if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
                         binding.frame.setVisibility(View.VISIBLE);
                     else
                         binding.frame.setVisibility(View.GONE);
@@ -44,8 +44,10 @@ public class ImageHolder extends RecyclerView.ViewHolder {
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
 
         itemView.setOnClickListener(v -> {
+            binding.frame.setVisibility(View.VISIBLE);
             String[] uids = model.getValue().uid().split("\\.");
-            processor.onNext(RowAction.create(uids[0], uids[1]));
+            String value = model.getValue().label();
+            processor.onNext(RowAction.create(uids[0], value));
         });
 
     }

@@ -5,20 +5,22 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -27,11 +29,14 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+
+import static android.text.TextUtils.isEmpty;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -86,6 +91,40 @@ public class EventRepository implements FormRepository {
             "  Event.status\n" +
             "FROM Event\n" +
             "WHERE Event.uid = ?";
+
+    private static final String QUERY = "SELECT\n" +
+            "  Field.id,\n" +
+            "  Field.label,\n" +
+            "  Field.type,\n" +
+            "  Field.mandatory,\n" +
+            "  Field.optionSet,\n" +
+            "  Value.value,\n" +
+            "  Option.name,\n" +
+            "  Field.section,\n" +
+            "  Field.allowFutureDate\n" +
+            "FROM Event\n" +
+            "  LEFT OUTER JOIN (\n" +
+            "      SELECT\n" +
+            "        DataElement.displayName AS label,\n" +
+            "        DataElement.valueType AS type,\n" +
+            "        DataElement.uid AS id,\n" +
+            "        DataElement.optionSet AS optionSet,\n" +
+            "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
+            "        ProgramStageDataElement.programStage AS stage,\n" +
+            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
+            "        ProgramStageDataElement.programStageSection AS section,\n" +
+            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate\n" +
+            "      FROM ProgramStageDataElement\n" +
+            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
+            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
+            "  )\n" +
+            "  LEFT OUTER JOIN Option ON (\n" +
+            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "  )\n" +
+            " %s  " +
+            "ORDER BY Field.formOrder ASC;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -246,6 +285,44 @@ public class EventRepository implements FormRepository {
     @Override
     public Observable<String> autoGenerateEvents(String enrollmentUid) {
         return null;
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<FieldViewModel>> fieldValues() {
+        String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
+        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, String.format(Locale.US, QUERY, where))
+                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    private FieldViewModel transform(@NonNull Cursor cursor) {
+        String uid = cursor.getString(0);
+        String label = cursor.getString(1);
+        ValueType valueType = ValueType.valueOf(cursor.getString(2));
+        boolean mandatory = cursor.getInt(3) == 1;
+        String optionSetUid = cursor.getString(4);
+        String dataValue = cursor.getString(5);
+        String optionCodeName = cursor.getString(6);
+        String section = cursor.getString(7);
+        Boolean allowFutureDates = cursor.getInt(8) == 1;
+
+        if (!isEmpty(optionCodeName)) {
+            dataValue = optionCodeName;
+        }
+
+        FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "");
+
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, true, null);
     }
 
     @NonNull

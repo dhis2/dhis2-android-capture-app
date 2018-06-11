@@ -1,7 +1,7 @@
 package com.dhis2.data.server;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
-
 
 import com.dhis2.data.dagger.PerServer;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -27,11 +27,12 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    D2 sdk(DatabaseAdapter databaseAdapter, OkHttpClient client) {
+    D2 sdk(DatabaseAdapter databaseAdapter, OkHttpClient client, Context context) {
         return new D2.Builder()
                 .configuration(configuration)
                 .databaseAdapter(databaseAdapter)
                 .okHttpClient(client)
+                .context(context)
                 .build();
     }
 

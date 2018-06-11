@@ -19,8 +19,13 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
+import devliving.online.securedpreferencestore.SecuredPreferenceStore;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -33,19 +38,25 @@ import timber.log.Timber;
 
 public class LoginInteractor implements LoginContracts.Interactor {
 
+    final String KEYSTORE_PROVIDER = "AndroidKeyStore";
+
     private final MetadataRepository metadataRepository;
+    private final SecuredPreferenceStore prefStore;
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
 
     @NonNull
     private final CompositeDisposable disposable;
+    private KeyStore mStore;
 
     LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.view = view;
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
+        prefStore = SecuredPreferenceStore.getSharedInstance();
+
         init();
     }
 
@@ -80,20 +91,32 @@ public class LoginInteractor implements LoginContracts.Interactor {
             return;
         }
 
+        /*if (prefStore.contains("user_credentials") &&
+                prefStore.getString("user_credentials", null).equals(String.format("%s:%s", username, password))) {
+
+            if (NetworkUtils.isOnline(view.getContext()))
+                handleResponse(Response.success(null));
+            else
+                view.startActivity(MainActivity.class, null, true, true, null);
+
+
+        } else*/
         disposable.add(configurationRepository.configure(baseUrl)
-                .map((config) -> ((App) view.getContext().getApplicationContext()).createServerComponent(config).userManager())
+                .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap((userManager) -> {
                     SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
                             "com.dhis2", Context.MODE_PRIVATE);
-                    prefs.edit().putString("SERVER", serverUrl).apply();
+//                    prefs.edit().putString("SERVER", serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
                 .map(user -> {
                     if (user == null)
                         return Response.error(404, null);
-                    else
+                    else {
+                        saveUserData(username, password);
                         return Response.success(null);
+                    }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -102,10 +125,36 @@ public class LoginInteractor implements LoginContracts.Interactor {
                         , LoginInteractor.this::handleError));
     }
 
+    private void saveUserData(String username, String password) {
+        prefStore.edit().putString("user_credentials", String.format("%s:%s", username, password)).commit();
+    }
+
+    void loadKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+        mStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
+        mStore.load(null);
+    }
+
     @Override
     public void sync() {
 
-        disposable.add(metadata()
+        disposable.add(
+                Observable.just(true)
+                        .map(response -> {
+                            userManager.getD2().syncMetaData().call();
+                            return SyncResult.success();
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> SyncResult.failure(
+                                throwable.getMessage() == null ? "" : throwable.getMessage()))
+                        .startWith(SyncResult.progress())
+                        .subscribe(
+                                update(LoginActivity.SyncState.METADATA),
+                                throwable -> {
+                                    throw new OnErrorNotImplementedException(throwable);
+                                }));
+
+       /* disposable.add(metadata()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,7 +165,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                         update(LoginActivity.SyncState.METADATA),
                         throwable -> {
                             throw new OnErrorNotImplementedException(throwable);
-                        }));
+                        }));*/
 
     }
 
@@ -126,20 +175,23 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 metadataRepository.getTheme()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(flagTheme -> {
-                            view.saveFlag(flagTheme.val0());
-                            view.saveTheme(flagTheme.val1());
-                            return events();
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .map(response -> SyncResult.success())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .onErrorReturn(throwable -> SyncResult.failure(
-                                throwable.getMessage() == null ? "" : throwable.getMessage()))
-                        .startWith(SyncResult.progress())
-                        .subscribe(update(LoginActivity.SyncState.EVENTS),
-                                throwable -> view.displayMessage(throwable.getMessage())
+                        .subscribe(flagTheme -> {
+                                    view.saveFlag(flagTheme.val0());
+                                    view.saveTheme(flagTheme.val1());
+                                },
+                                Timber::e
                         ));
+
+        disposable.add(events()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(LoginActivity.SyncState.EVENTS),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
     }
 
     @Override
@@ -177,7 +229,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     @NonNull
-    private Observable<Response> metadata() {
+    private Observable<Void> metadata() {
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
     }
 

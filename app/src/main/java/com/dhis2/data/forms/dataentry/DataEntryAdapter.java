@@ -98,12 +98,13 @@ public final class DataEntryAdapter extends Adapter {
 
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        /*if (viewType == IMAGE)
+        if (viewType == IMAGE)
             return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount());
-        else*/
-        return rows.get(viewType).onCreate(parent);
+        else
+            return rows.get(viewType).onCreate(parent);
     }
 
     @Override
@@ -143,6 +144,8 @@ public final class DataEntryAdapter extends Adapter {
             return BUTTON;
         } else if (viewModel instanceof OrgUnitViewModel) {
             return ORG_UNIT;
+        } else if (viewModel instanceof ImageViewModel) {
+            return IMAGE;
         } else if (viewModel instanceof UnsupportedViewModel) {
             return UNSUPPORTED;
         } else {
@@ -169,5 +172,15 @@ public final class DataEntryAdapter extends Adapter {
         viewModels.addAll(updates);
 
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    public boolean mandatoryOk(){
+        boolean isOk = true;
+        for(FieldViewModel fieldViewModel : viewModels){
+            if(fieldViewModel.mandatory() && fieldViewModel.value()==null || fieldViewModel.value().isEmpty())
+                isOk = false;
+        }
+
+        return isOk;
     }
 }
