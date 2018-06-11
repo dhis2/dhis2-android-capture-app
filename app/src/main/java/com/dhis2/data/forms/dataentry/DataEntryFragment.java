@@ -114,6 +114,10 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         }
     }
 
+    public boolean checkMandatory(){
+        return dataEntryAdapter.mandatoryOk();
+    }
+
     private void setUpRecyclerView() {
         DataEntryArguments arguments = getArguments().getParcelable(ARGUMENTS);
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),

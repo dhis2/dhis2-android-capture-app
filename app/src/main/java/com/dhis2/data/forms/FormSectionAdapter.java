@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
 import com.dhis2.data.forms.dataentry.DataEntryFragment;
@@ -11,17 +12,17 @@ import com.dhis2.utils.CustomFragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
-    //    private final List<DataEntryFragment> dataEntryFragments;
     private final List<String> sections;
 
     FormSectionAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
         this.formSectionViewModelList = new ArrayList<>();
-//        this.dataEntryFragments = new ArrayList<>();
         this.sections = new ArrayList<>();
     }
 
@@ -41,12 +42,11 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
         } else {
             throw new IllegalArgumentException("Unsupported page type");
         }
-//        return dataEntryFragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return formSectionViewModelList.size();
+        return sections.size();
     }
 
     @Override
@@ -60,33 +60,49 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
         int position = sections.indexOf(section);
 
         return position >= 0 ? position : POSITION_NONE;
-
     }
 
 
     void swapData(List<FormSectionViewModel> models) {
-        formSectionViewModelList.clear();
-//        dataEntryFragments.clear();
-        sections.clear();
-        formSectionViewModelList.addAll(models);
-        for (FormSectionViewModel viewModel : models) {
-            sections.add(viewModel.sectionUid());
-//            if (viewModel.type().equals(FormSectionViewModel.Type.ENROLLMENT)) {
-//                dataEntryFragments.add(DataEntryFragment.create(DataEntryArguments
-//                        .forEnrollment(viewModel.uid())));
-//            } else if (viewModel.type().equals(FormSectionViewModel.Type.PROGRAM_STAGE)) {
-//                dataEntryFragments.add(DataEntryFragment.create(DataEntryArguments
-//                        .forEvent(viewModel.uid())));
-//            } else if (viewModel.type().equals(FormSectionViewModel.Type.SECTION)) {
-//                dataEntryFragments.add(DataEntryFragment.create(DataEntryArguments
-//                        .forEventSection(viewModel.uid(), viewModel.sectionUid(), viewModel.renderType())));
-//            }
+
+        List<String> newSections = new ArrayList<>();
+        boolean differentSections = false;
+
+        for (int i = 0; i < models.size() - 1; i++) {
+            FormSectionViewModel item = models.get(i);
+            newSections.add(item.sectionUid());
         }
-        notifyDataSetChanged();
+
+        if (sections.size() == models.size()) //If previous sections size = new sections size we check if each section is the same
+            for (String section : newSections) {
+                if (!section.equals(sections.get(0)))
+                    differentSections = true;
+            }
+        else
+            differentSections = true;
+
+        if (differentSections || sections.isEmpty()) {
+
+            formSectionViewModelList.clear();
+            sections.clear();
+            formSectionViewModelList.addAll(models);
+            sections.addAll(newSections);
+            notifyDataSetChanged();
+
+        }
     }
 
     @Override
     public String getTag(int position) {
         return sections.get(position);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        try {
+            super.destroyItem(container, position, object);
+        } catch (IllegalStateException e) {
+            Timber.e(e);
+        }
     }
 }

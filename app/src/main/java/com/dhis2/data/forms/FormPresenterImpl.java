@@ -52,6 +52,7 @@ class FormPresenterImpl implements FormPresenter {
 
     @NonNull
     private final FlowableProcessor<String> processor;
+    private FormView view;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
@@ -72,6 +73,7 @@ class FormPresenterImpl implements FormPresenter {
     @Override
     public void onAttach(@NonNull FormView view) {
         isNull(view, "FormView must not be null");
+        this.view = view;
 
         compositeDisposable.add(formRepository.title()
                 .subscribeOn(schedulerProvider.io())
@@ -255,7 +257,24 @@ class FormPresenterImpl implements FormPresenter {
 
     @Override
     public void checkSections() {
-        processor.onNext("check");
+        if (processor.hasSubscribers())
+            processor.onNext("check");
+        else{
+            Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
+            Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
+                    .subscribeOn(schedulerProvider.computation());
+
+            // Combining results of two repositories into a single stream.
+            Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
+                    sectionsFlowable, ruleEffectFlowable, this::applyEffects);
+            compositeDisposable.add(processor.startWith("init")
+                    .flatMap(data -> sectionModelsFlowable)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(view.renderSectionViewModels(), Timber::e));
+
+        }
+
     }
 
 

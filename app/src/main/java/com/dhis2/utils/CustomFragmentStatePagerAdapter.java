@@ -25,10 +25,10 @@ import java.util.ArrayList;
     private FragmentTransaction mCurTransaction = null;
 
     private ArrayList<Fragment.SavedState> mSavedState = new ArrayList<Fragment.SavedState>();
-    private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
-    private Fragment mCurrentPrimaryItem = null;
-
     private ArrayList<String> mSavedFragmentTags = new ArrayList<String>();
+    private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
+
+    private Fragment mCurrentPrimaryItem = null;
 
 
     public CustomFragmentStatePagerAdapter(FragmentManager fm) {
@@ -39,6 +39,10 @@ import java.util.ArrayList;
      * Return the Fragment associated with a specified position.
      */
     public abstract Fragment getItem(int position);
+
+    public String getTag(int position) {
+        return null;
+    }
 
     @Override
     public void startUpdate(ViewGroup container) {
@@ -131,6 +135,7 @@ import java.util.ArrayList;
         if (mCurTransaction != null) {
             mCurTransaction.commitNowAllowingStateLoss();
             mCurTransaction = null;
+            mFragmentManager.executePendingTransactions();
         }
     }
 
@@ -152,7 +157,7 @@ import java.util.ArrayList;
         }
         for (int i=0; i<mFragments.size(); i++) {
             Fragment f = mFragments.get(i);
-            if (f != null && f.isAdded()) {
+            if (f != null /*&& f.isAdded()*/) {
                 if (state == null) {
                     state = new Bundle();
                 }
@@ -169,9 +174,16 @@ import java.util.ArrayList;
             Bundle bundle = (Bundle)state;
             bundle.setClassLoader(loader);
             Parcelable[] fss = bundle.getParcelableArray("states");
-            mSavedFragmentTags = bundle.getStringArrayList("tags");
             mSavedState.clear();
             mFragments.clear();
+
+            ArrayList<String> tags = bundle.getStringArrayList("tags");
+            if (tags != null) {
+                mSavedFragmentTags = tags;
+            } else {
+                mSavedFragmentTags.clear();
+            }
+
             if (fss != null) {
                 for (int i=0; i<fss.length; i++) {
                     mSavedState.add((Fragment.SavedState)fss[i]);
@@ -196,9 +208,7 @@ import java.util.ArrayList;
         }
     }
 
-    public String getTag(int position) {
-        return null;
-    }
+
 
 
 }

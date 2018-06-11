@@ -8,6 +8,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -107,7 +108,11 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         if (generated && dataValue == null) {
-            dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+            try {
+                dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+            } catch (D2CallException e) {
+                e.printStackTrace();
+            }
         }
 
         return fieldFactory.create(uid,

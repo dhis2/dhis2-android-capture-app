@@ -195,9 +195,9 @@ dependencies {
         force = true
     }
 
-    //LOCATION
-    implementation("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
-    implementation("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
+    //LOCATION15.0.1
+    implementation("com.google.android.gms:play-services-location:15.0.1")
+    implementation("com.google.android.gms:play-services-maps:15.0.1")
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
@@ -240,4 +240,8 @@ dependencies {
     compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
     implementation 'com.airbnb.android:lottie:2.5.4'
+
+    //SECURE PREFERENCES
+    implementation 'online.devliving:securedpreferencestore:0.6.1'
+
 }

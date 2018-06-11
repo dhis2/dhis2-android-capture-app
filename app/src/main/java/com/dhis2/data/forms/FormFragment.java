@@ -121,7 +121,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
         }
-
+/*
         RxView.clicks(nextButton)
                 .subscribe(
                         o -> {
@@ -131,7 +131,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
                             }
                         }
-                );
+                );*/
 
         setupActionBar();
     }
@@ -156,9 +156,27 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onNext(ReportStatus reportStatus) {
-        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1)
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
+
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-        else
+
+        } else
             getActivity().finish();
     }
 
@@ -220,6 +238,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
         return sectionViewModels -> {
             formSectionAdapter.swapData(sectionViewModels);
+            tabLayout.setupWithViewPager(viewPager);
             if (sectionViewModels.size() == 0) {
                 Log.d("EMPTY", "Show empty state");
                 // TODO: Show empty state

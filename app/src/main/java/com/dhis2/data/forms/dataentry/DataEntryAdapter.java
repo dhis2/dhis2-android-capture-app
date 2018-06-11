@@ -173,4 +173,14 @@ public final class DataEntryAdapter extends Adapter {
 
         diffResult.dispatchUpdatesTo(this);
     }
+
+    public boolean mandatoryOk(){
+        boolean isOk = true;
+        for(FieldViewModel fieldViewModel : viewModels){
+            if(fieldViewModel.mandatory() && fieldViewModel.value()==null || fieldViewModel.value().isEmpty())
+                isOk = false;
+        }
+
+        return isOk;
+    }
 }

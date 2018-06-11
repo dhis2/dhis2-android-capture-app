@@ -288,7 +288,8 @@ public class Bindings {
             color = "#FFFFFF";
 
         Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program).mutate();
-        drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN);
+        if (drawable != null)
+            drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN);
         imageView.setImageDrawable(drawable);
     }
 
@@ -801,6 +802,7 @@ public class Bindings {
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
+            if(drawable!=null)
             drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
@@ -848,6 +850,7 @@ public class Bindings {
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
+            if(drawable!=null)
             drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
