@@ -27,7 +27,6 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
-import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
@@ -37,7 +36,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.intellij.lang.annotations.Flow;
 
 import java.util.List;
 
@@ -46,7 +44,6 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
-import timber.log.Timber;
 
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
@@ -126,17 +123,36 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setCurrentLocationListener(this);
         }
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        /*RxView.clicks(nextButton)
-                .subscribe(
-                        o -> {
-                            if (isEnrollment) {
+            }
 
-                            } else {
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("formfragment", "onPageSelected " + position);
+            }
 
-                            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
+                        if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                        else {
+                            displayMessage("Fill mandatory fields to continue");
+                            viewPager.setCurrentItem(viewPager.getCurrentItem(), true);
                         }
-                );*/
+                    } else if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                        getActivity().finish();
+                    else {
+                        displayMessage("Fill mandatory fields to continue");
+                    }
+                }
+                Log.d("formfragment", "onPageScrollStateChanged");
+            }
+        });
 
         setupActionBar();
     }
@@ -161,37 +177,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onNext(ReportStatus reportStatus) {
-        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.d("formfragment","onPageSelected " + position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if(state == ViewPager.SCROLL_STATE_DRAGGING){
-                    if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
-                        if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
-                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-                        else {
-                            displayMessage("Fill mandatory fields to continue");
-                            viewPager.setCurrentItem(viewPager.getCurrentItem(), true);
-                        }
-                    } else
-                        if(((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
-                            getActivity().finish();
-                        else {
-                            displayMessage("Fill mandatory fields to continue");
-                        }
-                }
-                Log.d("formfragment","onPageScrollStateChanged");
-            }
-        });*/
+        //TODO: NEXT ACTION
     }
 
     @NonNull
