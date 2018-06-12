@@ -35,6 +35,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.intellij.lang.annotations.Flow;
 
 import java.util.List;
 

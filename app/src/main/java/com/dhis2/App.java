@@ -30,21 +30,9 @@ import com.facebook.stetho.Stetho;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
-
-import javax.crypto.NoSuchPaddingException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import devliving.online.securedpreferencestore.DefaultRecoveryHandler;
-import devliving.online.securedpreferencestore.SecuredPreferenceStore;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
@@ -91,13 +79,6 @@ public class App extends MultiDexApplication implements Components {
             Timber.plant(new DebugTree());
         Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
-        try {
-            SecuredPreferenceStore.init(getApplicationContext(), new DefaultRecoveryHandler());
-        } catch (IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException |
-                InvalidAlgorithmParameterException | NoSuchPaddingException | UnrecoverableEntryException |
-                InvalidKeyException | NoSuchProviderException e) {
-            e.printStackTrace();
-        }
 
         this.instance = this;
 

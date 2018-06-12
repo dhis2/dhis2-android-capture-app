@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Cristian on 22/03/2018.
@@ -113,8 +113,16 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 
-        if (briteDatabase.insert(EventModel.TABLE,
-                eventModel.toContentValues())/*insert*/ < 0) {
+        long row = -1;
+
+        try {
+            row = briteDatabase.insert(EventModel.TABLE,
+                    eventModel.toContentValues());
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        if (row < 0) {
             String message = String.format(Locale.US, "Failed to insert new event " +
                             "instance for organisationUnit=[%s] and programStage=[%s]",
                     orgUnitUid, programStage);
@@ -126,7 +134,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
-       //TODO: Update program causes crash
+        //TODO: Update program causes crash
         /* ContentValues program = new ContentValues();
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
@@ -178,8 +186,15 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
         contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
 
+        long row = -1;
 
-        if (briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+        try {
+            row = briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        if (row <= 0) {
             String message = String.format(Locale.US, "Failed to update event for uid=[%s]", eventUid);
             return Observable.error(new SQLiteConstraintException(message));
         }

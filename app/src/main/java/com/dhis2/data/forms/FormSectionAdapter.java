@@ -46,7 +46,7 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return sections.size();
+        return sections.isEmpty()?formSectionViewModelList.size():sections.size();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
 
     @Override
     public String getTag(int position) {
-        return sections.get(position);
+        return sections.isEmpty()?"section":sections.get(position);
     }
 
     @Override

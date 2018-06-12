@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <style name="colorPrimary_Pink" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_e57" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_d32" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary_d32</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_d32</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight_d32</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
+        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>    <style name="colorPrimary_f06" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_c21" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_880" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_f50" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_e1b" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_ba6" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_8e2" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_aa0" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_7e5" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_452" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_7c4" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_620" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_c5c" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_798" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_394" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_304" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_e3f" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_64b" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_197" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_028" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_40c" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_00b" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_80d" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_00a" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_008" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_006" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_e0f" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_80c" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_0069" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_64f" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_c8e" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_66b" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_2e7" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_1b5" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_00e" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_aed" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_689" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_336" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_76f" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_64d" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_cdd" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_9e9" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_827" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_fff" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_fbc" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_f57" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_ffff" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_ffc" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_ffcc" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_ffa" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_bca" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_8d6" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_4e3" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_faf" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_bdb" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_757" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_424" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_cfd" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_b0b" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_607" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="colorPrimary_374" parent="Theme.AppCompat.Light.NoActionBar"></style>
+
+</resources>

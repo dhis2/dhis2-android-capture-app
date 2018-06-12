@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
-import devliving.online.securedpreferencestore.SecuredPreferenceStore;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -41,7 +40,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     final String KEYSTORE_PROVIDER = "AndroidKeyStore";
 
     private final MetadataRepository metadataRepository;
-    private final SecuredPreferenceStore prefStore;
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
@@ -55,7 +53,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
-        prefStore = SecuredPreferenceStore.getSharedInstance();
 
         init();
     }
@@ -91,22 +88,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
             return;
         }
 
-        /*if (prefStore.contains("user_credentials") &&
-                prefStore.getString("user_credentials", null).equals(String.format("%s:%s", username, password))) {
-
-            if (NetworkUtils.isOnline(view.getContext()))
-                handleResponse(Response.success(null));
-            else
-                view.startActivity(MainActivity.class, null, true, true, null);
-
-
-        } else*/
         disposable.add(configurationRepository.configure(baseUrl)
                 .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap((userManager) -> {
                     SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
                             "com.dhis2", Context.MODE_PRIVATE);
-//                    prefs.edit().putString("SERVER", serverUrl).apply();
+                    prefs.edit().putString("SERVER", serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
@@ -126,7 +113,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     private void saveUserData(String username, String password) {
-        prefStore.edit().putString("user_credentials", String.format("%s:%s", username, password)).commit();
     }
 
     void loadKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
@@ -282,26 +268,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
         }
     }
 
-    /*@Override
-    public void handleResponse(@NonNull Response<User> userResponse) {
-        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
-        Timber.d("Authentication response code: %s", userResponse.code());
-        if (userResponse.isSuccessful()) {
-            ((App) view.getContext().getApplicationContext()).createUserComponent();
-            view.saveUsersData();
-            view.handleSync();
-            sync();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            view.renderInvalidCredentialsError();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
-            view.renderInvalidCredentialsError();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-            view.renderUnexpectedError();
-        } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            view.renderServerError();
-        }
-    }*/
-
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
@@ -331,7 +297,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     .observeOn(Schedulers.io())
                     .subscribe(
                             data -> view.handleLogout(),
-                            Timber::d
+                            t -> view.getAbstractActivity().recreate()
                     )
             );
     }

@@ -12,6 +12,8 @@ import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
+import java.util.concurrent.TimeUnit;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -47,6 +49,9 @@ public class ServerModule {
     OkHttpClient okHttpClient(Authenticator authenticator) {
         return new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .connectTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();
     }

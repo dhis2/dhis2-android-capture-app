@@ -34,7 +34,6 @@ import javax.inject.Inject;
 import io.reactivex.functions.Consumer;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
@@ -136,17 +135,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void handleLogout() {
-        isSyncing = false;
-        if (binding.logo != null) {
-            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-            params.height = WRAP_CONTENT;
-            binding.logo.setLayoutParams(params);
-            binding.syncLayout.setVisibility(View.GONE);
-            binding.lottieView.setVisibility(View.GONE);
-            binding.lottieView.cancelAnimation();
-            binding.lottieView.clearAnimation();
-        }
-        binding.login.setVisibility(View.VISIBLE);
+        recreate();
     }
 
     @Override

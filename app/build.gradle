@@ -31,7 +31,7 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 4
+        versionCode 5
         versionName "1.0.0-ALPHA"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -240,8 +240,5 @@ dependencies {
     compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
     implementation 'com.airbnb.android:lottie:2.5.4'
-
-    //SECURE PREFERENCES
-    implementation 'online.devliving:securedpreferencestore:0.6.1'
 
 }

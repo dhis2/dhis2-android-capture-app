@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.dhis2.R;
+import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
@@ -74,10 +75,13 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
        /* if (!BuildConfig.DEBUG)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);TODO:ACTIVATE FOR FINAL BUILD*/
-
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
-        setTheme(prefs.getInt("THEME", R.style.AppTheme));
+        if (this instanceof MainActivity)
+            prefs.edit().remove("PROGRAM_THEME").apply();
+
+        setTheme(prefs.getInt("PROGRAM_THEME", prefs.getInt("THEME", R.style.AppTheme)));
+//        setTheme(prefs.getInt("THEME", R.style.AppTheme));
         Crashlytics.setString("SERVER", prefs.getString("SERVER", null));
 
         super.onCreate(savedInstanceState);

@@ -204,7 +204,8 @@ public class EventInitialInteractor implements EventInitialContract.Interactor {
                         latitude, longitude)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
+                        .subscribe(view::onEventCreated,
+                                t -> view.renderError(t.getMessage()))
         );
     }
 

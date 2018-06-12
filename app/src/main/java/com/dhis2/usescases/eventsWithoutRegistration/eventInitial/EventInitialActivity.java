@@ -195,7 +195,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedOrgUnit = s.toString();
+//                selectedOrgUnit = s.toString();
                 checkActionButtonVisibility();
             }
 
@@ -415,8 +415,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         }
                     }
                 }
-                if (!fixedOrgUnit)
+                if (!fixedOrgUnit) {
+                    selectedOrgUnit = ((OrganisationUnitModel) value).uid();
                     binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+                }
                 binding.drawerLayout.closeDrawers();
             }
         });
