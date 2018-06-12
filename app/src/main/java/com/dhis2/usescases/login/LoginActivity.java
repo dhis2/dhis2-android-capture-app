@@ -134,7 +134,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
             binding.lottieView.useHardwareAcceleration(true);
             binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-
             binding.lottieView.playAnimation();
         }
     }

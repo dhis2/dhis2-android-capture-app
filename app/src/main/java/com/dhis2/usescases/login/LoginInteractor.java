@@ -10,16 +10,22 @@ import com.dhis2.App;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.data.server.UserManager;
+import com.dhis2.data.service.SyncMetadataService;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobTrigger;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +42,8 @@ import retrofit2.Response;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
+import static com.dhis2.utils.Constants.TIME_DAILY;
+
 public class LoginInteractor implements LoginContracts.Interactor {
 
     final String KEYSTORE_PROVIDER = "AndroidKeyStore";
@@ -44,17 +52,18 @@ public class LoginInteractor implements LoginContracts.Interactor {
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
+    private FirebaseJobDispatcher dispatcher;
 
     @NonNull
     private final CompositeDisposable disposable;
     private KeyStore mStore;
 
-    LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
+    LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository, MetadataRepository metadataRepository, FirebaseJobDispatcher firebaseJobDispatcher) {
         this.view = view;
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
-
+        this.dispatcher = firebaseJobDispatcher;
         init();
     }
 
@@ -251,6 +260,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
+            syncMetadata();
             view.handleSync();
             sync();
         }
@@ -314,5 +324,37 @@ public class LoginInteractor implements LoginContracts.Interactor {
                             t -> view.getAbstractActivity().recreate()
                     )
             );
+    }
+
+    private void syncMetadata(){
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
+        prefs.edit().putInt("timeMeta", TIME_DAILY).apply();
+        syncMeta(TIME_DAILY);
+    }
+
+    private void syncMeta(int seconds) {
+        String tag = "MetaData";
+        Job metaJob;
+
+        boolean isRecurring = false;
+        JobTrigger trigger = Trigger.NOW;
+
+        if (seconds != 0) {
+            isRecurring = true;
+            trigger = Trigger.executionWindow(seconds, seconds + 60);
+        }
+
+        metaJob = dispatcher.newJobBuilder()
+                .setService(SyncMetadataService.class)
+                .setTag(tag)
+                .setRecurring(isRecurring)
+                .setTrigger(trigger)
+                .setReplaceCurrent(true)
+                .setLifetime(Lifetime.FOREVER)
+                .setConstraints(
+                        Constraint.ON_ANY_NETWORK
+                )
+                .build();
+        dispatcher.mustSchedule(metaJob);
     }
 }
