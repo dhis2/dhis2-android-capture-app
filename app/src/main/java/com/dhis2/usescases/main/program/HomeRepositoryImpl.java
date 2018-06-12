@@ -1,5 +1,6 @@
 package com.dhis2.usescases.main.program;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.tuples.Pair;
@@ -7,13 +8,13 @@ import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
-import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.Arrays;
@@ -25,8 +26,6 @@ import java.util.Set;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-
-import static android.text.TextUtils.isEmpty;
 
 class HomeRepositoryImpl implements HomeRepository {
 
@@ -64,6 +63,18 @@ class HomeRepositoryImpl implements HomeRepository {
 
     private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
             "WHERE TrackedEntityType.uid = ?";
+
+    private final static String PROGRAM_MODELS = "SELECT " +
+            "Program.uid, " +
+            "Program.displayName, " +
+            "ObjectStyle.color, " +
+            "ObjectStyle.icon," +
+            "Program.programType," +
+            "Program.trackedEntityType " +
+            "FROM Program JOIN ObjectStyle ON ObjectStyle.uid = Program.uid ";
+    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE};
+    private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
+
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
@@ -179,10 +190,53 @@ class HomeRepositoryImpl implements HomeRepository {
                 .flatMap(data -> {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_TYPE_NAME, program.trackedEntityType())
-                                .mapToOne(cursor         -> Pair.create(data.size(), cursor.getString(0)));
+                                .mapToOne(cursor -> Pair.create(data.size(), cursor.getString(0)));
                     else
                         return Observable.just(Pair.create(data.size(), "events"));
                 });
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<ProgramViewModel>> programModels() {
+        return briteDatabase.createQuery(TABLE_SET, PROGRAM_MODELS)
+                .mapToList(cursor -> {
+                    String uid = cursor.getString(0);
+                    String displayName = cursor.getString(1);
+                    String color = cursor.getString(2);
+                    String icon = cursor.getString(3);
+
+                    String programType = cursor.getString(4);
+                    String teiType = cursor.getString(5);
+
+                    String queryFinal;
+                    if (dates != null) {
+                        StringBuilder dateQuery = new StringBuilder();
+                        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+                        for (int i = 0; i < dates.size(); i++) {
+                            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+                            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+                            if (i < dates.size() - 1)
+                                dateQuery.append("OR ");
+                        }
+                        queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
+                    } else
+                        queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
+
+                    if (programType.equals(ProgramType.WITH_REGISTRATION.name()))
+                        queryFinal += " GROUP BY " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT_UID;
+
+                    Cursor countCursor = briteDatabase.query(queryFinal, uid);
+                    int count = 0;
+                    if (countCursor != null && countCursor.moveToFirst())
+                        count = countCursor.getCount();
+                    String type = "events";
+                    if (programType.equals(ProgramType.WITH_REGISTRATION.name()))
+                        type = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType).getString(0);
+
+
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, type);
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull

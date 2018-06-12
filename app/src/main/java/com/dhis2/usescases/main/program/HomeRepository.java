@@ -35,4 +35,8 @@ interface HomeRepository {
 
     @NonNull
     Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program);
+
+    @NonNull
+    Flowable<List<ProgramViewModel>> programModels();
+
 }

@@ -14,6 +14,7 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
 
+import org.hisp.dhis.android.core.common.D2ErrorCode;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -271,7 +272,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
-
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
         } else {
