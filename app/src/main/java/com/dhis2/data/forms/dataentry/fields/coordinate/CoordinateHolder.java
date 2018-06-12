@@ -46,7 +46,10 @@ public class CoordinateHolder extends FormViewHolder {
         model = BehaviorProcessor.create();
 
         disposable.add(model.subscribe(coordinateViewModel -> {
-            binding.formCoordinates.setLabel(coordinateViewModel.label());
+            StringBuilder label = new StringBuilder(coordinateViewModel.label());
+            if(coordinateViewModel.mandatory())
+                label.append("*");
+            binding.formCoordinates.setLabel(label.toString());
             if (!isEmpty(coordinateViewModel.value()))
                 binding.formCoordinates.setInitialValue(coordinateViewModel.value());
             binding.executePendingBindings();

@@ -21,11 +21,13 @@ import android.view.ViewGroup;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.DataEntryFragment;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
+import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
@@ -44,6 +46,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
@@ -122,8 +125,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
         }
-/*
-        RxView.clicks(nextButton)
+
+
+        /*RxView.clicks(nextButton)
                 .subscribe(
                         o -> {
                             if (isEnrollment) {
@@ -157,7 +161,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onNext(ReportStatus reportStatus) {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -165,20 +169,29 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onPageSelected(int position) {
-
+                Log.d("formfragment","onPageSelected " + position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                if(state == ViewPager.SCROLL_STATE_DRAGGING){
+                    if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
+                        if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                        else {
+                            displayMessage("Fill mandatory fields to continue");
+                            viewPager.setCurrentItem(viewPager.getCurrentItem(), true);
+                        }
+                    } else
+                        if(((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                            getActivity().finish();
+                        else {
+                            displayMessage("Fill mandatory fields to continue");
+                        }
+                }
+                Log.d("formfragment","onPageScrollStateChanged");
             }
-        });
-        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
-
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-
-        } else
-            getActivity().finish();
+        });*/
     }
 
     @NonNull
