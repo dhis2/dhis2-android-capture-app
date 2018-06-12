@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
-import devliving.online.securedpreferencestore.SecuredPreferenceStore;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -41,7 +40,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     final String KEYSTORE_PROVIDER = "AndroidKeyStore";
 
     private final MetadataRepository metadataRepository;
-    private final SecuredPreferenceStore prefStore;
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
     private UserManager userManager;
@@ -55,7 +53,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
         this.disposable = new CompositeDisposable();
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
-        prefStore = SecuredPreferenceStore.getSharedInstance();
 
         init();
     }
@@ -126,7 +123,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     private void saveUserData(String username, String password) {
-        prefStore.edit().putString("user_credentials", String.format("%s:%s", username, password)).commit();
+        //prefStore.edit().putString("user_credentials", String.format("%s:%s", username, password)).commit();
     }
 
     void loadKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {

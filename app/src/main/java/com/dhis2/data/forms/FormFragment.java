@@ -124,12 +124,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
         }
-/*
-        RxView.clicks(nextButton)
-=======
+
 
         /*RxView.clicks(nextButton)
->>>>>>> Stashed changes
                 .subscribe(
                         o -> {
                             if (isEnrollment) {
@@ -163,7 +160,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onNext(ReportStatus reportStatus) {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -176,14 +173,24 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                if(state == ViewPager.SCROLL_STATE_DRAGGING){
+                    if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
+                        if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                        else {
+                            displayMessage("Fill mandatory fields to continue");
+                            viewPager.setCurrentItem(viewPager.getCurrentItem(), true);
+                        }
+                    } else
+                        if(((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
+                            getActivity().finish();
+                        else {
+                            displayMessage("Fill mandatory fields to continue");
+                        }
+                }
                 Log.d("formfragment","onPageScrollStateChanged");
             }
-        });
-        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1)
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-
-         else
-            getActivity().finish();
+        });*/
     }
 
     @NonNull

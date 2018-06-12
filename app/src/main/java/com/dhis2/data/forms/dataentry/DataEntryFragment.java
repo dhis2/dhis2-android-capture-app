@@ -137,8 +137,4 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         /*recyclerView.addItemDecoration(new DividerItemDecoration(
                 recyclerView.getContext(), DividerItemDecoration.VERTICAL));*/
     }
-
-    public boolean checkMandatory(){
-        return dataEntryAdapter.mandatoryOk();
-    }
 }
