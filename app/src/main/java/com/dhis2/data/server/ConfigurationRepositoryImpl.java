@@ -24,8 +24,6 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
     public Observable<ConfigurationModel> configure(@NonNull HttpUrl baseUrl) {
         return Observable.defer(() -> Observable.fromCallable(
                 () -> configurationManager.configure(baseUrl)));
-
-
     }
 
     @NonNull
