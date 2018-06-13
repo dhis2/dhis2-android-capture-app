@@ -12,4 +12,6 @@ interface FormPresenter {
     void onDetach();
 
     void checkSections();
+
+    void checkMandatoryFields();
 }

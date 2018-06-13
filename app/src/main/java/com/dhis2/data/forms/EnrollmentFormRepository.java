@@ -13,7 +13,6 @@ import com.dhis2.utils.DateUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -23,7 +22,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -32,7 +30,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -422,10 +419,10 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> fieldValues() {
+    public Observable<List<FieldViewModel>> fieldValues() {
         return briteDatabase
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid)
-                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(this::transform);
     }
 
     @NonNull
@@ -514,7 +511,7 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    private void updateProgramTable(Date lastUpdated, String programUid) {
       /*  ContentValues program = new ContentValues(); TODO: This causes the app to crash
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/

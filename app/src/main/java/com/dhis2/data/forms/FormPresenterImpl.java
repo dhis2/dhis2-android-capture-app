@@ -12,6 +12,7 @@ import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -52,6 +53,7 @@ class FormPresenterImpl implements FormPresenter {
 
     @NonNull
     private final FlowableProcessor<String> processor;
+    private final FlowableProcessor<String> fieldsValueProcessor;
     private FormView view;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
@@ -68,6 +70,7 @@ class FormPresenterImpl implements FormPresenter {
             this.ruleEngineRepository = new EventsRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
 
         this.processor = PublishProcessor.create();
+        this.fieldsValueProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -109,7 +112,6 @@ class FormPresenterImpl implements FormPresenter {
         );
 
         //region SECTIONS
-        Flowable<List<FieldViewModel>> valuesFlowable = formRepository.fieldValues();
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
                 .subscribeOn(schedulerProvider.computation());
@@ -214,6 +216,44 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(statusChangeObservable.connect());
     }
 
+    private List<FieldViewModel> applyFieldViewEffects(
+            @NonNull List<FieldViewModel> viewModels,
+            @NonNull Result<RuleEffect> calcResult) {
+        if (calcResult.error() != null) {
+            calcResult.error().printStackTrace();
+            return viewModels;
+        }
+
+        Map<String, FieldViewModel> fieldViewModels = toFieldViewMap(viewModels);
+        applyRuleFieldViewsEffects(fieldViewModels, calcResult);
+
+        return new ArrayList<>(fieldViewModels.values());
+
+    }
+
+    private void applyRuleFieldViewsEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+        for (RuleEffect ruleEffect : calcResult.items()) {
+            RuleAction ruleAction = ruleEffect.ruleAction();
+
+            if (ruleAction instanceof RuleActionHideField) {
+                RuleActionHideField hideField = (RuleActionHideField) ruleAction;
+                fieldViewModels.remove(hideField.field());
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
+                fieldViewModels.remove(hideSection.programStageSection());
+            }
+        }
+    }
+
+    @NonNull
+    private static Map<String, FieldViewModel> toFieldViewMap(@NonNull List<FieldViewModel> fieldViewModels) {
+        Map<String, FieldViewModel> map = new LinkedHashMap<>();
+        for (FieldViewModel fieldViewModel : fieldViewModels) {
+            map.put(fieldViewModel.uid(), fieldViewModel);
+        }
+        return map;
+    }
+
     @NonNull
     private List<FormSectionViewModel> applyEffects(
             @NonNull List<FormSectionViewModel> viewModels,
@@ -259,7 +299,7 @@ class FormPresenterImpl implements FormPresenter {
     public void checkSections() {
         if (processor.hasSubscribers())
             processor.onNext("check");
-        else{
+        else {
             Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
             Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
                     .subscribeOn(schedulerProvider.computation());
@@ -277,5 +317,23 @@ class FormPresenterImpl implements FormPresenter {
 
     }
 
+    @Override
+    public void checkMandatoryFields() {
+        Observable<List<FieldViewModel>> values = formRepository.fieldValues();
+        Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
+                .subscribeOn(schedulerProvider.computation());
 
+        Observable<List<FieldViewModel>> fieldValues = Observable.zip(
+                values, ruleEffect, this::applyFieldViewEffects);
+
+        CompositeDisposable disposable = new CompositeDisposable();
+        disposable.add(fieldValues
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(data -> {
+                    view.isMandatoryFieldsRequired(data);
+                    disposable.dispose();
+                }, Timber::e)
+        );
+    }
 }
