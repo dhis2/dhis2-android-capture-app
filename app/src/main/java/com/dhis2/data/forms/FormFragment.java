@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.data.forms.dataentry.DataEntryFragment;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
@@ -70,6 +71,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private TextInputEditText incidentDate;
     private CoordinatesView coordinatesView;
     private boolean isEnrollment;
+    private Trio<String, String, String> enrollmentTrio;
 
     public FormFragment() {
         // Required empty public constructor
@@ -122,38 +124,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setMapListener(this);
             coordinatesView.setCurrentLocationListener(this);
         }
-
-        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.d("formfragment", "onPageSelected " + position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
-                        if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
-                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-                        else {
-                            displayMessage("Fill mandatory fields to continue");
-                            viewPager.setCurrentItem(viewPager.getCurrentItem(), true);
-                        }
-                    } else if (((DataEntryFragment) formSectionAdapter.getItem(viewPager.getCurrentItem())).checkMandatory())
-                        getActivity().finish();
-                    else {
-                        displayMessage("Fill mandatory fields to continue");
-                    }
-                }
-                Log.d("formfragment", "onPageScrollStateChanged");
-            }
-        });*/
-
         setupActionBar();
     }
 
@@ -178,6 +148,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onNext(ReportStatus reportStatus) {
         //TODO: NEXT ACTION
+        if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+        } else
+            formPresenter.checkMandatoryFields();
     }
 
     @NonNull
@@ -288,7 +262,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public Consumer<Trio<String, String, String>> finishEnrollment() {
         return trio -> {
-            Bundle bundle = new Bundle();
+            enrollmentTrio = trio;
+            formPresenter.checkMandatoryFields();
+           /* Bundle bundle = new Bundle();
             bundle.putString("PROGRAM_UID", trio.val0());
             bundle.putString("TEI_UID", trio.val1());
             if (!trio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
@@ -297,7 +273,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                 startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
             }
-            getActivity().finish();
+            getActivity().finish();*/
         };
     }
 
@@ -404,5 +380,29 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     public void hideSections(String uid) {
         formPresenter.checkSections();
+    }
+
+    @Override
+    public void isMandatoryFieldsRequired(List<FieldViewModel> viewModels) {
+        boolean mandatoryRequired = false;
+        for (FieldViewModel viewModel : viewModels) {
+            if (viewModel.mandatory() && TextUtils.isEmpty(viewModel.value()))
+                mandatoryRequired = true;
+        }
+        if (!mandatoryRequired) {
+            if (enrollmentTrio != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString("PROGRAM_UID", enrollmentTrio.val0());
+                bundle.putString("TEI_UID", enrollmentTrio.val1());
+                if (!enrollmentTrio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
+                    FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
+                    startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment));
+                } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                    startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+                }
+            }
+            getActivity().finish();
+        } else
+            displayMessage(getString(R.string.missing_mandatory_fields));
     }
 }

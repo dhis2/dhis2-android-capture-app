@@ -16,7 +16,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
@@ -99,20 +98,27 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void renderInvalidCredentialsError() {
-        binding.userName.setError(getString(R.string.error_wrong_credentials));
-        binding.userPass.setError(getString(R.string.error_wrong_credentials));
+        displayMessage(getResources().getString(R.string.error_wrong_credentials));
     }
 
     @Override
     public void renderUnexpectedError() {
-        Toast.makeText(this, getResources().getString(
-                R.string.error_unexpected_error), Toast.LENGTH_SHORT).show();
+        displayMessage(getResources().getString(R.string.error_unexpected_error));
+    }
+
+    @Override
+    public void renderEmptyUsername() {
+        binding.userName.setError(getString(R.string.error_wrong_credentials));
+    }
+
+    @Override
+    public void renderEmptyPassword() {
+        binding.userPass.setError(getString(R.string.error_wrong_credentials));
     }
 
     @Override
     public void renderServerError() {
-        Toast.makeText(this, getResources().getString(
-                R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
+        displayMessage(getResources().getString(R.string.error_internal_server_error));
     }
 
     @Override
@@ -128,7 +134,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
             binding.lottieView.useHardwareAcceleration(true);
             binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-
             binding.lottieView.playAnimation();
         }
     }

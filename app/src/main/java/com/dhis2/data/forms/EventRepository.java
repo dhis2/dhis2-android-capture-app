@@ -289,10 +289,10 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> fieldValues() {
+    public Observable<List<FieldViewModel>> fieldValues() {
         String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
         return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, String.format(Locale.US, QUERY, where))
-                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(this::transform);
     }
 
     @NonNull

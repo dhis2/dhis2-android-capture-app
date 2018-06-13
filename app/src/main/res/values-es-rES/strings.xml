@@ -180,5 +180,6 @@
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
     <string name="share">Compartir</string>
     <string name="teiType_search_online">La búsqueda por tipo no está disponible de manera online.\nPor favor, seleccione un programa de la lista.</string>
+    <string name="missing_mandatory_fields">Campos requeridos no pueden estar vacios</string>
 
 </resources>

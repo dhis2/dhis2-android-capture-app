@@ -30,6 +30,12 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.dhis2.utils.Constants.TIME_15M;
+import static com.dhis2.utils.Constants.TIME_DAILY;
+import static com.dhis2.utils.Constants.TIME_HOURLY;
+import static com.dhis2.utils.Constants.TIME_MANUAL;
+import static com.dhis2.utils.Constants.TIME_WEEKLY;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -84,25 +90,18 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            prefs.edit().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())).apply();
-                        },
+                        data -> prefs.edit().putInt(Constants.EVENT_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
 
         listenerDisposable.add(RxTextView.textChanges(binding.teiMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply();
-                        },
+                        data -> prefs.edit().putInt(Constants.TEI_MAX, Integer.valueOf(data.toString())).apply(),
                         Timber::d
                 ));
 
-        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply();
-        });
+        binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
     }
 
     @Override
@@ -125,7 +124,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
-
             binding.eventMaxData.setText(String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)));
             binding.teiMaxData.setText(String.valueOf(prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)));
             binding.eventCurrentData.setText(String.valueOf(syncParameters.val0()));
@@ -135,17 +133,17 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void initRadioGroups() {
-        int timeData = prefs.getInt("timeData", 1);
-        int timeMeta = prefs.getInt("timeMeta", 1);
+        int timeData = prefs.getInt("timeData", TIME_MANUAL);
+        int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
 
         switch (timeData) {
-            case 900:
+            case TIME_15M:
                 binding.radioData.check(R.id.data15);
                 break;
-            case 3600:
+            case TIME_HOURLY:
                 binding.radioData.check(R.id.dataHour);
                 break;
-            case 86400:
+            case TIME_DAILY:
                 binding.radioData.check(R.id.dataDay);
                 break;
             default:
@@ -154,15 +152,15 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
 
         switch (timeMeta) {
-            //case 86400:
-            case 180:
-                binding.radioMeta.check(R.id.metaDay);
+            case TIME_MANUAL:
+                binding.radioMeta.check(R.id.metaManual);
                 break;
-            case 604800:
+            case TIME_WEEKLY:
                 binding.radioMeta.check(R.id.metaWeek);
                 break;
+            case TIME_DAILY:
             default:
-                binding.radioMeta.check(R.id.metaManual);
+                binding.radioMeta.check(R.id.metaDay);
                 break;
         }
     }
@@ -173,43 +171,46 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         switch (i) {
             case R.id.data15:
                 // 15 minutes
-                time = 900;
+                time = TIME_15M;
                 break;
             case R.id.dataHour:
                 // 1 hour
-                time = 3600;
+                time = TIME_HOURLY;
                 break;
             case R.id.dataDay:
                 // 1 day
-                time = 86400;
+                time = TIME_DAILY;
                 break;
             default:
-                time = 0;
+                time = TIME_MANUAL;
                 break;
         }
         prefs.edit().putInt("timeData", time).apply();
-        if (time != 0) presenter.syncData(time);
+        if (time != TIME_MANUAL)
+            presenter.syncData(time);
     }
 
     private void saveTimeMeta(int i) {
         int time;
 
         switch (i) {
-            case R.id.metaDay:
-                // 1 day
-                time = 86400;
-                break;
             case R.id.metaWeek:
                 // 1 week
-                time = 604800;
+                time = TIME_WEEKLY;
                 break;
+            case R.id.metaManual:
+                time = TIME_MANUAL;
+                break;
+            case R.id.metaDay:
             default:
-                time = 0;
+                // 1 day
+                time = TIME_DAILY;
                 break;
         }
 
         prefs.edit().putInt("timeMeta", time).apply();
-        if (time != 0) presenter.syncMeta(time);
+        if (time != TIME_MANUAL)
+            presenter.syncMeta(time);
     }
 
     @Override
@@ -217,9 +218,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context,R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    presenter.wipeDb();
-                })
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> presenter.wipeDb())
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
     }

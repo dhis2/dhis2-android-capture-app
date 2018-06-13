@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:background="@drawable/button_selector"
+        android:background="?attr/button_selector"
         android:elevation="8dp"
         android:text="@string/next"
         android:textColor="?colorAccent"
