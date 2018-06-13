@@ -12,6 +12,8 @@ import com.dhis2.data.server.ConfigurationRepository;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.qrScanner.QRActivity;
 import com.dhis2.utils.Constants;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
 
 public class LoginPresenter implements LoginContracts.Presenter {
 
@@ -32,7 +34,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void init(LoginContracts.View view) {
         this.view = view;
-        this.interactor = new LoginInteractor(view, configurationRepository, metadataRepository);
+        FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(view.getContext()));
+        this.interactor = new LoginInteractor(view, configurationRepository, metadataRepository, firebaseJobDispatcher);
     }
 
     @Override
@@ -107,6 +110,5 @@ public class LoginPresenter implements LoginContracts.Presenter {
             view.displayMessage("Something went wrong during syncronisation");
             new Handler().postDelayed(() -> interactor.logOut(), 1500);
         }
-
     }
 }

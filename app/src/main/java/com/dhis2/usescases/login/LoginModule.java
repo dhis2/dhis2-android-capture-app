@@ -20,6 +20,4 @@ public class LoginModule {
     LoginContracts.Presenter providePresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         return new LoginPresenter(configurationRepository, metadataRepository);
     }
-
-
 }
