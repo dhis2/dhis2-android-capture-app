@@ -14,6 +14,7 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
 
+import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -90,7 +91,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
         disposable.add(configurationRepository.configure(baseUrl)
                 .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
-                .switchMap((userManager) -> {
+                .switchMap(userManager -> {
                     SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
                             "com.dhis2", Context.MODE_PRIVATE);
                     prefs.edit().putString("SERVER", serverUrl).apply();
@@ -108,8 +109,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        LoginInteractor.this::handleResponse
-                        , LoginInteractor.this::handleError));
+                        LoginInteractor.this::handleResponse,
+                        LoginInteractor.this::handleError));
     }
 
     private void saveUserData(String username, String password) {
@@ -215,11 +216,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     @NonNull
-    private Observable<Void> metadata() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
-    }
-
-    @NonNull
     private Observable<List<TrackedEntityInstance>> trackerData() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
@@ -257,14 +253,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.saveUsersData();
             view.handleSync();
             sync();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            view.renderInvalidCredentialsError();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_NOT_FOUND) {
-            view.renderInvalidCredentialsError();
-        } else if (userResponse.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-            view.renderUnexpectedError();
-        } else if (userResponse.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            view.renderServerError();
         }
     }
 
@@ -274,7 +262,33 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
-        } else {
+        } else if (throwable instanceof D2CallException) {
+            D2CallException d2CallException = (D2CallException) throwable;
+            switch (d2CallException.errorCode()){
+                case LOGIN_PASSWORD_NULL:
+                    view.renderEmptyPassword();
+                    break;
+                case LOGIN_USERNAME_NULL:
+                    view.renderEmptyUsername();
+                    break;
+                case INVALID_DHIS_VERSION:
+                    view.renderInvalidCredentialsError();
+                    break;
+                case ALREADY_AUTHENTICATED:
+                    view.renderInvalidCredentialsError();
+                    break;
+                case API_UNSUCCESSFUL_RESPONSE:
+                    view.renderInvalidCredentialsError();
+                    break;
+                case API_RESPONSE_PROCESS_ERROR:
+                    view.renderInvalidCredentialsError();
+                    break;
+                default:
+                    view.renderServerError();
+                    break;
+            }
+        }
+        else {
             view.renderUnexpectedError();
         }
     }

@@ -8,8 +8,6 @@ import android.support.annotation.UiThread;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
-import org.hisp.dhis.android.core.user.User;
-
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 
@@ -26,6 +24,12 @@ public class LoginContracts {
 
         @UiThread
         void renderUnexpectedError();
+
+        @UiThread
+        void renderEmptyUsername();
+
+        @UiThread
+        void renderEmptyPassword();
 
         @UiThread
         void renderServerError();
