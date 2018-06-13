@@ -82,6 +82,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
         setTheme(prefs.getInt("PROGRAM_THEME", prefs.getInt("THEME", R.style.AppTheme)));
 //        setTheme(prefs.getInt("THEME", R.style.AppTheme));
+
         Crashlytics.setString("SERVER", prefs.getString("SERVER", null));
 
         super.onCreate(savedInstanceState);
