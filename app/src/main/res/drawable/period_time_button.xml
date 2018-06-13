@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:shape="rectangle">
     <corners
         android:bottomRightRadius="20dp"
         android:topRightRadius="20dp" />
     <solid
-        app:color="?attr/colorPrimary" />
+        android:color="@color/colorPrimary" />
     <stroke
         android:width="2dp"
-        app:color="?attr/colorPrimary" />
+        android:color="@color/colorPrimary" />
 </shape>

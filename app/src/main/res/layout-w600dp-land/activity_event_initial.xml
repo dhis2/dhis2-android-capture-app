@@ -353,7 +353,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginBottom="16dp"
                     android:layout_marginEnd="16dp"
-                    android:background="@drawable/selector_button_round_7"
+                    android:background="?attr/selector_button_round_7"
                     android:paddingEnd="10dp"
                     android:paddingStart="10dp"
                     android:text="@string/create"
