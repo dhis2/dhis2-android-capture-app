@@ -1,12 +1,81 @@
 package com.dhis2.utils;
 
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.TypedValue;
+
 import com.dhis2.R;
+
+import java.util.ArrayList;
 
 /**
  * QUADRAM. Created by ppajuelo on 12/06/2018.
  */
 
 public class ColorUtils {
+
+    public static int getColorFrom(Context context, @Nullable String hexColor) {
+
+        int colorToReturn = Color.BLACK;
+
+        if (hexColor != null) {
+            if (hexColor.length() == 4) {//Color is formatted as #fff
+                char r = hexColor.charAt(1);
+                char g = hexColor.charAt(2);
+                char b = hexColor.charAt(3);
+                hexColor = "#" + r + r + g + g + b + b; //formatted to #ffff
+            }
+            colorToReturn = Color.parseColor(hexColor);
+        }
+        if (hexColor == null || colorToReturn == Color.BLACK) {
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
+            colorToReturn = a.getColor(0, 0);
+            a.recycle();
+        }
+
+        return colorToReturn;
+    }
+
+    public static Drawable tintDrawableReosurce(@NonNull Drawable drawableToTint, int bgResource) {
+        drawableToTint.setColorFilter(getContrastColor(bgResource), PorterDuff.Mode.SRC_IN);
+        return drawableToTint;
+    }
+
+    public static int getContrastColor(int color) {
+
+        ArrayList<Double> rgb = new ArrayList<>();
+        rgb.add(Color.red(color) / 255.0d);
+        rgb.add(Color.green(color) / 255.0d);
+        rgb.add(Color.blue(color) / 255.0d);
+
+        Double r = null;
+        Double g = null;
+        Double b = null;
+        for (Double c : rgb) {
+            if (c <= 0.03928d)
+                c = c / 12.92d;
+            else
+                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
+
+            if (r == null)
+                r = c;
+            else if (g == null)
+                g = c;
+            else
+                b = c;
+        }
+
+        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
+
+
+        return (L > 0.179d) ? Color.BLACK : Color.WHITE;
+    }
 
     public static int getThemeFromColor(String color) {
 
@@ -143,7 +212,7 @@ public class ColorUtils {
                 return -1;
 
         }
-
     }
+
 
 }

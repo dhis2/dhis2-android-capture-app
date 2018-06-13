@@ -10,6 +10,8 @@ import com.dhis2.utils.Result;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramRuleAction;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
@@ -143,13 +145,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showWarning.field(),
                             ((EditTextViewModel) model).withWarning(showWarning.content()));
-                } /*else if (model != null && model instanceof EditTextDoubleViewModel) {
-                    fieldViewModels.put(showWarning.field(),
-                            ((EditTextDoubleViewModel) model).withWarning(showWarning.content()));
-                } else if (model != null && model instanceof EditTextIntegerViewModel) {
-                    fieldViewModels.put(showWarning.field(), ((EditTextIntegerViewModel) model)
-                            .withWarning(showWarning.content()));
-                }*/
+                }
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
@@ -157,13 +153,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 if (model != null && model instanceof EditTextViewModel) {
                     fieldViewModels.put(showError.field(),
                             ((EditTextViewModel) model).withError(showError.content()));
-                } /*else if (model != null && model instanceof EditTextDoubleViewModel) {
-                    fieldViewModels.put(showError.field(),
-                            ((EditTextDoubleViewModel) model).withWarning(showError.content()));
-                } else if (model != null && model instanceof EditTextIntegerViewModel) {
-                    fieldViewModels.put(showError.field(), ((EditTextIntegerViewModel) model)
-                            .withWarning(showError.content()));
-                }*/
+                }
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
@@ -178,14 +168,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 RuleActionDisplayKeyValuePair displayText =
                         (RuleActionDisplayKeyValuePair) ruleAction;
-               /* TextViewModel textViewModel = TextViewModel.create(uid,
-                        displayText.content(), displayText.data());
 
-                fieldViewModels.put(uid, textViewModel);*/
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 dataEntryView.removeSection(hideSection.programStageSection());
             }
+
         }
     }
 }

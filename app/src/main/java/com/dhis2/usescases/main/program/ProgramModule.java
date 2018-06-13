@@ -16,8 +16,8 @@ public class ProgramModule {
 
     @Provides
     @PerFragment
-    ProgramContract.Presenter programPresenter(HomeRepository homeRepository, MetadataRepository metadataRepository) {
-        return new ProgramPresenter(homeRepository, metadataRepository);
+    ProgramContract.Presenter programPresenter(HomeRepository homeRepository) {
+        return new ProgramPresenter(homeRepository);
     }
 
     @Provides

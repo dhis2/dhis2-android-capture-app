@@ -39,16 +39,18 @@
             <LinearLayout
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
                 android:background="?colorPrimary"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:elevation="10dp">
 
                 <ImageView
                     android:id="@+id/menu"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:onClick="@{()->presenter.onMenuClick()}"
-                    android:padding="15dp"
+                    android:padding="8dp"
                     app:srcCompat="@drawable/ic_menu"
                     tools:ignore="ContentDescription" />
 
@@ -79,6 +81,7 @@
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipToPadding="false"
                 android:layout_below="@id/toolbar" />
         </RelativeLayout>
 

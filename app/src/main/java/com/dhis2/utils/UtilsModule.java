@@ -14,4 +14,10 @@ public final class UtilsModule {
     CurrentDateProvider currentDateProvider() {
         return new CurrentDateProviderImpl();
     }
+
+    @Provides
+    @Singleton
+    RulesUtilsProvider rulesUtilsProvider(CodeGenerator codeGenerator) {
+        return new RulesUtilsProviderImpl(codeGenerator);
+    }
 }

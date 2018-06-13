@@ -35,7 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/renderImage"
-            android:textColorHint="@drawable/edit_text_hint_primary"
             android:theme="@style/loginInputText"
             tools:hint="hint">
 

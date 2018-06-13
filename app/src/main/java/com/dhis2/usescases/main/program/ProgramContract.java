@@ -36,7 +36,7 @@ public class ProgramContract {
 
         void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery);
 
-        Consumer<List<ProgramModel>> swapProgramData();
+        Consumer<List<ProgramViewModel>> swapProgramModelData();
 
         void setOrgUnitFilter(StringBuilder orgUnitFilter);
 
@@ -61,7 +61,7 @@ public class ProgramContract {
     public interface Presenter {
         void init(View view);
 
-        void onItemClick(ProgramModel homeViewModel, Period currentPeriod);
+        void onItemClick(ProgramViewModel programModel, Period currentPeriod);
 
         void onOrgUnitButtonClick();
 
@@ -70,8 +70,6 @@ public class ProgramContract {
         void onTimeButtonClick();
 
         void showDescription(String description);
-
-        Observable<List<EventModel>> getEvents(ProgramModel programModel);
 
         Observable<Pair<Integer, String>> getNumberOfRecords(ProgramModel programModel);
 
@@ -82,8 +80,6 @@ public class ProgramContract {
         void getAllPrograms(String orgUnitQuery);
 
         List<OrganisationUnitModel> getOrgUnits();
-
-        void programObjectStyle(ImageView programImageView, ProgramModel programModel);
 
         void dispose();
     }

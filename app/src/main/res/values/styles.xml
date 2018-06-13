@@ -1,52 +1,6 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorAccentAlpha">@color/colorAccentAlpha</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerTheme</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerTheme</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
 
-    </style>
-
-    <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimaryRed</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeRed</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeRed</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLightRed</item>
-
-    </style>
-
-    <style name="GreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimaryGreen</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeGreen</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeGreen</item>
-        <item name="android:windowContentTransitions">true</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLightGreen</item>
-    </style>
-
-    <style name="OrangeTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimaryOrange</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimaryLight">@color/colorPrimaryLightOrange</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerThemeOrange</item>
-        <item name="android:timePickerDialogTheme">@style/TimePickerThemeOrange</item>
-        <item name="android:windowContentTransitions">true</item>
-    </style>
 
 
     <style name="DatePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">

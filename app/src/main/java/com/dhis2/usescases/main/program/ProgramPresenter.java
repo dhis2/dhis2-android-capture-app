@@ -1,22 +1,17 @@
 package com.dhis2.usescases.main.program;
 
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Color;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.widget.ImageView;
 
 import com.dhis2.R;
-import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
+import com.dhis2.utils.ColorUtils;
 import com.dhis2.utils.OrgUnitUtils;
 import com.dhis2.utils.Period;
-import com.dhis2.utils.StringUtils;
 
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -29,7 +24,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
@@ -37,36 +31,33 @@ import timber.log.Timber;
 
 public class ProgramPresenter implements ProgramContract.Presenter {
 
-    private final MetadataRepository metadataRepository;
     private ProgramContract.View view;
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
     private List<OrganisationUnitModel> myOrgs;
 
-    ProgramPresenter(HomeRepository homeRepository, MetadataRepository metadataRepository) {
+    ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
     public void init(ProgramContract.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
-
         compositeDisposable.add(
                 homeRepository.orgUnits()
                         .map(
                                 orgUnits -> {
                                     this.myOrgs = orgUnits;
-                                    return homeRepository.programs(orgUnitQuery());
+                                    return homeRepository.programModels(null, null, null);
                                 }
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> {
-                                    view.swapProgramData().accept(data.blockingFirst());
+                                    view.swapProgramModelData().accept(data.blockingFirst());
                                     view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs));
                                 },
                                 throwable -> view.renderError(throwable.getMessage())));
@@ -75,11 +66,12 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
-        compositeDisposable.add(homeRepository.programs(dates, period)
+
+        compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view.swapProgramData(),
+                        view.swapProgramModelData(),
                         throwable -> view.renderError(throwable.getMessage())));
 
     }
@@ -87,11 +79,12 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
-        compositeDisposable.add(homeRepository.programs(dates, period, orgUnitQuery)
+
+        compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view.swapProgramData(),
+                        view.swapProgramModelData(),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -100,11 +93,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getAllPrograms(String orgUnitQuery) {
         compositeDisposable.add(
-                homeRepository.programs(orgUnitQuery)
+                homeRepository.programModels(null, null, orgUnitQuery)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view.swapProgramData(),
+                                view.swapProgramModelData(),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
     }
@@ -115,65 +108,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     }
 
     @Override
-    public void programObjectStyle(ImageView programImageView, ProgramModel programModel) {
-        compositeDisposable.add(
-                metadataRepository.getObjectStyle(programModel.uid())
-                        .filter(objectStyleModel -> objectStyleModel != null)
-                        .map(objectStyleModel -> {
-                            String color = objectStyleModel.color();
-                            if (color != null && color.length() == 4) {//Color is formatted as #fff
-                                char r = color.charAt(1);
-                                char g = color.charAt(2);
-                                char b = color.charAt(3);
-                                color = "#" + r + r + g + g + b + b; //formatted to #ffff
-                            }
-
-                            int icon = -1;
-                            if (objectStyleModel.icon() != null) {
-                                Resources resources = view.getContext().getResources();
-                                String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                                icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                            }
-                            return Pair.create(color!=null?Color.parseColor(color):-1, icon);
-
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                colorAndIcon -> {
-
-                                    if (colorAndIcon.val1() != -1) {
-                                        programImageView.setImageResource(colorAndIcon.val1());
-                                    }
-
-                                    if (colorAndIcon.val0() != -1) {
-                                        programImageView.setBackgroundColor(colorAndIcon.val0());
-                                        StringUtils.setFromResBgColor(programImageView, colorAndIcon.val0());
-
-                                    } else {
-                                        TypedValue typedValue = new TypedValue();
-                                        TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-                                        int lcolor = a.getColor(0, 0);
-                                        a.recycle();
-                                        programImageView.setBackgroundColor(lcolor);
-                                    }
-
-                                },
-                                Timber::d)
-        );
-    }
-
-    @Override
     public void dispose() {
         compositeDisposable.dispose();
     }
 
     @Override
-    public void onItemClick(ProgramModel programModel, Period currentPeriod) {
+    public void onItemClick(ProgramViewModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programModel.uid());
-        bundle.putString("TRACKED_ENTITY_UID", programModel.trackedEntityType());
+        bundle.putString("PROGRAM_UID", programModel.id());
+        bundle.putString("TRACKED_ENTITY_UID", programModel.type());
 
         switch (currentPeriod) {
             case NONE:
@@ -198,8 +142,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                 break;
         }
 
+        int programTheme = ColorUtils.getThemeFromColor(programModel.color());
+        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        if (programTheme != -1) {
 
-        if (programModel.programType() == ProgramType.WITH_REGISTRATION) {
+            prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
+        } else
+            prefs.edit().remove("PROGRAM_THEME").apply();
+
+        if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         } else {
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
@@ -225,11 +177,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
-    }
-
-    @Override
-    public Observable<List<EventModel>> getEvents(ProgramModel programModel) {
-        return homeRepository.eventModels(programModel.uid());
     }
 
     @Override

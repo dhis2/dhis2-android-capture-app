@@ -123,7 +123,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             coordinatesView.setCurrentLocationListener(this);
         }
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -152,7 +152,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 }
                 Log.d("formfragment", "onPageScrollStateChanged");
             }
-        });
+        });*/
 
         setupActionBar();
     }

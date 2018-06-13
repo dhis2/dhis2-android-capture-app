@@ -94,8 +94,7 @@
                     android:layout_height="match_parent"
                     app:initGrid="@{true}"
                     spanCount="@{4}"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    tools:listitem="@layout/item_program" />
+                    app:layoutManager="android.support.v7.widget.GridLayoutManager" />
 
                 <ProgressBar
                     android:id="@+id/program_progress"

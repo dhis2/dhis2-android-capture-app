@@ -20,6 +20,7 @@
     <application
         android:name=".App"
         android:allowBackup="false"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -29,8 +30,11 @@
         <activity android:name=".usescases.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="play.dhis.org"/>
             </intent-filter>
         </activity>
 
@@ -40,13 +44,11 @@
 
         <activity android:name=".usescases.main.MainActivity" />
 
-        <activity android:name=".usescases.programDetail.ProgramDetailActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
-        <activity android:name=".usescases.programDetailTablet.ProgramDetailTabletActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />

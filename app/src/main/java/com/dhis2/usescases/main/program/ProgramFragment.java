@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,15 +96,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         chosenDateWeek.add(new Date());
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
-
+        binding.programRecycler.setAdapter(new ProgramModelAdapter(presenter, currentPeriod));
+        binding.programRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setUpRecycler();
-
+        presenter.init(this);
     }
 
     @Override
@@ -230,7 +230,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                 break;
         }
-        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+//        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+        ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
         switch (currentPeriod) {
@@ -277,7 +278,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-        binding.programRecycler.setAdapter(new ProgramAdapter(presenter, currentPeriod));
+
         presenter.init(this);
     }
 
@@ -293,11 +294,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     }
 
     @Override
-    public Consumer<List<ProgramModel>> swapProgramData() {
+    public Consumer<List<ProgramViewModel>> swapProgramModelData() {
         return programs -> {
             binding.programProgress.setVisibility(View.GONE);
             binding.emptyView.setVisibility(programs.isEmpty() ? View.VISIBLE : View.GONE);
-            ((ProgramAdapter) binding.programRecycler.getAdapter()).setData(programs);
+            ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setData(programs);
 
             setTutorial();
         };
@@ -403,7 +404,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
-        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+//        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
+        ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,18 +30,6 @@ import io.reactivex.Observable;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-    private List<Date> dates;
-    private Period period;
-
-    private final static String PROGRAMS = "" +
-            "SELECT Program.* FROM Program";
-
-    private final static String PROGRAMS_EVENT_DATES_2 = "" +
-            "SELECT *, Program.uid, Event.uid AS event_uid, Event.lastUpdated AS event_updated FROM Program " +
-            "INNER JOIN Event ON Event.program = Program.uid " +
-            "WHERE (%s) " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-            "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_PROGRAMS = "SELECT " +
             "Program.* FROM Program " +
@@ -51,10 +40,16 @@ class HomeRepositoryImpl implements HomeRepository {
             "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
-            "WHERE (%s) " +
-            "AND Event.organisationUnit IN (%s) " +
-            "AND Event.program = ? " +
+            "WHERE %s " +
+            "Event.program = ? " +
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+
+    private final static String SELECT_TEIS = "SELECT Event.* FROM Event " +
+            "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
+            "WHERE %s " +
+            "Event.program = ? " +
+            "AND Event.state != 'TO_DELETE' " +
+            "GROUP BY Enrollment.trackedEntityInstance";
 
     private final static String SELECT_EVENTS_NO_DATE = "SELECT Event.* FROM Event " +
             "WHERE Event.organisationUnit IN (%s) " +
@@ -70,11 +65,11 @@ class HomeRepositoryImpl implements HomeRepository {
             "ObjectStyle.color, " +
             "ObjectStyle.icon," +
             "Program.programType," +
-            "Program.trackedEntityType " +
-            "FROM Program JOIN ObjectStyle ON ObjectStyle.uid = Program.uid ";
+            "Program.trackedEntityType," +
+            "Program.description " +
+            "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid ";
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
@@ -85,106 +80,15 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
 
     private final BriteDatabase briteDatabase;
-    private String orgUnits;
 
     HomeRepositoryImpl(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
-
-    @NonNull
-    @Override
-    public Observable<List<ProgramModel>> programs(String orgUnitsIdQuery) {
-        this.dates = null;
-        this.period = null;
-        this.orgUnits = orgUnitsIdQuery;
-        String finalQuery = PROGRAMS;
-       /* if (!isEmpty(orgUnitsIdQuery)) {
-            finalQuery += String.format(" LEFT JOIN Event ON Event.program = Program.uid WHERE Event.organisationUnit IN (%s) AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'", orgUnitsIdQuery);
-        }*/
-        return briteDatabase.createQuery(SELECT_SET_2, finalQuery + " GROUP BY Program.uid")
-                .mapToList(ProgramModel::create);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<ProgramModel>> programs(List<Date> dates, Period period) {
-        this.dates = dates;
-        this.period = period;
-
-        StringBuilder dateQuery = new StringBuilder();
-        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-        for (int i = 0; i < dates.size(); i++) {
-            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
-            if (i < dates.size() - 1)
-                dateQuery.append("OR ");
-        }
-
-        return briteDatabase.createQuery(SELECT_SET_2, String.format(PROGRAMS_EVENT_DATES_2, dateQuery))
-                .mapToList(ProgramModel::create);
-    }
-
-
-    @NonNull
-    @Override
-    public Flowable<List<ProgramModel>> programs(List<Date> dates, Period period, String orgUnitsId) {
-        this.dates = dates;
-        this.period = period;
-        this.orgUnits = orgUnitsId;
-
-        StringBuilder dateQuery = new StringBuilder();
-        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-        for (int i = 0; i < dates.size(); i++) {
-            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.getInstance().formatDate(datesToQuery[0]), DateUtils.getInstance().formatDate(datesToQuery[1])));
-            if (i < dates.size() - 1)
-                dateQuery.append("OR ");
-        }
-
-        return briteDatabase.createQuery(SELECT_SET, String.format(SELECT_PROGRAMS, dateQuery, orgUnitsId))
-                .mapToList(ProgramModel::create).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<EventModel>> eventModels(String programUid) {
-        String queryFinal;
-        if (dates != null) {
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
-            queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
-        } else
-            queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
-
-        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, programUid).mapToList(EventModel::create);
-    }
-
     @NonNull
     @Override
     public Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program) {
-        String queryFinal;
-        if (dates != null) {
-            StringBuilder dateQuery = new StringBuilder();
-            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-            for (int i = 0; i < dates.size(); i++) {
-                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                if (i < dates.size() - 1)
-                    dateQuery.append("OR ");
-            }
-            queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
-        } else
-            queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
-
-        if (program.programType() == ProgramType.WITH_REGISTRATION)
-            queryFinal += " GROUP BY " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT_UID;
+        String queryFinal = null;
 
         return briteDatabase.createQuery(EventModel.TABLE, queryFinal, program.uid()).mapToList(EventModel::create)
                 .flatMap(data -> {
@@ -198,20 +102,20 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> programModels() {
+    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId) {
         return briteDatabase.createQuery(TABLE_SET, PROGRAM_MODELS)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
                     String displayName = cursor.getString(1);
                     String color = cursor.getString(2);
                     String icon = cursor.getString(3);
-
                     String programType = cursor.getString(4);
                     String teiType = cursor.getString(5);
+                    String description = cursor.getString(6);
 
-                    String queryFinal;
-                    if (dates != null) {
-                        StringBuilder dateQuery = new StringBuilder();
+                    //QUERYING Program EVENTS - dates filter
+                    StringBuilder dateQuery = new StringBuilder("");
+                    if (dates != null && !dates.isEmpty()) {
                         String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
                         for (int i = 0; i < dates.size(); i++) {
                             Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
@@ -219,24 +123,59 @@ class HomeRepositoryImpl implements HomeRepository {
                             if (i < dates.size() - 1)
                                 dateQuery.append("OR ");
                         }
-                        queryFinal = String.format(SELECT_EVENTS, dateQuery, orgUnits);
-                    } else
-                        queryFinal = String.format(SELECT_EVENTS_NO_DATE, orgUnits);
+                    }
 
-                    if (programType.equals(ProgramType.WITH_REGISTRATION.name()))
-                        queryFinal += " GROUP BY " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT_UID;
+                    //QUERYING Program Events - orgUnit filter
+                    String orgQuery = "";
+                    if (orgUnitsId != null)
+                        orgQuery = String.format("Event.organisationUnit IN (%s)", orgUnitsId);
+
+
+                    String queryFinal;
+                    String filter = "";
+                    if (!dateQuery.toString().isEmpty() && !orgQuery.isEmpty())
+                        filter = dateQuery.toString() + " AND " + orgQuery + " AND ";
+                    else if (!dateQuery.toString().isEmpty() || !orgQuery.isEmpty())
+                        filter = dateQuery.toString() + orgQuery + " AND ";
+
+                    if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
+                        queryFinal = String.format(SELECT_TEIS, filter);
+                    } else {
+                        queryFinal = String.format(SELECT_EVENTS, filter);
+                    }
 
                     Cursor countCursor = briteDatabase.query(queryFinal, uid);
                     int count = 0;
-                    if (countCursor != null && countCursor.moveToFirst())
+                    if (countCursor != null && countCursor.moveToFirst()) {
                         count = countCursor.getCount();
-                    String type = "events";
-                    if (programType.equals(ProgramType.WITH_REGISTRATION.name()))
-                        type = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType).getString(0);
+                        countCursor.close();
+                    }
 
 
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, type);
-                }).toFlowable(BackpressureStrategy.LATEST);
+                    //QUERYING Tracker name
+                    String typeName = "Events";
+                    if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
+                        Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType);
+                        if (typeCursor != null && typeCursor.moveToFirst()) {
+                            typeName = typeCursor.getString(0);
+                            typeCursor.close();
+                        }
+                    }
+
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description);
+                }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period) {
+        if (period == null)
+            return list;
+        else {
+            List<ProgramViewModel> models = new ArrayList<>();
+            for (ProgramViewModel programViewModel : list)
+                if (programViewModel.count() > 0)
+                    models.add(programViewModel);
+            return models;
+        }
     }
 
     @NonNull
@@ -245,6 +184,4 @@ class HomeRepositoryImpl implements HomeRepository {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
-
-
 }

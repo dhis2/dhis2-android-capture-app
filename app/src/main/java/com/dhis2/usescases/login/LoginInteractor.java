@@ -15,6 +15,7 @@ import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.common.D2ErrorCode;
+import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
@@ -124,7 +125,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void sync() {
 
-        disposable.add(
+        /*disposable.add(
                 Observable.just(true)
                         .map(response -> {
                             userManager.getD2().syncMetaData().call();
@@ -139,9 +140,9 @@ public class LoginInteractor implements LoginContracts.Interactor {
                                 update(LoginActivity.SyncState.METADATA),
                                 throwable -> {
                                     throw new OnErrorNotImplementedException(throwable);
-                                }));
+                                }));*/
 
-       /* disposable.add(metadata()
+        disposable.add(metadata()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -152,7 +153,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                         update(LoginActivity.SyncState.METADATA),
                         throwable -> {
                             throw new OnErrorNotImplementedException(throwable);
-                        }));*/
+                        }));
 
     }
 
@@ -216,7 +217,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     }
 
     @NonNull
-    private Observable<Void> metadata() {
+    private Observable<Unit> metadata() {
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
     }
 

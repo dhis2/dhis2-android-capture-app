@@ -4,6 +4,7 @@
         <attr name="bgTransparent" format="boolean" />
     </declare-styleable>
 
+    <attr name="colorPrimary" format="color"/>
     <attr name="colorPrimaryLight" format="color"/>
     <attr name="colorAccentAlpha" format="color"/>
     <attr name="coloredBgTextColor" format="color"/>
