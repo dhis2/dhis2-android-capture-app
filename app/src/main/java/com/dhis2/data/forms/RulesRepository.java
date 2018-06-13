@@ -122,12 +122,12 @@ public final class RulesRepository {
         this.briteDatabase = briteDatabase;
     }
 
-   /* @NonNull
+    /*@NonNull
     Flowable<List<Rule>> rules(@NonNull String programUid) {
         return Flowable.combineLatest(queryRules(programUid),
                 queryRuleActions(programUid), RulesRepository::mapActionsToRules);
-    }*/
-
+    }
+*/
     @NonNull
     Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
         return Flowable.combineLatest(queryRules(programUid),
@@ -147,11 +147,11 @@ public final class RulesRepository {
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
-   /* @NonNull
+  /*  @NonNull
     private Flowable<Map<String, Collection<RuleAction>>> queryRuleActions(@NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
                 .mapToList(RulesRepository::mapToActionPairs)
-                .switchMap(pairs -> toV2Flowable(rx.Observable.from(pairs)
+                .switchMap(pairs -> Flowable.fromIterable(pairs))
                         .toMultimap(Pair::val0,
                                 Pair::val1)));
     }*/
@@ -257,7 +257,7 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-//                return RuleVariableValue.create(mimeType); //TODO: POR QUÉ NO ES PUBLICO????
+//                return RuleVariableDataElement.create(mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
