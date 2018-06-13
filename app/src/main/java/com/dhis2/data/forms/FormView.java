@@ -2,6 +2,7 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
@@ -50,4 +51,6 @@ interface FormView {
     void initReportDatePicker(boolean reportAllowFutureDates, boolean incidentAllowFutureDates);
 
     void onNext(ReportStatus reportStatus);
+
+    void isMandatoryFieldsRequired(List<FieldViewModel> viewModels);
 }

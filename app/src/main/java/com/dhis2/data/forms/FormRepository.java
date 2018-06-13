@@ -8,8 +8,6 @@ import com.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 
 import java.util.List;
@@ -61,5 +59,5 @@ public interface FormRepository {
     Observable<String> autoGenerateEvents(String enrollmentUid);
 
     @NonNull
-    Flowable<List<FieldViewModel>> fieldValues();
+    Observable<List<FieldViewModel>> fieldValues();
 }

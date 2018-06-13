@@ -187,6 +187,7 @@
     <string name="revert">Revert</string>
     <string name="activated">Activated</string>
     <string name="enroll_in">Enroll in %s</string>
+    <string name="missing_mandatory_fields">Some mandatory fields are missing</string>
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
