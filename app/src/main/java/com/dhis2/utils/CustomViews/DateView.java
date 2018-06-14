@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -20,6 +19,8 @@ import com.dhis2.utils.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+
+import timber.log.Timber;
 
 /**
  * Created by frodriguez on 1/15/2018.
@@ -94,9 +95,13 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
             try {
                 date = DateUtils.uiDateFormat().parse(data);
             } catch (ParseException e) {
+                Timber.e(e);
             }
 
             data = DateUtils.uiDateFormat().format(date);
+        }
+        else{
+            editText.setText("");
         }
         editText.setText(data);
     }

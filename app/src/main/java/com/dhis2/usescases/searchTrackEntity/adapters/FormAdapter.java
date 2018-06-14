@@ -1,5 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.crashlytics.android.Crashlytics;
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
@@ -26,7 +28,6 @@ import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import com.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import com.dhis2.utils.CodeGeneratorImpl;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -69,10 +70,12 @@ public class FormAdapter extends RecyclerView.Adapter {
     @NonNull
     private final List<Row> rows;
 
-    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits) {
+    private Context context;
+
+    public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits, Context context) {
         setHasStableIds(true);
-        //        this.processor = PublishProcessor.create();
         this.processor = PublishProcessor.create();
+        this.context = context;
         rows = new ArrayList<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
@@ -91,19 +94,18 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return rows.get(viewType).onCreate(parent);
-
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        FieldViewModel viewModel = null;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        FieldViewModel viewModel;
 
         if (position < programData) {
             viewModel = DateTimeViewModel.create(
                     String.valueOf(programModel.id() + position),
                     holder.getAdapterPosition() == 0 ?
-                            programModel.enrollmentDateLabel() != null ? programModel.enrollmentDateLabel() : "Enrollment date" :
-                            programModel.incidentDateLabel() != null ? programModel.incidentDateLabel() : "Incident date",
+                            programModel.enrollmentDateLabel() != null && programModel.enrollmentDateLabel().isEmpty() ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
+                            programModel.incidentDateLabel() != null && programModel.incidentDateLabel().isEmpty() ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
                     false,
                     ValueType.DATE,
                     null,
@@ -139,7 +141,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = AgeViewModel.create(attr.uid(), label, false, null, null);
                     break;
                 case ORG_UNIT:
-                    viewModel = OrgUnitViewModel.create(attr.uid(),label,false,null,null);
+                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, null, null);
                     break;
                 default:
                     Crashlytics.log("Unsupported viewType " +
@@ -147,13 +149,6 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = EditTextViewModel.create(attr.uid(), "UNSUPORTED", false, null, "UNSUPPORTED", 1, attr.valueType(), null, false);
                     break;
             }
-         /*   if (holder.getItemViewType() == EDITTEXT)
-                rows.get(holder.getItemViewType()).onBind(holder, EditTextViewModel.create(attr.uid(), attr.displayShortName(), false, null,
-                        attr.displayShortName(), 1, attr.valueType()));
-            else if (holder.getItemViewType() == SPINNER) {
-                rows.get(holder.getItemViewType()).onBind(holder, SpinnerViewModel.create(attr.uid(), attr.displayShortName(), "Hola", false, attr.optionSet(), null));
-            } else
-                ((FormViewHolder) holder).bind(presenter, attributeList.get(holder.getAdapterPosition() - programData));*/
         }
         rows.get(holder.getItemViewType()).onBind(holder, viewModel);
 
@@ -237,7 +232,6 @@ public class FormAdapter extends RecyclerView.Adapter {
             }
             modelList = new ArrayList<>(modelListnew);
         }
-
 
         this.attributeList = modelList;
         notifyDataSetChanged();

@@ -90,7 +90,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         }
 
 
-        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits()));
+        binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
 
     }
 
@@ -183,9 +183,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void clearList(String uid) {
         this.initialProgram = uid;
-       /* ((SearchLocalFragment) pagerAdapter.getItem(0)).clear();
-        if (NetworkUtils.isOnline(this))
-            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();*/
+
         if (uid == null)
             binding.programSpinner.setSelection(0);
     }
