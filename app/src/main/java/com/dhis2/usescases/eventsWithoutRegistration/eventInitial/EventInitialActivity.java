@@ -475,7 +475,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
-        startFormActivity(eventUid);
+        if (!eventCreationType.equals(SCHEDULENEW)) {
+            startFormActivity(eventUid);
+        }
+        else {
+            finish();
+        }
     }
 
     @Override

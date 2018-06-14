@@ -33,11 +33,10 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private TextInputEditText editText;
     @NonNull
     private BehaviorProcessor<DateTimeViewModel> model;
 
-    public DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.disposable = new CompositeDisposable();
         this.processor = processor;
@@ -45,17 +44,14 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
-            this.editText = ((FormTimeTextBinding) binding).timeView.getEditText();
         }
 
         if (binding instanceof FormDateTextBinding) {
             ((FormDateTextBinding) binding).dateView.setDateListener(this);
-            this.editText = ((FormDateTextBinding) binding).dateView.getEditText();
         }
 
         if (binding instanceof FormDateTimeTextBinding) {
             ((FormDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
-            this.editText = ((FormDateTimeTextBinding) binding).dateTimeView.getEditText();
         }
 
         disposable.add(
@@ -68,6 +64,10 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                             if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
                             }
+                            else {
+                                binding.setVariable(BR.initData, null);
+                            }
+
                             if (binding instanceof FormDateTextBinding)
                                 ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
                             if (binding instanceof FormDateTimeTextBinding)

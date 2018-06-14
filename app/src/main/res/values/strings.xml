@@ -176,6 +176,8 @@
     <string name="last_metadata_sync_date">Last sync on: %s</string>
 
     <!-- SEARCH TRACK ENTITY -->
+    <string name="enrollmment_date">Enrollment date</string>
+
 
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>
