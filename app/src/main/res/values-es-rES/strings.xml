@@ -181,5 +181,15 @@
     <string name="share">Compartir</string>
     <string name="teiType_search_online">La búsqueda por tipo no está disponible de manera online.\nPor favor, seleccione un programa de la lista.</string>
     <string name="missing_mandatory_fields">Campos requeridos no pueden estar vacios</string>
+    <string name="sync_max_parameters">Ajustes actuales de sincronización:</string>
+    <string name="sync_default_parameters">Volver a los valores por defecto</string>
+    <string name="wipe_data">Reiniciar app</string>
+    <string name="wipe_data_meesage">Se borrará la base de datos. Tendrás que volver a iniciar sesión.</string>
+    <string name="wipe_data_ok">Aceptar</string>
+    <string name="wipe_data_no">Cancelar</string>
+    <string name="max">MAX</string>
+    <string name="current">ACTUAL</string>
+    <string name="tei">TEI</string>
+    <string name="limit_by_organisation_unit">Limitar por unid. organizativa</string>
 
 </resources>

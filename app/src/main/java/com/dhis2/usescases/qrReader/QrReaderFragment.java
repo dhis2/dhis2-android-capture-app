@@ -168,4 +168,17 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         bundle.putString("PROGRAM_UID", null);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
+
+    @Override
+    public void emptyOnlineData() {
+        new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setTitle(getString(R.string.QR_SCANNER))
+                .setMessage("Read next QR to get more info")
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                    dialog.dismiss();
+                    mScannerView.resumeCameraPreview(this);
+                })
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+                .show();
+    }
 }

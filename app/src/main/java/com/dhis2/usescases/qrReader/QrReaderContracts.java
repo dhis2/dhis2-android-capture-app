@@ -24,6 +24,8 @@ public class QrReaderContracts {
         void initDownload();
 
         void goToDashBoard(String uid);
+
+        void emptyOnlineData();
     }
 
     public interface Presenter {

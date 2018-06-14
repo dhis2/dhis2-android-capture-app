@@ -124,4 +124,8 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
+    public void dispose() {
+        disposable.dispose();
+    }
 }

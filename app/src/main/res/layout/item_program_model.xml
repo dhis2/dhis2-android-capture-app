@@ -60,11 +60,12 @@
             android:padding="5dp"
             android:text="@{program.title()}"
             android:textColor="?colorPrimary"
-            android:textSize="14sp"
+            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="dasfasdadgfg\n" />
+            tools:text="Child Program" />
 
         <ImageView
             android:id="@+id/sync_status"

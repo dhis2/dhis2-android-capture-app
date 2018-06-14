@@ -53,4 +53,9 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
     public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel) {
         binding.setLabel(viewModel.label());
     }
+
+    @Override
+    public void deAttach(@NonNull UnsupportedHolder viewHolder) {
+        viewHolder.dispose();
+    }
 }

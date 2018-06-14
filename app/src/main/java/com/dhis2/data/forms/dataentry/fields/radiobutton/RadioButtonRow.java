@@ -54,5 +54,10 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
         viewHolder.update(viewModel);
     }
 
+    @Override
+    public void deAttach(@NonNull RadioButtonHolder viewHolder) {
+        viewHolder.dispose();
+    }
+
 
 }

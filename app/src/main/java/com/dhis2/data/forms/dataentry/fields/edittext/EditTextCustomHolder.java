@@ -253,4 +253,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    public void dispose() {
+        disposable.dispose();
+    }
 }

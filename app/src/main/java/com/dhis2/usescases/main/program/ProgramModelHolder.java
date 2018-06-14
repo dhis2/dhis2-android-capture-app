@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main.program;
 
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemProgramModelBinding;
@@ -41,7 +44,7 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
             String iconName = programViewModel.icon().startsWith("ic_") ? programViewModel.icon() : "ic_" + programViewModel.icon();
             icon = resources.getIdentifier(iconName, "drawable", binding.programImage.getContext().getPackageName());
         } else {
-            icon = programViewModel.programType().equals(ProgramType.WITH_REGISTRATION.name()) ? R.drawable.ic_with_registration : R.drawable.ic_without_reg;
+            icon = R.drawable.ic_program_default;
         }
 
         Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
@@ -52,6 +55,7 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
 
         SpannableStringBuilder sb = new SpannableStringBuilder(String.format("%s %s", programViewModel.count(), programViewModel.typeName()));
         sb.setSpan(new AbsoluteSizeSpan(18,true), 0, programViewModel.count().toString().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD), 0, programViewModel.count().toString().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         binding.eventsNumber.setText(sb);
     }
 }

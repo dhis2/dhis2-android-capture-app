@@ -16,4 +16,5 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
+    public abstract void dispose();
 }

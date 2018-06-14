@@ -23,22 +23,23 @@ public class AgeHolder extends FormViewHolder {
 
     @NonNull
     private BehaviorProcessor<AgeViewModel> model;
+    CompositeDisposable disposable;
 
     AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
-        CompositeDisposable disposable = new CompositeDisposable();
+        disposable = new CompositeDisposable();
         model = BehaviorProcessor.create();
 
         disposable.add(model.subscribe(ageViewModel -> {
-            StringBuilder label = new StringBuilder(ageViewModel.label());
-            if(ageViewModel.mandatory())
-                label.append("*");
-            binding.customAgeview.setLabel(label.toString());
-            if (!isEmpty(ageViewModel.value())) {
-                binding.customAgeview.setInitialValue(ageViewModel.value());
-            }
-            binding.executePendingBindings();
-        },
+                    StringBuilder label = new StringBuilder(ageViewModel.label());
+                    if (ageViewModel.mandatory())
+                        label.append("*");
+                    binding.customAgeview.setLabel(label.toString());
+                    if (!isEmpty(ageViewModel.value())) {
+                        binding.customAgeview.setInitialValue(ageViewModel.value());
+                    }
+                    binding.executePendingBindings();
+                },
                 Timber::d));
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
@@ -52,5 +53,10 @@ public class AgeHolder extends FormViewHolder {
 
     public void update(AgeViewModel viewModel) {
         model.onNext(viewModel);
+    }
+
+    @Override
+    public void dispose() {
+        disposable.dispose();
     }
 }

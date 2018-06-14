@@ -151,7 +151,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="MAX"
+                        android:text="@string/max"
                         android:textColor="?colorPrimary"
                         android:textStyle="bold" />
 
@@ -159,7 +159,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="CURRENT"
+                        android:text="@string/current"
                         android:textColor="?colorPrimary"
                         android:textStyle="bold" />
                 </TableRow>
@@ -169,7 +169,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Events"
+                        android:text="@string/sync_events"
                         android:textColor="@color/black_de0"
                         android:textStyle="bold" />
 
@@ -194,7 +194,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TEI"
+                        android:text="@string/tei"
                         android:textColor="@color/black_de0"
                         android:textStyle="bold" />
 
@@ -220,7 +220,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Limit by organisation unit"
+                android:text="@string/limit_by_organisation_unit"
                 app:switchPadding="15dp" />
 
             <Button

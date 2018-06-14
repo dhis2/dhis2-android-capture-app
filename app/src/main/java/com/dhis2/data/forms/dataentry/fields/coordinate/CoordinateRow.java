@@ -54,4 +54,8 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
         viewHolder.update(viewModel);
     }
 
+    @Override
+    public void deAttach(@NonNull CoordinateHolder viewHolder) {
+        viewHolder.dispose();
+    }
 }

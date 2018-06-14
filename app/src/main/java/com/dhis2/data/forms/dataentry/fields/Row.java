@@ -10,4 +10,6 @@ public interface Row<VH extends ViewHolder, VM extends FieldViewModel> {
     VH onCreate(@NonNull ViewGroup parent);
 
     void onBind(@NonNull VH viewHolder, @NonNull VM viewModel);
+
+    void deAttach(@NonNull VH viewHolder);
 }

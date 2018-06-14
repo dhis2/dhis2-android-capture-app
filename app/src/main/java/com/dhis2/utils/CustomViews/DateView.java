@@ -69,6 +69,8 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
 
         editText = findViewById(R.id.inputEditText);
         selectedCalendar = Calendar.getInstance();
+        editText.setFocusable(false); //Makes editText not editable
+        editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
     }

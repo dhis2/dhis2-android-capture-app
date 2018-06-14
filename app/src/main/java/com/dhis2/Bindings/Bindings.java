@@ -295,10 +295,7 @@ public class Bindings {
 
     @BindingAdapter("programTypeIcon")
     public static void setProgramIcon(ImageView view, ProgramType programType) {
-        if (programType.equals(ProgramType.WITH_REGISTRATION))
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_with_registration));
-        else
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_without_reg));
+        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_program_default));
     }
 
     @BindingAdapter("progressColor")
@@ -802,8 +799,8 @@ public class Bindings {
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
-            if(drawable!=null)
-            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            if (drawable != null)
+                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
     }
@@ -850,8 +847,8 @@ public class Bindings {
         }
         if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
-            if(drawable!=null)
-            drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
+            if (drawable != null)
+                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
         }
     }

@@ -62,4 +62,9 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel) {
         viewHolder.update(viewModel);
     }
+
+    @Override
+    public void deAttach(@NonNull ImageHolder viewHolder) {
+        viewHolder.dispose();
+    }
 }

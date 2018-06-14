@@ -7,10 +7,7 @@ import android.support.annotation.NonNull;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.CustomFormCoordinateBinding;
-import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 import com.dhis2.utils.CustomViews.CoordinatesView;
-
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.Locale;
 
@@ -23,9 +20,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class CoordinateHolder extends FormViewHolder {
 
-    private SearchTEContractsModule.Presenter presenter;
-    private TrackedEntityAttributeModel bindableObject;
-
+    CompositeDisposable disposable;
     @NonNull
     private
     BehaviorProcessor<CoordinateViewModel> model;
@@ -33,6 +28,8 @@ public class CoordinateHolder extends FormViewHolder {
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        disposable = new CompositeDisposable();
+
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) ->
                 processor.onNext(
                         RowAction.create(model.getValue().uid(),
@@ -42,18 +39,18 @@ public class CoordinateHolder extends FormViewHolder {
         binding.formCoordinates.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
         );
-        CompositeDisposable disposable = new CompositeDisposable();
+
         model = BehaviorProcessor.create();
 
         disposable.add(model.subscribe(coordinateViewModel -> {
-            StringBuilder label = new StringBuilder(coordinateViewModel.label());
-            if(coordinateViewModel.mandatory())
-                label.append("*");
-            binding.formCoordinates.setLabel(label.toString());
-            if (!isEmpty(coordinateViewModel.value()))
-                binding.formCoordinates.setInitialValue(coordinateViewModel.value());
-            binding.executePendingBindings();
-        },
+                    StringBuilder label = new StringBuilder(coordinateViewModel.label());
+                    if (coordinateViewModel.mandatory())
+                        label.append("*");
+                    binding.formCoordinates.setLabel(label.toString());
+                    if (!isEmpty(coordinateViewModel.value()))
+                        binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+                    binding.executePendingBindings();
+                },
                 Timber::d));
     }
 
@@ -61,4 +58,8 @@ public class CoordinateHolder extends FormViewHolder {
         model.onNext(viewModel);
     }
 
+    @Override
+    public void dispose() {
+        disposable.dispose();
+    }
 }

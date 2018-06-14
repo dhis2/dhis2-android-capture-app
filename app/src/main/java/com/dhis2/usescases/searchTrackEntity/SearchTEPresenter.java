@@ -19,6 +19,8 @@ import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.D2CallException;
+import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
@@ -186,19 +188,21 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     filterList.add(key + ":LIKE:" + queryData.get(key));
                                 }
                                 List<String> orgUnitsUids = new ArrayList<>();
-                                for (OrganisationUnitModel orgUnit : orgUnits)
-                                    orgUnitsUids.add(orgUnit.uid());
+//                                for (OrganisationUnitModel orgUnit : orgUnits)
+                                orgUnitsUids.add(orgUnits.get(0).uid());
                                 TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
                                         .program(selectedProgram.uid())
                                         .page(page)
-                                        .pageSize(10)
+                                        .pageSize(20)
                                         .paging(true)
                                         .filter(filterList)
                                         .orgUnits(orgUnitsUids)
+                                        .orgUnitMode(OuMode.ACCESSIBLE)
                                         .build();
                                 return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
                                         .observeOn(Schedulers.io())
-                                        .subscribeOn(Schedulers.io());
+                                        .subscribeOn(Schedulers.io())
+                                        .doOnError(this::handleError);
 
                             })
                             .flatMap(teiList -> searchRepository.isOnLocalStorage(teiList).toFlowable(BackpressureStrategy.LATEST))
@@ -219,11 +223,31 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(data -> onlineFragment.setItems(
                                     data, programModels),
-                                    t -> Log.d("ONLINE_SEARCH_DOWNLOAD", "ERROR SHOWING ONLINE DATA " + t.getMessage())
+                                    Timber::d
                             )
             );
         else
             onlineFragment.setItems(Pair.create(new ArrayList<>(), view.getContext().getString(R.string.teiType_search_online)), programModels);
+    }
+
+    private void handleError(Throwable throwable) {
+        if (throwable instanceof D2CallException) {
+            D2CallException exception = (D2CallException) throwable;
+            switch (exception.errorCode()) {
+                case UNEXPECTED:
+                    view.displayMessage("Unexpected error while searching online");
+                    break;
+                case SEARCH_GRID_PARSE:
+                    view.displayMessage("Error while parsing results");
+                    break;
+                case API_RESPONSE_PROCESS_ERROR:
+                    view.displayMessage("Searching online returned an error");
+                    break;
+                case API_UNSUCCESSFUL_RESPONSE:
+                    view.displayMessage("Something went wrong in the server");
+                    break;
+            }
+        }
     }
 
     private void getTrackedEntityAttributes() {

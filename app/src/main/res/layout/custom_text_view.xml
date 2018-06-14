@@ -13,6 +13,7 @@
         <variable
             name="isEditable"
             type="android.databinding.ObservableBoolean" />
+
     </data>
 
     <RelativeLayout
@@ -46,9 +47,9 @@
                 android:maxLines="1"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
-                tools:text="hello"
                 android:textColor="?colorPrimary"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                tools:text="hello" />
 
         </android.support.design.widget.TextInputLayout>
     </RelativeLayout>

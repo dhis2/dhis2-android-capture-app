@@ -22,18 +22,21 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
 
         <ImageView
             android:id="@+id/program_image"
             android:layout_width="130dp"
             android:layout_height="0dp"
+            android:padding="8dp"
             android:background="?attr/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@id/enrollmentDateLabel"
             app:layout_constraintTop_toTopOf="parent"
             app:programTypeIcon='@{program.programType()}'
             tools:background="?attr/colorPrimaryLight"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_program_default"/>
 
         <TextView
             android:id="@+id/program_last_date_label"
@@ -111,12 +114,13 @@
             android:lines="2"
             android:padding="5dp"
             android:text="@{program.displayName()}"
+            android:textStyle="bold"
             android:textColor="?colorPrimary"
-            android:textSize="14sp"
+            android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="dasfasdadgfg\n" />
+            tools:text="Child Program" />
 
         <ImageView
             android:id="@+id/sync_status"

@@ -22,16 +22,11 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import org.hisp.dhis.android.core.common.D2CallException;
-import org.hisp.dhis.android.core.common.D2ErrorCode;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -48,8 +43,6 @@ import static com.dhis2.utils.Constants.TIME_DAILY;
 
 public class LoginInteractor implements LoginContracts.Interactor {
 
-    final String KEYSTORE_PROVIDER = "AndroidKeyStore";
-
     private final MetadataRepository metadataRepository;
     private LoginContracts.View view;
     private ConfigurationRepository configurationRepository;
@@ -58,7 +51,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     @NonNull
     private final CompositeDisposable disposable;
-    private KeyStore mStore;
 
     LoginInteractor(LoginContracts.View view, ConfigurationRepository configurationRepository, MetadataRepository metadataRepository, FirebaseJobDispatcher firebaseJobDispatcher) {
         this.view = view;
@@ -127,30 +119,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
     private void saveUserData(String username, String password) {
     }
 
-    void loadKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-        mStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
-        mStore.load(null);
-    }
-
     @Override
     public void sync() {
-
-        /*disposable.add(
-                Observable.just(true)
-                        .map(response -> {
-                            userManager.getD2().syncMetaData().call();
-                            return SyncResult.success();
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .onErrorReturn(throwable -> SyncResult.failure(
-                                throwable.getMessage() == null ? "" : throwable.getMessage()))
-                        .startWith(SyncResult.progress())
-                        .subscribe(
-                                update(LoginActivity.SyncState.METADATA),
-                                throwable -> {
-                                    throw new OnErrorNotImplementedException(throwable);
-                                }));*/
 
         disposable.add(metadata()
                 .subscribeOn(Schedulers.io())
@@ -197,7 +167,10 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
         disposable.add(trackerData()
                 .subscribeOn(Schedulers.io())
-                .map(response -> SyncResult.success())
+                .map(response -> {
+//                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
+                    return SyncResult.success();
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
@@ -280,7 +253,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
             view.renderInvalidServerUrlError();
         } else if (throwable instanceof D2CallException) {
             D2CallException d2CallException = (D2CallException) throwable;
-            switch (d2CallException.errorCode()){
+            switch (d2CallException.errorCode()) {
                 case LOGIN_PASSWORD_NULL:
                     view.renderEmptyPassword();
                     break;
@@ -303,8 +276,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     view.renderServerError();
                     break;
             }
-        }
-        else {
+        } else {
             view.renderUnexpectedError();
         }
     }
@@ -332,7 +304,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
             );
     }
 
-    private void syncMetadata(){
+    private void syncMetadata() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
         prefs.edit().putInt("timeMeta", TIME_DAILY).apply();
         syncMeta(TIME_DAILY);

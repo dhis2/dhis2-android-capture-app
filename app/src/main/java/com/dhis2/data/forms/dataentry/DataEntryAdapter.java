@@ -4,6 +4,7 @@ import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -82,7 +83,7 @@ public final class DataEntryAdapter extends Adapter {
         this.dataEntryArguments = dataEntryArguments;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, dataEntryArguments.renderType(), isEditable));
-        rows.add(BUTTON, new FileRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
@@ -91,9 +92,9 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, dataEntryArguments.renderType()));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
-        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, false, orgUnits, dataEntryArguments.renderType()));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, false, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, dataEntryArguments.renderType()));
 
 
     }
@@ -182,5 +183,10 @@ public final class DataEntryAdapter extends Adapter {
         }
 
         return isOk;
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
+        rows.get(holder.getItemViewType()).deAttach(holder);
     }
 }

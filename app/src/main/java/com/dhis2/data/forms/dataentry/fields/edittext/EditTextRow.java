@@ -64,4 +64,9 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         viewHolder.update(viewModel);
     }
 
+    @Override
+    public void deAttach(@NonNull EditTextCustomHolder viewHolder) {
+        viewHolder.dispose();
+    }
+
 }

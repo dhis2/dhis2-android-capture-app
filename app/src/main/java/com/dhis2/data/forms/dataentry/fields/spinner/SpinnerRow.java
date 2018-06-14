@@ -48,4 +48,9 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         viewHolder.update(viewModel);
     }
 
+    @Override
+    public void deAttach(@NonNull SpinnerHolder viewHolder) {
+        viewHolder.dispose();
+    }
+
 }

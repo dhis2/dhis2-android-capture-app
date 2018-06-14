@@ -76,4 +76,8 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
         model.onNext(viewModel);
 
     }
+
+    public void dispose() {
+        disposable.dispose();
+    }
 }

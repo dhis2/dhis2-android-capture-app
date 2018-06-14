@@ -257,7 +257,7 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-//                return RuleVariableDataElement.create(mimeType);
+//                return RuleVariable.create(mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);

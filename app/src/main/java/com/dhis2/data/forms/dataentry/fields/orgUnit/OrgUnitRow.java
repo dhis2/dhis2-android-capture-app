@@ -1,16 +1,18 @@
 package com.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.dhis2.BR;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormButtonBinding;
+import com.dhis2.utils.ColorUtils;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -56,16 +58,28 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     @NonNull
     @Override
     public OrgUnitHolder onCreate(@NonNull ViewGroup parent) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.form_button, parent, false);
-        if (isBgTransparent)
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorPrimary));
-        else
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorAccent));
+        ViewDataBinding binding = DataBindingUtil.inflate(
+                inflater,
+                isBgTransparent ? R.layout.custom_text_view : R.layout.custom_text_view_accent,
+                parent,
+                false
+        );
+        binding.setVariable(BR.renderType, renderType);
+        binding.executePendingBindings();
+
+        binding.getRoot().findViewById(R.id.input_editText).setFocusable(false); //Makes editText
+        binding.getRoot().findViewById(R.id.input_editText).setClickable(true);//  but clickable
+
         return new OrgUnitHolder(fm, binding, processor, orgUnits);
     }
 
     @Override
     public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
         viewHolder.update(viewModel);
+    }
+
+    @Override
+    public void deAttach(@NonNull OrgUnitHolder viewHolder) {
+        viewHolder.dispose();
     }
 }

@@ -55,4 +55,8 @@ public class ImageHolder extends RecyclerView.ViewHolder {
     public void update(ImageViewModel viewModel) {
         model.onNext(viewModel);
     }
+
+    public void dispose() {
+        disposable.dispose();
+    }
 }

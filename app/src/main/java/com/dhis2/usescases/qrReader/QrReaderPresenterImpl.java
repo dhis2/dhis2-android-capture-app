@@ -202,11 +202,16 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         List<String> uidToDownload = new ArrayList<>();
         uidToDownload.add(teiUid);
         compositeDisposable.add(
-                Observable.defer(() -> io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(uidToDownload))).toFlowable(BackpressureStrategy.LATEST)
+                Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(uidToDownload))).toFlowable(BackpressureStrategy.LATEST)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.goToDashBoard(data.get(0).uid()),
+                                data -> {
+                                    if(!data.isEmpty())
+                                        view.goToDashBoard(data.get(0).uid());
+                                    else
+                                        view.emptyOnlineData();
+                                    },
                                 Timber::d
                         )
         );

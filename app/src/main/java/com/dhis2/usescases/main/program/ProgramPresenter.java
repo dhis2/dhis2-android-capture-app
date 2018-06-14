@@ -146,7 +146,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
         if (programTheme != -1) {
-
             prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
         } else
             prefs.edit().remove("PROGRAM_THEME").apply();

@@ -1,80 +1,98 @@
 package com.dhis2.data.forms.dataentry.fields.orgUnit;
 
+import android.databinding.ViewDataBinding;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
+import android.widget.EditText;
 
+import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.databinding.FormButtonBinding;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 19/03/2018.
+ * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final FlowableProcessor<RowAction> processor;
+    private final EditText editText;
+    private final TextInputLayout inputLayout;
+    private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
-    FormButtonBinding binding;
-    OrgUnitDialog orgUnitDialog;
+    private OrgUnitDialog orgUnitDialog;
     private OrgUnitViewModel viewModel;
+    private CompositeDisposable compositeDisposable;
 
-
-    public OrgUnitHolder(FragmentManager fm, FormButtonBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
+    OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);
-        this.binding = binding;
-        this.processor = processor;
-
-        binding.formButton.setOnClickListener(view ->
-                orgUnitDialog.show(fm, binding.getLabel()));
+        compositeDisposable = new CompositeDisposable();
+        this.editText = binding.getRoot().findViewById(R.id.input_editText);
+        this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
+        this.orgUnitsObservable = orgUnits;
+        this.editText.setOnClickListener(view ->
+                orgUnitDialog.show(fm, viewModel.label()));
 
         orgUnitDialog = OrgUnitDialog.newInstace(false)
                 .setPossitiveListener(data -> {
                     processor.onNext(RowAction.create(viewModel.uid(), orgUnitDialog.getSelectedOrgUnit()));
-                    binding.formButton.setText(viewModel.label() + ": " + orgUnitDialog.getSelectedOrgUnitName());
+                    this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(data -> orgUnitDialog.dismiss());
 
-        orgUnits
+        getOrgUnits();
+    }
+
+    @Override
+    public void dispose() {
+        if (!compositeDisposable.isDisposed())
+            compositeDisposable.dispose();
+    }
+
+    public void update(OrgUnitViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.inputLayout.setHint(viewModel.label());
+        orgUnitDialog.setTitle(viewModel.label());
+        if (viewModel.value() != null && !viewModel.value().equals(this.viewModel.value())) {
+            getOrgUnits();
+        }
+    }
+
+    private String getOrgUnitName(String value) {
+        String orgUnitName = "Unknown";
+        if (orgUnits != null) {
+            for (OrganisationUnitModel orgUnit : orgUnits) {
+                if (orgUnit.uid().equals(value))
+                    orgUnitName = orgUnit.displayName();
+            }
+        }
+        return orgUnitName;
+    }
+
+    private void getOrgUnits() {
+        compositeDisposable.add(orgUnitsObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
                         orgUnitViewModels ->
                         {
                             this.orgUnits = orgUnitViewModels;
+                            if (viewModel.value() != null)
+                                this.editText.setText(getOrgUnitName(viewModel.value()));
                             orgUnitDialog.setOrgUnits(orgUnitViewModels);
                         },
                         Timber::d
-                );
-    }
-
-    public void update(OrgUnitViewModel viewModel) {
-        this.viewModel = viewModel;
-        binding.setLabel(viewModel.label());
-        orgUnitDialog.setTitle(viewModel.label());
-        if (viewModel.value() != null) {
-            binding.formButton.setText(viewModel.label() + ": " + getOrgUnitName(viewModel.value()));
-        }
-
-    }
-
-    private String getOrgUnitName(String value) {
-        String orgUnitName = "Unknown";
-        if (orgUnits != null)
-            for (OrganisationUnitModel orgUnit : orgUnits) {
-                if (orgUnit.uid().equals(value))
-                    orgUnitName = orgUnit.displayName();
-            }
-        return orgUnitName;
+                )
+        );
     }
 }

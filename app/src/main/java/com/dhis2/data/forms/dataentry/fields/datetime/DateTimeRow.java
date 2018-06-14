@@ -79,4 +79,8 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
         viewHolder.update(viewModel);
     }
 
+    @Override
+    public void deAttach(@NonNull DateTimeHolder viewHolder) {
+        viewHolder.dispose();
+    }
 }

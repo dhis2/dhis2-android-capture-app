@@ -19,6 +19,10 @@ import java.util.ArrayList;
 
 public class ColorUtils {
 
+    public enum ColorType {
+        PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
+    }
+
     public static int getColorFrom(Context context, @Nullable String hexColor) {
 
         int colorToReturn = Color.BLACK;
@@ -32,7 +36,7 @@ public class ColorUtils {
             }
             colorToReturn = Color.parseColor(hexColor);
         }
-        if (hexColor == null || colorToReturn == Color.BLACK) {
+        if (hexColor == null || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
             TypedValue typedValue = new TypedValue();
             TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
             colorToReturn = a.getColor(0, 0);
@@ -78,6 +82,9 @@ public class ColorUtils {
     }
 
     public static int getThemeFromColor(String color) {
+
+        if (color == null)
+            return -1;
 
         switch (color) {
             case "#ffcdd2":
@@ -152,8 +159,8 @@ public class ColorUtils {
                 return R.style.colorPrimary_66b;
             case "#2e7d32":
                 return R.style.colorPrimary_2e7;
-            case "#1b5e20":
-                return R.style.colorPrimary_1b5;
+            case "#60ad5e":
+                return R.style.colorPrimary_60a;
             case "#00e676":
                 return R.style.colorPrimary_00e;
             case "#aed581":
@@ -214,5 +221,29 @@ public class ColorUtils {
         }
     }
 
+    public static int getPrimaryColor(Context context, @NonNull ColorType colorType) {
 
+        int id;
+        switch (colorType) {
+            case ACCENT:
+                id = R.attr.colorAccent;
+                break;
+            case PRIMARY_DARK:
+                id = R.attr.colorPrimaryDark;
+                break;
+            case PRIMARY_LIGHT:
+                id = R.attr.colorPrimaryLight;
+                break;
+            case PRIMARY:
+            default:
+                id = R.attr.colorPrimary;
+                break;
+        }
+
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{id});
+        int colorToReturn = a.getColor(0, 0);
+        a.recycle();
+        return colorToReturn;
+    }
 }

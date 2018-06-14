@@ -88,10 +88,10 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         processor.onNext(
                 RowAction.create(model.getValue().uid(), date != null ? DateUtils.databaseDateFormat().format(date) : null)
         );
+    }
 
-        /*if (editText.focusSearch(View.FOCUS_DOWN) != null)
-            editText.focusSearch(View.FOCUS_DOWN).requestFocus();
-
-        FocusFinder.getInstance().findNextFocus((ViewGroup) itemView.getParent(), editText, View.FOCUS_DOWN);*/
+    @Override
+    public void dispose() {
+        disposable.dispose();
     }
 }

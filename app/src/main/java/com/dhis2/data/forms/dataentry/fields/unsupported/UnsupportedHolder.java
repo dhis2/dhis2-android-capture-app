@@ -11,5 +11,10 @@ public class UnsupportedHolder extends FormViewHolder {
         super(binding);
     }
 
+    @Override
+    public void dispose() {
+
+    }
+
 
 }
