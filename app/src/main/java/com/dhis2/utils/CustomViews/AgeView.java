@@ -171,6 +171,8 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         year = findViewById(R.id.input_year);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
+        date.setFocusable(false); //Makes editText not editable
+        date.setClickable(true);//  but clickable
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 

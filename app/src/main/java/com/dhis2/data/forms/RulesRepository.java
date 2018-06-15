@@ -192,7 +192,7 @@ public final class RulesRepository {
 
             List<RuleAction> pairActions = new ArrayList<>();
             for (Pair<String, RuleAction> pair : ruleActions) {
-                if (Objects.equals(pair.val0(), rawRule.val0()))
+                if (pair.val0().equals(rawRule.val0()))
                     pairActions.add(pair.val1());
             }
 

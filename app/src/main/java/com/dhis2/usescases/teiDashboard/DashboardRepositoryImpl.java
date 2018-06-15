@@ -333,10 +333,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
                     values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
+                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(dueDate.getTime()));
                     values.put(EventModel.Columns.STATE, State.TO_POST.toString());
 
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
-                        throw new IllegalStateException(String.format(Locale.US, "Event has not been successfully added"));
+                        return Observable.error(new IllegalStateException("Event has not been successfully added"));
                     }
 
                     updateProgramTable(createdDate.getTime(), programUid);

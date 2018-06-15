@@ -154,5 +154,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
                 init(teiUid, data.getStringExtra("CHANGE_PROGRAM"));
             }
         }
+        super.onActivityResult(requestCode,resultCode,data);
     }
 }

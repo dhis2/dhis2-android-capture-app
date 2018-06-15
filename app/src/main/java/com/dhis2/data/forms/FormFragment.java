@@ -106,7 +106,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         incidentDateLayout = view.findViewById(R.id.incident_date_layout);
         incidentDate = view.findViewById(R.id.incident_date_text);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
-        formSectionAdapter = new FormSectionAdapter(getFragmentManager());
+        formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
 

@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
+public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
@@ -68,7 +69,7 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
         List<String> newSections = new ArrayList<>();
         boolean differentSections = false;
 
-        for (int i = 0; i < models.size() - 1; i++) {
+        for (int i = 0; i < models.size(); i++) {
             FormSectionViewModel item = models.get(i);
             newSections.add(item.sectionUid());
         }
@@ -92,10 +93,10 @@ public class FormSectionAdapter extends CustomFragmentStatePagerAdapter {
         }
     }
 
-    @Override
+   /* @Override
     public String getTag(int position) {
         return sections.isEmpty()?"section":sections.get(position);
-    }
+    }*/
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {

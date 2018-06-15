@@ -106,38 +106,6 @@ public class EventInitialContract {
 
         void getEventSections(@NonNull String eventId);
 
-
     }
 
-    public interface Interactor extends AbstractActivityContracts.Interactor {
-
-        void init(EventInitialContract.View view, String programId, String eventId);
-
-        void getProgramStageWithId(String programStageUid);
-
-        void getOrgUnits();
-
-        void getCatOption(String categoryOptionComboId);
-
-        void getFilteredOrgUnits(String date);
-
-        void createNewEvent(String enrollmentUid, String programStageModel, String programUid, Date date, String orgUnitUid,
-                            String categoryOptionComboUid, String categoryOptionsUid,
-                            String latitude, String longitude);
-
-
-        void createNewEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, String programUid, Date date, String orgUnitUid,
-                                     String categoryOptionComboUid, String categoryOptionsUid,
-                                     String latitude, String longitude);
-
-        void editEvent(String programStageModelUid, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
-
-        void getEventSections(@NonNull String eventId);
-
-        void getSectionCompletion(@Nullable String sectionUid);
-
-        void onDetach();
-
-        void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);
-    }
 }

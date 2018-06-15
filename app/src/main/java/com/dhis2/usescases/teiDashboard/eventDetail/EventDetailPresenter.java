@@ -1,16 +1,12 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import io.reactivex.Observable;
@@ -96,13 +92,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void back() {
-        if (changedEventStatus) {
-            Intent intent = new Intent();
-            if(eventDetailModel.getEventModel().status() == EventStatus.ACTIVE)
-                intent.putExtra(Constants.EVENT_UID, eventUid);
-            view.getAbstractActivity().setResult(Activity.RESULT_OK, intent);
-        }
-        view.back();
+
+        view.goBack(changedEventStatus);
+
     }
 
     @Override
@@ -126,11 +118,10 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void deleteEvent() {
-        if (eventDetailModel != null && eventDetailModel.getEventModel() != null){
-            if (eventDetailModel.getEventModel().state() == State.TO_POST){
+        if (eventDetailModel != null && eventDetailModel.getEventModel() != null) {
+            if (eventDetailModel.getEventModel().state() == State.TO_POST) {
                 eventDetailRepository.deleteNotPostedEvent(eventDetailModel.getEventModel().uid());
-            }
-            else {
+            } else {
                 eventDetailRepository.deletePostedEvent(eventDetailModel.getEventModel());
             }
             view.showEventWasDeleted();

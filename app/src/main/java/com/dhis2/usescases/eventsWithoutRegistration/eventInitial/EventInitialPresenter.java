@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import com.dhis2.Bindings.Bindings;
-import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
@@ -224,20 +223,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         programModel.uid(), programStageModel, date, orgUnitUid,
                         catComboUid, catOptionUid,
                         latitude, longitude)
+                        .switchMap(
+                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId,trackedEntityInstanceUid, orgUnitUid)
+                        )
+                        .distinctUntilChanged()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                (eventUid) -> {
-                                    compositeDisposable.add(eventInitialRepository.updateTrackedEntityInstance(trackedEntityInstanceUid, orgUnitUid)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(
-                                                    (Void) -> view.onEventCreated(eventUid),
-                                                    t -> view.renderError(t.getMessage())));
-
-                                },
-                                t -> view.renderError(t.getMessage()))
-        );
+                                eventUid -> view.onEventCreated(eventUid),
+                                t -> view.renderError(t.getMessage())));
     }
 
     @Override

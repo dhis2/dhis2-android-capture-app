@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -141,8 +142,23 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public Observable<Void> updateTrackedEntityInstance(String trackedEntityInstanceUid, String orgUnitUid) {
-        return null;
+    public Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid) {
+        String TEI_QUERY = "SELECT * FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ?";
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI_QUERY, trackedEntityInstanceUid)
+                .mapToOne(TrackedEntityInstanceModel::create).distinctUntilChanged()
+                .map(trackedEntityInstanceModel -> {
+                    ContentValues contentValues = trackedEntityInstanceModel.toContentValues();
+                    contentValues.put(TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, orgUnitUid);
+                    long row = -1;
+                    try {
+                        row = briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "TrackedEntityInstance.uid = ?", trackedEntityInstanceUid);
+                    } catch (Exception e) {
+                    }
+                    if (row != -1) {
+                        return eventId; //Event created and referral complete
+                    }
+                    return eventId;
+                });
     }
 
 

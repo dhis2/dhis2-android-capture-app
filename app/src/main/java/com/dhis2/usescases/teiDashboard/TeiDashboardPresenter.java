@@ -262,7 +262,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = view.getAdapter().getItem(0);
-        Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
+        Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("EVENT_UID", uid);
         extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());

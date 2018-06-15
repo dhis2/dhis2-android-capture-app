@@ -1,10 +1,10 @@
 package com.dhis2.data.forms.dataentry.fields.edittext;
 
+import android.annotation.SuppressLint;
 import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -18,6 +18,8 @@ import android.widget.ImageView;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.fields.FieldViewHolder;
+import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.Preconditions;
@@ -26,7 +28,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -41,7 +42,7 @@ import static java.lang.String.valueOf;
  * QUADRAM. Created by frodriguez on 18/01/2018..
  */
 
-final class EditTextCustomHolder extends RecyclerView.ViewHolder {
+final class EditTextCustomHolder extends FieldViewHolder {
 
     private final TextInputLayout inputLayout;
     private final ObservableBoolean isEditable;
@@ -50,9 +51,9 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
     @NonNull
     private BehaviorProcessor<EditTextModel> model;
 
-    private CompositeDisposable disposable;
-
-    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+    @SuppressLint("RxLeakedSubscription")
+    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
+                         boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         super(binding.getRoot());
 
         this.isEditable = isEditable;
@@ -62,13 +63,12 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
 
         inputLayout = binding.getRoot().findViewById(R.id.input_layout);
 
-        this.disposable = new CompositeDisposable();
-
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
         model = BehaviorProcessor.create();
-        disposable.add(model.subscribe(editTextModel -> {
+        model.subscribe(editTextModel -> {
+
                     Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
                     editText.setEnabled(editTextModel.editable());
                     editText.setText(editTextModel.value() == null ?
@@ -94,17 +94,19 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                     }
 
                 }
-                , t -> Log.d("DHIS_ERROR", t.getMessage())));
+                , t -> Log.d("DHIS_ERROR", t.getMessage()));
 
 
         // show and hide hint
+
         ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
                 .publish();
 
-        disposable.add(editTextObservable
+        editTextObservable
                 .filter(hasFocus -> !hasFocus)
                 .filter(focusLost -> model.getValue() != null)
+                .filter(focusLost -> model.getValue().editable())
                 .filter(focusLost -> validate())
                 .map(focusLost -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
                 .subscribe(
@@ -116,7 +118,7 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                                 processor.onNext(RowAction.create(model.getValue().uid(),
                                         editText.getText().toString()));
                             }
-                        }));
+                        });
 
         editTextObservable.connect();
     }
@@ -192,8 +194,9 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
                 model.getValue().value() == null ? "" : valueOf(model.getValue().value()));
     }
 
-    void update(@NonNull EditTextModel editTextModel) {
-        model.onNext(editTextModel);
+    @Override
+    public void update(@NonNull FieldViewModel editTextModel) {
+        model.onNext((EditTextModel) editTextModel);
     }
 
     private boolean validate() {
@@ -253,7 +256,8 @@ final class EditTextCustomHolder extends RecyclerView.ViewHolder {
         }
     }
 
+
     public void dispose() {
-        disposable.dispose();
+//        disposable.dispose();
     }
 }

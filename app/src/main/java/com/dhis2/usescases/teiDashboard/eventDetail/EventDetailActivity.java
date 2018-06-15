@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
@@ -20,8 +22,9 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivityEventDetailBinding;
 import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
-import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CustomDialog;
+import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -73,7 +76,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         binding.setStage(eventDetailModel.getProgramStage());
         binding.executePendingBindings();
 
-        if (!eventDetailModel.getStageSections().isEmpty()) {
+        /*if (!eventDetailModel.getStageSections().isEmpty()) {
             setSectionDataElements(eventDetailModel, "null");
 
             for (ProgramStageSectionModel section : eventDetailModel.getStageSections()) {
@@ -92,7 +95,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         } else
             setSectionDataElements(eventDetailModel, null);
 
-        binding.dataLayout.invalidate();
+        binding.dataLayout.invalidate();*/
 
         supportStartPostponedEnterTransition();
 
@@ -102,6 +105,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                         false))
                 .commit();
     }
+
     @Override
     public void isEventExpired(ProgramModel program) {
         EventModel event = eventDetailModel.getEventModel();
@@ -149,6 +153,17 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         finish();
     }
 
+    @Override
+    public void goBack(boolean changedEventStatus) {
+        if (changedEventStatus) {
+            Intent intent = new Intent();
+            if (eventDetailModel.getEventModel().status() == EventStatus.ACTIVE)
+                intent.putExtra(Constants.EVENT_UID, eventUid);
+            setResult(Activity.RESULT_OK, intent);
+        }
+        finish();
+    }
+
     private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {
 
         for (ProgramStageDataElementModel dataValueModel : eventDetailModel.getDataElementsForSection(sectionUid)) {
@@ -188,6 +203,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void onBackPressed() {
+
         presenter.back();
     }
 }

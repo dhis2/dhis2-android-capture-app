@@ -24,6 +24,8 @@ public class EventDetailContracts {
         void showConfirmDeleteEvent();
 
         void showEventWasDeleted();
+
+        void goBack(boolean changedEventStatus);
     }
 
     public interface Presenter {

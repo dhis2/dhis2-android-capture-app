@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -8,11 +9,13 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
@@ -20,6 +23,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 final class EnrollmentRepository implements DataEntryRepository {
     private static final String QUERY = "SELECT \n" +
@@ -96,8 +100,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSet = cursor.getString(4);
-        boolean allowFutureDates = Boolean.valueOf(cursor.getString(7));
-        boolean generated = Boolean.valueOf(cursor.getString(8));
+        boolean allowFutureDates = cursor.getInt(7) == 1;
+        boolean generated = cursor.getInt(8) == 1;
         String orgUnitUid = cursor.getString(9);
 
         String dataValue = cursor.getString(5);
@@ -109,7 +113,29 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         if (generated && dataValue == null) {
             try {
+                String teiUid = null;
+                Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
+                        "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
+                        "WHERE Enrollment.uid = ?",enrollment);
+                if(tei!=null && tei.moveToFirst()) {
+                    teiUid = tei.getString(0);
+                    tei.close();
+                }
                 dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
+                        "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
+                        "VALUES (?,?,?,?)";
+                SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
+                        .compileStatement(INSERT);
+                sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                        .format(Calendar.getInstance().getTime()));
+                sqLiteBind(updateStatement, 2, dataValue);
+                sqLiteBind(updateStatement, 3, uid);
+                sqLiteBind(updateStatement, 4, teiUid);
+
+                long insert = briteDatabase.executeInsert(
+                        TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                updateStatement.clearBindings();
             } catch (D2CallException e) {
                 e.printStackTrace();
             }

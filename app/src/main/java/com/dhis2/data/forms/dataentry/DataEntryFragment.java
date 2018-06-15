@@ -124,7 +124,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 getChildFragmentManager(), arguments,
                 dataEntryPresenter.getOrgUnits(),
                 new ObservableBoolean(true));
-        dataEntryAdapter.setHasStableIds(true);
+//        dataEntryAdapter.setHasStableIds(true);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {

@@ -79,26 +79,6 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.35" />
 
-            <!--<TextView
-                android:id="@+id/event_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="50dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif"
-                android:gravity="start"
-                android:maxLines="1"
-                android:textColor="#444444"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:programStage="@{event.programStage()}"
-                tools:text="ANC 4" />-->
-
             <RelativeLayout
                 android:id="@+id/icon_container"
                 android:layout_width="wrap_content"
@@ -175,7 +155,7 @@
                                 android:layout_height="wrap_content"
                                 android:enabled="false"
                                 android:inputType="date"
-                                android:text="@{event.eventDate().toLocaleString()}" />
+                                app:date="@{event.eventDate()}" />
                         </android.support.design.widget.TextInputLayout>
 
                         <android.support.design.widget.TextInputLayout
@@ -198,8 +178,8 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/cat_combo"
                             android:theme="@style/loginInputText"
+                            android:visibility="gone"
                             app:layout_flexBasisPercent="50%">
-
 
                             <EditText
                                 android:id="@+id/category_combo"

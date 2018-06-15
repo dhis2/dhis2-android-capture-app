@@ -53,15 +53,6 @@ public class EventInitialModule {
     }
 
 
-   /* @Provides
-    @PerActivity
-    EventInitialContract.Interactor provideInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                      @NonNull EventInitialRepository eventInitialRepository,
-                                                      @NonNull MetadataRepository metadataRepository,
-                                                      @NonNull SchedulerProvider schedulerProvider) {
-        return new EventInitialInteractor(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
-    }*/
-
     @Provides
     @PerActivity
     EventSummaryRepository eventSummaryRepository(@NonNull Context context,

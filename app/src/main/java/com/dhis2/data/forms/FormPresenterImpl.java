@@ -32,6 +32,7 @@ import io.reactivex.processors.PublishProcessor;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static com.dhis2.utils.Preconditions.isNull;
 
 
@@ -86,6 +87,7 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(formRepository.reportDate()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
+                .filter(date->!isEmpty(date))
                 .map(date -> {
                     try {
                         return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));

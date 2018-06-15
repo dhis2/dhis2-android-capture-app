@@ -64,6 +64,8 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     private void setLayout() {
         binding = DataBindingUtil.inflate(inflater, R.layout.time_view, this, true);
         editText = findViewById(R.id.inputEditText);
+        editText.setFocusable(false); //Makes editText not editable
+        editText.setClickable(true);//  but clickable
         editText.setOnFocusChangeListener(this::onFocusChanged);
         editText.setOnClickListener(this);
     }

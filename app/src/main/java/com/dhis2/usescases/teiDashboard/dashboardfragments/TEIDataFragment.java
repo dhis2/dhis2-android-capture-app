@@ -191,15 +191,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 presenter.getData();
             }
         }
-        if (requestCode == REQ_EVENT) {
-            if (resultCode == RESULT_OK) {
-                presenter.getTEIEvents(this);
-                if (data != null) {
-                    lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
-                    if (lastModifiedEventUid != null)
-                        presenter.displayGenerateEvent(this, lastModifiedEventUid);
-                }
+        if (requestCode == REQ_EVENT && resultCode == RESULT_OK) {
+            presenter.getTEIEvents(this);
+            if (data != null) {
+                lastModifiedEventUid = data.getStringExtra(Constants.EVENT_UID);
+                if (lastModifiedEventUid != null)
+                    presenter.displayGenerateEvent(this, lastModifiedEventUid);
             }
+
         }
     }
 
