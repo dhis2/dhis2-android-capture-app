@@ -25,12 +25,15 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
-            "  uid,\n" +
-            "  incidentDate,\n" +
-            "  enrollmentDate,\n" +
-            "  status\n" +
+            "  Enrollment.uid,\n" +
+            "  Enrollment.incidentDate,\n" +
+            "  Enrollment.enrollmentDate,\n" +
+            "  Enrollment.status,\n" +
+            "  Enrollment.organisationUnit,\n" +
+            "  Program.displayName\n" +
             "FROM Enrollment\n" +
-            "WHERE uid = ? \n" +
+            "JOIN Program ON Program.uid = Enrollment.program\n"+
+            "WHERE Enrollment.uid = ? \n" +
             "LIMIT 1;";
 
     private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
@@ -90,9 +93,11 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             enrollmentDate : parseDate(cursor.getString(1));
                     RuleEnrollment.Status status = RuleEnrollment.Status
                             .valueOf(cursor.getString(3));
+                    String orgUnit = cursor.getString(4);
+                    String programName = cursor.getString(5);
 
                     return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, attributeValues);
+                            incidentDate, enrollmentDate, status, orgUnit, attributeValues,programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

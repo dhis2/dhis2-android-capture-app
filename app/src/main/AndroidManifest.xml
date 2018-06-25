@@ -67,6 +67,7 @@
             android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
+        <activity android:name=".usescases.qrCodes.QrActivity" />
 
         <service
             android:name=".data.service.SyncService"

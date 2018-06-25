@@ -3,13 +3,20 @@ package com.dhis2.utils;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/06/2018.
@@ -117,6 +124,42 @@ public class StringUtils {
             Drawable drawable = ((ImageView) view).getDrawable();
             drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
             ((ImageView) view).setImageDrawable(drawable);
+        }
+    }
+
+    private byte[] compress(String data) {
+        try {
+            Log.d("COMPRESSOR",""+data.length());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length());
+            GZIPOutputStream gzip = new GZIPOutputStream(bos);
+            gzip.write(data.getBytes());
+            gzip.close();
+            byte[] compressed = bos.toByteArray();
+            bos.close();
+            return compressed;
+        }catch (Exception e){
+            Timber.e(e);
+            return data.getBytes();
+        }
+    }
+
+    public static String decompress(byte[] compressed){
+        try {
+
+            final int BUFFER_SIZE = 32;
+            ByteArrayInputStream is = new ByteArrayInputStream(compressed);
+            GZIPInputStream gis = new GZIPInputStream(is, BUFFER_SIZE);
+            StringBuilder string = new StringBuilder();
+            byte[] data = new byte[BUFFER_SIZE];
+            int bytesRead;
+            while ((bytesRead = gis.read(data)) != -1) {
+                string.append(new String(data, 0, bytesRead));
+            }
+            gis.close();
+            is.close();
+            return string.toString();
+        }catch (Exception e){
+            return null;
         }
     }
 }

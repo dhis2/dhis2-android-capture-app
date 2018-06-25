@@ -1,6 +1,7 @@
 package com.dhis2.data.qr;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
@@ -14,10 +15,15 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
 import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
@@ -75,4 +81,6 @@ public class QRCodeGenerator implements QRInterface {
 
         return bitmap;
     }
+
+
 }

@@ -126,6 +126,6 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
     }
 
     public void dispose() {
-        disposable.dispose();
+        disposable.clear();
     }
 }

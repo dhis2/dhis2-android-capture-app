@@ -23,14 +23,17 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
 public final class EventsRuleEngineRepository implements RuleEngineRepository {
-    private static final String QUERY_EVENT = "SELECT uid,\n" +
-            "  programStage,\n" +
-            "  status,\n" +
-            "  eventDate,\n" +
-            "  dueDate\n" +
+    private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
+            "  Event.programStage,\n" +
+            "  Event.status,\n" +
+            "  Event.eventDate,\n" +
+            "  Event.dueDate,\n" +
+            "  Event.organisationUnit,\n" +
+            "  ProgramStage.displayName\n" +
             "FROM Event\n" +
-            "WHERE uid = ?\n" +
-            " AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
+            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
+            "WHERE Event.uid = ?\n" +
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
             "LIMIT 1;";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -77,10 +80,11 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                 .mapToOne(cursor -> {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
-
+                    String orgUnit = cursor.getString(5);
+                    String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, dataValues);
+                            status, eventDate, dueDate, orgUnit, dataValues, programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

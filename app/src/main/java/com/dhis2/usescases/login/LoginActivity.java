@@ -87,6 +87,12 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
+    protected void onDestroy() {
+        ((App)getApplicationContext()).releaseLoginComponent();
+        super.onDestroy();
+    }
+
+    @Override
     public ActivityLoginBinding getBinding() {
         return binding;
     }

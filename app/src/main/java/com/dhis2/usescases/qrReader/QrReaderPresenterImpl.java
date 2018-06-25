@@ -220,6 +220,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void dispose() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

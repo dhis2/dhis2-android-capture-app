@@ -334,7 +334,7 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(data -> {
                     view.isMandatoryFieldsRequired(data);
-                    disposable.dispose();
+                    disposable.clear();
                 }, Timber::e)
         );
     }

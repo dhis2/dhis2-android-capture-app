@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.ColorUtils;
@@ -23,6 +24,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -36,6 +39,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private CompositeDisposable compositeDisposable;
 
     private List<OrganisationUnitModel> myOrgs;
+    private Trio<List<Date>, Period, String> filter;
+    FlowableProcessor<Trio> programQueries;
 
     ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
@@ -45,61 +50,80 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void init(ProgramContract.View view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
+        programQueries = PublishProcessor.create();
         compositeDisposable.add(
                 homeRepository.orgUnits()
-                        .map(
+                        /*.map(
                                 orgUnits -> {
                                     this.myOrgs = orgUnits;
+                                    programQueries.onNext(Trio.create(null,null,null));
                                     return homeRepository.programModels(null, null, null);
                                 }
-                        )
+                        )*/
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> {
-                                    view.swapProgramModelData().accept(data.blockingFirst());
+                                    this.myOrgs = data;
+//                                    view.swapProgramModelData().accept(data.blockingFirst());
+                                    programQueries.onNext(Trio.create(null, null, null));
                                     view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs));
                                 },
                                 throwable -> view.renderError(throwable.getMessage())));
-    }
 
-
-    @Override
-    public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
-
-        compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view.swapProgramModelData(),
-                        throwable -> view.renderError(throwable.getMessage())));
-
-    }
-
-
-    @Override
-    public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
-
-        compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view.swapProgramModelData(),
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
-    }
-
-
-    @Override
-    public void getAllPrograms(String orgUnitQuery) {
         compositeDisposable.add(
-                homeRepository.programModels(null, null, orgUnitQuery)
+                programQueries
+                        .flatMap(datePeriodOrgs -> homeRepository.programModels(
+                                (List<Date>) datePeriodOrgs.val0(),
+                                (Period) datePeriodOrgs.val1(),
+                                (String) datePeriodOrgs.val2()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 view.swapProgramModelData(),
                                 throwable -> view.renderError(throwable.getMessage())
                         ));
+    }
+
+
+    @Override
+    public void getProgramsWithDates(ArrayList<Date> dates, Period period) {
+
+        programQueries.onNext(Trio.create(dates, period, orgUnitQuery()));
+        /*compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view.swapProgramModelData(),
+                        throwable -> view.renderError(throwable.getMessage())));*/
+
+    }
+
+
+    @Override
+    public void getProgramsOrgUnit(List<Date> dates, Period period, String orgUnitQuery) {
+        programQueries.onNext(Trio.create(dates, period, orgUnitQuery));
+       /* compositeDisposable.add(homeRepository.programModels(dates, period, orgUnitQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view.swapProgramModelData(),
+                        throwable -> view.renderError(throwable.getMessage())
+                ));*/
+    }
+
+
+    @Override
+    public void getAllPrograms(String orgUnitQuery) {
+        programQueries.onNext(Trio.create(null, null, orgUnitQuery));
+       /* compositeDisposable.add(
+                homeRepository.programModels(null, null, orgUnitQuery)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.swapProgramModelData(),
+                                throwable -> view.renderError(throwable.getMessage())
+                        ));*/
     }
 
     @Override
@@ -109,7 +133,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
     @Override
     public void dispose() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     @Override

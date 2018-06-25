@@ -4,11 +4,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
 import com.dhis2.data.forms.dataentry.DataEntryFragment;
-import com.dhis2.utils.CustomFragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,13 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
     @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
     private final List<String> sections;
+    private final FragmentManager fm;
 
     FormSectionAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
         this.formSectionViewModelList = new ArrayList<>();
         this.sections = new ArrayList<>();
+        this.fm = fragmentManager;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return sections.isEmpty()?formSectionViewModelList.size():sections.size();
+        return sections.isEmpty() ? formSectionViewModelList.size() : sections.size();
     }
 
     @Override
@@ -82,7 +84,15 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         else
             differentSections = true;
 
+        /*if(differentSections){
+            for(Fragment fragment : fm.getFragments()){
+                fm.beginTransaction().remove(fragment).commit();
+            }
+        }*/
+
         if (differentSections || sections.isEmpty()) {
+
+            Log.d("FM_TEST", fm.getFragments().size() + " ");
 
             formSectionViewModelList.clear();
             sections.clear();

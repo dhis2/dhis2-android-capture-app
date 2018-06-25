@@ -107,7 +107,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onPause() {
         super.onPause();
-        listenerDisposable.dispose();
+        listenerDisposable.clear();
         presenter.disponse();
     }
 

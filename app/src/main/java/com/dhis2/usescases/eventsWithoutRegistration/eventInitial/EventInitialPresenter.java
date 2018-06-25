@@ -300,7 +300,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     @Override

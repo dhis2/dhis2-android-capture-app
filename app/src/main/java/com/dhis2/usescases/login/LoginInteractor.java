@@ -294,12 +294,13 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void logOut() {
         if (userManager != null)
-            disposable.add(Observable.fromCallable(userManager.getD2().logout())
+            disposable.add(Observable.fromCallable(
+                    userManager.getD2().logout())
                     .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             data -> view.handleLogout(),
-                            t -> view.getAbstractActivity().recreate()
+                            t -> view.handleLogout()
                     )
             );
     }

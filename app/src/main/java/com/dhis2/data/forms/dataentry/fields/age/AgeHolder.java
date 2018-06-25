@@ -57,6 +57,6 @@ public class AgeHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-        disposable.dispose();
+        disposable.clear();
     }
 }

@@ -56,7 +56,7 @@ public class OrgUnitHolder extends FormViewHolder {
     @Override
     public void dispose() {
         if (!compositeDisposable.isDisposed())
-            compositeDisposable.dispose();
+            compositeDisposable.clear();
     }
 
     public void update(OrgUnitViewModel viewModel) {

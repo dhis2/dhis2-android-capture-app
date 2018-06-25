@@ -37,7 +37,7 @@ import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 27/09/2017.
+ * QUADRAM. Created by ppajuelo on 27/09/2017.
  */
 
 public class App extends MultiDexApplication implements Components {

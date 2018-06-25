@@ -139,7 +139,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
     @Override
     public void disponse() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 
     @Override

@@ -142,6 +142,6 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     @Override
     public void onDettach() {
-        compositeDisposable.dispose();
+        compositeDisposable.clear();
     }
 }

@@ -60,6 +60,6 @@ public class CoordinateHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-        disposable.dispose();
+        disposable.clear();
     }
 }

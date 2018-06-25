@@ -68,12 +68,13 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
             );
         //endregion
 
-        compositeDisposable.add(
-                metadataRepository.getRelationshipType(presenter.getProgramModel().uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::setRelationshipType, Timber::d)
-        );
+        if (presenter.getProgramModel() != null) //TODO: Improve
+            compositeDisposable.add(
+                    metadataRepository.getRelationshipType(presenter.getProgramModel().uid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(this::setRelationshipType, Timber::d)
+            );
 
         binding.executePendingBindings();
 

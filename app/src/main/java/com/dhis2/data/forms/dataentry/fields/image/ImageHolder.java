@@ -57,6 +57,6 @@ public class ImageHolder extends RecyclerView.ViewHolder {
     }
 
     public void dispose() {
-        disposable.dispose();
+        disposable.clear();
     }
 }
