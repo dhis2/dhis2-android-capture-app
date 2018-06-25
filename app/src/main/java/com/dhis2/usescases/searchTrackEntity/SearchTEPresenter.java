@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -193,7 +194,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 List<String> orgUnitsUids = new ArrayList<>();
                                 if (orgUnits != null) {
 //                                    for (OrganisationUnitModel orgUnit : orgUnits)
-                                        orgUnitsUids.add(orgUnits.get(0).uid());
+                                    orgUnitsUids.add(orgUnits.get(0).uid());
                                 }
                                 TrackedEntityInstanceQuery query = TrackedEntityInstanceQuery.builder()
                                         .program(selectedProgram.uid())
@@ -218,9 +219,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
                                     else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList != null && teiList.size() > selectedProgram.maxTeiCountToReturn())
                                         messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                                    else if (teiList != null && teiList.isEmpty() && queryData!= null && !queryData.isEmpty())
+                                    else if (teiList != null && teiList.isEmpty() && queryData != null && !queryData.isEmpty())
                                         messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList != null && teiList.isEmpty() && queryData!= null &&queryData.isEmpty())
+                                    else if (teiList != null && teiList.isEmpty() && queryData != null && queryData.isEmpty())
                                         messageId = view.getContext().getString(R.string.search_init);
                                 return Pair.create(teiList == null ? new ArrayList<TrackedEntityInstance>() : teiList, messageId);
                             })
@@ -265,7 +266,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    public void getProgramTrackedEntityAttributes() {
+    private void getProgramTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes(selectedProgram.uid())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -398,7 +399,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid) {
+    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean isA) {
         String relationshipType;
         if (relationshipTypeUid == null)
             relationshipType = selectedProgram.relationshipType();
@@ -406,7 +407,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             relationshipType = relationshipTypeUid;
 
         Intent intent = new Intent();
-        intent.putExtra("TEI_A_UID", TEIuid);
+        if (isA)
+            intent.putExtra("TEI_A_UID", TEIuid);
+        else
+            intent.putExtra("TEI_B_UID", TEIuid);
         intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
         view.getAbstractActivity().setResult(RESULT_OK, intent);
         view.getAbstractActivity().finish();
@@ -418,12 +422,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         progressBar.setVisibility(View.VISIBLE);
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
-        compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> view.removeTei(adapterPosition),
-                        t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+        compositeDisposable.add(
+                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.removeTei(adapterPosition),
+                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
         );
 
     }

@@ -16,6 +16,7 @@ import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import com.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 
@@ -30,8 +31,6 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class RelationshipFragment extends FragmentGlobalAbstract {
-
-    public static final int REQ_ADD_RELATIONSHIP = 1001;
 
     FragmentRelationshipsBinding binding;
     TeiDashboardContracts.Presenter presenter;
@@ -91,13 +90,13 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_ADD_RELATIONSHIP) {
+        if (requestCode == Constants.REQ_ADD_RELATIONSHIP) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     String tei_a = data.getStringExtra("TEI_A_UID");
+                    String tei_b = data.getStringExtra("TEI_B_UID");
                     String relationshipType = data.getStringExtra("RELATIONSHIP_TYPE_UID");
-
-                    presenter.addRelationship(tei_a, relationshipType);
+                    presenter.addRelationship(tei_a, tei_b, relationshipType);
                 }
             }
         }

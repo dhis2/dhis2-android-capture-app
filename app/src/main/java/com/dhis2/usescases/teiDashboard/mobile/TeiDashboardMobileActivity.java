@@ -21,6 +21,7 @@ import com.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
+import com.dhis2.utils.Constants;
 
 import java.util.List;
 
@@ -32,7 +33,6 @@ import io.reactivex.functions.Consumer;
 
 public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
 
-    private static final int RQ_ENROLLMENTS = 101;
     ActivityDashboardMobileBinding binding;
 
     @Override
@@ -129,7 +129,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     public void goToEnrollmentList(Bundle extras) {
         Intent intent = new Intent(this, TeiProgramListActivity.class);
         intent.putExtras(extras);
-        startActivityForResult(intent, RQ_ENROLLMENTS);
+        startActivityForResult(intent, Constants.RQ_ENROLLMENTS);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RQ_ENROLLMENTS && resultCode == RESULT_OK) {
+        if (requestCode == Constants.RQ_ENROLLMENTS && resultCode == RESULT_OK) {
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
                 FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
                 startActivity(FormActivity.create(this, formViewArguments, true));
@@ -154,6 +154,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
                 init(teiUid, data.getStringExtra("CHANGE_PROGRAM"));
             }
         }
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

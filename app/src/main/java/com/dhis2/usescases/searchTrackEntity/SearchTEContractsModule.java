@@ -79,7 +79,7 @@ public class SearchTEContractsModule {
 
         List<ProgramModel> getProgramList();
 
-        void addRelationship(String TEIuid, String relationshipTypeUid);
+        void addRelationship(String TEIuid, String relationshipTypeUid, boolean b);
 
         void downloadTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
 

@@ -14,6 +14,7 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
@@ -88,7 +89,7 @@ public class TeiDashboardContracts {
 
         void goToAddRelationship();
 
-        void addRelationship(String trackEntityInstance_A, String relationshipType);
+        void addRelationship(String trackEntityInstance_A, String trackedEntityInstance_B, String relationshipType);
 
         void deleteRelationship(long relationshipId);
 
@@ -113,7 +114,7 @@ public class TeiDashboardContracts {
 
         void openDashboard(String teiUid);
 
-        void subscribeToMainAttr(String teiUid, TextView textView);
+        void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView);
 
         void completeEnrollment(TEIDataFragment teiDataFragment);
 

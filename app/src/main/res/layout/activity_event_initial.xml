@@ -30,7 +30,7 @@
 
         <variable
             name="eventDate"
-            type="java.lang.String"/>
+            type="java.lang.String" />
 
     </data>
 
@@ -121,34 +121,17 @@
                             android:baselineAligned="false"
                             android:orientation="horizontal">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="horizontal">
-
-                                <ImageView
-                                    android:layout_width="80dp"
-                                    android:layout_height="80dp"
-                                    android:contentDescription='@{name}'
-                                    app:srcCompat="@drawable/photo_temp" />
-
-                                <!--TODO CRIS: PROGRAM COLOR-->
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="4dp"
-                                    android:contentDescription='@{name}'
-                                    android:tint="@color/red_060"
-                                    app:srcCompat="@drawable/ic_program_border" />
-                            </LinearLayout>
+                            <ImageView
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:contentDescription='@{name}'
+                                app:srcCompat="@drawable/photo_temp" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:padding="5dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -156,7 +139,8 @@
                                     android:layout_height="wrap_content"
                                     android:text='@{programStage.displayName()}'
                                     android:textColor="?colorPrimary"
-                                    android:textSize="14sp" />
+                                    android:textSize="14sp"
+                                    tools:text="Program Stage Name"/>
 
                                 <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
                                 <TextView
@@ -186,9 +170,9 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
-                                    android:textSize="15sp"
-                                    android:text="@{eventDate}"/>
-                                    <!--android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'-->
+                                    android:text="@{eventDate}"
+                                    android:textSize="15sp" />
+                                <!--android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'-->
 
                             </android.support.design.widget.TextInputLayout>
                         </LinearLayout>

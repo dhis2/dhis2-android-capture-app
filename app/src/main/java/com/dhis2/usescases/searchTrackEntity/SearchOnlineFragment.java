@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
             searchTEAdapter = new SearchTEOnlineAdapter(activity.presenter, activity.metadataRepository);
             binding.scrollView.setAdapter(searchTEAdapter);
             binding.tableView.setVisibility(View.GONE);
+            binding.scrollView.addItemDecoration(new DividerItemDecoration(activity,DividerItemDecoration.VERTICAL));
         }
 
         binding.scrollView.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager()) {

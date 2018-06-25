@@ -53,6 +53,7 @@ import timber.log.Timber;
 
 import static com.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 
+
 /**
  * Created by Cristian on 01/03/2018.
  */
@@ -75,7 +76,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
     public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
     public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
-
     @Inject
     EventInitialContract.Presenter presenter;
 
@@ -133,7 +133,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         binding.setIsNewEvent(isNewEvent);
         binding.date.clearFocus();
-//        presenter.init(this, programId, eventId);
 
         if (eventCreationType.equals(REFERRAL)) {
             binding.temp.setVisibility(View.VISIBLE);
@@ -339,11 +338,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
     }
 
-    private boolean isEventOpen(){
+    private boolean isEventOpen() {
         return isNewEvent || (eventModel != null && eventModel.status() != EventStatus.COMPLETED);
     }
 
-    private boolean isSelectedDateBetweenOpeningAndClosedDates(){
+    private boolean isSelectedDateBetweenOpeningAndClosedDates() {
         if (selectedDateString == null)
             return false;
         try {
@@ -477,8 +476,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         showToast(getString(R.string.event_created));
         if (!eventCreationType.equals(SCHEDULENEW)) {
             startFormActivity(eventUid);
-        }
-        else {
+        } else {
             finish();
         }
     }
@@ -561,37 +559,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.date.setHint(periodType.name());
                 presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
             }
-
-            /*categoryOptionComboModels = catComboList;
-
-            CatComboAdapter2 adapter = new CatComboAdapter2(EventInitialActivity.this,
-                    R.layout.spinner_layout,
-                    R.id.spinner_text,
-                    catComboList,
-                    catCombo.displayName() != null ? catCombo.displayName() : getString(R.string.category_option));
-
-            binding.catCombo.setAdapter(adapter);
-            binding.catCombo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (catComboList.size() > position - 1 && position > 0)
-                        selectedCatOptionCombo = catComboList.get(position - 1);
-                    else
-                        selectedCatOptionCombo = null;
-                    checkActionButtonVisibility();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-
-            if (periodType != null)
-                presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
-
-            if(eventModel!=null)//TODO: Check all this
-            presenter.getCatOption(eventModel.attributeOptionCombo());*/
             checkActionButtonVisibility();
         });
     }
@@ -668,11 +635,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showProgramStageSelection() {
-        /*Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        Intent intent = new Intent(this, ProgramStageSelectionActivity.class);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, RQ_PROGRAM_STAGE);*/
         presenter.getProgramStage(programStageUid);
     }
 
@@ -683,7 +645,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         totalCompletedFields = totalCompletedFields + completedSectionFields;
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         completionPercent = (int) (completionPerone * 100);
-
 
         runOnUiThread(() -> {
             ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
@@ -711,7 +672,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void showNoOrgUnits(){
+    public void showNoOrgUnits() {
         renderError(getString(R.string.no_org_units));
         selectedDateString = null;
         binding.date.setText("");

@@ -9,20 +9,37 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.dhis2.R;
+import com.dhis2.data.tuples.Trio;
+import com.dhis2.utils.ColorUtils;
+
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by frodriguez on 6/6/2018.
  */
-public class RelationshipSpinnerAdapter extends ArrayAdapter<RelationshipTypeModel> {
+public class RelationshipSpinnerAdapter extends ArrayAdapter<Trio<RelationshipTypeModel, String, Boolean>> {
 
-    private List<RelationshipTypeModel> itemList;
+    private List<Trio<RelationshipTypeModel, String, Boolean>> data;
 
     public RelationshipSpinnerAdapter(@NonNull Context context, @NonNull List<RelationshipTypeModel> itemList) {
-        super(context, android.R.layout.simple_spinner_dropdown_item, itemList);
-        this.itemList = itemList;
+        super(context, android.R.layout.simple_spinner_dropdown_item);
+        this.data = new ArrayList<>();
+        this.data.add(Trio.create(RelationshipTypeModel.builder().build(), context.getString(R.string.add_relation_button), false));
+        for (RelationshipTypeModel relationshipTypeModel : itemList) {
+            if (relationshipTypeModel.aIsToB().equals(relationshipTypeModel.bIsToA()))
+                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true));
+            else {
+                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true)); //for aIsToB
+                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.bIsToA(), false)); //for bIsToA
+            }
+        }
+        addAll(data);
+        notifyDataSetChanged();
+
     }
 
     @NonNull
@@ -34,7 +51,8 @@ public class RelationshipSpinnerAdapter extends ArrayAdapter<RelationshipTypeMod
             row = layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
         }
         TextView textView = row.findViewById(android.R.id.text1);
-        textView.setText(itemList.get(position).aIsToB());
+        textView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT));
+        textView.setText(data.get(position).val1());
 
         return row;
     }
@@ -47,7 +65,13 @@ public class RelationshipSpinnerAdapter extends ArrayAdapter<RelationshipTypeMod
             row = layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
         }
         TextView textView = row.findViewById(android.R.id.text1);
-        textView.setText(itemList.get(position).aIsToB());
+        if (position > 0)
+            textView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY_DARK));
+        else {
+            textView.setTextColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.ACCENT));
+            textView.setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
+        }
+        textView.setText(data.get(position).val1());
 
         return row;
     }

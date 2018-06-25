@@ -6,7 +6,6 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.dhis2.databinding.ItemProgramEventBinding;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -32,21 +31,6 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();
-
-      /*  disposable.add(presenter.getEventDataValue(event)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        trackedEntityDataValueModels -> {
-                            StringBuilder stringBuilder = new StringBuilder("");
-                            for (TrackedEntityDataValueModel dataValue : trackedEntityDataValueModels) {
-                                if (dataValue.value() != null)
-                                    stringBuilder.append(dataValue.value()).append("\n");
-                            }
-                            binding.dataValue.setText(stringBuilder);
-                        },
-                        Timber::d
-                ));*/
 
         disposable.add(presenter.getEventDataValueNew(event)
                 .subscribeOn(Schedulers.io())

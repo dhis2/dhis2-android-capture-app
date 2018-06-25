@@ -50,9 +50,9 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginEnd="6dp"
                 android:onClick="@{()->presenter.showFilter()}"
                 android:padding="8dp"
-                android:layout_marginEnd="6dp"
                 app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -71,9 +71,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingEnd="15dp"
-                    android:paddingStart="10dp">
+                    android:orientation="vertical">
 
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/filter_layout"

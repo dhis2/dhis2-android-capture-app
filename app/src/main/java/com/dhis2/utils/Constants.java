@@ -28,6 +28,10 @@ public class Constants {
     public static final int RQ_MAP_LOCATION_VIEW = 103;
     public static final int RQ_PROGRAM_STAGE = 104;
 
+    //RQ_CODES
+    public static final int RQ_ENROLLMENTS = 2001;
+    public static final int REQ_ADD_RELATIONSHIP = 2002;
+
     // METADATA SYNC TIME RANGES
     public static final int TIME_DAILY  = 86400;
     public static final int TIME_WEEKLY = 604800;
@@ -38,4 +42,7 @@ public class Constants {
     public static final int TIME_HOURLY = 3600;
 
     public static final String EVENT_UID = "EVENT_UID";
+
+    //EVENT_CREATION
+
 }

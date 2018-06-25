@@ -208,7 +208,7 @@
 
     <!--PERMISSIONS-->
     <string name="permission_denied">You don\'t have the required permission to perform this action</string>
-    <string name="add_relation_button">Add as %s</string>
+    <string name="add_relation_button">Add as…</string>
 
     <string name="date_dialog_clear">Clear</string>
     <string name="period">Period</string>
@@ -246,4 +246,5 @@
     <string name="limit_by_organisation_unit">Limit by organisation unit</string>
     <string name="programs_list">Program list</string>
     <string name="wipe_data">Reset app</string>
+    <string name="add_relationship_error">It\'s not possible to add this relationship</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -33,8 +34,9 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
         setHasStableIds(true);
     }
 
+    @NonNull
     @Override
-    public SearchTEViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SearchTEViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemSearchTrackedEntityBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_search_tracked_entity, parent, false);
         return new SearchTEViewHolder(binding);
@@ -47,7 +49,7 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(SearchTEViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SearchTEViewHolder holder, int position) {
         holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
     }
 

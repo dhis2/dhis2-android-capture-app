@@ -151,7 +151,7 @@
     <string name="one_time">Una vez</string>
     <string name="last_data_sync_date">Última sincronización: %s</string>
     <string name="last_metadata_sync_date">Última sincronización: %s</string>
-    <string name="add_relation_button">Añadir como %s</string>
+    <string name="add_relation_button">Añadir como…</string>
     <string name="permission_denied">No tienes los permisos necesarios para realizar esta acción</string>
     <string name="referral">Remitir</string>
     <string name="date_dialog_clear">Limpiar</string>
@@ -191,5 +191,7 @@
     <string name="current">ACTUAL</string>
     <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Limitar por unid. organizativa</string>
+    <string name="add_relationship_error">No es posible añadir esta relación</string>
+    <string name="enrollmment_date">Fecha de inscripción</string>
 
 </resources>

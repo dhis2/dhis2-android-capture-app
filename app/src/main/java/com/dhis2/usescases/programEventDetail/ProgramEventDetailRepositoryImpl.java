@@ -37,7 +37,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
             "AND TrackedEntityDataValue.dataElement IN\n" +
             "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
-            "WHERE ProgramStageDataElement.displayInReports = 1\n" +
+            "WHERE ProgramStageDataElement.displayInReports = '1'\n" +
             "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
             ")";
 

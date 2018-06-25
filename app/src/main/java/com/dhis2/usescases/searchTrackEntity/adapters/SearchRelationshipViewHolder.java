@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
@@ -68,24 +69,16 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
             );
         //endregion
 
-        if (presenter.getProgramModel() != null) //TODO: Improve
+        if (presenter.getProgramModel() != null)
             compositeDisposable.add(
-                    metadataRepository.getRelationshipType(presenter.getProgramModel().uid())
+                    metadataRepository.getRelationshipTypeList()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setRelationshipType, Timber::d)
+                            .subscribe(this::setRelationshipTypeList, Timber::d)
             );
 
         binding.executePendingBindings();
 
-        binding.buttonAdd.setOnClickListener(
-                view -> {
-                    if (relationshipType.uid() != null)
-                        presenter.addRelationship(trackedEntityInstanceModel.uid(), null);
-                    else {
-                        binding.relationshipSpinner.performClick();
-                    }
-                });
 
     }
 
@@ -99,18 +92,22 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRelationshipTypeList(List<RelationshipTypeModel> relationshipTypesModels) {
-        RelationshipTypeModel fake = RelationshipTypeModel.builder()
+        /*RelationshipTypeModel fake = RelationshipTypeModel.builder()
                 .aIsToB(" ")
                 .build();
-        this.relationshipTypes.add(fake);
+        this.relationshipTypes.add(fake);*/
+        this.relationshipTypes.clear();
         this.relationshipTypes.addAll(relationshipTypesModels);
         RelationshipSpinnerAdapter adapter = new RelationshipSpinnerAdapter(binding.getRoot().getContext(), this.relationshipTypes);
         binding.relationshipSpinner.setAdapter(adapter);
-        binding.relationshipSpinner.setSelection(adapter.NO_SELECTION, false);
+        binding.relationshipSpinner.setSelection(0);
         binding.relationshipSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                presenter.addRelationship(trackedEntityInstanceModel.uid(), relationshipTypes.get(position).uid());
+                if (position > 0) {
+                    Trio<RelationshipTypeModel, String, Boolean> selectedRelationShip = (Trio<RelationshipTypeModel, String, Boolean>) parent.getItemAtPosition(position);
+                    presenter.addRelationship(trackedEntityInstanceModel.uid(), selectedRelationShip.val0().uid(), selectedRelationShip.val2());
+                }
             }
 
             @Override
@@ -120,13 +117,13 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void setRelationshipType(RelationshipTypeModel relationshipTypeModel) {
+   /* private void setRelationshipType(RelationshipTypeModel relationshipTypeModel) {
         relationshipType = relationshipTypeModel;
         binding.setRelationship(relationshipType.aIsToB());
         if (relationshipType.uid() == null)
             getRelationshipTypeList();
         binding.executePendingBindings();
-    }
+    }*/
 
     private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
         binding.setAttribute(trackedEntityAttributeValueModels);

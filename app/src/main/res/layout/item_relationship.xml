@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="relationship"
             type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
@@ -13,8 +14,8 @@
             type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
-            name="attribute"
-            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
+            name="teiName"
+            type="java.lang.String" />
 
     </data>
 
@@ -30,32 +31,30 @@
         android:paddingTop="19.5dp">
 
         <TextView
-            android:id="@+id/indicator_name"
+            android:id="@+id/relationshipName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:textColor="#787878"
             android:textSize="14.2sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Risk factors:" />
+            tools:text="Mother:" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:fontFamily="sans-serif"
             android:maxLines="2"
+            android:text="@{teiName}"
             android:textColor="#444444"
             android:textSize="13.3sp"
             android:textStyle="normal"
-            android:text='@{attribute.size() > 0 ? attribute.get(0).value : relationship.trackedEntityInstanceA()}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tei_relationship_link"
-            app:layout_constraintStart_toEndOf="@id/indicator_name"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/relationshipName"
             tools:text="James Johnson" />
 
         <ImageView
@@ -63,9 +62,9 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:onClick="@{ () -> presenter.deleteRelationship(relationship.id)}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/ic_clear_red"
             tools:ignore="ContentDescription" />
 
@@ -74,10 +73,9 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="10dp"
-            android:onClick="@{ ()-> presenter.openDashboard(relationship.trackedEntityInstanceA())}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clear_relationship_button"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:srcCompat="@drawable/ic_insert_link"
             tools:ignore="ContentDescription" />
     </android.support.constraint.ConstraintLayout>

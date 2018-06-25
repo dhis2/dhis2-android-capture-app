@@ -27,11 +27,11 @@
 
     </data>
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:id="@+id/tracked_entity_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -45,20 +45,6 @@
                 android:layout_marginStart="5dp"
                 android:src="@drawable/photo_temp"
                 tools:ignore="ContentDescription" />
-
-            <!-- <ImageView
-                 android:id="@+id/follow_up"
-                 android:layout_width="34dp"
-                 android:layout_height="34dp"
-                 android:layout_alignBottom="@id/tracked_entity_image"
-                 android:layout_alignEnd="@id/tracked_entity_image"
-                 android:layout_gravity="center_vertical"
-                 android:background="@drawable/ic_circle_red"
-                 android:padding="8dp"
-                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
-                 app:srcCompat="@drawable/ic_warning_white"
-                 tools:ignore="ContentDescription" />-->
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -92,10 +78,10 @@
                 android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
                 android:onClick="@{(view)->presenter.downloadTei(view,tei.uid(),progress,adapterPosition)}"
                 android:tint="?attr/colorPrimary"
-                app:srcCompat="@drawable/ic_download"
-                android:contentDescription="@string/app_name" />
+                app:srcCompat="@drawable/ic_download" />
 
             <ProgressBar
                 android:id="@+id/progress"
@@ -104,9 +90,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:visibility="gone"
-                app:progressColor="@{@color/colorPrimary}"/>
+                app:progressColor="@{@color/colorPrimary}" />
 
         </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
+    </RelativeLayout>
 </layout>

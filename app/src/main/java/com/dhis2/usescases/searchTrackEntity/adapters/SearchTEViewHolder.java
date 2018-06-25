@@ -1,7 +1,6 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +32,9 @@ import timber.log.Timber;
 public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
     private ItemSearchTrackedEntityBinding binding;
-    private PopupMenu menu;
     private CompositeDisposable compositeDisposable;
-    private List<EnrollmentModel> teiEnrollments;
-    private SearchTEContractsModule.Presenter presenter;
-    private TrackedEntityInstanceModel tei;
 
-    public SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
+    SearchTEViewHolder(ItemSearchTrackedEntityBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
         compositeDisposable = new CompositeDisposable();
@@ -47,9 +42,8 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
 
     public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadataRepository) {
-        this.presenter = presenter;
         binding.setPresenter(presenter);
-        this.tei = trackedEntityInstanceModel;
+
         //--------------------------
         //region ENROLLMENTS
 
@@ -91,7 +85,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         );
         //endregion
 
-        binding.setSyncState(tei.state());
+        binding.setSyncState(trackedEntityInstanceModel.state());
 
         binding.executePendingBindings();
 
@@ -104,7 +98,6 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setEnrollment(List<EnrollmentModel> enrollments) {
-        this.teiEnrollments = enrollments;
         binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {

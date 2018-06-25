@@ -153,9 +153,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     private final String RELATIONSHIP_QUERY = String.format(
             "SELECT Relationship.* FROM %s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? OR %s.%s = ?",
             RelationshipModel.TABLE,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B);
+            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B,
+            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);
 
     private final String INSERT_RELATIONSHIP = String.format(
             "INSERT INTO %s (%s, %s, %s) " +
@@ -191,10 +192,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final String SCHEDULE_EVENTS = "SELECT Event.* FROM Event JOIN Enrollment ON " +
             "Enrollment.uid = Event.enrollment WHERE Enrollment.program = ? AND Enrollment.trackedEntityInstance = ? AND Event.status IN (%s)" +
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-    private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.* FROM TrackedEntityAttributeValue " +
-            "WHERE TrackedEntityAttributeValue.trackedEntityAttribute IN " +
-            "(SELECT uid FROM TrackedEntityAttribute WHERE displayInListNoProgram = 1 ORDER BY sortOrderInListNoProgram )" +
-            "AND TrackedEntityAttributeValue.trackedEntityInstance = ?";
+    private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.*, ProgramTrackedEntityAttribute.sortOrder FROM TrackedEntityAttributeValue " +
+            "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttributeValue.trackedEntityAttribute " +
+            "WHERE TrackedEntityAttributeValue.trackedEntityInstance = ? " +
+            "AND ProgramTrackedEntityAttribute.program = ? ORDER BY ProgramTrackedEntityAttribute.sortOrder";
 
     private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
                     "JOIN %s ON %s.%s = %s.%s\n" +
@@ -236,7 +237,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid, programUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
@@ -368,7 +369,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<RelationshipModel>> getRelationships(String teiUid) {
-        return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, teiUid)
+        return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, teiUid, teiUid)
                 .mapToList(RelationshipModel::create);
     }
 
@@ -521,7 +522,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 });
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/

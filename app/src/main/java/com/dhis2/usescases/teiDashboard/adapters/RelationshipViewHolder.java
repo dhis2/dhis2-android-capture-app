@@ -31,22 +31,32 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
     public void bind(TeiDashboardContracts.Presenter presenter, RelationshipModel relationship) {
 
         compositeDisposable.add(
-                presenter.getTEIMainAttributes(relationship.trackedEntityInstanceA())
-                .subscribe(
-                        this::setAttributes,
-                        Timber::d
-                )
+                presenter.getTEIMainAttributes(presenter.getTeUid().equals(relationship.trackedEntityInstanceA()) ?
+                        relationship.trackedEntityInstanceB() : relationship.trackedEntityInstanceA())
+                        .subscribe(
+                                this::setAttributes,
+                                Timber::d
+                        )
         );
+
+        binding.teiRelationshipLink.setOnClickListener(view -> {
+            String teiUid = presenter.getTeUid().equals(relationship.trackedEntityInstanceA()) ?
+                    relationship.trackedEntityInstanceB() : relationship.trackedEntityInstanceA();
+            presenter.openDashboard(teiUid);
+        });
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
         binding.executePendingBindings();
 
-        presenter.subscribeToMainAttr(relationship.trackedEntityInstanceA(), binding.indicatorName);
+        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
-        binding.setAttribute(trackedEntityAttributeValueModels);
+        if (trackedEntityAttributeValueModels.size() > 1)
+            binding.setTeiName(String.format("%s %s", trackedEntityAttributeValueModels.get(0).value(), trackedEntityAttributeValueModels.get(1).value()));
+        else
+            binding.setTeiName(trackedEntityAttributeValueModels.get(0).value());
         binding.executePendingBindings();
     }
 }

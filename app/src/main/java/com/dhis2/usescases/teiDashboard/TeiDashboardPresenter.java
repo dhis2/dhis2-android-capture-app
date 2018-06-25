@@ -26,13 +26,14 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
-import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
+import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
@@ -305,17 +306,24 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             extras.putString("TRACKED_ENTITY_UID", teType);
             extras.putString("PROGRAM_UID", programUid);
             intent.putExtras(extras);
-            relationshipFragment.startActivityForResult(intent, RelationshipFragment.REQ_ADD_RELATIONSHIP);
+            relationshipFragment.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
         } else
             view.displayMessage("You don't have the required permission for this action");
     }
 
     @Override
-    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
-        if (!trackEntityInstance_A.equals(teUid))
-            dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
-        else
-            view.displayMessage("It's not possible to add this relationship");
+    public void addRelationship(String trackEntityInstance_A, String trackEntityInstance_B, String relationshipType) {
+        if (trackEntityInstance_A != null) {
+            if (!trackEntityInstance_A.equals(teUid))
+                dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+            else
+                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
+        } else {
+            if (!trackEntityInstance_B.equals(teUid))
+                dashboardRepository.saveRelationship(teUid, trackEntityInstance_B, relationshipType);
+            else
+                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
+        }
     }
 
     @Override
@@ -441,8 +449,24 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void subscribeToMainAttr(String teiUid, TextView textView) {
+    public void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView) {
+        compositeDisposable.add(
+                metadataRepository.getRelationshipTypeList()
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMapIterable(data -> data)
+                        .filter(relationshipTypeModel -> relationshipTypeModel.uid().equals(relationship.relationshipType()))
+                        .map(item -> {
+                            if (teUid.equals(relationship.trackedEntityInstanceA()))
+                                return item.bIsToA();
+                            else
+                                return item.aIsToB();
+                        })
+                        .subscribe(
+                                textView::setText,
+                                t -> view.displayMessage("Error getting relationship label"))
 
+        );
     }
 
     @Override
