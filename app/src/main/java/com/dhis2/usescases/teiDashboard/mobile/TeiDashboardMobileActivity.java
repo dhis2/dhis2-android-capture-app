@@ -77,7 +77,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.tei_main_view, TEIDataFragment.getInstance())
+                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
                     .commit();
 
         binding.setDashboardModel(program);

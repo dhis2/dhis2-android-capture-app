@@ -33,13 +33,27 @@ public class ImageHolder extends RecyclerView.ViewHolder {
         this.disposable = new CompositeDisposable();
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(viewModel -> {
-                    binding.setLabel(viewModel.label());
+                    StringBuilder label = new StringBuilder(viewModel.label());
+                    if (viewModel.mandatory())
+                        label.append("*");
+                    binding.setLabel(label.toString());
                     String[] uids = viewModel.uid().split("\\.");
                     Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
                     if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
                         binding.frame.setVisibility(View.VISIBLE);
                     else
                         binding.frame.setVisibility(View.GONE);
+
+                    if (viewModel.warning() != null) {
+                        binding.errorMessage.setVisibility(View.VISIBLE);
+                        binding.errorMessage.setText(viewModel.warning());
+                    } else if (viewModel.error() != null) {
+                        binding.errorMessage.setVisibility(View.VISIBLE);
+                        binding.errorMessage.setText(viewModel.error());
+                    } else {
+                        binding.errorMessage.setVisibility(View.GONE);
+                        binding.errorMessage.setText(null);
+                    }
                 }
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
 

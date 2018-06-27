@@ -80,12 +80,23 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(viewModel -> {
                     StringBuilder label = new StringBuilder(viewModel.label());
-                    if(viewModel.mandatory())
+                    if (viewModel.mandatory())
                         label.append("*");
                     binding.setLabel(label.toString());
                     binding.setOptionSet(viewModel.optionSet());
                     binding.setInitialValue(viewModel.value());
                     currentValue = viewModel.value();
+
+                    if (viewModel.warning() != null) {
+                        binding.warningError.setVisibility(View.VISIBLE);
+                        binding.warningError.setText(viewModel.warning());
+                    } else if (viewModel.error() != null) {
+                        binding.warningError.setVisibility(View.VISIBLE);
+                        binding.warningError.setText(viewModel.error());
+                    } else {
+                        binding.warningError.setVisibility(View.GONE);
+                        binding.warningError.setText(null);
+                    }
                 }
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
 

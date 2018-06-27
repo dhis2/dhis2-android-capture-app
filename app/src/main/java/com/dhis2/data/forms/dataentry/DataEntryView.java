@@ -19,4 +19,6 @@ interface DataEntryView {
     Consumer<List<FieldViewModel>> showFields();
 
     void removeSection(String sectionUid);
+
+    void messageOnComplete(String message, boolean canComplete);
 }

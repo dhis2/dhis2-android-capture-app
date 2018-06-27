@@ -1,5 +1,7 @@
 package com.dhis2.data.forms.dataentry.fields.coordinate;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
 
@@ -10,6 +12,23 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
     public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section) {
-        return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null,true,null);
+        return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null,true,null,null,null);
+    }
+
+    @Override
+    public FieldViewModel setMandatory() {
+        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null,editable(),null,warning(),error());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null,editable(),null,warning,error());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withError(@NonNull String error) {
+        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null,editable(),null,warning(),error);
     }
 }

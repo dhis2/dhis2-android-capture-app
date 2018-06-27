@@ -1,15 +1,12 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -26,6 +23,10 @@ import io.reactivex.Observable;
  */
 
 public class EventDetailRepositoryImpl implements EventDetailRepository {
+
+    private static final String ORG_UNIT_NAME = "SELECT OrganisationUnit.displayName FROM OrganisationUnit " +
+            "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
+            "WHERE Event.uid = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -127,7 +128,14 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         updateProgramTable(currentDate, eventModel.program());
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    @NonNull
+    @Override
+    public Observable<String> orgUnitName(String eventUid) {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_NAME, eventUid)
+                .mapToOne(cursor -> cursor.getString(0));
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid) {
        /* ContentValues program = new ContentValues();  TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/

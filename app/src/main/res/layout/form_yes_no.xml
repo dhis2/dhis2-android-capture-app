@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -15,11 +16,25 @@
 
     </data>
 
-    <com.dhis2.utils.CustomViews.YesNoView
-        android:id="@+id/customYesNo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:label="@{label}"
-        app:valueType="@{ valueType }" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <com.dhis2.utils.CustomViews.YesNoView
+            android:id="@+id/customYesNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:label="@{label}"
+            app:valueType="@{ valueType }" />
+
+        <TextView
+            android:id="@+id/warningError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:gravity="center"
+            tools:text="This is a error message"
+            android:background="@color/white"
+            android:visibility="gone"/>
+    </LinearLayout>
 </layout>

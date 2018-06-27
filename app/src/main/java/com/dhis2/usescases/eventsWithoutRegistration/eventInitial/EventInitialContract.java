@@ -102,7 +102,7 @@ public class EventInitialContract {
 
         void getEvents(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType);
 
-        void getOrgUnits();
+        void getOrgUnits(String programId);
 
         void getEventSections(@NonNull String eventId);
 

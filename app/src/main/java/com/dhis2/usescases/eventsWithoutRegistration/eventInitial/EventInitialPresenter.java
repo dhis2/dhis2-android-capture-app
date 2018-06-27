@@ -64,6 +64,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private CompositeDisposable compositeDisposable;
     private ProgramModel programModel;
     private CategoryComboModel catCombo;
+    private String programId;
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
@@ -81,6 +82,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     public void init(EventInitialContract.View mview, String programId, String eventId) {
         view = mview;
         this.eventId = eventId;
+        this.programId = programId;
 
         compositeDisposable = new CompositeDisposable();
 
@@ -144,7 +146,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                     Timber::d
                             )
             );
-        getOrgUnits();
+        getOrgUnits(programId);
         getProgramStages(programId);
         if (eventId != null)
             getEventSections(eventId);
@@ -152,8 +154,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void getOrgUnits() {
-        compositeDisposable.add(eventInitialRepository.orgUnits()
+    public void getOrgUnits(String programId) {
+        compositeDisposable.add(eventInitialRepository.orgUnits(programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -310,7 +312,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void filterOrgUnits(String date) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date)
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date,programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

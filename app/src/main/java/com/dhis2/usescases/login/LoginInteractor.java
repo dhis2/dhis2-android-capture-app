@@ -14,6 +14,7 @@ import com.dhis2.data.service.SyncMetadataService;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.NetworkUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -87,6 +88,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
     @Override
     public void validateCredentials(@NonNull String serverUrl,
                                     @NonNull String username, @NonNull String password) {
+
         HttpUrl baseUrl = HttpUrl.parse(canonizeUrl(serverUrl));
         if (baseUrl == null) {
             return;
@@ -105,7 +107,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     if (user == null)
                         return Response.error(404, null);
                     else {
-                        saveUserData(username, password);
                         return Response.success(null);
                     }
                 })
@@ -116,8 +117,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
                         LoginInteractor.this::handleError));
     }
 
-    private void saveUserData(String username, String password) {
-    }
 
     @Override
     public void sync() {

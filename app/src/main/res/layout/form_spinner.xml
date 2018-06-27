@@ -22,7 +22,7 @@
             type="java.lang.String" />
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -39,6 +39,9 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
@@ -50,6 +53,8 @@
             android:layout_below="@id/renderImage"
             android:text="@{label}"
             android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/spinner"
+            app:layout_constraintTop_toBottomOf="@id/renderImage"
             tools:text="Spinner hint" />
 
         <android.support.v7.widget.AppCompatSpinner
@@ -65,7 +70,21 @@
             android:spinnerMode="dropdown"
             app:initialValue="@{initialValue}"
             app:label="@{label}"
+            app:layout_constraintTop_toBottomOf="@id/hintLabel"
             app:optionSet="@{optionSet}" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/warningError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center"
+            android:textColor="@color/red_060"
+            android:visibility="gone"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner"
+            tools:text="This is a error message" />
+
+    </android.support.constraint.ConstraintLayout>
 </layout>

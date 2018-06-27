@@ -10,10 +10,13 @@ import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.Result;
 
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
+import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     private SchedulerProvider schedulerProvider;
 
     private String eventUid;
+    private EventStatus currentStatus;
 
 
     EventSummaryInteractor(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -69,8 +73,10 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
         compositeDisposable.add(eventSummaryRepository.getEvent(eventId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setActionButton,
+                .subscribe(event -> {
+                            this.currentStatus = event.status();
+                            view.setActionButton(event);
+                        },
                         Timber::e
                 ));
     }
@@ -121,6 +127,14 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     @Override
     public void onDoAction() {
+        if (currentStatus != EventStatus.COMPLETED)
+            view.checkAction();
+        else
+            doOnComple();
+    }
+
+    @Override
+    public void doOnComple() {
         compositeDisposable.add(eventSummaryRepository.changeStatus(eventUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -157,6 +171,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
+        view.messageOnComplete(null, true);
+
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
@@ -178,6 +194,12 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
+            } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
+                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
+                view.messageOnComplete(warningOnCompletion.content(), true);
+            } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
+                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
+                view.messageOnComplete(errorOnCompletion.content(), false);
             }
         }
     }

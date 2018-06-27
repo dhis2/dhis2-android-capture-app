@@ -54,6 +54,8 @@ public class LoginContracts {
         void saveFlag(String s);
 
         void handleLogout();
+
+        void setLoginVisibility(boolean isVisible);
     }
 
     public interface Presenter {

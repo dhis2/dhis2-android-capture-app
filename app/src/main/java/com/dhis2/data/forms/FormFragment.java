@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.forms.dataentry.DataEntryFragment;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import com.dhis2.data.tuples.Pair;
@@ -211,6 +212,17 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
         return sectionViewModels -> {
+            if (formSectionAdapter.getCount() > 0 && formSectionAdapter.areDifferentSections(sectionViewModels)) {
+                for (Fragment fragment : getChildFragmentManager().getFragments()) {
+                    if (fragment instanceof DataEntryFragment) {
+                        continue;
+                    } else if (fragment != null) {
+                        getChildFragmentManager().beginTransaction().remove(fragment).commit();
+                    }
+                }
+                formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
+                viewPager.setAdapter(formSectionAdapter);
+            }
             formSectionAdapter.swapData(sectionViewModels);
             tabLayout.setupWithViewPager(viewPager);
             if (sectionViewModels.size() == 0) {

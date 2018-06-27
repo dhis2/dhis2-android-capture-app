@@ -1,8 +1,10 @@
 package com.dhis2.data.forms.dataentry;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
@@ -149,6 +151,19 @@ final class ProgramStageRepository implements DataEntryRepository {
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
                 .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public void assign(String field, String content) {
+        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field);
+        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+            TrackedEntityDataValueModel dataValue = TrackedEntityDataValueModel.create(dataValueCursor);
+            ContentValues contentValues = dataValue.toContentValues();
+            contentValues.put(TrackedEntityDataValueModel.Columns.VALUE, content);
+            int row = briteDatabase.update(TrackedEntityDataValueModel.TABLE, contentValues, "dataElement = ?", field);
+            if (row == -1)
+                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field));
+        }
     }
 
     @NonNull

@@ -61,8 +61,19 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public void update(OrgUnitViewModel viewModel) {
         this.viewModel = viewModel;
-        this.inputLayout.setHint(viewModel.label());
-        orgUnitDialog.setTitle(viewModel.label());
+        StringBuilder label = new StringBuilder(viewModel.label());
+        if (viewModel.mandatory())
+            label.append("*");
+        this.inputLayout.setHint(label);
+        orgUnitDialog.setTitle(label.toString());
+
+        if (viewModel.warning() != null)
+            editText.setError(viewModel.warning());
+        else if (viewModel.error() != null)
+            editText.setError(viewModel.error());
+        else
+            editText.setError(null);
+
         if (viewModel.value() != null && !viewModel.value().equals(this.viewModel.value())) {
             getOrgUnits();
         }

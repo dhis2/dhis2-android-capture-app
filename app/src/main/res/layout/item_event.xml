@@ -14,12 +14,11 @@
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
     </data>
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginBottom="1dp"
-        app:cardCornerRadius="2dp"
-        app:elevation="0dp"
+        tools:background="@color/event_green"
         app:eventColor="@{event.status()}">
 
         <android.support.constraint.ConstraintLayout
@@ -46,7 +45,7 @@
                 app:date='@{event.eventDate()}'
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="03/10/2017"
-                tools:textColor="@color/white" />
+                />
 
             <TextView
                 android:id="@+id/event_name"
@@ -64,7 +63,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/event_date"
                 tools:text="ANC 4\ndf"
-                tools:textColor="@color/white" />
+                />
 
             <ImageView
                 android:id="@+id/arrow_down"
@@ -74,6 +73,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_down"
+                app:tint="?colorPrimaryDark"
                 tools:ignore="ContentDescription" />
 
 
@@ -109,5 +109,5 @@
                     tools:text="Read only" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
+    </RelativeLayout>
 </layout>

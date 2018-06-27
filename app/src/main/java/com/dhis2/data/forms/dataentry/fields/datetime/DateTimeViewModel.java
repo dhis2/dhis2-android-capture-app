@@ -18,6 +18,24 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     public abstract ValueType valueType();
 
     public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates) {
-        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates,true,null, type);
+        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates,true,null,null,null, type);
     }
+
+    @Override
+    public FieldViewModel setMandatory() {
+        return new AutoValue_DateTimeViewModel(uid(),label(),true,value(),programStageSection(),
+                allowFutureDate(),editable(),optionSet(),warning(),error(),valueType());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withError(@NonNull String error) {
+        return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),value(),programStageSection(),
+                allowFutureDate(),editable(),optionSet(),warning(),error,valueType());    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),value(),programStageSection(),
+                allowFutureDate(),editable(),optionSet(),warning,error(),valueType());    }
 }

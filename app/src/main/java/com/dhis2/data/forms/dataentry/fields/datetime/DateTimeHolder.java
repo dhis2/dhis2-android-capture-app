@@ -2,10 +2,6 @@ package com.dhis2.data.forms.dataentry.fields.datetime;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputEditText;
-import android.view.FocusFinder;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.dhis2.BR;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -58,13 +54,12 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 model.subscribe(
                         dateTimeViewModel -> {
                             StringBuilder label = new StringBuilder(dateTimeViewModel.label());
-                            if(dateTimeViewModel.mandatory())
+                            if (dateTimeViewModel.mandatory())
                                 label.append("*");
                             binding.setVariable(BR.label, label.toString());
                             if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
-                            }
-                            else {
+                            } else {
                                 binding.setVariable(BR.initData, null);
                             }
 
@@ -72,6 +67,31 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                                 ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
                             if (binding instanceof FormDateTimeTextBinding)
                                 ((FormDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
+
+                            if (dateTimeViewModel.warning() != null) {
+                                if (binding instanceof FormTimeTextBinding)
+                                    ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
+                                if (binding instanceof FormDateTextBinding)
+                                    ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
+                                if (binding instanceof FormDateTimeTextBinding)
+                                    ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+
+                            } else if (dateTimeViewModel.error() != null) {
+                                if (binding instanceof FormTimeTextBinding)
+                                    ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
+                                if (binding instanceof FormDateTextBinding)
+                                    ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
+                                if (binding instanceof FormDateTimeTextBinding)
+                                    ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+                            } else {
+                                if (binding instanceof FormTimeTextBinding)
+                                    ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
+                                if (binding instanceof FormDateTextBinding)
+                                    ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
+                                if (binding instanceof FormDateTimeTextBinding)
+                                    ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+                            }
+
                             binding.executePendingBindings();
                         },
                         Timber::d)

@@ -34,6 +34,19 @@ import timber.log.Timber;
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {
 
+    private static final String SELECT_ORG_UNITS = "SELECT * FROM OrganisationUnit " +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
+            "WHERE OrganisationUnitProgramLink .program = ?";
+
+    private static final String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE +
+            " JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink .organisationUnit = OrganisationUnit.uid " +
+            " WHERE ("
+            + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date(?)) AND ("
+            + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
+            " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
+            "AND OrganisationUnitProgramLink .program = ?";
+
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
     private final DatabaseAdapter databaseAdapter;
@@ -55,9 +68,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
+    public Observable<List<OrganisationUnitModel>> orgUnits(String programId) {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS, programId)
                 .mapToList(OrganisationUnitModel::create);
     }
 
@@ -72,15 +84,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date) {
+    public Observable<List<OrganisationUnitModel>> filteredOrgUnits(String date, String programId) {
         if (date == null)
-            return orgUnits();
-        String SELECT_ORG_UNITS_FILTERED = "SELECT * FROM " + OrganisationUnitModel.TABLE + " WHERE ("
-                + OrganisationUnitModel.Columns.OPENING_DATE + " IS NULL OR " +
-                " date(" + OrganisationUnitModel.Columns.OPENING_DATE + ") <= date('%s')) AND ("
-                + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
-                " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date('%s'))";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, String.format(SELECT_ORG_UNITS_FILTERED, date, date))
+            return orgUnits(programId);
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_FILTERED, date, date, programId)
                 .mapToList(OrganisationUnitModel::create);
     }
 

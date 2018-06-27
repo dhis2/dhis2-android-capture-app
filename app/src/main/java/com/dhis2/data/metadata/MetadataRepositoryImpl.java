@@ -3,6 +3,7 @@ package com.dhis2.data.metadata;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
@@ -33,6 +34,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -513,9 +516,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String overdueProgram = " AND Enrollment.program = ?";
 
         if (programUid == null)
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(list->!list.isEmpty());
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(list -> !list.isEmpty());
         else
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(list->!list.isEmpty());
+            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(list -> !list.isEmpty());
 
     }
 
@@ -558,5 +561,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         return Flowable.just(Pair.create(currentEvent, currentTei));
 
+    }
+
+    @Override
+    public Flowable<Boolean> validateCredentials(String serverUrl, String username, String password) {
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT AuthenticatedUser.credentials, SystemInfo.contextPath FROM AuthenticatedUser JOIN SystemInfo")
+                .mapToOne(cursor -> {
+                    String userCredentials = cursor.getString(0);
+                    String currentServer = cursor.getString(1);
+                    byte[] bytes = String.format("%s:%s", username, password).getBytes("UTF-8");
+                    String encodedCredentials = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+                    return currentServer.equals(serverUrl) && userCredentials.equals(encodedCredentials);
+
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

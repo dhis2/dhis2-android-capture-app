@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.event.EventModel;
@@ -33,6 +34,10 @@ public class EventSummaryContract {
         void onStatusChanged(EventModel event);
 
         void setActionButton(EventModel eventModel);
+
+        void messageOnComplete(String content, boolean canComplete);
+
+        void checkAction();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -43,6 +48,8 @@ public class EventSummaryContract {
         void getSectionCompletion(@Nullable String sectionUid);
 
         void onDoAction();
+
+        void doOnComple();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -56,5 +63,7 @@ public class EventSummaryContract {
         void getSectionCompletion(@Nullable String sectionUid);
 
         void onDoAction();
+
+        void doOnComple();
     }
 }

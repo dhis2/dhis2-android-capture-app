@@ -21,7 +21,9 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@android:color/white"
+        >
 
         <TextView
             android:id="@+id/entity_attribute_1"

@@ -2,6 +2,7 @@ package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
@@ -38,7 +39,7 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
 
         disposable.add(model.subscribe(checkBoxViewModel -> {
                     StringBuilder label = new StringBuilder(checkBoxViewModel.label());
-                    if(checkBoxViewModel.mandatory())
+                    if (checkBoxViewModel.mandatory())
                         label.append("*");
                     binding.setLabel(label.toString());
                     binding.setValueType(checkBoxViewModel.valueType());
@@ -48,6 +49,17 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
                         binding.customYesNo.getRadioGroup().check(R.id.no);
                     else
                         binding.customYesNo.getRadioGroup().check(R.id.no_value);
+
+                    if (checkBoxViewModel.warning() != null) {
+                        binding.warningError.setVisibility(View.VISIBLE);
+                        binding.warningError.setText(checkBoxViewModel.warning());
+                    } else if (checkBoxViewModel.error() != null) {
+                        binding.warningError.setVisibility(View.VISIBLE);
+                        binding.warningError.setText(checkBoxViewModel.error());
+                    } else {
+                        binding.warningError.setVisibility(View.GONE);
+                        binding.warningError.setText(null);
+                    }
                 },
                 Timber::d)
         );

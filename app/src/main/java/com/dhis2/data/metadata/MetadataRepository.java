@@ -29,6 +29,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -137,4 +138,6 @@ public interface MetadataRepository {
     Observable<List<ResourceModel>> syncState(ProgramModel program);
 
     Flowable<Pair<Integer, Integer>> getDownloadedData();
+
+    Flowable<Boolean> validateCredentials(String serverUrl, String username, String password);
 }

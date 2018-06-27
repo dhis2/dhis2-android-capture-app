@@ -19,6 +19,23 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     public abstract String optionSet();
 
     public static SpinnerViewModel create(String id, String label, String hintFilterOptions, Boolean mandatory, String optionSet, String value, String section) {
-        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, true, hintFilterOptions, optionSet);
+        return new AutoValue_SpinnerViewModel(id, label, mandatory, value, section, null, true,null,null, hintFilterOptions, optionSet);
+    }
+
+    @Override
+    public FieldViewModel setMandatory() {
+        return new AutoValue_SpinnerViewModel(uid(),label(),true,value(),programStageSection(),allowFutureDate(),editable(),warning(),error(),hint(),optionSet());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withError(@NonNull String error) {
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning(),error,hint(),optionSet());
+    }
+
+    @NonNull
+    @Override
+    public FieldViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning,error(),hint(),optionSet());
     }
 }

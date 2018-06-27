@@ -45,6 +45,7 @@ import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
+import timber.log.Timber;
 
 import static com.dhis2.utils.Period.DAILY;
 import static com.dhis2.utils.Period.MONTHLY;
@@ -121,7 +122,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         this.orgUnitFilter = orgUnitFilter;
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -180,7 +181,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     getSelectedPrograms(date, currentPeriod, orgUnitFilter.toString());
 
                 }
-            });
+            }, Timber::d);
         } else if (currentPeriod == DAILY) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);
@@ -404,7 +405,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 getSelectedPrograms(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
-//        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
     }
 
@@ -461,13 +461,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     .closeOnTouch(true)
                     .build();
 
-            /*getAbstractActivity().fancyShowCaseQueue = new FancyShowCaseQueue()
-                    .add(tuto1)
-                    .add(tuto2)
-                    .add(tuto3)
-                    .add(tuto4)
-                    .add(tuto5)
-                    .add(tuto6);*/
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();
             steps.add(tuto1);
             steps.add(tuto2);

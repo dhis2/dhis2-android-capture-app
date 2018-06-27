@@ -36,4 +36,7 @@ public interface EventDetailRepository {
     void deleteNotPostedEvent(String eventUid);
 
     void deletePostedEvent(EventModel eventModel);
+
+    @NonNull
+    Observable<String> orgUnitName(String eventUid);
 }
