@@ -101,7 +101,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
                     metadataRepository.getTeiOrgUnit(teUid),
                     metadataRepository.getTeiActivePrograms(teUid),
-                    dashboardRepository.getRelationships(teUid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

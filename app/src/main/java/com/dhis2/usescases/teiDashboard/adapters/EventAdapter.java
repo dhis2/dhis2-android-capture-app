@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
@@ -31,14 +32,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         this.presenter = presenter;
     }
 
+    @NonNull
     @Override
-    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemEventBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_event, parent, false);
         return new EventViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         ProgramStageModel programStage = null;
         for (ProgramStageModel stage : programStageList)
             if (events.get(position).programStage().equals(stage.uid()))

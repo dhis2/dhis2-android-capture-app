@@ -51,8 +51,7 @@
 
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
         <activity
-            android:name=".usescases.searchTrackEntity.SearchTEActivity"
-            android:screenOrientation="portrait" />
+            android:name=".usescases.searchTrackEntity.SearchTEActivity"/>
         <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />

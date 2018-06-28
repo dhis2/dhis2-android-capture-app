@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.databinding.DataBindingUtil;
@@ -78,6 +79,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         ((App) getApplicationContext()).userComponent().plus(new SearchTEModule()).inject(this);
 
         super.onCreate(savedInstanceState);
+
+        if (!getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        else
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         binding.setDownloadMode(downloadMode);
@@ -157,7 +164,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.progress.setVisibility(View.GONE);
             binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.val0().size())));
 
-            ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList());
+            ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList(), presenter.getFormData());
 
         };
     }

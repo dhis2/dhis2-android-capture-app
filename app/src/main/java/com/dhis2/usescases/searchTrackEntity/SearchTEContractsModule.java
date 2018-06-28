@@ -86,5 +86,7 @@ public class SearchTEContractsModule {
         boolean selectTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+        List<TrackedEntityAttributeModel> getFormData();
     }
 }
