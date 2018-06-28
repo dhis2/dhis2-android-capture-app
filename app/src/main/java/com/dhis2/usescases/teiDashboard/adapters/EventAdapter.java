@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -12,8 +13,8 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -23,7 +24,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
     private final TeiDashboardContracts.Presenter presenter;
-    private List<EventModel> events = new ArrayList<>();
+    private List<EventModel> events;
 
     public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList) {
         this.events = eventList;
@@ -31,17 +32,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         this.presenter = presenter;
     }
 
+    @NonNull
     @Override
-    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemEventBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_event, parent, false);
         return new EventViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(EventViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         ProgramStageModel programStage = null;
         for (ProgramStageModel stage : programStageList)
-            if (events.get(position).programStage().equals(stage.uid()))
+            if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
         holder.bind(presenter, events.get(position), programStage);
     }
