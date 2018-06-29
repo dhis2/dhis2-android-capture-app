@@ -472,7 +472,7 @@ public class Bindings {
     }
 
     @BindingAdapter("eventColor")
-    public static void setEventText(CardView view, EventStatus status) {
+    public static void setEventColor(View view, EventStatus status) {
         int eventColor;
         if (status == null)
             status = EventStatus.ACTIVE;
@@ -491,7 +491,7 @@ public class Bindings {
                 break;
         }
 
-        view.setCardBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
+        view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
     }
 
     @BindingAdapter("scheduleColor")

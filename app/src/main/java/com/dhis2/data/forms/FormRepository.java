@@ -60,4 +60,13 @@ public interface FormRepository {
 
     @NonNull
     Observable<List<FieldViewModel>> fieldValues();
+
+    void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId);
+
+    void deleteEnrollment(@NonNull String trackedEntityInstanceId);
+
+    void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId);
+
+    @NonNull
+    Observable<String> getTrackedEntityInstanceUid();
 }

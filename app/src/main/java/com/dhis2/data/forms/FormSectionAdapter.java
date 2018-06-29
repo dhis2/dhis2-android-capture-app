@@ -54,6 +54,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         return formSectionViewModelList.get(position).label();
     }
 
+    @Override
     public int getItemPosition(@NonNull Object item) {
         DataEntryFragment fragment = (DataEntryFragment) item;
         String section = fragment.getSection();
@@ -81,12 +82,6 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         else
             differentSections = true;
 
-        /*if(differentSections){
-            for(Fragment fragment : fm.getFragments()){
-                fm.beginTransaction().remove(fragment).commit();
-            }
-        }*/
-
         if (differentSections || sections.isEmpty()) {
 
             Log.d("FM_TEST", fm.getFragments().size() + " ");
@@ -96,7 +91,6 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
             formSectionViewModelList.addAll(models);
             sections.addAll(newSections);
             notifyDataSetChanged();
-
         }
     }
 
