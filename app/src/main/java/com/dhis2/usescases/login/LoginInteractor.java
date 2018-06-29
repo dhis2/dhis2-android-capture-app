@@ -14,7 +14,6 @@ import com.dhis2.data.service.SyncMetadataService;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
-import com.dhis2.utils.NetworkUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -71,13 +70,13 @@ public class LoginInteractor implements LoginContracts.Interactor {
             disposable.add(userManager.isUserLoggedIn()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe((isUserLoggedIn) -> {
+                    .subscribe(isUserLoggedIn -> {
                         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                 "com.dhis2", Context.MODE_PRIVATE);
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
                         } else if (prefs.getBoolean("SessionLocked", false)) {
-                            view.getBinding().unlock.setVisibility(View.VISIBLE);
+                            view.getBinding().unlockLayout.setVisibility(View.VISIBLE);
                         }
 
                     }, Timber::e));
@@ -298,7 +297,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            data -> view.handleLogout(),
+                            data -> {
+                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
+                                prefs.edit().putBoolean("SessionLocked", false).apply();
+                                prefs.edit().putString("pin", null).apply();
+                                view.handleLogout();
+                            },
                             t -> view.handleLogout()
                     )
             );
