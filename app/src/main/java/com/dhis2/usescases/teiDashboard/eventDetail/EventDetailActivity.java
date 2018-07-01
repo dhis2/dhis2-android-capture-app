@@ -6,13 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -20,19 +13,15 @@ import com.dhis2.data.forms.FormFragment;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ActivityEventDetailBinding;
-import com.dhis2.databinding.FormEditTextDataBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
-import com.google.android.flexbox.FlexboxLayout;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
-import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 
 import javax.inject.Inject;
 
@@ -57,7 +46,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         super.onCreate(savedInstanceState);
         eventUid = getIntent().getStringExtra("EVENT_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_detail);
-        binding.toolbarTitle.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
+        binding.title.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
         binding.setPresenter(presenter);
     }
 
@@ -74,6 +63,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
         binding.setEvent(eventDetailModel.getEventModel());
         binding.setStage(eventDetailModel.getProgramStage());
+        binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
         binding.executePendingBindings();
 
         supportStartPostponedEnterTransition();
@@ -98,7 +88,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     public void setDataEditable() {
         if (binding.getStage().accessDataWrite()) {
             isEditable.set(!isEditable.get());
-            binding.dataLayout.invalidate();
         } else
             displayMessage(null);
     }
@@ -141,43 +130,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             setResult(Activity.RESULT_OK, intent);
         }
         finish();
-    }
-
-    private void setSectionDataElements(EventDetailModel eventDetailModel, String sectionUid) {
-
-        for (ProgramStageDataElementModel dataValueModel : eventDetailModel.getDataElementsForSection(sectionUid)) {
-
-            FormEditTextDataBinding editTextBinding = DataBindingUtil.inflate(
-                    LayoutInflater.from(this), R.layout.form_edit_text_data, binding.dataLayout, false
-            );
-            editTextBinding.setDataValue(dataValueModel);
-
-            editTextBinding.formEdittext.setText(eventDetailModel.getValueForDE(dataValueModel.dataElement()));
-
-            editTextBinding.setIsEditable(isEditable);
-
-            FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setFlexBasisPercent(1f);
-            binding.dataLayout.addView(editTextBinding.getRoot(), params);
-
-            editTextBinding.formEdittext.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // unused
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    presenter.saveData(dataValueModel.dataElement(), s.toString());
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // unused
-                }
-            });
-        }
     }
 
     @Override

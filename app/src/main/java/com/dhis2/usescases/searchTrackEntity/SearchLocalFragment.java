@@ -22,6 +22,7 @@ import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 import com.evrencoskun.tableview.listener.ITableViewListener;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
@@ -94,13 +95,13 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
 
     //endregion
 
-    public void setItems(Pair<List<TrackedEntityInstanceModel>, String> mData, List<ProgramModel> programList) {
+    public void setItems(Pair<List<TrackedEntityInstanceModel>, String> mData, List<ProgramModel> programList, List<TrackedEntityAttributeModel> formData) {
 
         if (mData.val1().isEmpty()) {
             binding.messageContainer.setVisibility(View.GONE);
 
             if (getResources().getBoolean(R.bool.is_tablet)) {
-                searchTEATabletAdapter.setItems(mData.val0(), programList);
+                searchTEATabletAdapter.setItems(mData.val0(), programList,formData);
             } else {
                 if (fromRelationship) {
                     searchRelationshipAdapter.setItems(mData.val0());
@@ -129,12 +130,27 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
     }
 
     @Override
+    public void onCellLongPressed(@NonNull RecyclerView.ViewHolder cellView, int column, int row) {
+
+    }
+
+    @Override
     public void onColumnHeaderClicked(@NonNull RecyclerView.ViewHolder p_jColumnHeaderView, int p_nXPosition) {
 
     }
 
     @Override
+    public void onColumnHeaderLongPressed(@NonNull RecyclerView.ViewHolder columnHeaderView, int column) {
+
+    }
+
+    @Override
     public void onRowHeaderClicked(@NonNull RecyclerView.ViewHolder p_jRowHeaderView, int p_nYPosition) {
+
+    }
+
+    @Override
+    public void onRowHeaderLongPressed(@NonNull RecyclerView.ViewHolder rowHeaderView, int row) {
 
     }
 }

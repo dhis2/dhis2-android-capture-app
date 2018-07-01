@@ -12,7 +12,6 @@ import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormButtonBinding;
-import com.dhis2.utils.ColorUtils;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 

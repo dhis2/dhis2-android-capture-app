@@ -17,7 +17,9 @@ import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.databinding.ActivityEventSummaryBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
+import com.dhis2.utils.DialogClickListener;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -29,6 +31,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * Created by Cristian on 01/03/2018.
@@ -52,6 +56,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private int fieldsToCompleteBeforeClosing;
     String eventId;
     String programId;
+    private String messageOnComplete = "";
+    private boolean canComplete = true;
+    private CustomDialog dialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,6 +140,40 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                 binding.actionButton.setText(getString(R.string.re_open));
                 break;
         }
+    }
+
+    @Override
+    public void messageOnComplete(String content, boolean canComplete) {
+        this.messageOnComplete = content;
+        this.canComplete = canComplete;
+    }
+
+    @Override
+    public void checkAction() {
+        dialog = new CustomDialog(
+                getContext(),
+                getString(R.string.warning_error_on_complete_title),
+                messageOnComplete,
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                1001,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        if (canComplete)
+                            presenter.doOnComple();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        dialog.dismiss();
+                    }
+                });
+        if (!isEmpty(messageOnComplete))
+            dialog.show();
+        else
+            presenter.doOnComple();
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {

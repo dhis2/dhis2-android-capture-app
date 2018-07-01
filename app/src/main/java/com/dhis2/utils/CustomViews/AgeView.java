@@ -2,9 +2,6 @@ package com.dhis2.utils.CustomViews;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.InverseBindingMethod;
-import android.databinding.InverseBindingMethods;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.text.InputFilter;
@@ -73,6 +70,10 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
         else
             ((AgeCustomViewBinding) binding).setLabel(label);
+    }
+
+    public void setWarningOrError(String warningOrError) {
+        date.setError(warningOrError);
     }
 
     private void onFocusChanged(View view, boolean b) {

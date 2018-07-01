@@ -38,6 +38,14 @@ public class AgeHolder extends FormViewHolder {
                     if (!isEmpty(ageViewModel.value())) {
                         binding.customAgeview.setInitialValue(ageViewModel.value());
                     }
+
+                    if (ageViewModel.warning() != null)
+                        binding.customAgeview.setWarningOrError(ageViewModel.warning());
+                    else if (ageViewModel.error() != null)
+                        binding.customAgeview.setWarningOrError(ageViewModel.error());
+                    else
+                        binding.customAgeview.setWarningOrError(null);
+
                     binding.executePendingBindings();
                 },
                 Timber::d));

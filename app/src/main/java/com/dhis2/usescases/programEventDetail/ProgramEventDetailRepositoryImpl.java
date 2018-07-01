@@ -159,16 +159,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 String value = cursor.getString(0);
-                String optionSet = cursor.getString(1);
 
-                if (optionSet == null)
-                    values.add(value);
-                else if (value != null) {
-                    Cursor option = briteDatabase.query(OPTION, value);
-                    if (option != null && option.moveToFirst()) {
-                        values.add(option.getString(0));
-                    }
-                }
+                values.add(value);
+
 
                 cursor.moveToNext();
             }

@@ -8,11 +8,11 @@
         android:layout_width="1px"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:background="@color/header_line_color"/>
+        android:background="?colorPrimary"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignParentBottom="true"
-        android:background="@color/header_line_color"/>
+        android:background="?colorPrimaryDark"/>
 </RelativeLayout>

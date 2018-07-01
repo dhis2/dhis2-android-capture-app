@@ -8,7 +8,7 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/scrollView"
@@ -19,14 +19,14 @@
         <com.evrencoskun.tableview.TableView
             android:id="@+id/tableView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:row_header_width="90dp" />
 
         <RelativeLayout
             android:id="@+id/messageContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/default_background_color"
+            android:background="@color/colorBackGround"
             android:visibility="gone">
 
             <TextView

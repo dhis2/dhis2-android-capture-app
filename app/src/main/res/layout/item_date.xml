@@ -14,6 +14,7 @@
         android:layout_height="40dp"
         android:gravity="center_vertical"
         android:paddingStart="20dp"
+        android:background="@android:color/white"
         android:paddingEnd="0dp">
 
         <TextView

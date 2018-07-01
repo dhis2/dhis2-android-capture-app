@@ -2,23 +2,19 @@ package com.dhis2.usescases.teiDashboard;
 
 import android.databinding.BaseObservable;
 
-import com.dhis2.domain.responses.Enrollment;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
 /**
- * Created by ppajuelo on 04/12/2017.
+ * QUADRAM. Created by ppajuelo on 04/12/2017.
  */
 public class DashboardProgramModel extends BaseObservable {
 
@@ -26,11 +22,9 @@ public class DashboardProgramModel extends BaseObservable {
     private List<ProgramTrackedEntityAttributeModel> trackedEntityAttributesModel;
     private List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues;
     private List<EventModel> eventModels;
-    private List<RelationshipModel> relationships;
     private EnrollmentModel currentEnrollment;
     private List<ProgramStageModel> programStages;
     private List<ProgramModel> enrollmentProgramModels;
-    private List<ProgramIndicatorModel> programIndicatorModels;
     private OrganisationUnitModel orgnUnit;
     private List<EnrollmentModel> teiEnrollments;
 
@@ -42,8 +36,7 @@ public class DashboardProgramModel extends BaseObservable {
             List<ProgramTrackedEntityAttributeModel> trackedEntityAttributeModels,
             List<TrackedEntityAttributeValueModel> trackedEntityAttributeValues,
             OrganisationUnitModel orgnUnit,
-            List<ProgramModel> enrollmentProgramModels,
-            List<RelationshipModel> relationships) {
+            List<ProgramModel> enrollmentProgramModels) {
 
         this.currentEnrollment = currentEnrollment;
         this.programStages = programStages;
@@ -53,7 +46,6 @@ public class DashboardProgramModel extends BaseObservable {
         this.eventModels = events;
         this.trackedEntityAttributesModel = trackedEntityAttributeModels;
         this.trackedEntityAttributeValues = trackedEntityAttributeValues;
-        this.relationships = relationships;
     }
 
     public DashboardProgramModel(TrackedEntityInstanceModel tei,
@@ -92,7 +84,8 @@ public class DashboardProgramModel extends BaseObservable {
         sortOrder--;
         if (sortOrder < trackedEntityAttributesModel.size())
             for (TrackedEntityAttributeValueModel attribute : trackedEntityAttributeValues)
-                if (trackedEntityAttributesModel != null && attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
+                if (trackedEntityAttributesModel != null &&
+                        attribute.trackedEntityAttribute().equals(trackedEntityAttributesModel.get(sortOrder).trackedEntityAttribute()))
                     attributeValue = attribute;
 
 
@@ -105,10 +98,6 @@ public class DashboardProgramModel extends BaseObservable {
 
     public List<EventModel> getEvents() {
         return eventModels;
-    }
-
-    public List<RelationshipModel> getRelationships() {
-        return relationships;
     }
 
     public ProgramModel getCurrentProgram() {
@@ -124,21 +113,9 @@ public class DashboardProgramModel extends BaseObservable {
         return trackedEntityAttributeValues;
     }
 
-    public List<ProgramTrackedEntityAttributeModel> getTrackedEntityAttributesModel() {
-        return trackedEntityAttributesModel;
-    }
-
-    public void setProgramIndicatorModels(List<ProgramIndicatorModel> programIndicatorModels) {
-        this.programIndicatorModels = programIndicatorModels;
-    }
-
-    public List<ProgramIndicatorModel> getProgramIndicatorModels() {
-        return programIndicatorModels;
-    }
-
     public EnrollmentModel getEnrollmentForProgram(String uid) {
         for (EnrollmentModel enrollment : teiEnrollments)
-            if(enrollment.program().equals(uid))
+            if (enrollment.program().equals(uid))
                 return enrollment;
         return null;
     }

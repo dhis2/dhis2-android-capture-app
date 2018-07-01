@@ -10,15 +10,18 @@ import com.dhis2.utils.Result;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramRuleAction;
-import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionAssign;
+import org.hisp.dhis.rules.models.RuleActionCreateEvent;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
+import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
+import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -79,7 +82,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.computation())//check if computation does better than io
                 .observeOn(schedulerProvider.ui())
                 .subscribe(dataEntryView.showFields(),
                         Timber::d
@@ -135,25 +138,23 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     }
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
-        //TODO: APPLY RULE EFFECTS TO ALL MODELS
+
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
-                    fieldViewModels.put(showWarning.field(),
-                            ((EditTextViewModel) model).withWarning(showWarning.content()));
-                }
+                fieldViewModels.put(showWarning.field(),
+                        model.withWarning(showWarning.content()));
+
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                if (model != null && model instanceof EditTextViewModel) {
-                    fieldViewModels.put(showError.field(),
-                            ((EditTextViewModel) model).withError(showError.content()));
-                }
+                fieldViewModels.put(showError.field(),
+                        model.withError(showError.content()));
+
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
@@ -161,17 +162,35 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = codeGenerator.generate();
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null, true);
+                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null, false);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
-
-                RuleActionDisplayKeyValuePair displayText =
-                        (RuleActionDisplayKeyValuePair) ruleAction;
+                RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
+                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
+                        displayKeyValuePair.content(), false, displayKeyValuePair.data(), "Information", 1, ValueType.TEXT, null, false);
+                fieldViewModels.put(uid, textViewModel);
 
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 dataEntryView.removeSection(hideSection.programStageSection());
+
+            } else if (ruleAction instanceof RuleActionAssign) {
+                RuleActionAssign assign = (RuleActionAssign) ruleAction;
+                dataEntryRepository.assign(assign.field(), assign.content());
+            } else if (ruleAction instanceof RuleActionCreateEvent) {
+                RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
+                //TODO: CREATE event with data from createEvent
+            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
+                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
+                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+                fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+            } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
+                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
+                dataEntryView.messageOnComplete(warningOnCompletion.content(), true);
+            } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
+                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
+                dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
             }
 
         }

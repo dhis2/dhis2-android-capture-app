@@ -1,8 +1,10 @@
 package com.dhis2.data.forms.dataentry;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
@@ -116,8 +118,8 @@ final class EnrollmentRepository implements DataEntryRepository {
                 String teiUid = null;
                 Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
                         "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?",enrollment);
-                if(tei!=null && tei.moveToFirst()) {
+                        "WHERE Enrollment.uid = ?", enrollment);
+                if (tei != null && tei.moveToFirst()) {
                     teiUid = tei.getString(0);
                     tei.close();
                 }
@@ -144,5 +146,18 @@ final class EnrollmentRepository implements DataEntryRepository {
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates, !generated, null);
 
+    }
+
+    @Override
+    public void assign(String field, String content) {
+        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityAttributeValue WHERE trackedEntityAttribute = ?", field);
+        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+            TrackedEntityAttributeValueModel dataValue = TrackedEntityAttributeValueModel.create(dataValueCursor);
+            ContentValues contentValues = dataValue.toContentValues();
+            contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
+            int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field);
+            if (row == -1)
+                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field));
+        }
     }
 }

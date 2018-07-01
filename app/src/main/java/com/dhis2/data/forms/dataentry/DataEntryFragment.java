@@ -114,6 +114,11 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         }
     }
 
+    @Override
+    public void messageOnComplete(String message, boolean canComplete) {
+        //TODO: When event/enrollment ends if there is a message it should be shown. Only if canComplete, user can finish
+    }
+
     public boolean checkMandatory(){
         return dataEntryAdapter.mandatoryOk();
     }

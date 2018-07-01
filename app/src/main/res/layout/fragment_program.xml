@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="presenter"
             type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
@@ -27,7 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="7dp"
-                android:layout_marginTop="7dp"
                 android:gravity="end"
                 android:visibility="gone">
 

@@ -37,7 +37,7 @@
                     android:id="@+id/data15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:buttonTint="?colorPrimary"
+                    app:buttonTint="?colorPrimary"
                     android:text="@string/fifteen_minute" />
 
                 <RadioButton

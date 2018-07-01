@@ -49,6 +49,14 @@ public class CoordinateHolder extends FormViewHolder {
                     binding.formCoordinates.setLabel(label.toString());
                     if (!isEmpty(coordinateViewModel.value()))
                         binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+
+                    if (coordinateViewModel.warning() != null)
+                        binding.formCoordinates.setWargingOrError(coordinateViewModel.warning());
+                    else if (coordinateViewModel.error() != null)
+                        binding.formCoordinates.setWargingOrError(coordinateViewModel.error());
+                    else
+                        binding.formCoordinates.setWargingOrError(null);
+
                     binding.executePendingBindings();
                 },
                 Timber::d));

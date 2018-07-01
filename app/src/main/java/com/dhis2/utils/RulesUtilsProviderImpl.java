@@ -31,14 +31,14 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
     public void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
+
             if (ruleAction instanceof RuleActionShowWarning) {
+
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
+                showWarning(showWarning,model);
 
-                if (model != null && model instanceof EditTextViewModel) {
-                    fieldViewModels.put(showWarning.field(),
-                            ((EditTextViewModel) model).withWarning(showWarning.content()));
-                }
+
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
@@ -73,5 +73,14 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 //                dataEntryView.removeSection(hideSection.programStageSection()); TODO: check how to tell view to remove sections
             }
         }
+    }
+
+    /**
+     * */
+    private void showWarning(RuleActionShowWarning showWarning, FieldViewModel model){
+        /*if (model != null && model instanceof EditTextViewModel) {
+            fieldViewModels.put(showWarning.field(),
+                    ((EditTextViewModel) model).withWarning(showWarning.content()));
+        }*/
     }
 }

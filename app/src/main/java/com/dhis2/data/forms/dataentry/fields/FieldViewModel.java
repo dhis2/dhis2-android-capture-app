@@ -28,4 +28,18 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String optionSet();
+
+    @Nullable
+    public abstract String warning();
+
+    @Nullable
+    public abstract String error();
+
+    public abstract FieldViewModel setMandatory();
+
+    @NonNull
+    public abstract FieldViewModel withWarning(@NonNull String warning);
+
+    @NonNull
+    public abstract FieldViewModel withError(@NonNull String error);
 }

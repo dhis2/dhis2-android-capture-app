@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
@@ -65,6 +66,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private HashMap<String, View> selectedTeiToDownloadProgress;
     private HashMap<String, Integer> selectedTeiToDownloadPosition;
     private List<OrganisationUnitModel> orgUnits;
+    private List<TrackedEntityAttributeModel> formData;
 
     public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
@@ -109,7 +111,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.setForm(data, selectedProgram),
+                                data -> {
+                                    this.formData = data;
+                                    view.setForm(data, selectedProgram);
+                                },
                                 Timber::d)
         );
 
@@ -228,12 +233,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(data -> onlineFragment.setItems(
-                                    data, programModels),
+                                    data, programModels, formData),
                                     Timber::d
                             )
             );
         else
-            onlineFragment.setItems(Pair.create(new ArrayList<>(), view.getContext().getString(R.string.teiType_search_online)), programModels);
+            onlineFragment.setItems(Pair.create(new ArrayList<>(), view.getContext().getString(R.string.teiType_search_online)), programModels, formData);
     }
 
     private void handleError(Throwable throwable) {
@@ -467,5 +472,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     @Override
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
         return searchRepository.getOrgUnits();
+    }
+
+    @Override
+    public List<TrackedEntityAttributeModel> getFormData() {
+        return formData;
     }
 }

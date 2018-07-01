@@ -27,11 +27,11 @@
 
     </data>
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:id="@+id/tracked_entity_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:background="@android:color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -105,5 +105,5 @@
 
         </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
+    </RelativeLayout>
 </layout>

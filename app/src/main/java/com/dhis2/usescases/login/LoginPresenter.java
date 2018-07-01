@@ -43,6 +43,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
         isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
         isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
+
+        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
     }
 
     @Override

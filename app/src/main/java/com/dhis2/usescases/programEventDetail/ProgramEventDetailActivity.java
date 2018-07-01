@@ -132,7 +132,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.drawerLayout.closeDrawer(Gravity.END);
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription", "RxSubscribeOnError"})
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @Override
     public void showRageDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -141,7 +141,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         String week = getString(R.string.week);
         SimpleDateFormat weeklyFormat = new SimpleDateFormat("'" + week + "' w", Locale.getDefault());
 
-        if (currentPeriod != DAILY) {
+        if (currentPeriod != DAILY && currentPeriod != NONE) {
             new RxDateDialog(getAbstractActivity(), currentPeriod).create().show().subscribe(selectedDates -> {
                         if (!selectedDates.isEmpty()) {
                             String textToShow;
@@ -196,7 +196,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                         }
                     },
                     Timber::d);
-        } else {
+        } else if (currentPeriod == DAILY) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(chosenDateDay);
             DatePickerDialog pickerDialog;

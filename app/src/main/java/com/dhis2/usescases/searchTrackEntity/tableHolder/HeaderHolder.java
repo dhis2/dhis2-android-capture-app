@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.tableHolder;
 
 import com.dhis2.databinding.ItemTableHeaderBinding;
+import com.dhis2.utils.ColorUtils;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 /**
@@ -16,6 +17,8 @@ public class HeaderHolder extends AbstractViewHolder {
     }
 
     public void bind(String p_jValue) {
+        binding.getRoot().setBackgroundColor(ColorUtils.getPrimaryColor(binding.getRoot().getContext(), ColorUtils.ColorType.PRIMARY_LIGHT));
+        binding.headerTitle.setTextColor(ColorUtils.getPrimaryColor(binding.getRoot().getContext(), ColorUtils.ColorType.PRIMARY_DARK));
         binding.setHeaderTitle(p_jValue);
         binding.executePendingBindings();
     }

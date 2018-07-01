@@ -31,7 +31,7 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 8
+        versionCode 9
         versionName "1.0.0-ALPHA"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -195,7 +195,7 @@ dependencies {
     implementation 'com.google.android:flexbox:0.3.1'
 
     //TABLEVIEW
-    implementation 'com.evrencoskun.library:tableview:0.8.3'
+    implementation 'com.evrencoskun.library:tableview:0.8.8'
 
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'

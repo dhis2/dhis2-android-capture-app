@@ -108,6 +108,10 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         editText.setText(data);
     }
 
+    public void setWarningOrError(String msg){
+        editText.setError(msg);
+    }
+
     public void setDateListener(OnDateSelected listener) {
         this.listener = listener;
     }

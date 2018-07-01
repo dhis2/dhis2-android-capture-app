@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FormCoordinatesAccentBinding;
@@ -34,7 +34,7 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 public class CoordinatesView extends RelativeLayout implements View.OnClickListener {
 
     private ViewDataBinding binding;
-    private TextView latLong;
+    private TextInputEditText latLong;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -97,6 +97,10 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
     public void setInitialValue(String initialValue) {
         this.latLong.setText(initialValue.replace("[", "").replace("]", ""));
+    }
+
+    public void setWargingOrError(String msg) {
+        this.latLong.setError(msg);
     }
 
     @Override

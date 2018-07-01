@@ -22,6 +22,7 @@ import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.evrencoskun.tableview.listener.ITableViewListener;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -97,7 +98,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
         activity.presenter.getOnlineTrackedEntities(this);
     }
 
-    public void setItems(Pair<List<TrackedEntityInstance>, String> mData, List<ProgramModel> programList) {
+    public void setItems(Pair<List<TrackedEntityInstance>, String> mData, List<ProgramModel> programList, List<TrackedEntityAttributeModel> formData) {
         if (!getResources().getBoolean(R.bool.is_tablet) && searchTEAdapter.getItemCount() > 0) {
 
             HashMap<String, List<String>> teiAttributes = new HashMap<>();
@@ -133,7 +134,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
             }
 
             if (getResources().getBoolean(R.bool.is_tablet)) {
-                searchTEATabletAdapter.setItems(modelData, programList);
+                searchTEATabletAdapter.setItems(modelData, programList, formData);
             } else {
                 searchTEAdapter.setItems(modelData, teiAttributes);
             }
@@ -171,12 +172,27 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     }
 
     @Override
+    public void onCellLongPressed(@NonNull RecyclerView.ViewHolder cellView, int column, int row) {
+
+    }
+
+    @Override
     public void onColumnHeaderClicked(@NonNull RecyclerView.ViewHolder p_jColumnHeaderView, int p_nXPosition) {
 
     }
 
     @Override
+    public void onColumnHeaderLongPressed(@NonNull RecyclerView.ViewHolder columnHeaderView, int column) {
+
+    }
+
+    @Override
     public void onRowHeaderClicked(@NonNull RecyclerView.ViewHolder p_jRowHeaderView, int p_nYPosition) {
+
+    }
+
+    @Override
+    public void onRowHeaderLongPressed(@NonNull RecyclerView.ViewHolder rowHeaderView, int row) {
 
     }
 

@@ -25,16 +25,18 @@ public class EventDetailModel extends BaseObservable {
     private final ProgramStageModel programStage;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
+    private final String orgUnitName;
 
     EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                      List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage) {
+                     ProgramStageModel programStage, String orgUnitName) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
         this.dataElemets = programStageDataElementModelList;
         this.stageSections = programStageSectionModelList;
         this.programStage = programStage;
         fieldsElements = new HashMap<>();
+        this.orgUnitName = orgUnitName;
 
         setUpFields();
 
@@ -83,5 +85,9 @@ public class EventDetailModel extends BaseObservable {
 
     public ProgramStageModel getProgramStage() {
         return programStage;
+    }
+
+    public String getOrgUnitName() {
+        return orgUnitName;
     }
 }

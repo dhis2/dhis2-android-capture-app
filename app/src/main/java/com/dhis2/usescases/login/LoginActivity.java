@@ -88,7 +88,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     protected void onDestroy() {
-        ((App)getApplicationContext()).releaseLoginComponent();
+        ((App) getApplicationContext()).releaseLoginComponent();
         super.onDestroy();
     }
 
@@ -147,6 +147,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void handleLogout() {
         recreate();
+    }
+
+    @Override
+    public void setLoginVisibility(boolean isVisible) {
+        binding.login.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -53,6 +53,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 eventDetailRepository.programStageSection(eventUid),
                 eventDetailRepository.programStageDataElement(eventUid),
                 eventDetailRepository.programStage(eventUid),
+                eventDetailRepository.orgUnitName(eventUid),
                 EventDetailModel::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -5,15 +5,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
-import android.view.ViewGroup;
 
 import com.dhis2.data.forms.dataentry.DataEntryArguments;
 import com.dhis2.data.forms.dataentry.DataEntryFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
@@ -103,17 +100,23 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-   /* @Override
-    public String getTag(int position) {
-        return sections.isEmpty()?"section":sections.get(position);
-    }*/
+    public boolean areDifferentSections(List<FormSectionViewModel> models) {
+        List<String> newSections = new ArrayList<>();
+        boolean differentSections = false;
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        try {
-            super.destroyItem(container, position, object);
-        } catch (IllegalStateException e) {
-            Timber.e(e);
+        for (int i = 0; i < models.size(); i++) {
+            FormSectionViewModel item = models.get(i);
+            newSections.add(item.sectionUid());
         }
+
+        if (sections.size() == models.size()) //If previous sections size = new sections size we check if each section is the same
+            for (String section : newSections) {
+                if (!section.equals(sections.get(newSections.indexOf(section))))
+                    differentSections = true;
+            }
+        else
+            differentSections = true;
+
+        return differentSections;
     }
 }
