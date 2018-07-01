@@ -3,6 +3,8 @@ package com.dhis2;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.squareup.duktape.Duktape;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
@@ -66,6 +68,12 @@ final class AppModule {
     @Singleton
     RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull Duktape duktape) {
         return new DuktapeEvaluator(duktape);
+    }
+
+    @Provides
+    @Singleton
+    FirebaseJobDispatcher jobDispatcher(){
+       return new FirebaseJobDispatcher(new GooglePlayDriver(application));
     }
 
 }

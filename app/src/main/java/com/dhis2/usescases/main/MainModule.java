@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.user.UserRepository;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 
 import org.hisp.dhis.android.core.D2;
 
@@ -24,8 +25,8 @@ public final class MainModule {
     @Provides
     @PerActivity
     MainContracts.Presenter homePresenter(D2 d2,
-                                          @NonNull UserRepository userRepository) {
-        return new MainPresenter(d2, userRepository);
+                                          @NonNull UserRepository userRepository, FirebaseJobDispatcher firebaseJobDispatcher) {
+        return new MainPresenter(d2, userRepository, firebaseJobDispatcher);
     }
 
 }

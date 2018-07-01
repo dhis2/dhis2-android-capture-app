@@ -87,6 +87,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         String tag = "Data";
         Job dataJob;
 
+        dispatcher.cancel(tag);
+
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
 
@@ -114,6 +116,8 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void syncMeta(int seconds) {
         String tag = "MetaData";
         Job metaJob;
+
+        dispatcher.cancel(tag);
 
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
@@ -175,6 +179,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void wipeDb() {
         try {
+            dispatcher.cancelAll();
             d2.wipeDB().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {

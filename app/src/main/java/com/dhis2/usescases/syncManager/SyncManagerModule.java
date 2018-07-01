@@ -27,8 +27,8 @@ public final class SyncManagerModule {
 
     @Provides
     @PerFragment
-    SyncManagerContracts.Presenter providePresenter(MetadataRepository metadataRepository, D2 d2) {
-        FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+    SyncManagerContracts.Presenter providePresenter(MetadataRepository metadataRepository, D2 d2,FirebaseJobDispatcher firebaseJobDispatcher) {
+//        FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
         return new SyncManagerPresenter(metadataRepository, firebaseJobDispatcher, d2);
     }
 }

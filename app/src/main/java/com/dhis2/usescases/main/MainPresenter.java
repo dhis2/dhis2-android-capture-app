@@ -9,6 +9,7 @@ import android.view.Gravity;
 import com.dhis2.data.service.SyncService;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.login.LoginActivity;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
@@ -24,16 +25,18 @@ import static android.text.TextUtils.isEmpty;
 final class MainPresenter implements MainContracts.Presenter {
 
     private final UserRepository userRepository;
+    private final FirebaseJobDispatcher jobDispatcher;
     private MainContracts.View view;
     private final CompositeDisposable compositeDisposable;
 
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, UserRepository userRepository) {
+    MainPresenter(@NonNull D2 d2, UserRepository userRepository, FirebaseJobDispatcher firebaseJobDispatcher) {
         this.d2 = d2;
         this.compositeDisposable = new CompositeDisposable();
         this.userRepository = userRepository;
+        this.jobDispatcher = firebaseJobDispatcher;
 
     }
 
@@ -59,6 +62,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void logOut() {
         try {
+            jobDispatcher.cancelAll();
             d2.logout().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {

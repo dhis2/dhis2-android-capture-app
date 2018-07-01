@@ -76,27 +76,6 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         binding.setStage(eventDetailModel.getProgramStage());
         binding.executePendingBindings();
 
-        /*if (!eventDetailModel.getStageSections().isEmpty()) {
-            setSectionDataElements(eventDetailModel, "null");
-
-            for (ProgramStageSectionModel section : eventDetailModel.getStageSections()) {
-
-                TextView sectionTitle = new TextView(this);
-                sectionTitle.setText(section.displayName());
-                sectionTitle.setTextColor(ContextCompat.getColor(this, R.color.cell_text_color));
-                sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                sectionTitle.setHintTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
-                FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.setFlexBasisPercent(1f);
-                binding.dataLayout.addView(sectionTitle, params);
-
-                setSectionDataElements(eventDetailModel, section.uid());
-            }
-        } else
-            setSectionDataElements(eventDetailModel, null);
-
-        binding.dataLayout.invalidate();*/
-
         supportStartPostponedEnterTransition();
 
         getSupportFragmentManager().beginTransaction()

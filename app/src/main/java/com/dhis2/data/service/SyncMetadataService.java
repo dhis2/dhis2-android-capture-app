@@ -36,8 +36,11 @@ public class SyncMetadataService extends JobService implements SyncView {
     public void onCreate() {
         super.onCreate();
 
-        ((App) getApplicationContext()).userComponent()
-                .plus(new MetadataServiceModule()).inject(this);
+        if (((App) getApplicationContext()).userComponent() == null)
+            stopSelf();
+        else
+            ((App) getApplicationContext()).userComponent()
+                    .plus(new MetadataServiceModule()).inject(this);
     }
 
     @Override
