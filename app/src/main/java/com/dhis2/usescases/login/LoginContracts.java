@@ -8,6 +8,8 @@ import android.support.annotation.UiThread;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
+import org.hisp.dhis.android.core.common.D2ErrorCode;
+
 import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 
@@ -15,6 +17,9 @@ public class LoginContracts {
 
     public interface View extends AbstractActivityContracts.View {
         ActivityLoginBinding getBinding();
+
+        @UiThread
+        void renderError(D2ErrorCode errorCode);
 
         @UiThread
         void renderInvalidServerUrlError();

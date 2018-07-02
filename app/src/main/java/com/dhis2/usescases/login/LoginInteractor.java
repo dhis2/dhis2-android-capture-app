@@ -262,6 +262,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     view.renderInvalidCredentialsError();
                     break;
                 case ALREADY_AUTHENTICATED:
+                    handleResponse(Response.success(null));
                     view.renderInvalidCredentialsError();
                     break;
                 case API_UNSUCCESSFUL_RESPONSE:
@@ -271,7 +272,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     view.renderInvalidCredentialsError();
                     break;
                 default:
-                    view.renderServerError();
+                    view.renderUnexpectedError();
                     break;
             }
         } else {

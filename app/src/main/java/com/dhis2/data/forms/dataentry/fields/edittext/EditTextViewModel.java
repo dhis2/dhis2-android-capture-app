@@ -41,7 +41,7 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+        return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null, hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
     }
 }

@@ -324,10 +324,9 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EventModel.TABLE  + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
-                " FROM " + EventModel.TABLE +
-                " WHERE " + EventModel.Columns.UID + " = ?";
+    public Observable<String> getTrackedEntityInstanceUid() { //TODO: HERE YOU SHOULD NOT REMOVE THE TEI BUT THE EVENT
+        String SELECT_TE = "SELECT Enrollment.trackedEntityInstance FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid " +
+                "WHERE Event.uid = ?";
 
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));
     }

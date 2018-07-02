@@ -25,13 +25,17 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.CustomDialog;
+import com.dhis2.utils.DialogClickListener;
+
+import org.hisp.dhis.android.core.common.D2ErrorCode;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import timber.log.Timber;
+import retrofit2.Response;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
@@ -98,6 +102,30 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public ActivityLoginBinding getBinding() {
         return binding;
+    }
+
+    @Override
+    public void renderError(D2ErrorCode errorCode) {
+        switch (errorCode) {
+            case LOGIN_PASSWORD_NULL:
+                renderEmptyPassword();
+                break;
+            case LOGIN_USERNAME_NULL:
+                renderEmptyUsername();
+                break;
+            case INVALID_DHIS_VERSION:
+
+                break;
+            case ALREADY_AUTHENTICATED:
+
+                break;
+            case API_UNSUCCESSFUL_RESPONSE:
+                break;
+            case API_RESPONSE_PROCESS_ERROR:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -181,7 +209,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void onLogoutClick(View android){
+    public void onLogoutClick(View android) {
         presenter.logOut();
     }
 
@@ -287,11 +315,10 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void onBackPressed() {
-        if (isPinScreenVisible){
+        if (isPinScreenVisible) {
             binding.pinLayout.getRoot().setVisibility(View.GONE);
             isPinScreenVisible = false;
-        }
-        else {
+        } else {
             super.onBackPressed();
             finish();
         }
