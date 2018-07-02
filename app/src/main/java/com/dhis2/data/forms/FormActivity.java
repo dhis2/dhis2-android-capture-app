@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.view.MenuItem;
 
 import com.dhis2.R;
@@ -12,8 +13,9 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import static com.dhis2.utils.Preconditions.isNull;
 
 public class FormActivity extends ActivityGlobalAbstract {
-    private static String ARGUMENTS = "formViewArguments";
-    private static String IS_ENROLLMENT = "isEnrollment";
+    private static final String ARGUMENTS = "formViewArguments";
+    private static final String IS_ENROLLMENT = "isEnrollment";
+    private Fragment fragment;
 
     @NonNull
     public static Intent create(@NonNull Activity activity,
@@ -48,14 +50,16 @@ public class FormActivity extends ActivityGlobalAbstract {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enrollment);
 
+        fragment = FormFragment.newInstance(
+                getIntent().getParcelableExtra(ARGUMENTS),
+                getIntent().getBooleanExtra(IS_ENROLLMENT, false),
+                true);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(
                         R.id.dashboard,
-                        FormFragment.newInstance(
-                                getIntent().getParcelableExtra(ARGUMENTS),
-                                getIntent().getBooleanExtra(IS_ENROLLMENT, false),
-                                true))
+                        fragment)
                 .commit();
 
     }
@@ -68,5 +72,15 @@ public class FormActivity extends ActivityGlobalAbstract {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragment instanceof FormView){
+            ((FormView) fragment).onBackPressed();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }

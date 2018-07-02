@@ -32,6 +32,8 @@ import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
+import com.dhis2.utils.CustomViews.CustomDialog;
+import com.dhis2.utils.DialogClickListener;
 import com.dhis2.utils.Preconditions;
 import com.google.android.gms.maps.model.LatLng;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -52,6 +54,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
     private static final String FORM_VIEW_ACTIONBAR = "formViewActionbar";
     private static final String IS_ENROLLMENT = "isEnrollment";
+    private static final int RC_GO_BACK = 101;
 
     View nextButton;
     ViewPager viewPager;
@@ -74,6 +77,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private boolean isEnrollment;
     private Trio<String, String, String> enrollmentTrio;
 
+
     public FormFragment() {
         // Required empty public constructor
     }
@@ -89,13 +93,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         nextButton = view.findViewById(R.id.next);
@@ -148,7 +152,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onNext(ReportStatus reportStatus) {
-        //TODO: NEXT ACTION
         if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
         } else
@@ -267,7 +270,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @NonNull
     @Override
     public Consumer<ReportStatus> renderStatus() {
-        return eventStatus -> nextButton.setActivated(/*eventStatus == ReportStatus.COMPLETED*/true);
+        return eventStatus -> nextButton.setActivated(true);
     }
 
     @NonNull
@@ -276,16 +279,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return trio -> {
             enrollmentTrio = trio;
             formPresenter.checkMandatoryFields();
-           /* Bundle bundle = new Bundle();
-            bundle.putString("PROGRAM_UID", trio.val0());
-            bundle.putString("TEI_UID", trio.val1());
-            if (!trio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
-                FormViewArguments formViewArguments = FormViewArguments.createForEvent(trio.val2());
-                startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment));
-            } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
-                startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
-            }
-            getActivity().finish();*/
         };
     }
 
@@ -414,7 +407,45 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 }
             }
             getActivity().finish();
-        } else
-            displayMessage(getString(R.string.missing_mandatory_fields));
+        } else {
+            showMandatoryFieldsDialog();
+        }
+    }
+
+    private void showMandatoryFieldsDialog(){
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.missing_mandatory_fields_title),
+                getAbstracContext().getString(R.string.missing_mandatory_fields_text),
+                getAbstracContext().getString(R.string.missing_mandatory_fields_go_back),
+                getAbstracContext().getString(R.string.cancel),
+                RC_GO_BACK,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        deleteAllSavedDataAndGoBack();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        // do nothing
+                    }
+                })
+                .show();
+    }
+
+    private void deleteAllSavedDataAndGoBack(){
+        formPresenter.getTrackedEntityInstanceAndDeleteCascade();
+    }
+
+    @Override
+    public void onAllSavedDataDeleted(){
+        if (getActivity() != null)
+            getActivity().finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        formPresenter.checkMandatoryFields();
     }
 }

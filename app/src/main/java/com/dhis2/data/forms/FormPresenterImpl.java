@@ -128,20 +128,6 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderSectionViewModels(), Timber::e));
 
-
-        /*private List<FormSectionViewModel> applyEffects(@NonNull List<FormSectionViewModel> viewModels,
-                @NonNull Result<RuleEffect> calcResult) {
-            if (calcResult.error() != null) {
-                calcResult.error().printStackTrace();
-                return viewModels;
-            }
-
-            Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-            applyRuleEffects(fieldViewModels, calcResult);
-
-            return new ArrayList<>(fieldViewModels.values());
-        }*/
-
         //endregion
 
         compositeDisposable.add(view.reportDateChanged()
@@ -161,29 +147,7 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io())
                 .subscribe(formRepository.storeCoordinates(), Timber::e));
 
-        /*ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
-                .distinctUntilChanged()
-                .publish();*/
-
-       /* compositeDisposable.add(statusObservable
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .skip(1)
-                .subscribe(view::renderStatusChangeSnackBar, throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
-
-        compositeDisposable.add(statusObservable
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(view.renderStatus(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
-
-        compositeDisposable.add(statusObservable.connect());*/
-
         ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
-//                .distinctUntilChanged()
                 .publish();
 
         compositeDisposable.add(statusChangeObservable
@@ -199,21 +163,15 @@ class FormPresenterImpl implements FormPresenter {
                 .map(reportStatus -> formViewArguments.uid())
                 .observeOn(schedulerProvider.io()).share();
 
-     /*   compositeDisposable.add(enrollmentDoneStream
-                .subscribeOn(schedulerProvider.io())
-                .subscribe(
-                        formRepository.autoGenerateEvent(),
-                        throwable -> {
-                            throw new OnErrorNotImplementedException(throwable);
-                        }));*/
-
         compositeDisposable.add(enrollmentDoneStream
                 .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
                 .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.io())
-                .subscribe(view.finishEnrollment(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                .subscribe(
+                        view.finishEnrollment(),
+                        throwable -> {
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));
 
         compositeDisposable.add(statusChangeObservable.connect());
     }
@@ -336,6 +294,35 @@ class FormPresenterImpl implements FormPresenter {
                     view.isMandatoryFieldsRequired(data);
                     disposable.clear();
                 }, Timber::e)
+        );
+    }
+
+    private void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityAttributeInstanceId){
+        formRepository.deleteTrackedEntityAttributeValues(trackedEntityAttributeInstanceId);
+    }
+
+    private void deleteEnrollment(@NonNull String trackedEntityAttributeInstanceId){
+        formRepository.deleteEnrollment(trackedEntityAttributeInstanceId);
+    }
+
+    private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId){
+        formRepository.deleteTrackedEntityInstance(trackedEntityAttributeInstanceId);
+    }
+
+    @Override
+    public void getTrackedEntityInstanceAndDeleteCascade(){
+        CompositeDisposable disposable = new CompositeDisposable();
+        disposable.add(formRepository.getTrackedEntityInstanceUid()
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(trackedEntityInstanceUid -> {
+                            deleteTrackedEntityAttributeValues(trackedEntityInstanceUid);
+                            deleteEnrollment(trackedEntityInstanceUid);
+                            deleteTrackedEntityInstance(trackedEntityInstanceUid);
+                            disposable.clear();
+                            view.onAllSavedDataDeleted();
+                        },
+                        Timber::e)
         );
     }
 }
