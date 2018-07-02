@@ -1,6 +1,7 @@
 package com.dhis2.usescases.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
@@ -40,6 +41,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     private ProgramFragment programFragment;
 
     ObservableInt currentFragment = new ObservableInt(R.id.menu_done_tasks);
+    private boolean isPinLayoutVisible = false;
 
     //-------------------------------------
     //region LIFECYCLE
@@ -157,14 +159,27 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void onLockClick(android.view.View view) {
-        binding.drawerLayout.closeDrawers();
+    public void onLockClick(View view) {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
-        if (prefs.getString("pin", null) == null)
+        if (prefs.getString("pin", null) == null) {
+            binding.drawerLayout.closeDrawers();
             binding.pinLayout.setVisibility(View.VISIBLE);
+            isPinLayoutVisible = true;
+        }
         else
             presenter.blockSession(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isPinLayoutVisible){
+            isPinLayoutVisible = false;
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+            finish();
+        }
+        else
+            super.onBackPressed();
     }
 
     @Override
@@ -172,41 +187,32 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         Fragment fragment;
         String tag;
         switch (id) {
-            case R.id.menu_done_tasks: {
-                fragment = new ProgramFragment();
-                programFragment = (ProgramFragment) fragment;
-                tag = getString(R.string.done_task);
-                binding.filter.setVisibility(View.VISIBLE);
-                break;
-            }
-            case R.id.sync_manager: {
+            case R.id.sync_manager:
                 fragment = new SyncManagerFragment();
                 tag = getString(R.string.SYNC_MANAGER);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            }
-            case R.id.qr_scan: {
+            case R.id.qr_scan:
                 fragment = new QrReaderFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            }
             case R.id.menu_jira:
                 fragment = new JiraFragment();
                 tag = getString(R.string.jira_report);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            case R.id.events: {
+            case R.id.events:
                 fragment = new EventQrFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            }
             case R.id.menu_about:
                 fragment = new ProgramFragment(); //TODO: Chage to Webview
                 tag = getString(R.string.done_task);
                 binding.filter.setVisibility(View.GONE);
                 break;
+            case R.id.menu_done_tasks:
             default:
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;

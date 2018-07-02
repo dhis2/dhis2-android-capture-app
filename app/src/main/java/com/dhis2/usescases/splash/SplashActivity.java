@@ -30,8 +30,6 @@ public class SplashActivity extends ActivityGlobalAbstract implements SplashCont
         ServerComponent serverComponent = ((App) getApplicationContext()).serverComponent();
         appComponent.plus(new SplashModule(serverComponent)).inject(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
-
-
     }
 
     @Override

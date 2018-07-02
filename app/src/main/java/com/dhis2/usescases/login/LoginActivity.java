@@ -31,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
@@ -46,6 +47,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     List<String> users;
     List<String> urls;
     private boolean isSyncing;
+
+    private boolean isPinScreenVisible = false;
 
 
     enum SyncState {
@@ -174,7 +177,12 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             }
         });
         binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
+        isPinScreenVisible = true;
+    }
 
+    @Override
+    public void onLogoutClick(View android){
+        presenter.logOut();
     }
 
     @Override
@@ -279,8 +287,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        if (isPinScreenVisible){
+            binding.pinLayout.getRoot().setVisibility(View.GONE);
+            isPinScreenVisible = false;
+        }
+        else {
+            super.onBackPressed();
+            finish();
+        }
     }
 
     @Override
@@ -299,4 +313,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.serverUrlEdit.setText(data.getStringExtra(Constants.EXTRA_DATA));
         }
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.dhis2.usescases.splash;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,8 +68,10 @@ public class SplashPresenter implements SplashContracts.Presenter {
                 .delay(2000, TimeUnit.MILLISECONDS,Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((isUserLoggedIn) -> {
-                    if (isUserLoggedIn) {
+                .subscribe(isUserLoggedIn -> {
+                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                            "com.dhis2", Context.MODE_PRIVATE);
+                    if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                         navigateToHomeView();
                     } else {
                         navigateToLoginView();

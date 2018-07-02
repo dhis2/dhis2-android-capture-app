@@ -41,6 +41,9 @@ public class LoginContracts {
         void onUnlockClick(android.view.View android);
 
         @UiThread
+        void onLogoutClick(android.view.View android);
+
+        @UiThread
         void setAutocompleteAdapters();
 
         @UiThread
@@ -78,6 +81,8 @@ public class LoginContracts {
         void onDestroy();
 
         void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
+
+        void logOut();
     }
 
     public interface Interactor {
