@@ -435,7 +435,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     private void deleteAllSavedDataAndGoBack(){
-        formPresenter.getTrackedEntityInstanceAndDeleteCascade();
+        formPresenter.deleteCascade();
     }
 
     @Override
