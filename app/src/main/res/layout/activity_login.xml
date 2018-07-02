@@ -183,12 +183,26 @@
                 android:text="@string/log_in_button"
                 android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE, default = gone}" />
 
-            <Button
-                android:id="@+id/unlock"
-                style="@style/FullWidthButton"
-                android:onClick="onUnlockClick"
-                android:text="@string/unlock_button"
-                android:visibility="gone" />
+            <LinearLayout
+                android:id="@+id/unlock_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone" >
+
+                <Button
+                    android:id="@+id/logout"
+                    style="@style/HalfWidthButton"
+                    android:onClick="onLogoutClick"
+                    android:text="@string/log_out"/>
+
+                <Button
+                    android:id="@+id/unlock"
+                    style="@style/HalfWidthButton"
+                    android:onClick="onUnlockClick"
+                    android:text="@string/unlock_button"/>
+
+            </LinearLayout>
         </LinearLayout>
 
         <!-- PIN LAYOUT -->

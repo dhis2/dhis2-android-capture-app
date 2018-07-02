@@ -177,15 +177,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
-        if (finishCurrent)
-            finish();
         Intent intent = new Intent(this, destination);
+        if (finishAll)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (bundle != null)
             intent.putExtras(bundle);
         if (transition != null)
             ContextCompat.startActivity(this, intent, transition.toBundle());
         else
             ContextCompat.startActivity(this, intent, null);
+        if (finishCurrent)
+            finish();
     }
 
     public ActivityGlobalAbstract getAbstracContext() {

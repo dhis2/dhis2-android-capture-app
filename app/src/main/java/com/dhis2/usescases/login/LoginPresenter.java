@@ -107,10 +107,17 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     view.getContext().startActivity(intent);
                     break;
+                default:
+                    break;
             }
         else {
             view.displayMessage("Something went wrong during syncronisation");
             new Handler().postDelayed(() -> interactor.logOut(), 1500);
         }
+    }
+
+    @Override
+    public void logOut() {
+        interactor.logOut();
     }
 }

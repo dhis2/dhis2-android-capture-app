@@ -211,7 +211,9 @@
             android:layout_height="match_parent"
             android:background="?colorPrimary"
             android:gravity="center"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true">
 
             <com.andrognito.pinlockview.IndicatorDots
                 android:id="@+id/indicator_dots"
@@ -233,5 +235,6 @@
                 app:keypadVerticalSpacing="24dp"
                 app:pinLength="4" />
         </RelativeLayout>
+
     </android.support.v4.widget.DrawerLayout>
 </layout>

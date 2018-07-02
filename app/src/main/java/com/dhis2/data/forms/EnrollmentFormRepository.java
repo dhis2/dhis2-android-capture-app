@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -135,9 +136,6 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private final CodeGenerator codeGenerator;
-
-   /* @NonNull
-    private final CurrentDateProvider currentDateProvider;*/
 
     @NonNull
     private final Flowable<RuleEngine> cachedRuleEngineFlowable;
@@ -423,6 +421,41 @@ class EnrollmentFormRepository implements FormRepository {
         return briteDatabase
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollmentUid)
                 .mapToList(this::transform);
+    }
+
+
+    @Override
+    public void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId) {
+        String DELETE_WHERE_RELATIONSHIP = String.format(
+                "%s.%s = ",
+                TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE);
+        briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+    }
+
+    @Override
+    public void deleteEnrollment(@NonNull String trackedEntityInstanceId) {
+        String DELETE_WHERE_RELATIONSHIP = String.format(
+                "%s.%s = ",
+                EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
+        briteDatabase.delete(EnrollmentModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+    }
+
+    @Override
+    public void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId) {
+        String DELETE_WHERE_RELATIONSHIP = String.format(
+                "%s.%s = ",
+                TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
+        briteDatabase.delete(TrackedEntityInstanceModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> getTrackedEntityInstanceUid() {
+        String SELECT_TE = "SELECT " + EnrollmentModel.TABLE  + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
+                " FROM " + EnrollmentModel.TABLE +
+                " WHERE " + EnrollmentModel.Columns.UID + " = ?";
+
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @NonNull

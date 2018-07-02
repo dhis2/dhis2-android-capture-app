@@ -76,7 +76,6 @@ final class MainPresenter implements MainContracts.Presenter {
                 "com.dhis2", Context.MODE_PRIVATE);
         prefs.edit().putBoolean("SessionLocked", true).apply();
         if (pin != null) {
-
             prefs.edit().putString("pin", pin).apply();
         }
         view.startActivity(LoginActivity.class, null, true, true, null);
@@ -89,7 +88,6 @@ final class MainPresenter implements MainContracts.Presenter {
 
     @Override
     public void changeFragment(int id) {
-
         view.changeFragment(id);
     }
 

@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -473,7 +472,7 @@ public class Bindings {
     }
 
     @BindingAdapter("eventColor")
-    public static void setEventText(RelativeLayout view, EventStatus status) {
+    public static void setEventColor(View view, EventStatus status) {
         int eventColor;
         if (status == null)
             status = EventStatus.ACTIVE;

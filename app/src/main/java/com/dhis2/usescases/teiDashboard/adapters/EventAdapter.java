@@ -13,8 +13,8 @@ import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -24,7 +24,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
     private final TeiDashboardContracts.Presenter presenter;
-    private List<EventModel> events = new ArrayList<>();
+    private List<EventModel> events;
 
     public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList) {
         this.events = eventList;
@@ -43,7 +43,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         ProgramStageModel programStage = null;
         for (ProgramStageModel stage : programStageList)
-            if (events.get(position).programStage().equals(stage.uid()))
+            if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
         holder.bind(presenter, events.get(position), programStage);
     }

@@ -50,6 +50,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
+    private static final int MAX_NO_SELECTED_PROGRAM_RESULTS = 5;
     private final MetadataRepository metadataRepository;
     private final SearchRepository searchRepository;
     private final D2 d2;
@@ -166,12 +167,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
                         else if (teiList.isEmpty() && !queryData.isEmpty())
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.isEmpty() && queryData.isEmpty())
+                        else if (teiList.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
+                    } else if (selectedProgram == null){
+                        if (queryData.isEmpty())
+                            messageId = view.getContext().getString(R.string.search_init);
+                        else if (teiList.isEmpty())
+                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                        else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS){
+                            messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+                        }
                     } else {
                         if (teiList.isEmpty() && !queryData.isEmpty())
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.isEmpty() && queryData.isEmpty())
+                        else if (teiList.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
                     }
                     return Pair.create(teiList, messageId);
