@@ -8,12 +8,13 @@ public class QRjson {
 
     public static final String TEI_JSON = "TEI";
     public static final String ENROLLMENT_JSON = "ENROLLMENT";
+    public static final String EVENTS_JSON = "EVENTS";
     public static final String ATTR_JSON = "ATTR";
 
     private String type;
     private String data;
 
-    public QRjson(String type, String data) {
+    QRjson(String type, String data) {
         this.type = type;
         this.data = data;
     }
