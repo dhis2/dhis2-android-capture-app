@@ -53,4 +53,8 @@ interface FormView {
     void onNext(ReportStatus reportStatus);
 
     void isMandatoryFieldsRequired(List<FieldViewModel> viewModels);
+
+    void onAllSavedDataDeleted();
+
+    void onBackPressed();
 }

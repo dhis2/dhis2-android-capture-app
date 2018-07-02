@@ -14,4 +14,6 @@ interface FormPresenter {
     void checkSections();
 
     void checkMandatoryFields();
+
+    void getTrackedEntityInstanceAndDeleteCascade();
 }
