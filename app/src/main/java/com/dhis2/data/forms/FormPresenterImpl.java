@@ -57,6 +57,8 @@ class FormPresenterImpl implements FormPresenter {
     private final FlowableProcessor<String> fieldsValueProcessor;
     private FormView view;
 
+    private boolean isEvent = false;
+
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
                       @NonNull SchedulerProvider schedulerProvider,
                       @NonNull BriteDatabase briteDatabase,
@@ -65,10 +67,14 @@ class FormPresenterImpl implements FormPresenter {
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
-        if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT)
+        if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT) {
+            isEvent = false;
             this.ruleEngineRepository = new EnrollmentRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
-        else
+        }
+        else {
+            isEvent = true;
             this.ruleEngineRepository = new EventsRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
+        }
 
         this.processor = PublishProcessor.create();
         this.fieldsValueProcessor = PublishProcessor.create();
@@ -305,24 +311,34 @@ class FormPresenterImpl implements FormPresenter {
         formRepository.deleteEnrollment(trackedEntityAttributeInstanceId);
     }
 
+    private void deleteEvent(){
+        formRepository.deleteEvent();
+    }
+
     private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId){
         formRepository.deleteTrackedEntityInstance(trackedEntityAttributeInstanceId);
     }
 
-    @Override
-    public void getTrackedEntityInstanceAndDeleteCascade(){
+    public void deleteCascade(){
         CompositeDisposable disposable = new CompositeDisposable();
-        disposable.add(formRepository.getTrackedEntityInstanceUid()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(trackedEntityInstanceUid -> {
-                    deleteTrackedEntityAttributeValues(trackedEntityInstanceUid);
-                    deleteEnrollment(trackedEntityInstanceUid);
-                    deleteTrackedEntityInstance(trackedEntityInstanceUid);
-                    disposable.clear();
-                    view.onAllSavedDataDeleted();
-                },
-                        Timber::e)
-        );
+        if (isEvent){
+            deleteEvent();
+            disposable.clear();
+            view.onAllSavedDataDeleted();
+        }
+        else {
+            disposable.add(formRepository.getTrackedEntityInstanceUid()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(trackedEntityInstanceUid -> {
+                                deleteTrackedEntityAttributeValues(trackedEntityInstanceUid);
+                                deleteEnrollment(trackedEntityInstanceUid);
+                                deleteTrackedEntityInstance(trackedEntityInstanceUid);
+                                disposable.clear();
+                                view.onAllSavedDataDeleted();
+                            },
+                            Timber::e)
+            );
+        }
     }
 }

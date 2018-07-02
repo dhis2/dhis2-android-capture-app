@@ -183,6 +183,7 @@
     <string name="missing_mandatory_fields">Campos requeridos no pueden estar vacios</string>
     <string name="missing_mandatory_fields_title">Campos requeridos no pueden estar vacios</string>
     <string name="missing_mandatory_fields_text">Algunos campos requeridos están vacíos. Si desea ir atrás ahora, toda la información guardada se borrará.</string>
+    <string name="missing_mandatory_fields_go_back">Borrar y salir.</string>
     <string name="sync_max_parameters">Ajustes actuales de sincronización:</string>
     <string name="sync_default_parameters">Volver a los valores por defecto</string>
     <string name="wipe_data">Reiniciar app</string>
