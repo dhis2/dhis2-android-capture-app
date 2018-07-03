@@ -1,7 +1,6 @@
 package com.dhis2.data.forms.dataentry.fields.age;
 
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
@@ -46,14 +45,14 @@ public class AgeHolder extends FormViewHolder {
                     else
                         binding.customAgeview.setWarningOrError(null);
 
+                    binding.customAgeview.setEditable(ageViewModel.editable());
+
                     binding.executePendingBindings();
                 },
                 Timber::d));
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     processor.onNext(RowAction.create(model.getValue().uid(), DateUtils.databaseDateFormat().format(ageDate)));
-                    if (binding.customAgeview.focusSearch(View.FOCUS_DOWN) != null)
-                        binding.customAgeview.focusSearch(View.FOCUS_DOWN).requestFocus();
                 }
         );
     }

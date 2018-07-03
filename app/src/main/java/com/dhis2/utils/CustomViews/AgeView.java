@@ -186,6 +186,13 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         year.setOnFocusChangeListener(this);
     }
 
+    public void setEditable(Boolean editable) {
+       date.setEnabled(editable);
+       day.setEnabled(editable);
+       month.setEnabled(editable);
+       year.setEnabled(editable);
+    }
+
     public interface OnAgeSet {
         void onAgeSet(Date ageDate);
     }

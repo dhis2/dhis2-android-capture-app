@@ -3,7 +3,6 @@ package com.dhis2.utils.CustomViews;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -65,7 +64,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     }
 
     public void initData(String data) {
-        if(data!=null) {
+        if (data != null) {
             Date date = null;
             try {
                 date = DateUtils.dateTimeFormat().parse(data);
@@ -74,14 +73,13 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
             }
 
             data = DateUtils.dateTimeFormat().format(date);
-        }
-        else {
+        } else {
             editText.setText("");
         }
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg){
+    public void setWarningOrError(String msg) {
         editText.setError(msg);
     }
 
@@ -90,7 +88,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         setLayout();
     }
 
-    public void setAllowFutureDates(boolean allowFutureDates){
+    public void setAllowFutureDates(boolean allowFutureDates) {
         this.allowFutureDates = allowFutureDates;
     }
 
@@ -163,5 +161,9 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
 
     public TextInputEditText getEditText() {
         return editText;
+    }
+
+    public void setEditable(Boolean editable) {
+        editText.setEnabled(editable);
     }
 }

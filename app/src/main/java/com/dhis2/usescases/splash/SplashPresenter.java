@@ -54,7 +54,6 @@ public class SplashPresenter implements SplashContracts.Presenter {
                         Timber::d
                 )
         );
-
     }
 
     @Override
@@ -64,19 +63,22 @@ public class SplashPresenter implements SplashContracts.Presenter {
             return;
         }
 
-        compositeDisposable.add(userManager.isUserLoggedIn()
-                .delay(2000, TimeUnit.MILLISECONDS,Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isUserLoggedIn -> {
-                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                            "com.dhis2", Context.MODE_PRIVATE);
-                    if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
-                        navigateToHomeView();
-                    } else {
-                        navigateToLoginView();
-                    }
-                }, Timber::e));
+        compositeDisposable.add(
+                splashRespository.checkExpiredEvents()
+                        .subscribeOn(Schedulers.computation())
+                        .flatMap(data -> userManager.isUserLoggedIn())
+                        .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(isUserLoggedIn -> {
+                            SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                    "com.dhis2", Context.MODE_PRIVATE);
+                            if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                                navigateToHomeView();
+                            } else {
+                                navigateToLoginView();
+                            }
+                        }, Timber::e));
     }
 
     @Override

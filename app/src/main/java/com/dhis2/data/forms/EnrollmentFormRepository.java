@@ -109,7 +109,8 @@ class EnrollmentFormRepository implements FormRepository {
             "  Option.name,\n" +
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
-            "  Enrollment.organisationUnit\n" +
+            "  Enrollment.organisationUnit,\n" +
+            "  Enrollment.status\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -469,7 +470,7 @@ class EnrollmentFormRepository implements FormRepository {
         String optionCodeName = cursor.getString(6);
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
-
+        EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(9));
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -485,7 +486,8 @@ class EnrollmentFormRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, true, null);
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null);
     }
 
     @NonNull

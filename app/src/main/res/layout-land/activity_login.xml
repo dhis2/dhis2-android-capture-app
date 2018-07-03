@@ -41,7 +41,63 @@
             app:layout_constraintVertical_bias="0.0"
             tools:layout_editor_absoluteX="28dp">
 
-            <include layout="@layout/logo_dhis" />
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/world_lottie" />
+
+            <include
+                android:id="@+id/logo_layout"
+                layout="@layout/logo_dhis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+            <ImageView
+                android:id="@+id/logo_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:alpha="0"
+                tools:src="@drawable/sierra_leone" />
+            <LinearLayout
+                android:id="@+id/sync_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/logo_layout"
+                android:layout_margin="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/metadataText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/syncing_configuration"
+                    android:textColor="@color/colorAccent"
+                    app:drawableEnd="@{@drawable/animator_sync}" />
+
+                <TextView
+                    android:id="@+id/eventsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:alpha=".3"
+                    android:gravity="center_vertical"
+                    android:text="@string/syncing_data_shortly"
+                    android:textColor="@color/colorAccent" />
+
+            </LinearLayout>
         </RelativeLayout>
 
         <LinearLayout
@@ -131,9 +187,9 @@
                     <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:imeActionLabel="@string/log_in_button"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
-                        android:imeActionLabel="@string/log_in_button"
                         android:maxLines="1"
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:textColor="?colorPrimaryDark"
@@ -154,19 +210,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="gone" >
+                android:visibility="gone">
 
                 <Button
                     android:id="@+id/logout"
                     style="@style/HalfWidthButton"
                     android:onClick="onLogoutClick"
-                    android:text="@string/log_out"/>
+                    android:text="@string/log_out" />
 
                 <Button
                     android:id="@+id/unlock"
                     style="@style/HalfWidthButton"
                     android:onClick="onUnlockClick"
-                    android:text="@string/unlock_button"/>
+                    android:text="@string/unlock_button" />
 
             </LinearLayout>
         </LinearLayout>

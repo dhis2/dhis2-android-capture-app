@@ -104,7 +104,8 @@ public class EventRepository implements FormRepository {
             "  Value.value,\n" +
             "  Option.name,\n" +
             "  Field.section,\n" +
-            "  Field.allowFutureDate\n" +
+            "  Field.allowFutureDate,\n" +
+            "  Event.status\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -342,7 +343,7 @@ public class EventRepository implements FormRepository {
         String optionCodeName = cursor.getString(6);
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
-
+        EventStatus status = EventStatus.valueOf(cursor.getString(9));
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -358,7 +359,7 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, true, null);
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, status == EventStatus.ACTIVE, null);
     }
 
     @NonNull

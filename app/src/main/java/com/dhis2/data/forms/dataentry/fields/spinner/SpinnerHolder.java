@@ -37,7 +37,6 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
     private final FlowableProcessor<RowAction> processor;
     private final AppCompatSpinner spinner;
     private final FormSpinnerBinding binding;
-    private static String currentValue;
     private final ImageView iconView;
 
     @NonNull
@@ -56,7 +55,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
             iconView.setVisibility(View.VISIBLE);
 
         this.spinner.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)
+            if (hasFocus && model.getValue().editable())
                 this.spinner.performClick();
         });
 
@@ -85,7 +84,6 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
                     binding.setLabel(label.toString());
                     binding.setOptionSet(viewModel.optionSet());
                     binding.setInitialValue(viewModel.value());
-                    currentValue = viewModel.value();
 
                     if (viewModel.warning() != null) {
                         binding.warningError.setVisibility(View.VISIBLE);
@@ -97,6 +95,9 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements AdapterVie
                         binding.warningError.setVisibility(View.GONE);
                         binding.warningError.setText(null);
                     }
+
+                    spinner.setEnabled(viewModel.editable());
+
                 }
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
 

@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -145,15 +146,19 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
 
-                fieldViewModels.put(showWarning.field(),
-                        model.withWarning(showWarning.content()));
+                if (model != null)
+                    fieldViewModels.put(showWarning.field(),
+                            model.withWarning(showWarning.content()));
+                else
+                    Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
 
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
 
-                fieldViewModels.put(showError.field(),
-                        model.withError(showError.content()));
+                if (model != null)
+                    fieldViewModels.put(showError.field(),
+                            model.withError(showError.content()));
 
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;

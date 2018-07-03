@@ -2,6 +2,7 @@ package com.dhis2.data.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -75,30 +76,36 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncEvents() {
-        disposable.add(events()
-                .subscribeOn(Schedulers.io())
-                .map(response -> SyncResult.success())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(SyncState.EVENTS),
-                        Timber::d));
+
+        new PostData().execute();
+
+        disposable.add(
+                events()
+                        .subscribeOn(Schedulers.io())
+                        .map(response -> SyncResult.success())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> SyncResult.failure(
+                                throwable.getMessage() == null ? "" : throwable.getMessage()))
+                        .startWith(SyncResult.progress())
+                        .subscribe(update(SyncState.EVENTS),
+                                Timber::d));
     }
 
     @Override
     public void syncTrackedEntities() {
 
-        disposable.add(trackerData()
-                .subscribeOn(Schedulers.io())
-                .map(response -> SyncResult.success())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(SyncState.TEI),
-                        Timber::d
-                ));
+
+        disposable.add(
+                trackerData()
+                        .subscribeOn(Schedulers.io())
+                        .map(response -> SyncResult.success())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .onErrorReturn(throwable -> SyncResult.failure(
+                                throwable.getMessage() == null ? "" : throwable.getMessage()))
+                        .startWith(SyncResult.progress())
+                        .subscribe(update(SyncState.TEI),
+                                Timber::d
+                        ));
 
     }
 
@@ -139,5 +146,28 @@ final class SyncPresenterImpl implements SyncPresenter {
                 syncView.update(syncState).accept(result);
             }
         };
+    }
+
+    class PostData extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                d2.syncSingleEvents().call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                d2.syncTrackedEntityInstances().call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
     }
 }

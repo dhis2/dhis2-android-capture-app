@@ -86,7 +86,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Value.value,\n" +
             "  Option.name,\n" +
             "  Field.section,\n" +
-            "  Field.allowFutureDate\n" +
+            "  Field.allowFutureDate,\n" +
+            "  Event.status\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -206,14 +207,15 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
-
+        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
 
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1, true, null);
+                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
+                eventStatus == EventStatus.ACTIVE, null);
     }
 
     @NonNull

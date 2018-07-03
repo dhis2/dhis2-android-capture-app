@@ -35,7 +35,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import retrofit2.Response;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.dhis2.utils.Constants.RQ_QR_SCANNER;
@@ -54,6 +53,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     private boolean isPinScreenVisible = false;
 
+    private CustomDialog customDialog;
 
     enum SyncState {
         METADATA, EVENTS, TEI
@@ -114,7 +114,20 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 renderEmptyUsername();
                 break;
             case INVALID_DHIS_VERSION:
+                customDialog = new CustomDialog(this,
+                        "Login error",
+                        "The server you are trying to log into uses an unsupported version of dhis (<2.29)",
+                        "Ok", "Cancel", errorCode.hashCode(), new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        customDialog.dismiss();
+                    }
 
+                    @Override
+                    public void onNegative() {
+                        customDialog.dismiss();
+                    }
+                });
                 break;
             case ALREADY_AUTHENTICATED:
 

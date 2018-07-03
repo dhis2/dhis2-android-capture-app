@@ -259,7 +259,7 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     view.renderEmptyUsername();
                     break;
                 case INVALID_DHIS_VERSION:
-                    view.renderInvalidCredentialsError();
+                    view.renderError(d2CallException.errorCode());
                     break;
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));

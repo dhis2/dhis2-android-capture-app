@@ -22,7 +22,7 @@ public class ImageHolder extends RecyclerView.ViewHolder {
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
     private final FormImageBinding binding;
-
+    private boolean isEditable;
     @NonNull
     private BehaviorProcessor<ImageViewModel> model;
 
@@ -33,6 +33,7 @@ public class ImageHolder extends RecyclerView.ViewHolder {
         this.disposable = new CompositeDisposable();
         model = BehaviorProcessor.create();
         disposable.add(model.subscribe(viewModel -> {
+                    this.isEditable = viewModel.editable();
                     StringBuilder label = new StringBuilder(viewModel.label());
                     if (viewModel.mandatory())
                         label.append("*");
@@ -58,10 +59,18 @@ public class ImageHolder extends RecyclerView.ViewHolder {
                 , t -> Log.d("DHIS_ERROR", t.getMessage())));
 
         itemView.setOnClickListener(v -> {
-            binding.frame.setVisibility(View.VISIBLE);
-            String[] uids = model.getValue().uid().split("\\.");
-            String value = model.getValue().label();
-            processor.onNext(RowAction.create(uids[0], value));
+
+            if (isEditable) {
+                String value = null;
+                String[] uids = model.getValue().uid().split("\\.");
+                if (binding.frame.getVisibility() == View.GONE) {
+                    binding.frame.setVisibility(View.VISIBLE);
+                    value = model.getValue().label();
+                } else {
+                    binding.frame.setVisibility(View.GONE);
+                }
+                processor.onNext(RowAction.create(uids[0], value));
+            }
         });
 
     }

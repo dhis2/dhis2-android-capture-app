@@ -19,8 +19,8 @@ public abstract class AgeViewModel extends FieldViewModel {
     @Nullable
     public abstract String value();
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section) {
-        return new AutoValue_AgeViewModel(id, label, section, null, true, null, null, null, mandatory, value);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable) {
+        return new AutoValue_AgeViewModel(id, label, section, null, editable, null, null, null, mandatory, value);
     }
 
     @Override

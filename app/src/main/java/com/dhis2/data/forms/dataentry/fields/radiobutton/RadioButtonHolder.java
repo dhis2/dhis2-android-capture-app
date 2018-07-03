@@ -60,6 +60,10 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
                         binding.warningError.setVisibility(View.GONE);
                         binding.warningError.setText(null);
                     }
+
+                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                        radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
+                    }
                 },
                 Timber::d)
         );

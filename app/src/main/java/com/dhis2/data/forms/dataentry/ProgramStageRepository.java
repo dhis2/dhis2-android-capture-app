@@ -11,6 +11,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -39,7 +40,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Value.value,\n" +
             "  Option.name,\n" +
             "  Field.section,\n" +
-            "  Field.allowFutureDate\n" +
+            "  Field.allowFutureDate,\n" +
+            "  Event.status\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -127,7 +129,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), true, renderingType));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType));
 
                             cursor.moveToNext();
                         }
@@ -177,13 +179,14 @@ final class ProgramStageRepository implements DataEntryRepository {
         String optionCodeName = cursor.getString(6);
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
-
+        EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
 
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, true, renderingType);
+        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
+                allowFutureDates, eventStatus == EventStatus.ACTIVE, renderingType);
     }
 
     @NonNull

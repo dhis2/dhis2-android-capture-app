@@ -78,26 +78,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/program_attribute_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/entity_attribute_3">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:textColor="@color/black_de0"
-                android:textSize="16sp"
-                app:programStage='@{event.programStage}'
-                tools:text="Diagnosis" />
-
-        </LinearLayout>
-
         <ImageView
             android:id="@+id/sync_icon"
             android:layout_width="wrap_content"

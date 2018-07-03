@@ -57,6 +57,8 @@ public class CoordinateHolder extends FormViewHolder {
                     else
                         binding.formCoordinates.setWargingOrError(null);
 
+                    binding.formCoordinates.setEditable(coordinateViewModel.editable());
+
                     binding.executePendingBindings();
                 },
                 Timber::d));

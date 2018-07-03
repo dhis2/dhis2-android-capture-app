@@ -45,7 +45,6 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends FieldViewHolder {
 
     private final TextInputLayout inputLayout;
-    private final ObservableBoolean isEditable;
     private EditText editText;
     private ImageView icon;
     @NonNull
@@ -55,8 +54,6 @@ final class EditTextCustomHolder extends FieldViewHolder {
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         super(binding.getRoot());
-
-        this.isEditable = isEditable;
 
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
@@ -124,7 +121,11 @@ final class EditTextCustomHolder extends FieldViewHolder {
     }
 
     private void setInputType(ValueType valueType) {
-        if (isEditable.get())
+
+        editText.setFocusable(model.getValue().editable());
+        editText.setEnabled(model.getValue().editable());
+
+        if (model.getValue().editable())
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -177,9 +178,7 @@ final class EditTextCustomHolder extends FieldViewHolder {
                     break;
             }
         else {
-            editText.setFocusable(false);
             editText.setInputType(0);
-            editText.setEnabled(false);
         }
     }
 

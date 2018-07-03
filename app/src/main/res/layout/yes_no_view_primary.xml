@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -20,53 +21,52 @@
         <TextView
             android:id="@+id/button"
             android:layout_width="wrap_content"
-            android:maxWidth="150dp"
-            android:minWidth="150dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
             android:gravity="start|center"
+            android:maxWidth="150dp"
+            android:minWidth="150dp"
             android:text='@{label}'
-            tools:text="WHOMCH Smocking cessation counselling provided"
             android:textAllCaps="false"
             android:textColor="?attr/colorPrimary"
             android:textColorHint="?attr/colorPrimary"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:text="WHOMCH Smocking cessation counselling provided" />
 
 
         <RadioGroup
             android:id="@+id/radiogroup"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <RadioButton
                 android:id="@+id/yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="?attr/colorPrimary"
                 android:checked="false"
-                android:text="yes"
-                android:textColor="?attr/colorPrimary" />
+                android:text="@string/yes"
+                android:textColor="?attr/colorPrimary"
+                app:buttonTint="?attr/colorPrimary" />
 
             <RadioButton
                 android:id="@+id/no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="?attr/colorPrimary"
                 android:checked="false"
-                android:text="no"
-                android:textColor="?attr/colorPrimary" />
+                android:text="@string/no"
+                android:textColor="?attr/colorPrimary"
+                app:buttonTint="?attr/colorPrimary" />
 
             <RadioButton
                 android:id="@+id/no_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="?attr/colorPrimary"
-
                 android:checked="false"
-                android:text="no value"
-                android:textColor="?attr/colorPrimary" />
+                android:text="@string/no_value"
+                android:textColor="?attr/colorPrimary"
+                app:buttonTint="?attr/colorPrimary" />
 
         </RadioGroup>
 

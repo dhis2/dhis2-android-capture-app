@@ -56,7 +56,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                             StringBuilder label = new StringBuilder(dateTimeViewModel.label());
                             if (dateTimeViewModel.mandatory())
                                 label.append("*");
+
                             binding.setVariable(BR.label, label.toString());
+
                             if (!isEmpty(dateTimeViewModel.value())) {
                                 binding.setVariable(BR.initData, dateTimeViewModel.value());
                             } else {
@@ -83,6 +85,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                                     ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
                                 if (binding instanceof FormDateTimeTextBinding)
                                     ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+
                             } else {
                                 if (binding instanceof FormTimeTextBinding)
                                     ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
@@ -91,6 +94,13 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                                 if (binding instanceof FormDateTimeTextBinding)
                                     ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
                             }
+
+                            if (binding instanceof FormTimeTextBinding)
+                                ((FormTimeTextBinding) binding).timeView.setEditable(dateTimeViewModel.editable());
+                            if (binding instanceof FormDateTextBinding)
+                                ((FormDateTextBinding) binding).dateView.setEditable(dateTimeViewModel.editable());
+                            if (binding instanceof FormDateTimeTextBinding)
+                                ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(dateTimeViewModel.editable());
 
                             binding.executePendingBindings();
                         },

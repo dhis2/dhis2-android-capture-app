@@ -139,4 +139,8 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     public TextInputEditText getEditText() {
         return editText;
     }
+
+    public void setEditable(Boolean editable) {
+        editText.setEnabled(editable);
+    }
 }

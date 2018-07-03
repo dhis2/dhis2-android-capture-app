@@ -11,8 +11,8 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class OrgUnitViewModel extends FieldViewModel {
 
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section) {
-        return new AutoValue_OrgUnitViewModel(id, label, mandatory, value,section, null,true,null,null,null);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable) {
+        return new AutoValue_OrgUnitViewModel(id, label, mandatory, value,section, null,editable,null,null,null);
     }
 
     @Override

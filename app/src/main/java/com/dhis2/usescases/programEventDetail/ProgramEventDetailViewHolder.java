@@ -38,9 +38,10 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                 .subscribe(
                         values -> {
                             StringBuilder stringBuilder = new StringBuilder("");
-                            for (String dataValue : values) {
-                                if (dataValue != null)
-                                    stringBuilder.append(dataValue).append("\n");
+                            int valuesSize = values.size() > 3 ? 3 : values.size();
+                            for (int i = 0; i < valuesSize; i++) {
+                                if (values.get(i) != null)
+                                    stringBuilder.append(values.get(i)).append("\n");
                             }
                             binding.dataValue.setText(stringBuilder);
                         },

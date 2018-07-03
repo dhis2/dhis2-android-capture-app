@@ -317,7 +317,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (isFormCompleted() && isEventOpen()) {
             binding.actionButton.setVisibility(View.VISIBLE);
         } else {
-            binding.actionButton.setVisibility(View.GONE);
+            binding.actionButton.setText("Check");
+            binding.actionButton.setVisibility(View.VISIBLE);
         }
     }
 

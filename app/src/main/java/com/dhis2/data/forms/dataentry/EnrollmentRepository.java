@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -38,7 +39,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Option.name,\n" +
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
-            "  Enrollment.organisationUnit\n" +
+            "  Enrollment.organisationUnit,\n" +
+            "  Enrollment.status\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -109,6 +111,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
 
+        EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
+
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -144,7 +148,8 @@ final class EnrollmentRepository implements DataEntryRepository {
         }
 
         return fieldFactory.create(uid,
-                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates, !generated, null);
+                label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
+                !generated || enrollmentStatus == EnrollmentStatus.ACTIVE, null);
 
     }
 

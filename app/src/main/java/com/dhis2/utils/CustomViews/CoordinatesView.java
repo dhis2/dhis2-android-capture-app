@@ -141,6 +141,12 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         setLayout();
     }
 
+    public void setEditable(Boolean editable) {
+        latLong.setEnabled(editable);
+        findViewById(R.id.location1).setEnabled(editable);
+        findViewById(R.id.location2).setEnabled(editable);
+    }
+
 
     public interface OnMapPositionClick {
         void onMapPositionClick(CoordinatesView coordinatesView);
