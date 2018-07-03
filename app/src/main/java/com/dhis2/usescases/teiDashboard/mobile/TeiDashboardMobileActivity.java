@@ -3,7 +3,6 @@ package com.dhis2.usescases.teiDashboard.mobile;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -14,6 +13,7 @@ import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.databinding.ActivityDashboardMobileBinding;
+import com.dhis2.usescases.qrCodes.QrActivity;
 import com.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import com.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
@@ -22,10 +22,6 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.Constants;
-
-import java.util.List;
-
-import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -116,13 +112,10 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
-    public Consumer<List<Bitmap>> showQR() {
-        return bitmaps -> TEIDataFragment.getInstance().flipCard(bitmaps);
-    }
-
-    @Override
-    public void nextQR() {
-        TEIDataFragment.getInstance().nextQR();
+    public void showQR() {
+        Intent intent = new Intent(TeiDashboardMobileActivity.this, QrActivity.class);
+        intent.putExtra("TEI_UID", teiUid);
+        startActivity(intent);
     }
 
     @Override

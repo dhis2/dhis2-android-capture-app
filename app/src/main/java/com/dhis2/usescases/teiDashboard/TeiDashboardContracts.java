@@ -41,9 +41,7 @@ public class TeiDashboardContracts {
 
         DashboardPagerAdapter getAdapter();
 
-        Consumer<List<Bitmap>> showQR();
-
-        void nextQR();
+        void showQR();
 
         void goToEnrollmentList(Bundle extras);
     }
@@ -79,8 +77,6 @@ public class TeiDashboardContracts {
 
         //Data Fragment
         void onShareClick(android.view.View view);
-
-        void nextQr();
 
         //RelationshipFragment
         Observable<List<TrackedEntityAttributeValueModel>> getTEIMainAttributes(String teiUid);

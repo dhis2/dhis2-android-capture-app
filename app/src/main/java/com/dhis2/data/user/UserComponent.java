@@ -25,6 +25,8 @@ import com.dhis2.usescases.programEventDetail.ProgramEventDetailComponent;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import com.dhis2.usescases.programStageSelection.ProgramStageSelectionComponent;
 import com.dhis2.usescases.programStageSelection.ProgramStageSelectionModule;
+import com.dhis2.usescases.qrCodes.QrComponent;
+import com.dhis2.usescases.qrCodes.QrModule;
 import com.dhis2.usescases.qrReader.QrReaderComponent;
 import com.dhis2.usescases.qrReader.QrReaderModule;
 import com.dhis2.usescases.searchTrackEntity.SearchTEComponent;
@@ -62,6 +64,9 @@ public interface UserComponent {
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    QrComponent plus(@NonNull QrModule qrModule);
 
     @NonNull
     MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);

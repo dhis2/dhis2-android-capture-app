@@ -2,6 +2,7 @@ package com.dhis2.data.qr;
 
 import android.graphics.Bitmap;
 
+import com.dhis2.usescases.qrCodes.QrViewModel;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import timber.log.Timber;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
@@ -48,19 +48,19 @@ public class QRCodeGenerator implements QRInterface {
     }
 
     @Override
-    public Observable<List<Bitmap>> teiQRs(String teiUid) {
-        List<Bitmap> bitmaps = new ArrayList<>();
+    public Observable<List<QrViewModel>> teiQRs(String teiUid) {
+        List<QrViewModel> bitmaps = new ArrayList<>();
 
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid)
                 .mapToOne(TrackedEntityInstanceModel::create)
-                .map(data -> bitmaps.add(transform(TEI_JSON, gson.toJson(data))))
+                .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, transform(TEI_JSON, gson.toJson(data)))))
                 .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid)
                         .mapToList(TrackedEntityAttributeValueModel::create))
-                .map(data -> bitmaps.add(transform(ATTR_JSON, gson.toJson(data))))
+                .map(data -> bitmaps.add(new QrViewModel(ATTR_JSON, transform(ATTR_JSON, gson.toJson(data)))))
                 .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid)
                         .mapToList(EnrollmentModel::create))
                 .map(data -> {
-                    bitmaps.add(transform(ENROLLMENT_JSON, gson.toJson(data)));
+                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, transform(ENROLLMENT_JSON, gson.toJson(data))));
                     return data;
                 })
 
@@ -69,7 +69,7 @@ public class QRCodeGenerator implements QRInterface {
                                 .mapToList(EventModel::create)
                                 .map(eventList -> {
                                     for (EventModel eventModel : eventList) {
-                                        bitmaps.add(transform(EVENTS_JSON, gson.toJson(eventModel)));
+                                        bitmaps.add(new QrViewModel(EVENTS_JSON, transform(EVENTS_JSON, gson.toJson(eventModel))));
                                     }
                                     return bitmaps;
                                 })))
@@ -81,7 +81,7 @@ public class QRCodeGenerator implements QRInterface {
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Bitmap bitmap = null;
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(gson.toJson(new QRjson(type, info)), BarcodeFormat.QR_CODE, 200, 200);
+            BitMatrix bitMatrix = multiFormatWriter.encode(gson.toJson(new QRjson(type, info)), BarcodeFormat.QR_CODE, 1000, 1000);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             bitmap = barcodeEncoder.createBitmap(bitMatrix);
         } catch (WriterException e) {

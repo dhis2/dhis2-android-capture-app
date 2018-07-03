@@ -43,12 +43,6 @@
             android:layout_marginTop="10dp">
 
             <include
-                android:id="@+id/card_back"
-                layout="@layout/fragment_tei_data_card_back"
-                android:visibility="gone"
-                app:presenter="@{presenter}" />
-
-            <include
                 android:id="@+id/card_front"
                 layout="@layout/fragment_tei_data_card_front"
                 app:dashboardModel="@{dashboardModel}"

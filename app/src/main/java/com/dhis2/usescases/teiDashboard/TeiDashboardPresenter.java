@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.data.qr.QRInterface;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
@@ -55,7 +54,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private final DashboardRepository dashboardRepository;
     private final MetadataRepository metadataRepository;
-    private final QRInterface qrInterface;
     private final D2 d2;
     private TeiDashboardContracts.View view;
 
@@ -69,11 +67,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     private TEIDataFragment teiDataFragment;
     private String eventUid;
 
-    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, QRInterface qrInterface) {
+    TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.dashboardRepository = dashboardRepository;
         this.metadataRepository = metadataRepository;
-        this.qrInterface = qrInterface;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -201,20 +198,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {
                 case 0:
-                    qrInterface.teiQRs(teUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    view.showQR(),
-                                    Timber::d
-                            );
+                    view.showQR();
                     return true;
                 case 1:
                     view.displayMessage("This functionality is not ready yet.");
                     return true;
                 default:
                     return true;
-
             }
         });
 
@@ -222,15 +212,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void nextQr() {
-        view.nextQR();
-    }
-
-    @Override
     public void onEnrollmentSelectorClick() {
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
-//        view.startActivity(TeiProgramListActivity.class, extras, false, false, null);
         view.goToEnrollmentList(extras);
     }
 

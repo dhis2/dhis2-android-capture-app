@@ -173,12 +173,17 @@
     <string name="default_relationship_label">Añadir relación</string>
     <string name="next">Siguiente</string>
     <string name="SAVE">Guardar</string>
+    <string name="qr_id">Identificación</string>
+    <string name="qr_attributes">Atributos</string>
+    <string name="qr_enrollment">Admisiones</string>
+    <string name="qr_events">Eventos</string>
     <string name="button_ok">OK</string>
     <string name="jira_report">Reportar en Jira</string>
     <string name="programs_to_enroll">Programas para enrolar</string>
     <string name="select_all">Selecionar todo</string>
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
     <string name="share">Compartir</string>
+    <string name="share_qr">Compartir QR</string>
     <string name="teiType_search_online">La búsqueda por tipo no está disponible de manera online.\nPor favor, seleccione un programa de la lista.</string>
     <string name="missing_mandatory_fields">Campos requeridos no pueden estar vacios</string>
     <string name="missing_mandatory_fields_title">Campos requeridos no pueden estar vacios</string>
