@@ -74,7 +74,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     @Override
     public void getOrgUnits(Date date) {
         compositeDisposable.add(programEventDetailRepository.orgUnits()
-                .map(orgUnits -> OrgUnitUtils.renderTree(view.getContext(), orgUnits))
+                .map(orgUnits -> OrgUnitUtils.renderTree(view.getContext(), orgUnits,true))
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

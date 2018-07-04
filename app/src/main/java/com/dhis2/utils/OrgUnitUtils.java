@@ -21,7 +21,7 @@ import java.util.TreeSet;
 
 public class OrgUnitUtils {
 
-    public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs) {
+    public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs, Boolean isMultiSelection) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
 
@@ -54,7 +54,7 @@ public class OrgUnitUtils {
         //Separamos las orunits en listas por nivel
         for (OrganisationUnitModel orgs : allOrgs) {
             ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(context));
+            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(context, isMultiSelection));
             treeNode.setSelectable(myOrgUnitUids.contains(orgs.uid()));
             sublist.add(treeNode);
             subLists.put(orgs.level(), sublist);

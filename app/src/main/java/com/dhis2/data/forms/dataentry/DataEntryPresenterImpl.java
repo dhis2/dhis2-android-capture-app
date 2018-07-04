@@ -89,7 +89,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                         Timber::d
                 ));
 
-        disposable.add(dataEntryView.rowActions().debounce(1000, TimeUnit.MILLISECONDS) //TODO: Check debounce time
+        disposable.add(dataEntryView.rowActions().debounce(500, TimeUnit.MILLISECONDS) //TODO: Check debounce time
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
                 .switchMap(action ->

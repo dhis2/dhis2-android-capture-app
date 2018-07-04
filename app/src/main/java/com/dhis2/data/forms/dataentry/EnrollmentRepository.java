@@ -127,21 +127,24 @@ final class EnrollmentRepository implements DataEntryRepository {
                     teiUid = tei.getString(0);
                     tei.close();
                 }
-                dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
-                String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
-                        "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
-                        "VALUES (?,?,?,?)";
-                SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
-                        .compileStatement(INSERT);
-                sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
-                        .format(Calendar.getInstance().getTime()));
-                sqLiteBind(updateStatement, 2, dataValue);
-                sqLiteBind(updateStatement, 3, uid);
-                sqLiteBind(updateStatement, 4, teiUid);
 
-                long insert = briteDatabase.executeInsert(
-                        TrackedEntityAttributeValueModel.TABLE, updateStatement);
-                updateStatement.clearBindings();
+                if(teiUid!=null) { //checks if tei has been deleted
+                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                    String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
+                            "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
+                            "VALUES (?,?,?,?)";
+                    SQLiteStatement updateStatement = briteDatabase.getWritableDatabase()
+                            .compileStatement(INSERT);
+                    sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                            .format(Calendar.getInstance().getTime()));
+                    sqLiteBind(updateStatement, 2, dataValue);
+                    sqLiteBind(updateStatement, 3, uid);
+                    sqLiteBind(updateStatement, 4, teiUid);
+
+                    long insert = briteDatabase.executeInsert(
+                            TrackedEntityAttributeValueModel.TABLE, updateStatement);
+                    updateStatement.clearBindings();
+                }
             } catch (D2CallException e) {
                 e.printStackTrace();
             }
@@ -149,7 +152,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated || enrollmentStatus == EnrollmentStatus.ACTIVE, null);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null);
 
     }
 

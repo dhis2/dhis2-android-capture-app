@@ -470,7 +470,7 @@ class EnrollmentFormRepository implements FormRepository {
         String optionCodeName = cursor.getString(6);
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
-        EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(9));
+        EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }

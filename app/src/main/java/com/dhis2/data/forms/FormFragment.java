@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -154,8 +155,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onNext(ReportStatus reportStatus) {
         if (viewPager.getCurrentItem() < viewPager.getAdapter().getCount() - 1) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-        } else
+
+            if (viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
+                ((Button) nextButton).setText(getString(R.string.save));
+            } else
+                ((Button) nextButton).setText(getString(R.string.next));
+
+        } else {
             formPresenter.checkMandatoryFields();
+        }
     }
 
     @NonNull
@@ -207,15 +215,17 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onPause() {
-        super.onPause();
         formPresenter.onDetach();
+        super.onPause();
     }
 
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
         return sectionViewModels -> {
+            int currentPostion = -1;
             if (formSectionAdapter.getCount() > 0 && formSectionAdapter.areDifferentSections(sectionViewModels)) {
+                currentPostion = viewPager.getCurrentItem();
                 for (Fragment fragment : getChildFragmentManager().getFragments()) {
                     if (fragment instanceof DataEntryFragment) {
                         continue;
@@ -228,6 +238,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             }
             formSectionAdapter.swapData(sectionViewModels);
             tabLayout.setupWithViewPager(viewPager);
+            if (currentPostion != -1)
+                viewPager.setCurrentItem(currentPostion, false);
             if (sectionViewModels.size() == 0) {
                 Log.d("EMPTY", "Show empty state");
                 // TODO: Show empty state
@@ -412,7 +424,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
-    private void showMandatoryFieldsDialog(){
+    @Override
+    public void showMandatoryFieldsDialog() {
         new CustomDialog(
                 getAbstracContext(),
                 getAbstracContext().getString(R.string.missing_mandatory_fields_title),
@@ -434,12 +447,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 .show();
     }
 
-    private void deleteAllSavedDataAndGoBack(){
+    private void deleteAllSavedDataAndGoBack() {
         formPresenter.getTrackedEntityInstanceAndDeleteCascade();
     }
 
     @Override
-    public void onAllSavedDataDeleted(){
+    public void onAllSavedDataDeleted() {
         if (getActivity() != null)
             getActivity().finish();
     }

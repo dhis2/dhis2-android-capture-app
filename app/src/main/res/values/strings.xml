@@ -250,4 +250,5 @@
     <string name="wipe_data">Reset app</string>
     <string name="add_relationship_error">It\'s not possible to add this relationship</string>
     <string name="warning_error_on_complete_title">Check this!</string>
+    <string name="save">Save</string>
 </resources>

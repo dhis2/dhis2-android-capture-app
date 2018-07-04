@@ -54,6 +54,8 @@ interface FormView {
 
     void isMandatoryFieldsRequired(List<FieldViewModel> viewModels);
 
+    void showMandatoryFieldsDialog();
+
     void onAllSavedDataDeleted();
 
     void onBackPressed();

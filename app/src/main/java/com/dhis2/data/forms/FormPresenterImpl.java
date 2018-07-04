@@ -1,12 +1,14 @@
 package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import com.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
 import com.dhis2.data.forms.dataentry.RuleEngineRepository;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.schedulers.SchedulerProvider;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -54,7 +56,6 @@ class FormPresenterImpl implements FormPresenter {
 
     @NonNull
     private final FlowableProcessor<String> processor;
-    private final FlowableProcessor<String> fieldsValueProcessor;
     private FormView view;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
@@ -71,7 +72,6 @@ class FormPresenterImpl implements FormPresenter {
             this.ruleEngineRepository = new EventsRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
 
         this.processor = PublishProcessor.create();
-        this.fieldsValueProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -87,7 +87,7 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(formRepository.reportDate()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .filter(date->!isEmpty(date))
+                .filter(date -> !isEmpty(date))
                 .map(date -> {
                     try {
                         return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
@@ -164,14 +164,22 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io()).share();
 
         compositeDisposable.add(enrollmentDoneStream
+                .flatMap(data -> checkMandatory().map(mandatoryRequired -> Pair.create(data, mandatoryRequired)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(data -> {
+                    view.showMandatoryFieldsDialog();
+                    return Observable.just(data);
+                })
+                .filter(data -> !data.val1()) //TODO: IS filtering, but mandatory popup is not showing
+                .map(data -> data.val0())
                 .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
                 .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                         view.finishEnrollment(),
                         throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
+                            throw new OnErrorNotImplementedException(throwable);
+                        }));
 
         compositeDisposable.add(statusChangeObservable.connect());
     }
@@ -297,31 +305,50 @@ class FormPresenterImpl implements FormPresenter {
         );
     }
 
-    private void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityAttributeInstanceId){
+    public Observable<Boolean> checkMandatory() {
+        Observable<List<FieldViewModel>> values = formRepository.fieldValues();
+        Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
+                .subscribeOn(schedulerProvider.computation());
+
+        Observable<List<FieldViewModel>> fieldValues = Observable.zip(
+                values, ruleEffect, this::applyFieldViewEffects);
+
+        return fieldValues
+                .map(data -> {
+                    boolean mandatoryRequired = false;
+                    for (FieldViewModel viewModel : data) {
+                        if (viewModel.mandatory() && TextUtils.isEmpty(viewModel.value()))
+                            mandatoryRequired = true;
+                    }
+                    return mandatoryRequired;
+                });
+    }
+
+    private void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityAttributeInstanceId) {
         formRepository.deleteTrackedEntityAttributeValues(trackedEntityAttributeInstanceId);
     }
 
-    private void deleteEnrollment(@NonNull String trackedEntityAttributeInstanceId){
+    private void deleteEnrollment(@NonNull String trackedEntityAttributeInstanceId) {
         formRepository.deleteEnrollment(trackedEntityAttributeInstanceId);
     }
 
-    private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId){
+    private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId) {
         formRepository.deleteTrackedEntityInstance(trackedEntityAttributeInstanceId);
     }
 
     @Override
-    public void getTrackedEntityInstanceAndDeleteCascade(){
+    public void getTrackedEntityInstanceAndDeleteCascade() {
         CompositeDisposable disposable = new CompositeDisposable();
         disposable.add(formRepository.getTrackedEntityInstanceUid()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(trackedEntityInstanceUid -> {
-                    deleteTrackedEntityAttributeValues(trackedEntityInstanceUid);
-                    deleteEnrollment(trackedEntityInstanceUid);
-                    deleteTrackedEntityInstance(trackedEntityInstanceUid);
-                    disposable.clear();
-                    view.onAllSavedDataDeleted();
-                },
+                            deleteTrackedEntityAttributeValues(trackedEntityInstanceUid);
+                            deleteEnrollment(trackedEntityInstanceUid);
+                            deleteTrackedEntityInstance(trackedEntityInstanceUid);
+                            disposable.clear();
+                            view.onAllSavedDataDeleted();
+                        },
                         Timber::e)
         );
     }

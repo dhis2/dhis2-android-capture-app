@@ -159,7 +159,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits,false)),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -316,7 +316,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits)),
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits,true)),
                         throwable -> view.showNoOrgUnits()
                 ));
     }

@@ -1,10 +1,15 @@
 package com.dhis2.usescases.general;
 
+import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.dhis2.utils.Constants;
@@ -25,6 +30,52 @@ import static android.content.Context.MODE_PRIVATE;
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
     public ViewDataBinding binding;
     public int containerId;
+
+    //region lifecycle
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d("LIFECYCLE", "FRAGMENT_ON_ATTACH");
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("LIFECYCLE", "FRAGMENT_ONCREATE_VIEW");
+        return super.onCreateView(inflater, container, savedInstanceState);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("LIFECYCLE", "FRAGMENT_STARTED");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("LIFECYCLE", "FRAGMENT_RESUME");
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("LIFECYCLE", "FRAGMENT_PAUSE");
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("LIFECYCLE", "FRAGMENT_DESTROY");
+
+    }
+
+    //endregion
 
     @Override
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {

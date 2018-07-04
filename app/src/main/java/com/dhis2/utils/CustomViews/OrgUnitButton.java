@@ -120,7 +120,7 @@ public class OrgUnitButton extends RelativeLayout {
         //Separamos las orunits en listas por nivel
         for (OrganisationUnitModel orgs : allOrgs) {
             ArrayList<TreeNode> sublist = subLists.get(orgs.level());
-            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(getContext()));
+            TreeNode treeNode = new TreeNode(orgs).setViewHolder(new OrgUnitHolder(getContext(),true));
             treeNode.setSelectable(orgs.path() != null);
             sublist.add(treeNode);
             subLists.put(orgs.level(), sublist);

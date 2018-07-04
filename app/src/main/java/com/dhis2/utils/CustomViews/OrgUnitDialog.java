@@ -15,6 +15,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.DialogOrgunitBinding;
 import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.OrgUnitUtils;
+import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -93,14 +94,16 @@ public class OrgUnitDialog extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(getContext(), myOrgs));
-
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(getContext(), myOrgs, false));
+        treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
 //        treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
+            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
+                ((OrgUnitHolder) treeNode.getViewHolder()).update();
             ((OrgUnitHolder) node.getViewHolder()).update();
         });
     }

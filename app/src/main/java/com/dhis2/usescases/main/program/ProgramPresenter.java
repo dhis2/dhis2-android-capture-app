@@ -20,7 +20,6 @@ import org.hisp.dhis.android.core.program.ProgramType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,7 +61,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                                 data -> {
                                     this.myOrgs = data;
                                     programQueries.onNext(Trio.create(null, null, null));
-                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs));
+                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
                                 },
                                 throwable -> view.renderError(throwable.getMessage())));
 

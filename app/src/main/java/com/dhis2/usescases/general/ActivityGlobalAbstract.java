@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -92,11 +93,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         lastUpdate = System.currentTimeMillis();
 
+        Log.d("LIFECYCLE", getLocalClassName()+"-ON_CREATE");
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("LIFECYCLE", getLocalClassName()+"-ON_RESUME");
         lifeCycleObservable.onNext(Status.ON_RESUME);
         sensorManager.registerListener(this,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -106,10 +110,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d("LIFECYCLE", getLocalClassName()+"-ON_PAUSE");
         lifeCycleObservable.onNext(Status.ON_PAUSE);
         sensorManager.unregisterListener(this);
 
     }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("LIFECYCLE", getLocalClassName()+"-ON_DESTROY");
+        super.onDestroy();
+    }
+
     //****************
     //PUBLIC METHOD REGION
 

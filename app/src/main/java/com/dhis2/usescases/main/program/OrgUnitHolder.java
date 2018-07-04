@@ -22,6 +22,7 @@ import java.util.Locale;
 
 public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitModel> {
 
+    private final Boolean isMultiSelection;
     private TextView textView;
     private ImageView imageView;
     private CheckBox checkBox;
@@ -29,8 +30,9 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
     private OrganisationUnitModel value;
     public int numberOfSelections;
 
-    public OrgUnitHolder(Context context) {
+    public OrgUnitHolder(Context context, Boolean isMultiSelection) {
         super(context);
+        this.isMultiSelection = isMultiSelection;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
-        checkBox.setChecked(node.isSelectable());
+        checkBox.setChecked(isMultiSelection & node.isSelectable());
 
         imageView.setOnClickListener(v -> {
             if (node.isExpanded())
@@ -60,7 +62,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
             setSelectedSizeText();
             checkBox.setVisibility(View.GONE);
             textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.gray_814));
-        } else {
+        } else if (isMultiSelection) {
             update();
         }
 
@@ -82,7 +84,6 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
         checkBox.setChecked(node.isSelected());
         setSelectedSizeText();
-
     }
 
     private void setSelectedSizeText() {

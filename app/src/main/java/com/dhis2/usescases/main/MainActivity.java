@@ -88,8 +88,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     protected void onPause() {
-        super.onPause();
         presenter.onDetach();
+        super.onPause();
     }
 
     //endregion

@@ -85,14 +85,23 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
         setUpRecyclerView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         dataEntryPresenter.onAttach(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        dataEntryPresenter.onDetach();
+    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        dataEntryPresenter.onDetach();
     }
 
     @NonNull

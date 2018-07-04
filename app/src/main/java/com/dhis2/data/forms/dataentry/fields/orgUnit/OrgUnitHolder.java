@@ -73,7 +73,6 @@ public class OrgUnitHolder extends FormViewHolder {
                             if (viewModel.value() != null && !viewModel.value().equals(viewModel.value())) {
                                 getOrgUnits();
                             }
-
                             editText.setEnabled(viewModel.editable());
                         },
                         Timber::d)
@@ -94,7 +93,7 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     private String getOrgUnitName(String value) {
-        String orgUnitName = "Unknown";
+        String orgUnitName = null;
         if (orgUnits != null) {
             for (OrganisationUnitModel orgUnit : orgUnits) {
                 if (orgUnit.uid().equals(value))

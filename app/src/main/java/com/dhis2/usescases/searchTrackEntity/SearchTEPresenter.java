@@ -169,12 +169,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
                         else if (teiList.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
-                    } else if (selectedProgram == null){
+                    } else if (selectedProgram == null) {
                         if (queryData.isEmpty())
                             messageId = view.getContext().getString(R.string.search_init);
                         else if (teiList.isEmpty())
                             messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS){
+                        else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
                             messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
                         }
                     } else {
@@ -480,7 +480,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return searchRepository.getOrgUnits();
+        return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 
     @Override

@@ -37,7 +37,7 @@ public interface SearchRepository {
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData);
 
-    Observable<List<OrganisationUnitModel>> getOrgUnits();
+    Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
 
     Observable<List<TrackedEntityInstance>> isOnLocalStorage(List<TrackedEntityInstance> tei);
 }

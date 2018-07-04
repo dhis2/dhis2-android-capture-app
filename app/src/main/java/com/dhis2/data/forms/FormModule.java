@@ -2,9 +2,6 @@ package com.dhis2.data.forms;
 
 import android.support.annotation.NonNull;
 
-import com.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
-import com.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
-import com.dhis2.data.forms.dataentry.RuleEngineRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -31,7 +28,7 @@ public class FormModule {
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
                                 @NonNull BriteDatabase briteDatabase,
                                 @NonNull FormRepository formRepository) {
-        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase,formRepository);
+        return new FormPresenterImpl(formViewArguments, schedulerProvider, briteDatabase, formRepository);
     }
 
     @Provides
