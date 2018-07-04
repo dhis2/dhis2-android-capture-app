@@ -442,6 +442,11 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
+    public void deleteEvent() {
+        // not necessary
+    }
+
+    @Override
     public void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId) {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",

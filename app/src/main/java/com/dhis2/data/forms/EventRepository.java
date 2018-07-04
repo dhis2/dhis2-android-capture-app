@@ -301,34 +301,33 @@ public class EventRepository implements FormRepository {
 
     @Override
     public void deleteTrackedEntityAttributeValues(@NonNull String trackedEntityInstanceId) {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
-                "%s.%s = ",
-                TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(TrackedEntityAttributeValueModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+        // not necessary
     }
 
     @Override
     public void deleteEnrollment(@NonNull String trackedEntityInstanceId) {
+        // not necessary
+    }
+
+    @Override
+    public void deleteEvent() {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
-        briteDatabase.delete(EnrollmentModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+                EventModel.TABLE, EventModel.Columns.UID);
+        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + eventUid + "'");
     }
 
     @Override
     public void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId) {
-        String DELETE_WHERE_RELATIONSHIP = String.format(
-                "%s.%s = ",
-                TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
-        briteDatabase.delete(TrackedEntityInstanceModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + trackedEntityInstanceId + "'");
+        // not necessary
     }
 
     @NonNull
     @Override
-    public Observable<String> getTrackedEntityInstanceUid() { //TODO: HERE YOU SHOULD NOT REMOVE THE TEI BUT THE EVENT
-        String SELECT_TE = "SELECT Enrollment.trackedEntityInstance FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid " +
-                "WHERE Event.uid = ?";
-
+    public Observable<String> getTrackedEntityInstanceUid() {
+        String SELECT_TE = "SELECT " + EventModel.TABLE  + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
+                " FROM " + EventModel.TABLE +
+                " WHERE " + EventModel.Columns.UID + " = ?";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));
     }
 

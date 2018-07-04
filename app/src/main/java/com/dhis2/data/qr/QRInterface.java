@@ -1,6 +1,6 @@
 package com.dhis2.data.qr;
 
-import android.graphics.Bitmap;
+import com.dhis2.usescases.qrCodes.QrViewModel;
 
 import java.util.List;
 
@@ -12,6 +12,6 @@ import io.reactivex.Observable;
 
 public interface QRInterface {
 
-    Observable<List<Bitmap>> teiQRs(String teiUid);
+    Observable<List<QrViewModel>> teiQRs(String teiUid);
 
 }

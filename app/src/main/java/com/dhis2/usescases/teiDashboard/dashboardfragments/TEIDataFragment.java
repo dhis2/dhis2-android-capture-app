@@ -1,12 +1,9 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -69,17 +66,14 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     TeiDashboardContracts.Presenter presenter;
 
     private DashboardProgramModel dashboardProgramModel;
-    private boolean mIsBackVisible;
     private EventAdapter adapter;
     private List<EventModel> events = new ArrayList<>();
     private CustomDialog dialog;
     private String lastModifiedEventUid;
     private ProgramStageModel programStageFromEvent;
-    private List<Bitmap> bitmaps;
-    private int currentQrPosition;
     private Context context;
 
-    static public TEIDataFragment getInstance() {
+    public static TEIDataFragment getInstance() {
         if (instance == null)
             instance = new TEIDataFragment();
 
@@ -127,7 +121,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
 
         });
-        binding.cardBack.cardBack.setAlpha(0f);
         return binding.getRoot();
     }
 
@@ -276,39 +269,4 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         if (dialog.getRequestCode() == RC_GENERATE_EVENT)
             presenter.areEventsCompleted(this);
     }
-
-    public void flipCard(List<Bitmap> bitmaps) {
-        this.bitmaps = bitmaps;
-        int distance = 8000;
-        float scale = getResources().getDisplayMetrics().density * distance;
-        binding.cardBack.qrImage.setImageBitmap(bitmaps.get(0));
-        binding.cardFront.cardFront.setCameraDistance(scale);
-        binding.cardBack.cardBack.setCameraDistance(scale);
-        AnimatorSet mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.flip_out_animation);
-        AnimatorSet mSetLeftIn = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.flip_in_animation);
-        if (!mIsBackVisible) {
-            mSetRightOut.setTarget(binding.cardFront.cardFront);
-            mSetLeftIn.setTarget(binding.cardBack.cardBack);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-            mIsBackVisible = true;
-            binding.cardBack.getRoot().setVisibility(View.VISIBLE);
-        } else {
-            mSetRightOut.setTarget(binding.cardBack.cardBack);
-            mSetLeftIn.setTarget(binding.cardFront.cardFront);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-            mIsBackVisible = false;
-            binding.cardBack.getRoot().setVisibility(View.GONE);
-        }
-    }
-
-    public void nextQR() {
-        if (currentQrPosition < bitmaps.size() - 1) {
-            currentQrPosition++;
-            binding.cardBack.qrImage.setImageBitmap(bitmaps.get(currentQrPosition));
-        } else
-            displayMessage("The are no more QR");
-    }
-
 }

@@ -2,7 +2,6 @@ package com.dhis2.usescases.teiDashboard;
 
 import com.dhis2.data.dagger.PerActivity;
 import com.dhis2.data.metadata.MetadataRepository;
-import com.dhis2.data.qr.QRInterface;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -25,8 +24,8 @@ public class TeiDashboardModule {
 
     @Provides
     @PerActivity
-    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository, QRInterface qrInterface) {
-        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository, qrInterface);
+    TeiDashboardContracts.Presenter providePresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
+        return new TeiDashboardPresenter(d2, dashboardRepository, metadataRepository);
     }
 
     @Provides

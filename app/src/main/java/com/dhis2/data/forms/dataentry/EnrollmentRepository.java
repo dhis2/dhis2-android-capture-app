@@ -24,6 +24,7 @@ import java.util.List;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
@@ -146,7 +147,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                     updateStatement.clearBindings();
                 }
             } catch (D2CallException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
 

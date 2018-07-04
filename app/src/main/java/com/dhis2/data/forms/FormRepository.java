@@ -65,6 +65,8 @@ public interface FormRepository {
 
     void deleteEnrollment(@NonNull String trackedEntityInstanceId);
 
+    void deleteEvent();
+
     void deleteTrackedEntityInstance(@NonNull String trackedEntityInstanceId);
 
     @NonNull
