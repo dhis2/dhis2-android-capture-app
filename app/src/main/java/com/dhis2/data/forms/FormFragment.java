@@ -244,6 +244,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 Log.d("EMPTY", "Show empty state");
                 // TODO: Show empty state
             }
+            if (viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
+                ((Button) nextButton).setText(getString(R.string.save));
+            }
         };
     }
 
