@@ -48,7 +48,7 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                         Timber::d
                 ));
 
-        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid()));
+        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid(), event.organisationUnit()));
     }
 
 

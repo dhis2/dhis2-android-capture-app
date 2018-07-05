@@ -66,7 +66,7 @@ public class ProgramEventDetailContract {
 
         void clearCatComboFilters(String orgUnitQuery);
 
-        void onEventClick(String eventId);
+        void onEventClick(String eventId, String orgUnit);
 
         Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
 

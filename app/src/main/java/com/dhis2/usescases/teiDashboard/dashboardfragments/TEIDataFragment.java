@@ -42,6 +42,7 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ENROLLMENT_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.REFERRAL;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.SCHEDULENEW;
@@ -100,7 +101,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
-            bundle.putString("ORG_UNIT", presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString(ORG_UNIT, presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
             bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
             bundle.putBoolean(NEW_EVENT, true);
 
