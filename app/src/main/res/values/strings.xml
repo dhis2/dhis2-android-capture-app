@@ -231,7 +231,7 @@
     <string name="search_init" >Enter your search criteria</string>
 
     <!-- QR -->
-    <string name="QR_SCANNER">QR Scanner</string>
+    <string name="QR_SCANNER">Import QR data</string>
     <string name="SAVE">Save</string>
     <string name="button_ok">OK</string>
     <string name="qr_id">Identification</string>
@@ -246,7 +246,7 @@
     <string name="qr_error_enrollment">This enrollment can\'t be added</string>
     <string name="qr_error_event">This event can\'t be added</string>
 
-    <string name="jira_report">Jira report</string>
+    <string name="jira_report">Report Jira Issue</string>
     <string name="about">About</string>
     <string name="programs_to_enroll">Programs to enroll</string>
     <string name="select_all">select all</string>
