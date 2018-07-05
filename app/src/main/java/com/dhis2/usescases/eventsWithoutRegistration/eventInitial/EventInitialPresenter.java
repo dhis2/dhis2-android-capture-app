@@ -79,7 +79,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void init(EventInitialContract.View mview, String programId, String eventId) {
+    public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId) {
         view = mview;
         this.eventId = eventId;
         this.programId = programId;
@@ -151,6 +151,16 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         if (eventId != null)
             getEventSections(eventId);
 
+        if (orgInitId != null){
+            compositeDisposable.add(
+                    metadataRepository.getOrganisationUnit(orgInitId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(organisationUnitModel ->
+                                    view.setOrgUnit(organisationUnitModel.uid(), organisationUnitModel.displayName()),
+                            Timber::d
+                    ));
+        }
     }
 
     @Override

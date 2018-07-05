@@ -15,6 +15,11 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
+
 /**
  * Created by Cristian on 13/02/2018.
  *
@@ -76,11 +81,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void onEventClick(String eventId) {
+    public void onEventClick(String eventId, String orgUnit) {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programId);
-        bundle.putString("EVENT_UID", eventId);
-        bundle.putBoolean("NEW_EVENT", false);
+        bundle.putString(PROGRAM_UID, programId);
+        bundle.putString(EVENT_UID, eventId);
+        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putBoolean(NEW_EVENT, false);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 
@@ -101,8 +107,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     public void addEvent() {
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programId);
-        bundle.putBoolean("NEW_EVENT", true);
+        bundle.putString(PROGRAM_UID, programId);
+        bundle.putBoolean(NEW_EVENT, true);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 
