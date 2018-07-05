@@ -3,7 +3,9 @@ package com.dhis2.data.qr;
 import android.graphics.Bitmap;
 
 import com.dhis2.usescases.qrCodes.QrViewModel;
+import com.dhis2.utils.DateUtils;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -44,7 +46,7 @@ public class QRCodeGenerator implements QRInterface {
 
     QRCodeGenerator(BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
-        gson = new Gson();
+        gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
     }
 
     @Override

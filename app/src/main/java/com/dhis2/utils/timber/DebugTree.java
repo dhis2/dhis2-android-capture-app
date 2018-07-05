@@ -1,5 +1,7 @@
 package com.dhis2.utils.timber;
 
+import android.util.Log;
+
 import timber.log.Timber;
 
 /**
@@ -9,6 +11,6 @@ import timber.log.Timber;
 public class DebugTree extends Timber.Tree {
     @Override
     protected void log(int priority, String tag, String message, Throwable t) {
-
+        Log.d(tag, message);
     }
 }

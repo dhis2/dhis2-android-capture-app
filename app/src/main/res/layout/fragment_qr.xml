@@ -19,21 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/downloadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:onClick="@{()->presenter.download()}"
-            android:tint="?colorAccent"
-            android:visibility="gone"
-            app:backgroundTint="?attr/colorPrimary"
-            app:fabSize="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_download"
-            tools:visibility="visible" />
-
         <RelativeLayout
             android:id="@+id/progress"
             android:layout_width="match_parent"

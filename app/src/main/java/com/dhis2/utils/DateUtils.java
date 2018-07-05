@@ -27,7 +27,11 @@ public class DateUtils {
         return new DateUtils();
     }
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    public static final String DATABASE_FORMAT_EXPRESSION  = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
+    public static final String DATE_FORMAT_EXPRESSION      = "yyyy-MM-dd";
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
 
     public Date[] getDateFromPeriod(Period period) {
         switch (period) {
@@ -223,7 +227,7 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat uiDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        return new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
     }
 
     @NonNull
@@ -233,12 +237,12 @@ public class DateUtils {
 
     @NonNull
     public static SimpleDateFormat dateTimeFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        return new SimpleDateFormat(DATE_TIME_FORMAT_EXPRESSION, Locale.US);
     }
 
     @NonNull
     public static SimpleDateFormat databaseDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US);
     }
 
     /**********************

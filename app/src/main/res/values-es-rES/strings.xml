@@ -177,6 +177,13 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Admisiones</string>
     <string name="qr_events">Eventos</string>
+    <string name="read_more_qr">Lee el siguiente QR para obtener más información.</string>
+    <string name="save_qr">Parar de leer y guardar datos</string>
+    <string name="qr_no_data">sin datos</string>
+    <string name="qr_error_id">Código QR no válido</string>
+    <string name="qr_error_attr">Este atributo no puede ser añadido</string>
+    <string name="qr_error_enrollment">Esta admisión no puede ser añadido</string>
+    <string name="qr_error_event">Este evento no puede ser añadido</string>
     <string name="button_ok">OK</string>
     <string name="jira_report">Reportar en Jira</string>
     <string name="programs_to_enroll">Programas para enrolar</string>
