@@ -129,18 +129,6 @@
                         app:currentFragment="@{currentFragment}" />
 
                     <TextView
-                        android:id="@+id/sync_manager"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.sync_manager)}"
-                        android:padding="10dp"
-                        android:text="@string/SYNC_MANAGER"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="18sp"
-                        app:currentFragment="@{currentFragment}" />
-
-                    <TextView
                         android:id="@+id/qr_scan"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -153,13 +141,13 @@
                         app:currentFragment="@{currentFragment}" />
 
                     <TextView
-                        android:id="@+id/menu_jira"
+                        android:id="@+id/sync_manager"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_jira)}"
+                        android:onClick="@{()->presenter.changeFragment(R.id.sync_manager)}"
                         android:padding="10dp"
-                        android:text="@string/jira_report"
+                        android:text="@string/SYNC_MANAGER"
                         android:textColor="@color/colorAccent"
                         android:textSize="18sp"
                         app:currentFragment="@{currentFragment}" />
@@ -175,7 +163,6 @@
                         android:textColor="@color/colorAccent"
                         android:textSize="18sp"
                         app:currentFragment="@{currentFragment}" />
-
 
                 </LinearLayout>
 
@@ -201,6 +188,23 @@
                     android:onClick="onLockClick"
                     android:text="@string/block_session"
                     android:textColor="@color/white_faf" />
+
+                <TextView
+                    android:id="@+id/menu_jira"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:onClick="@{()->presenter.changeFragment(R.id.menu_jira)}"
+                    android:text="@string/jira_report"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"
+
+                    android:layout_above="@id/block_button"
+                    android:background="@drawable/jira_button"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:padding="6dp"/>
             </RelativeLayout>
 
         </android.support.design.widget.NavigationView>
