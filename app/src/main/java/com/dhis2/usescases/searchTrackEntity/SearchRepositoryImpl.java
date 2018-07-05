@@ -42,7 +42,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
-    private static final String FIND_LOCAL_TEI = "SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ?";
+    private static final String FIND_LOCAL_TEI = "SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance WHERE TrackedEntityInstance.uid = ? AND TrackedEntityInstance.state <> 'RELATIONSHIP'";
     private final BriteDatabase briteDatabase;
 
     private final String SELECT_PROGRAM_WITH_REGISTRATION = "SELECT * FROM " + ProgramModel.TABLE + " WHERE Program.programType='WITH_REGISTRATION' AND Program.trackedEntityType = ";
@@ -124,6 +124,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                                @Nullable HashMap<String, String> queryData) {
 
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
+        String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
 
         String enrollmentDateWHERE = null;
         String incidentDateWHERE = null;
@@ -167,7 +168,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
 
         String search = String.format(SEARCH, queryData.isEmpty() ? "" : SEARCH_ATTR);
-        search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE;
+        search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship;
         if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
             String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
             search += " AND " + programWHERE;
