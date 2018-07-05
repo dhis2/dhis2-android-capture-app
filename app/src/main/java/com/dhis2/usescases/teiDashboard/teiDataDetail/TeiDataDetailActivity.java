@@ -39,19 +39,38 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
         init(getIntent().getStringExtra("TEI_UID"), getIntent().getStringExtra("PROGRAM_UID"), getIntent().getStringExtra("ENROLLMENT_UID"));
 
-        binding.fab.setOptionsClick(integer -> {
+        binding.fabActive.setOptionsClick(integer -> {
             if (integer == null)
                 return;
 
             switch (integer) {
-                case R.id.edit:
-                    //presenter.editData();
-                    break;
                 case R.id.deactivate:
                     presenter.onDeactivate(dashboardProgramModel);
-                case R.id.complete:
-                    presenter.onButtonActionClick(dashboardProgramModel);
                     break;
+                case R.id.complete:
+                    presenter.onComplete(dashboardProgramModel);
+                    break;
+            }
+        });
+
+        binding.fabCompleted.setOptionsClick(integer -> {
+            if (integer == null)
+                return;
+
+            switch (integer) {
+                case R.id.reOpen:
+                    presenter.onReOpen(dashboardProgramModel);
+                    break;
+            }
+        });
+
+        binding.fabCancelled.setOptionsClick(integer -> {
+            if (integer == null)
+                return;
+
+            switch (integer) {
+                case R.id.activate:
+                    presenter.onActivate(dashboardProgramModel);
             }
         });
     }
@@ -66,6 +85,7 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         this.dashboardProgramModel = program;
         binding.setDashboardModel(program);
         binding.setProgram(program.getCurrentProgram());
+        binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
         binding.executePendingBindings();
 
         supportStartPostponedEnterTransition();
@@ -80,16 +100,12 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
 
 
     @Override
-    public void setDataEditable() {
-        isEditable.set(!isEditable.get());
-        binding.dataLayout.invalidate();
-    }
-
-    @Override
     public Consumer<EnrollmentStatus> handleStatus() {
         return enrollmentStatus -> {
             Bindings.setEnrolmentIcon(binding.programLock, enrollmentStatus);
             Bindings.setEnrolmentText(binding.programLockText, enrollmentStatus);
+            binding.setEnrollmentStatus(enrollmentStatus);
+            binding.executePendingBindings();
         };
     }
 

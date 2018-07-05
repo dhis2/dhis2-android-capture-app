@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 31/10/2017.
+ * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
 
 public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.Presenter {

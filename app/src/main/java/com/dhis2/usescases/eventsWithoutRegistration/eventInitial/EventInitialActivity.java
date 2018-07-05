@@ -268,6 +268,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
                             (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
+                }else if(eventCreationType.equals(SCHEDULENEW)){
+                    presenter.scheduleEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
+                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
+                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                            selectedLat, selectedLon);
                 } else {
                     presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
                             null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/

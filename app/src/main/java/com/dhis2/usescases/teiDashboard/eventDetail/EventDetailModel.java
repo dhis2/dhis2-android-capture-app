@@ -2,7 +2,9 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.databinding.BaseObservable;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -23,13 +25,14 @@ public class EventDetailModel extends BaseObservable {
     private final List<ProgramStageSectionModel> stageSections;
     private final HashMap<String, List<ProgramStageDataElementModel>> fieldsElements;
     private final ProgramStageModel programStage;
+    private final List<CategoryOptionComboModel> optionComboList;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
     private final String orgUnitName;
 
     EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                      List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage, String orgUnitName) {
+                     ProgramStageModel programStage, String orgUnitName, List<CategoryOptionComboModel> optionComboList) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
         this.dataElemets = programStageDataElementModelList;
@@ -37,6 +40,7 @@ public class EventDetailModel extends BaseObservable {
         this.programStage = programStage;
         fieldsElements = new HashMap<>();
         this.orgUnitName = orgUnitName;
+        this.optionComboList = optionComboList;
 
         setUpFields();
 
@@ -89,5 +93,9 @@ public class EventDetailModel extends BaseObservable {
 
     public String getOrgUnitName() {
         return orgUnitName;
+    }
+
+    public List<CategoryOptionComboModel> getOptionComboList() {
+        return optionComboList;
     }
 }

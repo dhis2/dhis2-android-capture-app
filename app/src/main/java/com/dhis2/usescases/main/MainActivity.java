@@ -19,6 +19,7 @@ import com.dhis2.App;
 import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
+import com.dhis2.usescases.about.AboutFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.jira.JiraFragment;
 import com.dhis2.usescases.main.program.ProgramFragment;
@@ -166,19 +167,17 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             binding.drawerLayout.closeDrawers();
             binding.pinLayout.setVisibility(View.VISIBLE);
             isPinLayoutVisible = true;
-        }
-        else
+        } else
             presenter.blockSession(null);
     }
 
     @Override
     public void onBackPressed() {
-        if (isPinLayoutVisible){
+        if (isPinLayoutVisible) {
             isPinLayoutVisible = false;
             startActivity(new Intent(MainActivity.this, MainActivity.class));
             finish();
-        }
-        else
+        } else
             super.onBackPressed();
     }
 
@@ -208,8 +207,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.menu_about:
-                fragment = new ProgramFragment(); //TODO: Chage to Webview
-                tag = getString(R.string.done_task);
+                fragment = new AboutFragment();
+                tag = getString(R.string.about);
                 binding.filter.setVisibility(View.GONE);
                 break;
             case R.id.menu_done_tasks:

@@ -14,9 +14,7 @@ public class TeiDataDetailContracts {
 
         void setData(DashboardProgramModel program);
 
-        void setDataEditable();
-
-       Consumer<EnrollmentStatus> handleStatus();
+        Consumer<EnrollmentStatus> handleStatus();
     }
 
     public interface Presenter {
@@ -24,11 +22,14 @@ public class TeiDataDetailContracts {
 
         void onBackPressed();
 
-        void editData();
-
-        void onButtonActionClick(DashboardProgramModel dashboardProgramModel);
-
         void onDeactivate(DashboardProgramModel dashboardProgramModel);
+
+        void onReOpen(DashboardProgramModel dashboardProgramModel);
+
+        void onComplete(DashboardProgramModel dashboardProgramModel);
+
+        void onActivate(DashboardProgramModel dashboardProgramModel);
+
     }
 
 }

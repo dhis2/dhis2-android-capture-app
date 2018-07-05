@@ -159,7 +159,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits,false)),
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false)),
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -202,7 +202,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String categoryOptionComboUid, String categoryOptionsUid,
+    public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
+                            String categoryOptionComboUid, String categoryOptionsUid,
                             String latitude, String longitude) {
         if (programModel != null)
             compositeDisposable.add(
@@ -226,7 +227,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         catComboUid, catOptionUid,
                         latitude, longitude)
                         .switchMap(
-                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId,trackedEntityInstanceUid, orgUnitUid)
+                                eventId -> eventInitialRepository.updateTrackedEntityInstance(eventId, trackedEntityInstanceUid, orgUnitUid)
                         )
                         .distinctUntilChanged()
                         .subscribeOn(Schedulers.io())
@@ -234,6 +235,22 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         .subscribe(
                                 eventUid -> view.onEventCreated(eventUid),
                                 t -> view.renderError(t.getMessage())));
+    }
+
+    @Override
+    public void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
+                              String categoryOptionComboUid, String categoryOptionsUid,
+                              String latitude, String longitude) {
+        if (programModel != null)
+            compositeDisposable.add(
+                    eventInitialRepository.scheduleEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
+                            programStageModel, dueDate, orgUnitUid,
+                            categoryOptionComboUid, categoryOptionsUid,
+                            latitude, longitude)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view::onEventCreated, t -> view.renderError(t.getMessage()))
+            );
     }
 
     @Override
@@ -312,11 +329,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void filterOrgUnits(String date) {
-        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date,programId)
+        compositeDisposable.add(eventInitialRepository.filteredOrgUnits(date, programId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits,true)),
+                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true)),
                         throwable -> view.showNoOrgUnits()
                 ));
     }
