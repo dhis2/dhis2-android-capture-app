@@ -1,29 +1,38 @@
 package com.dhis2.usescases.about;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dhis2.BuildConfig;
 import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentAboutBinding;
+import com.dhis2.usescases.general.FragmentGlobalAbstract;
+
+import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 05/07/2018.
  */
 
-public class AboutFragment extends Fragment {
+public class AboutFragment extends FragmentGlobalAbstract implements AboutContracts.AboutView{
 
     @Inject
-    AboutPresenter presenter;
+    AboutContracts.AboutPresenter presenter;
+
+    private FragmentAboutBinding aboutBinding;
 
     @Override
     public void onAttach(Context context) {
@@ -35,9 +44,39 @@ public class AboutFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentAboutBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false);
-        binding.setPresenter(presenter);
-        return binding.getRoot();
+        aboutBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false);
+        aboutBinding.setPresenter(presenter);
+
+        aboutBinding.aboutMore.setMovementMethod(LinkMovementMethod.getInstance());
+        aboutBinding.aboutGit.setMovementMethod(LinkMovementMethod.getInstance());
+        aboutBinding.aboutDev.setMovementMethod(LinkMovementMethod.getInstance());
+        aboutBinding.aboutContact.setMovementMethod(LinkMovementMethod.getInstance());
+
+        setAppVersion();
+        setSDKVersion();
+
+        return aboutBinding.getRoot();
+    }
+
+
+    private void setAppVersion(){
+        try {
+            String versionName = getAbstractActivity()
+                    .getPackageManager()
+                    .getPackageInfo(getAbstractActivity().getPackageName(), 0)
+                    .versionName;
+
+            String text = String.format(getString(R.string.about_app), versionName);
+            aboutBinding.aboutApp.setText(text);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e);
+        }
+    }
+
+    private void setSDKVersion(){
+        String text = String.format(getString(R.string.about_sdk), BuildConfig.SDK_VERSION);
+        aboutBinding.appSDK.setText(text);
     }
 
     @Override
@@ -48,7 +87,19 @@ public class AboutFragment extends Fragment {
 
     @Override
     public void onPause() {
-        presenter.dispose();
+        presenter.onPause();
         super.onPause();
+    }
+
+    @Override
+    public void renderUserCredentials(UserCredentialsModel userCredentialsModel) {
+        String text = String.format(getString(R.string.about_user), userCredentialsModel.username());
+        aboutBinding.aboutUser.setText(text);
+    }
+
+    @Override
+    public void renderServerUrl(String serverUrl) {
+        String text = String.format(getString(R.string.about_connected), serverUrl);
+        aboutBinding.aboutConnected.setText(text);
     }
 }

@@ -92,7 +92,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             compositeDisposable.add(
                     eventInitialRepository.event(eventId)
                             .flatMap(
-                                    (eventModel) -> {
+                                    eventModel -> {
                                         view.setEvent(eventModel);
                                         return metadataRepository.getProgramWithId(programId)
                                                 .subscribeOn(Schedulers.io())

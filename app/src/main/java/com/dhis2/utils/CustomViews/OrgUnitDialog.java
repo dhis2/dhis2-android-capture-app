@@ -109,14 +109,11 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public String getSelectedOrgUnit() {
-        if (!(treeView.getSelected().isEmpty()))
-            return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
-        else
-            return null;
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid() : "";
     }
 
     public String getSelectedOrgUnitName() {
-        return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName();
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName() : "";
     }
 
     public OrganisationUnitModel getSelectedOrgUnitModel() {

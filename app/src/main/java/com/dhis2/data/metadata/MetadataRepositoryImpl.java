@@ -576,4 +576,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
+
+    @Override
+    public Observable<String> getServerUrl(){
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo")
+                .mapToOne(cursor -> cursor.getString(0));
+    }
 }
