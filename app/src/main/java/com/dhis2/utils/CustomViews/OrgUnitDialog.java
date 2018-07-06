@@ -99,7 +99,6 @@ public class OrgUnitDialog extends DialogFragment {
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
-//        treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
@@ -109,10 +108,10 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public String getSelectedOrgUnit() {
-        return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid() : "";
     }
 
     public String getSelectedOrgUnitName() {
-        return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName();
+        return treeView.getSelected() != null && !treeView.getSelected().isEmpty() ? ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName() : "";
     }
 }
