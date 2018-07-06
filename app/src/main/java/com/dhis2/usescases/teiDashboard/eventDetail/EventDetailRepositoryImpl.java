@@ -4,14 +4,17 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,10 +32,12 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
             "WHERE Event.uid = ?";
 
     private final BriteDatabase briteDatabase;
+    private final String eventUid;
 
 
-    EventDetailRepositoryImpl(BriteDatabase briteDatabase) {
+    EventDetailRepositoryImpl(BriteDatabase briteDatabase, String eventUid) {
         this.briteDatabase = briteDatabase;
+        this.eventUid = eventUid;
     }
 
     @NonNull
@@ -133,6 +138,32 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     public Observable<String> orgUnitName(String eventUid) {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_NAME, eventUid)
                 .mapToOne(cursor -> cursor.getString(0));
+    }
+
+    @Override
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        String EVENT_ORG_UNITS = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+                "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
+                "JOIN Event ON Event.program = OrganisationUnitProgramLink.program " +
+                "WHERE Event.uid = ?";
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, EVENT_ORG_UNITS, eventUid).mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public Observable<List<CategoryOptionComboModel>> getCategoryOptionCombos() {
+        String GET_CAT_COMBO_FROM_EVENT = "SELECT Program.categoryCombo FROM Program " +
+                "JOIN Event ON Event.program = Program.uid " +
+                "WHERE Event.uid = ?";
+        String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
+                CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+        return briteDatabase.createQuery(ProgramModel.TABLE, GET_CAT_COMBO_FROM_EVENT, eventUid)
+                .mapToOne(cursor -> cursor.getString(0))
+                .flatMap(catCombo ->{
+                    if(catCombo!=null)
+                        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo).mapToList(CategoryOptionComboModel::create);
+                    else
+                        return Observable.just(new ArrayList<>());
+                });
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

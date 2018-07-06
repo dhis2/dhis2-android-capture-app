@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -16,17 +17,19 @@ import com.dhis2.databinding.ActivityEventDetailBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CustomDialog;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import javax.inject.Inject;
 
 /**
- * Created by Cristian E. on 18/12/2017.
+ * QUADRAM. Created by Cristian E. on 18/12/2017.
  */
 
 public class EventDetailActivity extends ActivityGlobalAbstract implements EventDetailContracts.View {
@@ -64,6 +67,8 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         binding.setEvent(eventDetailModel.getEventModel());
         binding.setStage(eventDetailModel.getProgramStage());
         binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
+        binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty() ? View.GONE : View.VISIBLE);
+        updateActionButton(eventDetailModel.getEventModel().status());
         binding.executePendingBindings();
 
         supportStartPostponedEnterTransition();
@@ -130,6 +135,32 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             setResult(Activity.RESULT_OK, intent);
         }
         finish();
+    }
+
+    @Override
+    public void showOrgUnitSelector(OrgUnitDialog orgUnitDialog) {
+        orgUnitDialog.show(getSupportFragmentManager(), "EVENT_ORG_UNITS");
+    }
+
+    @Override
+    public void setSelectedOrgUnit(OrganisationUnitModel selectedOrgUnit) {
+        binding.orgUnit.setText(selectedOrgUnit.displayName());
+        //TODO: Save org unit change
+    }
+
+    @Override
+    public void updateActionButton(EventStatus eventStatus) {
+        switch (eventStatus) {
+            case COMPLETED:
+                binding.deactivateButton.setText(getString(R.string.re_open));
+                break;
+            case ACTIVE:
+                binding.deactivateButton.setText(getString(R.string.complete));
+                break;
+            default:
+                binding.deactivateButton.setVisibility(View.GONE);
+                break;
+        }
     }
 
     @Override

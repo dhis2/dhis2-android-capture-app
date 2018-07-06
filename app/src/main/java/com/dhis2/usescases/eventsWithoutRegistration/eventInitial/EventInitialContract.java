@@ -82,6 +82,10 @@ public class EventInitialContract {
                                   String catOption, String catOptionCombo,
                                   String latitude, String longitude);
 
+        void scheduleEvent(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid,
+                           String catOption, String catOptionCombo,
+                           String latitude, String longitude);
+
         void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid,
                        String catOption, String catOptionCombo,
                        String latitude, String longitude);

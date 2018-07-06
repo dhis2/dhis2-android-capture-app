@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -16,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 19/12/2017.
+ * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
 public class EventDetailPresenter implements EventDetailContracts.Presenter {
@@ -54,6 +55,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 eventDetailRepository.programStageDataElement(eventUid),
                 eventDetailRepository.programStage(eventUid),
                 eventDetailRepository.orgUnitName(eventUid),
+                eventDetailRepository.getCategoryOptionCombos(),
                 EventDetailModel::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -127,5 +129,31 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             }
             view.showEventWasDeleted();
         }
+    }
+
+    @Override
+    public void onOrgUnitClick() {
+
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        orgUnitDialog.setTitle("Event Org Unit")
+                .setPossitiveListener(v -> {
+                    view.setSelectedOrgUnit(orgUnitDialog.getSelectedOrgUnitModel());
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(v -> orgUnitDialog.dismiss());
+
+        disposable.add(eventDetailRepository.getOrgUnits()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        orgUnits -> {
+                            orgUnitDialog.setOrgUnits(orgUnits);
+                            view.showOrgUnitSelector(orgUnitDialog);
+                        },
+                        Timber::d
+                )
+        );
+
+
     }
 }

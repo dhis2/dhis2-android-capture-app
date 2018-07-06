@@ -11,6 +11,8 @@ import com.dhis2.data.service.MetadataServiceComponent;
 import com.dhis2.data.service.MetadataServiceModule;
 import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
+import com.dhis2.usescases.about.AboutComponent;
+import com.dhis2.usescases.about.AboutModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -106,4 +108,7 @@ public interface UserComponent {
 
     @NonNull
     JiraComponent plus(JiraModule jiraModule);
+
+    @NonNull
+    AboutComponent plus(AboutModule aboutModule);
 }

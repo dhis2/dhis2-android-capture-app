@@ -59,7 +59,11 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 " NOT IN (SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.PROGRAM + " FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + "='%s')" +
                 " AND " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE + "=" + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE +
                 " AND " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + "='%s'";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, String.format(SELECT_PROGRAMS_WITH_TEI_ID, trackedEntityId, trackedEntityId))
+
+        String SELECT_PROGRAMS_FOR_TEI = "SELECT Program.* FROM Program " +
+                "JOIN TrackedEntityInstance ON TrackedEntityInstance.trackedEntityType = Program.trackedEntityType " +
+                "WHERE TrackedEntityInstance.uid = ? GROUP BY Program.uid";
+        return briteDatabase.createQuery(EnrollmentModel.TABLE,SELECT_PROGRAMS_FOR_TEI, trackedEntityId)
                 .mapToList(ProgramModel::create);
     }
 

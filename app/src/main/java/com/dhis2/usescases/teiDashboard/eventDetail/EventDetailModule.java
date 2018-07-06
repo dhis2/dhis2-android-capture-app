@@ -38,7 +38,7 @@ public class EventDetailModule {
     @Provides
     @PerActivity
     EventDetailRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new EventDetailRepositoryImpl(briteDatabase);
+        return new EventDetailRepositoryImpl(briteDatabase,eventUid);
     }
 
     @Provides

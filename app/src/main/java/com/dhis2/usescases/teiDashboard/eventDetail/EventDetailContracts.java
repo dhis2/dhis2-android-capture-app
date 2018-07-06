@@ -2,8 +2,11 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -26,6 +29,12 @@ public class EventDetailContracts {
         void showEventWasDeleted();
 
         void goBack(boolean changedEventStatus);
+
+        void showOrgUnitSelector(OrgUnitDialog orgUnitDialog);
+
+        void setSelectedOrgUnit(OrganisationUnitModel selectedOrgUnit);
+
+        void updateActionButton(EventStatus eventStatus);
     }
 
     public interface Presenter {
@@ -46,6 +55,8 @@ public class EventDetailContracts {
         void confirmDeleteEvent();
 
         void deleteEvent();
+
+        void onOrgUnitClick();
     }
 
 

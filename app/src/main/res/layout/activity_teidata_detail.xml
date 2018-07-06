@@ -20,6 +20,10 @@
         <variable
             name="presenter"
             type="com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailContracts.Presenter" />
+
+        <variable
+            name="enrollmentStatus"
+            type="EnrollmentStatus" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -255,13 +259,44 @@
         </android.support.v4.widget.NestedScrollView>
 
         <com.dekoservidoni.omfm.OneMoreFabMenu
-            android:id="@+id/fab"
+            android:id="@+id/fabActive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{enrollmentStatus== EnrollmentStatus.ACTIVE?View.VISIBLE:View.GONE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
-            app:content_options="@menu/tei_detail_options"
+            app:content_options="@menu/tei_detail_options_active"
+            app:expanded_background_color="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
+
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fabCancelled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{enrollmentStatus == EnrollmentStatus.CANCELLED?View.VISIBLE:View.GONE}"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/tei_detail_options_cancelled"
+            app:expanded_background_color="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
+
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fabCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{enrollmentStatus == EnrollmentStatus.COMPLETED?View.VISIBLE:View.GONE}"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/tei_detail_options_completed"
             app:expanded_background_color="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

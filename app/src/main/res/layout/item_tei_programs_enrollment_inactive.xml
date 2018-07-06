@@ -48,7 +48,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
@@ -60,7 +60,7 @@
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="ANC PROGRAM"
+                    tools:text="ANC PROGRAM\nfasdsadfg"
                     android:alpha="0.5"/>
 
 

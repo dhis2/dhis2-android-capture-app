@@ -38,6 +38,12 @@ public interface EventInitialRepository {
                                    @NonNull String orgUnitUid, @NonNull String catComboUid,
                                    @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
+    Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
+                                   @NonNull Context context, @NonNull String program,
+                                   @NonNull String programStage, @NonNull Date dueDate,
+                                   @NonNull String orgUnitUid, @NonNull String catComboUid,
+                                   @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+
     Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid);
 
     @NonNull

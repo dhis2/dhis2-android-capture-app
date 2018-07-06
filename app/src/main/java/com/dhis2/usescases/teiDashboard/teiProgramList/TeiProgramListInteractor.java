@@ -1,7 +1,5 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
-import com.dhis2.data.forms.FormActivity;
-import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;

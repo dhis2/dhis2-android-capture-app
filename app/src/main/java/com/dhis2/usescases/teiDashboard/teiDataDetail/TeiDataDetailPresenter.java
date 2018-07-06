@@ -8,7 +8,6 @@ import com.dhis2.usescases.teiDashboard.DashboardRepository;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -88,42 +87,6 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         view.getAbstracContext().onBackPressed();
     }
 
-    @Override
-    public void editData() {
-        view.setDataEditable();
-    }
-
-    @Override
-    public void onButtonActionClick(DashboardProgramModel dashboardProgramModel) {
-        if (dashboardProgramModel.getCurrentProgram().accessDataWrite()) {
-            Flowable<Long> flowable = null;
-            EnrollmentStatus newStatus;
-            switch (dashboardProgramModel.getCurrentEnrollment().enrollmentStatus()) {
-                case ACTIVE:
-                    newStatus = EnrollmentStatus.COMPLETED;
-                    break;
-                case COMPLETED:
-                    newStatus = EnrollmentStatus.ACTIVE;
-                    break;
-                case CANCELLED:
-                    newStatus = EnrollmentStatus.ACTIVE;
-                    break;
-                default:
-                    newStatus = EnrollmentStatus.ACTIVE;
-                    break;
-            }
-            flowable = enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), newStatus);
-            disposable.add(flowable
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(result -> newStatus)
-                    .subscribe(
-                            view.handleStatus(),
-                            Timber::d)
-            );
-        } else
-            view.displayMessage(null);
-    }
 
     @Override
     public void onDeactivate(DashboardProgramModel dashboardProgramModel) {
@@ -131,7 +94,7 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
             disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.CANCELLED)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(result->EnrollmentStatus.CANCELLED)
+                    .map(result -> EnrollmentStatus.CANCELLED)
                     .subscribe(
                             view.handleStatus(),
                             Timber::d)
@@ -139,6 +102,51 @@ public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter 
         else
             view.displayMessage(null);
 
+    }
+
+    @Override
+    public void onReOpen(DashboardProgramModel dashboardProgramModel) {
+        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+            disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(result -> EnrollmentStatus.ACTIVE)
+                    .subscribe(
+                            view.handleStatus(),
+                            Timber::d)
+            );
+        else
+            view.displayMessage(null);
+    }
+
+    @Override
+    public void onComplete(DashboardProgramModel dashboardProgramModel) {
+        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+            disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.COMPLETED)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(result -> EnrollmentStatus.COMPLETED)
+                    .subscribe(
+                            view.handleStatus(),
+                            Timber::d)
+            );
+        else
+            view.displayMessage(null);
+    }
+
+    @Override
+    public void onActivate(DashboardProgramModel dashboardProgramModel) {
+        if (dashboardProgramModel.getCurrentProgram().accessDataWrite())
+            disposable.add(enrollmentStore.save(dashboardProgramModel.getCurrentEnrollment().uid(), EnrollmentStatus.ACTIVE)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(result -> EnrollmentStatus.ACTIVE)
+                    .subscribe(
+                            view.handleStatus(),
+                            Timber::d)
+            );
+        else
+            view.displayMessage(null);
     }
 
 }

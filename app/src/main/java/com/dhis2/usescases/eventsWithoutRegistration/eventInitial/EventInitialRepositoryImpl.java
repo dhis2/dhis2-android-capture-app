@@ -141,6 +141,54 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         }
     }
 
+    @Override
+    public Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
+                                            @NonNull Context context, @NonNull String program, @NonNull String programStage,
+                                            @NonNull Date dueDate, @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
+                                            @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
+        Date createDate = Calendar.getInstance().getTime();
+
+        String uid = codeGenerator.generate();
+
+        EventModel eventModel = EventModel.builder()
+                .uid(uid)
+                .enrollmentUid(enrollmentUid)
+                .created(createDate)
+                .lastUpdated(createDate)
+                .status(EventStatus.SCHEDULE)
+                .latitude(latitude)
+                .longitude(longitude)
+                .program(program)
+                .programStage(programStage)
+                .organisationUnit(orgUnitUid)
+                .eventDate(dueDate)
+                .completedDate(null)
+                .dueDate(dueDate)
+                .state(State.TO_POST)
+                .attributeCategoryOptions(categoryOptionsUid)
+                .attributeOptionCombo(categoryOptionComboUid)
+                .build();
+
+        long row = -1;
+
+        try {
+            row = briteDatabase.insert(EventModel.TABLE,
+                    eventModel.toContentValues());
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        if (row < 0) {
+            String message = String.format(Locale.US, "Failed to insert new event " +
+                            "instance for organisationUnit=[%s] and programStage=[%s]",
+                    orgUnitUid, programStage);
+            return Observable.error(new SQLiteConstraintException(message));
+        } else {
+            updateProgramTable(createDate, program);
+            return Observable.just(uid);
+        }
+    }
+
     private void updateProgramTable(Date lastUpdated, String programUid) {
         //TODO: Update program causes crash
         /* ContentValues program = new ContentValues();

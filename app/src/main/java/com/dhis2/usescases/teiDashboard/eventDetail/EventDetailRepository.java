@@ -2,7 +2,9 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -39,4 +41,8 @@ public interface EventDetailRepository {
 
     @NonNull
     Observable<String> orgUnitName(String eventUid);
+
+    Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+    Observable<List<CategoryOptionComboModel>> getCategoryOptionCombos();
 }
