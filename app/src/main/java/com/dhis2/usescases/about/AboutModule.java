@@ -1,7 +1,10 @@
 package com.dhis2.usescases.about;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.dagger.PerFragment;
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.user.UserRepository;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,7 +17,7 @@ public class AboutModule {
 
     @Provides
     @PerFragment
-    AboutPresenter providesPresenter(MetadataRepository metadataRepository) {
-        return new AboutPresenterImpl(metadataRepository);
+    AboutContracts.AboutPresenter providesPresenter(@NonNull MetadataRepository metadataRepository, @NonNull UserRepository userRepository) {
+        return new AboutPresenterImpl(metadataRepository, userRepository);
     }
 }

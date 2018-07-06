@@ -37,6 +37,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
+        buildConfigField "String", "SDK_VERSION", "\""+ libraries.dhis2sdk + "\""
     }
 
     configurations.all*.exclude module: 'jsr305'
