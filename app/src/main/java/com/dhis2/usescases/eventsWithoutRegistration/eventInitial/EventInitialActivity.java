@@ -123,6 +123,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (eventCreationType == null)
             eventCreationType = "DEFAULT";
         String orgUnit = getIntent().getStringExtra(ORG_UNIT);
+        selectedOrgUnit = orgUnit;
         isRepeatable = getIntent().getBooleanExtra(EVENT_REPEATABLE, false);
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
         programStageUid = getIntent().getStringExtra(PROGRAM_STAGE_UID);
@@ -291,8 +292,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, programId, eventId);
-
+        presenter.init(this, programId, eventId, selectedOrgUnit);
     }
 
     @Override
@@ -433,8 +433,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
             selectedOrgUnitOpeningDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).openingDate();
             selectedOrgUnitClosedDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).closedDate();
-        } else if (!fixedOrgUnit) {
-            binding.orgUnit.setText(getString(R.string.org_unit));
         }
         checkActionButtonVisibility();
     }
@@ -594,7 +592,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
         binding.date.setText(date);
         binding.date.clearFocus();
-        // TODO CRIS: DATE CHANGES ORG UNIT IN GENERAL, BUT IN THIS CASE WE CAN'T CHANGE ORG UNIT...
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
         presenter.filterOrgUnits(date);
@@ -675,6 +672,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.setText(selectedDateString);
         binding.executePendingBindings();
         checkActionButtonVisibility();
+    }
+
+    @Override
+    public void setOrgUnit(String orgUnitId, String orgUnitName) {
+        this.selectedOrgUnit = orgUnitId;
+        binding.orgUnit.setText(orgUnitName);
     }
 
     @Override

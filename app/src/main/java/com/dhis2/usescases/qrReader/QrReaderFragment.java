@@ -6,6 +6,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -32,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -49,9 +51,14 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     private ZXingScannerView mScannerView;
     private Context context;
     FragmentQrBinding binding;
+    private boolean isPermissionRequested = false;
 
     @Inject
     QrReaderContracts.Presenter presenter;
+    private String teiUid;
+    private List<Trio<String, String, Boolean>> attributes = new ArrayList<>();
+    private List<Pair<String, Boolean>> enrollments = new ArrayList<>();
+    private List<Pair<String, Boolean>> events = new ArrayList<>();
 
     public QrReaderFragment() {
         // Required empty public constructor
@@ -81,9 +88,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void handleResult(Result result) {
-        QRjson qRjson = new Gson().fromJson(result.getText(), QRjson.class);
-
+        // TODO CRIS: CHECK THAT ALL JSON BELONG TO SAME TEI
         try {
+            QRjson qRjson = new Gson().fromJson(result.getText(), QRjson.class);
             switch (qRjson.getType()) {
                 case QRjson.TEI_JSON:
                     presenter.handleTeiInfo(new JSONObject(qRjson.getData()));
@@ -94,9 +101,15 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 case QRjson.ENROLLMENT_JSON:
                     presenter.handleEnrollmentInfo(new JSONArray(qRjson.getData()));
                     break;
+                case QRjson.EVENTS_JSON:
+                    presenter.handleEventInfo(new JSONObject(qRjson.getData()));
+                    break;
+                default:
+                    break;
             }
         } catch (Exception e) {
             Timber.e(e);
+            showError(getString(R.string.qr_error_id));
         }
     }
 
@@ -105,8 +118,12 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         super.onResume();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
             initScanner();
-        } else {
+        } else if (!isPermissionRequested){
+            isPermissionRequested = true;
             ActivityCompat.requestPermissions((MainActivity) context, new String[]{Manifest.permission.CAMERA}, 101);
+        }
+        else {
+            getAbstractActivity().finish();
         }
     }
 
@@ -127,39 +144,16 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         mScannerView.startCamera();
     }
 
-    @Override
-    public void renderTeiInfo(String info, boolean isOk) {
-
-        if (isOk && NetworkUtils.isOnline(context)) {
-            presenter.onlineDownload();
-        } else {
-            new AlertDialog.Builder(context, R.style.CustomDialog)
-                    .setTitle(getString(R.string.QR_SCANNER))
-                    .setMessage(info)
-                    .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
-                        dialog.dismiss();
-                        mScannerView.resumeCameraPreview(this);
-                    })
-                    .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
-                    .show();
-        }
-    }
-
-    @Override
-    public void renderAttrInfo(ArrayList<Trio<String, String, Boolean>> attributes) {
-
-    }
-
-    @Override
-    public void renderEnrollmentInfo(ArrayList<Pair<String, Boolean>> enrollment) {
-
-    }
 
     @Override
     public void initDownload() {
         binding.progress.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void finishDownload() {
+        binding.progress.setVisibility(View.GONE);
+    }
 
     @Override
     public void goToDashBoard(String uid) {
@@ -170,15 +164,153 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
-    public void emptyOnlineData() {
+    public void downloadTei(@NonNull String teiUid){
+        if (NetworkUtils.isOnline(context)) {
+            this.teiUid = teiUid;
+            presenter.onlineDownload();
+        }
+        else {
+            renderTeiInfo(teiUid);
+        }
+    }
+
+    @Override
+    public void renderTeiInfo(@Nullable String teiUid) {
+        if (teiUid != null) {
+            this.teiUid = teiUid;
+            promtForMoreQr();
+        }
+        else {
+            showError(getString(R.string.qr_error_id));
+        }
+    }
+
+    private void showError(String message){
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.QR_SCANNER))
-                .setMessage("Read next QR to get more info")
+                .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
                     mScannerView.resumeCameraPreview(this);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    @Override
+    public void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes) {
+        for (Trio<String, String, Boolean> attribute : attributes){
+            if (!attribute.val2()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.attributes.contains(attribute)) {
+                this.attributes.add(attribute);
+            }
+        }
+        promtForMoreQr();
+    }
+
+    @Override
+    public void renderEnrollmentInfo(@NonNull  List<Pair<String, Boolean>> enrollments) {
+        for (Pair<String, Boolean> enrollment : enrollments){
+            if (!enrollment.val1()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.enrollments.contains(enrollment)) {
+                this.enrollments.add(enrollment);
+            }
+        }
+        promtForMoreQr();
+    }
+
+    @Override
+    public void renderEventInfo(@NonNull List<Pair<String, Boolean>> events) {
+        for (Pair<String, Boolean> event : events){
+            if (!event.val1()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.events.contains(event)) {
+                this.events.add(event);
+            }
+        }
+        promtForMoreQr();
+    }
+
+    @Override
+    public void promtForMoreQr(){
+
+        // IDENTIFICATION
+        String message = getString(R.string.qr_id) + ":\n";
+        if (teiUid != null){
+            message = message + teiUid + "\n\n";
+        }
+        else{
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+        // ATTRIBUTES
+        message = message + getString(R.string.qr_attributes) + ":\n";
+
+        if (attributes != null && !attributes.isEmpty()) {
+            for (Trio<String, String, Boolean> attribute : attributes) {
+                if (attribute.val2()) {
+                    message = message + attribute.val1() + "\n";
+                }
+            }
+            message = message + "\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+        // ENROLLMENT
+        message = message + getString(R.string.qr_enrollment) + ":\n";
+
+        if (enrollments != null && !enrollments.isEmpty()) {
+            for (Pair<String, Boolean> enrollment : enrollments) {
+                if (enrollment.val1()) {
+                    message = message + enrollment.val0() + "\n";
+                }
+            }
+            message = message + "\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+
+
+        // EVENTS
+        message = message + getString(R.string.qr_events) + ":\n";
+
+        if (events != null && !events.isEmpty()) {
+            int count = 0;
+            for (Pair<String, Boolean> event : events) {
+                if (event.val1()) {
+                    count++;
+                }
+            }
+            message = message + count + " " + getString(R.string.events) + "\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+
+        // READ MORE
+        message = message + "\n\n" + getString(R.string.read_more_qr);
+
+        new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setTitle(getString(R.string.QR_SCANNER))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                    dialog.dismiss();
+                    mScannerView.resumeCameraPreview(this);
+                })
+                .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
+                    presenter.download();
+                    dialog.dismiss();
+                })
                 .show();
     }
 }

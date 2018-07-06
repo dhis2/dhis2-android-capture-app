@@ -167,7 +167,7 @@
     <string name="search_min_num_attr">Es necesario introducir al menos %d de los atributos para iniciar una búsqueda</string>
     <string name="search_init">Introduce algún criterio de búsqueda</string>
     <string name="search_criteria_not_met">Tus criterios de búsqueda no devolvieron ningún resultado. Modifícalos o crea una nueva %s</string>
-    <string name="QR_SCANNER">Escáner QR</string>
+    <string name="QR_SCANNER">Importar datos QR</string>
     <string name="about">About</string>
     <string name="enroll_in">Enrolar en %s</string>
     <string name="default_relationship_label">Añadir relación</string>
@@ -177,8 +177,15 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Admisiones</string>
     <string name="qr_events">Eventos</string>
+    <string name="read_more_qr">Lee el siguiente QR para obtener más información.</string>
+    <string name="save_qr">Parar de leer y guardar datos</string>
+    <string name="qr_no_data">sin datos</string>
+    <string name="qr_error_id">Código QR no válido</string>
+    <string name="qr_error_attr">Este atributo no puede ser añadido</string>
+    <string name="qr_error_enrollment">Esta admisión no puede ser añadido</string>
+    <string name="qr_error_event">Este evento no puede ser añadido</string>
     <string name="button_ok">OK</string>
-    <string name="jira_report">Reportar en Jira</string>
+    <string name="jira_report">Reportar problema en Jira</string>
     <string name="programs_to_enroll">Programas para enrolar</string>
     <string name="select_all">Selecionar todo</string>
     <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>

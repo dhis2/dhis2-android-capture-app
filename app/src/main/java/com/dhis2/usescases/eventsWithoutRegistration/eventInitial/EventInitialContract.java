@@ -61,11 +61,13 @@ public class EventInitialContract {
 
         void setReportDate(String format);
 
+        void setOrgUnit(String orgUnitId, String orgUnitName);
+
         void showNoOrgUnits();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventInitialContract.View view, String programId, String eventId);
+        void init(EventInitialContract.View view, String programId, String eventId, String orgUnitId);
 
         void getProgramStage(String programStageUid);
 
@@ -109,7 +111,6 @@ public class EventInitialContract {
         void getOrgUnits(String programId);
 
         void getEventSections(@NonNull String eventId);
-
     }
 
 }

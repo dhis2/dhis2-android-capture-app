@@ -23,6 +23,7 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_PERIOD_TYPE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_REPEATABLE;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_STAGE_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
 import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
@@ -85,7 +86,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra("PROGRAM_UID"));
         bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra("TRACKED_ENTITY_INSTANCE"));
-        bundle.putString("ORG_UNIT", getIntent().getStringExtra("ORG_UNIT"));
+        bundle.putString(ORG_UNIT, getIntent().getStringExtra("ORG_UNIT"));
         bundle.putString(ENROLLMENT_UID, getIntent().getStringExtra("ENROLLMENT_UID"));
         bundle.putBoolean(NEW_EVENT, getIntent().getBooleanExtra("NEW_EVENT", true));
         bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra("EVENT_CREATION_TYPE"));
