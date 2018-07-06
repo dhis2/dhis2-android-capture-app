@@ -14,6 +14,7 @@ import com.dhis2.data.service.SyncMetadataService;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.NetworkUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -238,9 +239,12 @@ public class LoginInteractor implements LoginContracts.Interactor {
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
-            syncMetadata();
-            view.handleSync();
-            sync();
+            if (NetworkUtils.isOnline(view.getContext())) {
+                syncMetadata();
+                view.handleSync();
+                sync();
+            } else
+                view.startActivity(MainActivity.class, null, true, true, null);
         }
     }
 

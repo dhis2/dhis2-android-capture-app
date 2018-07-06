@@ -64,7 +64,7 @@
             android:gravity="bottom"
             android:textColor="@color/gray_666"
             android:textSize="14sp"
-            app:date="@{enrollment.dateOfIncident()}"
+            app:date="@{enrollment.incidentDate ()}"
             app:layout_constraintEnd_toStartOf="@id/overdue"
             app:layout_constraintTop_toBottomOf="@id/program_name"
             tools:text="date" />
@@ -98,7 +98,7 @@
             android:paddingBottom="5dp"
             android:textColor="@color/gray_666"
             android:textSize="14sp"
-            app:date="@{enrollment.dateOfEnrollment()}"
+            app:date="@{enrollment.enrollmentDate()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/overdue"
             tools:layout_editor_absoluteY="85dp"

@@ -50,7 +50,7 @@ public class OrgUnitHolder extends FormViewHolder {
                 .setPossitiveListener(data -> {
                     processor.onNext(RowAction.create(model.getValue().uid(), orgUnitDialog.getSelectedOrgUnit()));
                     this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
-                    orgUnitDialog.dismiss();
+                    orgUnitDialog.dismissAllowingStateLoss();
                 })
                 .setNegativeListener(data -> orgUnitDialog.dismiss());
 
@@ -89,7 +89,6 @@ public class OrgUnitHolder extends FormViewHolder {
 
     public void update(OrgUnitViewModel viewModel) {
         model.onNext(viewModel);
-
     }
 
     private String getOrgUnitName(String value) {

@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @SuppressWarnings("PMD")
@@ -103,6 +104,19 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         );
     }
 
+    private void save(String uid, String value) {
+        CompositeDisposable saveDisposable = new CompositeDisposable();
+        saveDisposable.add(
+                dataEntryStore.save(uid, value)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(Schedulers.io())
+                        .subscribe(
+                                data -> Log.d("SAVED_DATA", "DONE"),
+                                Timber::e,
+                                saveDisposable::clear
+                        ));
+    }
+
     @Override
     public void onDetach() {
         disposable.clear();
@@ -139,7 +153,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     }
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
-
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
@@ -163,26 +176,27 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
+                dataEntryStore.save(hideField.field(), null);
             } else if (ruleAction instanceof RuleActionDisplayText) {
                 String uid = codeGenerator.generate();
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT, null, false);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
                 RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayKeyValuePair.content(), false, displayKeyValuePair.data(), "Information", 1, ValueType.TEXT, null, false);
+                        displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false);
                 fieldViewModels.put(uid, textViewModel);
 
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 dataEntryView.removeSection(hideSection.programStageSection());
-
             } else if (ruleAction instanceof RuleActionAssign) {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
-                dataEntryRepository.assign(assign.field(), assign.content());
+//                dataEntryRepository.assign(assign.field(), assign.data());
+                save(assign.field(), assign.data());
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent
@@ -197,6 +211,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
             }
+
+            dataEntryView.removeSection(null);
 
         }
     }

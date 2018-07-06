@@ -45,6 +45,10 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         }
         return instance;
     }
+    public static RelationshipFragment createInstance() {
+        return instance = new RelationshipFragment();
+    }
+
 
     @Override
     public void onAttach(Context context) {

@@ -280,7 +280,7 @@
                         android:gravity="end"
                         android:textColor="@color/gray_444"
                         android:textSize="14sp"
-                        app:date="@{dashboardModel.currentEnrollment.dateOfIncident()}"
+                        app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/incident_date_label"
                         app:layout_constraintTop_toTopOf="@id/incident_date_label"
@@ -294,7 +294,7 @@
                         android:gravity="end"
                         android:textColor="@color/gray_444"
                         android:textSize="14sp"
-                        app:date="@{dashboardModel.currentEnrollment.dateOfEnrollment()}"
+                        app:date="@{dashboardModel.currentEnrollment.enrollmentDate()}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/enrollment_date_label"
                         tools:text="DD/MM/YYYY" />

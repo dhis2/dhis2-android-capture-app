@@ -70,11 +70,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EventModel.Columns.STATE,
             State.TO_DELETE,
             EventModel.TABLE,
-            EventModel.Columns.ENROLLMENT_UID);
+            EventModel.Columns.ENROLLMENT);
 
     private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
             "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s AND %s.%s != %s DESC LIMIT 1",
-            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE, EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE
     );
 

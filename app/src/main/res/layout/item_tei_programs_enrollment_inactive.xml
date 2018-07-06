@@ -93,7 +93,7 @@
                         android:gravity="end"
                         android:lines="1"
                         android:ellipsize="end"
-                        app:date="@{enrollment.dateOfEnrollment()}"
+                        app:date="@{enrollment.enrollmentDate()}"
                         android:alpha="0.5"
                         tools:text="DD/MM/YYYY"/>
                 </LinearLayout>

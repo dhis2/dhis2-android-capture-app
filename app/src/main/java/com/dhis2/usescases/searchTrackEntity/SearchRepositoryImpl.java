@@ -254,7 +254,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
-                    .dateOfEnrollment(currentDate)
+                    .enrollmentDate(currentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())

@@ -103,7 +103,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
-                    .dateOfEnrollment(currentDate)
+                    .enrollmentDate(currentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid)

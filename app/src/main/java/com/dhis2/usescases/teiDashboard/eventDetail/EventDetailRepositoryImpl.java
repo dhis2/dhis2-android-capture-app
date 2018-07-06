@@ -120,7 +120,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .lastUpdated(currentDate)
                 .eventDate(eventModel.eventDate())
                 .dueDate(eventModel.dueDate())
-                .enrollmentUid(eventModel.enrollmentUid())
+                .enrollment(eventModel.enrollment())
                 .program(eventModel.program())
                 .programStage(eventModel.programStage())
                 .organisationUnit(eventModel.organisationUnit())

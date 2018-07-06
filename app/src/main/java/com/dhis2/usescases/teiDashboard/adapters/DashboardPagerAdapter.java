@@ -30,17 +30,17 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
         this.dashboardProgram = program;
 
         if (!isTablet) {
-            pagerFragments.add(TEIDataFragment.getInstance());
+            pagerFragments.add(TEIDataFragment.createInstance());
             pagerFragmentsTitle.add("Overview");
         }
         if (program.getCurrentProgram() != null) {
-            pagerFragments.add(RelationshipFragment.getInstance());
+            pagerFragments.add(RelationshipFragment.createInstance());
             pagerFragmentsTitle.add("Relationships");
 
-            pagerFragments.add(IndicatorsFragment.getInstance());
+            pagerFragments.add(IndicatorsFragment.createInstance());
             pagerFragmentsTitle.add("Indicators");
 
-            pagerFragments.add(NotesFragment.getInstance());
+            pagerFragments.add(NotesFragment.createInstance());
             pagerFragmentsTitle.add("Notes");
         }
 

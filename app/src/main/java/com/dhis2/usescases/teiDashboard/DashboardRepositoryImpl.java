@@ -105,7 +105,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
                     "THEN %s.%s ELSE %s.%s END DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
             EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
@@ -119,7 +119,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s = ? " +
                     "AND %s.%s = ?",
             EventModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
@@ -252,7 +252,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .lastUpdated(currentDate)
                 .eventDate(eventModel.eventDate())
                 .dueDate(eventModel.dueDate())
-                .enrollmentUid(eventModel.enrollmentUid())
+                .enrollment(eventModel.enrollment())
                 .program(eventModel.program())
                 .programStage(eventModel.programStage())
                 .organisationUnit(eventModel.organisationUnit())
@@ -326,7 +326,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         dueDate.add(Calendar.DAY_OF_YEAR, standardInterval);
 
                     values.put(EventModel.Columns.UID, codeGenerator.generate());
-                    values.put(EventModel.Columns.ENROLLMENT_UID, event.enrollmentUid());
+                    values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
                     values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
                     values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());

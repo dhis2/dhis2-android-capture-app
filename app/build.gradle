@@ -26,7 +26,7 @@ android {
     }
 
     compileSdkVersion 27
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.dhis2"
         minSdkVersion 19
@@ -171,7 +171,7 @@ dependencies {
 
     // Google's auto-value. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
-    provided "com.google.auto.value:auto-value:${libraries.autovalue}"
+    compileOnly "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
@@ -222,21 +222,21 @@ dependencies {
 
     //Test
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs'
 
     })
 
     testImplementation 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    compile 'com.facebook.stetho:stetho:1.5.0'
-    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 
     //RXLint
-    compile 'nl.littlerobots.rxlint:rxlint:1.6'
+    implementation 'nl.littlerobots.rxlint:rxlint:1.6'
 
     //JODA-TIME
     implementation 'joda-time:joda-time:2.9.9'
@@ -247,7 +247,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
 
     //FancyShowCase
-    compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
     implementation 'com.airbnb.android:lottie:2.5.4'
 

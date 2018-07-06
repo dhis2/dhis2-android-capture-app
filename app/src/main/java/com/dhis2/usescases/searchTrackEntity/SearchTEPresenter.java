@@ -370,7 +370,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
-                    enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                    if (orgUnitDialog.getSelectedOrgUnit() != null)
+                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());

@@ -41,7 +41,7 @@ public class QRCodeGenerator implements QRInterface {
     private static final String TEI_ATTR = "SELECT * FROM " + TrackedEntityAttributeValueModel.TABLE +
             " WHERE " + TrackedEntityAttributeValueModel.TABLE + "." + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
     private static final String TEI_ENROLLMENTS = "SELECT * FROM Enrollment WHERE Enrollment." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " =?";
-    private static final String TEI_EVENTS = "SELECT * FROM Event WHERE Event." + EventModel.Columns.ENROLLMENT_UID + " =?";
+    private static final String TEI_EVENTS = "SELECT * FROM Event WHERE Event." + EventModel.Columns.ENROLLMENT + " =?";
     private final Gson gson;
 
     QRCodeGenerator(BriteDatabase briteDatabase) {

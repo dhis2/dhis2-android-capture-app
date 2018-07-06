@@ -109,7 +109,10 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     public String getSelectedOrgUnit() {
-        return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
+        if (!(treeView.getSelected().isEmpty()))
+            return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
+        else
+            return null;
     }
 
     public String getSelectedOrgUnitName() {

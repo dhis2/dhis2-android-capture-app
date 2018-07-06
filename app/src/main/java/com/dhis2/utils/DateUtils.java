@@ -392,7 +392,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.DAY_OF_YEAR, 1); //jump one day
                     break;
                 case Weekly:
                     now.setTime(moveWeekly(now));
@@ -400,6 +400,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,1); //jump one week
                     break;
                 case WeeklyWednesday:
                     now.setTime(moveWeeklyWednesday(now));
@@ -407,6 +408,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,1);
                     break;
                 case WeeklyThursday:
                     now.setTime(moveWeeklyThursday(now));
@@ -414,6 +416,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,1);
                     break;
                 case WeeklySaturday:
                     now.setTime(moveWeeklySaturday(now));
@@ -421,6 +424,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,1);
                     break;
                 case WeeklySunday:
                     now.setTime(moveWeeklySunday(now));
@@ -428,6 +432,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,1);
                     break;
                 case BiWeekly:
                     now.setTime(moveBiWeekly(now));
@@ -435,6 +440,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
+                    now.add(Calendar.WEEK_OF_YEAR,2);
                     break;
                 case Monthly:
                     now.setTime(moveMonthly(now));
@@ -442,7 +448,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.MONTH, 1);
                     break;
                 case BiMonthly:
                     now.setTime(moveBiMonthly(now));
@@ -450,7 +456,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.MONTH, 2);
                     break;
                 case Quarterly:
                     now.setTime(moveQuarterly(now));
@@ -458,7 +464,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.MONTH, 4);
                     break;
                 case SixMonthly:
                     now.setTime(moveSixMonthly(now));
@@ -466,7 +472,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.MONTH, 6);
                     break;
                 case SixMonthlyApril:
                     now.setTime(moveSixMonthlyApril(now));
@@ -474,7 +480,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.MONTH, 6);
                     break;
                 case Yearly:
                     now.setTime(moveYearly(now));

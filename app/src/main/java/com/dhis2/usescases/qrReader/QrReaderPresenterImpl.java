@@ -271,10 +271,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     enrollmentModelBuilder.followUp(enrollment.getBoolean("followUp"));
                 if (enrollment.has("enrollmentStatus"))
                     enrollmentModelBuilder.enrollmentStatus(EnrollmentStatus.valueOf(enrollment.getString("enrollmentStatus")));
-                if (enrollment.has("dateOfEnrollment"))
-                    enrollmentModelBuilder.dateOfEnrollment(DateUtils.databaseDateFormat().parse(enrollment.getString("dateOfEnrollment")));
+                if (enrollment.has("enrollmentDate"))
+                    enrollmentModelBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("enrollmentDate")));
                 if (enrollment.has("dateOfIncident"))
-                    enrollmentModelBuilder.dateOfIncident(DateUtils.databaseDateFormat().parse(enrollment.getString("dateOfIncident")));
+                    enrollmentModelBuilder.incidentDate (DateUtils.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
                 if (enrollment.has("organisationUnit"))
                     enrollmentModelBuilder.organisationUnit(enrollment.getString("organisationUnit"));
                 if (enrollment.has("trackedEntityInstance"))
@@ -305,7 +305,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (event.has("state"))
                     eventModelBuilder.state(State.valueOf(event.getString("state")));
                 if (event.has("enrollmentUid"))
-                    eventModelBuilder.enrollmentUid(event.getString("enrollmentUid"));
+                    eventModelBuilder.enrollment(event.getString("enrollmentUid"));
                 if (event.has("program"))
                     eventModelBuilder.program(event.getString("program"));
                 if (event.has("programStage"))

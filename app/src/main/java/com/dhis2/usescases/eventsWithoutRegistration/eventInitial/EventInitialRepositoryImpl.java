@@ -104,7 +104,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         EventModel eventModel = EventModel.builder()
                 .uid(uid)
-                .enrollmentUid(enrollmentUid)
+                .enrollment(enrollmentUid)
                 .created(createDate)
                 .lastUpdated(createDate)
                 .status(EventStatus.ACTIVE)
@@ -152,7 +152,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         EventModel eventModel = EventModel.builder()
                 .uid(uid)
-                .enrollmentUid(enrollmentUid)
+                .enrollment(enrollmentUid)
                 .created(createDate)
                 .lastUpdated(createDate)
                 .status(EventStatus.SCHEDULE)
@@ -290,7 +290,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                         "ORDER BY CASE WHEN %s.%s > %s.%s " +
                         "THEN %s.%s ELSE %s.%s END ASC",
                 EventModel.TABLE, EnrollmentModel.TABLE,
-                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT_UID,
+                EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
                 EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
                 EnrollmentModel.TABLE, EnrollmentModel.Columns.UID,
                 EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,

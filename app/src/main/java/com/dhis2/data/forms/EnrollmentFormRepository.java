@@ -199,8 +199,8 @@ class EnrollmentFormRepository implements FormRepository {
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.dateOfIncident() != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.dateOfIncident()) : "")))
+                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate () != null ?
+                                DateUtils.uiDateFormat().format(enrollmentModel.incidentDate ()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -236,7 +236,7 @@ class EnrollmentFormRepository implements FormRepository {
     public Consumer<String> storeReportDate() {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_DATE, reportDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
@@ -268,7 +268,7 @@ class EnrollmentFormRepository implements FormRepository {
     public Consumer<String> storeIncidentDate() {
         return incidentDate -> {
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.DATE_OF_INCIDENT, incidentDate);
+            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
@@ -325,7 +325,7 @@ class EnrollmentFormRepository implements FormRepository {
                             .lastUpdated(createdDate)
                             .eventDate(eventDate)
                             .dueDate(eventDate)
-                            .enrollmentUid(enrollmentUid)
+                            .enrollment(enrollmentUid)
                             .program(program)
                             .programStage(programStage)
                             .organisationUnit(orgUnit)
@@ -393,7 +393,7 @@ class EnrollmentFormRepository implements FormRepository {
                         .lastUpdated(createdDate)
                         .eventDate(eventDate)
                         .dueDate(eventDate)
-                        .enrollmentUid(enrollmentUid)
+                        .enrollment(enrollmentUid)
                         .program(program)
                         .programStage(programStage)
                         .organisationUnit(orgUnit)
@@ -516,7 +516,7 @@ class EnrollmentFormRepository implements FormRepository {
                                 .created(createdDate)
                                 .lastUpdated(createdDate)
                                 .eventDate(eventDate)
-                                .enrollmentUid(enrollmentUid)
+                                .enrollment(enrollmentUid)
                                 .program(programStageProgram)
                                 .programStage(programStageUid)
                                 .organisationUnit(enrollmentOrgUnit)

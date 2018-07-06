@@ -560,7 +560,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
 
             if (periodType != null) {
-                binding.date.setHint(periodType.name());
+                binding.dateLayout.setHint(periodType.name());
                 presenter.getEvents(programId, enrollmentUid, programStageUid, periodType);
             }
             checkActionButtonVisibility();

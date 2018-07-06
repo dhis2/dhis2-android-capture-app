@@ -42,7 +42,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
 
-        init(teiUid, programUid);
         binding.tabLayout.setupWithViewPager(binding.teiPager);
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         binding.toolbarTitle.setLines(1);
