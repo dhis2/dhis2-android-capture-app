@@ -133,7 +133,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     private void initRadioGroups() {
-        int timeData = prefs.getInt("timeData", TIME_MANUAL);
+        int timeData = prefs.getInt("timeData", TIME_DAILY);
         int timeMeta = prefs.getInt("timeMeta", TIME_DAILY);
 
         switch (timeData) {
@@ -144,10 +144,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 binding.radioData.check(R.id.dataHour);
                 break;
             case TIME_DAILY:
-                binding.radioData.check(R.id.dataDay);
-                break;
             default:
-                binding.radioData.check(R.id.dataManual);
+                binding.radioData.check(R.id.dataDay);
                 break;
         }
 
@@ -169,6 +167,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         int time;
 
         switch (i) {
+            case R.id.dataManual:
+                // 15 minutes
+                time = TIME_MANUAL;
+                break;
             case R.id.data15:
                 // 15 minutes
                 time = TIME_15M;
@@ -178,10 +180,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 time = TIME_HOURLY;
                 break;
             case R.id.dataDay:
-                // 1 day
-                time = TIME_DAILY;
-                break;
             default:
+                // 1 day
                 time = TIME_MANUAL;
                 break;
         }

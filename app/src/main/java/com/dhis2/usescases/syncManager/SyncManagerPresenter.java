@@ -31,8 +31,8 @@ import timber.log.Timber;
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
-    public static final int DATA_RESOURCE = 16;  //Events Resource
-    public static final int META_DATA_RESOURCE = 1; // User Resource
+    private static final int DATA_RESOURCE = 16;  //Events Resource
+    private static final int META_DATA_RESOURCE = 1; // User Resource
     private final D2 d2;
 
     private MetadataRepository metadataRepository;
@@ -40,7 +40,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
 
-    public SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher, D2 d2) {
+    SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher, D2 d2) {
         this.metadataRepository = metadataRepository;
         this.dispatcher = dispatcher;
         this.d2 = d2;

@@ -121,9 +121,9 @@
     <string name="a_minute">1 minuto</string>
     <string name="fifteen_minute">15 minutos</string>
     <string name="a_hour">1 hora</string>
-    <string name="a_day">1 día</string>
+    <string name="a_day">1 día (por defecto)</string>
     <string name="Automatic_Sync_Data">Sincronizacion de datos automatica cada:</string>
-    <string name="Manual">Manual (por defecto)</string>
+    <string name="Manual">Manual</string>
     <string name="Automatic_Sync_Metadata">Sincronizacion de configuracion automatica cada:</string>
     <string name="a_week">Semanal</string>
     <string name="SYNC_DATA">Sincronizar datos Ahora</string>
