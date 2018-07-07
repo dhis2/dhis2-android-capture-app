@@ -146,7 +146,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         super.onResume();
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
         binding.setPresenter(presenter);
-        setData(dashboardProgramModel);
+        if (dashboardProgramModel != null)
+            setData(dashboardProgramModel);
     }
 
     public void setData(DashboardProgramModel nprogram) {

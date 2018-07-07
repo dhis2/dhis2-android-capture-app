@@ -67,8 +67,10 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setData(DashboardProgramModel program) {
-        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
-        binding.teiPager.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
+            binding.teiPager.setAdapter(adapter);
+        }
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()

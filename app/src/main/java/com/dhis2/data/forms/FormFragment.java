@@ -162,7 +162,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 ((Button) nextButton).setText(getString(R.string.next));
 
         } else {
-            formPresenter.checkMandatoryFields();
+            if (isEnrollment) //Only check for mandatory fields when creating new enrollment
+                formPresenter.checkMandatoryFields();
         }
     }
 
@@ -450,7 +451,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 .show();
     }
 
-    private void deleteAllSavedDataAndGoBack(){
+    private void deleteAllSavedDataAndGoBack() {
         formPresenter.deleteCascade();
     }
 
@@ -462,6 +463,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void onBackPressed() {
-        formPresenter.checkMandatoryFields();
+        if (isEnrollment)//user can save event but enrollment should have all mandatory fields completed
+            formPresenter.checkMandatoryFields();
     }
 }

@@ -85,11 +85,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         getData();
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    @SuppressLint({"CheckResult"})
     @Override
     public void getData() {
         if (programUid != null)
-            Observable.zip(
+            compositeDisposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
                     dashboardRepository.getEnrollment(programUid, teUid),
                     dashboardRepository.getProgramStages(programUid),
@@ -109,10 +109,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 view.setData(dashboardProgramModel);
                             },
                             throwable -> Log.d("ERROR", throwable.getMessage())
-                    );
+                    )
+            );
 
         else {
-            Observable.zip(
+            compositeDisposable.add(Observable.zip(
                     metadataRepository.getTrackedEntityInstance(teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(null),
                     dashboardRepository.getTEIAttributeValues(null, teUid),
@@ -124,7 +125,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             view::setDataWithOutProgram,
-                            throwable -> Log.d("ERROR", throwable.getMessage()));
+                            throwable -> Log.d("ERROR", throwable.getMessage()))
+            );
         }
     }
 
