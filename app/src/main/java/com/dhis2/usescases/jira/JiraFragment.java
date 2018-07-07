@@ -13,6 +13,7 @@ import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentJiraBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
+import com.dhis2.utils.NetworkUtils;
 
 import javax.inject.Inject;
 
@@ -24,10 +25,12 @@ public class JiraFragment extends FragmentGlobalAbstract {
 
     @Inject
     JiraPresenter presenter;
+    private Context context;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         ((Components) context.getApplicationContext()).userComponent()
                 .plus(new JiraModule()).inject(this);
     }
@@ -37,6 +40,7 @@ public class JiraFragment extends FragmentGlobalAbstract {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentJiraBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_jira, container, false);
         binding.setPresenter(presenter);
+        binding.sendReportButton.setEnabled(NetworkUtils.isOnline(context));
         return binding.getRoot();
     }
 

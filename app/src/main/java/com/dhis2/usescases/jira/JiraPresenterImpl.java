@@ -1,22 +1,26 @@
 package com.dhis2.usescases.jira;
 
 import android.databinding.ObservableField;
+import android.util.Base64;
 
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.google.gson.Gson;
 
-import java.security.KeyStore;
 import java.util.ArrayList;
 
-import javax.crypto.KeyGenerator;
-
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
@@ -30,8 +34,6 @@ public class JiraPresenterImpl implements JiraPresenter {
     private ObservableField<String> userName = new ObservableField<>("");
     private ObservableField<String> userPass = new ObservableField<>("");
     private ActivityGlobalAbstract context;
-    private KeyGenerator keyGenerator;
-    private KeyStore keyStore;
 
     public JiraPresenterImpl() {
 
@@ -54,19 +56,24 @@ public class JiraPresenterImpl implements JiraPresenter {
     @Override
     public void onSendClick() {
 
-        /*if (!isEmpty(userName.get()) && !isEmpty(userPass.get()) && !isEmpty(summary.get()) && !isEmpty(description.get())) {
+        if (!isEmpty(userName.get()) && !isEmpty(userPass.get()) && !isEmpty(summary.get()) && !isEmpty(description.get())) {
 
             String credentials = String.format("%s:%s", userName.get(), userPass.get());
             String basic = String.format("Basic %s", Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP));
+            IssueRequest issuesRequest = new IssueRequest(summary.get(), description.get());
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new Gson().toJson(issuesRequest));
 
-            issueService.createIssue(basic, new IssueRequest(summary.get(), description.get()))
+            issueService.createIssue(basic, requestBody)
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
                                 context.displayMessage("Issue reported");
                             } else {
-                                context.displayMessage("Error reporting the issue");
+                                if (response.code() == 403)
+                                    context.displayMessage("Check that your jira user and password are correct");
+                                else
+                                    context.displayMessage("Error reporting the issue");
                             }
                         }
 
@@ -76,7 +83,7 @@ public class JiraPresenterImpl implements JiraPresenter {
                         }
                     });
         } else
-            context.displayMessage("All fields are mandatory");*/
+            context.displayMessage("All fields are mandatory");
 
     }
 

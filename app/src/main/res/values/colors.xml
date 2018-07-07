@@ -292,6 +292,7 @@
     <!-- region OTHER COLORS-->
 
     <color name="colorBackGround">#c4c4c4</color>
+    <color name="colorBackGroundLight">#e7e7e7</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_f5c">#f5c641</color>
     <color name="yellow_ffe">#ffeaad</color>
