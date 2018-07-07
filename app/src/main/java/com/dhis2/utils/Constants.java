@@ -45,4 +45,8 @@ public class Constants {
 
     //EVENT_CREATION
 
+
+    private Constants(){
+        // hide public constructor
+    }
 }
