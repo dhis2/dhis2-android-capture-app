@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -69,6 +70,16 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.programId = programId;
         getProgram();
         getOrgUnits(null);
+
+        compositeDisposable.add(
+                programEventDetailRepository.writePermission(programId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setWritePermission,
+                        Timber::e
+                )
+        );
     }
 
     @Override

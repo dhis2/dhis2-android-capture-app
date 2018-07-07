@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -161,6 +162,17 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             Timber::d
                     ));
         }
+
+        compositeDisposable.add(
+                eventInitialRepository.accessDataWrite(programId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        view::setAccessDataWrite,
+                        Timber::e
+                )
+
+        );
     }
 
     @Override

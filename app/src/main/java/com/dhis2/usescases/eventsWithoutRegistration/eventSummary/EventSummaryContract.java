@@ -38,6 +38,8 @@ public class EventSummaryContract {
         void messageOnComplete(String content, boolean canComplete);
 
         void checkAction();
+
+        void accessDataWrite(Boolean canWrite);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

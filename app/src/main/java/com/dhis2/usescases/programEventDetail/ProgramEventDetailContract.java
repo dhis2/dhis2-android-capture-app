@@ -43,6 +43,8 @@ public class ProgramEventDetailContract {
         void showHideFilter();
 
         void apply();
+
+        void setWritePermission(Boolean aBoolean);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

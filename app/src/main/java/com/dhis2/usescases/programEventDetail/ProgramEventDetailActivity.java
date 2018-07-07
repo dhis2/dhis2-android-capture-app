@@ -441,4 +441,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 break;
         }
     }
+
+    @Override
+    public void setWritePermission(Boolean canWrite) {
+        binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+    }
 }

@@ -176,6 +176,11 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             presenter.doOnComple();
     }
 
+    @Override
+    public void accessDataWrite(Boolean canWrite) {
+        binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+    }
+
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
         View sectionView = sections.get(sectionUid);
         if (sectionView != null) {

@@ -64,6 +64,8 @@ public class EventInitialContract {
         void setOrgUnit(String orgUnitId, String orgUnitName);
 
         void showNoOrgUnits();
+
+        void setAccessDataWrite(Boolean canWrite);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

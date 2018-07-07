@@ -269,7 +269,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
                             (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
-                }else if(eventCreationType.equals(SCHEDULENEW)){
+                } else if (eventCreationType.equals(SCHEDULENEW)) {
                     presenter.scheduleEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
                             null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
                             (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
@@ -687,5 +687,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.date.setText("");
         binding.executePendingBindings();
         checkActionButtonVisibility();
+    }
+
+    @Override
+    public void setAccessDataWrite(Boolean canWrite) {
+        if (!canWrite) {
+            binding.date.setEnabled(false);
+            binding.orgUnit.setEnabled(false);
+            binding.catCombo.setEnabled(false);
+            binding.actionButton.setText("Check");
+            binding.location1.setEnabled(false);
+            binding.location2.setEnabled(false);
+            binding.lat.setEnabled(false);
+            binding.lon.setEnabled(false);
+        }
     }
 }

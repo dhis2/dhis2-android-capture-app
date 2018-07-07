@@ -139,6 +139,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
             "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
 
+    private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
+
 
     public EventSummaryRepositoryImpl(@NonNull Context context,
                                       @NonNull BriteDatabase briteDatabase,
@@ -293,6 +295,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     public Flowable<EventModel> getEvent(String eventId) {
         return briteDatabase.createQuery(EventModel.TABLE, EVENT_QUERY, eventId)
                 .mapToOne(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Observable<Boolean> accessDataWrite(String eventId) {
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
     }
 
     @NonNull

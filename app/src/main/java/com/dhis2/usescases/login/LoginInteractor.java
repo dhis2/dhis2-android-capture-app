@@ -257,10 +257,10 @@ public class LoginInteractor implements LoginContracts.Interactor {
             D2CallException d2CallException = (D2CallException) throwable;
             switch (d2CallException.errorCode()) {
                 case LOGIN_PASSWORD_NULL:
-                    view.renderEmptyPassword();
+                    view.renderError(d2CallException.errorCode());
                     break;
                 case LOGIN_USERNAME_NULL:
-                    view.renderEmptyUsername();
+                    view.renderError(d2CallException.errorCode());
                     break;
                 case INVALID_DHIS_VERSION:
                     view.renderError(d2CallException.errorCode());
@@ -270,13 +270,13 @@ public class LoginInteractor implements LoginContracts.Interactor {
                     view.renderInvalidCredentialsError();
                     break;
                 case API_UNSUCCESSFUL_RESPONSE:
-                    view.renderInvalidCredentialsError();
+                    view.renderError(d2CallException.errorCode());
                     break;
                 case API_RESPONSE_PROCESS_ERROR:
-                    view.renderInvalidCredentialsError();
+                    view.renderError(d2CallException.errorCode());
                     break;
                 default:
-                    view.renderUnexpectedError();
+                    view.renderError(d2CallException.errorCode());
                     break;
             }
         } else {

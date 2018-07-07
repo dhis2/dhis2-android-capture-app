@@ -12,6 +12,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.ArrayList;
@@ -169,5 +170,12 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         }
 
         return Observable.just(values);
+    }
+
+    @Override
+    public Observable<Boolean> writePermission(String programId) {
+        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ?";
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
     }
 }

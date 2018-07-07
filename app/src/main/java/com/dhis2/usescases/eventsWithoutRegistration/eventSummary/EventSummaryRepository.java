@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Cristian E. on 02/11/2017.
@@ -32,4 +33,6 @@ public interface EventSummaryRepository {
     Observable<EventModel> changeStatus(String eventUid);
 
     Flowable<EventModel> getEvent(String eventId);
+
+    Observable<Boolean> accessDataWrite(String eventId);
 }

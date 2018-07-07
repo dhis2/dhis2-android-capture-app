@@ -67,7 +67,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "ORDER BY Field.formOrder ASC;";
 
     private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
-
+    private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
     private static final String OPTIONS = "SELECT Option.uid, Option.displayName FROM Option WHERE Option.optionSet = ?";
 
     @NonNull
@@ -83,6 +83,7 @@ final class ProgramStageRepository implements DataEntryRepository {
     private final String sectionUid;
 
     private ProgramStageSectionRenderingType renderingType;
+    private boolean accessDataWrite;
 
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
                            @NonNull FieldViewModelFactory fieldFactory,
@@ -105,6 +106,13 @@ final class ProgramStageRepository implements DataEntryRepository {
                     ProgramStageSectionRenderingType.LISTING;
             cursor.close();
         }
+
+        Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid);
+        if (accessCursor != null && accessCursor.moveToFirst()) {
+            accessDataWrite = accessCursor.getInt(0) == 1;
+            accessCursor.close();
+        }
+
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(cursor1 -> transform(cursor1))
@@ -186,7 +194,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, eventStatus == EventStatus.ACTIVE, renderingType);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType);
     }
 
     @NonNull

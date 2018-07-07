@@ -300,4 +300,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         return briteDatabase.createQuery(EventModel.TABLE, EVENTS_QUERY, programUid, enrollmentUid, programStageUid)
                 .mapToList(EventModel::create);
     }
+
+    @Override
+    public Observable<Boolean> accessDataWrite(String programId) {
+        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ?";
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
+    }
 }

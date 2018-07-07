@@ -39,10 +39,10 @@ public interface EventInitialRepository {
                                    @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
     Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
-                                   @NonNull Context context, @NonNull String program,
-                                   @NonNull String programStage, @NonNull Date dueDate,
-                                   @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                   @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
+                                     @NonNull Context context, @NonNull String program,
+                                     @NonNull String programStage, @NonNull Date dueDate,
+                                     @NonNull String orgUnitUid, @NonNull String catComboUid,
+                                     @NonNull String catOptionUid, @NonNull String latitude, @NonNull String longitude);
 
     Observable<String> updateTrackedEntityInstance(String eventId, String trackedEntityInstanceUid, String orgUnitUid);
 
@@ -60,4 +60,6 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
+
+    Observable<Boolean> accessDataWrite(String programId);
 }

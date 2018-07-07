@@ -106,39 +106,43 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void renderError(D2ErrorCode errorCode) {
+        String message;
         switch (errorCode) {
             case LOGIN_PASSWORD_NULL:
-                renderEmptyPassword();
+                message = getString(R.string.login_error_null_pass);
                 break;
             case LOGIN_USERNAME_NULL:
-                renderEmptyUsername();
+                message = getString(R.string.login_error_null_username);
                 break;
             case INVALID_DHIS_VERSION:
-                customDialog = new CustomDialog(this,
-                        "Login error",
-                        "The server you are trying to log into uses an unsupported version of dhis (<2.29)",
-                        "Ok", "Cancel", errorCode.hashCode(), new DialogClickListener() {
-                    @Override
-                    public void onPositive() {
-                        customDialog.dismiss();
-                    }
-
-                    @Override
-                    public void onNegative() {
-                        customDialog.dismiss();
-                    }
-                });
-                break;
-            case ALREADY_AUTHENTICATED:
-
+                message = getString(R.string.login_error_dhis_version);
                 break;
             case API_UNSUCCESSFUL_RESPONSE:
+                message = getString(R.string.login_error_unsuccessful_response);
                 break;
             case API_RESPONSE_PROCESS_ERROR:
+                message = getString(R.string.login_error_error_response);
                 break;
             default:
+                message = getString(R.string.login_error_default);
                 break;
         }
+
+        customDialog = new CustomDialog(this,
+                getString(R.string.login_error),
+                message,getString(R.string.button_ok), getString(R.string.cancel), errorCode.hashCode(), new DialogClickListener() {
+            @Override
+            public void onPositive() {
+                customDialog.dismiss();
+            }
+
+            @Override
+            public void onNegative() {
+                customDialog.dismiss();
+            }
+        });
+        customDialog.show();
+
     }
 
     @Override

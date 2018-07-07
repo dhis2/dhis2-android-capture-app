@@ -67,6 +67,16 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
         getEvent(eventId);
         getProgram(programId);
         getEventSections(eventId);
+
+        compositeDisposable.add(
+                eventSummaryRepository.accessDataWrite(eventId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::accessDataWrite,
+                                Timber::e
+                        ));
+
     }
 
     private void getEvent(String eventId) {

@@ -273,4 +273,13 @@
     <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
     <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
+
+    <string name="login_error_null_pass">Password is missing. Please fill this field.</string>
+    <string name="login_error_null_username">Username is missing. Please fill this field.</string>
+    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server url, username and password are correct and try again.</string>
+    <string name="login_error_error_response">The server could not complete this request.</string>
+    <string name="login_error_default">There has been a problem while trying to log into the server.</string>
+    <string name="login_error">Login error</string>
+    <string name="missing_mandatory_fields">Mandatory fields are missing</string>
 </resources>

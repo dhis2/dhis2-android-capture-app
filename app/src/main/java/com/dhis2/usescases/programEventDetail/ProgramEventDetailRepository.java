@@ -37,4 +37,6 @@ public interface ProgramEventDetailRepository {
     Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel);
 
     Observable<List<String>> eventDataValuesNew(EventModel eventModel);
+
+    Observable<Boolean> writePermission(String programId);
 }
