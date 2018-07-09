@@ -178,8 +178,12 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
-    public void onBackPressed() {
+    public void setDate(String result) {
+        binding.eventDate.setText(result);
+    }
 
+    @Override
+    public void onBackPressed() {
         presenter.back();
     }
 }

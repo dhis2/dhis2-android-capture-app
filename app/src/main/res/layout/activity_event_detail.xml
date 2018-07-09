@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.event.EventStatus"/>
 
         <variable
             name="presenter"
@@ -185,7 +186,8 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:clickable="true"
-                                            android:enabled="@{isEditable}"
+                                            android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : isEditable}"
+                                            android:onClick="@{ () -> presenter.setDate()}"
                                             android:focusable="false"
                                             android:inputType="date"
                                             app:date="@{event.eventDate()}"
