@@ -386,8 +386,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public void deleteRelationship(long relationshipId) {
-        briteDatabase.delete(RelationshipModel.TABLE, DELETE_WHERE_RELATIONSHIP + "" + relationshipId + "");
+    public void deleteRelationship(RelationshipModel relationshipModel) {
+        String deleteRelationship = "Relationship.relationshipType = ? AND " +
+                "Relationship.trackedEntityInstanceA = ? AND " +
+                "Relationship.trackedEntityInstanceB = ?";
+        briteDatabase.delete(RelationshipModel.TABLE, deleteRelationship,
+                relationshipModel.relationshipType(),
+                relationshipModel.trackedEntityInstanceA(),
+                relationshipModel.trackedEntityInstanceB());
     }
 
     @Override

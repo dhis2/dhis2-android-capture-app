@@ -5,7 +5,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -82,10 +81,10 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void initData(String data) {
-        if(data!=null) {
+        if (data != null) {
             Date date = null;
             try {
-                date = DateUtils.timeFormat().parse(data);
+                date = DateUtils.databaseDateFormat().parse(data);
             } catch (ParseException e) {
                 Timber.e(e);
             }
@@ -94,7 +93,8 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         }
         editText.setText(data);
     }
-    public void setWarningOrError(String msg){
+
+    public void setWarningOrError(String msg) {
         editText.setError(msg);
     }
 

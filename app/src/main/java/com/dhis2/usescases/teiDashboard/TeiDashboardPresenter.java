@@ -312,8 +312,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void deleteRelationship(long relationshipId) {
-        dashboardRepository.deleteRelationship(relationshipId);
+    public void deleteRelationship(RelationshipModel relationshipModel) {
+        dashboardRepository.deleteRelationship(relationshipModel);
     }
 
     @Override

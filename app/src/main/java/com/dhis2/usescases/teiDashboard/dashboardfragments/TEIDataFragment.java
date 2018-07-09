@@ -155,7 +155,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             this.events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events);
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events,nprogram.getCurrentEnrollment());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());

@@ -4,7 +4,6 @@ import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -165,6 +164,7 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
+
     public void swap(@NonNull List<FieldViewModel> updates) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
                 new DataEntryDiffCallback(viewModels, updates));
@@ -175,10 +175,10 @@ public final class DataEntryAdapter extends Adapter {
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public boolean mandatoryOk(){
+    public boolean mandatoryOk() {
         boolean isOk = true;
-        for(FieldViewModel fieldViewModel : viewModels){
-            if(fieldViewModel.mandatory() && fieldViewModel.value()==null || fieldViewModel.value().isEmpty())
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if (fieldViewModel.mandatory() && fieldViewModel.value() == null || fieldViewModel.value().isEmpty())
                 isOk = false;
         }
 

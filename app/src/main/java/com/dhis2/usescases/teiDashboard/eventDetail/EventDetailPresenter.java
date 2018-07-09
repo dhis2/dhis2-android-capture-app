@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -37,6 +38,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
         disposable = new CompositeDisposable();
+
+
     }
 
     @Override
@@ -48,7 +51,8 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void getEventData(String eventUid) {
         this.eventUid = eventUid;
-        disposable.add(Observable.zip(
+
+       /* disposable.add(Observable.zip(
                 eventDetailRepository.eventModelDetail(eventUid),
                 eventDetailRepository.dataValueModelList(eventUid),
                 eventDetailRepository.programStageSection(eventUid),
@@ -65,6 +69,32 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                             view.setData(data, metadataRepository);
                         },
                         throwable -> Log.d("ERROR", throwable.getMessage()))
+        );*/
+
+        disposable.add(
+                eventDetailRepository.eventStatus(eventUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(
+                                data -> Observable.zip(
+                                        eventDetailRepository.eventModelDetail(eventUid),
+                                        eventDetailRepository.dataValueModelList(eventUid),
+                                        eventDetailRepository.programStageSection(eventUid),
+                                        eventDetailRepository.programStageDataElement(eventUid),
+                                        eventDetailRepository.programStage(eventUid),
+                                        eventDetailRepository.orgUnitName(eventUid),
+                                        eventDetailRepository.getCategoryOptionCombos(),
+                                        EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> {
+                                    eventDetailModel = data;
+                                    view.setData(data, metadataRepository);
+                                },
+                                throwable -> Log.d("ERROR", throwable.getMessage()))
+
         );
     }
 

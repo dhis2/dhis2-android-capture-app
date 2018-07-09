@@ -14,11 +14,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import dagger.Module;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 16/01/2018.
+ * QUADRAM. Created by ppajuelo on 16/01/2018.
  */
 
 public class DateUtils {
@@ -27,9 +26,9 @@ public class DateUtils {
         return new DateUtils();
     }
 
-    public static final String DATABASE_FORMAT_EXPRESSION  = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
-    public static final String DATE_FORMAT_EXPRESSION      = "yyyy-MM-dd";
+    public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
+    private static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
 
@@ -400,7 +399,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,1); //jump one week
+                    now.add(Calendar.WEEK_OF_YEAR, 1); //jump one week
                     break;
                 case WeeklyWednesday:
                     now.setTime(moveWeeklyWednesday(now));
@@ -408,7 +407,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,1);
+                    now.add(Calendar.WEEK_OF_YEAR, 1);
                     break;
                 case WeeklyThursday:
                     now.setTime(moveWeeklyThursday(now));
@@ -416,7 +415,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,1);
+                    now.add(Calendar.WEEK_OF_YEAR, 1);
                     break;
                 case WeeklySaturday:
                     now.setTime(moveWeeklySaturday(now));
@@ -424,7 +423,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,1);
+                    now.add(Calendar.WEEK_OF_YEAR, 1);
                     break;
                 case WeeklySunday:
                     now.setTime(moveWeeklySunday(now));
@@ -432,7 +431,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,1);
+                    now.add(Calendar.WEEK_OF_YEAR, 1);
                     break;
                 case BiWeekly:
                     now.setTime(moveBiWeekly(now));
@@ -440,7 +439,7 @@ public class DateUtils {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.WEEK_OF_YEAR,2);
+                    now.add(Calendar.WEEK_OF_YEAR, 2);
                     break;
                 case Monthly:
                     now.setTime(moveMonthly(now));

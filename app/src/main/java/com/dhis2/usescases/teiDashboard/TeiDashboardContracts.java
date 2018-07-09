@@ -87,7 +87,7 @@ public class TeiDashboardContracts {
 
         void addRelationship(String trackEntityInstance_A, String trackedEntityInstance_B, String relationshipType);
 
-        void deleteRelationship(long relationshipId);
+        void deleteRelationship(RelationshipModel relationshipModel);
 
         //IndicatorsFragment
         void subscribeToIndicators(IndicatorsFragment indicatorsFragment);

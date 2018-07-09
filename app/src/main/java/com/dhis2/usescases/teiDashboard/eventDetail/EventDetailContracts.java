@@ -1,5 +1,7 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.support.annotation.NonNull;
+
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
@@ -10,9 +12,10 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import io.reactivex.functions.Consumer;
+
 /**
  * Created by ppajuelo on 19/12/2017.
- *
  */
 
 public class EventDetailContracts {
@@ -24,6 +27,7 @@ public class EventDetailContracts {
         void setDataEditable();
 
         void isEventExpired(ProgramModel programModel);
+
         void showConfirmDeleteEvent();
 
         void showEventWasDeleted();
@@ -35,6 +39,9 @@ public class EventDetailContracts {
         void setSelectedOrgUnit(OrganisationUnitModel selectedOrgUnit);
 
         void updateActionButton(EventStatus eventStatus);
+
+        @NonNull
+        Consumer<EventStatus> updateStatus(EventStatus eventStatus);
     }
 
     public interface Presenter {

@@ -31,11 +31,11 @@ import java.util.List;
  * QUADRAM. Created by ppajuelo on 16/04/2018.
  */
 
-public class SearchLocalFragment extends FragmentGlobalAbstract implements ITableViewListener {
+public class SearchLocalFragment extends FragmentGlobalAbstract /*implements ITableViewListener*/ {
 
     private static SearchLocalFragment instance;
     private SearchTEActivity activity;
-    private TabletSearchAdapter searchTEATabletAdapter;
+//    private TabletSearchAdapter searchTEATabletAdapter;
     private SearchTEAdapter searchTEAdapter;
     private SearchRelationshipAdapter searchRelationshipAdapter;
     private boolean fromRelationship;
@@ -66,13 +66,13 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         fromRelationship = getArguments().getBoolean("fromRelationship");
 
-        if (getResources().getBoolean(R.bool.is_tablet)) {
+        /*if (getResources().getBoolean(R.bool.is_tablet)) {
             searchTEATabletAdapter = new TabletSearchAdapter(activity, activity.presenter, activity.metadataRepository);
             binding.tableView.setAdapter(searchTEATabletAdapter);
             binding.tableView.setTableViewListener(this);
             binding.scrollView.setVisibility(View.GONE);
 
-        } else {
+        } else {*/
             if (fromRelationship) {
                 searchRelationshipAdapter = new SearchRelationshipAdapter(activity.presenter, activity.metadataRepository, false);
                 binding.scrollView.setAdapter(searchRelationshipAdapter);
@@ -80,9 +80,9 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
                 searchTEAdapter = new SearchTEAdapter(activity.presenter, activity.metadataRepository);
                 binding.scrollView.setAdapter(searchTEAdapter);
             }
-            binding.tableView.setVisibility(View.GONE);
+//            binding.tableView.setVisibility(View.GONE);
             binding.scrollView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
-        }
+//        }
         return binding.getRoot();
     }
 
@@ -100,15 +100,15 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
         if (mData.val1().isEmpty()) {
             binding.messageContainer.setVisibility(View.GONE);
 
-            if (getResources().getBoolean(R.bool.is_tablet)) {
+            /*if (getResources().getBoolean(R.bool.is_tablet)) {
                 searchTEATabletAdapter.setItems(mData.val0(), programList,formData);
-            } else {
+            } else {*/
                 if (fromRelationship) {
                     searchRelationshipAdapter.setItems(mData.val0());
                 } else {
                     searchTEAdapter.setItems(mData.val0());
                 }
-            }
+//            }
         } else {
             binding.messageContainer.setVisibility(View.VISIBLE);
             binding.message.setText(mData.val1());
@@ -124,7 +124,7 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
             searchRelationshipAdapter.clear();
     }
 
-    @Override
+    /*@Override
     public void onCellClicked(@NonNull RecyclerView.ViewHolder p_jCellView, int p_nXPosition, int p_nYPosition) {
         activity.presenter.onTEIClick(searchTEATabletAdapter.getTEI(p_nYPosition).uid());
     }
@@ -152,5 +152,5 @@ public class SearchLocalFragment extends FragmentGlobalAbstract implements ITabl
     @Override
     public void onRowHeaderLongPressed(@NonNull RecyclerView.ViewHolder rowHeaderView, int row) {
 
-    }
+    }*/
 }

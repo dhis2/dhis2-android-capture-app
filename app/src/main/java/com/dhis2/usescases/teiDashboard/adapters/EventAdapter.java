@@ -10,6 +10,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ItemEventBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -24,10 +25,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<ProgramStageModel> programStageList;
     private final TeiDashboardContracts.Presenter presenter;
+    private final EnrollmentModel enrollment;
     private List<EventModel> events;
 
-    public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList) {
+    public EventAdapter(TeiDashboardContracts.Presenter presenter, List<ProgramStageModel> programStageList, List<EventModel> eventList, EnrollmentModel currentEnrollment) {
         this.events = eventList;
+        this.enrollment = currentEnrollment;
         this.programStageList = programStageList;
         this.presenter = presenter;
     }
@@ -45,7 +48,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         for (ProgramStageModel stage : programStageList)
             if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
-        holder.bind(presenter, events.get(position), programStage);
+        holder.bind(presenter, events.get(position), programStage,enrollment);
     }
 
     @Override

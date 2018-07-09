@@ -12,14 +12,18 @@
         <variable
             name="stage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginBottom="1dp"
-        tools:background="@color/event_green"
-        app:eventColor="@{event.status()}">
+        app:eventColor="@{event.status()}"
+        tools:background="@color/event_green">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/shared_view"
@@ -44,8 +48,7 @@
                 android:textStyle="normal"
                 app:date='@{event.eventDate()}'
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="03/10/2017"
-                />
+                tools:text="03/10/2017" />
 
             <TextView
                 android:id="@+id/event_name"
@@ -62,8 +65,7 @@
                 app:layout_constraintEnd_toStartOf="@id/status_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/event_date"
-                tools:text="ANC 4\ndf"
-                />
+                tools:text="ANC 4\ndf" />
 
             <ImageView
                 android:id="@+id/arrow_down"
@@ -94,6 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     app:eventStatusIcon="@{event}"
+                    app:enrollmentStatusIcon="@{enrollment}"
                     app:srcCompat="@drawable/ic_edit"
                     tools:ignore="ContentDescription" />
 
@@ -106,6 +109,7 @@
                     android:textColor="@color/icon_color"
                     android:textSize="12sp"
                     app:eventStatusText='@{event}'
+                    app:enrollmentStatus="@{enrollment}"
                     tools:text="Read only" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>

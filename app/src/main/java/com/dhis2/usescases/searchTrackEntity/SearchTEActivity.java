@@ -96,6 +96,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             Timber.d(e.getMessage());
         }
 
+        //Pager configuration based on network
+        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
+        pagerAdapter.setOnline(program != null && NetworkUtils.isOnline(this));
+        binding.resultsPager.setAdapter(pagerAdapter);
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
 
@@ -126,14 +130,12 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         this.program = program;
 
+        SearchOnlineFragment.getInstance(getAbstracContext(),false).refreshOnlineData();
+
         //Form has been set.
-        //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
-        pagerAdapter.setOnline(program != null && NetworkUtils.isOnline(this));
-        binding.resultsPager.setAdapter(pagerAdapter);
+
         binding.searchTab.setVisibility(program != null && NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
         binding.searchTab.setupWithViewPager(binding.resultsPager);
-
         binding.buttonAdd.setVisibility(program == null ? View.GONE : View.VISIBLE);
 
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();

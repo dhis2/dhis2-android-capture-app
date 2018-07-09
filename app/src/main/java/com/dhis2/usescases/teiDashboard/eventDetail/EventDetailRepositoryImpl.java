@@ -7,6 +7,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
@@ -19,6 +20,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -158,12 +161,19 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
         return briteDatabase.createQuery(ProgramModel.TABLE, GET_CAT_COMBO_FROM_EVENT, eventUid)
                 .mapToOne(cursor -> cursor.getString(0))
-                .flatMap(catCombo ->{
-                    if(catCombo!=null)
+                .flatMap(catCombo -> {
+                    if (catCombo != null)
                         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo).mapToList(CategoryOptionComboModel::create);
                     else
                         return Observable.just(new ArrayList<>());
                 });
+    }
+
+    @NonNull
+    @Override
+    public Flowable<EventStatus> eventStatus(String eventUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.status FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

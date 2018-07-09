@@ -29,7 +29,7 @@ import java.util.List;
 public class OrgUnitDialog extends DialogFragment {
     DialogOrgunitBinding binding;
     AndroidTreeView treeView;
-    static boolean isMultiSelection;
+    static boolean isMultiSelection = false;
     static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
@@ -52,6 +52,11 @@ public class OrgUnitDialog extends DialogFragment {
 
     public OrgUnitDialog setNegativeListener(View.OnClickListener listener) {
         this.negativeListener = listener;
+        return this;
+    }
+
+    public OrgUnitDialog setMultiSelection(boolean multiSelection) {
+        isMultiSelection = multiSelection;
         return this;
     }
 
@@ -99,7 +104,8 @@ public class OrgUnitDialog extends DialogFragment {
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeContainer.addView(treeView.getView());
-//        treeView.expandAll();
+        if (myOrgs.size() < 30)
+            treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())

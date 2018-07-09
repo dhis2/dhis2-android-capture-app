@@ -61,7 +61,7 @@
             android:id="@+id/clear_relationship_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:onClick="@{ () -> presenter.deleteRelationship(relationship.id)}"
+            android:onClick="@{ () -> presenter.deleteRelationship(relationship)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

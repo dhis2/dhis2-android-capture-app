@@ -45,6 +45,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         }
         return instance;
     }
+
     public static RelationshipFragment createInstance() {
         return instance = new RelationshipFragment();
     }
@@ -60,9 +61,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
-        relationshipAdapter = new RelationshipAdapter(presenter);
         binding.setPresenter(presenter);
-        presenter.subscribeToRelationships(this);
+        relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         return binding.getRoot();
     }
@@ -70,8 +70,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
-        binding.setPresenter(presenter);
+        presenter.subscribeToRelationships(this);
         if (dashboardProgramModel != null)
             setData(dashboardProgramModel);
     }

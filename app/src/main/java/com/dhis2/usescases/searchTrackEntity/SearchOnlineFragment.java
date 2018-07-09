@@ -21,6 +21,8 @@ import com.dhis2.usescases.searchTrackEntity.adapters.TabletSearchAdapter;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.evrencoskun.tableview.listener.ITableViewListener;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -39,16 +41,15 @@ import io.reactivex.processors.PublishProcessor;
  * QUADRAM. Created by ppajuelo on 16/04/2018.
  */
 
-public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITableViewListener {
+public class SearchOnlineFragment extends FragmentGlobalAbstract/* implements ITableViewListener*/ {
 
     private static SearchOnlineFragment instance;
-    private TabletSearchAdapter searchTEATabletAdapter;
+//    private TabletSearchAdapter searchTEATabletAdapter;
     private SearchTEOnlineAdapter searchTEAdapter;
     private SearchTEActivity activity;
     FragmentSearchBinding binding;
 
     private static PublishProcessor<Integer> onlinePagerProcessor;
-    private String message;
 
     public static SearchOnlineFragment getInstance(ActivityGlobalAbstract context, boolean fromRelationship) {
         if (instance == null) {
@@ -66,20 +67,20 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
 
-        if (getResources().getBoolean(R.bool.is_tablet)) {
+      /*  if (getResources().getBoolean(R.bool.is_tablet)) {
             searchTEATabletAdapter = new TabletSearchAdapter(activity, activity.presenter, activity.metadataRepository);
             binding.tableView.setAdapter(searchTEATabletAdapter);
             binding.scrollView.setVisibility(View.GONE);
 
-        } else {
+        } else {*/
             searchTEAdapter = new SearchTEOnlineAdapter(activity.presenter, activity.metadataRepository);
             binding.scrollView.setAdapter(searchTEAdapter);
-            binding.tableView.setVisibility(View.GONE);
-            binding.scrollView.addItemDecoration(new DividerItemDecoration(activity,DividerItemDecoration.VERTICAL));
-        }
+//            binding.tableView.setVisibility(View.GONE);
+            binding.scrollView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
+//        }
 
         binding.scrollView.addOnScrollListener(new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager()) {
             @Override
@@ -95,6 +96,11 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     @Override
     public void onResume() {
         super.onResume();
+        refreshOnlineData();
+    }
+
+
+    public void refreshOnlineData() {
         activity.presenter.getOnlineTrackedEntities(this);
     }
 
@@ -117,7 +123,6 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
             searchTEAdapter.setItems(modelData, teiAttributes);
 
         } else if (searchTEAdapter.getItemCount() == 0 && mData.val1().isEmpty()) {
-            message = null;
             binding.messageContainer.setVisibility(View.GONE);
 
             HashMap<String, List<String>> teiAttributes = new HashMap<>();
@@ -133,23 +138,22 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
                 teiAttributes.put(tei.uid(), attr);
             }
 
-            if (getResources().getBoolean(R.bool.is_tablet)) {
+            /*if (getResources().getBoolean(R.bool.is_tablet)) {
                 searchTEATabletAdapter.setItems(modelData, programList, formData);
-            } else {
+            } else {*/
                 searchTEAdapter.setItems(modelData, teiAttributes);
-            }
+//            }
         } else {
 
             binding.messageContainer.setVisibility(View.VISIBLE);
             binding.message.setText(mData.val1());
-
         }
     }
 
     @Override
-    public void onDestroy() {
+    public void onPause() {
         instance = null;
-        super.onDestroy();
+        super.onPause();
     }
 
     public void clear() {
@@ -167,7 +171,7 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
         return onlinePagerProcessor;
     }
 
-    @Override
+   /* @Override
     public void onCellClicked(@NonNull RecyclerView.ViewHolder p_jCellView, int p_nXPosition, int p_nYPosition) {
     }
 
@@ -194,6 +198,6 @@ public class SearchOnlineFragment extends FragmentGlobalAbstract implements ITab
     @Override
     public void onRowHeaderLongPressed(@NonNull RecyclerView.ViewHolder rowHeaderView, int row) {
 
-    }
+    }*/
 
 }

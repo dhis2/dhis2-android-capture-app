@@ -2,9 +2,9 @@ package com.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
-import android.widget.EditText;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -27,7 +27,7 @@ import timber.log.Timber;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final EditText editText;
+    private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
@@ -43,16 +43,19 @@ public class OrgUnitHolder extends FormViewHolder {
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         this.orgUnitsObservable = orgUnits;
 
-        this.editText.setOnClickListener(view ->
-                orgUnitDialog.show(fm, model.getValue().label()));
+        this.editText.setOnClickListener(view -> {
+            orgUnitDialog = new OrgUnitDialog()
+                    .setMultiSelection(false)
+                    .setOrgUnits(this.orgUnits)
+                    .setPossitiveListener(data -> {
+                        processor.onNext(RowAction.create(model.getValue().uid(), orgUnitDialog.getSelectedOrgUnit()));
+                        this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
+                        orgUnitDialog.dismiss();
+                    })
+                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+            orgUnitDialog.show(fm, model.getValue().label());
+        });
 
-        orgUnitDialog = OrgUnitDialog.newInstace(false)
-                .setPossitiveListener(data -> {
-                    processor.onNext(RowAction.create(model.getValue().uid(), orgUnitDialog.getSelectedOrgUnit()));
-                    this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
-                    orgUnitDialog.dismissAllowingStateLoss();
-                })
-                .setNegativeListener(data -> orgUnitDialog.dismiss());
 
         model = BehaviorProcessor.create();
         compositeDisposable.add(
@@ -60,7 +63,7 @@ public class OrgUnitHolder extends FormViewHolder {
                             StringBuilder label = new StringBuilder(viewModel.label());
                             if (viewModel.mandatory())
                                 label.append("*");
-                            this.inputLayout.setHint(label);
+                            this.inputLayout.setHint(label.toString());
                             orgUnitDialog.setTitle(label.toString());
 
                             if (viewModel.warning() != null)
@@ -83,8 +86,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-        if (!compositeDisposable.isDisposed())
-            compositeDisposable.clear();
+        compositeDisposable.clear();
     }
 
     public void update(OrgUnitViewModel viewModel) {
@@ -112,7 +114,6 @@ public class OrgUnitHolder extends FormViewHolder {
                             this.orgUnits = orgUnitViewModels;
                             if (model.getValue().value() != null)
                                 this.editText.setText(getOrgUnitName(model.getValue().value()));
-                            orgUnitDialog.setOrgUnits(orgUnitViewModels);
                         },
                         Timber::d
                 )

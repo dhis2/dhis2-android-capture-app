@@ -6,6 +6,7 @@ import com.dhis2.BR;
 import com.dhis2.databinding.ItemEventBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -22,9 +23,10 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage) {
+    public void bind(TeiDashboardContracts.Presenter presenter, EventModel eventModel, ProgramStageModel programStage, EnrollmentModel enrollment) {
         binding.setVariable(BR.event, eventModel);
         binding.setVariable(BR.stage, programStage);
+        binding.setVariable(BR.enrollment, enrollment);
         binding.executePendingBindings();
 
         itemView.setOnClickListener(view -> presenter.onEventSelected(eventModel.uid(), binding.sharedView));

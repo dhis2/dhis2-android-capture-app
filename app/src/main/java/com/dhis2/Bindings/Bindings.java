@@ -21,7 +21,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,6 +34,7 @@ import com.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -408,67 +408,117 @@ public class Bindings {
         view.setText(text);
     }
 
-    @BindingAdapter("eventStatusIcon")
-    public static void setEventIcon(ImageView view, EventModel event) {
+    @BindingAdapter(value = {"eventStatusIcon", "enrollmentStatusIcon"})
+    public static void setEventIcon(ImageView view, EventModel event, EnrollmentModel enrollmentModel) {
         EventStatus status = event.status();
+        EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
         if (status == null)
             status = EventStatus.ACTIVE;
-        switch (status) {
-            default:
-                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
-                break;
-            case COMPLETED:
-                if (metadataRepository != null)
-                    metadataRepository.getExpiryDateFromEvent(event.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    program -> {
-                                        if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
-                                        } else {
-                                            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
-                                        }
-                                    },
-                                    Timber::d
-                            );
-                break;
+        if (enrollmentStatus == null)
+            enrollmentStatus = EnrollmentStatus.ACTIVE;
+
+        if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+            switch (status) {
+                case ACTIVE:
+                    if (metadataRepository != null)
+                        metadataRepository.getExpiryDateFromEvent(event.uid())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        program -> {
+                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
+                                            } else {
+                                                view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                                            }
+                                        },
+                                        Timber::d
+                                );
+                case COMPLETED:
+                case SKIPPED:
+                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+                    break;
+                case SCHEDULE:
+                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                    break;
+                case VISITED:
+                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                    break;
+                default:
+                    view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
+                    break;
+            }
+        } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
+            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
+        } else { //EnrollmentStatus = CANCELLED
+            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
         }
     }
 
-    @BindingAdapter("eventStatusText")//TODO: IT NEEDS ENROLLMENTSTATUS
-    public static void setEventText(TextView view, EventModel event) {
+    @BindingAdapter(value = {"eventStatusText", "enrollmentStatus"})
+//    @BindingAdapter("eventStatusText")
+    public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel) {
         EventStatus status = event.status();
+        EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
         if (status == null)
             status = EventStatus.ACTIVE;
+        if (enrollmentStatus == null)
+            enrollmentStatus = EnrollmentStatus.ACTIVE;
 
-        switch (status) {
-            case ACTIVE:
-                view.setText(view.getContext().getString(R.string.event_open));
-                break;
-            case COMPLETED:
-                if (metadataRepository != null)
-                    metadataRepository.getExpiryDateFromEvent(event.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    program -> {
-                                        if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
-                                            view.setText(view.getContext().getString(R.string.event_expired));
-                                        } else {
-                                            view.setText(view.getContext().getString(R.string.event_completed));
-                                        }
-                                    },
-                                    Timber::d
-                            );
-                break;
-            case SCHEDULE:
-                view.setText(view.getContext().getString(R.string.program_inactive));
-                break;
-            default:
-                view.setText(view.getContext().getString(R.string.read_only));
-                break;
+
+        if (enrollmentStatus == EnrollmentStatus.ACTIVE) {
+            switch (status) {
+                case ACTIVE:
+                    if (metadataRepository != null)
+                        metadataRepository.getExpiryDateFromEvent(event.uid())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        program -> {
+                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                                view.setText(view.getContext().getString(R.string.event_expired));
+                                            } else {
+                                                view.setText(view.getContext().getString(R.string.event_open));
+                                            }
+                                        },
+                                        Timber::d
+                                );
+                    break;
+                case COMPLETED:
+                    if (metadataRepository != null)
+                        metadataRepository.getExpiryDateFromEvent(event.uid())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        program -> {
+                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                                view.setText(view.getContext().getString(R.string.event_expired));
+                                            } else {
+                                                view.setText(view.getContext().getString(R.string.event_completed));
+                                            }
+                                        },
+                                        Timber::d
+                                );
+                    break;
+                case SCHEDULE:
+                    view.setText(view.getContext().getString(R.string.event_schedule));
+                    break;
+                case VISITED:
+                    break;
+                case SKIPPED:
+                    view.setText(view.getContext().getString(R.string.event_skipped));
+                    break;
+                default:
+                    view.setText(view.getContext().getString(R.string.read_only));
+                    break;
+            }
+        } else if (enrollmentStatus == EnrollmentStatus.COMPLETED) {
+            view.setText(view.getContext().getString(R.string.program_completed));
+        } else { //EnrollmentStatus = CANCELLED
+            view.setText(view.getContext().getString(R.string.program_inactive));
         }
+
+
     }
 
     @BindingAdapter("eventColor")

@@ -199,8 +199,8 @@ class EnrollmentFormRepository implements FormRepository {
                 .mapToOne(ProgramModel::create)
                 .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_INCIDENT_DATE, enrollmentUid)
                         .mapToOne(EnrollmentModel::create)
-                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate () != null ?
-                                DateUtils.uiDateFormat().format(enrollmentModel.incidentDate ()) : "")))
+                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.incidentDate() != null ?
+                                DateUtils.uiDateFormat().format(enrollmentModel.incidentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -350,6 +350,13 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Observable<String> autoGenerateEvents(String enrollmentUid) {
 
+        Calendar calNow = Calendar.getInstance();
+        calNow.set(Calendar.HOUR_OF_DAY, 0);
+        calNow.set(Calendar.MINUTE, 0);
+        calNow.set(Calendar.SECOND, 0);
+        calNow.set(Calendar.MILLISECOND, 0);
+        Date now = calNow.getTime();
+
         Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid);
 
         if (cursor != null) {
@@ -376,28 +383,35 @@ class EnrollmentFormRepository implements FormRepository {
                 Date eventDate;
                 Calendar cal = Calendar.getInstance();
                 if (generatedByEnrollmentDate) {
+
                     cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
                     cal.add(Calendar.DATE, minDaysFromStart);
                     eventDate = cal.getTime();
                 } else {
                     cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
                     cal.add(Calendar.DATE, minDaysFromStart);
                     eventDate = cal.getTime();
                 }
 
-                Date createdDate = Calendar.getInstance().getTime();
-
                 EventModel event = EventModel.builder()
                         .uid(codeGenerator.generate())
-                        .created(createdDate)
-                        .lastUpdated(createdDate)
+                        .created(now)
+                        .lastUpdated(now)
                         .eventDate(eventDate)
                         .dueDate(eventDate)
                         .enrollment(enrollmentUid)
                         .program(program)
                         .programStage(programStage)
                         .organisationUnit(orgUnit)
-                        .status(EventStatus.SCHEDULE)
+                        .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
                         .state(State.TO_POST)
                         .build();
 
@@ -405,7 +419,7 @@ class EnrollmentFormRepository implements FormRepository {
                     throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
                 }
 
-                updateProgramTable(createdDate, program);
+                updateProgramTable(now, program);
 
                 cursor.moveToNext();
             }
@@ -457,7 +471,7 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EnrollmentModel.TABLE  + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
+        String SELECT_TE = "SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EnrollmentModel.TABLE +
                 " WHERE " + EnrollmentModel.Columns.UID + " = ?";
 

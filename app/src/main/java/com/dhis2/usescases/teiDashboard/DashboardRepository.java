@@ -50,7 +50,7 @@ public interface DashboardRepository {
 
     void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
 
-    void deleteRelationship(long relationshipId);
+    void deleteRelationship(RelationshipModel relationshipId);
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -27,6 +28,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by Cristian E. on 18/12/2017.
@@ -73,10 +76,15 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
         supportStartPostponedEnterTransition();
 
+        if (getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY") != null)
+            getSupportFragmentManager().beginTransaction()
+                    .remove(getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY"))
+                    .commit();
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, FormFragment.newInstance(
                         FormViewArguments.createForEvent(eventUid), false,
-                        false))
+                        false), "EVENT_DATA_ENTRY")
                 .commit();
     }
 
@@ -161,6 +169,12 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                 binding.deactivateButton.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    @NonNull
+    @Override
+    public Consumer<EventStatus> updateStatus(EventStatus eventStatus) {
+        return eventStatus1 -> updateStatus(eventStatus);
     }
 
     @Override
