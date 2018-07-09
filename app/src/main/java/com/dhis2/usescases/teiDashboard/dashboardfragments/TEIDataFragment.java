@@ -225,10 +225,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             if (programStageModel.displayGenerateEventBox()) {
                 dialog = new CustomDialog(
                         getContext(),
-                        "Generate new event",
-                        "Do you want to create another event?",
-                        "Ok",
-                        "Cancel",
+                        getString(R.string.dialog_generate_new_event),
+                        getString(R.string.message_generate_new_event),
+                        getString(R.string.button_ok),
+                        getString(R.string.cancel),
                         RC_GENERATE_EVENT,
                         this);
                 dialog.show();
@@ -243,10 +243,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             if (eventsCompleted.blockingGet()) {
                 dialog = new CustomDialog(
                         getContext(),
-                        "Events Completed",
-                        "All events in this program are completed. Would you like to close the program as well?",
-                        "Ok",
-                        "Cancel",
+                        getString(R.string.event_completed_title),
+                        getString(R.string.event_completed_message),
+                        getString(R.string.button_ok),
+                        getString(R.string.cancel),
                         RC_EVENTS_COMPLETED,
                         this);
                 dialog.show();

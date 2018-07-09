@@ -2,9 +2,11 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.databinding.BaseObservable;
 
+import com.dhis2.utils.DateUtils;
+
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
@@ -16,7 +18,6 @@ import java.util.List;
 
 /**
  * Created by Cristian on 08/02/2018.
- *
  */
 
 public class EventDetailModel extends BaseObservable {
@@ -26,13 +27,14 @@ public class EventDetailModel extends BaseObservable {
     private final HashMap<String, List<ProgramStageDataElementModel>> fieldsElements;
     private final ProgramStageModel programStage;
     private final List<CategoryOptionComboModel> optionComboList;
+    private final ProgramModel programModel;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
     private final String orgUnitName;
 
     EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                      List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage, String orgUnitName, List<CategoryOptionComboModel> optionComboList) {
+                     ProgramStageModel programStage, String orgUnitName, List<CategoryOptionComboModel> optionComboList, ProgramModel programModel) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
         this.dataElemets = programStageDataElementModelList;
@@ -41,6 +43,7 @@ public class EventDetailModel extends BaseObservable {
         fieldsElements = new HashMap<>();
         this.orgUnitName = orgUnitName;
         this.optionComboList = optionComboList;
+        this.programModel = programModel;
 
         setUpFields();
 
@@ -97,5 +100,9 @@ public class EventDetailModel extends BaseObservable {
 
     public List<CategoryOptionComboModel> getOptionComboList() {
         return optionComboList;
+    }
+
+    public boolean hasExpired() {
+        return eventModel.completedDate() != null && DateUtils.getInstance().hasExpired(eventModel.completedDate(), programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType());
     }
 }

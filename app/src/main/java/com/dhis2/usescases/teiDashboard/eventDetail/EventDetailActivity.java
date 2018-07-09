@@ -161,6 +161,8 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         switch (eventStatus) {
             case COMPLETED:
                 binding.deactivateButton.setText(getString(R.string.re_open));
+                if (eventDetailModel.hasExpired())
+                    binding.deactivateButton.setVisibility(View.GONE);
                 break;
             case ACTIVE:
                 binding.deactivateButton.setText(getString(R.string.complete));

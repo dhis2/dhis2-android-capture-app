@@ -787,7 +787,7 @@ public class Bindings {
     @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
     public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
         if (metadataRepository != null && optionSet != null) {
-            String optionSetLabel = label == null ? "Select option" : label;
+            String optionSetLabel = label == null ? spinner.getContext().getString(R.string.select_option) : label;
             metadataRepository.optionSet(optionSet)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

@@ -44,7 +44,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
             convertView = binding.getRoot();
             if (position > 0)
                 binding.setProgram(options.get(position - 1));
-            binding.setProgramTitle("All " + trackedEntityName);
+            binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
             binding.spinnerText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             binding.spinnerText.setTextColor(ContextCompat.getColor(binding.spinnerText.getContext(), R.color.white_faf));
         }
