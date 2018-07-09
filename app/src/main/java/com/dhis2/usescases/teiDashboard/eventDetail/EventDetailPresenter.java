@@ -1,14 +1,21 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 
+import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
+import com.dhis2.utils.DateUtils;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
@@ -185,5 +192,37 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         );
 
 
+    }
+
+    @Override
+    public void setDate() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dateDialog = new DatePickerDialog(view.getContext(), (
+                (datePicker, year1, month1, day1) -> {
+                    Calendar selectedCalendar = Calendar.getInstance();
+                    selectedCalendar.set(Calendar.YEAR, year1);
+                    selectedCalendar.set(Calendar.MONTH, month1);
+                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+                    selectedCalendar.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+                    Date selectedDate = selectedCalendar.getTime();
+                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    view.setDate(result);
+
+                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+                    }
+                }),
+                year,
+                month,
+                day);
+        dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+        });
+        dateDialog.show();
     }
 }

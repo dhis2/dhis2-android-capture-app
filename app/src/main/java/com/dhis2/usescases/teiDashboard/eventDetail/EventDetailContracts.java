@@ -42,6 +42,9 @@ public class EventDetailContracts {
 
         @NonNull
         Consumer<EventStatus> updateStatus(EventStatus eventStatus);
+
+        void setDate(String result);
+
     }
 
     public interface Presenter {
@@ -64,6 +67,8 @@ public class EventDetailContracts {
         void deleteEvent();
 
         void onOrgUnitClick();
+
+        void setDate();
     }
 
 

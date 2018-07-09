@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.event.EventModel;
 
+import java.util.Date;
+
 import io.reactivex.Flowable;
 
 /**
@@ -17,4 +19,6 @@ public interface DataEntryStore {
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
 
     void updateEventStatus(EventModel eventModel);
+
+    void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel);
 }

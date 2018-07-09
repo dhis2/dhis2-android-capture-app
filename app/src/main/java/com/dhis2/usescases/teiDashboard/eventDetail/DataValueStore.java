@@ -10,10 +10,8 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
@@ -74,6 +72,9 @@ final class DataValueStore implements DataEntryStore {
             case COMPLETED:
                 eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
                 break;
+            case SCHEDULE:
+                eventStatus = EventStatus.ACTIVE.name();
+                break;
             default:
                 eventStatus = EventStatus.COMPLETED.name();
                 break;
@@ -86,7 +87,18 @@ final class DataValueStore implements DataEntryStore {
         briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
     }
 
-    private void updateProgramTable(Date lastUpdated, String programUid){
+    @Override
+    public void updateEvent(@NonNull Date eventDate, @NonNull EventModel eventModel) {
+        ContentValues contentValues = new ContentValues();
+        Date currentDate = Calendar.getInstance().getTime();
+        contentValues.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(currentDate));
+        contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
+        if (eventDate.before(currentDate))
+            contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
+        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+    }
+
+    private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues(); //TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
