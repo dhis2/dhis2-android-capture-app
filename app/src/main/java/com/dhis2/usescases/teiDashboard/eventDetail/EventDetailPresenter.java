@@ -91,6 +91,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                                         eventDetailRepository.programStage(eventUid),
                                         eventDetailRepository.orgUnitName(eventUid),
                                         eventDetailRepository.getCategoryOptionCombos(),
+                                        eventDetailRepository.getProgram(eventUid),
                                         EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())

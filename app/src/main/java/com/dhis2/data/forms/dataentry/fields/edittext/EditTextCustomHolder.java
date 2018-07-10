@@ -204,42 +204,42 @@ final class EditTextCustomHolder extends FieldViewHolder {
                 if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
                     return true;
                 else {
-                    inputLayout.setError("This is not a valid phone number");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_phone_number));
                     return false;
                 }
             case EMAIL:
                 if (Patterns.EMAIL_ADDRESS.matcher(editText.getText().toString()).matches())
                     return true;
                 else {
-                    inputLayout.setError("This is not a valid email");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_email));
                     return false;
                 }
             case INTEGER_NEGATIVE:
                 if (Integer.valueOf(editText.getText().toString()) < 0)
                     return true;
                 else {
-                    inputLayout.setError("Only negative numbers are allowed");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_negative_number));
                     return false;
                 }
             case INTEGER_ZERO_OR_POSITIVE:
                 if (Integer.valueOf(editText.getText().toString()) >= 0)
                     return true;
                 else {
-                    inputLayout.setError("Only positive numbers or zero allowed");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive_zero));
                     return false;
                 }
             case INTEGER_POSITIVE:
                 if (Integer.valueOf(editText.getText().toString()) > 0)
                     return true;
                 else {
-                    inputLayout.setError("Only positive numbers are allowed");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_possitive));
                     return false;
                 }
             case UNIT_INTERVAL:
                 if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 1)
                     return true;
                 else {
-                    inputLayout.setError("Only values from 0 to 1 are allowed");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_interval));
                     return false;
                 }
             case PERCENTAGE:
@@ -247,7 +247,7 @@ final class EditTextCustomHolder extends FieldViewHolder {
                     return true;
                 else {
 
-                    inputLayout.setError("Only values from 0 to 100 are allowed");
+                    inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
                     return false;
                 }
             default:

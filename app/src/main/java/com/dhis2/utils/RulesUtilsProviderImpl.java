@@ -24,7 +24,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
     private final CodeGenerator codeGenerator;
 
     public RulesUtilsProviderImpl(CodeGenerator codeGenerator) {
-        this.codeGenerator =codeGenerator;
+        this.codeGenerator = codeGenerator;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
-                showWarning(showWarning,model);
+                showWarning(showWarning, model);
 
 
             } else if (ruleAction instanceof RuleActionShowError) {
@@ -55,7 +55,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT,
-                        fieldViewModels.get(0).programStageSection()!=null?fieldViewModels.get(0).programStageSection():null,
+                        fieldViewModels.get(0).programStageSection() != null ? fieldViewModels.get(0).programStageSection() : null,
                         false);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
@@ -77,7 +77,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
     /**
      * */
-    private void showWarning(RuleActionShowWarning showWarning, FieldViewModel model){
+    private void showWarning(RuleActionShowWarning showWarning, FieldViewModel model) {
         /*if (model != null && model instanceof EditTextViewModel) {
             fieldViewModels.put(showWarning.field(),
                     ((EditTextViewModel) model).withWarning(showWarning.content()));

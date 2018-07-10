@@ -176,6 +176,12 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    @Override
+    public Observable<ProgramModel> getProgram(String eventUid) {
+        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?", eventUid)
+                .mapToOne(ProgramModel::create);
+    }
+
     private void updateProgramTable(Date lastUpdated, String programUid) {
        /* ContentValues program = new ContentValues();  TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));

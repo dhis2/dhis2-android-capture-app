@@ -227,8 +227,34 @@
     <string name="login_error_error_response">El servidor no ha podido completar su solicitur.</string>
     <string name="login_error_default">Ha habido un problema intentando conectarse al servidor.</string>
     <string name="login_error">Error de Acceso</string>
-    <string name="event_skipped">Evento Omitido</string>
+    <string name="event_skipped">"Evento Omitido"</string>
     <string name="event_schedule">Evento Programado</string>
+    <string name="online_search_unexpected">Error inesperado mientras se eecutaba la búsqueda online</string>
+    <string name="online_search_parsing_error">Error al obtener los resultados</string>
+    <string name="online_search_error">La busqueda online devolvió un error</string>
+    <string name="online_search_response_error">Algo fue mal al conectar con el servidor</string>
+    <string name="search_program_not_selected">Selecciona un programa para habilitar nuevas admisiones</string>
+    <string name="search_access_error">No tienes los permisos necesarios</string>
+    <string name="feature_unavaible">Esta funcionalidad no está lista.</string>
+    <string name="relationship_label_error">Error al recuperar la etiqueta de la relación</string>
+    <string name="all_tei_type">Todo %s</string>
+    <string name="invalid_phone_number">Este no es un número de teléfono válido</string>
+    <string name="invalid_email">Este no es un email válido</string>
+    <string name="invalid_negative_number">Solo se permiten números negativos</string>
+    <string name="invalid_possitive_zero">Solo se permiten números positivos o cero</string>
+    <string name="invalid_possitive">Solo se permiten números positivos</string>
+    <string name="invalid_interval">Solo se permiten valores entre 0 y 1</string>
+    <string name="invalid_percentage">Solo se permiten valores entre 0 y 100</string>
+    <string name="date_dialog_tigle">Selecciona las fechas para filtrar</string>
+    <string name="select_option">Selecciona una opción</string>
+    <string name="issue_reported">Incidencia reportada</string>
+    <string name="jira_credential_error">Comprueba que tus credenciales de jira son correctas</string>
+    <string name="jira_issue_error">Error al reportar la incidencia</string>
+    <string name="jira_fields_error">Todos los campos son obligatorios</string>
+    <string name="dialog_generate_new_event">Generar nuevo evento</string>
+    <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
+    <string name="event_completed_title">Eventos Completados</string>
+    <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
     <string name="missing_mandatory_fields_events">Faltan algunos campos obligatorios. Puedes cerrar la edición, pero este evento no podrá ser completado.</string>
 
 </resources>

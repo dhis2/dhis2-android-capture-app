@@ -3,6 +3,7 @@ package com.dhis2.usescases.jira;
 import android.databinding.ObservableField;
 import android.util.Base64;
 
+import com.dhis2.R;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.gson.Gson;
 
@@ -68,22 +69,22 @@ public class JiraPresenterImpl implements JiraPresenter {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                context.displayMessage("Issue reported");
+                                context.displayMessage(context.getString(R.string.issue_reported));
                             } else {
                                 if (response.code() == 403)
-                                    context.displayMessage("Check that your jira user and password are correct");
+                                    context.displayMessage(context.getString(R.string.jira_credential_error));
                                 else
-                                    context.displayMessage("Error reporting the issue");
+                                    context.displayMessage(context.getString(R.string.jira_issue_error));
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            context.displayMessage("Error reporting the issue");
+                            context.displayMessage(context.getString(R.string.jira_issue_error));
                         }
                     });
         } else
-            context.displayMessage("All fields are mandatory");
+            context.displayMessage(context.getString(R.string.jira_fields_error));
 
     }
 

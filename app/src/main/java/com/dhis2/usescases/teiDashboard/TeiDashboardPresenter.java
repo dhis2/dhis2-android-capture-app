@@ -203,7 +203,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     view.showQR();
                     return true;
                 case 1:
-                    view.displayMessage("This functionality is not ready yet.");
+                    view.displayMessage(view.getContext().getString(R.string.feature_unavaible));
                     return true;
                 default:
                     return true;
@@ -293,7 +293,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             intent.putExtras(extras);
             relationshipFragment.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
         } else
-            view.displayMessage("You don't have the required permission for this action");
+            view.displayMessage(view.getContext().getString(R.string.search_access_error));
     }
 
     @Override
@@ -450,7 +450,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         })
                         .subscribe(
                                 textView::setText,
-                                t -> view.displayMessage("Error getting relationship label"))
+                                t -> view.displayMessage(view.getContext().getString(R.string.relationship_label_error)))
 
         );
     }

@@ -87,7 +87,7 @@ public class DateDialog extends DialogFragment {
 
         binding.recyclerDate.setAdapter(adapter);
 
-        binding.setTitleText("Select dates to filter");
+        binding.setTitleText(getString(R.string.date_dialog_tigle));
 
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.acceptButton.setOnClickListener(possitiveListener);

@@ -257,16 +257,16 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             D2CallException exception = (D2CallException) throwable;
             switch (exception.errorCode()) {
                 case UNEXPECTED:
-                    view.displayMessage("Unexpected error while searching online");
+                    view.displayMessage(view.getContext().getString(R.string.online_search_unexpected));
                     break;
                 case SEARCH_GRID_PARSE:
-                    view.displayMessage("Error while parsing results");
+                    view.displayMessage(view.getContext().getString(R.string.online_search_parsing_error));
                     break;
                 case API_RESPONSE_PROCESS_ERROR:
-                    view.displayMessage("Searching online returned an error");
+                    view.displayMessage(view.getContext().getString(R.string.online_search_error));
                     break;
                 case API_UNSUCCESSFUL_RESPONSE:
-                    view.displayMessage("Something went wrong in the server");
+                    view.displayMessage(view.getContext().getString(R.string.online_search_response_error));
                     break;
             }
         }
@@ -349,9 +349,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             if (view.isEnabled()) {
                 enroll(selectedProgram.uid(), null);
             } else
-                this.view.displayMessage("Select a program to enable enrolling");
+                this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
         else
-            this.view.displayMessage("You don't have the requiered permission");
+            this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
     }
 
     @Override

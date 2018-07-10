@@ -67,7 +67,7 @@ public class NotesFragment extends FragmentGlobalAbstract {
             noteAdapter.addNote(binding.editNote.getText().toString());
             clearNote(view);
         } else
-            activity.displayMessage("You don't have the required permission for this action");
+            activity.displayMessage(getString(R.string.search_access_error));
     }
 
     public void clearNote(View view) {
