@@ -432,14 +432,19 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         new CustomDialog(
                 getAbstracContext(),
                 getAbstracContext().getString(R.string.missing_mandatory_fields_title),
-                getAbstracContext().getString(R.string.missing_mandatory_fields_text),
-                getAbstracContext().getString(R.string.missing_mandatory_fields_go_back),
+                isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_text) :
+                        getAbstracContext().getString(R.string.missing_mandatory_fields_events),
+                isEnrollment ? getAbstracContext().getString(R.string.missing_mandatory_fields_go_back) :
+                        getAbstracContext().getString(R.string.button_ok),
                 getAbstracContext().getString(R.string.cancel),
                 RC_GO_BACK,
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        deleteAllSavedDataAndGoBack();
+                        if (isEnrollment)
+                            deleteAllSavedDataAndGoBack();
+                        else
+                            getActivity().finish();
                     }
 
                     @Override

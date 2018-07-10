@@ -65,16 +65,19 @@ public class QRCodeGenerator implements QRInterface {
                     bitmaps.add(new QrViewModel(ENROLLMENT_JSON, transform(ENROLLMENT_JSON, gson.toJson(data))));
                     return data;
                 })
-
-                .flatMap(data -> Observable.fromIterable(data)
-                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
-                                .mapToList(EventModel::create)
-                                .map(eventList -> {
-                                    for (EventModel eventModel : eventList) {
-                                        bitmaps.add(new QrViewModel(EVENTS_JSON, transform(EVENTS_JSON, gson.toJson(eventModel))));
-                                    }
-                                    return bitmaps;
-                                })))
+                .flatMap(data ->
+                        Observable.fromIterable(data)
+                                .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
+                                        .mapToList(EventModel::create)
+                                        .map(eventList -> {
+                                                    for (EventModel eventModel : eventList) {
+                                                        bitmaps.add(new QrViewModel(EVENTS_JSON, transform(EVENTS_JSON, gson.toJson(eventModel))));
+                                                    }
+                                                    return bitmaps;
+                                                }
+                                        )
+                                )
+                )
                 .map(data -> bitmaps);
     }
 

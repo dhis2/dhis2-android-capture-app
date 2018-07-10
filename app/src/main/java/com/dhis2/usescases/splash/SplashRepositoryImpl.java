@@ -26,6 +26,11 @@ public class SplashRepositoryImpl implements SplashRepository {
 
     private final String EXPIRED_EVENTS = "SELECT * FROM Event WHERE Event.dueDate IS NOT NULL";
 
+    private final String EXPIRED_PERIOD_EVENTS = String.format("SELECT %s.%s, %s.%s, %s.%s, %s.%s FROM Event " +
+                    "JOIN Program ON Event.program = Program.uid WHERE Event.status = 'COMPLETED'",
+            EventModel.TABLE, EventModel.Columns.COMPLETE_DATE, ProgramModel.TABLE, ProgramModel.Columns.EXPIRY_DAYS,
+            ProgramModel.TABLE, ProgramModel.Columns.COMPLETE_EVENTS_EXPIRY_DAYS, ProgramModel.TABLE, ProgramModel.Columns.EXPIRY_PERIOD_TYPE);
+
     private final BriteDatabase briteDatabase;
 
     SplashRepositoryImpl(BriteDatabase briteDatabase) {
@@ -48,6 +53,22 @@ public class SplashRepositoryImpl implements SplashRepository {
                         .map(eventModel -> switchToExpired(eventModel))
                         .toList()
                 )
+                /*.flatMap(eventModels -> briteDatabase.createQuery(EventModel.TABLE, EXPIRED_PERIOD_EVENTS)
+                        .mapToList(cursor -> Quartet.create(cursor.getString(0),
+                                cursor.getInt(1),
+                                cursor.getInt(2),
+                                cursor.getString(3)))
+                        .map(eventModels1 -> Observable.fromIterable(eventModels1)
+                                .filter(completedEvent ->
+                                        DateUtils.getInstance().hasExpired(
+                                                DateUtils.databaseDateFormat().parse(completedEvent.val0()),
+                                                completedEvent.val1(),
+                                                completedEvent.val2(),
+                                                PeriodType.valueOf(completedEvent.val3())))
+                                .map(completedEvent-> switchToExpired(completedEvent))
+                                .toList()
+                        )
+                        )*/
                 .flatMap(eventModels -> Observable.just(true));
     }
 

@@ -113,7 +113,7 @@ public class SyncDataService extends JobService implements SyncView {
                 syncPresenter.syncTrackedEntities();
                 break;
             case TEI:
-                jobFinished(job, job.isRecurring());
+//                jobFinished(job, job.isRecurring());
                 syncPresenter.onDetach();
                 break;
         }

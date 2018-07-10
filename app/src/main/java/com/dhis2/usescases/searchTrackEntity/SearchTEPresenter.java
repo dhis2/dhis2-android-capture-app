@@ -241,8 +241,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(data -> onlineFragment.setItems(
-                                    data, programModels, formData),
+                            .subscribe(data -> {
+                                        if (!onlineFragment.isDetached())
+                                            onlineFragment.setItems(data, programModels, formData);
+                                    },
                                     Timber::d
                             )
             );

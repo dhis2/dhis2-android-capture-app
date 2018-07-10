@@ -227,5 +227,8 @@
     <string name="login_error_error_response">El servidor no ha podido completar su solicitur.</string>
     <string name="login_error_default">Ha habido un problema intentando conectarse al servidor.</string>
     <string name="login_error">Error de Acceso</string>
+    <string name="event_skipped">Evento Omitido</string>
+    <string name="event_schedule">Evento Programado</string>
+    <string name="missing_mandatory_fields_events">Faltan algunos campos obligatorios. Puedes cerrar la edición, pero este evento no podrá ser completado.</string>
 
 </resources>

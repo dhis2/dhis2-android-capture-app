@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -66,6 +66,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private ProgramModel programModel;
     private CategoryComboModel catCombo;
     private String programId;
+    private List<OrganisationUnitModel> orgUnits;
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
                                  @NonNull EventInitialRepository eventInitialRepository,
@@ -152,25 +153,25 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         if (eventId != null)
             getEventSections(eventId);
 
-        if (orgInitId != null){
+        if (orgInitId != null) {
             compositeDisposable.add(
                     metadataRepository.getOrganisationUnit(orgInitId)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(organisationUnitModel ->
-                                    view.setOrgUnit(organisationUnitModel.uid(), organisationUnitModel.displayName()),
-                            Timber::d
-                    ));
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(organisationUnitModel ->
+                                            view.setOrgUnit(organisationUnitModel.uid(), organisationUnitModel.displayName()),
+                                    Timber::d
+                            ));
         }
 
         compositeDisposable.add(
                 eventInitialRepository.accessDataWrite(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setAccessDataWrite,
-                        Timber::e
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setAccessDataWrite,
+                                Timber::e
+                        )
 
         );
     }
@@ -181,7 +182,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false)),
+                        orgUnits -> {
+                            this.orgUnits = orgUnits;
+                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, false));
+                        },
                         throwable -> view.renderError(throwable.getMessage())
                 ));
     }
@@ -205,6 +209,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         view::onEventSections,
                         Timber::e
                 ));
+    }
+
+    @Override
+    public List<OrganisationUnitModel> getOrgUnits() {
+        return orgUnits;
     }
 
     @Override

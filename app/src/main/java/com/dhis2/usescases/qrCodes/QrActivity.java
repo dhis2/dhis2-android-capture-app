@@ -12,6 +12,7 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityQrCodesBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
     public QrContracts.Presenter presenter;
 
     private ActivityQrCodesBinding binding;
+    private QrAdapter qrAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,16 +42,20 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
         binding.setName(getString(R.string.share_qr));
         binding.setPresenter(presenter);
         String teiUid = getIntent().getStringExtra("TEI_UID");
+
+        qrAdapter = new QrAdapter(getSupportFragmentManager(), new ArrayList<>());
+        binding.viewPager.setAdapter(qrAdapter);
+
         presenter.generateQrs(teiUid, this);
     }
 
     @Override
     public void showQR(@NonNull List<QrViewModel> bitmaps) {
-        QrAdapter qrAdapter = new QrAdapter(getSupportFragmentManager(), bitmaps);
-        binding.viewPager.setAdapter(qrAdapter);
+
+        qrAdapter.addItems(bitmaps);
 
         binding.setTitle(getString(R.string.qr_id));
-        binding.page.setText("1/" + bitmaps.size());
+        binding.page.setText(String.format("1/%d", qrAdapter.getCount()));
         binding.prev.setVisibility(View.GONE);
         binding.next.setVisibility(View.VISIBLE);
 
@@ -61,23 +67,21 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
 
             @Override
             public void onPageSelected(int position) {
-                binding.page.setText(position + 1 + "/" + bitmaps.size());
+                binding.page.setText(String.format("%d/%d", position + 1, bitmaps.size()));
 
-                if (position + 1 == bitmaps.size()){
+                if (position + 1 == bitmaps.size()) {
                     binding.next.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     binding.next.setVisibility(View.VISIBLE);
                 }
 
-                if (position == 0){
+                if (position == 0) {
                     binding.prev.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     binding.prev.setVisibility(View.VISIBLE);
                 }
 
-                switch (bitmaps.get(position).getQrType()){
+                switch (bitmaps.get(position).getQrType()) {
                     case TEI_JSON:
                         binding.setTitle(getString(R.string.qr_id));
                         break;

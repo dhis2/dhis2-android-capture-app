@@ -12,6 +12,7 @@ import com.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -21,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -49,6 +49,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     private @LastSearchType
     int lastSearchType;
     private CategoryComboModel mCatCombo;
+    private List<OrganisationUnitModel> orgUnits;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -73,19 +74,22 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
 
         compositeDisposable.add(
                 programEventDetailRepository.writePermission(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        view::setWritePermission,
-                        Timber::e
-                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setWritePermission,
+                                Timber::e
+                        )
         );
     }
 
     @Override
     public void getOrgUnits(Date date) {
         compositeDisposable.add(programEventDetailRepository.orgUnits()
-                .map(orgUnits -> OrgUnitUtils.renderTree(view.getContext(), orgUnits,true))
+                .map(orgUnits -> {
+                    this.orgUnits = orgUnits;
+                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
+                })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -163,6 +167,11 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
                 .subscribe(
                         view::setData,
                         throwable -> view.renderError(throwable.getMessage())));
+    }
+
+    @Override
+    public List<OrganisationUnitModel> getOrgUnits() {
+        return this.orgUnits;
     }
 
     @SuppressLint("CheckResult")

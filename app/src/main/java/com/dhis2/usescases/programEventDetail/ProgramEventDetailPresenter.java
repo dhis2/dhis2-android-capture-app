@@ -7,6 +7,7 @@ import com.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -22,7 +23,6 @@ import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
@@ -39,7 +39,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
         view = mview;
-        this.programId=programId;
+        this.programId = programId;
 
         interactor.init(view, programId, period);
     }
@@ -68,6 +68,11 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery) {
         interactor.getProgramEventsWithDates(programId, dates, period, orgUnitQuery);
+    }
+
+    @Override
+    public List<OrganisationUnitModel> getOrgUnits() {
+        return interactor.getOrgUnits();
     }
 
     @Override

@@ -52,11 +52,13 @@ public class SyncMetadataService extends JobService implements SyncView {
     @Override
     public boolean onStartJob(JobParameters job) {
         this.job = job;
-        syncPresenter.onAttach(this);
-        syncResult = SyncResult.idle();
-        if (!syncResult.inProgress()) {
-            Log.d("SyncMetaDataService", "Metadata job started");
-            syncPresenter.syncMetaData();
+        if (syncPresenter != null) {
+            syncPresenter.onAttach(this);
+            syncResult = SyncResult.idle();
+            if (!syncResult.inProgress()) {
+                Log.d("SyncMetaDataService", "Metadata job started");
+                syncPresenter.syncMetaData();
+            }
         }
         return true;
     }
@@ -93,10 +95,10 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();
             } else if (result.isSuccess()) {
                 syncPresenter.onDetach();
-                if (job.isRecurring())
+                /*if (job.isRecurring())
                     jobFinished(job, true);
                 else
-                    jobFinished(job, false);
+                    jobFinished(job, false);*/
                 notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
                         .setContentTitle(getTextForNotification() + " " + getString(R.string.sync_complete_title))
@@ -105,10 +107,10 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();
             } else if (!result.isSuccess()) {
                 syncPresenter.onDetach();
-                if (job.isRecurring())
+               /* if (job.isRecurring())
                     jobFinished(job, true);
                 else
-                    jobFinished(job, false);
+                    jobFinished(job, false);*/
                 notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification() + " " + getString(R.string.sync_error_title))

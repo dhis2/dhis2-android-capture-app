@@ -138,7 +138,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     public void goBack(boolean changedEventStatus) {
         if (changedEventStatus) {
             Intent intent = new Intent();
-            if (eventDetailModel.getEventModel().status() == EventStatus.ACTIVE)
+            if (eventDetailModel.getEventModel().status() == EventStatus.COMPLETED)
                 intent.putExtra(Constants.EVENT_UID, eventUid);
             setResult(Activity.RESULT_OK, intent);
         }

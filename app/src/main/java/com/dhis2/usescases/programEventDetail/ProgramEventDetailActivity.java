@@ -302,7 +302,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         treeView.setSelectionModeEnabled(true);
 
         binding.treeViewContainer.addView(treeView.getView());
-//        treeView.expandAll();
+        if (presenter.getOrgUnits().size() < 25)
+            treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {

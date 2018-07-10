@@ -98,7 +98,13 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                           @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
                                           @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
 
+
         Date createDate = Calendar.getInstance().getTime();
+
+        if (date.after(createDate))
+            return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
+                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);
+
 
         String uid = codeGenerator.generate();
 

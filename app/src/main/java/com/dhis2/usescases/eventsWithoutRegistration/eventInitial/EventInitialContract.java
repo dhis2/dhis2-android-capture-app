@@ -12,6 +12,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -113,6 +114,8 @@ public class EventInitialContract {
         void getOrgUnits(String programId);
 
         void getEventSections(@NonNull String eventId);
+
+        List<OrganisationUnitModel> getOrgUnits();
     }
 
 }

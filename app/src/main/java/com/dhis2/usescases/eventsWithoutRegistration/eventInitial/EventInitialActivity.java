@@ -404,7 +404,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
         binding.treeViewContainer.addView(treeView.getView());
-//        treeView.expandAll();
+
+        if (presenter.getOrgUnits().size() < 25)
+            treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (node.isSelectable()) {
@@ -478,7 +480,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
-        if (!eventCreationType.equals(SCHEDULENEW)) {
+        if (!eventCreationType.equals(SCHEDULENEW) && !eventCreationType.equals(REFERRAL)) {
             startFormActivity(eventUid);
         } else {
             finish();

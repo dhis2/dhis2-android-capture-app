@@ -9,20 +9,20 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class QrPresenter implements QrContracts.Presenter{
+public class QrPresenter implements QrContracts.Presenter {
 
     private final QRInterface qrInterface;
     private QrContracts.View view;
 
-    QrPresenter(QRInterface qrInterface){
+    QrPresenter(QRInterface qrInterface) {
         this.qrInterface = qrInterface;
     }
 
     @SuppressLint({"RxLeakedSubscription", "CheckResult"})
-    public void generateQrs(@NonNull String teUid, @NonNull QrContracts.View view){
+    public void generateQrs(@NonNull String teUid, @NonNull QrContracts.View view) {
         this.view = view;
         qrInterface.teiQRs(teUid)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view::showQR,

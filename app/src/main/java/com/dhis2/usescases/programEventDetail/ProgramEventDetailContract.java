@@ -7,6 +7,8 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -78,6 +80,7 @@ public class ProgramEventDetailContract {
 
         void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery);
 
+        List<OrganisationUnitModel> getOrgUnits();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
@@ -95,5 +98,7 @@ public class ProgramEventDetailContract {
         Observable<List<String>> getEventDataValueNew(EventModel event);
 
         void getProgramEventsWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery);
+
+        List<OrganisationUnitModel> getOrgUnits();
     }
 }

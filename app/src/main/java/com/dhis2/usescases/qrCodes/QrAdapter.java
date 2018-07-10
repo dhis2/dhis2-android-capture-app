@@ -26,4 +26,11 @@ public class QrAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return bitmaps.size();
     }
+
+    public void addItems(List<QrViewModel> bitmaps) {
+        this.bitmaps.clear();
+        this.bitmaps.addAll(bitmaps);
+        notifyDataSetChanged();
+    }
+
 }
