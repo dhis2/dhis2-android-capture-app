@@ -2,6 +2,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
@@ -46,6 +48,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             + OrganisationUnitModel.Columns.CLOSED_DATE + " IS NULL OR " +
             " date(" + OrganisationUnitModel.Columns.CLOSED_DATE + ") >= date(?)) " +
             "AND OrganisationUnitProgramLink .program = ?";
+
+    private static final String SELECT_CAT_OPTION_FROM_OPTION_COMBO = String.format(
+            "SELECT %s.%s FROM %s WHERE %s.%s = ?",
+            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION, CategoryOptionComboCategoryOptionLinkModel.TABLE,
+            CategoryOptionComboCategoryOptionLinkModel.TABLE, CategoryOptionComboCategoryOptionLinkModel.Columns.CATEGORY_OPTION_COMBO
+    );
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
@@ -108,6 +116,14 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         String uid = codeGenerator.generate();
 
+        if (categoryOptionComboUid != null) {
+            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
+            if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
+                categoryOptionsUid = cursorCatOpt.getString(0);
+                cursorCatOpt.close();
+            }
+        }
+
         EventModel eventModel = EventModel.builder()
                 .uid(uid)
                 .enrollment(enrollmentUid)
@@ -123,7 +139,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .completedDate(null)
                 .dueDate(null)
                 .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)
+                .attributeCategoryOptions(categoryOptionsUid)//TODO: For now categoryOptionsUid is always null. Should check SELECT_CAT_OPTION_FROM_OPTION_COMBO
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 

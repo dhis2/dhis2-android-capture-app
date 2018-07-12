@@ -4,23 +4,29 @@
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
-            name="renderType"
+            name="label"
             type="java.lang.String" />
 
         <variable
-            name="isEditable"
-            type="android.databinding.ObservableBoolean" />
+            name="optionSet"
+            type="java.lang.String" />
 
+        <variable
+            name="isBgTransparent"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="initialValue"
+            type="java.lang.String" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:padding="5dp">
+        android:padding="5dp"
+        tools:background="?attr/colorPrimary">
 
         <ImageView
             android:id="@+id/renderImage"
@@ -30,25 +36,25 @@
             android:layout_marginBottom="5dp"
             android:visibility="gone"
             tools:srcCompat="@drawable/sierra_leone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/renderImage"
-            android:theme="@style/loginInputText"
-            tools:hint="hint">
+            android:textColorHint="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent"
+            tools:hint="this is the hint">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
-                android:maxLines="1"
                 android:textAlignment="textStart"
                 android:textAllCaps="false"
-                android:textColor="?colorPrimary"
+                android:textColor="?colorAccent"
                 android:textSize="15sp"
                 tools:text="hello" />
 

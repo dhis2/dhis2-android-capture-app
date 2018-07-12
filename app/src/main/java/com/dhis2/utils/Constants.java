@@ -33,20 +33,21 @@ public class Constants {
     public static final int REQ_ADD_RELATIONSHIP = 2002;
 
     // METADATA SYNC TIME RANGES
-    public static final int TIME_DAILY  = 86400;
+    public static final int TIME_DAILY = 86400;
     public static final int TIME_WEEKLY = 604800;
     public static final int TIME_MANUAL = 0;
 
     // DATA SYNC TIME RANGES
-    public static final int TIME_15M    = 900;
+    public static final int TIME_15M = 900;
     public static final int TIME_HOURLY = 3600;
 
     public static final String EVENT_UID = "EVENT_UID";
 
     //EVENT_CREATION
+    public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
+    public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
 
-
-    private Constants(){
+    private Constants() {
         // hide public constructor
     }
 }

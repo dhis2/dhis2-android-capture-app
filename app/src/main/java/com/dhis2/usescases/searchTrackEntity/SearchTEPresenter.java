@@ -219,7 +219,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .orgUnits(orgUnitsUids)
                                         .orgUnitMode(OuMode.ACCESSIBLE)
                                         .build();
-                                return Observable.defer(() -> Observable.fromCallable(d2.queryTrackedEntityInstances(query))).toFlowable(BackpressureStrategy.LATEST)
+                                return Flowable.defer(() -> Flowable.fromCallable(d2.queryTrackedEntityInstances(query)))
                                         .observeOn(Schedulers.io())
                                         .subscribeOn(Schedulers.io())
                                         .doOnError(this::handleError);

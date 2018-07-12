@@ -203,8 +203,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onDetach() {
         super.onDetach();
-        ((App) getActivity().getApplicationContext())
-                .releaseFormComponent();
     }
 
     @Override
