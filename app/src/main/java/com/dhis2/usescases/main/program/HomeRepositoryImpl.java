@@ -67,7 +67,8 @@ class HomeRepositoryImpl implements HomeRepository {
             "Program.programType," +
             "Program.trackedEntityType," +
             "Program.description " +
-            "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid ";
+            "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid";
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 

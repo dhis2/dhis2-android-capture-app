@@ -55,7 +55,7 @@ import static com.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 
 
 /**
- * Created by Cristian on 01/03/2018.
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
@@ -266,24 +266,37 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             programStageModel.uid(),
                             date,
                             selectedOrgUnit,
-                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
-                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                            null,
+                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 } else if (eventCreationType.equals(SCHEDULENEW)) {
-                    presenter.scheduleEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
-                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
-                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                    presenter.scheduleEvent(
+                            enrollmentUid,
+                            programStageModel.uid(),
+                            date,
+                            selectedOrgUnit,
+                            null,
+                            catComboIsDefaultOrNull() ?
+                                    null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 } else {
-                    presenter.createEvent(enrollmentUid, programStageModel.uid(), date, selectedOrgUnit,
-                            null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
-                            (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                    presenter.createEvent(
+                            enrollmentUid,
+                            programStageModel.uid(),
+                            date,
+                            selectedOrgUnit,
+                            null,
+                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 }
             } else {
-                presenter.editEvent(programStageModel.uid(), eventId, formattedDate, selectedOrgUnit,
-                        null,/*(selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),*/
-                        (selectedCatCombo == null || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid())) ? null : selectedCatOptionCombo.uid(),
+                presenter.editEvent(
+                        programStageModel.uid(),
+                        eventId,
+                        formattedDate,
+                        selectedOrgUnit,
+                        null,
+                        catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                         selectedLat, selectedLon);
             }
         });
@@ -321,15 +334,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private void checkActionButtonVisibility() {
         if (isFormCompleted() && isEventOpen()) {
             binding.actionButton.setVisibility(View.VISIBLE);
-        } else {
-            binding.actionButton.setText("Check");
+        } else if (isFormCompleted()) {
+            binding.actionButton.setText(getString(R.string.check_event));
             binding.actionButton.setVisibility(View.VISIBLE);
+        } else {
+            binding.actionButton.setVisibility(View.GONE);
         }
     }
 
     private boolean isFormCompleted() {
 
-        if (selectedCatCombo != null && !CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()))
+        if (!catComboIsDefaultOrNull())
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
@@ -519,7 +534,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             selectedCatCombo = catCombo;
 
-            if (CategoryComboModel.DEFAULT_UID.equals(catCombo.uid()) || catComboList == null || catComboList.isEmpty()) {
+            if (catComboIsDefaultOrNull() || catComboList.isEmpty()) {
                 binding.catCombo.setVisibility(View.GONE);
                 binding.catComboLine.setVisibility(View.GONE);
             } else {
@@ -703,5 +718,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
         }
+    }
+
+    private boolean catComboIsDefaultOrNull() {
+        return (selectedCatCombo == null || selectedCatCombo.isDefault() || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()));
     }
 }

@@ -412,10 +412,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<List<OptionModel>> optionSet(String optionSetId) {
+    public List<OptionModel> optionSet(String optionSetId) {
         String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
-        return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET, optionSetId)
-                .mapToList(OptionModel::create);
+        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetId);
+        List<OptionModel> options = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                options.add(OptionModel.create(cursor));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return options;
     }
 
     @Override
@@ -578,7 +586,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<String> getServerUrl(){
+    public Observable<String> getServerUrl() {
         return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo")
                 .mapToOne(cursor -> cursor.getString(0));
     }

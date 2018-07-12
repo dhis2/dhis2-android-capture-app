@@ -9,15 +9,19 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.TypedValue;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,6 +30,7 @@ import android.widget.TextView;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.OptionAdapter;
+import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CatComboAdapter;
@@ -38,6 +43,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.resource.ResourceModel;
@@ -783,7 +789,7 @@ public class Bindings {
                     );
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    /*@SuppressLint({"CheckResult", "RxLeakedSubscription"})
     @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
     public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
         if (metadataRepository != null && optionSet != null) {
@@ -808,6 +814,12 @@ public class Bindings {
                             },
                             Timber::d);
         }
+    }*/
+
+
+    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
+    public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
+           return metadataRepository.optionSet(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")

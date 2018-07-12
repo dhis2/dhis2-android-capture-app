@@ -63,7 +63,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
         this.section = args.section();
 
-        ((App) getActivity().getApplicationContext())
+        ((App) context.getApplicationContext())
                 .formComponent()
                 .plus(new DataEntryModule(context, args),
                         new DataEntryStoreModule(args))
@@ -128,7 +128,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         //TODO: When event/enrollment ends if there is a message it should be shown. Only if canComplete, user can finish
     }
 
-    public boolean checkMandatory(){
+    public boolean checkMandatory() {
         return dataEntryAdapter.mandatoryOk();
     }
 
