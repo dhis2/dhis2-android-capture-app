@@ -1,12 +1,10 @@
 package com.dhis2.usescases.main;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 
-import com.dhis2.data.service.SyncService;
 import com.dhis2.data.user.UserRepository;
 import com.dhis2.usescases.login.LoginActivity;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -78,6 +76,7 @@ final class MainPresenter implements MainContracts.Presenter {
         if (pin != null) {
             prefs.edit().putString("pin", pin).apply();
         }
+        jobDispatcher.cancelAll();
         view.startActivity(LoginActivity.class, null, true, true, null);
     }
 

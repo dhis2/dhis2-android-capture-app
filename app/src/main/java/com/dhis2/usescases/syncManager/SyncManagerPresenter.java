@@ -83,11 +83,10 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void syncData(int seconds) {
-        String tag = "Data";
+    public void syncData(int seconds, String scheduleTag) {
         Job dataJob;
 
-        dispatcher.cancel(tag);
+        dispatcher.cancel(scheduleTag);
 
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
@@ -99,7 +98,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
         dataJob = dispatcher.newJobBuilder()
                 .setService(SyncDataService.class)
-                .setTag(tag)
+                .setTag(scheduleTag)
                 .setRecurring(isRecurring)
                 .setTrigger(trigger)
                 .setReplaceCurrent(false)
@@ -113,11 +112,10 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
-    public void syncMeta(int seconds) {
-        String tag = "MetaData";
+    public void syncMeta(int seconds, String scheduleTag) {
         Job metaJob;
 
-        dispatcher.cancel(tag);
+        dispatcher.cancel(scheduleTag);
 
         boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
@@ -129,7 +127,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
         metaJob = dispatcher.newJobBuilder()
                 .setService(SyncMetadataService.class)
-                .setTag(tag)
+                .setTag(scheduleTag)
                 .setRecurring(isRecurring)
                 .setTrigger(trigger)
                 .setReplaceCurrent(true)
