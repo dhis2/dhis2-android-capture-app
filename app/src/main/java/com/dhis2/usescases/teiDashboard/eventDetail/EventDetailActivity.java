@@ -84,7 +84,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, FormFragment.newInstance(
                         FormViewArguments.createForEvent(eventUid), false,
-                        false), "EVENT_DATA_ENTRY")
+                        false, true), "EVENT_DATA_ENTRY")
                 .commit();
     }
 

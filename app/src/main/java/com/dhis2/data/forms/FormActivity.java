@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.MenuItem;
 
+import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
@@ -65,6 +66,13 @@ public class FormActivity extends ActivityGlobalAbstract {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((App) getActivity().getApplicationContext())
+                .releaseFormComponent();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
@@ -76,10 +84,9 @@ public class FormActivity extends ActivityGlobalAbstract {
 
     @Override
     public void onBackPressed() {
-        if (fragment instanceof FormView){
+        if (fragment instanceof FormView) {
             ((FormView) fragment).onBackPressed();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }

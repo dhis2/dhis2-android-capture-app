@@ -117,7 +117,7 @@ public interface MetadataRepository {
 
 
     /*OPTION SET*/
-    Observable<List<OptionModel>> optionSet(String optionSetId);
+    List<OptionModel> optionSet(String optionSetId);
 
     /*RESOURCE*/
     Observable<ResourceModel> getLastSync(int resourceId);

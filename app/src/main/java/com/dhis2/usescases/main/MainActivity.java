@@ -201,11 +201,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 tag = getString(R.string.jira_report);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            case R.id.events:
+            /*case R.id.events:
                 fragment = new EventQrFragment();
                 tag = getString(R.string.QR_SCANNER);
                 binding.filter.setVisibility(View.GONE);
-                break;
+                break;*/
             case R.id.menu_about:
                 fragment = new AboutFragment();
                 tag = getString(R.string.about);

@@ -12,6 +12,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -55,6 +56,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
     private static final String FORM_VIEW_ACTIONBAR = "formViewActionbar";
     private static final String IS_ENROLLMENT = "isEnrollment";
+    private static final String FORM_VIEW_TABLAYOUT = "formViewTablayout";
     private static final int RC_GO_BACK = 101;
 
     View nextButton;
@@ -89,6 +91,21 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         args.putParcelable(FORM_VIEW_ARGUMENTS, formViewArguments);
         args.putBoolean(IS_ENROLLMENT, isEnrollment);
         args.putBoolean(FORM_VIEW_ACTIONBAR, showActionBar);
+        boolean showTabLayout = false;
+        if(showActionBar)
+            showTabLayout = true;
+        args.putBoolean(FORM_VIEW_TABLAYOUT, showTabLayout);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static Fragment newInstance(@NonNull FormViewArguments formViewArguments, boolean isEnrollment, boolean showActionBar, boolean showTabLayout) {
+        FormFragment fragment = new FormFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(FORM_VIEW_ARGUMENTS, formViewArguments);
+        args.putBoolean(IS_ENROLLMENT, isEnrollment);
+        args.putBoolean(FORM_VIEW_ACTIONBAR, showActionBar);
+        args.putBoolean(FORM_VIEW_TABLAYOUT, showTabLayout);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,12 +119,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        NestedScrollView nestedScrollView= view.findViewById(R.id.content_frame);
         nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
         View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
+        View datesLayout = view.findViewById(R.id.data_entry_dates);
         reportDate = view.findViewById(R.id.report_date);
         incidentDateLayout = view.findViewById(R.id.incident_date_layout);
         incidentDate = view.findViewById(R.id.incident_date_text);
@@ -118,7 +136,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
         if (getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
             setupActionBar();
-        else {
+        else if (getArguments().getBoolean(FORM_VIEW_TABLAYOUT)) {
+            /*ViewGroup.LayoutParams lp = nestedScrollView.getLayoutParams();
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            nestedScrollView.setLayoutParams(lp);*/
+            toolbar.setVisibility(View.GONE);
+            datesLayout.setVisibility(View.GONE);
+            nextButton.setVisibility(View.GONE);
+            tabLayout.setVisibility(View.VISIBLE);
+        } else {
             appBarLayout.setVisibility(View.GONE);
             nextButton.setVisibility(View.GONE);
         }
@@ -203,8 +229,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onDetach() {
         super.onDetach();
-        ((App) getActivity().getApplicationContext())
-                .releaseFormComponent();
     }
 
     @Override
