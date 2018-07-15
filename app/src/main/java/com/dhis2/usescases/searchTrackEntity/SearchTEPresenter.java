@@ -2,11 +2,8 @@ package com.dhis2.usescases.searchTrackEntity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
@@ -14,9 +11,10 @@ import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormViewArguments;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.data.user.UserRepository;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
+import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.D2CallException;
@@ -24,7 +22,12 @@ import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModelBuilder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModelBuilder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
 
@@ -63,13 +66,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     private List<ProgramModel> programModels;
     private HashMap<String, String> queryData;
 
-    private HashMap<String, View> selectedTeiToDownloadIcon;
-    private HashMap<String, View> selectedTeiToDownloadProgress;
-    private HashMap<String, Integer> selectedTeiToDownloadPosition;
     private List<OrganisationUnitModel> orgUnits;
     private List<TrackedEntityAttributeModel> formData;
 
-    public SearchTEPresenter(SearchRepository searchRepository, UserRepository userRepository, MetadataRepository metadataRepository, D2 d2) {
+    public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
         this.metadataRepository = metadataRepository;
         this.searchRepository = searchRepository;
@@ -139,7 +139,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             else
                                 queryData.remove(data.id());
                             getTrakedEntities();
-                            view.restartOnlineFragment();
                         },
                         Timber::d)
         );
@@ -156,48 +155,55 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public void getTrakedEntities() {
-        compositeDisposable.add(searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData)
-                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
-                .map(teiList -> {
-                    String messageId = "";
-                    if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-                        if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
-                            messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                        else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
-                            messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                        else if (teiList.isEmpty() && !queryData.isEmpty())
-                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.isEmpty())
-                            messageId = view.getContext().getString(R.string.search_init);
-                    } else if (selectedProgram == null) {
-                        if (queryData.isEmpty())
-                            messageId = view.getContext().getString(R.string.search_init);
-                        else if (teiList.isEmpty())
-                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
-                            messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-                        }
-                    } else {
-                        if (teiList.isEmpty() && !queryData.isEmpty())
-                            messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                        else if (teiList.isEmpty())
-                            messageId = view.getContext().getString(R.string.search_init);
-                    }
-                    return Pair.create(teiList, messageId);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view.swapListData(), Timber::d)
-        );
-    }
-
-    @Override
-    public void getOnlineTrackedEntities(SearchOnlineFragment onlineFragment) {
-        if (selectedProgram != null)
+        if (!NetworkUtils.isOnline(view.getContext()))
+            compositeDisposable.add(
+                    view.offlinePage()
+                            .startWith(0)
+                            .flatMap(page -> searchRepository.trackedEntityInstances(trackedEntity.uid(), selectedProgram, queryData, page).toFlowable(BackpressureStrategy.BUFFER))
+                            .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
+                            .map(trackedEntityInstanceModels -> {
+                                List<SearchTeiModel> teiModels = new ArrayList<>();
+                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
+                                    teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                return teiModels;
+                            })
+                            .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
+                            .map(teiList -> {
+                                String messageId = "";
+                                if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
+                                    if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                                        messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
+                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+                                    else if (teiList.isEmpty() && !queryData.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                } else if (selectedProgram == null) {
+                                    if (queryData.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                    else if (teiList.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
+                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+                                    }
+                                } else {
+                                    if (teiList.isEmpty() && !queryData.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                }
+                                return Pair.create(teiList, messageId);
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(view.swapTeiListData(), Timber::d)
+            );
+        else
             compositeDisposable.add(
                     view.onlinePage()
-                            .filter(page -> page > -1)
-                            .startWith(0)
+                            .filter(page -> page > 0)
+                            .startWith(1)
                             .flatMap(page -> {
                                 List<String> filterList = new ArrayList<>();
                                 if (queryData != null) {
@@ -225,31 +231,53 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .doOnError(this::handleError);
 
                             })
-                            .flatMap(teiList -> searchRepository.isOnLocalStorage(teiList).toFlowable(BackpressureStrategy.LATEST))
+                            .map(trackedEntityInstances -> {
+                                List<SearchTeiModel> teiList = new ArrayList<>();
+                                TrackedEntityInstanceModelBuilder teiBuilder = new TrackedEntityInstanceModelBuilder();
+
+                                for (TrackedEntityInstance tei : trackedEntityInstances) {
+                                    List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
+                                    TrackedEntityAttributeValueModelBuilder attrValueBuilder = new TrackedEntityAttributeValueModelBuilder(tei);
+                                    for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                                        attributeModels.add(attrValueBuilder.buildModel(attrValue));
+                                    }
+                                    SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
+                                    teiList.add(teiModel);
+                                }
+                                return teiList;
+                            })
+                            .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
                             .map(teiList -> {
                                 String messageId = "";
-                                if (selectedProgram != null && !selectedProgram.displayFrontPageList())
-                                    if (selectedProgram != null && queryData != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                                if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
+                                    if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
                                         messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList != null && teiList.size() > selectedProgram.maxTeiCountToReturn())
+                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
                                         messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                                    else if (teiList != null && teiList.isEmpty() && queryData != null && !queryData.isEmpty())
+                                    else if (teiList.isEmpty() && !queryData.isEmpty())
                                         messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList != null && teiList.isEmpty() && queryData != null && queryData.isEmpty())
+                                    else if (teiList.isEmpty())
                                         messageId = view.getContext().getString(R.string.search_init);
-                                return Pair.create(teiList == null ? new ArrayList<TrackedEntityInstance>() : teiList, messageId);
+                                } else if (selectedProgram == null) {
+                                    if (queryData.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                    else if (teiList.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
+                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+                                    }
+                                } else {
+                                    if (teiList.isEmpty() && !queryData.isEmpty())
+                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+                                    else if (teiList.isEmpty())
+                                        messageId = view.getContext().getString(R.string.search_init);
+                                }
+                                return Pair.create(teiList, messageId);
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(data -> {
-                                        if (!onlineFragment.isDetached())
-                                            onlineFragment.setItems(data, programModels, formData);
-                                    },
-                                    Timber::d
-                            )
+                            .subscribe(view.swapTeiListData(), Timber::d)
             );
-        else
-            onlineFragment.setItems(Pair.create(new ArrayList<>(), view.getContext().getString(R.string.teiType_search_online)), programModels, formData);
     }
 
     private void handleError(Throwable throwable) {
@@ -302,11 +330,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return selectedProgram;
     }
 
-    @Override
-    public List<ProgramModel> getProgramList() {
-        return programModels;
-    }
-
     //endregion
 
     @Override
@@ -336,11 +359,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onFabClick(View view, boolean downloadMode) {
-        if (downloadMode)
-            onDownloadClick(view);
-        else
-            onEnrollClick(view);
+    public void onFabClick(View view) {
+        onEnrollClick(view);
     }
 
     @Override
@@ -352,19 +372,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
         else
             this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
-    }
-
-    @Override
-    public void onDownloadClick(View fab) {
-       /* for (String teiUid : selectedTeiToDownloadIcon.keySet())
-            compositeDisposable.add(io.reactivex.Observable.fromCallable(d2.downloadTrackedEntityInstance(selectedTeiToDownloadIcon.keySet()))
-                    .doOnComplete(() -> selectedTeiToDownloadProgress.get(teiUid).setVisibility(View.GONE))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> view.removeTei(selectedTeiToDownloadPosition.get(teiUid)),
-                            t -> Log.d("ONLINE_SEARCH", t.getMessage()))
-            );*/
     }
 
     @Override
@@ -408,35 +415,38 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onTEIClick(String TEIuid) {
-        Bundle bundle = new Bundle();
-        bundle.putString("TEI_UID", TEIuid);
-        bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
-        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+    public void onTEIClick(String TEIuid, boolean isOnline) {
+        if (!isOnline) {
+            openDashboard(TEIuid);
+        } else
+            downloadTei(TEIuid);
+
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean isA) {
-        String relationshipType;
-        if (relationshipTypeUid == null)
-            relationshipType = selectedProgram.relationshipType();
-        else
-            relationshipType = relationshipTypeUid;
+    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean isA, boolean online) {
+        if (!online) {
+            String relationshipType;
+            if (relationshipTypeUid == null)
+                relationshipType = selectedProgram.relationshipType();
+            else
+                relationshipType = relationshipTypeUid;
 
-        Intent intent = new Intent();
-        if (isA)
-            intent.putExtra("TEI_A_UID", TEIuid);
-        else
-            intent.putExtra("TEI_B_UID", TEIuid);
-        intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
-        view.getAbstractActivity().setResult(RESULT_OK, intent);
-        view.getAbstractActivity().finish();
+            Intent intent = new Intent();
+            if (isA)
+                intent.putExtra("TEI_A_UID", TEIuid);
+            else
+                intent.putExtra("TEI_B_UID", TEIuid);
+            intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
+            view.getAbstractActivity().setResult(RESULT_OK, intent);
+            view.getAbstractActivity().finish();
+        } else {
+            downloadTeiForRelationship(TEIuid, relationshipTypeUid, isA);
+        }
     }
 
     @Override
-    public void downloadTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
-        mView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+    public void downloadTei(String teiUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
@@ -444,41 +454,24 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.removeTei(adapterPosition),
+                                data -> openDashboard(data.get(0).uid()),
                                 t -> Log.d("ONLINE_SEARCH", t.getMessage()))
         );
 
     }
 
     @Override
-    public boolean selectTei(View mView, String teiUid, ProgressBar progressBar, int adapterPosition) {
-
-        ImageView download = (ImageView) mView;
-
-        if (selectedTeiToDownloadIcon == null)
-            selectedTeiToDownloadIcon = new HashMap<>();
-
-        if (selectedTeiToDownloadPosition == null)
-            selectedTeiToDownloadPosition = new HashMap<>();
-
-        if (selectedTeiToDownloadProgress == null)
-            selectedTeiToDownloadProgress = new HashMap<>();
-
-        if (download.getColorFilter() != null) {
-            download.setColorFilter(ContextCompat.getColor(view.getContext(), R.color.green_7ed));
-            selectedTeiToDownloadIcon.put(teiUid, mView);
-            selectedTeiToDownloadProgress.put(teiUid, progressBar);
-            selectedTeiToDownloadPosition.put(teiUid, adapterPosition);
-        } else {
-            download.setColorFilter(null);
-            selectedTeiToDownloadIcon.remove(teiUid);
-            selectedTeiToDownloadProgress.remove(teiUid);
-            selectedTeiToDownloadPosition.remove(teiUid);
-        }
-
-        view.handleTeiDownloads(selectedTeiToDownloadIcon.isEmpty());
-
-        return false;
+    public void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid, boolean isA) {
+        List<String> teiUids = new ArrayList<>();
+        teiUids.add(TEIuid);
+        compositeDisposable.add(
+                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> addRelationship(TEIuid, relationshipTypeUid, isA, false),
+                                t -> Log.d("ONLINE_SEARCH", t.getMessage()))
+        );
     }
 
     @Override
@@ -486,8 +479,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         return searchRepository.getOrgUnits(selectedProgram != null ? selectedProgram.uid() : null);
     }
 
-    @Override
-    public List<TrackedEntityAttributeModel> getFormData() {
-        return formData;
+    private void openDashboard(String TEIuid) {
+        Bundle bundle = new Bundle();
+        bundle.putString("TEI_UID", TEIuid);
+        bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
+        view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 }

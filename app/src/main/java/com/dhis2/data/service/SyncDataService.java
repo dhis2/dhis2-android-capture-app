@@ -36,9 +36,12 @@ public class SyncDataService extends JobService implements SyncView {
     public void onCreate() {
         super.onCreate();
         // inject dependencies
-        ((App) getApplicationContext()).userComponent()
-                .plus(new DataServiceModule()).inject(this);
 
+        if (((App) getApplicationContext()).userComponent() == null)
+            stopSelf();
+        else
+            ((App) getApplicationContext()).userComponent()
+                    .plus(new DataServiceModule()).inject(this);
     }
 
     @Override

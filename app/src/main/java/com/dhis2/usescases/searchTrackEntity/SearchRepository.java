@@ -3,6 +3,8 @@ package com.dhis2.usescases.searchTrackEntity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -13,6 +15,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -32,7 +35,7 @@ public interface SearchRepository {
 
     Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(@NonNull String teType,
                                                                         @Nullable ProgramModel selectedProgram,
-                                                                        @Nullable HashMap<String, String> queryData);
+                                                                        @Nullable HashMap<String, String> queryData, Integer page);
 
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData);
@@ -40,4 +43,6 @@ public interface SearchRepository {
     Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
 
     Observable<List<TrackedEntityInstance>> isOnLocalStorage(List<TrackedEntityInstance> tei);
+
+    Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram);
 }

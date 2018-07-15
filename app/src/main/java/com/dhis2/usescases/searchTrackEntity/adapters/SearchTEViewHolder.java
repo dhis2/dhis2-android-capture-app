@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
-import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import com.dhis2.databinding.TrackEntityProgramsBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
@@ -16,14 +15,10 @@ import com.google.android.flexbox.FlexboxLayout;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by frodriguez on 11/7/2017.
@@ -41,55 +36,21 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(SearchTEContractsModule.Presenter presenter, TrackedEntityInstanceModel trackedEntityInstanceModel, MetadataRepository metadataRepository) {
+    public void bind(SearchTEContractsModule.Presenter presenter, SearchTeiModel searchTeiModel) {
         binding.setPresenter(presenter);
+        binding.setOverdue(searchTeiModel.isHasOverdue());
+        setEnrollment(searchTeiModel.getEnrollments());
+        setTEIData(searchTeiModel.getAttributeValues());
 
-        //--------------------------
-        //region ENROLLMENTS
-
-        compositeDisposable.add(
-                metadataRepository.getTEIEnrollments(trackedEntityInstanceModel.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::setEnrollment, Timber::d));
-        //endregion
-
-
-        //--------------------------
-        //region ATTRI
-        if (presenter.getProgramModel() == null)
-            compositeDisposable.add(
-                    metadataRepository.getTEIAttributeValues(trackedEntityInstanceModel.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData, Timber::d)
-
-            );
+        if (searchTeiModel.isOnline())
+            binding.syncState.setVisibility(View.GONE);
         else
-            compositeDisposable.add(
-                    metadataRepository.getTEIAttributeValues(presenter.getProgramModel().uid(), trackedEntityInstanceModel.uid())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(this::setTEIData, Timber::d)
+            binding.syncState.setVisibility(View.VISIBLE);
 
-            );
-        //endregion
+        binding.setSyncState(searchTeiModel.getTei().state());
 
-        //--------------------------
-        //region OVERDUE EVENTS
-        compositeDisposable.add(
-                metadataRepository.hasOverdue(presenter.getProgramModel() != null ? presenter.getProgramModel().uid() : null, trackedEntityInstanceModel.uid())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(hasOverDue -> binding.setOverdue(hasOverDue), Timber::d)
-        );
-        //endregion
+        itemView.setOnClickListener(view -> presenter.onTEIClick(searchTeiModel.getTei().uid(), searchTeiModel.isOnline()));
 
-        binding.setSyncState(trackedEntityInstanceModel.state());
-
-        binding.executePendingBindings();
-
-        itemView.setOnClickListener(view -> presenter.onTEIClick(trackedEntityInstanceModel.uid()));
     }
 
     private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
@@ -116,11 +77,10 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
             if (enrollment.followUp() != null && enrollment.followUp())
                 isFollowUp = true;
 
-            binding.setFollowUp(isFollowUp);
 
         }
+        binding.setFollowUp(isFollowUp);
         binding.viewMore.setVisibility(enrollments.size() > 2 ? View.VISIBLE : View.GONE);
-
-        binding.executePendingBindings();
     }
+
 }

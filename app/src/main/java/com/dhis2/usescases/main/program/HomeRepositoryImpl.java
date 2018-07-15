@@ -68,8 +68,8 @@ class HomeRepositoryImpl implements HomeRepository {
             "Program.trackedEntityType," +
             "Program.description " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid";
-    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE};
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid GROUP BY Program.uid";
+    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE,OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};

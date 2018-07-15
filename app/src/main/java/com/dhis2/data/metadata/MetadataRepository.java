@@ -120,7 +120,7 @@ public interface MetadataRepository {
     List<OptionModel> optionSet(String optionSetId);
 
     /*RESOURCE*/
-    Observable<ResourceModel> getLastSync(int resourceId);
+    Observable<ResourceModel> getLastSync(ResourceModel.Type resourceType);
 
     /*SETINGS*/
     Observable<Pair<String, Integer>> getTheme();

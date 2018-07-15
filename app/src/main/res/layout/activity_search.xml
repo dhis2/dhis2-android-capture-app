@@ -9,9 +9,6 @@
             name="presenter"
             type="com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
-        <variable
-            name="downloadMode"
-            type="android.databinding.ObservableBoolean" />
     </data>
 
     <RelativeLayout
@@ -86,25 +83,38 @@
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="end|bottom"
                 android:layout_margin="15dp"
-                android:onClick="@{(view)->presenter.onFabClick(view,downloadMode)}"
+                android:onClick="@{(view)->presenter.onFabClick(view)}"
                 android:tint="@color/yellow_fdd"
                 app:backgroundTint="?attr/colorPrimary"
                 app:fabSize="normal"
                 app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"
-                app:srcCompat='@{downloadMode ? @drawable/ic_download : @drawable/ic_add}' />
+                app:srcCompat='@{@drawable/ic_add}' />
 
-            <android.support.v4.widget.NestedScrollView
-                android:id="@+id/nestedScroll"
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/resultsPager"
+            <RelativeLayout
+                android:id="@+id/messageContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/message"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </android.support.v4.widget.NestedScrollView>
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    tools:text="You need to enter at least N attributes to do a search" />
+
+            </RelativeLayout>
 
             <!--END OF SCROLLING VIEW-->
 
@@ -138,59 +148,7 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="?android:attr/actionBarSize"
-                        android:background="?colorPrimary"
-                        android:gravity="center_vertical"
-                        android:padding="10dp"
-                        android:visibility="gone">
-
-                        <ProgressBar
-                            android:id="@+id/progress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/object_counter"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textColor="@color/yellow_fdd"
-                            android:textSize="20sp" />
-
-                        <Button
-                            android:id="@+id/button_add"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:background="@drawable/selector_enroll_button"
-                            android:onClick="@{(view)->presenter.onEnrollClick(view)}"
-                            android:text="@string/add_new"
-                            android:textAllCaps="true"
-                            android:textColor="?colorPrimary" />
-                    </LinearLayout>
-
-
                 </android.support.design.widget.CollapsingToolbarLayout>
-
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/searchTab"
-                    style="@style/DhisTabLayout"
-                    app:tabTextAppearance="@style/DhisTabText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.TabItem
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/local_results" />
-
-                    <android.support.design.widget.TabItem
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/online_results" />
-                </android.support.design.widget.TabLayout>
 
             </android.support.design.widget.AppBarLayout>
 

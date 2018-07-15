@@ -487,8 +487,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.format(Locale.getDefault(), "%.5f", latitude));
-        binding.lon.setText(String.format(Locale.getDefault(), "%.5f", longitude));
+        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
+        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
         checkActionButtonVisibility();
     }
 

@@ -59,66 +59,11 @@ public class LoginInteractor implements LoginContracts.Interactor {
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
         this.dispatcher = firebaseJobDispatcher;
-        init();
-    }
 
-    private void init() {
-        userManager = null;
-        if (((App) view.getContext().getApplicationContext()).getServerComponent() != null)
-            userManager = ((App) view.getContext().getApplicationContext()).getServerComponent().userManager();
-
-        if (userManager != null) {
-            disposable.add(userManager.isUserLoggedIn()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(isUserLoggedIn -> {
-                        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                "com.dhis2", Context.MODE_PRIVATE);
-                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
-                            view.startActivity(MainActivity.class, null, true, true, null);
-                        } else if (prefs.getBoolean("SessionLocked", false)) {
-                            view.getBinding().unlockLayout.setVisibility(View.VISIBLE);
-                        }
-
-                    }, Timber::e));
-        }
-    }
-
-    @UiThread
-    @Override
-    public void validateCredentials(@NonNull String serverUrl,
-                                    @NonNull String username, @NonNull String password) {
-
-        HttpUrl baseUrl = HttpUrl.parse(canonizeUrl(serverUrl));
-        if (baseUrl == null) {
-            return;
-        }
-
-        disposable.add(configurationRepository.configure(baseUrl)
-                .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
-                .switchMap(userManager -> {
-                    SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
-                            "com.dhis2", Context.MODE_PRIVATE);
-                    prefs.edit().putString("SERVER", serverUrl).apply();
-                    this.userManager = userManager;
-                    return userManager.logIn(username, password);
-                })
-                .map(user -> {
-                    if (user == null)
-                        return Response.error(404, null);
-                    else {
-                        return Response.success(null);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        LoginInteractor.this::handleResponse,
-                        LoginInteractor.this::handleError));
     }
 
 
-    @Override
+   /* @Override
     public void sync() {
 
         disposable.add(metadata()
@@ -134,9 +79,8 @@ public class LoginInteractor implements LoginContracts.Interactor {
                             throw new OnErrorNotImplementedException(throwable);
                         }));
 
-    }
+    }*/
 
-    @Override
     public void syncEvents() {
         disposable.add(
                 metadataRepository.getTheme()
@@ -161,7 +105,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
                 ));
     }
 
-    @Override
     public void syncTrackedEntities() {
 
         disposable.add(trackerData()
@@ -180,7 +123,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
 
     }
 
-    @Override
     public void syncReservedValues() {
         disposable.add(metadataRepository.getReserveUids()
                 .map(pairs -> {
@@ -232,86 +174,6 @@ public class LoginInteractor implements LoginContracts.Interactor {
         };
     }
 
-    @Override
-    public void handleResponse(@NonNull Response userResponse) {
-        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
-        Timber.d("Authentication response code: %s", userResponse.code());
-        if (userResponse.isSuccessful()) {
-            ((App) view.getContext().getApplicationContext()).createUserComponent();
-            view.saveUsersData();
-            if (NetworkUtils.isOnline(view.getContext())) {
-                syncMetadata();
-                view.handleSync();
-                sync();
-            } else
-                view.startActivity(MainActivity.class, null, true, true, null);
-        }
-    }
-
-    @Override
-    public void handleError(@NonNull Throwable throwable) {
-        Timber.e(throwable);
-        if (throwable instanceof IOException) {
-            view.renderInvalidServerUrlError();
-        } else if (throwable instanceof D2CallException) {
-            D2CallException d2CallException = (D2CallException) throwable;
-            switch (d2CallException.errorCode()) {
-                case LOGIN_PASSWORD_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case LOGIN_USERNAME_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case INVALID_DHIS_VERSION:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case ALREADY_AUTHENTICATED:
-                    handleResponse(Response.success(null));
-                    view.renderInvalidCredentialsError();
-                    break;
-                case API_UNSUCCESSFUL_RESPONSE:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case API_RESPONSE_PROCESS_ERROR:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                default:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-            }
-        } else {
-            view.renderUnexpectedError();
-        }
-    }
-
-
-    private String canonizeUrl(@NonNull String serverUrl) {
-        return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-    }
-
-    @Override
-    public void onDestroy() {
-        disposable.clear();
-    }
-
-    @Override
-    public void logOut() {
-        if (userManager != null)
-            disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> {
-                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
-                                prefs.edit().putBoolean("SessionLocked", false).apply();
-                                prefs.edit().putString("pin", null).apply();
-                                view.handleLogout();
-                            },
-                            t -> view.handleLogout()
-                    )
-            );
-    }
 
     private void syncMetadata() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);

@@ -33,7 +33,7 @@ public class CoordinateHolder extends FormViewHolder {
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) ->
                 processor.onNext(
                         RowAction.create(model.getValue().uid(),
-                                String.format(Locale.getDefault(),
+                                String.format(Locale.US,
                                         "[%.5f,%.5f]", latitude, longitude))
                 ));
         binding.formCoordinates.setMapListener(

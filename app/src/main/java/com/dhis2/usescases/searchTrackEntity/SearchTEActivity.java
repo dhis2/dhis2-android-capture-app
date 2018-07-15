@@ -8,11 +8,12 @@ import android.content.pm.ActivityInfo;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,11 +27,14 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ActivitySearchBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
 
@@ -38,6 +42,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 /**
@@ -56,20 +61,19 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     private String initialProgram;
     private String tEType;
-    private SearchPagerAdapter pagerAdapter;
+    private SearchTEAdapter searchTEAdapter;
+    private SearchRelationshipAdapter searchRelationshipAdapter;
+
     private boolean fromRelationship = false;
-    private ObservableBoolean downloadMode = new ObservableBoolean(false);
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (pagerAdapter != null) {
-                pagerAdapter.setOnline(NetworkUtils.isOnline(context));
-                binding.searchTab.setVisibility(NetworkUtils.isOnline(context) ? View.VISIBLE : View.GONE);
-            }
+
         }
     };
     private ProgramModel program;
-
+    private static PublishProcessor<Integer> onlinePagerProcessor;
+    private PublishProcessor<Integer> offlinePagerProcessor;
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -87,21 +91,40 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
-        binding.setDownloadMode(downloadMode);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
         tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
+
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
         } catch (Exception e) {
             Timber.d(e.getMessage());
         }
 
-        //Pager configuration based on network
-        pagerAdapter = new SearchPagerAdapter(this, fromRelationship);
-        pagerAdapter.setOnline(program != null && NetworkUtils.isOnline(this));
-        binding.resultsPager.setAdapter(pagerAdapter);
+        if (fromRelationship) {
+            searchRelationshipAdapter = new SearchRelationshipAdapter(presenter, metadataRepository, false);
+            binding.scrollView.setAdapter(searchRelationshipAdapter);
+        } else {
+            searchTEAdapter = new SearchTEAdapter(presenter, metadataRepository);
+            binding.scrollView.setAdapter(searchTEAdapter);
+        }
+
+        binding.scrollView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         binding.formRecycler.setAdapter(new FormAdapter(getSupportFragmentManager(), LayoutInflater.from(this), presenter.getOrgUnits(), this));
+
+        onlinePagerProcessor = PublishProcessor.create();
+        offlinePagerProcessor = PublishProcessor.create();
+        binding.scrollView.addOnScrollListener(
+                new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
+                        NetworkUtils.isOnline(this) ? 1 : 0) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                        if (NetworkUtils.isOnline(SearchTEActivity.this))
+                            onlinePagerProcessor.onNext(page);
+                        else
+                            offlinePagerProcessor.onNext(page);
+                    }
+                });
 
     }
 
@@ -130,14 +153,9 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         this.program = program;
 
-        SearchOnlineFragment.getInstance(getAbstracContext(),false).refreshOnlineData();
+        //TODO: refreshData for recycler
 
         //Form has been set.
-
-        binding.searchTab.setVisibility(program != null && NetworkUtils.isOnline(this) ? View.VISIBLE : View.GONE);
-        binding.searchTab.setupWithViewPager(binding.resultsPager);
-        binding.buttonAdd.setVisibility(program == null ? View.GONE : View.VISIBLE);
-
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
         formAdapter.setList(trackedEntityAttributeModels, program);
     }
@@ -150,43 +168,39 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Flowable<Integer> onlinePage() {
         if (program != null)
-            return ((SearchOnlineFragment) pagerAdapter.getItem(1)).pageAction();
+            return onlinePagerProcessor;
         else
             return Flowable.just(-1);
+    }
+
+    @Override
+    public Flowable<Integer> offlinePage() {
+        return offlinePagerProcessor;
     }
 
     //endregion
 
     //---------------------------------------------------------------------
     //region TEI LIST
+
     @Override
-    public Consumer<Pair<List<TrackedEntityInstanceModel>, String>> swapListData() {
+    public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
 
-            binding.progress.setVisibility(View.GONE);
-            binding.objectCounter.setText(String.format(getString(R.string.search_result_text), String.valueOf(data.val0().size())));
+            if (data.val1().isEmpty()) {
+                binding.messageContainer.setVisibility(View.GONE);
 
-            ((SearchLocalFragment) pagerAdapter.getItem(0)).setItems(data, presenter.getProgramList(), presenter.getFormData());
+                if (!fromRelationship)
+                    searchTEAdapter.setTeis(data.val0());
+                else
+                    searchRelationshipAdapter.setItems(data.val0());
+
+            } else {
+                binding.messageContainer.setVisibility(View.VISIBLE);
+                binding.message.setText(data.val1());
+            }
 
         };
-    }
-
-    @Override
-    public void removeTei(int adapterPosition) {
-        if (program != null)
-            ((SearchOnlineFragment) pagerAdapter.getItem(1)).getSearchTEAdapter().removeAt(adapterPosition);
-    }
-
-    @Override
-    public void handleTeiDownloads(boolean downloadMode) {
-        this.downloadMode.set(downloadMode);
-    }
-
-    @Override
-    public void restartOnlineFragment() {
-        if (program != null)
-            ((SearchOnlineFragment) pagerAdapter.getItem(1)).clear();
-
     }
 
     @Override
@@ -208,7 +222,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                binding.objectCounter.setText("");
                 if (pos > 0) {
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                     binding.enrollmentButton.setVisibility(View.VISIBLE);
@@ -231,10 +244,5 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
                 binding.programSpinner.setSelection(i + 1);
             }
         }
-    }
-
-    @Override
-    public View getProgress() {
-        return binding.progress;
     }
 }

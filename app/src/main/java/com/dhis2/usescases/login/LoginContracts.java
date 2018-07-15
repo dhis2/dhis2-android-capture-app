@@ -88,17 +88,10 @@ public class LoginContracts {
         void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
 
         void logOut();
-    }
 
-    public interface Interactor {
-        void validateCredentials(@NonNull String serverUrl,
-                                 @NonNull String username, @NonNull String password);
-
-        //        void handleResponse(@NonNull Response<User> userResponse);
         void handleResponse(@NonNull Response userResponse);
 
         void handleError(@NonNull Throwable throwable);
-
 
         void sync();
 
@@ -108,9 +101,13 @@ public class LoginContracts {
 
         void syncReservedValues();
 
-        void onDestroy();
+    }
 
-        void logOut();
+    public interface Interactor {
+
+
+
+
     }
 
 }
