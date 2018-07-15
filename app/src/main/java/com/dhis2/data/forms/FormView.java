@@ -59,4 +59,6 @@ interface FormView {
     void onAllSavedDataDeleted();
 
     void onBackPressed();
+
+    void messageOnComplete(String content, boolean b);
 }
