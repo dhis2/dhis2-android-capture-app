@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:layout_marginTop="10dp"
-                    android:onClick="@{()->presenter.syncData(0)}"
+                    android:onClick='@{()->presenter.syncData(0, "dataNow")}'
                     android:text="@string/SYNC_DATA"
                     app:layout_constraintEnd_toStartOf="@id/guideline"
                     app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +160,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:onClick="@{()->presenter.syncMeta(0)}"
+                    android:onClick='@{()->presenter.syncMeta(0, "metaNow")}'
                     android:text="@string/SYNC_META"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
