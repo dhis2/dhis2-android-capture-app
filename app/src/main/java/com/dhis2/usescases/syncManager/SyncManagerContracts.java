@@ -25,9 +25,9 @@ public class SyncManagerContracts {
 
         void init(SyncManagerContracts.View view);
 
-        void syncData(int seconds);
+        void syncData(int seconds, String scheduleTag);
 
-        void syncMeta(int seconds);
+        void syncMeta(int seconds, String scheduleTag);
 
         void disponse();
 

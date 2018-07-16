@@ -185,18 +185,18 @@ public class LoginInteractor implements LoginContracts.Interactor {
         String tag = "MetaData";
         Job metaJob;
 
-        boolean isRecurring = false;
+        //boolean isRecurring = false;
         JobTrigger trigger = Trigger.NOW;
 
-        if (seconds != 0) {
+        /*if (seconds != 0) {
             isRecurring = true;
             trigger = Trigger.executionWindow(seconds, seconds + 60);
-        }
+        }*/
 
         metaJob = dispatcher.newJobBuilder()
                 .setService(SyncMetadataService.class)
                 .setTag(tag)
-                .setRecurring(isRecurring)
+                .setRecurring(false)
                 .setTrigger(trigger)
                 .setReplaceCurrent(true)
                 .setLifetime(Lifetime.FOREVER)

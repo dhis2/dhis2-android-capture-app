@@ -187,7 +187,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
         prefs.edit().putInt("timeData", time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncData(time);
+            presenter.syncData(time, "Data");
     }
 
     private void saveTimeMeta(int i) {
@@ -210,12 +210,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         prefs.edit().putInt("timeMeta", time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncMeta(time);
+            presenter.syncMeta(time, "Meta");
     }
 
     @Override
     public void wipeDatabase() {
-        new AlertDialog.Builder(context,R.style.CustomDialog)
+        new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
                 .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> presenter.wipeDb())
