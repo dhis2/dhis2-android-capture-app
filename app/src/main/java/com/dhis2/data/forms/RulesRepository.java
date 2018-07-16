@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
-import org.hisp.dhis.rules.RuleVariableValue;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -236,14 +234,15 @@ public final class RulesRepository {
         String elementType = cursor.getString(6);
 
         // String representation of value type.
-        RuleValueType mimeType;
+        RuleValueType mimeType = null;
         if (!isEmpty(attributeType)) {
             mimeType = convertType(attributeType);
         } else if (!isEmpty(elementType)) {
             mimeType = convertType(elementType);
-        } else {
-            throw new IllegalArgumentException("No ValueType was supplied");
         }
+
+        if (mimeType == null)
+            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s",attributeType,elementType,mimeType));
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:

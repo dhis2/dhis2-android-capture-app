@@ -168,33 +168,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return teiModels;
                             })
                             .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                            .map(teiList -> {
-                                String messageId = "";
-                                if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-                                    if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
-                                        messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
-                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                                    else if (teiList.isEmpty() && !queryData.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                } else if (selectedProgram == null) {
-                                    if (queryData.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                    else if (teiList.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
-                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-                                    }
-                                } else {
-                                    if (teiList.isEmpty() && !queryData.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                }
-                                return Pair.create(teiList, messageId);
-                            })
+                            .map(this::getMessage)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view.swapTeiListData(), Timber::d)
@@ -247,37 +221,39 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return teiList;
                             })
                             .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                            .map(teiList -> {
-                                String messageId = "";
-                                if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
-                                    if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
-                                        messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
-                                    else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
-                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
-                                    else if (teiList.isEmpty() && !queryData.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                } else if (selectedProgram == null) {
-                                    if (queryData.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                    else if (teiList.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
-                                        messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
-                                    }
-                                } else {
-                                    if (teiList.isEmpty() && !queryData.isEmpty())
-                                        messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-                                    else if (teiList.isEmpty())
-                                        messageId = view.getContext().getString(R.string.search_init);
-                                }
-                                return Pair.create(teiList, messageId);
-                            })
+                            .map(this::getMessage)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(view.swapTeiListData(), Timber::d)
             );
+    }
+
+    private Pair<List<SearchTeiModel>,String> getMessage(List<SearchTeiModel> teiList){
+        String messageId = "";
+        if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
+            if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())
+                messageId = String.format(view.getContext().getString(R.string.search_min_num_attr), selectedProgram.minAttributesRequiredToSearch());
+            else if (selectedProgram.maxTeiCountToReturn() != 0 && teiList.size() > selectedProgram.maxTeiCountToReturn())
+                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), selectedProgram.maxTeiCountToReturn());
+            else if (teiList.isEmpty() && !queryData.isEmpty())
+                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+            else if (teiList.isEmpty())
+                messageId = view.getContext().getString(R.string.search_init);
+        } else if (selectedProgram == null) {
+            if (queryData.isEmpty())
+                messageId = view.getContext().getString(R.string.search_init);
+            else if (teiList.isEmpty())
+                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+            else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
+                messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
+            }
+        } else {
+            if (teiList.isEmpty() && !queryData.isEmpty())
+                messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
+            else if (teiList.isEmpty())
+                messageId = view.getContext().getString(R.string.search_init);
+        }
+        return Pair.create(teiList, messageId);
     }
 
     private void handleError(Throwable throwable) {

@@ -193,7 +193,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
 
-    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ?",
             ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.RESOURCE_TYPE);
 
     private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(

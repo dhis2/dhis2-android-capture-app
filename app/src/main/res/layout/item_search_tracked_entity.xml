@@ -22,6 +22,10 @@
             type="java.lang.Boolean" />
 
         <variable
+            name="isOnline"
+            type="java.lang.Boolean" />
+
+        <variable
             name="syncState"
             type="org.hisp.dhis.android.core.common.State" />
 
@@ -58,8 +62,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
                 app:stateIcon="@{syncState}"
                 tools:src="@drawable/ic_sync_green" />
+
+            <ImageView
+                android:id="@+id/download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:tint="?colorPrimary"
+                android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
+                app:srcCompat="@drawable/ic_download" />
 
             <ImageView
                 android:layout_width="wrap_content"

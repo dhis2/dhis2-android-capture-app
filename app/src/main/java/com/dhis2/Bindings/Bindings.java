@@ -699,7 +699,7 @@ public class Bindings {
 
     @BindingAdapter("stateIcon")
     public static void setStateIcon(ImageView imageView, State state) {
-        if (state != null)
+        if (state != null) {
             switch (state) {
                 case TO_POST:
                     imageView.setImageResource(R.drawable.ic_sync_problem_grey);
@@ -719,6 +719,7 @@ public class Bindings {
                 default:
                     break;
             }
+        }
     }
 
     public static void setMetadataRepository(MetadataRepository metadata) {

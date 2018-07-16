@@ -187,19 +187,25 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
 
-            if (data.val1().isEmpty()) {
-                binding.messageContainer.setVisibility(View.GONE);
-
-                if (!fromRelationship)
+            if(!fromRelationship){
+                if(data.val1().isEmpty()){
+                    binding.messageContainer.setVisibility(View.GONE);
                     searchTEAdapter.setTeis(data.val0());
-                else
+                }else if(searchTEAdapter.getItemCount()==0){
+                    binding.messageContainer.setVisibility(View.VISIBLE);
+                    binding.message.setText(data.val1());
+                }
+
+
+            }else{
+                if(data.val1().isEmpty()){
+                    binding.messageContainer.setVisibility(View.GONE);
                     searchRelationshipAdapter.setItems(data.val0());
-
-            } else {
-                binding.messageContainer.setVisibility(View.VISIBLE);
-                binding.message.setText(data.val1());
+                }else if(searchTEAdapter.getItemCount()==0){
+                    binding.messageContainer.setVisibility(View.VISIBLE);
+                    binding.message.setText(data.val1());
+                }
             }
-
         };
     }
 

@@ -50,12 +50,10 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
-    private final FirebaseJobDispatcher firebaseJobDispatcher;
 
     LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository, FirebaseJobDispatcher jobDispatcher) {
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
-        this.firebaseJobDispatcher = jobDispatcher;
     }
 
     @Override
@@ -274,10 +272,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(syncReult -> {
-                            view.update(LoginActivity.SyncState.METADATA).accept(syncReult);
-
-                        },
+                .subscribe(syncReult -> view.update(LoginActivity.SyncState.METADATA).accept(syncReult),
                         Timber::d)
         );
     }

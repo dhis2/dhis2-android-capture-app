@@ -21,9 +21,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
@@ -150,8 +148,10 @@ public class EventRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = eventProgram()
-                .switchMap(program -> Flowable.zip(rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program), (rules, variables) ->
+                .switchMap(program -> Flowable.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        (rules, variables) ->
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
@@ -325,7 +325,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EventModel.TABLE  + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
+        String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EventModel.TABLE +
                 " WHERE " + EventModel.Columns.UID + " = ?";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));
