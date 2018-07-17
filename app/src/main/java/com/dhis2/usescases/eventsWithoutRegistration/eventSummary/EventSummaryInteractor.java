@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.Result;
@@ -210,10 +209,11 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 view.messageOnComplete(errorOnCompletion.content(), false);
-            }else if( ruleAction instanceof RuleActionSetMandatoryField){
+            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
                 RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
                 FieldViewModel model = fieldViewModels.get(mandatoryField.field());
-                fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+                if (model != null)
+                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
             }
         }
     }

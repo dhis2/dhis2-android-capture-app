@@ -178,7 +178,7 @@ public final class DataEntryAdapter extends Adapter {
     public boolean mandatoryOk() {
         boolean isOk = true;
         for (FieldViewModel fieldViewModel : viewModels) {
-            if (fieldViewModel.mandatory() && fieldViewModel.value() == null || fieldViewModel.value().isEmpty())
+            if (fieldViewModel.mandatory() && (fieldViewModel.value() == null || fieldViewModel.value().isEmpty()))
                 isOk = false;
         }
 

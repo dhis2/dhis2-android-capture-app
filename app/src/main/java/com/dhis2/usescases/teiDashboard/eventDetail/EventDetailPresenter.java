@@ -3,9 +3,12 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.dhis2.R;
+import com.dhis2.data.forms.FormFragment;
+import com.dhis2.data.forms.dataentry.DataEntryFragment;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 import com.dhis2.utils.DateUtils;
@@ -16,6 +19,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
@@ -36,7 +40,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     private EventDetailContracts.View view;
     private CompositeDisposable disposable;
     private EventDetailModel eventDetailModel;
-    private String eventUid;
 
     private boolean changedEventStatus = false;
 
@@ -45,7 +48,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         this.eventDetailRepository = eventDetailRepository;
         this.dataEntryStore = dataEntryStore;
         disposable = new CompositeDisposable();
-
 
     }
 
@@ -57,26 +59,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @SuppressLint("CheckResult")
     @Override
     public void getEventData(String eventUid) {
-        this.eventUid = eventUid;
-
-       /* disposable.add(Observable.zip(
-                eventDetailRepository.eventModelDetail(eventUid),
-                eventDetailRepository.dataValueModelList(eventUid),
-                eventDetailRepository.programStageSection(eventUid),
-                eventDetailRepository.programStageDataElement(eventUid),
-                eventDetailRepository.programStage(eventUid),
-                eventDetailRepository.orgUnitName(eventUid),
-                eventDetailRepository.getCategoryOptionCombos(),
-                EventDetailModel::new)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        data -> {
-                            eventDetailModel = data;
-                            view.setData(data, metadataRepository);
-                        },
-                        throwable -> Log.d("ERROR", throwable.getMessage()))
-        );*/
 
         disposable.add(
                 eventDetailRepository.eventStatus(eventUid)
@@ -141,8 +123,16 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void eventStatus(EventModel eventModel, ProgramStageModel stageModel) {
         if (stageModel.accessDataWrite()) {
-            dataEntryStore.updateEventStatus(eventModel);
-            changedEventStatus = true;
+            FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
+            List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
+            boolean mandatoryOk = true;
+            for (Fragment dataEntryFragment : sectionFragments)
+                mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
+            if (mandatoryOk) {
+                dataEntryStore.updateEventStatus(eventModel);
+                changedEventStatus = true;
+            } else
+                view.displayMessage(view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
         } else
             view.displayMessage(null);
     }
