@@ -15,7 +15,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +50,8 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
+import static android.text.TextUtils.isEmpty;
+
 
 public class FormFragment extends FragmentGlobalAbstract implements FormView, CoordinatesView.OnMapPositionClick, CoordinatesView.OnCurrentLocationClick {
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
@@ -79,6 +80,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private CoordinatesView coordinatesView;
     private boolean isEnrollment;
     private Trio<String, String, String> enrollmentTrio;
+
+    private String messageOnComplete = "";
+    private boolean canComplete = true;
 
 
     public FormFragment() {
@@ -427,10 +431,16 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
+    public void messageOnComplete(String content, boolean canComplete) {
+        this.messageOnComplete = content;
+        this.canComplete = canComplete;
+    }
+
+    @Override
     public void isMandatoryFieldsRequired(List<FieldViewModel> viewModels) {
         boolean mandatoryRequired = false;
         for (FieldViewModel viewModel : viewModels) {
-            if (viewModel.mandatory() && TextUtils.isEmpty(viewModel.value()))
+            if (viewModel.mandatory() && isEmpty(viewModel.value()))
                 mandatoryRequired = true;
         }
         if (!mandatoryRequired) {
@@ -444,11 +454,38 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
                 }
+                getActivity().finish();
+            } else {
+                checkAction();
             }
-            getActivity().finish();
         } else {
             showMandatoryFieldsDialog();
         }
+    }
+
+    private void checkAction() {
+        CustomDialog dialog = new CustomDialog(
+                getContext(),
+                getString(R.string.warning_error_on_complete_title),
+                messageOnComplete,
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                1001,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        if(canComplete)
+                            getActivity().finish();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                    }
+                });
+        if(!isEmpty(messageOnComplete))
+            dialog.show();
+        else
+            getActivity().finish();
     }
 
     @Override
