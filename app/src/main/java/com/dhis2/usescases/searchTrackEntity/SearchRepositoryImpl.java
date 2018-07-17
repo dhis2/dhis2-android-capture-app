@@ -213,6 +213,75 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .mapToList(TrackedEntityInstanceModel::create);
     }
 
+    @Override
+    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType, @Nullable ProgramModel selectedProgram, @Nullable HashMap<String, String> queryData, Integer page) {
+        String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
+        String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
+
+        String enrollmentDateWHERE = null;
+        String incidentDateWHERE = null;
+        if (queryData != null && !isEmpty(queryData.get("1"))) {
+            enrollmentDateWHERE = " Enrollment.enrollmentDate = '" + queryData.get("1") + "'";
+            queryData.remove("1");
+        }
+        if (queryData != null && !isEmpty(queryData.get("2"))) {
+            incidentDateWHERE = " Enrollment.incidentData = '" + queryData.get("2") + "'";
+            queryData.remove("2");
+        }
+
+        if (queryData != null && !queryData.isEmpty()) {
+            StringBuilder teiAttributeWHERE = new StringBuilder("");
+            teiAttributeWHERE.append(TrackedEntityAttributeValueModel.TABLE + ".value IN (");
+            for (int i = 0; i < queryData.keySet().size(); i++) {
+                String dataValue = queryData.get(queryData.keySet().toArray()[i]);
+                teiAttributeWHERE.append("'").append(dataValue).append("'");
+                if (i < queryData.size() - 1)
+                    teiAttributeWHERE.append(",");
+            }
+            teiAttributeWHERE.append(")");
+
+        }
+
+
+        String attrQuery = "(SELECT TrackedEntityAttributeValue.trackedEntityInstance FROM TrackedEntityAttributeValue WHERE " +
+                "TrackedEntityAttributeValue.trackedEntityAttribute = 'ATTR_ID' AND TrackedEntityAttributeValue.value LIKE 'ATTR_VALUE%') t";
+        StringBuilder attr = new StringBuilder("");
+        for (int i = 0; i < queryData.keySet().size(); i++) {
+            String dataId = queryData.keySet().toArray()[i].toString();
+            String dataValue = queryData.get(dataId);
+
+            if (i > 0)
+                attr.append(" INNER JOIN  ");
+
+            attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
+            attr.append(i + 1);
+            if (i > 0)
+                attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
+        }
+
+        String search = String.format(SEARCH, queryData.isEmpty() ? "" : SEARCH_ATTR);
+        search = search.replace("ATTR_QUERY", "SELECT t1.trackedEntityInstance FROM" + attr) + teiTypeWHERE + " AND " + teiRelationship + " AND (TrackedEntityInstance.state = 'TO_POST' OR TrackedEntityInstance.state = 'TO_UPDATE')";
+        if (selectedProgram != null && !selectedProgram.uid().isEmpty()) {
+            String programWHERE = "Enrollment.program = '" + selectedProgram.uid() + "'";
+            search += " AND " + programWHERE;
+        }
+        if (enrollmentDateWHERE != null)
+            search += " AND" + enrollmentDateWHERE;
+        if (incidentDateWHERE != null)
+            search += " AND" + incidentDateWHERE;
+        search += " GROUP BY TrackedEntityInstance.uid";
+
+        if (selectedProgram != null && !selectedProgram.displayFrontPageList() && selectedProgram.maxTeiCountToReturn() != 0) {
+            String maxResults = String.format(" LIMIT %s", selectedProgram.maxTeiCountToReturn());
+            search += maxResults;
+        } else {
+            search += String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
+        }
+
+        return briteDatabase.createQuery(TEI_TABLE_SET, search)
+                .mapToList(TrackedEntityInstanceModel::create);
+    }
+
 
     @NonNull
     @Override
@@ -387,6 +456,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .toList().toFlowable();
     }
+
+
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
         /*ContentValues program = new ContentValues();TODO: Crash if active

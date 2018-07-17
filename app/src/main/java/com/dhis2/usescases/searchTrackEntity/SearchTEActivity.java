@@ -74,6 +74,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private ProgramModel program;
     private static PublishProcessor<Integer> onlinePagerProcessor;
     private PublishProcessor<Integer> offlinePagerProcessor;
+    private EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
     //---------------------------------------------------------------------------------------------
     //region LIFECYCLE
 
@@ -114,17 +115,17 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         onlinePagerProcessor = PublishProcessor.create();
         offlinePagerProcessor = PublishProcessor.create();
-        binding.scrollView.addOnScrollListener(
-                new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
-                        NetworkUtils.isOnline(this) ? 1 : 0) {
-                    @Override
-                    public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                        if (NetworkUtils.isOnline(SearchTEActivity.this))
-                            onlinePagerProcessor.onNext(page);
-                        else
-                            offlinePagerProcessor.onNext(page);
-                    }
-                });
+        endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(binding.scrollView.getLayoutManager(), 2,
+                NetworkUtils.isOnline(this) ? 1 : 0) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if (NetworkUtils.isOnline(SearchTEActivity.this))
+                    onlinePagerProcessor.onNext(page);
+                else
+                    offlinePagerProcessor.onNext(page);
+            }
+        };
+        binding.scrollView.addOnScrollListener(endlessRecyclerViewScrollListener);
 
     }
 
@@ -178,6 +179,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         return offlinePagerProcessor;
     }
 
+    @Override
+    public void clearData() {
+        endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
+        if (fromRelationship)
+            searchRelationshipAdapter.clear();
+        else
+            searchTEAdapter.clear();
+    }
+
     //endregion
 
     //---------------------------------------------------------------------
@@ -187,21 +197,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
 
-            if(!fromRelationship){
-                if(data.val1().isEmpty()){
+            if (!fromRelationship) {
+                if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
                     searchTEAdapter.setTeis(data.val0());
-                }else if(searchTEAdapter.getItemCount()==0){
+                } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }
 
 
-            }else{
-                if(data.val1().isEmpty()){
+            } else {
+                if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
                     searchRelationshipAdapter.setItems(data.val0());
-                }else if(searchTEAdapter.getItemCount()==0){
+                } else if (searchTEAdapter.getItemCount() == 0) {
                     binding.messageContainer.setVisibility(View.VISIBLE);
                     binding.message.setText(data.val1());
                 }

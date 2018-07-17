@@ -125,6 +125,12 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         this.loading = true;
     }
 
+    public void resetState(Integer initialPage){
+        this.currentPage = initialPage;
+        this.previousTotalItemCount = 0;
+        this.loading = true;
+    }
+
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
 

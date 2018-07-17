@@ -42,7 +42,7 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 /**
- * Created by ppajuelo on 06/11/2017.
+ * QUADRAM. Created by ppajuelo on 06/11/2017.
  */
 
 public class FormAdapter extends RecyclerView.Adapter {
@@ -76,6 +76,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         setHasStableIds(true);
         this.processor = PublishProcessor.create();
         this.context = context;
+        attributeList = new ArrayList<>();
         rows = new ArrayList<>();
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, false));
@@ -110,7 +111,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     ValueType.DATE,
                     null,
                     null,
-                    holder.getAdapterPosition() == 0 ? programModel.selectEnrollmentDatesInFuture() : programModel.selectIncidentDatesInFuture(),true);
+                    holder.getAdapterPosition() == 0 ? programModel.selectEnrollmentDatesInFuture() : programModel.selectIncidentDatesInFuture(), true);
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
@@ -124,24 +125,24 @@ public class FormAdapter extends RecyclerView.Adapter {
                     break;
                 case CHECKBOX:
                 case YES_NO:
-                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, null, null,true);
+                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, null, null, true);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), null, null,true);
+                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), null, null, true);
                     break;
                 case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, null, null,true);
+                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, null, null, true);
                     break;
                 case TIME:
                 case DATE:
                 case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), null, null, true,true);
+                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), null, null, true, true);
                     break;
                 case AGEVIEW:
-                    viewModel = AgeViewModel.create(attr.uid(), label, false, null, null,true);
+                    viewModel = AgeViewModel.create(attr.uid(), label, false, null, null, true);
                     break;
                 case ORG_UNIT:
-                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, null, null,true);
+                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, null, null, true);
                     break;
                 default:
                     Crashlytics.log("Unsupported viewType " +
@@ -234,7 +235,9 @@ public class FormAdapter extends RecyclerView.Adapter {
         }
 
         this.attributeList = modelList;
+
         notifyDataSetChanged();
+
     }
 
     @NonNull

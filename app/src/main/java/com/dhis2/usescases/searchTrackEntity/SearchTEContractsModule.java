@@ -38,6 +38,8 @@ public class SearchTEContractsModule {
         Flowable<Integer> onlinePage();
 
         Flowable<Integer> offlinePage();
+
+        void clearData();
     }
 
     public interface Presenter {
