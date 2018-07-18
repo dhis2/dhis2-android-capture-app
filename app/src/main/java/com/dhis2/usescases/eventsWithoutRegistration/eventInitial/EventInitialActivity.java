@@ -506,7 +506,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventUpdated(String eventUid) {
-        showToast(getString(R.string.event_updated));
+//        showToast(getString(R.string.event_updated));
         startFormActivity(eventUid);
     }
 

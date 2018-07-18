@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -12,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentTeiDataBinding;
@@ -32,6 +34,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -155,7 +158,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
             this.events = new ArrayList<>();
-            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events,nprogram.getCurrentEnrollment());
+            adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
             binding.setTrackEntity(nprogram.getTei());
@@ -269,7 +272,25 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 presenter.completeEnrollment(this);
                 break;
             case RC_GENERATE_EVENT:
-                presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
+                if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0)
+                    presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
+                else {
+                    //TODO: WHAT HAPPENS IF PROGRAM HAS A PERIOD
+                    Calendar calendar = Calendar.getInstance();
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
+                        Calendar chosenDate = Calendar.getInstance();
+                        chosenDate.set(year, month, dayOfMonth);
+                        presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                    if (programStageFromEvent != null && programStageFromEvent.hideDueDate())
+                        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                    else {
+                        // ONLY FUTURE DATES
+                        calendar.add(Calendar.DAY_OF_YEAR, 1);
+                        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+                    }
+                    datePickerDialog.show();
+                }
                 break;
             default:
                 break;

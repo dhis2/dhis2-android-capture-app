@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -117,5 +118,7 @@ public class TeiDashboardContracts {
         void displayGenerateEvent(TEIDataFragment teiDataFragment, String eventUid);
 
         void generateEvent(String lastModifiedEventUid, Integer integer);
+
+        void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
     }
 }

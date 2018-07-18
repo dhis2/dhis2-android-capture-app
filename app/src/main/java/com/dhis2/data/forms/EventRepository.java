@@ -151,11 +151,13 @@ public class EventRepository implements FormRepository {
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
-                        (rules, variables) ->
+                        rulesRepository.otherEvents(eventUid),
+                        (rules, variables,events) ->
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
                                         .build().toEngineBuilder()
+                                        .events(events)
                                         .build()))
                 .cacheWithInitialCapacity(1);
     }

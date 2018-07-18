@@ -143,7 +143,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
 
                     return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, dataValues, programStage);
+                            status, eventDate, dueDate, dataValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -178,7 +178,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                     String programName = cursor.getString(5);
 
                                     return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, orgUnit, attributeValues, programName);
+                                            incidentDate, enrollmentDate, status, attributeValues);
                                 }).toFlowable(BackpressureStrategy.LATEST)
                 );
     }

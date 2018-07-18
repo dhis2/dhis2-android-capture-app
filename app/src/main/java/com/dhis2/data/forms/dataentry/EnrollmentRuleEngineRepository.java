@@ -97,7 +97,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                     String programName = cursor.getString(5);
 
                     return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, orgUnit, attributeValues,programName);
+                            incidentDate, enrollmentDate, status, attributeValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
