@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.dhis2.GlideApp;
 import com.dhis2.R;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.Preconditions;
@@ -40,8 +41,11 @@ public class QrFragment extends FragmentGlobalAbstract {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ImageView qrCode = view.findViewById(R.id.qr_code);
-        if (qrCode != null && bitmap != null)
-            qrCode.setImageBitmap(bitmap);
+        if (qrCode != null && bitmap != null) {
+            GlideApp.with(view)
+                    .load(bitmap)
+                    .into(qrCode);
+        }
     }
 
     @Override
