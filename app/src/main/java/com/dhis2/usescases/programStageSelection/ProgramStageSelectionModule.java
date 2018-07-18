@@ -3,7 +3,10 @@ package com.dhis2.usescases.programStageSelection;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.dagger.PerActivity;
+import com.dhis2.data.forms.RulesRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
+
+import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,6 +17,14 @@ import dagger.Provides;
 @PerActivity
 @Module
 public class ProgramStageSelectionModule {
+
+    private final String programUid;
+    private final String enrollmentUid;
+
+    public ProgramStageSelectionModule(String programId, String enrollmenId) {
+        this.programUid = programId;
+        this.enrollmentUid = enrollmenId;
+    }
 
     @Provides
     @PerActivity
@@ -29,7 +40,15 @@ public class ProgramStageSelectionModule {
 
     @Provides
     @PerActivity
-    ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull BriteDatabase briteDatabase) {
-        return new ProgramStageSelectionRepositoryImpl(briteDatabase);
+    ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull BriteDatabase briteDatabase,
+                                                                            @NonNull RuleExpressionEvaluator evaluator,
+                                                                            RulesRepository rulesRepository) {
+        return new ProgramStageSelectionRepositoryImpl(briteDatabase,evaluator, rulesRepository, programUid,enrollmentUid);
+    }
+
+    @Provides
+    @PerActivity
+    RulesRepository rulesRepository(BriteDatabase briteDatabase){
+        return new RulesRepository(briteDatabase);
     }
 }

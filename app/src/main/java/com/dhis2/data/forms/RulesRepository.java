@@ -21,6 +21,7 @@ import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -127,13 +128,13 @@ public final class RulesRepository {
     }
 */
     @NonNull
-    Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
+    public Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
         return Flowable.combineLatest(queryRules(programUid),
                 queryRuleActionsList(programUid), RulesRepository::mapActionsToRulesNew);
     }
 
     @NonNull
-    Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
+    public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -311,7 +312,7 @@ public final class RulesRepository {
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);
             case HIDEPROGRAMSTAGE:
-                return RuleActionCreateEvent.create(content, data, programStage);
+                return RuleActionHideProgramStage.create(programStage);
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
             default:

@@ -306,7 +306,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     @Override
     public void onOrgUnitButtonClick() {
-        view.openDrawer();
+//        view.openDrawer();
+        view.showOrgUnitSelector(orgUnits);
     }
 
     @Override

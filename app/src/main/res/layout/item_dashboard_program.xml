@@ -33,7 +33,6 @@
             android:background="?attr/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@id/enrollmentDateLabel"
             app:layout_constraintTop_toTopOf="parent"
-            app:programTypeIcon='@{program.programType()}'
             tools:background="?attr/colorPrimaryLight"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_program_default"/>

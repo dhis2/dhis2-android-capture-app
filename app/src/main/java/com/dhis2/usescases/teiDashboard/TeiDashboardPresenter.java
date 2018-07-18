@@ -428,10 +428,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", teiUid);
-        bundle.putString("PROGRAM_UID", programUid);
+        bundle.putString("PROGRAM_UID", null);
         intent.putExtras(bundle);
         view.getAbstractActivity().startActivity(intent);
-        //view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 
     @Override

@@ -312,4 +312,7 @@
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
     <string name="check_event">Check</string>
+
+    <string name="burmesse_test">မြန်မာအက္ခရာ</string>
+    <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
 </resources>
