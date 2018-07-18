@@ -14,6 +14,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
         qrAdapter.addItems(bitmaps);
 
         binding.setTitle(getString(R.string.qr_id));
-        binding.page.setText(String.format("1/%d", qrAdapter.getCount()));
+        binding.page.setText(String.format(Locale.getDefault(), "1/%d", qrAdapter.getCount()));
         binding.prev.setVisibility(View.GONE);
         binding.next.setVisibility(View.VISIBLE);
 
@@ -67,7 +68,7 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
 
             @Override
             public void onPageSelected(int position) {
-                binding.page.setText(String.format("%d/%d", position + 1, bitmaps.size()));
+                binding.page.setText(String.format(Locale.getDefault(), "%d/%d", position + 1, bitmaps.size()));
 
                 if (position + 1 == bitmaps.size()) {
                     binding.next.setVisibility(View.GONE);

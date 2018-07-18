@@ -8,7 +8,6 @@ import com.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
 import com.dhis2.data.forms.dataentry.RuleEngineRepository;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.schedulers.SchedulerProvider;
-import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -16,6 +15,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.text.ParseException;
@@ -251,6 +251,9 @@ class FormPresenterImpl implements FormPresenter {
             if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 fieldViewModels.remove(hideSection.programStageSection());
+            } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
+                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
+                view.messageOnComplete(warningOnCompletion.content(), true);
             }
         }
     }
