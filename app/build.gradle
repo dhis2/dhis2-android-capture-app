@@ -250,6 +250,10 @@ dependencies {
     //FancyShowCase
     implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
+    //Lottie animations
     implementation 'com.airbnb.android:lottie:2.5.4'
 
+    //Glide load images
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 }

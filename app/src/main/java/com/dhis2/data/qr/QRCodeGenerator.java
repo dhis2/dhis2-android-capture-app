@@ -55,14 +55,14 @@ public class QRCodeGenerator implements QRInterface {
 
         return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid)
                 .mapToOne(TrackedEntityInstanceModel::create)
-                .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, transform(TEI_JSON, gson.toJson(data)))))
+                .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, gson.toJson(data))))
                 .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid)
                         .mapToList(TrackedEntityAttributeValueModel::create))
-                .map(data -> bitmaps.add(new QrViewModel(ATTR_JSON, transform(ATTR_JSON, gson.toJson(data)))))
+                .map(data -> bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(data))))
                 .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid)
                         .mapToList(EnrollmentModel::create))
                 .map(data -> {
-                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, transform(ENROLLMENT_JSON, gson.toJson(data))));
+                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(data)));
                     return data;
                 })
                 .flatMap(data ->
@@ -71,7 +71,7 @@ public class QRCodeGenerator implements QRInterface {
                                         .mapToList(EventModel::create)
                                         .map(eventList -> {
                                                     for (EventModel eventModel : eventList) {
-                                                        bitmaps.add(new QrViewModel(EVENTS_JSON, transform(EVENTS_JSON, gson.toJson(eventModel))));
+                                                        bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(eventModel)));
                                                     }
                                                     return bitmaps;
                                                 }
@@ -81,10 +81,10 @@ public class QRCodeGenerator implements QRInterface {
                 .map(data -> bitmaps);
     }
 
-    private Bitmap transform(String type, String info) {
-
+    public static Bitmap transform(String type, String info) {
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         Bitmap bitmap = null;
+        Gson gson = new GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(gson.toJson(new QRjson(type, info)), BarcodeFormat.QR_CODE, 1000, 1000);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
@@ -95,6 +95,4 @@ public class QRCodeGenerator implements QRInterface {
 
         return bitmap;
     }
-
-
 }

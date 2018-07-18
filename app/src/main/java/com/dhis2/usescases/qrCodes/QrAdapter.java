@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.dhis2.data.qr.QRCodeGenerator;
+
 import java.util.List;
 
 public class QrAdapter extends FragmentStatePagerAdapter {
@@ -19,7 +21,7 @@ public class QrAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return QrFragment.create(bitmaps.get(position).getQrBitmap());
+        return QrFragment.create(QRCodeGenerator.transform(bitmaps.get(position).getQrType(), bitmaps.get(position).getQrJson()));
     }
 
     @Override

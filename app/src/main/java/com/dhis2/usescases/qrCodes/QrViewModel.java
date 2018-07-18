@@ -1,16 +1,14 @@
 package com.dhis2.usescases.qrCodes;
 
-import android.graphics.Bitmap;
-
 public class QrViewModel {
 
     private String qrType;
 
-    private Bitmap qrBitmap;
+    private String qrJson;
 
-    public QrViewModel(String qrType, Bitmap qrBitmap) {
+    public QrViewModel(String qrType, String qrJson) {
         this.qrType = qrType;
-        this.qrBitmap = qrBitmap;
+        this.qrJson = qrJson;
     }
 
     public String getQrType() {
@@ -21,11 +19,11 @@ public class QrViewModel {
         this.qrType = qrType;
     }
 
-    public Bitmap getQrBitmap() {
-        return qrBitmap;
+    public String getQrJson() {
+        return qrJson;
     }
 
-    public void setQrBitmap(Bitmap qrBitmap) {
-        this.qrBitmap = qrBitmap;
+    public void setQrJson(String qrJson) {
+        this.qrJson = qrJson;
     }
 }
