@@ -4,10 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,7 +35,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -47,19 +42,10 @@ import rx.subjects.BehaviorSubject;
  * QUADRAM. Created by Javi on 28/07/2017.
  */
 
-public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick, SensorEventListener {
-
-    private static final float SHAKE_THRESHOLD_GRAVITY = 2.7F;
-    private static final int SHAKE_SLOP_TIME_MS = 500;
-    private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
-    private long mShakeTimestamp;
-    private int mShakeCount;
+public abstract class ActivityGlobalAbstract extends AppCompatActivity implements AbstractActivityContracts.View, CoordinatesView.OnMapPositionClick {
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
-    private SensorManager sensorManager;
-    private long lastUpdate;
-    public FancyShowCaseQueue fancyShowCaseQueue;
 
     public enum Status {
         ON_PAUSE,
@@ -90,85 +76,33 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
         super.onCreate(savedInstanceState);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        lastUpdate = System.currentTimeMillis();
-
-        Log.d("LIFECYCLE", getLocalClassName()+"-ON_CREATE");
+        Log.d("LIFECYCLE", getLocalClassName() + "-ON_CREATE");
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("LIFECYCLE", getLocalClassName()+"-ON_RESUME");
+        Log.d("LIFECYCLE", getLocalClassName() + "-ON_RESUME");
         lifeCycleObservable.onNext(Status.ON_RESUME);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("LIFECYCLE", getLocalClassName()+"-ON_PAUSE");
+        Log.d("LIFECYCLE", getLocalClassName() + "-ON_PAUSE");
         lifeCycleObservable.onNext(Status.ON_PAUSE);
-        sensorManager.unregisterListener(this);
-
     }
 
     @Override
     protected void onDestroy() {
-        Log.d("LIFECYCLE", getLocalClassName()+"-ON_DESTROY");
+        Log.d("LIFECYCLE", getLocalClassName() + "-ON_DESTROY");
         super.onDestroy();
     }
 
     //****************
     //PUBLIC METHOD REGION
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            getAccelerometer(event);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    private void getAccelerometer(SensorEvent event) {
-        float[] values = event.values;
-        // Movement
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-
-        float gX = x / SensorManager.GRAVITY_EARTH;
-        float gY = y / SensorManager.GRAVITY_EARTH;
-        float gZ = z / SensorManager.GRAVITY_EARTH;
-
-        // gForce will be close to 1 when there is no movement.
-        float gForce = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
-
-        if (gForce > SHAKE_THRESHOLD_GRAVITY) {
-            final long now = System.currentTimeMillis();
-            // ignore shake events too close to each other (500ms)
-            if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
-                return;
-            }
-
-            // reset the shake count after 3 seconds of no shakes
-            if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
-                mShakeCount = 0;
-            }
-
-            mShakeTimestamp = now;
-            mShakeCount++;
-
-            showTutorial(true);
-        }
-    }
 
     @Override
     public void setTutorial() {
@@ -264,12 +198,18 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     }
 
     public void renderError(String message) {
-        if (getActivity() != null)
+        showInfoDialog(getString(R.string.error), message);
+    }
+
+    @Override
+    public void showInfoDialog(String title, String message) {
+        if (getActivity() != null) {
             new AlertDialog.Builder(getActivity())
                     .setPositiveButton(android.R.string.ok, null)
-                    .setTitle(getString(R.string.error))
+                    .setTitle(title)
                     .setMessage(message)
                     .show();
+        }
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -71,6 +72,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private final List<Row> rows;
 
     private Context context;
+    private HashMap<String, String> queryData;
 
     public FormAdapter(FragmentManager fm, LayoutInflater layoutInflater, Observable<List<OrganisationUnitModel>> orgUnits, Context context) {
         setHasStableIds(true);
@@ -118,31 +120,31 @@ public class FormAdapter extends RecyclerView.Adapter {
             String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
-                    viewModel = EditTextViewModel.create(attr.uid(), label, false, null, label, 1, attr.valueType(), null, !attr.generated());
+                    viewModel = EditTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated());
                     break;
                 case BUTTON:
-                    viewModel = FileViewModel.create(attr.uid(), label, false, null, null);
+                    viewModel = FileViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null);
                     break;
                 case CHECKBOX:
                 case YES_NO:
-                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, null, null, true);
+                    viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), null, null, true);
+                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), queryData.get(attr.uid()), null, true);
                     break;
                 case COORDINATES:
-                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, null, null, true);
+                    viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true);
                     break;
                 case TIME:
                 case DATE:
                 case DATETIME:
-                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), null, null, true, true);
+                    viewModel = DateTimeViewModel.create(attr.uid(), label, false, attr.valueType(), queryData.get(attr.uid()), null, true, true);
                     break;
                 case AGEVIEW:
-                    viewModel = AgeViewModel.create(attr.uid(), label, false, null, null, true);
+                    viewModel = AgeViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true);
                     break;
                 case ORG_UNIT:
-                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, null, null, true);
+                    viewModel = OrgUnitViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true);
                     break;
                 default:
                     Crashlytics.log("Unsupported viewType " +
@@ -219,8 +221,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
     }
 
-    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel) {
-
+    public void setList(List<TrackedEntityAttributeModel> modelList, ProgramModel programModel, HashMap<String, String> queryData) {
+        this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;
             programData = programModel.displayIncidentDate() ? 2 : 1;

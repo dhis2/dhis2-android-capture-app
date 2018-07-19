@@ -126,13 +126,18 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
             List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
             boolean mandatoryOk = true;
-            for (Fragment dataEntryFragment : sectionFragments)
+            boolean hasError = false;
+            for (Fragment dataEntryFragment : sectionFragments) {
                 mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
-            if (mandatoryOk) {
+                hasError =((DataEntryFragment) dataEntryFragment).checkErrors();
+            }
+            if (mandatoryOk && !hasError) {
                 dataEntryStore.updateEventStatus(eventModel);
                 changedEventStatus = true;
-            } else
+            } else if(!mandatoryOk)
                 view.displayMessage(view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+            else
+                view.showInfoDialog("Unable to complete","Some fields have errors. Please, check them to be able to complete");
         } else
             view.displayMessage(null);
     }

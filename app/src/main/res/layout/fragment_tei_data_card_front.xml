@@ -204,7 +204,9 @@
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:srcCompat="@drawable/photo_temp"
+                        android:background="@drawable/photo_temp"
+                        app:srcCompat = "@drawable/ic_tei_default"
+                        android:tint="?attr/colorPrimaryDark"
                         tools:ignore="ContentDescription" />
 
 

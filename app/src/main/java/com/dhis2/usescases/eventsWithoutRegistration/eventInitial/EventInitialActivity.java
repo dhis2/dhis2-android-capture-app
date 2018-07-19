@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.DatePicker;
 
 import com.dhis2.App;
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
 import com.dhis2.data.forms.FormSectionViewModel;
@@ -302,6 +303,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         selectedLat, selectedLon);
             }
         });
+
+        Bindings.setObjectStyleAndTint(binding.programStageIcon, binding.programStageIcon, programStageUid);
+
     }
 
     @Override

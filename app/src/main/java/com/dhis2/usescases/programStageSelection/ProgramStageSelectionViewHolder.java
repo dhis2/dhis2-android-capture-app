@@ -3,6 +3,7 @@ package com.dhis2.usescases.programStageSelection;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.dhis2.Bindings.Bindings;
 import com.dhis2.databinding.ItemProgramStageBinding;
 
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -24,6 +25,7 @@ public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.programStage, programStage);
         binding.executePendingBindings();
+        Bindings.setObjectStyleAndTint(binding.programStageIcon, binding.programStageIcon, programStage.uid());
         itemView.setOnClickListener(view -> {
             if (programStage.accessDataWrite())
                 presenter.onProgramStageClick(programStage);

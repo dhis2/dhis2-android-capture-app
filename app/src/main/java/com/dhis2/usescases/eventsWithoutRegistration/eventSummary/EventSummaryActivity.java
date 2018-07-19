@@ -59,6 +59,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private CustomDialog dialog;
+    private boolean fieldsWithErrors;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -181,6 +182,11 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
     }
 
+    @Override
+    public void fieldWithError(boolean hasError) {
+        fieldsWithErrors = hasError;
+    }
+
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
         View sectionView = sections.get(sectionUid);
         if (sectionView != null) {
@@ -195,6 +201,15 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, totalSectionFields - completedSectionFields));
             sectionView.findViewById(R.id.empty_progress)
                     .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
+
+            for (FieldViewModel fields : updates)
+                if (fields.error() != null) {
+                    sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
+                    sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
+                            showInfoDialog("Error",
+                                    String.format("Field %s has an error. Please check its value and fix it to be able to complete the event",fields.label())));
+                }
+
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
@@ -208,7 +223,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void checkButton() {
-        binding.actionButton.setEnabled(fieldsToCompleteBeforeClosing <= 0);
+        binding.actionButton.setEnabled(fieldsToCompleteBeforeClosing <= 0 && !fieldsWithErrors);
     }
 
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {
