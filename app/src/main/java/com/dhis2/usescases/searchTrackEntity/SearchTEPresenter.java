@@ -109,7 +109,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.setForm(data, selectedProgram),
+                                data -> view.setForm(data, selectedProgram, queryData),
                                 Timber::d)
         );
 
@@ -174,7 +174,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         else
             compositeDisposable.add(
                     view.onlinePage()
-                            .filter(page->selectedProgram!=null)
+                            .filter(page -> selectedProgram != null)
                             .filter(page -> page > 0)
                             .startWith(1)
                             .flatMap(page -> {
@@ -219,6 +219,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     teiList.add(teiModel);
                                 }
                                 return teiList;
+                            })
+                            .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
+                            .flatMap(list -> {
+                                if (currentPage == 1)
+                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData)
+                                            .map(trackedEntityInstanceModels -> {
+                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
+                                                    list.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                                return list;
+                                            }).toFlowable(BackpressureStrategy.LATEST);
+                                else
+                                    return Flowable.just(list);
                             })
                             .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
                             .map(this::getMessage)
@@ -283,7 +295,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram),
+                        data -> view.setForm(data, selectedProgram, queryData),
                         Timber::d)
         );
     }
@@ -293,7 +305,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> view.setForm(data, selectedProgram),
+                        data -> view.setForm(data, selectedProgram, queryData),
                         Timber::d)
         );
     }
@@ -315,12 +327,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         selectedProgram = programSelected;
         view.clearList(programSelected == null ? null : programSelected.uid());
         view.clearData();
-        getTrakedEntities();
 
         if (selectedProgram == null)
             getTrackedEntityAttributes();
         else
             getProgramTrackedEntityAttributes();
+
+        getTrakedEntities(); //TODO: Check if queryData dataElements are only those from the selectedProgram
+
     }
 
     @Override

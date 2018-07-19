@@ -1,6 +1,7 @@
 package com.dhis2.Bindings;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
@@ -12,6 +13,8 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -933,6 +936,37 @@ public class Bindings {
                                     String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
                                     int colorRes = Color.parseColor(color);
                                     itemView.setBackgroundColor(colorRes);
+                                    setFromResBgColor(view, colorRes);
+                                }
+                            },
+                            Timber::d
+                    );
+
+
+    }
+
+    @SuppressLint("RxLeakedSubscription")
+    @BindingAdapter({"objectStyle", "itemView"})
+    public static void setObjectStyleAndTint(View view, View itemView, String uid) {
+        if (metadataRepository != null)
+            metadataRepository.getObjectStyle(uid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            data -> {
+                                if (data.icon() != null) {
+                                    Resources resources = view.getContext().getResources();
+                                    String iconName = data.icon().startsWith("ic_") ? data.icon() : "ic_" + data.icon();
+                                    int icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
+                                    if (view instanceof ImageView)
+                                        ((ImageView) view).setImageResource(icon);
+                                }
+
+                                if (data.color() != null) {
+                                    String color = data.color().startsWith("#") ? data.color() : "#" + data.color();
+                                    int colorRes = Color.parseColor(color);
+                                    ColorStateList colorStateList = ColorStateList.valueOf(colorRes);
+                                    ViewCompat.setBackgroundTintList(view,colorStateList);
                                     setFromResBgColor(view, colorRes);
                                 }
                             },

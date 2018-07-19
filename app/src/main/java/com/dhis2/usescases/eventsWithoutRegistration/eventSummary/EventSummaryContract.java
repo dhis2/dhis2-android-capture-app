@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.event.EventModel;
@@ -16,8 +15,7 @@ import java.util.List;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by Cristian on 01/03/2018.
- *
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventSummaryContract {
@@ -40,6 +38,8 @@ public class EventSummaryContract {
         void checkAction();
 
         void accessDataWrite(Boolean canWrite);
+
+        void fieldWithError(boolean b);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

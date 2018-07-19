@@ -189,4 +189,14 @@ public final class DataEntryAdapter extends Adapter {
     public void onViewDetachedFromWindow(@NonNull ViewHolder holder) {
         rows.get(holder.getItemViewType()).deAttach(holder);
     }
+
+    public boolean hasError() {
+        boolean hasError = false;
+        for (FieldViewModel fieldViewModel : viewModels) {
+            if (fieldViewModel.error() != null)
+                hasError = true;
+        }
+
+        return hasError;
+    }
 }

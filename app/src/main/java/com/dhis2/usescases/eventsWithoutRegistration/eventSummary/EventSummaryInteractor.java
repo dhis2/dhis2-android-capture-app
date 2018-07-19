@@ -183,6 +183,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.messageOnComplete(null, true);
+        view.fieldWithError(false);
 
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
@@ -190,16 +191,17 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
                 if (model != null)
-                    fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content()));
+                    fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content()));
                 else
                     Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
                 if (model != null)
-                    fieldViewModels.put(showError.field(),
-                            model.withError(showError.content()));
+                    fieldViewModels.put(showError.field(), model.withError(showError.content()));
+                else
+                    Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showError.field()));
+                view.fieldWithError(true);
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());

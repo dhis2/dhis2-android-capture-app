@@ -28,7 +28,7 @@ public class AbstractActivityContracts {
         void back();
 
         void displayMessage(String message);
-
+        void showInfoDialog(String title, String message);
         void setTutorial();
 
         void showTutorial(boolean shaked);

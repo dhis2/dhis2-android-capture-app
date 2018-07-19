@@ -214,7 +214,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType, @Nullable ProgramModel selectedProgram, @Nullable HashMap<String, String> queryData, Integer page) {
+    public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType, @Nullable ProgramModel selectedProgram, @Nullable HashMap<String, String> queryData) {
         String teiTypeWHERE = "TrackedEntityInstance.trackedEntityType = '" + teType + "'";
         String teiRelationship = "TrackedEntityInstance.state <> '" + State.RELATIONSHIP.name() + "'";
 
@@ -274,8 +274,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (selectedProgram != null && !selectedProgram.displayFrontPageList() && selectedProgram.maxTeiCountToReturn() != 0) {
             String maxResults = String.format(" LIMIT %s", selectedProgram.maxTeiCountToReturn());
             search += maxResults;
-        } else {
-            search += String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
         }
 
         return briteDatabase.createQuery(TEI_TABLE_SET, search)

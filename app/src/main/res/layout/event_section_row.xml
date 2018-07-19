@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
+    <android.support.v7.widget.CardView xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        xmlns:tools="http://schemas.android.com/tools"
         app:cardCornerRadius="8dp"
         app:cardPreventCornerOverlap="true">
 
@@ -20,15 +18,15 @@
 
             <View
                 android:id="@+id/completed_progress"
-                android:background="@color/green_7ed"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:background="@color/green_7ed" />
 
             <View
                 android:id="@+id/empty_progress"
-                android:background="@color/white_d6d"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:background="@color/white_d6d" />
 
         </LinearLayout>
 
@@ -40,35 +38,45 @@
             <TextView
                 android:id="@+id/section_title"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:lines="2"
+                android:paddingEnd="13dp"
+                android:paddingStart="13dp"
+                android:textColor="@color/white"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 tools:text="dasdhaikshdo"
-                android:paddingStart="13dp"
-                android:paddingEnd="13dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/white"
-                android:lines="2"
-                android:ellipsize="end"/>
+                tools:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/section_info"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                android:tint="@color/white"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_info_outline" />
 
             <TextView
                 android:id="@+id/section_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="13dp"
+                android:paddingStart="13dp"
+                android:textColor="@color/colorPrimary"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                tools:text="0/12"
-                android:paddingStart="13dp"
-                android:paddingEnd="13dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/colorPrimary"/>
+                tools:text="0/12" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </FrameLayout>

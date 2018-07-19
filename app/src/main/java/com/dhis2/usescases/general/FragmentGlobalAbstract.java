@@ -19,8 +19,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import me.toptas.fancyshowcase.FancyShowCaseQueue;
-
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -82,7 +80,7 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
         getAbstracContext().startActivity(destination, bundle, finishCurrent, finishAll, transition);
     }
 
-    public int getContainerId(){
+    public int getContainerId() {
         return containerId;
     }
 
@@ -109,6 +107,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     @Override
     public void displayMessage(String message) {
         getAbstractActivity().displayMessage(message);
+    }
+
+    @Override
+    public void showInfoDialog(String title, String message) {
+        getAbstractActivity().showInfoDialog(title, message);
     }
 
     @Override
