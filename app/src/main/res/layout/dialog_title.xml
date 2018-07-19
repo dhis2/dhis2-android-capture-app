@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:textColor="?colorPrimaryLight"
         android:textSize="19sp"
+        android:padding="10dp"
         android:textStyle="bold"
         tools:text="Dialog title" />
 

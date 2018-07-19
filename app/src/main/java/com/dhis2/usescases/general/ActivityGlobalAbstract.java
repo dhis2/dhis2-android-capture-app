@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.usescases.splash.SplashActivity;
+import com.dhis2.utils.ColorUtils;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.CoordinatesView;
 import com.dhis2.utils.HelpManager;
@@ -204,11 +207,25 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public void showInfoDialog(String title, String message) {
         if (getActivity() != null) {
-            new AlertDialog.Builder(getActivity())
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .show();
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+
+            //TITLE
+            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
+            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
+            int colorPrimary = ColorUtils.getPrimaryColor(getActivity(), ColorUtils.ColorType.PRIMARY);
+            alertDialog.setCustomTitle(titleView);
+
+            //BODY
+            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
+            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
+            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view->alertDialog.dismiss());
+            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view->alertDialog.dismiss());
+            alertDialog.setView(msgView);
+
+
+
+            alertDialog.show();
+
         }
     }
 
@@ -231,14 +248,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showDescription(String description) {
-        LayoutInflater inflater = getLayoutInflater();
+        showInfoDialog("Description", description);
+       /* LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
         ((TextView) layout.findViewById(R.id.toast_message)).setText(description);
         Toast toast = new Toast(this);
         toast.setView(layout);
         toast.setGravity(Gravity.BOTTOM, 0, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
-        toast.show();
+        toast.show();*/
     }
 
     protected int getPrimaryColor() {
