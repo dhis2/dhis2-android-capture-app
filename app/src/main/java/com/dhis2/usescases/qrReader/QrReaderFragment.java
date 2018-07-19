@@ -59,6 +59,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     private List<Trio<String, String, Boolean>> attributes = new ArrayList<>();
     private List<Pair<String, Boolean>> enrollments = new ArrayList<>();
     private List<Pair<String, Boolean>> events = new ArrayList<>();
+    private List<Pair<String, Boolean>> relationships = new ArrayList<>();
 
     public QrReaderFragment() {
         // Required empty public constructor
@@ -103,6 +104,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     break;
                 case QRjson.EVENTS_JSON:
                     presenter.handleEventInfo(new JSONObject(qRjson.getData()));
+                    break;
+                case QRjson.RELATIONSHIP_JSON:
+                    presenter.handleRelationship(new JSONArray(qRjson.getData()));
                     break;
                 default:
                     break;
@@ -156,7 +160,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
-    public void goToDashBoard(String uid) {
+    public void goToDashBoard(String uid, boolean isDownloadedOrPresent) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", uid);
         bundle.putString("PROGRAM_UID", null);
@@ -237,6 +241,19 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
+    public void renderRelationship(@NonNull List<Pair<String, Boolean>> relationships) {
+        for (Pair<String, Boolean> relationship : relationships){
+            if (!relationship.val1()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.relationships.contains(relationship)) {
+                this.relationships.add(relationship);
+            }
+        }
+        promtForMoreQr();
+    }
+
+    @Override
     public void promtForMoreQr(){
 
         // IDENTIFICATION
@@ -290,7 +307,25 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     count++;
                 }
             }
-            message = message + count + " " + getString(R.string.events) + "\n";
+            message = message + count + " " + getString(R.string.events) + "\n\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+
+
+        // RELATIONSHIPS
+        message = message + getString(R.string.qr_relationships) + ":\n";
+
+        if (relationships != null && !relationships.isEmpty()) {
+            int count = 0;
+            for (Pair<String, Boolean> relationship : relationships) {
+                if (relationship.val1()) {
+                    count++;
+                }
+            }
+            message = message + count + " " + getString(R.string.relationships) + "\n";
         }
         else {
             message = message + getString(R.string.qr_no_data) + "\n\n";

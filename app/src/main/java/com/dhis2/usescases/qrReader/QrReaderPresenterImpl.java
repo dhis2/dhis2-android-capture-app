@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -46,6 +47,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     private JSONObject teiJson;
     private JSONArray attrJson;
     private JSONArray enrollmentJson;
+    private JSONArray relationshipsJson;
     private ArrayList<JSONObject> eventJson = new ArrayList<>();
     private String teiUid;
 
@@ -72,7 +74,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     " WHERE " + TrackedEntityInstanceModel.Columns.UID + " = ?", teiUid);
             // IF FOUND, OPEN DASHBOARD
             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                view.goToDashBoard(teiUid);
+                view.goToDashBoard(teiUid, true);
                 cursor.close();
             }
             // IF NOT FOUND, TRY TO DOWNLOAD ONLINE, OR PROMPT USER TO SCAN MORE QR CODES
@@ -158,10 +160,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     EnrollmentModel.Columns.UID +
                     " FROM " + EnrollmentModel.TABLE +
                     " WHERE " + EnrollmentModel.Columns.UID + " = ?",
-                    jsonObject.getString("enrollmentUid"));
+                    jsonObject.getString("enrollment"));
             // ENROLLMENT FOUND, EVENT CAN BE SAVED
             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                events.add(Pair.create(jsonObject.getString("enrollmentUid"), true));
+                events.add(Pair.create(jsonObject.getString("enrollment"), true));
                 cursor.close();
             }
             // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
@@ -169,7 +171,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 boolean isEnrollmentReadFromQr = false;
                 for (int i = 0; i < enrollmentJson.length(); i++) {
                     JSONObject enrollment = enrollmentJson.getJSONObject(i);
-                    if (jsonObject.getString("enrollmentUid").equals(enrollment.getString(EnrollmentModel.Columns.UID))){
+                    if (jsonObject.getString("enrollment").equals(enrollment.getString(EnrollmentModel.Columns.UID))){
                         isEnrollmentReadFromQr = true;
                         break;
                     }
@@ -193,11 +195,29 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     }
 
     @Override
+    public void handleRelationship(JSONArray jsonArray) {
+        this.relationshipsJson = jsonArray;
+        ArrayList<Pair<String, Boolean>> relationships = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject relationship = jsonArray.getJSONObject(i);
+                relationships.add(Pair.create(relationship.getString("trackedEntityInstanceA"), true));
+            }
+            catch (Exception e){
+                Timber.e(e);
+            }
+        }
+
+        view.renderRelationship(relationships);
+    }
+
+    @Override
     public void init(QrReaderContracts.View view) {
         this.view = view;
     }
 
-    // SAVES READ TRACKED ENTITY INSTANCE, TRACKED ENTITY ATTRIBUTE VALUES AND ENROLLMENTS INTO LOCAL DATABASE
+    // SAVES READ TRACKED ENTITY INSTANCE, TRACKED ENTITY ATTRIBUTE VALUES, ENROLLMENTS, EVENTS AND RELATIONSHIPS INTO LOCAL DATABASE
     @Override
     public void download() {
         try {
@@ -247,6 +267,29 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, attrValueModel.toContentValues());
 
             } catch (JSONException | ParseException e) {
+                Timber.e(e);
+            }
+        }
+
+        for (int i = 0; i < relationshipsJson.length(); i++) {
+            try {
+                JSONObject relationship = relationshipsJson.getJSONObject(i);
+                RelationshipModel.Builder relationshipModelBuilder;
+                relationshipModelBuilder = RelationshipModel.builder();
+
+                if (relationship.has("trackedEntityInstanceA"))
+                    relationshipModelBuilder.trackedEntityInstanceA(relationship.getString("trackedEntityInstanceA"));
+                if (relationship.has("trackedEntityInstanceB"))
+                    relationshipModelBuilder.trackedEntityInstanceB(relationship.getString("trackedEntityInstanceB"));
+                if (relationship.has("relationshipType"))
+                    relationshipModelBuilder.relationshipType(relationship.getString("relationshipType"));
+
+                RelationshipModel relationshipModel = relationshipModelBuilder.build();
+
+                if (relationshipModel != null)
+                    briteDatabase.insert(RelationshipModel.TABLE, relationshipModel.toContentValues());
+
+            } catch (Exception e) {
                 Timber.e(e);
             }
         }
@@ -304,8 +347,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(event.getString("lastUpdated")));
                 if (event.has("state"))
                     eventModelBuilder.state(State.valueOf(event.getString("state")));
-                if (event.has("enrollmentUid"))
-                    eventModelBuilder.enrollment(event.getString("enrollmentUid"));
+                if (event.has("enrollment"))
+                    eventModelBuilder.enrollment(event.getString("enrollment"));
                 if (event.has("program"))
                     eventModelBuilder.program(event.getString("program"));
                 if (event.has("programStage"))
@@ -341,7 +384,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             }
         }
 
-        view.goToDashBoard(teiUid);
+        view.goToDashBoard(teiUid, false);
     }
 
 
@@ -357,10 +400,12 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 data -> {
-                                    if(!data.isEmpty())
-                                        view.goToDashBoard(data.get(0).uid());
+                                    view.finishDownload();
+                                    if(!data.isEmpty()) {
+                                        this.teiUid = data.get(0).uid();
+                                        view.goToDashBoard(data.get(0).uid(), true);
+                                    }
                                     else {
-                                        view.finishDownload();
                                         view.renderTeiInfo(teiUid);
                                     }},
                                 error -> {
