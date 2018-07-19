@@ -18,6 +18,7 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -52,7 +53,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
 
         compositeDisposable.add(
-                metadataRepository.getLastSync(META_DATA_RESOURCE)
+                metadataRepository.getLastSync(ResourceModel.Type.PROGRAM)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -62,7 +63,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         );
 
         compositeDisposable.add(
-                metadataRepository.getLastSync(DATA_RESOURCE)
+                metadataRepository.getLastSync(ResourceModel.Type.TRACKED_ENTITY_INSTANCE)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

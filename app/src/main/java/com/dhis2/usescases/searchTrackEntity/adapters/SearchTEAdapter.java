@@ -26,11 +26,13 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
     private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.Presenter presenter;
     private List<TrackedEntityInstanceModel> trackedEntityInstances;
+    private List<SearchTeiModel> teis;
 
     public SearchTEAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository) {
         this.presenter = presenter;
         this.metadataRepository = metadataRepository;
         this.trackedEntityInstances = new ArrayList<>();
+        this.teis = new ArrayList<>();
         setHasStableIds(true);
     }
 
@@ -45,17 +47,20 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return trackedEntityInstances.get(position).uid().hashCode();
+//        return trackedEntityInstances.get(position).uid().hashCode();
+        return teis.get(position).getTei().uid().hashCode();
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchTEViewHolder holder, int position) {
-        holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
+//        holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
+        holder.bind(presenter, teis.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
+//        return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
+        return teis != null ? teis.size() : 0;
     }
 
     public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances) {
@@ -64,8 +69,14 @@ public class SearchTEAdapter extends RecyclerView.Adapter<SearchTEViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void setTeis(List<SearchTeiModel> trackedEntityInstances) {
+        this.teis.addAll(trackedEntityInstances);
+        notifyDataSetChanged();
+    }
+
     public void clear() {
         this.trackedEntityInstances.clear();
+        this.teis.clear();
         notifyDataSetChanged();
     }
 

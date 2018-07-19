@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -8,10 +9,7 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
-import com.dhis2.databinding.ItemSearchTrackedEntityOnlineBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
-
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,7 @@ public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelati
 
     private final MetadataRepository metadataRepository;
     private SearchTEContractsModule.Presenter presenter;
-    private List<TrackedEntityInstanceModel> trackedEntityInstances;
+    private List<SearchTeiModel> trackedEntityInstances;
     private final boolean isOnline;
 
     public SearchRelationshipAdapter(SearchTEContractsModule.Presenter presenter, MetadataRepository metadataRepository, boolean online) {
@@ -34,25 +32,17 @@ public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelati
         this.isOnline = online;
     }
 
+    @NonNull
     @Override
-    public SearchRelationshipViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SearchRelationshipViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if(!isOnline){
-            ItemSearchRelationshipTrackedEntityBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_search_relationship_tracked_entity, parent, false);
-            return new SearchRelationshipViewHolder(binding);
-        }else {
-            ItemSearchRelationshipTrackedEntityBinding bindingOnline = DataBindingUtil.inflate(inflater, R.layout.item_search_relationship_tracked_entity, parent, false);
-            return new SearchRelationshipViewHolder(bindingOnline);
-        }
+        ItemSearchRelationshipTrackedEntityBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_search_relationship_tracked_entity, parent, false);
+        return new SearchRelationshipViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(SearchRelationshipViewHolder holder, int position) {
-        if (holder instanceof SearchRelationshipViewHolder)
-            ((SearchRelationshipViewHolder) holder).bind(presenter, trackedEntityInstances.get(position), metadataRepository);
-        else
-            ((SearchRelationshipViewHolder) holder).bind(presenter, trackedEntityInstances.get(position), metadataRepository);
-
+    public void onBindViewHolder(@NonNull SearchRelationshipViewHolder holder, int position) {
+        holder.bind(presenter, trackedEntityInstances.get(position), metadataRepository);
     }
 
     @Override
@@ -60,8 +50,7 @@ public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelati
         return trackedEntityInstances != null ? trackedEntityInstances.size() : 0;
     }
 
-    public void setItems(List<TrackedEntityInstanceModel> trackedEntityInstances) {
-        this.trackedEntityInstances.clear();
+    public void setItems(List<SearchTeiModel> trackedEntityInstances) {
         this.trackedEntityInstances.addAll(trackedEntityInstances);
         notifyDataSetChanged();
     }

@@ -3,6 +3,10 @@ package com.dhis2;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.server.ConfigurationRepository;
+import com.dhis2.data.server.ConfigurationRepositoryImpl;
+import com.dhis2.utils.CodeGenerator;
+import com.dhis2.utils.CodeGeneratorImpl;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.squareup.duktape.Duktape;
@@ -10,10 +14,6 @@ import com.squareup.duktape.Duktape;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import com.dhis2.utils.CodeGenerator;
-import com.dhis2.utils.CodeGeneratorImpl;
-import com.dhis2.data.server.ConfigurationRepository;
-import com.dhis2.data.server.ConfigurationRepositoryImpl;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import org.hisp.dhis.rules.android.DuktapeEvaluator;
 
@@ -72,8 +72,14 @@ final class AppModule {
 
     @Provides
     @Singleton
-    FirebaseJobDispatcher jobDispatcher(){
-       return new FirebaseJobDispatcher(new GooglePlayDriver(application));
+    FirebaseJobDispatcher jobDispatcher(GooglePlayDriver playDriver) {
+        return new FirebaseJobDispatcher(playDriver);
+    }
+
+    @Provides
+    @Singleton
+    GooglePlayDriver googlePlayDriver() {
+        return new GooglePlayDriver(application);
     }
 
 }

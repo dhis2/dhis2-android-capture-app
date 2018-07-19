@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,13 +13,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import timber.log.Timber;
-
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
  */
 
 public class DateUtils {
+
+    public static final int NEXT = 1;
+    public static final int PREVIOUS = -1;
+    public static final int NOW = 0;
 
     public static DateUtils getInstance() {
         return new DateUtils();
@@ -29,22 +30,6 @@ public class DateUtils {
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     private static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_EXPRESSION, Locale.US);
-
-    public Date[] getDateFromPeriod(Period period) {
-        switch (period) {
-            case YEARLY:
-                return new Date[]{getFirstDayOfCurrentYear(), getLastDayOfCurrentYear()};
-            case MONTHLY:
-                return new Date[]{getFirstDayOfurrentMonth(), getLastDayOfurrentMonth()};
-            case WEEKLY:
-                return new Date[]{getFirstDayOfCurrentWeek(), getLastDayOfCurrentWeek()};
-            case DAILY:
-            default:
-                return new Date[]{getToday(), getToday()};
-        }
-    }
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -351,17 +336,6 @@ public class DateUtils {
         }
     }
 
-    public Date toDate(String date) {
-
-        try {
-            return databaseDateFormat().parse(date);
-
-        } catch (ParseException e) {
-            Timber.e(e);
-            return null;
-        }
-    }
-
     public static int[] getDifference(Date startDate, Date endDate) {
 
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime());
@@ -649,4 +623,72 @@ public class DateUtils {
         date.set(Calendar.DAY_OF_MONTH, 1);
         return date.getTime();
     }
+
+    /**
+     * @param period      Period in which the date will be selected
+     * @param currentDate Current selected date
+     * @param page        1 for next, 0 for now, -1 for previous
+     * @return Next/Previous date calculated from the currentDate and Period
+     */
+    public Date getPeriodDate(PeriodType period, Date currentDate, int page) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+
+        switch (period) {
+            case Daily:
+                calendar.add(Calendar.DAY_OF_YEAR, page);
+                break;
+            case Weekly:
+
+                break;
+            case WeeklyWednesday:
+
+                break;
+            case WeeklyThursday:
+
+                break;
+            case WeeklySaturday:
+
+                break;
+            case WeeklySunday:
+
+                break;
+            case BiWeekly:
+
+                break;
+            case Monthly:
+
+                break;
+            case BiMonthly:
+
+                break;
+            case Quarterly:
+
+                break;
+            case SixMonthly:
+
+                break;
+            case SixMonthlyApril:
+
+                break;
+            case Yearly:
+
+                break;
+            case FinancialApril:
+
+                break;
+            case FinancialJuly:
+
+                break;
+            case FinancialOct:
+
+                break;
+            default:
+
+                break;
+        }
+        return calendar.getTime();
+    }
+
 }

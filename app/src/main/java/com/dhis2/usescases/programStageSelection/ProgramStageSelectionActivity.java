@@ -40,10 +40,14 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     ProgramStageSelectionContract.Presenter presenter;
 
     ProgramStageSelectionAdapter adapter;
+    private String enrollmenId;
+    private String programId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule()).inject(this);
+        programId = getIntent().getStringExtra("PROGRAM_UID");
+        enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
+        ((App) getApplicationContext()).userComponent().plus(new ProgramStageSelectionModule(programId,enrollmenId)).inject(this);
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
@@ -57,8 +61,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     @Override
     protected void onResume() {
         super.onResume();
-        String programId = getIntent().getStringExtra("PROGRAM_UID");
-        String enrollmenId = getIntent().getStringExtra("ENROLLMENT_UID");
+
         presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
     }
 

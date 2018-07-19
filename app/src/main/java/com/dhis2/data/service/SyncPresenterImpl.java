@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.dhis2.utils.Constants;
 
@@ -77,7 +78,18 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncEvents() {
 
-        new PostData().execute();
+//        new PostData().execute();
+
+        disposable.add(Observable.fromCallable(d2.syncSingleEvents())
+                .map(webResponse -> SyncResult.success())
+                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        data -> Log.d("DONE", "DONE"),
+                        Timber::d
+                )
+        );
 
         disposable.add(
                 events()

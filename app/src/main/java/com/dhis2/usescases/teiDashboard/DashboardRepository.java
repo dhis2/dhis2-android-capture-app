@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -75,4 +76,6 @@ public interface DashboardRepository {
     Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval);
 
     Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel programIndicator, String value);
+
+    Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
 }

@@ -2,10 +2,10 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.schedulers.SchedulerProvider;
 import com.dhis2.utils.Result;
@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -32,7 +33,7 @@ import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 /**
- * Created by Cristian on 01/03/2018.
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventSummaryInteractor implements EventSummaryContract.Interactor {
@@ -188,19 +189,17 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             if (ruleAction instanceof RuleActionShowWarning) {
                 RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showWarning.field());
-
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model != null)
                     fieldViewModels.put(showWarning.field(),
-                            ((EditTextViewModel) model).withWarning(showWarning.content()));
-                }
+                            model.withWarning(showWarning.content()));
+                else
+                    Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
             } else if (ruleAction instanceof RuleActionShowError) {
                 RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 FieldViewModel model = fieldViewModels.get(showError.field());
-
-                if (model != null && model instanceof EditTextViewModel) {
+                if (model != null)
                     fieldViewModels.put(showError.field(),
-                            ((EditTextViewModel) model).withError(showError.content()));
-                }
+                            model.withError(showError.content()));
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
@@ -210,6 +209,11 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
             } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 view.messageOnComplete(errorOnCompletion.content(), false);
+            } else if (ruleAction instanceof RuleActionSetMandatoryField) {
+                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
+                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+                if (model != null)
+                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
             }
         }
     }

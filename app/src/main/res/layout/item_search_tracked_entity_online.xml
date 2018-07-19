@@ -79,7 +79,6 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/app_name"
-                android:onClick="@{(view)->presenter.downloadTei(view,tei.uid(),progress,adapterPosition)}"
                 android:tint="?attr/colorPrimary"
                 app:srcCompat="@drawable/ic_download" />
 

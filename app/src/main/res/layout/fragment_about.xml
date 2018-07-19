@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="presenter"
             type="com.dhis2.usescases.about.AboutContracts.AboutPresenter" />
@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -40,18 +41,18 @@
                     android:id="@+id/aboutMore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:text="@string/about_more"
-                    android:textColorLink="?colorPrimary"
 
-                    app:layout_constraintTop_toBottomOf="@id/appSDK"
-                    android:layout_marginTop="15dp"/>
+                    android:textColorLink="?colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/appSDK" />
 
                 <TextView
                     android:id="@+id/about_connected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/about_connected"
                     android:layout_marginTop="15dp"
+                    android:text="@string/about_connected"
                     app:layout_constraintTop_toBottomOf="@id/aboutMore" />
 
                 <TextView
@@ -65,16 +66,16 @@
                     android:id="@+id/about_git"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/about_git"
                     android:layout_marginTop="15dp"
+                    android:text="@string/about_git"
                     android:textColorLink="?colorPrimary"
                     app:layout_constraintTop_toBottomOf="@id/about_user" />
 
                 <TextView
                     android:id="@+id/about_dev"
                     android:layout_width="wrap_content"
-                    android:layout_marginTop="15dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:text="@string/about_dev"
                     android:textColorLink="?colorPrimary"
                     app:layout_constraintTop_toBottomOf="@id/about_git" />
@@ -83,11 +84,24 @@
                 <TextView
                     android:id="@+id/about_contact"
                     android:layout_width="wrap_content"
-                    android:layout_marginTop="15dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:text="@string/about_contact"
                     android:textColorLink="?colorPrimary"
                     app:layout_constraintTop_toBottomOf="@id/about_dev" />
+
+                <TextView
+                    android:id="@+id/burmesseTest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/burmesse_test"
+                    app:layout_constraintTop_toBottomOf="@id/about_contact" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/chinesse_test"
+                    app:layout_constraintTop_toBottomOf="@id/burmesseTest" />
 
             </android.support.constraint.ConstraintLayout>
         </ScrollView>

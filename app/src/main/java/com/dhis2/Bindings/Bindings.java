@@ -10,18 +10,15 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.TypedValue;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,8 +26,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import com.dhis2.data.forms.dataentry.OptionAdapter;
-import com.dhis2.data.forms.dataentry.fields.spinner.SpinnerHolder;
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CatComboAdapter;
@@ -704,24 +699,26 @@ public class Bindings {
 
     @BindingAdapter("stateIcon")
     public static void setStateIcon(ImageView imageView, State state) {
-        switch (state) {
-            case TO_POST:
-                imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                break;
-            case TO_UPDATE:
-                imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                break;
-            case TO_DELETE:
-                imageView.setImageResource(R.drawable.ic_sync_problem_grey);
-                break;
-            case ERROR:
-                imageView.setImageResource(R.drawable.ic_sync_problem_red);
-                break;
-            case SYNCED:
-                imageView.setImageResource(R.drawable.ic_sync);
-                break;
-            default:
-                break;
+        if (state != null) {
+            switch (state) {
+                case TO_POST:
+                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                    break;
+                case TO_UPDATE:
+                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                    break;
+                case TO_DELETE:
+                    imageView.setImageResource(R.drawable.ic_sync_problem_grey);
+                    break;
+                case ERROR:
+                    imageView.setImageResource(R.drawable.ic_sync_problem_red);
+                    break;
+                case SYNCED:
+                    imageView.setImageResource(R.drawable.ic_sync);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -819,7 +816,7 @@ public class Bindings {
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
-           return metadataRepository.optionSet(optionSet);
+        return metadataRepository.optionSet(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")

@@ -358,6 +358,36 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate) {
+        return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(event -> {
+                    ContentValues values = new ContentValues();
+                    Calendar createdDate = Calendar.getInstance();
+
+                    values.put(EventModel.Columns.UID, codeGenerator.generate());
+                    values.put(EventModel.Columns.ENROLLMENT, event.enrollment());
+                    values.put(EventModel.Columns.CREATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(createdDate.getTime()));
+                    values.put(EventModel.Columns.STATUS, EventStatus.SCHEDULE.toString());
+                    values.put(EventModel.Columns.PROGRAM, event.program());
+                    values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
+                    values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
+                    values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(chosenDate));
+                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(chosenDate));
+                    values.put(EventModel.Columns.STATE, State.TO_POST.toString());
+
+                    if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
+                        return Observable.error(new IllegalStateException("Event has not been successfully added"));
+                    }
+
+                    updateProgramTable(createdDate.getTime(), programUid);
+
+                    return Observable.just("Event Created");
+                });
+    }
+
+    @Override
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid, teiUid)

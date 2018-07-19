@@ -25,6 +25,7 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
 import com.dhis2.utils.CatComboAdapter2;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.CustomViews.OrgUnitDialog;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 import com.dhis2.utils.DateUtils;
 import com.unnamed.b.atv.model.TreeNode;
@@ -108,6 +109,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private boolean isRepeatable;
     private PeriodType periodType;
     private String programStageUid;
+    private OrgUnitDialog orgUnitDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -487,8 +489,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setLocation(double latitude, double longitude) {
-        binding.lat.setText(String.format(Locale.getDefault(), "%.5f", latitude));
-        binding.lon.setText(String.format(Locale.getDefault(), "%.5f", longitude));
+        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
+        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
         checkActionButtonVisibility();
     }
 
@@ -504,7 +506,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void onEventUpdated(String eventUid) {
-        showToast(getString(R.string.event_updated));
+//        showToast(getString(R.string.event_updated));
         startFormActivity(eventUid);
     }
 
@@ -718,6 +720,20 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
         }
+    }
+
+    @Override
+    public void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits) {
+        orgUnitDialog = new OrgUnitDialog()
+                .setTitle(getString(R.string.org_unit))
+                .setMultiSelection(false)
+                .setOrgUnits(orgUnits)
+                .setPossitiveListener(data -> {
+                    setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
+                    orgUnitDialog.dismiss();
+                })
+                .setNegativeListener(data -> orgUnitDialog.dismiss());
+        orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
     }
 
     private boolean catComboIsDefaultOrNull() {

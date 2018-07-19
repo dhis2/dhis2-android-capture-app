@@ -198,7 +198,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             } else if (ruleAction instanceof RuleActionAssign) {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 //                dataEntryRepository.assign(assign.field(), assign.data());
-                save(assign.field(), assign.data());
+                save(assign.field(), ruleEffect.data());
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent

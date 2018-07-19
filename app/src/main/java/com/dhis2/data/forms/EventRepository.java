@@ -148,12 +148,16 @@ public class EventRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = eventProgram()
-                .switchMap(program -> Flowable.zip(rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program), (rules, variables) ->
+                .switchMap(program -> Flowable.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        rulesRepository.otherEvents(eventUid),
+                        (rules, variables,events) ->
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
                                         .build().toEngineBuilder()
+                                        .events(events)
                                         .build()))
                 .cacheWithInitialCapacity(1);
     }
@@ -323,7 +327,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<String> getTrackedEntityInstanceUid() {
-        String SELECT_TE = "SELECT " + EventModel.TABLE  + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
+        String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EventModel.TABLE +
                 " WHERE " + EventModel.Columns.UID + " = ?";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));

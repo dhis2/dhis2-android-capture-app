@@ -1,16 +1,15 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.support.annotation.Nullable;
-import android.widget.ProgressBar;
 
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
@@ -28,23 +27,19 @@ public class SearchTEContractsModule {
     public interface View extends AbstractActivityContracts.View {
         void setForm(List<TrackedEntityAttributeModel> trackedEntityAttributeModels, @Nullable ProgramModel program);
 
-        Consumer<Pair<List<TrackedEntityInstanceModel>,String>> swapListData();
+        Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData();
 
         void setPrograms(List<ProgramModel> programModels);
 
         void clearList(String uid);
 
-        android.view.View getProgress();
-
         Flowable<RowAction> rowActionss();
 
         Flowable<Integer> onlinePage();
 
-        void removeTei(int adapterPosition);
+        Flowable<Integer> offlinePage();
 
-        void handleTeiDownloads(boolean empty);
-
-        void restartOnlineFragment();
+        void clearData();
     }
 
     public interface Presenter {
@@ -59,34 +54,26 @@ public class SearchTEContractsModule {
 
         void onClearClick();
 
-        void onFabClick(android.view.View view, boolean downloadMode);
+        void onFabClick(android.view.View view);
 
         void onEnrollClick(android.view.View view);
 
-        void onDownloadClick(android.view.View view);
-
         void enroll(String programUid, String uid);
 
-        void onTEIClick(String TEIuid);
+        void onTEIClick(String TEIuid, boolean isOnline);
 
         void getTrakedEntities();
-
-        void getOnlineTrackedEntities(SearchOnlineFragment onlineFragment);
 
         TrackedEntityTypeModel getTrackedEntityName();
 
         ProgramModel getProgramModel();
 
-        List<ProgramModel> getProgramList();
+        void addRelationship(String TEIuid, String relationshipTypeUid, boolean b, boolean online);
 
-        void addRelationship(String TEIuid, String relationshipTypeUid, boolean b);
+        void downloadTei(String teiUid);
 
-        void downloadTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
-
-        boolean selectTei(android.view.View view, String teiUid, ProgressBar progressBar, int adapterPosition);
+        void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid, boolean b);
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
-
-        List<TrackedEntityAttributeModel> getFormData();
     }
 }

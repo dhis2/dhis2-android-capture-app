@@ -47,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 30/11/2017.
+ * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
 public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
@@ -180,6 +180,20 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void generateEvent(String lastModifiedEventUid, Integer standardInterval) {
         compositeDisposable.add(
                 dashboardRepository.generateNewEvent(lastModifiedEventUid, standardInterval)
+                        .take(1)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> view.displayMessage(result),
+                                Timber::d
+                        )
+        );
+    }
+
+    @Override
+    public void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate) {
+        compositeDisposable.add(
+                dashboardRepository.generateNewEventFromDate(lastModifiedEventUid, chosenDate)
                         .take(1)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -428,10 +442,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         Intent intent = new Intent(view.getContext(), TeiDashboardMobileActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", teiUid);
-        bundle.putString("PROGRAM_UID", programUid);
+        bundle.putString("PROGRAM_UID", null);
         intent.putExtras(bundle);
         view.getAbstractActivity().startActivity(intent);
-        //view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
 
     @Override
