@@ -80,7 +80,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "FROM DataSet " +
             "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
 
-    private final static String COUNT_AGGREGATE_FROM_DATASET = "SELECT COUNT(*) FROM DataSetDataElementLink " +
+    private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
             "WHERE dataSet = ? ";
 
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE,OrganisationUnitProgramLinkModel.TABLE};
@@ -160,7 +160,7 @@ class HomeRepositoryImpl implements HomeRepository {
                             queryFinal = String.format(SELECT_EVENTS, filter);
                         }
                     } else {
-                        queryFinal = COUNT_AGGREGATE_FROM_DATASET;
+                        queryFinal = AGGREGATE_FROM_DATASET;
                     }
 
                     Cursor countCursor = briteDatabase.query(queryFinal, uid);
