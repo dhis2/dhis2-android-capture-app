@@ -68,7 +68,21 @@ class HomeRepositoryImpl implements HomeRepository {
             "Program.trackedEntityType," +
             "Program.description " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid GROUP BY Program.uid";
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid GROUP BY Program.uid " +
+            "UNION " +
+            "SELECT DataSet.uid, " +
+            "DataSet.displayName, " +
+            "null, " +
+            "null, " +
+            "'', " +
+            "'', " +
+            "DataSet.description " +
+            "FROM DataSet " +
+            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
+
+    private final static String COUNT_AGGREGATE_FROM_DATASET = "SELECT COUNT(*) FROM DataSetDataElementLink " +
+            "WHERE dataSet = ? ";
+
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE,OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
@@ -115,34 +129,38 @@ class HomeRepositoryImpl implements HomeRepository {
                     String description = cursor.getString(6);
 
                     //QUERYING Program EVENTS - dates filter
-                    StringBuilder dateQuery = new StringBuilder("");
-                    if (dates != null && !dates.isEmpty()) {
-                        String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
-                        for (int i = 0; i < dates.size(); i++) {
-                            Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
-                            dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
-                            if (i < dates.size() - 1)
-                                dateQuery.append("OR ");
-                        }
-                    }
-
-                    //QUERYING Program Events - orgUnit filter
-                    String orgQuery = "";
-                    if (orgUnitsId != null)
-                        orgQuery = String.format("Event.organisationUnit IN (%s)", orgUnitsId);
-
-
                     String queryFinal;
-                    String filter = "";
-                    if (!dateQuery.toString().isEmpty() && !orgQuery.isEmpty())
-                        filter = dateQuery.toString() + " AND " + orgQuery + " AND ";
-                    else if (!dateQuery.toString().isEmpty() || !orgQuery.isEmpty())
-                        filter = dateQuery.toString() + orgQuery + " AND ";
+                    if(!programType.isEmpty()){
+                        StringBuilder dateQuery = new StringBuilder("");
+                        if (dates != null && !dates.isEmpty()) {
+                            String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
+                            for (int i = 0; i < dates.size(); i++) {
+                                Date[] datesToQuery = DateUtils.getInstance().getDateFromDateAndPeriod(dates.get(i), period);
+                                dateQuery.append(String.format(queryFormat, "Event.eventDate", DateUtils.databaseDateFormat().format(datesToQuery[0]), DateUtils.databaseDateFormat().format(datesToQuery[1])));
+                                if (i < dates.size() - 1)
+                                    dateQuery.append("OR ");
+                            }
+                        }
 
-                    if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
-                        queryFinal = String.format(SELECT_TEIS, filter);
+                        //QUERYING Program Events - orgUnit filter
+                        String orgQuery = "";
+                        if (orgUnitsId != null)
+                            orgQuery = String.format("Event.organisationUnit IN (%s)", orgUnitsId);
+
+
+                        String filter = "";
+                        if (!dateQuery.toString().isEmpty() && !orgQuery.isEmpty())
+                            filter = dateQuery.toString() + " AND " + orgQuery + " AND ";
+                        else if (!dateQuery.toString().isEmpty() || !orgQuery.isEmpty())
+                            filter = dateQuery.toString() + orgQuery + " AND ";
+
+                        if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
+                            queryFinal = String.format(SELECT_TEIS, filter);
+                        } else {
+                            queryFinal = String.format(SELECT_EVENTS, filter);
+                        }
                     } else {
-                        queryFinal = String.format(SELECT_EVENTS, filter);
+                        queryFinal = COUNT_AGGREGATE_FROM_DATASET;
                     }
 
                     Cursor countCursor = briteDatabase.query(queryFinal, uid);
@@ -154,13 +172,17 @@ class HomeRepositoryImpl implements HomeRepository {
 
 
                     //QUERYING Tracker name
-                    String typeName = "Events";
+                    String typeName = "";
                     if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
                         Cursor typeCursor = briteDatabase.query(TRACKED_ENTITY_TYPE_NAME, teiType);
                         if (typeCursor != null && typeCursor.moveToFirst()) {
                             typeName = typeCursor.getString(0);
                             typeCursor.close();
                         }
+                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())){
+                        typeName = "Events";
+                    } else {
+                        typeName = "DataSets";
                     }
 
                     return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description);
