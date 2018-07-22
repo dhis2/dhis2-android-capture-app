@@ -20,7 +20,7 @@ repositories {
 
 android {
 
-    lintOptions{
+    lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
@@ -37,7 +37,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        buildConfigField "String", "SDK_VERSION", "\""+ libraries.dhis2sdk + "\""
+        buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -143,7 +143,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
     // Core module of the DHIS 2 Android SDK
-    implementation ("org.hisp.dhis:android-core:${libraries.dhis2sdk}"){
+    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
     // RuleEngine module of the DHIS 2 Android SDK

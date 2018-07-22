@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dhis2">
@@ -12,7 +13,6 @@
     <uses-feature
         android:name="android.hardware.fingerprint"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
@@ -30,28 +30,27 @@
         <activity android:name=".usescases.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="play.dhis2.org"
                     android:scheme="https" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".usescases.login.LoginActivity"
             android:windowSoftInputMode="adjustPan" />
-
         <activity android:name=".usescases.main.MainActivity" />
-
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
-        <activity
-            android:name=".usescases.searchTrackEntity.SearchTEActivity"/>
+        <activity android:name=".usescases.searchTrackEntity.SearchTEActivity" />
         <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
@@ -72,7 +71,6 @@
             android:name=".data.service.SyncService"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".data.service.SyncMetadataService"
             android:permission="android.permission.BIND_JOB_SERVICE">
@@ -80,7 +78,6 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".data.service.SyncDataService"
             android:permission="android.permission.BIND_JOB_SERVICE">
@@ -95,6 +92,8 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
+
+        <activity android:name=".usescases.dataSetDetail.DataSetDetailActivity"></activity>
     </application>
 
 </manifest>
