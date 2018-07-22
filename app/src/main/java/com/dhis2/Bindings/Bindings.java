@@ -333,7 +333,7 @@ public class Bindings {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             // TODO CRIS: ADD DESCRIPTION IN NEXT SDK RELEASES
-                            programStageModel -> textView.setText(textView.getContext().getString(R.string.lorem)),
+                            programStageModel -> textView.setText(""),
                             Timber::d
                     );
     }

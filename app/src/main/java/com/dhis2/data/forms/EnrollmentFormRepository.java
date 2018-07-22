@@ -78,11 +78,12 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
-    private static final String SELECT_USE_FIRST_STAGE = "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
-            "FROM Enrollment\n" +
-            "  JOIN Program ON Enrollment.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND Program.useFirstStageDuringRegistration  = 1\n" +
-            "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1";
+    private static final String SELECT_USE_FIRST_STAGE =
+            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
+                    "FROM Enrollment\n" +
+                    "  JOIN Program ON Enrollment.program = Program.uid\n" +
+                    "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
+                    "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
             "  program\n" +

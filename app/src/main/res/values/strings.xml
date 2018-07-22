@@ -32,7 +32,6 @@
     <string name="search_result_text">%s results found</string>
     <string name="add_new">Add new</string>
     <string name="schedule_new">Schedule new</string>
-    <string name="lorem" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</string>
     <string name="referral">Referral</string>
 
     <!-- Login -->
@@ -113,7 +112,6 @@
     <string name="failed_insert_event">Failed to insert new Event</string>
     <string name="event_created">Event created</string>
     <string name="event_updated">Event updated</string>
-    <string name="fake_program_stage_description" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</string>
     <string name="one_time">One time</string>
     <string name="permanent">Permanent</string>
 
