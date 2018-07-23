@@ -103,11 +103,13 @@ public class EventRepository implements FormRepository {
             "  Option.name,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
-            "  Event.status\n" +
+            "  Event.status,\n" +
+            "  Field.formLabel\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
+            "        DataElement.formName AS formLabel,\n" +
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
@@ -152,7 +154,7 @@ public class EventRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
-                        (rules, variables,events) ->
+                        (rules, variables, events) ->
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
@@ -337,6 +339,7 @@ public class EventRepository implements FormRepository {
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
         String label = cursor.getString(1);
+        String formLabel = cursor.getString(10);
         ValueType valueType = ValueType.valueOf(cursor.getString(2));
         boolean mandatory = cursor.getInt(3) == 1;
         String optionSetUid = cursor.getString(4);
@@ -360,7 +363,7 @@ public class EventRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, status == EventStatus.ACTIVE, null);
+        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section, allowFutureDates, status == EventStatus.ACTIVE, null);
     }
 
     @NonNull

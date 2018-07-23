@@ -36,10 +36,10 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     @Override
     public ImageHolder onCreate(@NonNull ViewGroup parent) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
-        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, null);
+        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, null, null);
     }
 
-    public ImageHolder onCreate(@NonNull ViewGroup parent, int count) {
+    public ImageHolder onCreate(@NonNull ViewGroup parent, int count, FlowableProcessor<String> imageSelector) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
         Integer height = null;
         if (renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
@@ -55,7 +55,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
             rootView.setLayoutParams(layoutParams);
         }
 
-        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, rootView);
+        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, rootView, imageSelector);
     }
 
     @Override

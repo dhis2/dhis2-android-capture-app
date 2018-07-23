@@ -1,7 +1,9 @@
 package com.dhis2.data.forms;
 
+import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Quartet;
@@ -133,7 +135,7 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.program = ? AND Event.uid != ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     /**
      * Query all events except current one from an enrollment
@@ -148,7 +150,7 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ? AND Event.uid != ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     private static final String QUERY_VALUES = "SELECT " +
             "  eventDate," +
@@ -254,7 +256,7 @@ public final class RulesRepository {
     @NonNull
     private static Quartet<String, String, Integer, String> mapToQuartet(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
-        String condition = cursor.getString(3);
+        String condition = cursor.getString(3) == null ? "" : cursor.getString(3);
 
         String stage = cursor.isNull(1) ? "" : cursor.getString(1);
         Integer priority = cursor.isNull(2) ? 0 : cursor.getInt(2);
@@ -387,30 +389,34 @@ public final class RulesRepository {
     }
 
     public Flowable<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
-                .mapToOne(ProgramModel::create).flatMap(programModel ->
-                        briteDatabase.createQuery(EventModel.TABLE, QUERY_OTHER_EVENTS, programModel.uid(), eventUidToEvaluate)
-                                .mapToList(cursor -> {
-                                    List<RuleDataValue> dataValues = new ArrayList<>();
-                                    String eventUid = cursor.getString(0);
-                                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
-                                    String orgUnit = cursor.getString(5);
-                                    String programStage = cursor.getString(6);
-                                    RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUidToEvaluate)
+                .mapToOne(EventModel::create)
+                .flatMap(eventModel ->
+                        briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
+                                .mapToOne(ProgramModel::create).flatMap(programModel ->
+                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid(), eventUidToEvaluate)
+                                        .mapToList(cursor -> {
+                                            List<RuleDataValue> dataValues = new ArrayList<>();
+                                            String eventUid = cursor.getString(0);
+                                            Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
+                                            Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+                                            String orgUnit = cursor.getString(5);
+                                            String programStage = cursor.getString(6);
+                                            RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
-                                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
-                                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                            String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                            dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                                    dataValueCursor.getString(2), value));
-                                        }
-                                    }
+                                            Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
+                                            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+                                                for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                                                    Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                                                    String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                                                    dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
+                                                            dataValueCursor.getString(2), value));
+                                                }
+                                                dataValueCursor.close();
+                                            }
 
-                                    return RuleEvent.create(eventUid, cursor.getString(1),
-                                            status, eventDate, dueDate, dataValues);
-                                })).toFlowable(BackpressureStrategy.LATEST);
+                                            return RuleEvent.create(eventUid, cursor.getString(1),
+                                                    status, eventDate, dueDate, dataValues);
+                                        }))).toFlowable(BackpressureStrategy.LATEST);
     }
 }

@@ -71,8 +71,7 @@ class FormPresenterImpl implements FormPresenter {
         if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT) {
             isEvent = false;
             this.ruleEngineRepository = new EnrollmentRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
-        }
-        else {
+        } else {
             isEvent = true;
             this.ruleEngineRepository = new EventsRuleEngineRepository(briteDatabase, formRepository, formViewArguments.uid());
         }
@@ -170,14 +169,14 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.io()).share();
 
         compositeDisposable.add(enrollmentDoneStream
-               /* .flatMap(data -> checkMandatory().map(mandatoryRequired -> Pair.create(data, mandatoryRequired)))
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(data -> {
-                    view.showMandatoryFieldsDialog();
-                    return Observable.just(data);
-                })
-                .filter(data -> !data.val1()) //
-                .map(data -> data.val0())*/
+                /* .flatMap(data -> checkMandatory().map(mandatoryRequired -> Pair.create(data, mandatoryRequired)))
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .flatMap(data -> {
+                     view.showMandatoryFieldsDialog();
+                     return Observable.just(data);
+                 })
+                 .filter(data -> !data.val1()) //
+                 .map(data -> data.val0())*/
                 .flatMap(formRepository::autoGenerateEvents) //Autogeneration of events
                 .flatMap(data -> formRepository.useFirstStageDuringRegistration()) //Checks if first Stage Should be used
                 .subscribeOn(schedulerProvider.io())
@@ -310,7 +309,10 @@ class FormPresenterImpl implements FormPresenter {
                 .subscribe(data -> {
                     view.isMandatoryFieldsRequired(data);
                     disposable.clear();
-                }, Timber::e)
+                }, t -> {
+                    Timber.e(t);
+                    view.isMandatoryFieldsRequired(new ArrayList<>());
+                })
         );
     }
 
@@ -341,22 +343,21 @@ class FormPresenterImpl implements FormPresenter {
         formRepository.deleteEnrollment(trackedEntityAttributeInstanceId);
     }
 
-    private void deleteEvent(){
+    private void deleteEvent() {
         formRepository.deleteEvent();
     }
 
-    private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId){
+    private void deleteTrackedEntityInstance(@NonNull String trackedEntityAttributeInstanceId) {
         formRepository.deleteTrackedEntityInstance(trackedEntityAttributeInstanceId);
     }
 
-    public void deleteCascade(){
+    public void deleteCascade() {
         CompositeDisposable disposable = new CompositeDisposable();
-        if (isEvent){
+        if (isEvent) {
             deleteEvent();
             disposable.clear();
             view.onAllSavedDataDeleted();
-        }
-        else {
+        } else {
             disposable.add(formRepository.getTrackedEntityInstanceUid()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())

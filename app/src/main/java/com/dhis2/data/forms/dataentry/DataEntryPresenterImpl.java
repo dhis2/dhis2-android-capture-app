@@ -6,7 +6,6 @@ import android.util.Log;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import com.dhis2.data.schedulers.SchedulerProvider;
-import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.CodeGenerator;
 import com.dhis2.utils.Result;
 
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -198,7 +196,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             } else if (ruleAction instanceof RuleActionAssign) {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 //                dataEntryRepository.assign(assign.field(), assign.data());
-                save(assign.field(), ruleEffect.data());
+                if (fieldViewModels.get(assign.field())==null || !fieldViewModels.get(assign.field()).value().equals(ruleEffect.data()))
+                    save(assign.field(), ruleEffect.data());
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent

@@ -78,11 +78,12 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
-    private static final String SELECT_USE_FIRST_STAGE = "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
-            "FROM Enrollment\n" +
-            "  JOIN Program ON Enrollment.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND Program.useFirstStageDuringRegistration  = 1\n" +
-            "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1";
+    private static final String SELECT_USE_FIRST_STAGE =
+            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
+                    "FROM Enrollment\n" +
+                    "  JOIN Program ON Enrollment.program = Program.uid\n" +
+                    "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
+                    "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
             "  program\n" +
@@ -110,12 +111,14 @@ class EnrollmentFormRepository implements FormRepository {
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
-            "  Enrollment.status\n" +
+            "  Enrollment.status,\n" +
+            "  Field.formLabel\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
             "        TrackedEntityAttribute.displayName AS label,\n" +
+            "        TrackedEntityAttribute.formName AS formLabel,\n" +
             "        TrackedEntityAttribute.valueType AS type,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
@@ -490,6 +493,7 @@ class EnrollmentFormRepository implements FormRepository {
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
+        String formLabel = cursor.getString(11);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -505,7 +509,7 @@ class EnrollmentFormRepository implements FormRepository {
                 "",
                 "");
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
+        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
                 allowFutureDates, status == EnrollmentStatus.ACTIVE, null);
     }
 
