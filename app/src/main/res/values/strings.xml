@@ -147,6 +147,7 @@
 
     <!--DONE TASKS-->
     <string name="events">events</string>
+    <string name="relationships">relationships</string>
     <string name="done_task">Home</string>
     <string name="app_info">App Info</string>
     <string name="log_out">Log Out</string>
@@ -237,8 +238,9 @@
     <string name="button_ok">OK</string>
     <string name="qr_id">Identification</string>
     <string name="qr_attributes">Attributes</string>
-    <string name="qr_enrollment">Enrollment</string>
+    <string name="qr_enrollment">Enrollments</string>
     <string name="qr_events">Events</string>
+    <string name="qr_relationships">Relationships</string>
     <string name="read_more_qr">Read next QR to get more info.</string>
     <string name="save_qr">Stop reading and save data</string>
     <string name="qr_no_data">no data</string>
@@ -264,6 +266,8 @@
     <string name="add_relationship_error">It\'s not possible to add this relationship</string>
     <string name="warning_error_on_complete_title">Check this!</string>
     <string name="save">Save</string>
+
+    <string name="downloaded_confirm">Do you want to add more data from QR?</string>
 
     <!--ABOUT-->
     <string name="about_app">App Version: %s</string>

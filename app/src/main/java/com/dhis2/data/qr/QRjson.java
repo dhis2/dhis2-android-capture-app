@@ -10,6 +10,7 @@ public class QRjson {
     public static final String ENROLLMENT_JSON = "ENROLLMENT";
     public static final String EVENTS_JSON = "EVENTS";
     public static final String ATTR_JSON = "ATTR";
+    public static final String RELATIONSHIP_JSON = "RELATIONSHIP";
 
     private String type;
     private String data;

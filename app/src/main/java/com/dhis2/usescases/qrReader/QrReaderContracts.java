@@ -9,7 +9,6 @@ import com.dhis2.data.tuples.Trio;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,11 +30,13 @@ public class QrReaderContracts {
 
         void renderEventInfo(@NonNull List<Pair<String, Boolean>> events);
 
+        void renderRelationship(@NonNull List<Pair<String, Boolean>> relationships);
+
         void initDownload();
 
         void finishDownload();
 
-        void goToDashBoard(String uid);
+        void goToDashBoard(String teiUid, boolean isDownloadedOrPresent);
     }
 
     public interface Presenter {
@@ -46,7 +47,9 @@ public class QrReaderContracts {
 
         void handleEnrollmentInfo(JSONArray jsonArray);
 
-        void handleEventInfo(JSONObject jsonArray);
+        void handleEventInfo(JSONObject jsonObject);
+
+        void handleRelationship(JSONArray jsonArray);
 
         void init(View view);
 
