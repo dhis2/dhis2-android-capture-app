@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -32,7 +32,27 @@ public class ExampleUnitTest {
         cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek()); //Set to first day of next week
         cal.add(Calendar.DAY_OF_YEAR, -1); //Set to last day of this week
 
-        assertEquals("2018-07-15",DateUtils.uiDateFormat().format(cal.getTime()));
+        assertEquals("2018-07-15", DateUtils.uiDateFormat().format(cal.getTime()));
+
+    }
+
+    @Test
+    public void moveWeeklyWednesday() throws ParseException {
+        String testDate = "2018-07-23";
+        Date date = DateUtils.uiDateFormat().parse(testDate);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        if (cal.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY) {
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+            assertEquals("2018-07-25", DateUtils.uiDateFormat().format(cal.getTime()));
+
+        } else {
+            cal.add(Calendar.WEEK_OF_YEAR, 1);
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+            assertEquals("2018-07-25", DateUtils.uiDateFormat().format(cal.getTime()));
+        }
+
 
     }
 }

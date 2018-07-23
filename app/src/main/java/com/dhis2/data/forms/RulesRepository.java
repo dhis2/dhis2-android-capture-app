@@ -1,7 +1,9 @@
 package com.dhis2.data.forms;
 
+import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Quartet;
@@ -133,7 +135,7 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.program = ? AND Event.uid != ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate LIMIT 10";
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     /**
      * Query all events except current one from an enrollment
@@ -148,7 +150,7 @@ public final class RulesRepository {
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.enrollment = ? AND Event.uid != ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate LIMIT 10";
+            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     private static final String QUERY_VALUES = "SELECT " +
             "  eventDate," +
@@ -392,7 +394,7 @@ public final class RulesRepository {
                 .flatMap(eventModel ->
                         briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
                                 .mapToOne(ProgramModel::create).flatMap(programModel ->
-                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment()==null?QUERY_OTHER_EVENTS:QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid(), eventUidToEvaluate)
+                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid(), eventUidToEvaluate)
                                         .mapToList(cursor -> {
                                             List<RuleDataValue> dataValues = new ArrayList<>();
                                             String eventUid = cursor.getString(0);

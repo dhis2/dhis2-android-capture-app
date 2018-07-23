@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.support.annotation.NonNull;
 
 import com.dhis2.data.schedulers.SchedulerProvider;
+import com.dhis2.usescases.general.AbstractActivityContracts;
 import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -20,8 +21,8 @@ public class FormModule {
 
     public FormModule(@NonNull FormViewArguments formViewArguments) {
         this.formViewArguments = formViewArguments;
-
     }
+
 
     @Provides
     @PerForm

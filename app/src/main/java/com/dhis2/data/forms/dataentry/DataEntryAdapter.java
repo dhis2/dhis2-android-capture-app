@@ -66,6 +66,9 @@ public final class DataEntryAdapter extends Adapter {
     private final FlowableProcessor<RowAction> processor;
 
     @NonNull
+    private final FlowableProcessor<String> imageSelector;
+
+    @NonNull
     private final List<Row> rows;
     private final DataEntryArguments dataEntryArguments;
 
@@ -78,6 +81,7 @@ public final class DataEntryAdapter extends Adapter {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
+        imageSelector = PublishProcessor.create();
 
         this.dataEntryArguments = dataEntryArguments;
 
@@ -102,7 +106,7 @@ public final class DataEntryAdapter extends Adapter {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == IMAGE)
-            return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount());
+            return ((ImageRow) rows.get(IMAGE)).onCreate(parent, getItemCount(), imageSelector);
         else
             return rows.get(viewType).onCreate(parent);
     }

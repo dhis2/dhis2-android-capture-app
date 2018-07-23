@@ -43,12 +43,12 @@ public class ProgramStageSelectionModule {
     ProgramStageSelectionRepository providesProgramStageSelectionRepository(@NonNull BriteDatabase briteDatabase,
                                                                             @NonNull RuleExpressionEvaluator evaluator,
                                                                             RulesRepository rulesRepository) {
-        return new ProgramStageSelectionRepositoryImpl(briteDatabase,evaluator, rulesRepository, programUid,enrollmentUid);
+        return new ProgramStageSelectionRepositoryImpl(briteDatabase, evaluator, rulesRepository, programUid, enrollmentUid);
     }
 
     @Provides
     @PerActivity
-    RulesRepository rulesRepository(BriteDatabase briteDatabase){
+    RulesRepository rulesRepository(BriteDatabase briteDatabase) {
         return new RulesRepository(briteDatabase);
     }
 }

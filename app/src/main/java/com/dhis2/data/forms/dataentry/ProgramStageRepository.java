@@ -41,7 +41,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Option.name,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
-            "  Event.status\n" +
+            "  Event.status,\n" +
+            "  Field.formLabel\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -49,6 +50,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
+            "        DataElement.formName AS formLabel,\n" +
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
@@ -188,12 +190,13 @@ final class ProgramStageRepository implements DataEntryRepository {
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
+        String formLabel = cursor.getString(10);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
 
 
-        return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
+        return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
                 allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType);
     }
 
