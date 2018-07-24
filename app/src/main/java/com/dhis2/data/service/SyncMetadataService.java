@@ -4,10 +4,12 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.dhis2.App;
@@ -56,7 +58,7 @@ public class SyncMetadataService extends JobService implements SyncView {
             syncPresenter.onAttach(this);
             syncResult = SyncResult.idle();
             if (!syncResult.inProgress()) {
-                Log.d("SyncMetaDataService", "Metadata job started");
+                Log.d("SyncMetaDataService", "Metadata job started_"+job.getTag());
                 syncPresenter.syncMetaData();
             }
         }
@@ -72,55 +74,52 @@ public class SyncMetadataService extends JobService implements SyncView {
     @Override
     public Consumer<SyncResult> update(SyncState syncState) {
         return result -> {
-            Notification notification;
+//            Notification notification;
             syncResult = result;
             String channelId = "dhis";
             String channelName = "Sync";
 
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 int importance = NotificationManagerCompat.IMPORTANCE_DEFAULT;
                 NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
                 notificationManager.createNotificationChannel(channel);
-            }
+            }*/
 
             if (result.inProgress()) {
-                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress",true));
+               /* notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getTextForNotification())
                         .setContentText(getString(R.string.sync_text))
                         .setProgress(0, 0, true)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setOngoing(true)
-                        .build();
+                        .build();*/
             } else if (result.isSuccess()) {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress",false));
+
                 syncPresenter.onDetach();
-                /*if (job.isRecurring())
-                    jobFinished(job, true);
-                else
-                    jobFinished(job, false);*/
-                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                /*notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
                         .setContentTitle(getTextForNotification() + " " + getString(R.string.sync_complete_title))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setContentText(getString(R.string.sync_complete_text))
-                        .build();
+                        .build();*/
             } else if (!result.isSuccess()) {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress",false));
+
                 syncPresenter.onDetach();
-               /* if (job.isRecurring())
-                    jobFinished(job, true);
-                else
-                    jobFinished(job, false);*/
-                notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                /*notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification() + " " + getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .build();
+                        .build();*/
             } else {
                 throw new IllegalStateException();
             }
-            notificationManager.notify(getNotId(), notification);
+//            notificationManager.notify(getNotId(), notification);
         };
     }
 

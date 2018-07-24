@@ -23,7 +23,6 @@ import com.dhis2.usescases.about.AboutFragment;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.jira.JiraFragment;
 import com.dhis2.usescases.main.program.ProgramFragment;
-import com.dhis2.usescases.qrReader.EventQR.EventQrFragment;
 import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
 import com.dhis2.utils.Period;

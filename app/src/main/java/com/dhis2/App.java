@@ -1,5 +1,6 @@
 package com.dhis2;
 
+import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
@@ -44,6 +45,9 @@ public class App extends MultiDexApplication implements Components {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+
+    private ObservableBoolean metaSync = new ObservableBoolean(false);
+    private ObservableBoolean dataSync = new ObservableBoolean(false);
 
     private static final String DATABASE_NAME = "dhis.db";
 
@@ -227,6 +231,18 @@ public class App extends MultiDexApplication implements Components {
 
     public static App getInstance() {
         return instance;
+    }
+
+    public boolean isSyncing() {
+        return metaSync.get() || dataSync.get();
+    }
+
+    public void setMetaSync(boolean isSyncing) {
+        this.metaSync.set(isSyncing);
+    }
+
+    public void seDataSync(boolean isSyncing) {
+        this.dataSync.set(isSyncing);
     }
 
 }

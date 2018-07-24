@@ -31,7 +31,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorAccent">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -47,21 +47,41 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackPressed()}"
                 android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TEI NAME" />
 
-        </LinearLayout>
+            <android.support.constraint.Guideline
+                android:id="@+id/toolbar_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="0dp"
@@ -138,7 +158,7 @@
                             app:enrolmentIcon='@{dashboardModel.currentEnrollment.enrollmentStatus()}'
                             app:layout_constraintEnd_toEndOf="parent"
                             app:srcCompat="@drawable/ic_lock_open_green"
-                            tools:ignore="ContentDescription"
+                            tools:ignore="ContentDescription,MissingConstraints"
                             tools:layout_editor_absoluteY="5dp" />
 
                         <TextView

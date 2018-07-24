@@ -84,7 +84,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.computation())//check if computation does better than io
+                .subscribeOn(schedulerProvider.io())//check if computation does better than io
                 .observeOn(schedulerProvider.ui())
                 .subscribe(dataEntryView.showFields(),
                         Timber::d

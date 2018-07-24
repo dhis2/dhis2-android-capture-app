@@ -49,7 +49,7 @@ public class EventRepository implements FormRepository {
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
 
-    private static final String SELECT_PROGRAM = "SELECT Program.uid\n" +
+    private static final String SELECT_PROGRAM = "SELECT Program.*\n" +
             "FROM Program JOIN Event ON Event.program = Program.uid \n" +
             "WHERE Event.uid =?\n" +
             "LIMIT 1;";

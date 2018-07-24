@@ -1,13 +1,12 @@
 package com.dhis2.data.forms;
 
-import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Quartet;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.RuleVariableCalculatedValue;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
@@ -91,6 +90,7 @@ public final class RulesRepository {
             "  \"DATAELEMENT_NEWEST_EVENT_PROGRAM\",\n" +
             "  \"DATAELEMENT_CURRENT_EVENT\",\n" +
             "  \"DATAELEMENT_PREVIOUS_EVENT\",\n" +
+            "  \"CALCULATED_VALUE\",\n" +
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
@@ -290,7 +290,8 @@ public final class RulesRepository {
         }
 
         if (mimeType == null)
-            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+            mimeType = RuleValueType.TEXT;
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
@@ -304,7 +305,7 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-//                return RuleVariable.create(mimeType);
+                return RuleVariableCalculatedValue.create(name);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -333,6 +334,11 @@ public final class RulesRepository {
         String content = cursor.getString(8);
         String data = cursor.getString(9);
 
+        if (dataElement == null && attribute == null) {
+            dataElement = "";
+            attribute = "";
+        }
+
         switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
@@ -355,6 +361,11 @@ public final class RulesRepository {
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
             case ERRORONCOMPLETE:
+                if (content == null)
+                    content = "";
+                if (data == null)
+                    data = "";
+
                 return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);

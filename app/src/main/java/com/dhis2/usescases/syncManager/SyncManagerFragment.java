@@ -41,6 +41,11 @@ import static com.dhis2.utils.Constants.TIME_WEEKLY;
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
+    public final static String TAG_DATA = "DATA";
+    public final static String TAG_META_NOW = "META_NOW";
+    public final static String TAG_META = "DATA_NOW";
+    public final static String TAG_DATA_NOW = "DATA_NOW";
+
     @Inject
     SyncManagerContracts.Presenter presenter;
 
@@ -168,7 +173,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (i) {
             case R.id.dataManual:
-                // 15 minutes
+                // manual
                 time = TIME_MANUAL;
                 break;
             case R.id.data15:
@@ -180,8 +185,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 time = TIME_HOURLY;
                 break;
             case R.id.dataDay:
+                //daily
+                time = TIME_DAILY;
+                break;
             default:
-                // 1 day
+                // Manual
                 time = TIME_MANUAL;
                 break;
         }
@@ -203,7 +211,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
             case R.id.metaDay:
             default:
-                // 1 day
+                // 1 day (default)
                 time = TIME_DAILY;
                 break;
         }
