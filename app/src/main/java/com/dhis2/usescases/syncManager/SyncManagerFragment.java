@@ -107,6 +107,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
+
+        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
+            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date),prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+        else
+            binding.dataLastSync.setText(getString(R.string.sync_error_text));
+
+        if (prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true))
+            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date),prefs.getString(Constants.LAST_META_SYNC, "-")));
+        else
+            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
     }
 
     @Override

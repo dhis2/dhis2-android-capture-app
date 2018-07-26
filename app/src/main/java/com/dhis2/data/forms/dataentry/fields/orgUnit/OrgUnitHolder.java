@@ -45,6 +45,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.editText.setOnClickListener(view -> {
             orgUnitDialog = new OrgUnitDialog()
+                    .setTitle(model.getValue().label())
                     .setMultiSelection(false)
                     .setOrgUnits(this.orgUnits)
                     .setPossitiveListener(data -> {
@@ -64,7 +65,6 @@ public class OrgUnitHolder extends FormViewHolder {
                             if (viewModel.mandatory())
                                 label.append("*");
                             this.inputLayout.setHint(label.toString());
-                            orgUnitDialog.setTitle(label.toString());
 
                             if (viewModel.warning() != null)
                                 editText.setError(viewModel.warning());

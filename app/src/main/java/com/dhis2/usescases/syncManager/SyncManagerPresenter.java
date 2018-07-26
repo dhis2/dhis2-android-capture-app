@@ -1,6 +1,7 @@
 package com.dhis2.usescases.syncManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -56,7 +57,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-        compositeDisposable.add(
+       /* compositeDisposable.add(
                 metadataRepository.getLastSync(ResourceModel.Type.PROGRAM)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -74,7 +75,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                                 resourceModel -> view.setLastDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
                                 Timber::e
                         )
-        );
+        );*/
 
         compositeDisposable.add(
                 metadataRepository.getDownloadedData()
@@ -101,7 +102,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                     .setRecurring(true)
                     .setLifetime(Lifetime.FOREVER)
                     .setTrigger(Trigger.executionWindow(seconds, seconds + 60))
-                    .setReplaceCurrent(true)
+//                    .setReplaceCurrent(true)
                     .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                     .setConstraints(
                             Constraint.ON_ANY_NETWORK
@@ -134,7 +135,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                     .setRecurring(isRecurring)
                     .setLifetime(Lifetime.FOREVER)
                     .setTrigger(trigger)
-                    .setReplaceCurrent(true)
+//                    .setReplaceCurrent(true)
                     .setConstraints(
                             Constraint.ON_ANY_NETWORK
                     )
@@ -151,7 +152,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setService(SyncDataService.class)
                 .setTag(TAG_DATA_NOW)
                 .setRecurring(false)
-                .setReplaceCurrent(true)
+//                .setReplaceCurrent(true)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
                 )
@@ -168,12 +169,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setService(SyncMetadataService.class)
                 .setTag(TAG_META_NOW)
                 .setRecurring(false)
-                .setReplaceCurrent(true)
+//                .setReplaceCurrent(true)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
                 )
                 .build();
-
         dispatcher.mustSchedule(dataJob);
     }
 

@@ -154,13 +154,18 @@ public class EventRepository implements FormRepository {
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
                         rulesRepository.otherEvents(eventUid),
-                        (rules, variables, events) ->
-                                RuleEngineContext.builder(evaluator)
-                                        .rules(rules)
-                                        .ruleVariables(variables)
-                                        .build().toEngineBuilder()
-                                        .events(events)
-                                        .build()))
+                        rulesRepository.enrollment(eventUid),
+                        (rules, variables, events, enrollment) -> {
+
+                            RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .build().toEngineBuilder();
+                            builder.events(events);
+                            if (!isEmpty(enrollment.enrollment()))
+                                builder.enrollment(enrollment);
+                            return builder.build();
+                        }))
                 .cacheWithInitialCapacity(1);
     }
 
@@ -369,8 +374,9 @@ public class EventRepository implements FormRepository {
     @NonNull
     private Flowable<String> eventProgram() {
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
-                .mapToOne(cursor -> {
-                    programUid = cursor.getString(0);
+                .mapToOne(ProgramModel::create)
+                .map(programModel -> {
+                    programUid = programModel.uid();
                     return programUid;
                 }).toFlowable(BackpressureStrategy.LATEST);
     }

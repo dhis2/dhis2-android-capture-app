@@ -47,6 +47,11 @@ public class Constants {
     public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
     public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
 
+    public static String LAST_DATA_SYNC = "last_data_sync";
+    public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
+    public static String LAST_META_SYNC = "last_meta_sync";
+    public static String LAST_META_SYNC_STATUS = "last_meta_sync_status";
+
     private Constants() {
         // hide public constructor
     }

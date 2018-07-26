@@ -65,9 +65,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
                     ((App) getApplication()).seDataSync(isDataSync);
 
                     if (progressBar != null)
-                        if (((App) getApplication()).isSyncing())
+                        if (((App) getApplication()).isSyncing() && progressBar.getVisibility() == View.GONE)
                             progressBar.setVisibility(View.VISIBLE);
-                        else progressBar.setVisibility(View.GONE);
+                        else if (!(((App) getApplication()).isSyncing()))
+                            progressBar.setVisibility(View.GONE);
                 }
 
             }
@@ -266,7 +267,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                if(coordinatesView!=null && resultCode == RESULT_OK && data.getExtras()!=null) {
+                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                }
                 this.coordinatesView = null;
                 break;
         }

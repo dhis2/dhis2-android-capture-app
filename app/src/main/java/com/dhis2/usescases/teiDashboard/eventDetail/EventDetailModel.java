@@ -2,6 +2,7 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.databinding.BaseObservable;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.DateUtils;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -28,13 +29,14 @@ public class EventDetailModel extends BaseObservable {
     private final ProgramStageModel programStage;
     private final List<CategoryOptionComboModel> optionComboList;
     private final ProgramModel programModel;
+    private final String catComboName;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
     private final String orgUnitName;
 
     EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                      List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage, String orgUnitName, List<CategoryOptionComboModel> optionComboList, ProgramModel programModel) {
+                     ProgramStageModel programStage, String orgUnitName, Pair<String, List<CategoryOptionComboModel>> optionComboList, ProgramModel programModel) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
         this.dataElemets = programStageDataElementModelList;
@@ -42,7 +44,8 @@ public class EventDetailModel extends BaseObservable {
         this.programStage = programStage;
         fieldsElements = new HashMap<>();
         this.orgUnitName = orgUnitName;
-        this.optionComboList = optionComboList;
+        this.catComboName = optionComboList.val0();
+        this.optionComboList = optionComboList.val1();
         this.programModel = programModel;
 
         setUpFields();
@@ -94,6 +97,10 @@ public class EventDetailModel extends BaseObservable {
         return programStage;
     }
 
+    public String getCatComboName() {
+        return catComboName;
+    }
+
     public String getOrgUnitName() {
         return orgUnitName;
     }
@@ -104,5 +111,16 @@ public class EventDetailModel extends BaseObservable {
 
     public boolean hasExpired() {
         return eventModel.completedDate() != null && DateUtils.getInstance().hasExpired(eventModel.completedDate(), programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType());
+    }
+
+    public String getEventCatComboOptionName() {
+        String eventCatComboOptionName = null;
+
+        for (CategoryOptionComboModel option : optionComboList) {
+            if (option.uid().equals(eventModel.attributeOptionCombo()))
+                eventCatComboOptionName = option.name();
+        }
+
+        return eventCatComboOptionName;
     }
 }

@@ -1,18 +1,21 @@
 package com.dhis2.data.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.utils.Constants;
+import com.dhis2.utils.DateUtils;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -68,7 +71,7 @@ public class SyncDataService extends JobService implements SyncView {
 
     @Override
     public boolean onStopJob(JobParameters job) {
-        return false; // Should this job be retried?
+        return true; // Should this job be retried?
     }
 
     @NonNull
@@ -79,7 +82,7 @@ public class SyncDataService extends JobService implements SyncView {
             syncResult = result;
             String channelId = "dhis";
             if (result.inProgress()) {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress",true));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", true));
               /*  notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getTextForNotification(syncState))
@@ -88,7 +91,11 @@ public class SyncDataService extends JobService implements SyncView {
                         .setOngoing(true)
                         .build();*/
             } else if (result.isSuccess()) {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress",false));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
+                SharedPreferences prefs = getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
+                prefs.edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
+
                 next(syncState);
              /*   notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_done_black)
@@ -96,8 +103,11 @@ public class SyncDataService extends JobService implements SyncView {
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();*/
             } else if (!result.isSuccess()) { // NOPMD
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
+                SharedPreferences prefs = getSharedPreferences("com.dhis2", Context.MODE_PRIVATE);
+                prefs.edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, false).apply();
                 next(syncState);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress",false));
                /* notification = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getTextForNotification(syncState) + " " + getString(R.string.sync_error_title))
