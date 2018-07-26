@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:onClick='@{()->presenter.syncData(0, "dataNow")}'
+                android:onClick='@{()->presenter.syncData()}'
                 android:text="@string/SYNC_DATA" />
 
             <TextView
@@ -125,7 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:onClick='@{()->presenter.syncMeta(0, "metaNow")}'
+                android:onClick='@{()->presenter.syncMeta()}'
                 android:text="@string/SYNC_META" />
 
             <TextView

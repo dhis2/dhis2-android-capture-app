@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="name"
             type="java.lang.String" />
@@ -13,17 +14,16 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.qrCodes.QrContracts.Presenter"/>
+            type="com.dhis2.usescases.qrCodes.QrContracts.Presenter" />
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -36,26 +36,47 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
                 android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                tools:text="TITLE" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/toolbar_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
             android:text="@{ title }"
             android:textSize="20sp" />
 
@@ -67,46 +88,46 @@
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="82dp"/>
+                android:layout_marginBottom="82dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/prev"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:layout_alignParentStart="true"
                     android:layout_gravity="center_vertical"
                     android:onClick="@{()->presenter.onPrevQr()}"
-                    android:layout_alignParentStart="true"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_keyboard_arrow_left_black"
-                    tools:ignore="ContentDescription"
-                    android:visibility="gone"/>
+                    tools:ignore="ContentDescription" />
 
 
                 <ImageView
                     android:id="@+id/next"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
                     android:layout_gravity="center_vertical"
                     android:onClick="@{()->presenter.onNextQr()}"
-                    android:layout_alignParentEnd="true"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_keyboard_arrow_right_black"
-                    tools:ignore="ContentDescription"
-                    android:visibility="gone"/>
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/page"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_centerInParent="true"
+                    android:gravity="center"
                     android:textSize="18sp" />
             </RelativeLayout>
         </RelativeLayout>

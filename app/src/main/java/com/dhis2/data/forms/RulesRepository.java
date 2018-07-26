@@ -1,17 +1,18 @@
 package com.dhis2.data.forms;
 
-import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Quartet;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.RuleVariableCalculatedValue;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramRuleActionModel;
@@ -19,6 +20,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
@@ -33,7 +35,9 @@ import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
+import org.hisp.dhis.rules.models.RuleAttributeValue;
 import org.hisp.dhis.rules.models.RuleDataValue;
+import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
 import org.hisp.dhis.rules.models.RuleValueType;
 import org.hisp.dhis.rules.models.RuleVariable;
@@ -44,6 +48,8 @@ import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent;
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +57,7 @@ import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -91,6 +98,7 @@ public final class RulesRepository {
             "  \"DATAELEMENT_NEWEST_EVENT_PROGRAM\",\n" +
             "  \"DATAELEMENT_CURRENT_EVENT\",\n" +
             "  \"DATAELEMENT_PREVIOUS_EVENT\",\n" +
+            "  \"CALCULATED_VALUE\",\n" +
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
@@ -160,6 +168,34 @@ public final class RulesRepository {
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
             " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+
+    private static final String QUERY_ENROLLMENT = "SELECT\n" +
+            "  Enrollment.uid,\n" +
+            "  Enrollment.incidentDate,\n" +
+            "  Enrollment.enrollmentDate,\n" +
+            "  Enrollment.status,\n" +
+            "  Enrollment.organisationUnit,\n" +
+            "  Program.displayName\n" +
+            "FROM Enrollment\n" +
+            "JOIN Program ON Program.uid = Enrollment.program\n" +
+            "WHERE Enrollment.uid = ? \n" +
+            "LIMIT 1;";
+
+    private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
+            "  Field.id,\n" +
+            "  Value.value\n" +
+            "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
+            "  INNER JOIN (\n" +
+            "      SELECT\n" +
+            "        TrackedEntityAttribute.uid AS id,\n" +
+            "        ProgramTrackedEntityAttribute.program AS program\n" +
+            "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
+            "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
+            "    ) AS Field ON Field.program = Program.uid\n" +
+            "  INNER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
+            "    Value.trackedEntityAttribute = Field.id\n" +
+            "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "WHERE Enrollment.uid = ? AND Value.value IS NOT NULL;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -290,7 +326,8 @@ public final class RulesRepository {
         }
 
         if (mimeType == null)
-            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+            mimeType = RuleValueType.TEXT;
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
@@ -300,11 +337,13 @@ public final class RulesRepository {
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:
                 return RuleVariableNewestEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if(stage==null)
+                    stage = "";
                 return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-//                return RuleVariable.create(mimeType);
+                return RuleVariableCalculatedValue.create(name);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -333,6 +372,11 @@ public final class RulesRepository {
         String content = cursor.getString(8);
         String data = cursor.getString(9);
 
+        if (dataElement == null && attribute == null) {
+            dataElement = "";
+            attribute = "";
+        }
+
         switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
@@ -355,6 +399,11 @@ public final class RulesRepository {
                 return RuleActionShowError.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
             case ERRORONCOMPLETE:
+                if (content == null)
+                    content = "";
+                if (data == null)
+                    data = "";
+
                 return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);
@@ -418,5 +467,51 @@ public final class RulesRepository {
                                             return RuleEvent.create(eventUid, cursor.getString(1),
                                                     status, eventDate, dueDate, dataValues);
                                         }))).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    public Flowable<RuleEnrollment> enrollment(String eventUid) {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(eventModel -> {
+                            if (eventModel.enrollment() != null)
+                                return queryAttributeValues(eventModel.enrollment())
+                                        .switchMap(ruleAttributeValues ->
+                                                queryEnrollment(ruleAttributeValues, eventModel.enrollment())
+                                        ).toObservable();
+                            else
+                                return Observable.just(
+                                        RuleEnrollment.create("",
+                                                Calendar.getInstance().getTime(),
+                                                Calendar.getInstance().getTime(),
+                                                RuleEnrollment.Status.CANCELLED,
+                                                new ArrayList<>()));
+                        }
+                ).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    private Flowable<List<RuleAttributeValue>> queryAttributeValues(String enrollmentUid) {
+        return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
+                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
+                .mapToList(cursor -> RuleAttributeValue.create(
+                        cursor.getString(0), cursor.getString(1))
+                ).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
+    private Flowable<RuleEnrollment> queryEnrollment(@NonNull List<RuleAttributeValue> attributeValues, @NonNull String enrollmentUid) {
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
+                .mapToOne(cursor -> {
+                    Date enrollmentDate = BaseIdentifiableObject.DATE_FORMAT.parse(cursor.getString(2));
+                    Date incidentDate = cursor.isNull(1) ?
+                            enrollmentDate : BaseIdentifiableObject.DATE_FORMAT.parse(cursor.getString(1));
+                    RuleEnrollment.Status status = RuleEnrollment.Status
+                            .valueOf(cursor.getString(3));
+                    String orgUnit = cursor.getString(4);
+                    String programName = cursor.getString(5);
+
+                    return RuleEnrollment.create(cursor.getString(0),
+                            incidentDate, enrollmentDate, status, attributeValues);
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

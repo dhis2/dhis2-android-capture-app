@@ -84,7 +84,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.computation())//check if computation does better than io
+                .subscribeOn(schedulerProvider.io())//check if computation does better than io
                 .observeOn(schedulerProvider.ui())
                 .subscribe(dataEntryView.showFields(),
                         Timber::d
@@ -195,9 +195,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 dataEntryView.removeSection(hideSection.programStageSection());
             } else if (ruleAction instanceof RuleActionAssign) {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
-//                dataEntryRepository.assign(assign.field(), assign.data());
-                if (fieldViewModels.get(assign.field())==null || !fieldViewModels.get(assign.field()).value().equals(ruleEffect.data()))
+
+                if (fieldViewModels.get(assign.field()) == null)
                     save(assign.field(), ruleEffect.data());
+                else {
+                    String value = fieldViewModels.get(assign.field()).value();
+
+                    if (value == null || !value.equals(ruleEffect.data()))
+                        save(assign.field(), ruleEffect.data());
+
+                }
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent

@@ -70,7 +70,17 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         binding.setEvent(eventDetailModel.getEventModel());
         binding.setStage(eventDetailModel.getProgramStage());
         binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
-        binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty() ? View.GONE : View.VISIBLE);
+
+        if(eventDetailModel.getOptionComboList().isEmpty()){
+            binding.categoryComboLayout.setVisibility(View.GONE);
+        }else{
+            binding.categoryComboLayout.setVisibility(View.VISIBLE);
+            binding.categoryComboLayout.setHint(eventDetailModel.getCatComboName());
+            binding.categoryCombo.setText(eventDetailModel.getEventCatComboOptionName());
+        }
+
+        binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty()
+                ? View.GONE : View.VISIBLE);
         updateActionButton(eventDetailModel.getEventModel().status());
         binding.executePendingBindings();
 

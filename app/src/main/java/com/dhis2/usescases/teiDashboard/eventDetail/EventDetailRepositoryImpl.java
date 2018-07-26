@@ -2,8 +2,10 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -153,19 +155,22 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     }
 
     @Override
-    public Observable<List<CategoryOptionComboModel>> getCategoryOptionCombos() {
-        String GET_CAT_COMBO_FROM_EVENT = "SELECT Program.categoryCombo FROM Program " +
+    public Observable<Pair<String, List<CategoryOptionComboModel>>> getCategoryOptionCombos() {
+        String GET_CAT_COMBO_FROM_EVENT = "SELECT CategoryCombo.* FROM CategoryCombo " +
+                "WHERE CategoryCombo.uid IN (" +
+                "SELECT Program.categoryCombo FROM Program " +
                 "JOIN Event ON Event.program = Program.uid " +
-                "WHERE Event.uid = ?";
+                "WHERE Event.uid = ? LIMIT 1)";
         String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
                 CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
-        return briteDatabase.createQuery(ProgramModel.TABLE, GET_CAT_COMBO_FROM_EVENT, eventUid)
-                .mapToOne(cursor -> cursor.getString(0))
+        return briteDatabase.createQuery(CategoryComboModel.TABLE, GET_CAT_COMBO_FROM_EVENT, eventUid)
+                .mapToOne(CategoryComboModel::create)
                 .flatMap(catCombo -> {
-                    if (catCombo != null)
-                        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo).mapToList(CategoryOptionComboModel::create);
+                    if (catCombo != null && !catCombo.isDefault())
+                        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, catCombo.uid()).mapToList(CategoryOptionComboModel::create)
+                                .map(list -> Pair.create(catCombo.name(), list));
                     else
-                        return Observable.just(new ArrayList<>());
+                        return Observable.just(Pair.create("", new ArrayList<>()));
                 });
     }
 

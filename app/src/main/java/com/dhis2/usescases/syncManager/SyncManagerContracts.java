@@ -29,6 +29,10 @@ public class SyncManagerContracts {
 
         void syncMeta(int seconds, String scheduleTag);
 
+        void syncData();
+
+        void syncMeta();
+
         void disponse();
 
         void resetSyncParameters();

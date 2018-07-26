@@ -1,15 +1,18 @@
 package com.dhis2.usescases.general;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,11 +21,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.dhis2.App;
 import com.dhis2.R;
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.usescases.main.MainActivity;
@@ -49,6 +52,28 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
+    private ContentLoadingProgressBar progressBar;
+
+    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
+                if (intent.getExtras() != null) {
+                    boolean isMetaSync = intent.getExtras().getBoolean("metaSyncInProgress");
+                    boolean isDataSync = intent.getExtras().getBoolean("dataSyncInProgress");
+                    ((App) getApplication()).setMetaSync(isMetaSync);
+                    ((App) getApplication()).seDataSync(isDataSync);
+
+                    if (progressBar != null)
+                        if (((App) getApplication()).isSyncing() && progressBar.getVisibility() == View.GONE)
+                            progressBar.setVisibility(View.VISIBLE);
+                        else if (!(((App) getApplication()).isSyncing()))
+                            progressBar.setVisibility(View.GONE);
+                }
+
+            }
+        }
+    };
 
     public enum Status {
         ON_PAUSE,
@@ -87,11 +112,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onResume() {
         super.onResume();
         Log.d("LIFECYCLE", getLocalClassName() + "-ON_RESUME");
+        LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         lifeCycleObservable.onNext(Status.ON_RESUME);
+        setProgressBar(findViewById(R.id.toolbarProgress));
     }
 
     @Override
     protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
         super.onPause();
         Log.d("LIFECYCLE", getLocalClassName() + "-ON_PAUSE");
         lifeCycleObservable.onNext(Status.ON_PAUSE);
@@ -100,6 +128,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     protected void onDestroy() {
         Log.d("LIFECYCLE", getLocalClassName() + "-ON_DESTROY");
+        progressBar = null;
         super.onDestroy();
     }
 
@@ -218,10 +247,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             //BODY
             final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
             ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
-            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view->alertDialog.dismiss());
-            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view->alertDialog.dismiss());
+            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> alertDialog.dismiss());
+            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> alertDialog.dismiss());
             alertDialog.setView(msgView);
-
 
 
             alertDialog.show();
@@ -239,7 +267,9 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                if(coordinatesView!=null && resultCode == RESULT_OK && data.getExtras()!=null) {
+                    coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+                }
                 this.coordinatesView = null;
                 break;
         }
@@ -265,5 +295,14 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         int color = a.getColor(0, 0);
         a.recycle();
         return color;
+    }
+
+    public void setProgressBar(ContentLoadingProgressBar progressBar) {
+        if (progressBar != null) {
+            this.progressBar = progressBar;
+            if (((App) getApplication()).isSyncing())
+                progressBar.setVisibility(View.VISIBLE);
+            else progressBar.setVisibility(View.GONE);
+        }
     }
 }

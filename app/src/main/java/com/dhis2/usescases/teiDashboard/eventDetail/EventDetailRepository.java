@@ -2,6 +2,8 @@ package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.tuples.Pair;
+
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -48,7 +50,7 @@ public interface EventDetailRepository {
 
     Observable<List<OrganisationUnitModel>> getOrgUnits();
 
-    Observable<List<CategoryOptionComboModel>> getCategoryOptionCombos();
+    Observable<Pair<String,List<CategoryOptionComboModel>>> getCategoryOptionCombos();
 
     @NonNull
     Flowable<EventStatus> eventStatus(String eventUid);
