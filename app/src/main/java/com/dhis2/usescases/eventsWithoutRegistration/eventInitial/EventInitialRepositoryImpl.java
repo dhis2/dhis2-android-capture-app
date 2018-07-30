@@ -109,7 +109,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         Date createDate = Calendar.getInstance().getTime();
 
-        if (date.after(createDate))
+        if (date != null && date.after(createDate))
             return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
                     date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);
 
