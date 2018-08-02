@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -15,6 +16,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.BehaviorProcessor;
@@ -59,6 +62,7 @@ public class OrgUnitHolder extends FormViewHolder {
 
 
         model = BehaviorProcessor.create();
+
         compositeDisposable.add(
                 model.subscribe(viewModel -> {
                             StringBuilder label = new StringBuilder(viewModel.label());
@@ -112,8 +116,11 @@ public class OrgUnitHolder extends FormViewHolder {
                         orgUnitViewModels ->
                         {
                             this.orgUnits = orgUnitViewModels;
-                            if (model.getValue().value() != null)
+                            if (model.getValue().value() != null) {
+                                this.inputLayout.setHintAnimationEnabled(false);
                                 this.editText.setText(getOrgUnitName(model.getValue().value()));
+                                this.inputLayout.setHintAnimationEnabled(true);
+                            }
                         },
                         Timber::d
                 )

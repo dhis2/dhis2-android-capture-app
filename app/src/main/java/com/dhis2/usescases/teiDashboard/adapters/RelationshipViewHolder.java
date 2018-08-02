@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import com.dhis2.databinding.ItemRelationshipBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
+import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -28,7 +29,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, RelationshipModel relationship) {
+    public void bind(TeiDashboardContracts.Presenter presenter, Relationship relationship) {
 
         compositeDisposable.add(
                 presenter.getTEIMainAttributes(presenter.getTeUid().equals(relationship.trackedEntityInstanceA()) ?
@@ -49,7 +50,7 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         binding.setRelationship(relationship);
         binding.executePendingBindings();
 
-        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
+//        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {

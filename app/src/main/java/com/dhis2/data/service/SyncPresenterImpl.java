@@ -106,6 +106,16 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncTrackedEntities() {
 
+        disposable.add(Observable.fromCallable(d2.syncTrackedEntityInstances())
+                .map(webResponse -> SyncResult.success())
+                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        data -> Log.d("DONE", "DONE"),
+                        Timber::d
+                )
+        );
 
         disposable.add(
                 trackerData()

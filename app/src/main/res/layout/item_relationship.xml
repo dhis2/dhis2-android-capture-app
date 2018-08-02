@@ -7,7 +7,7 @@
 
         <variable
             name="relationship"
-            type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
+            type="org.hisp.dhis.android.core.relationship.Relationship" />
 
         <variable
             name="presenter"
@@ -40,6 +40,7 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:text="@{relationship.displayName()}"
             tools:text="Mother:" />
 
         <TextView

@@ -18,7 +18,7 @@ import com.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.Constants;
 
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.Relationship;
 
 import java.util.List;
 
@@ -84,9 +84,9 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         binding.executePendingBindings();
     }
 
-    public Consumer<List<RelationshipModel>> setRelationships() {
-        return relationshipModels -> {
-            relationshipAdapter.addItems(relationshipModels);
+    public Consumer<List<Relationship>> setRelationships() {
+        return relationships -> {
+            relationshipAdapter.addItems(relationships);
         };
     }
 

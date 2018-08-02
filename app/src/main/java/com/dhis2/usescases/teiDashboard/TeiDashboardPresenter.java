@@ -32,6 +32,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -314,26 +315,29 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void addRelationship(String trackEntityInstance_A, String trackEntityInstance_B, String relationshipType) {
         if (trackEntityInstance_A != null) {
             if (!trackEntityInstance_A.equals(teUid))
-                dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+//                dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
+            d2.relationshipModule().relationship.createTEIRelationship(relationshipType,trackEntityInstance_A,teUid);
             else
                 view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
         } else {
             if (!trackEntityInstance_B.equals(teUid))
-                dashboardRepository.saveRelationship(teUid, trackEntityInstance_B, relationshipType);
+//                dashboardRepository.saveRelationship(teUid, trackEntityInstance_B, relationshipType);
+            d2.relationshipModule().relationship.createTEIRelationship(relationshipType,teUid,trackEntityInstance_B);
             else
                 view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
         }
     }
 
     @Override
-    public void deleteRelationship(RelationshipModel relationshipModel) {
-        dashboardRepository.deleteRelationship(relationshipModel);
+    public void deleteRelationship(Relationship relationship) {
+//        dashboardRepository.deleteRelationship(relationshipModel); TODO: HOW TO DELETE NOW?
     }
 
     @Override
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
-                dashboardRepository.getRelationships(teUid)
+                Observable.just(d2.relationshipModule().relationship.getRelationshipsByTEI(teUid))
+//                dashboardRepository.getRelationships(teUid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -449,6 +453,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void subscribeToRelationshipLabel(RelationshipModel relationship, TextView textView) {
+
+       /*
         compositeDisposable.add(
                 metadataRepository.getRelationshipTypeList()
                         .subscribeOn(Schedulers.computation())
@@ -465,7 +471,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 textView::setText,
                                 t -> view.displayMessage(view.getContext().getString(R.string.relationship_label_error)))
 
-        );
+        );*/
     }
 
     @Override

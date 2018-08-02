@@ -47,11 +47,11 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
-    Observable<List<RelationshipModel>> getRelationships(String teiUid);
+    /*Observable<List<RelationshipModel>> getRelationships(String teiUid);
 
     void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
 
-    void deleteRelationship(RelationshipModel relationshipId);
+    void deleteRelationship(RelationshipModel relationshipId);*/
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
