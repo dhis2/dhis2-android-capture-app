@@ -31,8 +31,8 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 18
-        versionName "1.0.0-BETA3"
+        versionCode 19
+        versionName "1.0.0-BETA4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
