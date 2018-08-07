@@ -96,7 +96,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         args.putBoolean(IS_ENROLLMENT, isEnrollment);
         args.putBoolean(FORM_VIEW_ACTIONBAR, showActionBar);
         boolean showTabLayout = false;
-        if(showActionBar)
+        if (showActionBar)
             showTabLayout = true;
         args.putBoolean(FORM_VIEW_TABLAYOUT, showTabLayout);
         fragment.setArguments(args);
@@ -123,7 +123,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        NestedScrollView nestedScrollView= view.findViewById(R.id.content_frame);
+        NestedScrollView nestedScrollView = view.findViewById(R.id.content_frame);
         nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
@@ -345,6 +345,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
 
     private ReportStatus getReportStatusFromButton() {
+        nextButton.requestFocus();
         return nextButton.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 
@@ -474,7 +475,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        if(canComplete)
+                        if (canComplete)
                             getActivity().finish();
                     }
 
@@ -482,7 +483,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     public void onNegative() {
                     }
                 });
-        if(!isEmpty(messageOnComplete))
+        if (!isEmpty(messageOnComplete))
             dialog.show();
         else
             getActivity().finish();
