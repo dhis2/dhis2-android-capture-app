@@ -122,7 +122,7 @@ final class EditTextCustomHolder extends FieldViewHolder {
 
 
 
-        ConnectableObservable<CharSequence> textObservable = RxTextView.textChanges(editText).takeUntil(RxView.detaches(parent))
+        /*ConnectableObservable<CharSequence> textObservable = RxTextView.textChanges(editText).takeUntil(RxView.detaches(parent))
                 .publish();
 
         textObservable
@@ -141,10 +141,10 @@ final class EditTextCustomHolder extends FieldViewHolder {
                                 processor.onNext(RowAction.create(model.getValue().uid(),
                                         editText.getText().toString()));
                             }
-                        });
+                        });*/
 
         editTextObservable.connect();
-        textObservable.connect();
+//        textObservable.connect();
     }
 
     private void setInputType(ValueType valueType) {
