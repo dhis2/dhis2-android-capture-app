@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemRelationshipBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.RelationshipType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.List;
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {
 
     private TeiDashboardContracts.Presenter presenter;
-    private List<Relationship> relationships;
+    private List<Pair<Relationship, RelationshipType>> relationships;
 
     public RelationshipAdapter(TeiDashboardContracts.Presenter presenter) {
         this.presenter = presenter;
@@ -47,7 +49,7 @@ public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHo
         return relationships != null ? relationships.size() : 0;
     }
 
-    public void addItems(List<Relationship> relationships) {
+    public void addItems(List<Pair<Relationship, RelationshipType>> relationships) {
         this.relationships = relationships;
         notifyDataSetChanged();
     }

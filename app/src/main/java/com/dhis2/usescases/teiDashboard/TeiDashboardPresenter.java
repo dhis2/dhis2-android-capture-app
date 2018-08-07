@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
@@ -316,13 +317,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         if (trackEntityInstance_A != null) {
             if (!trackEntityInstance_A.equals(teUid))
 //                dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
-            d2.relationshipModule().relationship.createTEIRelationship(relationshipType,trackEntityInstance_A,teUid);
+                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
             else
                 view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
         } else {
             if (!trackEntityInstance_B.equals(teUid))
 //                dashboardRepository.saveRelationship(teUid, trackEntityInstance_B, relationshipType);
-            d2.relationshipModule().relationship.createTEIRelationship(relationshipType,teUid,trackEntityInstance_B);
+                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, teUid, trackEntityInstance_B);
             else
                 view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
         }
@@ -337,7 +338,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
                 Observable.just(d2.relationshipModule().relationship.getRelationshipsByTEI(teUid))
-//                dashboardRepository.getRelationships(teUid)
+                        .flatMapIterable(list -> list)
+                        .map(relationship -> {
+                            RelationshipType relationshipType = null;
+                            for (RelationshipType type : d2.relationshipModule().relationshipType.getAll())
+                                if (type.uid().equals(relationship.relationshipType()))
+                                    relationshipType = type;
+                            return Pair.create(relationship, relationshipType); //TODO: relationshipType is never going to be null. right?
+                        }).toList()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

@@ -40,7 +40,6 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@{relationship.displayName()}"
             tools:text="Mother:" />
 
         <TextView
