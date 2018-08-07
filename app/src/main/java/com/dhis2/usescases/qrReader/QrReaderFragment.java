@@ -21,6 +21,7 @@ import com.dhis2.data.qr.QRjson;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.FragmentQrBinding;
+import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -29,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -41,6 +43,10 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_UID;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
+import static com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
 
 
 /**
@@ -55,6 +61,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Inject
     QrReaderContracts.Presenter presenter;
+    private String eventUid;
+    private List<Trio<TrackedEntityDataValueModel, String, Boolean>> eventData = new ArrayList<>();
+
     private String teiUid;
     private List<Trio<String, String, Boolean>> attributes = new ArrayList<>();
     private List<Pair<String, Boolean>> enrollments = new ArrayList<>();
@@ -89,10 +98,15 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
     @Override
     public void handleResult(Result result) {
-        // TODO CRIS: CHECK THAT ALL JSON BELONG TO SAME TEI
         try {
             QRjson qRjson = new Gson().fromJson(result.getText(), QRjson.class);
             switch (qRjson.getType()) {
+                case QRjson.EVENT_JSON:
+                    presenter.handleEventWORegistrationInfo(new JSONObject(qRjson.getData()));
+                    break;
+                case QRjson.DATA_JSON:
+                    presenter.handleDataWORegistrationInfo(new JSONArray(qRjson.getData()));
+                    break;
                 case QRjson.TEI_JSON:
                     presenter.handleTeiInfo(new JSONObject(qRjson.getData()));
                     break;
@@ -160,11 +174,38 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
-    public void goToDashBoard(String uid, boolean isDownloadedOrPresent) {
+    public void goToDashBoard(String uid) {
         Bundle bundle = new Bundle();
         bundle.putString("TEI_UID", uid);
         bundle.putString("PROGRAM_UID", null);
         startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+    }
+
+    @Override
+    public void goToEvent(String eventUid, String programId, String orgUnit) {
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, programId);
+        bundle.putString(EVENT_UID, eventUid);
+        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putBoolean(NEW_EVENT, false);
+        startActivity(EventInitialActivity.class, bundle, false, false, null);
+    }
+
+    @Override
+    public void downloadEventWORegistration(@NonNull String eventUid) {
+        this.eventUid = eventUid;
+        renderEventWORegistrationInfo(eventUid);
+    }
+
+    @Override
+    public void renderEventWORegistrationInfo(@Nullable String eventUid) {
+        if (eventUid != null) {
+            this.eventUid = eventUid;
+            promtForEventWORegistrationMoreQr();
+        }
+        else {
+            showError(getString(R.string.qr_error_id));
+        }
     }
 
     @Override
@@ -182,7 +223,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     public void renderTeiInfo(@Nullable String teiUid) {
         if (teiUid != null) {
             this.teiUid = teiUid;
-            promtForMoreQr();
+            promtForTEIMoreQr();
         }
         else {
             showError(getString(R.string.qr_error_id));
@@ -202,6 +243,19 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
+    public void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data) {
+        for (Trio<TrackedEntityDataValueModel, String, Boolean> dataValue : data){
+            if (!dataValue.val2()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.eventData.contains(dataValue)) {
+                this.eventData.add(dataValue);
+            }
+        }
+        promtForEventWORegistrationMoreQr();
+    }
+
+    @Override
     public void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes) {
         for (Trio<String, String, Boolean> attribute : attributes){
             if (!attribute.val2()){
@@ -211,7 +265,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 this.attributes.add(attribute);
             }
         }
-        promtForMoreQr();
+        promtForTEIMoreQr();
     }
 
     @Override
@@ -224,7 +278,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 this.enrollments.add(enrollment);
             }
         }
-        promtForMoreQr();
+        promtForTEIMoreQr();
     }
 
     @Override
@@ -237,7 +291,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 this.events.add(event);
             }
         }
-        promtForMoreQr();
+        promtForTEIMoreQr();
     }
 
     @Override
@@ -250,11 +304,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 this.relationships.add(relationship);
             }
         }
-        promtForMoreQr();
+        promtForTEIMoreQr();
     }
 
     @Override
-    public void promtForMoreQr(){
+    public void promtForTEIMoreQr(){
 
         // IDENTIFICATION
         String message = getString(R.string.qr_id) + ":\n";
@@ -344,6 +398,58 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 })
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.download();
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void promtForEventWORegistrationMoreQr(){
+
+        // IDENTIFICATION
+        String message = getString(R.string.qr_id) + ":\n";
+        if (eventUid != null){
+            message = message + eventUid + "\n\n";
+        }
+        else{
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+        // ATTRIBUTES
+        message = message + getString(R.string.qr_attributes) + ":\n";
+
+        if (eventData != null && !eventData.isEmpty()) {
+            for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : eventData) {
+                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+            }
+            message = message + "\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
+
+
+        // READ MORE
+        message = message + "\n\n" + getString(R.string.read_more_qr);
+
+        new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setTitle(getString(R.string.QR_SCANNER))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
+                    dialog.dismiss();
+                    mScannerView.resumeCameraPreview(this);
+                })
+                .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
+                    presenter.downloadEventWORegistration();
                     dialog.dismiss();
                 })
                 .show();

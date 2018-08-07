@@ -14,4 +14,6 @@ public interface QRInterface {
 
     Observable<List<QrViewModel>> teiQRs(String teiUid);
 
+    Observable<List<QrViewModel>> eventWORegistrationQRs(String eventUid);
+
 }
