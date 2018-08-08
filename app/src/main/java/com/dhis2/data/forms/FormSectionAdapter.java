@@ -100,7 +100,8 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
         for (int i = 0; i < models.size(); i++) {
             FormSectionViewModel item = models.get(i);
-            newSections.add(item.sectionUid());
+            if (item.sectionUid() != null)
+                newSections.add(item.sectionUid());
         }
 
         if (sections.size() == models.size()) //If previous sections size = new sections size we check if each section is the same

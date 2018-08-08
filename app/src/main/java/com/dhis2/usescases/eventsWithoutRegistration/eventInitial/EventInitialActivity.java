@@ -111,6 +111,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private PeriodType periodType;
     private String programStageUid;
     private OrgUnitDialog orgUnitDialog;
+    private ProgramModel program;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -390,6 +391,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setProgram(@NonNull ProgramModel program) {
+        this.program = program;
         String activityTitle;
         if (eventCreationType.equals(REFERRAL)) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
@@ -604,6 +606,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
             // ONLY PAST DATES AND TODAY
             else if (eventCreationType.equals(ADDNEW)) {
+                //If expiryPeriodType is not null set a minumn date
+                if (program.expiryPeriodType() != null) {
+                    Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+                    datePickerDialog.getDatePicker().setMinDate(minDate.getTime() - 1000);
+                }
                 datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
             }
         }

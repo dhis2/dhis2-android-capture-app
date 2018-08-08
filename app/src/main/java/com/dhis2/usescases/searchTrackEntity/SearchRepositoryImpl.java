@@ -370,12 +370,17 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid) {
-        String orgUnitQuery = selectedProgramUid != null ? "SELECT * FROM OrganisationUnit " +
-                "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
-                "WHERE OrganisationUnitProgramLink.program = ?" : "SELECT * FROM OrganisationUnit";
 
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, orgUnitQuery, selectedProgramUid)
-                .mapToList(OrganisationUnitModel::create);
+
+        if (selectedProgramUid != null) {
+            String orgUnitQuery = "SELECT * FROM OrganisationUnit " +
+                    "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.organisationUnit = OrganisationUnit.uid " +
+                    "WHERE OrganisationUnitProgramLink.program = ?";
+            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, orgUnitQuery, selectedProgramUid)
+                    .mapToList(OrganisationUnitModel::create);
+        } else
+            return briteDatabase.createQuery(OrganisationUnitModel.TABLE, " SELECT * FROM OrganisationUnit")
+                    .mapToList(OrganisationUnitModel::create);
     }
 
     @Override
@@ -454,7 +459,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .toList().toFlowable();
     }
-
 
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

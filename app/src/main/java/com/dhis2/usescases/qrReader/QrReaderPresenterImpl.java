@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.utils.DateUtils;
+import com.google.gson.Gson;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
@@ -14,6 +15,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipBuilder;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -96,10 +99,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
                 Cursor cursor = briteDatabase.query("SELECT " +
-                        TrackedEntityAttributeModel.Columns.UID + ", " +
-                        TrackedEntityAttributeModel.Columns.DISPLAY_NAME +
-                        " FROM " + TrackedEntityAttributeModel.TABLE +
-                        " WHERE " + TrackedEntityAttributeModel.Columns.UID + " = ?",
+                                TrackedEntityAttributeModel.Columns.UID + ", " +
+                                TrackedEntityAttributeModel.Columns.DISPLAY_NAME +
+                                " FROM " + TrackedEntityAttributeModel.TABLE +
+                                " WHERE " + TrackedEntityAttributeModel.Columns.UID + " = ?",
                         attrValue.getString("trackedEntityAttribute"));
                 // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
                 if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
@@ -127,10 +130,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject attrValue = jsonArray.getJSONObject(i);
                 Cursor cursor = briteDatabase.query("SELECT " +
-                        ProgramModel.Columns.UID + ", " +
-                        ProgramModel.Columns.DISPLAY_NAME +
-                        " FROM " + ProgramModel.TABLE +
-                        " WHERE " + ProgramModel.Columns.UID + " = ?",
+                                ProgramModel.Columns.UID + ", " +
+                                ProgramModel.Columns.DISPLAY_NAME +
+                                " FROM " + ProgramModel.TABLE +
+                                " WHERE " + ProgramModel.Columns.UID + " = ?",
                         attrValue.getString("program"));
                 // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
                 if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
@@ -157,9 +160,9 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         try {
             // LOOK FOR ENROLLMENT ON LOCAL DATABASE
             Cursor cursor = briteDatabase.query("SELECT " +
-                    EnrollmentModel.Columns.UID +
-                    " FROM " + EnrollmentModel.TABLE +
-                    " WHERE " + EnrollmentModel.Columns.UID + " = ?",
+                            EnrollmentModel.Columns.UID +
+                            " FROM " + EnrollmentModel.TABLE +
+                            " WHERE " + EnrollmentModel.Columns.UID + " = ?",
                     jsonObject.getString("enrollment"));
             // ENROLLMENT FOUND, EVENT CAN BE SAVED
             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
@@ -167,19 +170,18 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 cursor.close();
             }
             // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
-            else if (enrollmentJson != null){
+            else if (enrollmentJson != null) {
                 boolean isEnrollmentReadFromQr = false;
                 for (int i = 0; i < enrollmentJson.length(); i++) {
                     JSONObject enrollment = enrollmentJson.getJSONObject(i);
-                    if (jsonObject.getString("enrollment").equals(enrollment.getString(EnrollmentModel.Columns.UID))){
+                    if (jsonObject.getString("enrollment").equals(enrollment.getString(EnrollmentModel.Columns.UID))) {
                         isEnrollmentReadFromQr = true;
                         break;
                     }
                 }
-                if (isEnrollmentReadFromQr){
+                if (isEnrollmentReadFromQr) {
                     events.add(Pair.create(jsonObject.getString("uid"), true));
-                }
-                else {
+                } else {
                     events.add(Pair.create(jsonObject.getString("uid"), false));
                 }
             }
@@ -203,8 +205,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             try {
                 JSONObject relationship = jsonArray.getJSONObject(i);
                 relationships.add(Pair.create(relationship.getString("trackedEntityInstanceA"), true));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Timber.e(e);
             }
         }
@@ -272,8 +273,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         }
 
         for (int i = 0; i < relationshipsJson.length(); i++) {
-            try {
+            //TODO: CHANGE RELATIONSHIPS
+            /*try {
                 JSONObject relationship = relationshipsJson.getJSONObject(i);
+
+
                 RelationshipModel.Builder relationshipModelBuilder;
                 relationshipModelBuilder = RelationshipModel.builder();
 
@@ -291,7 +295,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
             } catch (Exception e) {
                 Timber.e(e);
-            }
+            }*/
         }
 
         for (int i = 0; i < enrollmentJson.length(); i++) {
@@ -317,7 +321,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 if (enrollment.has("enrollmentDate"))
                     enrollmentModelBuilder.enrollmentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("enrollmentDate")));
                 if (enrollment.has("dateOfIncident"))
-                    enrollmentModelBuilder.incidentDate (DateUtils.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
+                    enrollmentModelBuilder.incidentDate(DateUtils.databaseDateFormat().parse(enrollment.getString("incidentDate ")));
                 if (enrollment.has("organisationUnit"))
                     enrollmentModelBuilder.organisationUnit(enrollment.getString("organisationUnit"));
                 if (enrollment.has("trackedEntityInstance"))
@@ -401,13 +405,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         .subscribe(
                                 data -> {
                                     view.finishDownload();
-                                    if(!data.isEmpty()) {
+                                    if (!data.isEmpty()) {
                                         this.teiUid = data.get(0).uid();
                                         view.goToDashBoard(data.get(0).uid(), true);
-                                    }
-                                    else {
+                                    } else {
                                         view.renderTeiInfo(teiUid);
-                                    }},
+                                    }
+                                },
                                 error -> {
                                     view.finishDownload();
                                     view.renderTeiInfo(teiUid);

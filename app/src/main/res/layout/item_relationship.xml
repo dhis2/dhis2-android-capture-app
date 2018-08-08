@@ -7,7 +7,7 @@
 
         <variable
             name="relationship"
-            type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
+            type="org.hisp.dhis.android.core.relationship.Relationship" />
 
         <variable
             name="presenter"

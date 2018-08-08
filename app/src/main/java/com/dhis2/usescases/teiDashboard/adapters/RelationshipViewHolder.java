@@ -2,10 +2,12 @@ package com.dhis2.usescases.teiDashboard.adapters;
 
 import android.support.v7.widget.RecyclerView;
 
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.ItemRelationshipBinding;
 import com.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.List;
@@ -28,11 +30,21 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         this.compositeDisposable = new CompositeDisposable();
     }
 
-    public void bind(TeiDashboardContracts.Presenter presenter, RelationshipModel relationship) {
+    public void bind(TeiDashboardContracts.Presenter presenter, Pair<Relationship, RelationshipType> relationships) {
 
+        Relationship relationship = relationships.val0();
+        String relationshipTEIUid;
+        boolean from;
+
+        if (!presenter.getTeUid().equals(relationship.from().trackedEntityInstance().trackedEntityInstance())) {
+            relationshipTEIUid = relationship.from().trackedEntityInstance().trackedEntityInstance();
+            from = true;
+        }else {
+            relationshipTEIUid = relationship.to().trackedEntityInstance().trackedEntityInstance();
+            from = false;
+        }
         compositeDisposable.add(
-                presenter.getTEIMainAttributes(presenter.getTeUid().equals(relationship.trackedEntityInstanceA()) ?
-                        relationship.trackedEntityInstanceB() : relationship.trackedEntityInstanceA())
+                presenter.getTEIMainAttributes(relationshipTEIUid)
                         .subscribe(
                                 this::setAttributes,
                                 Timber::d
@@ -40,16 +52,15 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
         );
 
         binding.teiRelationshipLink.setOnClickListener(view -> {
-            String teiUid = presenter.getTeUid().equals(relationship.trackedEntityInstanceA()) ?
-                    relationship.trackedEntityInstanceB() : relationship.trackedEntityInstanceA();
-            presenter.openDashboard(teiUid);
+            presenter.openDashboard(relationshipTEIUid);
         });
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
+        binding.relationshipName.setText(from?relationships.val1().aIsToB():relationships.val1().bIsToA());
         binding.executePendingBindings();
 
-        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
+//        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);
     }
 
     private void setAttributes(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {

@@ -151,19 +151,19 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE);
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
-    private final String RELATIONSHIP_QUERY = String.format(
+    /*private final String RELATIONSHIP_QUERY = String.format(
             "SELECT Relationship.* FROM %s " +
                     "WHERE %s.%s = ? OR %s.%s = ?",
             RelationshipModel.TABLE,
             RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);
+            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);*/
 
-    private final String INSERT_RELATIONSHIP = String.format(
+    /*private final String INSERT_RELATIONSHIP = String.format(
             "INSERT INTO %s (%s, %s, %s) " +
                     "VALUES (?, ?, ?);",
             RelationshipModel.TABLE,
             RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
-    );
+    );*/
 
     private static final String DELETE_WHERE_RELATIONSHIP = String.format(
             "%s.%s = ",
@@ -397,7 +397,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
-    @Override
+    /*@Override
     public Observable<List<RelationshipModel>> getRelationships(String teiUid) {
         return briteDatabase.createQuery(RELATIONSHIP_TABLE, RELATIONSHIP_QUERY, teiUid, teiUid)
                 .mapToList(RelationshipModel::create);
@@ -424,7 +424,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 relationshipModel.relationshipType(),
                 relationshipModel.trackedEntityInstanceA(),
                 relationshipModel.trackedEntityInstanceB());
-    }
+    }*/
 
     @Override
     public Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid) {

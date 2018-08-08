@@ -1,6 +1,7 @@
 package com.dhis2.utils.CustomViews;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,14 +36,26 @@ public class OrgUnitDialog extends DialogFragment {
     private View.OnClickListener negativeListener;
     private String title;
     private List<OrganisationUnitModel> myOrgs;
+    private Context context;
 
 
     public static OrgUnitDialog newInstace(boolean multiSelection) {
         if (instace == null || instace.isMultiSelection() != multiSelection) {
-            isMultiSelection = multiSelection;
             instace = new OrgUnitDialog();
+            isMultiSelection = multiSelection;
         }
         return instace;
+    }
+
+    public OrgUnitDialog(){
+        instace = null;
+        isMultiSelection = false;
+        possitiveListener = null;
+        negativeListener = null;
+        title = null;
+        myOrgs = null;
+
+
     }
 
     public OrgUnitDialog setPossitiveListener(View.OnClickListener listener) {
@@ -70,6 +83,12 @@ public class OrgUnitDialog extends DialogFragment {
         return this;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -84,10 +103,10 @@ public class OrgUnitDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_orgunit, container, false);
 
-        binding.setTitleText(title);
-        renderTree(myOrgs);
+        binding.title.setText(title);
         binding.acceptButton.setOnClickListener(possitiveListener);
         binding.clearButton.setOnClickListener(negativeListener);
+        renderTree(myOrgs);
 
         return binding.getRoot();
     }
@@ -99,7 +118,7 @@ public class OrgUnitDialog extends DialogFragment {
     private void renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
         binding.treeContainer.removeAllViews();
-        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(getContext(), myOrgs, false));
+        treeView = new AndroidTreeView(getContext(), OrgUnitUtils.renderTree(context, myOrgs, isMultiSelection));
         treeView.deselectAll();
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
