@@ -1,6 +1,7 @@
 package com.dhis2.usescases.qrReader;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
@@ -52,7 +53,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     private JSONObject eventWORegistrationJson;
     private String eventUid;
-    private JSONArray dataJson;
+    private ArrayList<JSONObject> dataJson = new ArrayList<>();
 
     private JSONObject teiJson;
     private JSONArray attrJson;
@@ -82,7 +83,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataWORegistrationInfo(JSONArray jsonArray) {
-        this.dataJson = jsonArray;
         ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
         if (eventUid != null) {
             try {
@@ -118,6 +118,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                                 " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
                         // IF FOUND, OPEN DASHBOARD
                         if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                            this.dataJson.add(attrValue);
                             attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
                         } else {
                             attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
@@ -567,19 +568,28 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 eventModelBuilder.trackedEntityInstance(eventWORegistrationJson.getString("trackedEntityInstance"));
             }
 
+            eventModelBuilder.state(State.TO_UPDATE);
+
             EventModel eventModel = eventModelBuilder.build();
 
-            if (eventModel != null)
-                briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+            Cursor cursor = briteDatabase.query("SELECT * FROM " + EventModel.TABLE +
+                    " WHERE " + EventModel.Columns.UID + " = ?", eventModel.uid());
+
+            if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
+            } else {
+                long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+                Log.d("RESULT", "insert event " + result);
+            }
         }
         catch (JSONException | ParseException e) {
             Timber.e(e);
         }
 
 
-        for (int i = 0; i < dataJson.length(); i++) {
+        for (int i = 0; i < dataJson.size(); i++) {
             try {
-                JSONObject attrV = dataJson.getJSONObject(i);
+                JSONObject attrV = dataJson.get(i);
 
                 TrackedEntityDataValueModel.Builder attrValueModelBuilder;
                 attrValueModelBuilder = TrackedEntityDataValueModel.builder();
@@ -599,8 +609,10 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
                 TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
 
-                if (attrValueModel != null)
-                    briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+                if (attrValueModel != null) {
+                    long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+                    Log.d("RESULT", "insert event " + result);
+                }
 
             } catch (JSONException | ParseException e) {
                 Timber.e(e);
