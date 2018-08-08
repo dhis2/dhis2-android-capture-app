@@ -105,7 +105,7 @@
                 android:layout_gravity="end|bottom"
                 android:layout_margin="15dp"
                 android:onClick="@{(view)->presenter.onFabClick(view)}"
-                android:tint="@color/yellow_fdd"
+                android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
                 app:fabSize="normal"
                 app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"

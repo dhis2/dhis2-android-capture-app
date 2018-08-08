@@ -56,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:textColor="@color/black_de0"
+                    android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:programName='@{enrollment.program}'
@@ -74,7 +74,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
-                        android:textColor="@color/gray_9b9"
+                        android:textColor="@color/text_black_333"
                         android:textSize="14sp"
                         app:organisationUnitName='@{enrollment.organisationUnit()}'
                         tools:text="ORG UNIT" />
@@ -89,7 +89,7 @@
                         android:ellipsize="end"
                         android:gravity="end"
                         android:lines="1"
-                        android:textColor="@color/black_de0"
+                        android:textColor="@color/text_black_333"
                         android:textSize="14sp"
                         app:date="@{enrollment.enrollmentDate()}"
                         tools:text="DD/MM/YYYY" />
@@ -111,6 +111,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:contentDescription='@{enrollment.uid()}'
+                android:tint="?colorPrimary"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>
 

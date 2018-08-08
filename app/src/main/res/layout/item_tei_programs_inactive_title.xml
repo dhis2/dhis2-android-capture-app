@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <import type="android.view.View" />
 
         <import type="java.lang.String" />
@@ -18,29 +20,29 @@
             type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:layout_height="48dp"
+        android:background="@color/bg_gray_ccc"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?colorPrimary"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:paddingTop="16dp"
             android:paddingBottom="10dp"
-            android:text="@string/past_programs"/>
+            android:paddingEnd="18dp"
+            android:paddingStart="18dp"
+            android:paddingTop="16dp"
+            android:text="@string/past_programs"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_afa"/>
+            android:background="@color/gray_afa" />
 
     </LinearLayout>
 </layout>

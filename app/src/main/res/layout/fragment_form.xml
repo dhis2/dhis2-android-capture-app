@@ -24,7 +24,7 @@
             android:id="@+id/viewpager_dataentry"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white" />
+            android:background="@color/bg_white_f9f" />
 
         <!--</FrameLayout>-->
     </android.support.v4.widget.NestedScrollView>
@@ -32,12 +32,14 @@
     <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:background="?attr/button_selector"
         android:elevation="8dp"
         android:text="@string/next"
+        android:textSize="12sp"
+        android:textStyle="bold"
         android:textColor="?colorAccent"
         app:backgroundTint="?colorPrimary"
         android:focusable="true"

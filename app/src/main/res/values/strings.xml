@@ -317,4 +317,7 @@
 
     <string name="burmesse_test">မြန်မာအက္ခရာ</string>
     <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
+    <string name="menu_home">Home</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

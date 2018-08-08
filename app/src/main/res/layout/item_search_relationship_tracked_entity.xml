@@ -43,9 +43,9 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/photo_temp"
-                app:srcCompat = "@drawable/ic_tei_default"
-                android:tint="?attr/colorPrimaryDark"
+                android:background="@drawable/photo_temp_gray"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
             <ImageView
@@ -64,10 +64,10 @@
 
             <LinearLayout
                 android:id="@+id/attributes_layout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tracked_entity_image"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/entity_attribute_1"
@@ -75,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
-                    android:textColor="@color/black_de0"
+                    android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
-                    android:textColor="@color/black_de0"
+                    android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
@@ -96,14 +96,15 @@
             <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/relationship_spinner"
                 android:layout_width="150dp"
-                android:layout_height="27dp"
+                android:layout_height="36dp"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@id/attributes_layout"
+                android:layout_centerVertical="true"
                 android:layout_marginEnd="9dp"
                 android:layout_marginTop="9dp"
-                android:spinnerMode="dropdown"
                 android:background="?attr/button_selector"
-                android:prompt="@string/add_relation_button" />
+                android:prompt="@string/add_relation_button"
+                android:spinnerMode="dropdown"
+                tools:text="Add as..."/>
 
         </RelativeLayout>
 

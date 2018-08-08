@@ -53,9 +53,9 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
 
         binding.programImage.setBackgroundColor(color);
 
-        SpannableStringBuilder sb = new SpannableStringBuilder(String.format("%s %s", programViewModel.count(), programViewModel.typeName()));
+      /*  SpannableStringBuilder sb = new SpannableStringBuilder(String.format("%s %s", programViewModel.count(), programViewModel.typeName()));
         sb.setSpan(new AbsoluteSizeSpan(18,true), 0, programViewModel.count().toString().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), 0, programViewModel.count().toString().length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        binding.eventsNumber.setText(sb);
+        binding.eventsNumber.setText(sb);*/
     }
 }

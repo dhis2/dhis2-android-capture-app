@@ -100,6 +100,13 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
                 Timber.e(e);
             }
 
+            if(date==null)
+                try {
+                    date = DateUtils.uiDateFormat().parse(data);
+                } catch (ParseException e) {
+                    Timber.e(e);
+                }
+
             data = DateUtils.uiDateFormat().format(date);
         }
         else{

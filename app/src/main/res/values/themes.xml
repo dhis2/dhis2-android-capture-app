@@ -21,6 +21,8 @@
         <item name="toast_bg">@drawable/toast_bg</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
 
+        <item name="android:fontFamily">@font/rubik_regular</item>
+
     </style>
 
     <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">

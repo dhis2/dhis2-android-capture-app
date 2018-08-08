@@ -16,19 +16,11 @@ public final class MainContracts {
         @UiThread
         Consumer<String> renderUsername();
 
-        @NonNull
-        @UiThread
-        Consumer<String> renderUserInfo();
-
-        @NonNull
-        @UiThread
-        Consumer<String> renderUserInitials();
-
         void openDrawer(int gravity);
 
         void showHideFilter();
 
-        void onLockClick(android.view.View view);
+        void onLockClick();
 
         void changeFragment(int id);
 
