@@ -8,6 +8,8 @@
 
         <import type="com.dhis2.utils.DateUtils" />
 
+        <import type="android.view.View" />
+
         <variable
             name="name"
             type="java.lang.String" />
@@ -170,12 +172,12 @@
                                     android:textSize="14sp"
                                     tools:text="Program Stage Name" />
 
-                                <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:text="@{programStage.description()}"
                                     android:textSize="12sp"
-                                    android:visibility="gone" />
+                                    android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
 
                             </LinearLayout>
 

@@ -24,9 +24,12 @@ import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.Preconditions;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
@@ -117,7 +120,31 @@ final class EditTextCustomHolder extends FieldViewHolder {
                             }
                         });
 
+
+
+        /*ConnectableObservable<CharSequence> textObservable = RxTextView.textChanges(editText).takeUntil(RxView.detaches(parent))
+                .publish();
+
+        textObservable
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .filter(text -> valueHasChanged())
+                .filter(text -> model.getValue() != null)
+                .filter(text -> model.getValue().editable())
+                .filter(text -> validate())
+                .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
+                .subscribe(
+                        processor::onNext,
+                        Timber::d,
+                        () ->
+                        {
+                            if (valueHasChanged() && validate()) {
+                                processor.onNext(RowAction.create(model.getValue().uid(),
+                                        editText.getText().toString()));
+                            }
+                        });*/
+
         editTextObservable.connect();
+//        textObservable.connect();
     }
 
     private void setInputType(ValueType valueType) {

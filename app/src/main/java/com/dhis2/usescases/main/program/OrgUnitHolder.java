@@ -56,7 +56,11 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
                 node.getViewHolder().getTreeView().expandNode(node);
         });
 
-        checkBox.setOnClickListener(v -> update());
+        checkBox.setOnClickListener(v -> {
+            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
+                ((OrgUnitHolder) treeNode.getViewHolder()).update();
+            update();
+        });
 
         if (!node.isSelectable()) {
             setSelectedSizeText();

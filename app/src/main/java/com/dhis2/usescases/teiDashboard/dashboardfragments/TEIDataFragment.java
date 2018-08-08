@@ -31,6 +31,7 @@ import com.dhis2.utils.DialogClickListener;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
@@ -275,21 +276,24 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0)
                     presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
                 else {
-                    //TODO: WHAT HAPPENS IF PROGRAM HAS A PERIOD
-                    Calendar calendar = Calendar.getInstance();
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
-                        Calendar chosenDate = Calendar.getInstance();
-                        chosenDate.set(year, month, dayOfMonth);
-                        presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
-                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                    if (programStageFromEvent != null && programStageFromEvent.hideDueDate())
-                        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
-                    else {
-                        // ONLY FUTURE DATES
-                        calendar.add(Calendar.DAY_OF_YEAR, 1);
-                        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+                    if(programStageFromEvent.periodType()== null || programStageFromEvent.periodType() == PeriodType.Daily) {
+                        Calendar calendar = Calendar.getInstance();
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
+                            Calendar chosenDate = Calendar.getInstance();
+                            chosenDate.set(year, month, dayOfMonth);
+                            presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
+                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                        if (programStageFromEvent != null && programStageFromEvent.hideDueDate())
+                            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+                        else {
+                            // ONLY FUTURE DATES
+                            calendar.add(Calendar.DAY_OF_YEAR, 1);
+                            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+                        }
+                        datePickerDialog.show();
+                    }else{
+                        //TODO: SHOW PERIOD SELECTOR
                     }
-                    datePickerDialog.show();
                 }
                 break;
             default:

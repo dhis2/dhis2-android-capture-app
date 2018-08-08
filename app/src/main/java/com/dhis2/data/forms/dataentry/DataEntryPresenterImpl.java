@@ -211,7 +211,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
             } else if (ruleAction instanceof RuleActionSetMandatoryField) {
                 RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
                 FieldViewModel model = fieldViewModels.get(mandatoryField.field());
-                fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+                if (model != null)
+                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
             } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
                 RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
                 dataEntryView.messageOnComplete(warningOnCompletion.content(), true);

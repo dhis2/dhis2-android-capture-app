@@ -27,6 +27,7 @@ import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -159,8 +160,10 @@ class EnrollmentFormRepository implements FormRepository {
         // We don't want to rebuild RuleEngine on each request, since metadata of
         // the event is not changing throughout lifecycle of FormComponent.
         this.cachedRuleEngineFlowable = enrollmentProgram()
-                .switchMap(program -> Flowable.zip(rulesRepository.rulesNew(program),
-                        rulesRepository.ruleVariables(program), (rules, variables) ->
+                .switchMap(program -> Flowable.zip(
+                        rulesRepository.rulesNew(program),
+                        rulesRepository.ruleVariables(program),
+                        (rules, variables) ->
                                 RuleEngineContext.builder(expressionEvaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)

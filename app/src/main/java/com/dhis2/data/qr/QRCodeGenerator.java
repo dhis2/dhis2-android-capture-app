@@ -13,6 +13,7 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -55,8 +56,8 @@ public class QRCodeGenerator implements QRInterface {
 
     private static final String TEI_EVENTS = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.TABLE + "." + EventModel.Columns.ENROLLMENT + " =?";
 
-    private static final String TEI_RELATIONSHIPS = "SELECT * FROM " + RelationshipModel.TABLE + " WHERE " + RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A + " = ? OR " +
-            RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B + " = ?";
+   /* private static final String TEI_RELATIONSHIPS = "SELECT * FROM " + RelationshipModel.TABLE + " WHERE " + RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A + " = ? OR " +
+            RelationshipModel.TABLE + "." + RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B + " = ?";*/
 
 
     QRCodeGenerator(BriteDatabase briteDatabase) {
@@ -71,76 +72,73 @@ public class QRCodeGenerator implements QRInterface {
         return
                 briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid)
                         .mapToOne(TrackedEntityInstanceModel::create)
-                .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, gson.toJson(data))))
+                        .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, gson.toJson(data))))
 
 
-                .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid)
-                        .mapToList(TrackedEntityAttributeValueModel::create))
-                .map(data -> {
-                    ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
-                    // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                    int count = 0;
-                    for (int i = 0; i < data.size(); i++) {
-                        arrayListAux.add(data.get(i));
-                        if (count == 1){
-                            count = 0;
-                            bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
-                            arrayListAux.clear();
-                        }
-                        else if (i == data.size()-1){
-                            bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
-                        }
-                        else {
-                            count++;
-                        }
-                    }
-                    return true;
-                })
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid)
+                                .mapToList(TrackedEntityAttributeValueModel::create))
+                        .map(data -> {
+                            ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
+                            // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                            int count = 0;
+                            for (int i = 0; i < data.size(); i++) {
+                                arrayListAux.add(data.get(i));
+                                if (count == 1) {
+                                    count = 0;
+                                    bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
+                                    arrayListAux.clear();
+                                } else if (i == data.size() - 1) {
+                                    bitmaps.add(new QrViewModel(ATTR_JSON, gson.toJson(arrayListAux)));
+                                } else {
+                                    count++;
+                                }
+                            }
+                            return true;
+                        })
 
 
-                .flatMap(data -> briteDatabase.createQuery(RelationshipModel.TABLE, TEI_RELATIONSHIPS, teiUid, teiUid)
-                        .mapToList(RelationshipModel::create))
-                .map(data -> bitmaps.add(new QrViewModel(RELATIONSHIP_JSON, gson.toJson(data))))
+                      /*  .flatMap(data -> briteDatabase.createQuery(RelationshipModel.TABLE, TEI_RELATIONSHIPS, teiUid, teiUid)
+                                .mapToList(RelationshipModel::create))*/
+                       /* .flatMap(data->Observable.just(d2.relationshipModule().relationship.getRelationshipsByTEI(teiUid)))
+                        .map(data -> bitmaps.add(new QrViewModel(RELATIONSHIP_JSON, gson.toJson(data))))*/
 
 
-                .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid)
-                        .mapToList(EnrollmentModel::create))
-                .map(data -> {
-                    ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
-                    // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
-                    int count = 0;
-                    for (int i = 0; i < data.size(); i++) {
-                        arrayListAux.add(data.get(i));
-                        if (count == 1){
-                            count = 0;
-                            bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
-                            arrayListAux.clear();
-                        }
-                        else if (i == data.size()-1){
-                            bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
-                        }
-                        else {
-                            count++;
-                        }
-                    }
-                    return data;
-                })
+                        .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid)
+                                .mapToList(EnrollmentModel::create))
+                        .map(data -> {
+                            ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
+                            // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
+                            int count = 0;
+                            for (int i = 0; i < data.size(); i++) {
+                                arrayListAux.add(data.get(i));
+                                if (count == 1) {
+                                    count = 0;
+                                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
+                                    arrayListAux.clear();
+                                } else if (i == data.size() - 1) {
+                                    bitmaps.add(new QrViewModel(ENROLLMENT_JSON, gson.toJson(arrayListAux)));
+                                } else {
+                                    count++;
+                                }
+                            }
+                            return data;
+                        })
 
 
-                .flatMap(data ->
-                        Observable.fromIterable(data)
-                                .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
-                                        .mapToList(EventModel::create)
-                                        .map(eventList -> {
-                                                    for (EventModel eventModel : eventList) {
-                                                        bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(eventModel)));
-                                                    }
-                                                    return bitmaps;
-                                                }
+                        .flatMap(data ->
+                                Observable.fromIterable(data)
+                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
+                                                .mapToList(EventModel::create)
+                                                .map(eventList -> {
+                                                            for (EventModel eventModel : eventList) {
+                                                                bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(eventModel)));
+                                                            }
+                                                            return bitmaps;
+                                                        }
+                                                )
                                         )
-                                )
-                )
-                .map(data -> bitmaps);
+                        )
+                        .map(data -> bitmaps);
     }
 
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><!--region BASE THEMES -->
+<resources>
+    <!--region BASE THEMES -->
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -18,6 +20,7 @@
         <item name="period_time_button">@drawable/period_time_button</item>
         <item name="toast_bg">@drawable/toast_bg</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
+
     </style>
 
     <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -37,6 +40,7 @@
         <item name="period_time_button">@drawable/period_time_button_red</item>
         <item name="toast_bg">@drawable/toast_bg_red</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
+
     </style>
 
     <style name="GreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -56,6 +60,7 @@
         <item name="period_time_button">@drawable/period_time_button_green</item>
         <item name="toast_bg">@drawable/toast_bg_green</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
+
     </style>
 
     <style name="OrangeTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -75,6 +80,7 @@
         <item name="period_time_button">@drawable/period_time_button_orange</item>
         <item name="toast_bg">@drawable/toast_bg_orange</item>
         <item name="android:windowBackground">@color/gray_f6f</item>
+
     </style><!--endregion--><!--region PALETTES-->
     <style name="colorPrimary_Pink" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary_Pink</item>
