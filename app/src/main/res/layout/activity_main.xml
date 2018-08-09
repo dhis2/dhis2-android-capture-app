@@ -68,16 +68,30 @@
 
                 <ImageView
                     android:id="@+id/filter"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="6dp"
                     android:onClick="@{()->presenter.showFilter()}"
                     android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_filter"
+                    tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:id="@+id/moreOptions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="6dp"
+                    android:onClick="showMoreOptions"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_more"
                     tools:ignore="ContentDescription" />
 
                 <android.support.constraint.Guideline

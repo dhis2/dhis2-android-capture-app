@@ -49,10 +49,19 @@
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="title" />
 
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                android:padding="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
             <android.support.constraint.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"

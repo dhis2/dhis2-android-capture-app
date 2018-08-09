@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.andrognito.pinlockview.PinLockListener;
@@ -27,6 +29,9 @@ import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
 import com.dhis2.utils.Period;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
@@ -34,7 +39,7 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
-    ActivityMainBinding binding;
+    public ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
 

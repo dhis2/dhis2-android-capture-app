@@ -1,12 +1,16 @@
 package com.dhis2.usescases.teiDashboard.mobile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 
 import com.dhis2.R;
@@ -22,6 +26,12 @@ import com.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import com.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.HelpManager;
+
+import java.util.ArrayList;
+
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -88,6 +98,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         TEIDataFragment.getInstance().setData(programModel);
         RelationshipFragment.getInstance().setData(program);
         binding.teiPager.setOffscreenPageLimit(6);
+
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override
@@ -149,5 +162,82 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void setTutorial() {
+        super.setTutorial();
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_1))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_2))
+                    .focusOn(getAbstractActivity().findViewById(R.id.viewMore))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .titleGravity(Gravity.BOTTOM)
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_3))
+                    .focusOn(getAbstractActivity().findViewById(R.id.shareContainer))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .titleGravity(Gravity.BOTTOM)
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_4))
+                    .focusOn(getAbstractActivity().findViewById(R.id.follow_up))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_5))
+                    .focusOn(getAbstractActivity().findViewById(R.id.fab))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_6))
+                    .focusOn(getAbstractActivity().findViewById(R.id.tei_recycler))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .titleGravity(Gravity.TOP)
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_7))
+                    .focusOn(getAbstractActivity().findViewById(R.id.tab_layout))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_dashboard_8))
+                    .focusOn(getAbstractActivity().findViewById(R.id.program_selector_button))
+                    .closeOnTouch(true)
+                    .build();
+
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+            steps.add(tuto3);
+            steps.add(tuto4);
+            steps.add(tuto5);
+            steps.add(tuto6);
+            steps.add(tuto7);
+            steps.add(tuto8);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+            if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
+            }
+
+        }, 500);
+
+
     }
 }

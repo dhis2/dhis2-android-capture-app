@@ -62,8 +62,18 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:srcCompat="@drawable/ic_program_border"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
             <android.support.constraint.Guideline

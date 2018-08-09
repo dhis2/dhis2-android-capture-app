@@ -19,6 +19,8 @@ public class SyncManagerContracts {
         Consumer<Pair<Integer, Integer>> setSyncData();
 
         void wipeDatabase();
+
+        void showTutorial();
     }
 
     public interface Presenter {

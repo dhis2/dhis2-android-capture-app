@@ -78,7 +78,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="6dp"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions">
 
                 <ProgressBar
                     android:id="@+id/progressGains"
@@ -98,8 +99,19 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:textColor="@color/yellow_fdd"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="100%"/>
             </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/toolbar_guideline"

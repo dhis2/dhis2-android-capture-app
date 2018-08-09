@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +20,10 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.databinding.FragmentSyncManagerBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
 import com.dhis2.utils.Constants;
+import com.dhis2.utils.HelpManager;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -28,6 +32,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 import static com.dhis2.utils.Constants.TIME_15M;
@@ -90,6 +97,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         super.onResume();
         presenter.init(this);
 
+        showTutorial();
+
         listenerDisposable = new CompositeDisposable();
 
         listenerDisposable.add(RxTextView.textChanges(binding.eventMaxData).debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -109,12 +118,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
 
         if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
-            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date),prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
         else
             binding.dataLastSync.setText(getString(R.string.sync_error_text));
 
         if (prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true))
-            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date),prefs.getString(Constants.LAST_META_SYNC, "-")));
+            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
         else
             binding.metadataLastSync.setText(getString(R.string.sync_error_text));
     }
@@ -239,5 +248,65 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> presenter.wipeDb())
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    @Override
+    public void showTutorial() {
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
+        new Handler().postDelayed(() -> {
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.radioData))
+                    .title(getString(R.string.tuto_settings_1))
+                    .closeOnTouch(true)
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .dismissListener(new DismissListener() {
+                        @Override
+                        public void onDismiss(String id) {
+                            scrollView.scrollTo((int)getAbstractActivity().findViewById(R.id.radioMeta).getX(), (int)getAbstractActivity().findViewById(R.id.radioMeta).getY());
+                        }
+
+                        @Override
+                        public void onSkipped(String id) {
+
+                        }
+                    })
+                    .build();
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.radioMeta))
+                    .title(getString(R.string.tuto_settings_2))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.capacityLayout))
+                    .title(getString(R.string.tuto_settings_3))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+
+            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.wipeData))
+                    .title(getString(R.string.tuto_settings_4))
+                    .closeOnTouch(true)
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .build();
+
+
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+            steps.add(tuto3);
+            steps.add(tuto4);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
+            }
+
+        }, 500);
     }
 }

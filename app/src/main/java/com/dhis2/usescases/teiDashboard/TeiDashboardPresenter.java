@@ -332,6 +332,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void deleteRelationship(Relationship relationship) {
 //        dashboardRepository.deleteRelationship(relationshipModel); TODO: HOW TO DELETE NOW?
+        view.showInfoDialog("Info", view.getContext().getString(R.string.feature_unavaible));
     }
 
     @Override

@@ -87,35 +87,35 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         binding.executePendingBindings();
     }
 
-    public void setAllowFutureDates(boolean allowFutureDates){
+    public void setAllowFutureDates(boolean allowFutureDates) {
         this.allowFutureDates = allowFutureDates;
     }
 
     public void initData(String data) {
-        if(data!=null) {
+        if (data != null) {
             Date date = null;
-            try {
-                date = DateUtils.databaseDateFormat().parse(data);
-            } catch (ParseException e) {
-                Timber.e(e);
-            }
-
-            if(date==null)
+            if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.uiDateFormat().parse(data);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
+            else
+                try {
+                    date = DateUtils.databaseDateFormat().parse(data);
+                } catch (ParseException e) {
+                    Timber.e(e);
+                }
+
 
             data = DateUtils.uiDateFormat().format(date);
-        }
-        else{
+        } else {
             editText.setText("");
         }
         editText.setText(data);
     }
 
-    public void setWarningOrError(String msg){
+    public void setWarningOrError(String msg) {
         editText.setError(msg);
     }
 

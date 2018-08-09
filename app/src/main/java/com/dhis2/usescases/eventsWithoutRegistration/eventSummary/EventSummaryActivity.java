@@ -1,5 +1,7 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,10 +22,12 @@ import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 import com.dhis2.utils.DialogClickListener;
+import com.dhis2.utils.HelpManager;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -180,6 +186,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
         binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+
+        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override
@@ -242,5 +251,34 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                 total++;
         }
         return total;
+    }
+
+    @Override
+    public void setTutorial() {
+        super.setTutorial();
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+
+
+                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_event_summary))
+                        .focusOn(binding.actionButton)
+                        .closeOnTouch(true)
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .build();
+                steps.add(tuto1);
+
+                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+                if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
+                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                    prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
+                }
+
+        }, 500);
     }
 }

@@ -3,6 +3,7 @@ package com.dhis2.usescases.main;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.view.View;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
 
