@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,11 +19,19 @@ import java.util.List;
 public class QrReaderContracts {
 
     public interface View {
+        void downloadEventWORegistration(@NonNull String eventUid);
+
+        void renderEventWORegistrationInfo(@Nullable String eventUid);
+
         void downloadTei(@NonNull String teiUid);
 
         void renderTeiInfo(@Nullable String teiUid);
 
-        void promtForMoreQr();
+        void promtForTEIMoreQr();
+
+        void promtForEventWORegistrationMoreQr();
+
+        void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data);
 
         void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes);
 
@@ -36,10 +45,16 @@ public class QrReaderContracts {
 
         void finishDownload();
 
-        void goToDashBoard(String teiUid, boolean isDownloadedOrPresent);
+        void goToDashBoard(String teiUid);
+
+        void goToEvent(String eventUid, String programId, String orgUnit);
     }
 
     public interface Presenter {
+
+        void handleEventWORegistrationInfo(JSONObject jsonObject);
+
+        void handleDataWORegistrationInfo(JSONArray jsonArray);
 
         void handleTeiInfo(JSONObject jsonObject);
 
@@ -54,6 +69,8 @@ public class QrReaderContracts {
         void init(View view);
 
         void download();
+
+        void downloadEventWORegistration();
 
         void onlineDownload();
 
