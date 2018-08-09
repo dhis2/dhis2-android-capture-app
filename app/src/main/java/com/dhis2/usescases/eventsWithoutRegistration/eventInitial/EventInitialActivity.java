@@ -24,6 +24,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.databinding.ActivityEventInitialBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.usescases.map.MapSelectorActivity;
+import com.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import com.dhis2.utils.CatComboAdapter2;
 import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
@@ -247,9 +248,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (isNewEvent) {
             binding.actionButton.setText(R.string.create);
+            binding.shareButton.setVisibility(View.GONE);
         } else {
             binding.actionButton.setText(R.string.update);
+            binding.shareButton.setVisibility(View.VISIBLE);
         }
+
+        binding.shareButton.setOnClickListener(v -> {
+            Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
+            intent.putExtra("EVENT_UID", eventId);
+            startActivity(intent);
+        });
 
         binding.actionButton.setOnClickListener(v -> {
 

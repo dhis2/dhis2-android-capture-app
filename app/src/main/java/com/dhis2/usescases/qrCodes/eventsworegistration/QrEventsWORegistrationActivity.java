@@ -1,4 +1,4 @@
-package com.dhis2.usescases.qrCodes;
+package com.dhis2.usescases.qrCodes.eventsworegistration;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -9,8 +9,10 @@ import android.view.View;
 
 import com.dhis2.App;
 import com.dhis2.R;
-import com.dhis2.databinding.ActivityQrCodesBinding;
+import com.dhis2.databinding.ActivityQrEventsWoRegistrationCodesBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.qrCodes.QrAdapter;
+import com.dhis2.usescases.qrCodes.QrViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,37 +22,33 @@ import javax.inject.Inject;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
 import static com.dhis2.data.qr.QRjson.DATA_JSON;
-import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
-import static com.dhis2.data.qr.QRjson.EVENTS_JSON;
 import static com.dhis2.data.qr.QRjson.EVENT_JSON;
-import static com.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
-import static com.dhis2.data.qr.QRjson.TEI_JSON;
 
 /**
  * QUADRAM. Created by ppajuelo on 21/06/2018.
  */
 
-public class QrActivity extends ActivityGlobalAbstract implements QrContracts.View {
+public class QrEventsWORegistrationActivity extends ActivityGlobalAbstract implements QrEventsWORegistrationContracts.View {
 
     @Inject
-    public QrContracts.Presenter presenter;
+    public QrEventsWORegistrationContracts.Presenter presenter;
 
-    private ActivityQrCodesBinding binding;
+    private ActivityQrEventsWoRegistrationCodesBinding binding;
     private QrAdapter qrAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new QrModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new QrEventsWORegistrationModule()).inject(this);
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_qr_codes);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_qr_events_wo_registration_codes);
         binding.setName(getString(R.string.share_qr));
         binding.setPresenter(presenter);
-        String teiUid = getIntent().getStringExtra("TEI_UID");
+        String eventUid = getIntent().getStringExtra("EVENT_UID");
 
         qrAdapter = new QrAdapter(getSupportFragmentManager(), new ArrayList<>());
         binding.viewPager.setAdapter(qrAdapter);
 
-        presenter.generateQrs(teiUid, this);
+        presenter.generateQrs(eventUid, this);
     }
 
     @Override
@@ -91,21 +89,6 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
                         break;
                     case DATA_JSON:
                         binding.setTitle(getString(R.string.qr_attributes));
-                        break;
-                    case TEI_JSON:
-                        binding.setTitle(getString(R.string.qr_id));
-                        break;
-                    case ATTR_JSON:
-                        binding.setTitle(getString(R.string.qr_attributes));
-                        break;
-                    case ENROLLMENT_JSON:
-                        binding.setTitle(getString(R.string.qr_enrollment));
-                        break;
-                    case EVENTS_JSON:
-                        binding.setTitle(getString(R.string.qr_events));
-                        break;
-                    case RELATIONSHIP_JSON:
-                        binding.setTitle(getString(R.string.qr_relationships));
                         break;
                     default:
                         break;

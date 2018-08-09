@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
@@ -27,8 +28,10 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
+import static com.dhis2.data.qr.QRjson.DATA_JSON;
 import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
 import static com.dhis2.data.qr.QRjson.EVENTS_JSON;
+import static com.dhis2.data.qr.QRjson.EVENT_JSON;
 import static com.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
 import static com.dhis2.data.qr.QRjson.TEI_JSON;
 
@@ -43,7 +46,11 @@ public class QRCodeGenerator implements QRInterface {
 
     private static final String TEI = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE + " WHERE " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.UID + " = ?";
 
+    private static final String EVENT = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.TABLE + "." + EventModel.Columns.UID + " = ?";
+
     private static final String TEI_ATTR = "SELECT * FROM " + TrackedEntityAttributeValueModel.TABLE + " WHERE " + TrackedEntityAttributeValueModel.TABLE + "." + TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
+
+    private static final String TEI_DATA = "SELECT * FROM " + TrackedEntityDataValueModel.TABLE + " WHERE " + TrackedEntityDataValueModel.TABLE + "." + TrackedEntityDataValueModel.Columns.EVENT + " = ?";
 
     private static final String TEI_ENROLLMENTS = "SELECT * FROM " + EnrollmentModel.TABLE + " WHERE " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE + " = ?";
 
@@ -131,6 +138,44 @@ public class QRCodeGenerator implements QRInterface {
                                                 )
                                         )
                         )
+                        .map(data -> bitmaps);
+    }
+
+
+
+    @Override
+    public Observable<List<QrViewModel>> eventWORegistrationQRs(String eventUid) {
+        List<QrViewModel> bitmaps = new ArrayList<>();
+
+        return
+                briteDatabase.createQuery(EventModel.TABLE, EVENT, eventUid)
+                        .mapToOne(EventModel::create)
+                        .map(data -> {
+                            bitmaps.add(new QrViewModel(EVENT_JSON, gson.toJson(data)));
+                            return data;
+                        })
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, data.uid())
+                                .mapToList(TrackedEntityDataValueModel::create))
+                        .map(data -> {
+                            ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+                            // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                            int count = 0;
+                            for (int i = 0; i < data.size(); i++) {
+                                arrayListAux.add(data.get(i));
+                                if (count == 1){
+                                    count = 0;
+                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                    arrayListAux.clear();
+                                }
+                                else if (i == data.size()-1){
+                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                }
+                                else {
+                                    count++;
+                                }
+                            }
+                            return true;
+                        })
                         .map(data -> bitmaps);
     }
 

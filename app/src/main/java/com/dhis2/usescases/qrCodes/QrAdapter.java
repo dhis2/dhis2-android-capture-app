@@ -14,7 +14,7 @@ public class QrAdapter extends FragmentStatePagerAdapter {
     @NonNull
     private final List<QrViewModel> bitmaps;
 
-    QrAdapter(@NonNull FragmentManager fragmentManager, @NonNull List<QrViewModel> bitmaps) {
+    public QrAdapter(@NonNull FragmentManager fragmentManager, @NonNull List<QrViewModel> bitmaps) {
         super(fragmentManager);
         this.bitmaps = bitmaps;
     }

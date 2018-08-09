@@ -6,6 +6,9 @@ package com.dhis2.data.qr;
 
 public class QRjson {
 
+    public static final String EVENT_JSON = "EVENT";
+    public static final String DATA_JSON = "DATA";
+
     public static final String TEI_JSON = "TEI";
     public static final String ENROLLMENT_JSON = "ENROLLMENT";
     public static final String EVENTS_JSON = "EVENTS";

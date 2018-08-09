@@ -374,6 +374,22 @@
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/share_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/selector_button_round_7"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:text="@string/share"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
             </RelativeLayout>
 
             <android.support.design.widget.NavigationView
