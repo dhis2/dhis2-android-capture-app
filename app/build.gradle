@@ -20,7 +20,7 @@ repositories {
 
 android {
 
-    lintOptions{
+    lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
@@ -31,13 +31,13 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 19
-        versionName "1.0.0-BETA4"
+        versionCode 20
+        versionName "1.0.0-BETA5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        buildConfigField "String", "SDK_VERSION", "\""+ libraries.dhis2sdk + "\""
+        buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -143,7 +143,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
     // Core module of the DHIS 2 Android SDK
-    implementation ("org.hisp.dhis:android-core:${libraries.dhis2sdk}"){
+    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
     // RuleEngine module of the DHIS 2 Android SDK
@@ -257,3 +257,5 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 }
+
+apply plugin: 'kotlin-android-extensions'

@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -31,11 +33,13 @@ import com.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
+import com.dhis2.utils.HelpManager;
 import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +48,8 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 /**
@@ -155,11 +161,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         this.program = program;
 
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
+
         //TODO: refreshData for recycler
 
         //Form has been set.
         FormAdapter formAdapter = (FormAdapter) binding.formRecycler.getAdapter();
-        formAdapter.setList(trackedEntityAttributeModels, program,queryData);
+        formAdapter.setList(trackedEntityAttributeModels, program, queryData);
     }
 
     @NonNull
@@ -187,6 +196,49 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             searchRelationshipAdapter.clear();
         else
             searchTEAdapter.clear();
+    }
+
+    @Override
+    public void setTutorial() {
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_search_1))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_search_2))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .focusOn(getAbstractActivity().findViewById(R.id.program_spinner))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_search_3))
+                    .focusOn(getAbstractActivity().findViewById(R.id.enrollmentButton))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .focusOn(getAbstractActivity().findViewById(R.id.clear_button))
+                    .title(getString(R.string.tuto_search_4))
+                    .closeOnTouch(true)
+                    .build();
+
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+            steps.add(tuto3);
+            steps.add(tuto4);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
+            }
+
+        }, 500);
     }
 
     //endregion

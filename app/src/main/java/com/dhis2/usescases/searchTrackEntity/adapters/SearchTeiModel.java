@@ -66,4 +66,7 @@ public class SearchTeiModel {
         this.attributeValues.add(attributeValues);
     }
 
+    public void resetEnrollments() {
+        this.enrollments.clear();
+    }
 }

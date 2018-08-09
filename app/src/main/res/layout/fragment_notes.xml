@@ -13,7 +13,8 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/bg_white_f9f">
 
             <EditText
                 android:id="@+id/edit_note"
@@ -23,44 +24,48 @@
                 android:layout_marginStart="9dp"
                 android:layout_marginTop="30dp"
                 android:background="@drawable/gray_border_box"
+                android:fadeScrollbars="true"
                 android:gravity="start"
                 android:hint="@string/write_new_note"
+                android:inputType="textMultiLine"
                 android:maxHeight="200dp"
                 android:padding="16dp"
                 android:textColor="@color/gray_444"
+                android:textColorHint="@color/gray_d7d"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@tools:sample/lorem/random"
-                android:inputType="textMultiLine"
-                android:fadeScrollbars="true"/>
+                tools:text="@tools:sample/lorem/random" />
 
             <Button
                 android:id="@+id/button_delete"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
+                android:layout_height="36dp"
                 android:layout_marginEnd="9dp"
-                android:layout_marginTop="9dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/button_delete_selector"
                 android:paddingEnd="23dp"
                 android:paddingStart="23dp"
                 android:text="@string/clear"
                 android:textColor="?colorAccent"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_note" />
 
             <Button
                 android:id="@+id/button_add"
                 android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginTop="9dp"
-                android:background="?attr/button_selector"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/button_delete_selector"
                 android:paddingEnd="23dp"
                 android:paddingStart="23dp"
                 android:text="@string/add_note"
                 android:textColor="?colorAccent"
                 android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="?colorPrimary"
                 app:layout_constraintEnd_toStartOf="@id/button_delete"
                 app:layout_constraintTop_toBottomOf="@id/edit_note" />
 

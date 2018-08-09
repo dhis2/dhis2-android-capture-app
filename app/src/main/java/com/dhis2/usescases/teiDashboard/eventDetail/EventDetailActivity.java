@@ -1,12 +1,16 @@
 package com.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.View;
 
 import com.dhis2.App;
@@ -21,15 +25,20 @@ import com.dhis2.utils.CustomViews.CustomDialog;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.DialogClickListener;
+import com.dhis2.utils.HelpManager;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 /**
  * QUADRAM. Created by Cristian E. on 18/12/2017.
@@ -96,6 +105,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                         FormViewArguments.createForEvent(eventUid), false,
                         false, true), "EVENT_DATA_ENTRY")
                 .commit();
+
+        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override
@@ -197,5 +209,41 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void onBackPressed() {
         presenter.back();
+    }
+
+    @Override
+    public void setTutorial() {
+        super.setTutorial();
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_tei_event_1))
+                    .focusOn(getAbstractActivity().findViewById(R.id.toolbarDelete))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_tei_event_2))
+                    .focusOn(getAbstractActivity().findViewById(R.id.deactivate_button))
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .closeOnTouch(true)
+                    .build();
+
+
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+            if (!prefs.getBoolean("TUTO_TEI_EVENT", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
+            }
+
+        }, 500);
+
     }
 }

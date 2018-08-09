@@ -25,8 +25,6 @@ import com.dhis2.R;
 import com.dhis2.databinding.ActivityLoginBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.dhis2.utils.Constants;
-import com.dhis2.utils.CustomViews.CustomDialog;
-import com.dhis2.utils.DialogClickListener;
 
 import org.hisp.dhis.android.core.common.D2ErrorCode;
 
@@ -52,8 +50,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     private boolean isSyncing;
 
     private boolean isPinScreenVisible = false;
-
-    private CustomDialog customDialog;
 
     enum SyncState {
         METADATA, EVENTS, TEI
@@ -128,20 +124,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 break;
         }
 
-        customDialog = new CustomDialog(this,
-                getString(R.string.login_error),
-                message,getString(R.string.button_ok), getString(R.string.cancel), errorCode.hashCode(), new DialogClickListener() {
-            @Override
-            public void onPositive() {
-                customDialog.dismiss();
-            }
-
-            @Override
-            public void onNegative() {
-                customDialog.dismiss();
-            }
-        });
-        customDialog.show();
+        showInfoDialog(getString(R.string.login_error), message);
 
     }
 

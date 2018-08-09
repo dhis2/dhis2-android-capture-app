@@ -14,6 +14,7 @@ public class HelpManager {
     private static HelpManager instance;
     private List<FancyShowCaseView> help;
     private FancyShowCaseQueue queue;
+    private String screen;
 
     public static HelpManager getInstance() {
         if (instance == null)
@@ -24,6 +25,7 @@ public class HelpManager {
 
     public void setScreenHelp(String screen, List<FancyShowCaseView> steps) {
         help = steps;
+        this.screen = screen;
     }
 
     public void showHelp() {
@@ -34,5 +36,9 @@ public class HelpManager {
             }
             queue.show();
         }
+    }
+
+    public boolean isTutorialReadyForScreen(String screen){
+        return this.screen.equals(screen) && help!=null && !help.isEmpty();
     }
 }

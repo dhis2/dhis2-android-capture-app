@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
-import com.dhis2.BuildConfig;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.about.AboutFragment;
@@ -27,6 +29,9 @@ import com.dhis2.usescases.qrReader.QrReaderFragment;
 import com.dhis2.usescases.syncManager.SyncManagerFragment;
 import com.dhis2.utils.Period;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
@@ -34,13 +39,13 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.View {
 
-    ActivityMainBinding binding;
+    public ActivityMainBinding binding;
     @Inject
     MainContracts.Presenter presenter;
 
     private ProgramFragment programFragment;
 
-    ObservableInt currentFragment = new ObservableInt(R.id.menu_done_tasks);
+    ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
 
     //-------------------------------------
@@ -58,8 +63,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
         binding.setCurrentFragment(currentFragment);
-        binding.pinLockView.attachIndicatorDots(binding.indicatorDots);
-        binding.pinLockView.setPinLockListener(new PinLockListener() {
+        binding.navView.setNavigationItemSelectedListener(item -> {
+            changeFragment(item.getItemId());
+            return false;
+        });
+        binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
+        binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
             @Override
             public void onComplete(String pin) {
                 presenter.blockSession(pin);
@@ -76,7 +85,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             }
         });
 
-        changeFragment(R.id.menu_done_tasks);
+        changeFragment(R.id.menu_home);
     }
 
     @Override
@@ -101,21 +110,10 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     public Consumer<String> renderUsername() {
         return username -> {
             binding.setUserName(username);
-            binding.menuJira.setText(String.format(getString(R.string.jira_report) + " (%s)", BuildConfig.VERSION_NAME));
+            ((TextView) binding.navView.getHeaderView(0).findViewById(R.id.user_info)).setText(username);
+//            binding.menuJira.setText(String.format(getString(R.string.jira_report) + " (%s)", BuildConfig.VERSION_NAME));
             binding.executePendingBindings();
         };
-    }
-
-    @NonNull
-    @Override
-    public Consumer<String> renderUserInfo() {
-        return userInitials -> Log.d("dhis", userInitials);
-    }
-
-    @NonNull
-    @Override
-    public Consumer<String> renderUserInitials() {
-        throw new UnsupportedOperationException();
     }
 
     /*End of user info methods*/
@@ -159,12 +157,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void onLockClick(View view) {
+    public void onLockClick() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
         if (prefs.getString("pin", null) == null) {
             binding.drawerLayout.closeDrawers();
-            binding.pinLayout.setVisibility(View.VISIBLE);
+            binding.pinLayout.getRoot().setVisibility(View.VISIBLE);
             isPinLayoutVisible = true;
         } else
             presenter.blockSession(null);
@@ -182,8 +180,9 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void changeFragment(int id) {
-        Fragment fragment;
-        String tag;
+        binding.navView.setCheckedItem(id);
+        Fragment fragment = null;
+        String tag = null;
         switch (id) {
             case R.id.sync_manager:
                 fragment = new SyncManagerFragment();
@@ -200,17 +199,18 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 tag = getString(R.string.jira_report);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            /*case R.id.events:
-                fragment = new EventQrFragment();
-                tag = getString(R.string.QR_SCANNER);
-                binding.filter.setVisibility(View.GONE);
-                break;*/
             case R.id.menu_about:
                 fragment = new AboutFragment();
                 tag = getString(R.string.about);
                 binding.filter.setVisibility(View.GONE);
                 break;
-            case R.id.menu_done_tasks:
+            case R.id.block_button:
+                onLockClick();
+                break;
+            case R.id.logout_button:
+                presenter.logOut();
+                break;
+            case R.id.menu_home:
             default:
                 fragment = new ProgramFragment();
                 programFragment = (ProgramFragment) fragment;
@@ -219,10 +219,12 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
                 break;
         }
 
-        currentFragment.set(id);
+        if (fragment != null) {
+            currentFragment.set(id);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
-        binding.title.setText(tag);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, tag).commit();
+            binding.title.setText(tag);
+        }
         binding.drawerLayout.closeDrawers();
     }
 
@@ -230,4 +232,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         binding.title.setText(title);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
 }

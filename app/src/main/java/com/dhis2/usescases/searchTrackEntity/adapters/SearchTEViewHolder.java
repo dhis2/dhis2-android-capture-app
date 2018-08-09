@@ -67,15 +67,13 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 programsBinding.setEnrollment(enrollment);
                 programsBinding.executePendingBindings();
                 FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.setFlexBasisPercent(.5f);
+//                params.setFlexBasisPercent(.5f);
                 binding.linearLayout.addView(programsBinding.getRoot(), params);
                 binding.linearLayout.invalidate();
             }
 
             if (enrollment.followUp() != null && enrollment.followUp())
                 isFollowUp = true;
-
-
         }
         binding.setFollowUp(isFollowUp);
         binding.viewMore.setVisibility(enrollments.size() > 2 ? View.VISIBLE : View.GONE);

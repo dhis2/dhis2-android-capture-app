@@ -1,10 +1,13 @@
 package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -30,6 +33,7 @@ import com.dhis2.utils.Constants;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 import com.dhis2.utils.CustomViews.ProgressBarAnimation;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.HelpManager;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -52,8 +56,10 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
 import static com.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 
 
@@ -473,7 +479,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setEvent(EventModel event) {
+
         binding.setEvent(event);
+
 
         if (event.eventDate() != null)
             binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
@@ -482,10 +490,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (event.latitude() != null && event.longitude() != null) {
             runOnUiThread(() -> {
-                binding.lat.setText(event.latitude());
-                binding.lon.setText(event.longitude());
-            });
+                String savedLat = binding.lat.getText().toString();
+                String savedLon = binding.lon.getText().toString();
+                if (isEmpty(savedLat)) {
 
+                    binding.lat.setText(event.latitude());
+                    binding.lon.setText(event.longitude());
+                } else {
+                    binding.lat.setText(savedLat);
+                    binding.lon.setText(savedLon);
+                }
+            });
         }
 
         eventModel = event;
@@ -740,6 +755,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.lat.setEnabled(false);
             binding.lon.setEnabled(false);
         }
+
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override
@@ -758,5 +776,50 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private boolean catComboIsDefaultOrNull() {
         return (selectedCatCombo == null || selectedCatCombo.isDefault() || CategoryComboModel.DEFAULT_UID.equals(selectedCatCombo.uid()));
+    }
+
+    @Override
+    public void setTutorial() {
+        super.setTutorial();
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+
+            if (eventId==null) {
+
+                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_event_initial_new_1))
+                        .closeOnTouch(true)
+                        .build();
+                steps.add(tuto1);
+
+                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false)) {
+                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
+                }
+            } else {
+
+                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_event_initial_1))
+                        .focusOn(binding.percentage)
+                        .closeOnTouch(true)
+                        .build();
+                steps.add(tuto1);
+
+                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false)) {
+                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                    prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
+                }
+            }
+
+
+        }, 500);
     }
 }

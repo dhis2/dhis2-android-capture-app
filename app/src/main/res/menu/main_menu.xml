@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/main_sections"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_home"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/qr_scan"
+            android:icon="@drawable/ic_qr"
+            android:title="@string/QR_SCANNER"
+            app:actionViewClass="android.widget.ImageButton" />
+
+        <item
+            android:id="@+id/sync_manager"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="@string/SYNC_MANAGER"
+            app:actionViewClass="android.widget.ImageButton" />
+
+
+        <item
+            android:id="@+id/menu_about"
+            android:icon="@drawable/ic_menu_info"
+            android:title="@string/about" />
+
+
+    </group>
+
+    <group android:id="@+id/close_section"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/block_button"
+            android:icon="@drawable/ic_menu_lock"
+            android:title="@string/block_session"
+            app:actionViewClass="android.widget.ImageButton" />
+
+        <item
+            android:id="@+id/logout_button"
+            android:icon="@drawable/ic_menu_logout"
+            android:title="@string/log_out"
+            app:actionViewClass="android.widget.ImageButton" />
+
+    </group>
+
+    <group android:id="@+id/extra_section"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_jira"
+            android:icon="@drawable/ic_menu_info"
+            android:title="@string/jira_report" />
+    </group>
+</menu>

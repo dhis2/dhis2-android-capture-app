@@ -21,8 +21,7 @@
             type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -35,44 +34,46 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:contentDescription='@{program.uid}'
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="80dp"
-                android:padding="8dp"
+                android:layout_weight="1"
                 android:alpha="0.5"
+                android:contentDescription='@{program.uid}'
+                android:padding="8dp"
                 app:srcCompat="@drawable/photo_temp" />
 
 
             <TextView
                 android:id="@+id/program_name"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
+                android:layout_weight="2"
                 android:text='@{program.displayShortName}'
-                android:textColor="@color/black_de0"
+                android:textColor="@color/text_black_333"
                 android:textSize="16sp"
-                tools:text="ANC PROGRAM"/>
+                tools:text="ANC PROGRAM" />
 
 
             <Button
                 android:id="@+id/action_button"
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_height="36dp"
                 android:layout_marginEnd="16dp"
-                android:layout_height="28dp"
+                android:layout_weight="1"
                 android:background="?attr/selector_button_round_7"
+                android:backgroundTint="@color/gray_666"
+                android:onClick="@{()->presenter.onEnrollClick(program)}"
+                android:text="@string/enroll"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:text="@string/enroll"
-                android:onClick="@{()->presenter.onEnrollClick(program)}"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_afa"/>
+            android:background="@color/gray_afa" />
     </LinearLayout>
 </layout>

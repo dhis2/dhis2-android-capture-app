@@ -2,10 +2,13 @@ package com.dhis2.usescases.programEventDetail;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -23,6 +26,7 @@ import com.dhis2.usescases.main.program.OrgUnitHolder;
 import com.dhis2.utils.CatComboAdapter;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
+import com.dhis2.utils.HelpManager;
 import com.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -42,6 +46,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 import static com.dhis2.utils.Period.DAILY;
@@ -115,6 +121,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
         adapter.setEvents(events);
+
+        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+            setTutorial();
     }
 
     @Override
@@ -446,5 +455,40 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addEventButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setTutorial() {
+        super.setTutorial();
+
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+
+        new Handler().postDelayed(() -> {
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_program_event_1))
+                    .closeOnTouch(true)
+                    .build();
+            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_program_event_2))
+                    .focusOn(getAbstractActivity().findViewById(R.id.addEventButton))
+                    .closeOnTouch(true)
+                    .build();
+
+
+            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+            steps.add(tuto1);
+            steps.add(tuto2);
+
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+
+            if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_PROGRAM_EVENT", true).apply();
+            }
+
+        }, 500);
+
     }
 }
