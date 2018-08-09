@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
+import com.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.ColorUtils;
@@ -146,8 +147,12 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
         } else
             prefs.edit().remove("PROGRAM_THEME").apply();
+        //FIXME quitar este if, es solo para probar el dataset
+        if(programModel.typeName().equals("Events")){
+            view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
+        }
 
-        if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
+        else if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
         } else {
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);

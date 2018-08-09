@@ -17,6 +17,7 @@ import android.view.View;
 import com.andrognito.pinlockview.PinLockListener;
 import com.dhis2.App;
 import com.dhis2.BuildConfig;
+import com.dhis2.DaggerAppComponent;
 import com.dhis2.R;
 import com.dhis2.databinding.ActivityMainBinding;
 import com.dhis2.usescases.about.AboutFragment;

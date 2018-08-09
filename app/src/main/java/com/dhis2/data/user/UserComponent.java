@@ -13,6 +13,8 @@ import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.about.AboutComponent;
 import com.dhis2.usescases.about.AboutModule;
+import com.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
+import com.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -43,6 +45,8 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
+
+import org.hisp.dhis.android.core.dataset.DataSetModel;
 
 import dagger.Subcomponent;
 
@@ -96,6 +100,9 @@ public interface UserComponent {
 
     @NonNull
     EventSummaryComponent plus(EventSummaryModule eventInitialModule);
+
+    @NonNull
+    DataSetDetailComponent plus(DataSetDetailModule dataSetModel);
 
     @NonNull
     SyncManagerComponent plus(SyncManagerModule syncManagerModule);

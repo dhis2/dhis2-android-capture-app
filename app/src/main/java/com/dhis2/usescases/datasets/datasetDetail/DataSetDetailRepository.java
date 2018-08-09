@@ -1,0 +1,39 @@
+package com.dhis2.usescases.datasets.datasetDetail;
+
+import android.support.annotation.NonNull;
+
+import com.dhis2.utils.Period;
+
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+
+import java.util.Date;
+import java.util.List;
+
+import io.reactivex.Observable;
+
+public interface DataSetDetailRepository {
+
+    @NonNull
+    Observable<List<DataSetModel>> filteredDataSet(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
+
+    @NonNull
+    Observable<List<DataSetModel>> filteredDataSet(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel);
+
+    @NonNull
+    Observable<List<OrganisationUnitModel>> orgUnits();
+
+    @NonNull
+    Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
+
+    @NonNull
+    Observable<List<TrackedEntityDataValueModel>> dataSetDataValues(DataSetModel eventModel);
+
+    Observable<List<String>> dataSetValuesNew(DataSetModel eventModel);
+
+    Observable<Boolean> writePermission(String programId);
+
+}
