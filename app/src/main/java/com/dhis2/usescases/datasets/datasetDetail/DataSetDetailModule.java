@@ -34,6 +34,12 @@ public class DataSetDetailModule {
     DataSetDetailRepository eventDetailRepository(BriteDatabase briteDatabase) {
         return new DataSetDetailRepositoryImpl(briteDatabase);
     }
+    @Provides
+    @PerActivity
+    DataSetDetailAdapter dataSetDetailAdapter(DataSetDetailContract.Presenter presenter) {
+        return new DataSetDetailAdapter(presenter);
+    }
+
     /*@Provides
     @PerActivity
     ProgramRepository homeRepository(BriteDatabase briteDatabase) {

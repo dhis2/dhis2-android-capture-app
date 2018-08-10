@@ -18,10 +18,10 @@ import io.reactivex.Observable;
 public interface DataSetDetailRepository {
 
     @NonNull
-    Observable<List<DataSetModel>> filteredDataSet(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
+    Observable<List<DataSetModel>> filteredDataSet(String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
 
     @NonNull
-    Observable<List<DataSetModel>> filteredDataSet(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel);
+    Observable<List<DataSetModel>> filteredDataSet(List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel);
 
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits();

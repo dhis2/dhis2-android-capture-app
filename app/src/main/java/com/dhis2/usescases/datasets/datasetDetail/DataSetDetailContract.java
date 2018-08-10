@@ -31,8 +31,6 @@ public class DataSetDetailContract {
 
         void showRageDatePicker();
 
-        void setProgram(ProgramModel programModel);
-
         void renderError(String message);
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
@@ -61,13 +59,13 @@ public class DataSetDetailContract {
 
         void onBackClick();
 
-        void setProgram(ProgramModel program);
-
         void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
 
         void clearCatComboFilters(String orgUnitQuery);
 
         void onDataSetClick(String eventId, String orgUnit);
+
+        List<OrganisationUnitModel> getOrgUnits();
 
         Observable<List<TrackedEntityDataValueModel>> getDataSetDataValue(DataSetModel event);
 
@@ -75,11 +73,11 @@ public class DataSetDetailContract {
 
         void showFilter();
 
-        void getDataSets(String programId, Date fromDate, Date toDate, String orgUnitQuery);
+        void getDataSets(Date fromDate, Date toDate, String orgUnitQuery);
 
         void getOrgUnits(Date date);
 
-        void getDataSetWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery);
+        void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery);
 
     }
 }

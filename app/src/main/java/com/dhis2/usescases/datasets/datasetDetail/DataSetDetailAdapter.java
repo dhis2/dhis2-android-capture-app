@@ -2,21 +2,27 @@ package com.dhis2.usescases.datasets.datasetDetail;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
 import com.dhis2.databinding.ItemDatasetBinding;
-
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailViewHolder> {
 
     private DataSetDetailContract.Presenter presenter;
     private List<DataSetModel> datasets;
+
+    public DataSetDetailAdapter(DataSetDetailContract.Presenter presenter) {
+        this.presenter = presenter;
+        this.datasets = new ArrayList<>();
+    }
 
     @NonNull
     @Override
@@ -30,11 +36,18 @@ public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailView
     @Override
     public void onBindViewHolder(@NonNull DataSetDetailViewHolder holder, int position) {
         DataSetModel dataSetModel = datasets.get(position);
-
+        holder.bind(presenter, dataSetModel);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return datasets.size();
+    }
+
+    public void setDatasets(List<DataSetModel> datasets){
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DataSetDiffCallback(this.datasets, datasets));
+        this.datasets.clear();
+        this.datasets.addAll(datasets);
+        diffResult.dispatchUpdatesTo(this);
     }
 }

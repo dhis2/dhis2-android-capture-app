@@ -20,9 +20,9 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
     private ItemDatasetBinding binding;
     private CompositeDisposable disposable;
 
-    public DataSetDetailViewHolder(ItemDatasetBinding itemView) {
-        super(itemView);
-        binding = itemView;
+    public DataSetDetailViewHolder(ItemDatasetBinding binding) {
+        super(binding.getRoot());
+        this.binding = binding;
         disposable = new CompositeDisposable();
     }
 

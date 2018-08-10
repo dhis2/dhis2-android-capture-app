@@ -2,6 +2,7 @@ package com.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 
 import com.dhis2.data.metadata.MetadataRepository;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -19,6 +20,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.List;
 
@@ -49,15 +52,27 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private CompositeDisposable compositeDisposable;
     private List<OrganisationUnitModel> orgUnits;
     private CategoryComboModel mCatCombo;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
+    public @interface LastSearchType {
+        int DATES = 1;
+        int DATE_RANGES = 32;
+    }
+
     public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, MetadataRepository metadataRepository) {
         this.dataSetDetailRepository = dataSetDetailRepository;
         this.metadataRepository = metadataRepository;
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void init(DataSetDetailContract.View view, String programId, Period period) {
         this.view = view;
+        //FIXME creo que hay que quitarlo, los dataset creo que no tienen programs
         this.programId = programId;
+
+        getOrgUnits(null);
     }
 
     @Override
@@ -97,11 +112,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void setProgram(ProgramModel program) {
-        this.program = program;
-    }
-
-    @Override
     public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
         updateFilters(categoryOptionComboModel, orgUnitQuery);
     }
@@ -123,6 +133,11 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
+    public List<OrganisationUnitModel> getOrgUnits() {
+        return this.orgUnits;
+    }
+
+    @Override
     public Observable<List<TrackedEntityDataValueModel>> getDataSetDataValue(DataSetModel dataSet) {
         return dataSetDetailRepository.dataSetDataValues(dataSet);
     }
@@ -139,11 +154,11 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @SuppressLint("CheckResult")
     @Override
-    public void getDataSets(String programId, Date fromDate, Date toDate, String orgUnitQuery) {
+    public void getDataSets(Date fromDate, Date toDate, String orgUnitQuery) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATES;
-        Observable.just(dataSetDetailRepository.filteredDataSet(programId,
+        Observable.just(dataSetDetailRepository.filteredDataSet(
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate),
                 categoryOptionComboModel)
@@ -172,29 +187,31 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
         this.categoryOptionComboModel = categoryOptionComboModel;
         switch (lastSearchType) {
-            case ProgramEventDetailInteractor.LastSearchType.DATES:
-                getDataSets(programId, this.fromDate, this.toDate, orgUnitQuery);
+            case DataSetDetailPresenter.LastSearchType.DATES:
+                getDataSets( this.fromDate, this.toDate, orgUnitQuery);
                 break;
-            case ProgramEventDetailInteractor.LastSearchType.DATE_RANGES:
-                getDataSetWithDates(programId, this.dates, this.period, orgUnitQuery);
+            case DataSetDetailPresenter.LastSearchType.DATE_RANGES:
+                getDataSetWithDates(this.dates, this.period, orgUnitQuery);
                 break;
             default:
-                getDataSetWithDates(programId, null, this.period, orgUnitQuery);
+                getDataSetWithDates(null, this.period, orgUnitQuery);
                 break;
         }
     }
 
     @Override
-    public void getDataSetWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery) {
+    public void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery) {
         this.dates = dates;
         this.period = period;
         lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATE_RANGES;
-        compositeDisposable.add(dataSetDetailRepository.filteredDataSet(this.programId, dates, period, categoryOptionComboModel)
+        //FIXME cuando haya datos para dataset hay que cambiarlo
+        //ahora falla por que se va a hacer la select y no puede
+       /* compositeDisposable.add(dataSetDetailRepository.filteredDataSet(dates, period, categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view::setData,
-                        throwable -> view.renderError(throwable.getMessage())));
+                        throwable -> view.renderError(throwable.getMessage())));*/
     }
 
     @Override
@@ -206,20 +223,6 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void displayMessage(String message) {
         view.displayMessage(message);
     }
-
-    private void getProgram() {
-        compositeDisposable.add(metadataRepository.getProgramWithId(programId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        programModel -> {
-                            view.setProgram(programModel);
-                            getCatCombo(programModel);
-                        },
-                        Timber::d)
-        );
-    }
-
 
     private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
