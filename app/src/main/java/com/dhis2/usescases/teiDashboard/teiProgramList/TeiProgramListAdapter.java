@@ -24,8 +24,8 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
     private TeiProgramListContract.Presenter presenter;
     private List<TeiProgramListItem> listItems;
-    private List<EnrollmentModel> activeEnrollments;
-    private List<EnrollmentModel> inactiveEnrollments;
+    private List<EnrollmentViewModel> activeEnrollments;
+    private List<EnrollmentViewModel> inactiveEnrollments;
     private List<ProgramModel> programs;
     private List<ProgramModel> possibleEnrollmentPrograms;
 
@@ -113,13 +113,13 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         return listItems != null ? listItems.size() : 0;
     }
 
-    void setActiveEnrollments(List<EnrollmentModel> enrollments) {
+    void setActiveEnrollments(List<EnrollmentViewModel> enrollments) {
         this.activeEnrollments.clear();
         this.activeEnrollments.addAll(enrollments);
         orderList();
     }
 
-    void setOtherEnrollments(List<EnrollmentModel> enrollments) {
+    void setOtherEnrollments(List<EnrollmentViewModel> enrollments) {
         this.inactiveEnrollments.clear();
         this.inactiveEnrollments.addAll(enrollments);
         orderList();
@@ -137,7 +137,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
         listItems.add(firstTeiProgramListItem);
 
-        for (EnrollmentModel enrollmentModel : activeEnrollments) {
+        for (EnrollmentViewModel enrollmentModel : activeEnrollments) {
             TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.ACTIVE_ENROLLMENT);
             listItems.add(teiProgramListItem);
         }
@@ -146,7 +146,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             TeiProgramListItem secondTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.SECOND_TITLE);
             listItems.add(secondTeiProgramListItem);
 
-            for (EnrollmentModel enrollmentModel : inactiveEnrollments) {
+            for (EnrollmentViewModel enrollmentModel : inactiveEnrollments) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(enrollmentModel, null, TeiProgramListItem.TeiProgramListItemViewType.INACTIVE_ENROLLMENT);
                 listItems.add(teiProgramListItem);
             }
@@ -157,18 +157,20 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         for (ProgramModel programModel : programs) {
             found = false;
             active = false;
-            for (EnrollmentModel enrollment : activeEnrollments) {
-                if (programModel.uid().equals(enrollment.program())) {
+            for (EnrollmentViewModel enrollment : activeEnrollments) {
+                if (programModel.displayName().equals(enrollment.programName())) {
                     found = true;
-                    active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+//                    active = enrollment.val0().enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                    active = true;
                 }
             }
 
             if (!found)
-                for (EnrollmentModel enrollment : inactiveEnrollments) {
-                    if (programModel.uid().equals(enrollment.program())) {
+                for (EnrollmentViewModel enrollment : inactiveEnrollments) {
+                    if (programModel.displayName().equals(enrollment.programName())) {
                         found = true;
-                        active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+//                        active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+                        active = false;
                     }
                 }
 

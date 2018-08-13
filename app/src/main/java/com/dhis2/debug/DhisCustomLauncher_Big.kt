@@ -14,11 +14,11 @@ import com.dhis2.usescases.splash.SplashActivity
 /**
  * Implementation of App Widget functionality.
  */
-class DhisCustomLauncher : AppWidgetProvider() {
+class DhisCustomLauncher_Big : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
 
-        val remoteViews = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
+        val remoteViews = RemoteViews(context.packageName, R.layout.dhis_custom_launcher_big)
         val configIntent = Intent(context, SplashActivity::class.java)
 
         val configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, 0)
@@ -49,7 +49,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
             val widgetImage = prefs.getString("FLAG",null)
             val icon = context.resources.getIdentifier(widgetImage,"drawable",context.packageName)
             // Construct the RemoteViews object
-            val views = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
+            val views = RemoteViews(context.packageName, R.layout.dhis_custom_launcher_big)
 
             views.setImageViewResource(R.id.appwidget_image, icon)
 

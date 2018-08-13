@@ -310,6 +310,7 @@
     <color name="bg_black_e6e">#e6e6e6</color>
     <color name="bg_white_fdf">#fdfdfe</color>
     <color name="bg_gray_ccc">#cccccc</color>
+    <color name="bg_gray_f1f">#f1f1f2</color>
     <color name="bg_white_f9f">#f9faf9</color>
     <color name="icon_color">#787878</color>
     <color name="icon_color_989">#989898</color>

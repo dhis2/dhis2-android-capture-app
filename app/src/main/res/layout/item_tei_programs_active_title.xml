@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -16,27 +16,17 @@
             type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/bg_gray_ccc"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:background="@color/bg_gray_f1f"
+        android:paddingEnd="18dp"
+        android:paddingStart="18dp"
+        android:text="@string/active_programs"
+        android:textColor="@color/text_black_333"
+        android:textSize="12sp"
+        android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="18dp"
-            android:paddingStart="18dp"
-            android:text="@string/active_programs"
-            android:textColor="@color/text_black_333"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray_afa" />
-
-    </LinearLayout>
 </layout>

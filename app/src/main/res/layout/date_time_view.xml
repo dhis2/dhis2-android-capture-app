@@ -30,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:textAlignment="textStart"
-                android:textAllCaps="false"
                 android:textSize="15sp" />
 
         </android.support.design.widget.TextInputLayout>

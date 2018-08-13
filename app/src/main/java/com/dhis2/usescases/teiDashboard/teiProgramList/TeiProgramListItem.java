@@ -2,7 +2,6 @@ package com.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.support.annotation.IntDef;
 
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.lang.annotation.Retention;
@@ -29,18 +28,18 @@ public class TeiProgramListItem {
         int PROGRAMS_TO_ENROLL = 6;
     }
 
-    private EnrollmentModel enrollmentModel;
+    private EnrollmentViewModel enrollmentModel;
     private ProgramModel programModel;
     private @TeiProgramListItemViewType
     int viewType;
 
-    public TeiProgramListItem(EnrollmentModel enrollmentModel, ProgramModel programModel, int viewType) {
+    public TeiProgramListItem(EnrollmentViewModel enrollmentModel, ProgramModel programModel, int viewType) {
         this.enrollmentModel = enrollmentModel;
         this.programModel = programModel;
         this.viewType = viewType;
     }
 
-    public EnrollmentModel getEnrollmentModel() {
+    public EnrollmentViewModel getEnrollmentModel() {
         return enrollmentModel;
     }
 

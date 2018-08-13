@@ -67,6 +67,7 @@
         <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
+        <activity android:name=".data.forms.formActivityTest.FormActivityTest" />
 
         <service
             android:name=".data.service.SyncService"
@@ -104,6 +105,16 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/dhis_custom_launcher_info" />
+        </receiver>
+
+        <receiver android:name=".debug.DhisCustomLauncher_Big">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dhis_custom_launcher_info_big" />
         </receiver>
     </application>
 

@@ -51,6 +51,11 @@ public class ColorUtils {
         return drawableToTint;
     }
 
+    public static Drawable tintDrawableWithColor(@NonNull Drawable drawableToTint, int tintColor){
+        drawableToTint.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN);
+        return drawableToTint;
+    }
+
     public static int getContrastColor(int color) {
 
         ArrayList<Double> rgb = new ArrayList<>();

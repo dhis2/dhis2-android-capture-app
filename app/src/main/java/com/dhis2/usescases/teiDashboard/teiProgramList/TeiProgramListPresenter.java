@@ -41,8 +41,8 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
-    public void onActiveEnrollClick(EnrollmentModel enrollmentModel) {
-        view.changeCurrentProgram(enrollmentModel.program());
+    public void onActiveEnrollClick(EnrollmentViewModel enrollmentModel) {
+        view.changeCurrentProgram(enrollmentModel.programUid());
     }
 
     @Override

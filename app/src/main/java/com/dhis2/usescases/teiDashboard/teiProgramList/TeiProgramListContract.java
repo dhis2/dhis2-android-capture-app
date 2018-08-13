@@ -14,9 +14,9 @@ import java.util.List;
 public class TeiProgramListContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setActiveEnrollments(List<EnrollmentModel> enrollments);
+        void setActiveEnrollments(List<EnrollmentViewModel> enrollments);
 
-        void setOtherEnrollments(List<EnrollmentModel> enrollments);
+        void setOtherEnrollments(List<EnrollmentViewModel> enrollments);
 
         void setPrograms(List<ProgramModel> programs);
 
@@ -32,7 +32,7 @@ public class TeiProgramListContract {
 
         void onEnrollClick(ProgramModel program);
 
-        void onActiveEnrollClick(EnrollmentModel enrollmentModel);
+        void onActiveEnrollClick(EnrollmentViewModel enrollmentModel);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

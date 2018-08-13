@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.dhis2.App;
 import com.dhis2.R;
@@ -83,6 +84,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     private String messageOnComplete = "";
     private boolean canComplete = true;
+    private LinearLayout dateLayout;
 
 
     public FormFragment() {
@@ -124,6 +126,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         NestedScrollView nestedScrollView = view.findViewById(R.id.content_frame);
+        dateLayout = view.findViewById(R.id.date_layout);
         nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
@@ -435,6 +438,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     public void messageOnComplete(String content, boolean canComplete) {
         this.messageOnComplete = content;
         this.canComplete = canComplete;
+    }
+
+    @Override
+    public void hideDates() {
+        this.dateLayout.setVisibility(View.GONE);
     }
 
     @Override

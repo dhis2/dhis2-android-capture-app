@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.dhis2.App;
 import com.dhis2.R;
+import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.ActivityTeiProgramListBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
 
@@ -53,7 +54,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void setActiveEnrollments(List<EnrollmentModel> enrollments) {
+    public void setActiveEnrollments(List<EnrollmentViewModel> enrollments) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }
@@ -61,7 +62,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void setOtherEnrollments(List<EnrollmentModel> enrollments) {
+    public void setOtherEnrollments(List<EnrollmentViewModel> enrollments) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }

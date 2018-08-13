@@ -10,14 +10,12 @@
         <item
             android:id="@+id/qr_scan"
             android:icon="@drawable/ic_qr"
-            android:title="@string/QR_SCANNER"
-            app:actionViewClass="android.widget.ImageButton" />
+            android:title="@string/QR_SCANNER"/>
 
         <item
             android:id="@+id/sync_manager"
             android:icon="@drawable/ic_menu_settings"
-            android:title="@string/SYNC_MANAGER"
-            app:actionViewClass="android.widget.ImageButton" />
+            android:title="@string/SYNC_MANAGER"/>
 
 
         <item
@@ -33,14 +31,12 @@
         <item
             android:id="@+id/block_button"
             android:icon="@drawable/ic_menu_lock"
-            android:title="@string/block_session"
-            app:actionViewClass="android.widget.ImageButton" />
+            android:title="@string/block_session"/>
 
         <item
             android:id="@+id/logout_button"
             android:icon="@drawable/ic_menu_logout"
-            android:title="@string/log_out"
-            app:actionViewClass="android.widget.ImageButton" />
+            android:title="@string/log_out"/>
 
     </group>
 
