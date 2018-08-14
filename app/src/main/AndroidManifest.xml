@@ -95,6 +95,8 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity"></activity>
+
+        <activity android:name=".usescases.dataset.dataSetPeriod.DataSetPeriodActivity"></activity>
     </application>
 
 </manifest>

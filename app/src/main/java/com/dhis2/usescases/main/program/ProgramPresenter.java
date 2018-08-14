@@ -8,6 +8,7 @@ import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
+import com.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodActivity;
 import com.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import com.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import com.dhis2.utils.ColorUtils;
@@ -114,8 +115,13 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onItemClick(ProgramViewModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programModel.id());
-        bundle.putString("TRACKED_ENTITY_UID", programModel.type());
+        String idTag = "PROGRAM_UID";
+        if(programModel.type() != null) {
+            bundle.putString("TRACKED_ENTITY_UID", programModel.type());
+        } else {
+            idTag = "DATASET_UID";
+        }
+        bundle.putString(idTag, programModel.id());
 
         switch (currentPeriod) {
             case NONE:
@@ -147,15 +153,13 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
         } else
             prefs.edit().remove("PROGRAM_THEME").apply();
-        //FIXME quitar este if, es solo para probar el dataset
-        if(programModel.typeName().equals("Events")){
-            view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
-        }
 
-        else if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
+        if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
-        } else {
+        } else if(programModel.programType().equals(ProgramType.WITHOUT_REGISTRATION.name())){
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+        } else {
+            view.startActivity(DataSetPeriodActivity.class, bundle, false, false, null);
         }
     }
 
