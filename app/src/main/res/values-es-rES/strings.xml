@@ -210,7 +210,8 @@
     <string name="enrollmment_date">Fecha de inscripción</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>
     <string name="save">Guardar</string>
-
+    <string name="report_period">Reporte periodo</string>
+    <string name="cat_option">Cat opción</string>
     <!--ABOUT-->
     <string name="about_app">Versión de la app: %s</string>
     <string name="about_sdk">Versión del SDK: %s</string>

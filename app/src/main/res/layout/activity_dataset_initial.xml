@@ -189,12 +189,21 @@
 
                         </LinearLayout>
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="10dp"
+                            android:hint="@string/report_period"
+                            android:textColorHint="@color/colorPrimary"
+                            android:textSize="15sp" />
+
                         <Spinner
                             android:id="@+id/report_period"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_marginStart="5dp"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="3dp"
                             android:maxLines="1"
                             android:minHeight="40dp"
                             android:textAlignment="textStart"
@@ -210,12 +219,21 @@
                             android:layout_marginStart="4dp"
                             android:background="@color/black_de0" />
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="10dp"
+                            android:hint="@string/cat_option"
+                            android:textColorHint="@color/colorPrimary"
+                            android:textSize="15sp" />
+
                         <Spinner
                             android:id="@+id/cat_combo"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_marginStart="5dp"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="3dp"
                             android:maxLines="1"
                             android:minHeight="40dp"
                             android:textAlignment="textStart"
@@ -231,7 +249,15 @@
                             android:layout_marginStart="4dp"
                             android:background="@color/black_de0" />
 
-
+                        <View
+                            android:id="@+id/cat_combo_line_end"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.8dp"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginStart="-16dp"
+                            android:layout_marginEnd="-16dp"
+                            android:layout_marginBottom="-16dp"
+                            android:background="@color/black_de0" />
 
 
                     </LinearLayout>
