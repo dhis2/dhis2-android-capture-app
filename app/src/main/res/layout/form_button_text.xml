@@ -31,7 +31,6 @@
             android:hint="@{attribute!=null?attribute.displayShortName:label,default=text}"
             android:imeOptions="actionNext"
             android:textAlignment="textStart"
-            android:textAllCaps="false"
             android:textColor="@color/white_faf"
             android:textColorHint="@color/white_faf"
             android:textSize="16sp" />

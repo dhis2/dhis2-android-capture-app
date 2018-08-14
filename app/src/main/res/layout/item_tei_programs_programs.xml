@@ -18,7 +18,7 @@
 
         <variable
             name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="com.dhis2.usescases.main.program.ProgramViewModel" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,12 +34,13 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/programImage"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:layout_weight="1"
                 android:alpha="0.5"
-                android:contentDescription='@{program.uid}'
-                android:padding="8dp"
+                android:contentDescription='@{program.id()}'
+                android:layout_margin="8dp"
                 app:srcCompat="@drawable/photo_temp" />
 
 
@@ -49,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:layout_weight="2"
-                android:text='@{program.displayShortName}'
+                android:text='@{program.title()}'
                 android:textColor="@color/text_black_333"
                 android:textSize="16sp"
                 tools:text="ANC PROGRAM" />

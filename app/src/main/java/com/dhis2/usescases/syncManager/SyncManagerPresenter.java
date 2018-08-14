@@ -57,26 +57,6 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 
-       /* compositeDisposable.add(
-                metadataRepository.getLastSync(ResourceModel.Type.PROGRAM)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                resourceModel -> view.setLastMetaDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
-                                Timber::e
-                        )
-        );
-
-        compositeDisposable.add(
-                metadataRepository.getLastSync(ResourceModel.Type.TRACKED_ENTITY_INSTANCE)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                resourceModel -> view.setLastDataSyncDate(DateUtils.dateTimeFormat().format(resourceModel.lastSynced())),
-                                Timber::e
-                        )
-        );*/
-
         compositeDisposable.add(
                 metadataRepository.getDownloadedData()
                         .subscribeOn(Schedulers.io())
@@ -152,7 +132,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setService(SyncDataService.class)
                 .setTag(TAG_DATA_NOW)
                 .setRecurring(false)
-//                .setReplaceCurrent(true)
+                .setReplaceCurrent(true)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
                 )
@@ -169,7 +149,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                 .setService(SyncMetadataService.class)
                 .setTag(TAG_META_NOW)
                 .setRecurring(false)
-//                .setReplaceCurrent(true)
+                .setReplaceCurrent(true)
                 .setConstraints(
                         Constraint.ON_ANY_NETWORK
                 )

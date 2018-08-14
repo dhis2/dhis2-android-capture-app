@@ -27,7 +27,6 @@ import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -134,6 +133,7 @@ class EnrollmentFormRepository implements FormRepository {
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
             "WHERE Enrollment.uid = ?";
+    private static final String CHECK_STAGE_IS_NOT_CREATED = "SELECT * FROM Event JOIN Enrollment ON Event.enrollment = Enrollment.uid WHERE Enrollment.uid = ? AND Event.programStage = ?";
     @NonNull
     private final BriteDatabase briteDatabase;
 
@@ -302,56 +302,6 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<String> autoGenerateEvent() {
-        return enrollmentUid -> {
-            Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid);
-
-            if (cursor != null) {
-                cursor.moveToFirst();
-                for (int i = 0; i < cursor.getCount(); i++) {
-
-                    String programStage = cursor.getString(0);
-                    String program = cursor.getString(1);
-                    String orgUnit = cursor.getString(2);
-                    int minDaysFromStart = cursor.getInt(3);
-                    cursor.close();
-
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(Calendar.getInstance().getTime());
-                    cal.add(Calendar.DATE, minDaysFromStart);
-                    Date eventDate = cal.getTime();
-
-                    Date createdDate = Calendar.getInstance().getTime();
-
-                    EventModel event = EventModel.builder()
-                            .uid(codeGenerator.generate())
-                            .created(createdDate)
-                            .lastUpdated(createdDate)
-                            .eventDate(eventDate)
-                            .dueDate(eventDate)
-                            .enrollment(enrollmentUid)
-                            .program(program)
-                            .programStage(programStage)
-                            .organisationUnit(orgUnit)
-                            .status(EventStatus.SCHEDULE)
-                            .state(State.TO_POST)
-                            .build();
-
-
-                    if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
-                        throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
-                    }
-
-                    updateProgramTable(createdDate, program);
-
-                    cursor.moveToNext();
-                }
-            }
-        };
-    }
-
-    @NonNull
-    @Override
     public Observable<String> autoGenerateEvents(String enrollmentUid) {
 
         Calendar calNow = Calendar.getInstance();
@@ -361,11 +311,13 @@ class EnrollmentFormRepository implements FormRepository {
         calNow.set(Calendar.MILLISECOND, 0);
         Date now = calNow.getTime();
 
+
         Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid);
 
         if (cursor != null) {
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getCount(); i++) {
+
 
                 String programStage = cursor.getString(0);
                 String program = cursor.getString(1);
@@ -382,7 +334,6 @@ class EnrollmentFormRepository implements FormRepository {
                 } catch (Exception e) {
                     Timber.e(e);
                 }
-
 
                 Date eventDate;
                 Calendar cal = Calendar.getInstance();
@@ -405,25 +356,33 @@ class EnrollmentFormRepository implements FormRepository {
                     eventDate = cal.getTime();
                 }
 
-                EventModel event = EventModel.builder()
-                        .uid(codeGenerator.generate())
-                        .created(now)
-                        .lastUpdated(now)
-                        .eventDate(eventDate)
-                        .dueDate(eventDate)
-                        .enrollment(enrollmentUid)
-                        .program(program)
-                        .programStage(programStage)
-                        .organisationUnit(orgUnit)
-                        .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
-                        .state(State.TO_POST)
-                        .build();
+                Cursor eventCursor = briteDatabase.query(CHECK_STAGE_IS_NOT_CREATED, enrollmentUid, programStage);
 
-                if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
-                    throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
-                }
+                if (!eventCursor.moveToFirst()) {
 
-                updateProgramTable(now, program);
+                    EventModel event = EventModel.builder()
+                            .uid(codeGenerator.generate())
+                            .created(now)
+                            .lastUpdated(now)
+                            .eventDate(eventDate)
+                            .dueDate(eventDate)
+                            .enrollment(enrollmentUid)
+                            .program(program)
+                            .programStage(programStage)
+                            .organisationUnit(orgUnit)
+                            .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
+                            .state(State.TO_POST)
+                            .build();
+
+
+                    if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                        throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                    }
+
+                    updateProgramTable(now, program);
+
+                } else
+                    eventCursor.close();
 
                 cursor.moveToNext();
             }
@@ -515,7 +474,7 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
+    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //EnrollmentUid,
         return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid)
                 .map(query -> {
                     Cursor cursor = query.run();

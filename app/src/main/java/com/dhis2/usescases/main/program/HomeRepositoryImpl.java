@@ -163,7 +163,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         }
                     }
 
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description);
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description,true,true);
                 }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
     }
 

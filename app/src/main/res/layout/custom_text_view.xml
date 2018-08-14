@@ -47,7 +47,6 @@
                 android:imeOptions="actionNext"
                 android:maxLines="1"
                 android:textAlignment="textStart"
-                android:textAllCaps="false"
                 android:textColor="?colorPrimary"
                 android:textSize="15sp"
                 tools:text="hello" />

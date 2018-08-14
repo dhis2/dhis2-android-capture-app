@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -89,34 +90,37 @@ class FormPresenterImpl implements FormPresenter {
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderTitle(), Timber::e));
 
-        compositeDisposable.add(formRepository.reportDate()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .filter(date -> !isEmpty(date))
-                .map(date -> {
-                    try {
-                        return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
-                    } catch (ParseException e) {
-                        Timber.e(e, "DashboardRepository: Unable to parse date. Expected format: " +
-                                DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
-                        return date;
-                    }
-                })
-                .subscribe(view.renderReportDate(), Timber::e));
+        if (!isEvent) {
+            compositeDisposable.add(formRepository.reportDate()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .filter(date -> !isEmpty(date))
+                    .map(date -> {
+                        try {
+                            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
+                        } catch (ParseException e) {
+                            Timber.e(e, "DashboardRepository: Unable to parse date. Expected format: " +
+                                    DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
+                            return date;
+                        }
+                    })
+                    .subscribe(view.renderReportDate(), Timber::e));
 
-        compositeDisposable.add(formRepository.incidentDate()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .filter(programModelAndDate -> programModelAndDate.val0().displayIncidentDate())
-                .subscribe(view.renderIncidentDate(), Timber::e)
-        );
+            compositeDisposable.add(formRepository.incidentDate()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .filter(programModelAndDate -> programModelAndDate.val0().displayIncidentDate())
+                    .subscribe(view.renderIncidentDate(), Timber::e)
+            );
 
-        compositeDisposable.add(formRepository.getAllowDatesInFuture()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
-                        Timber::e)
-        );
+            compositeDisposable.add(formRepository.getAllowDatesInFuture()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
+                            Timber::e)
+            );
+        }else
+            view.hideDates();
 
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
@@ -127,7 +131,7 @@ class FormPresenterImpl implements FormPresenter {
         Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
                 sectionsFlowable, ruleEffectFlowable, this::applyEffects);
 
-        compositeDisposable.add(processor.startWith("init")
+        compositeDisposable.add(processor.startWith("init").debounce(500, TimeUnit.MILLISECONDS)
                 .flatMap(data -> sectionModelsFlowable)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -159,7 +163,7 @@ class FormPresenterImpl implements FormPresenter {
                 .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(/*formRepository.storeReportStatus()*/view::onNext, throwable -> {
+                .subscribe(view::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 

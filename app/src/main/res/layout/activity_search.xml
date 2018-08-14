@@ -107,20 +107,6 @@
 
             <!--SCROLLING VIEW-->
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/enrollmentButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="15dp"
-                android:onClick="@{(view)->presenter.onFabClick(view)}"
-                android:tint="@color/white"
-                app:backgroundTint="?attr/colorPrimary"
-                app:fabSize="normal"
-                app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"
-                app:srcCompat='@{@drawable/ic_add}' />
 
 
             <android.support.v7.widget.RecyclerView
@@ -148,6 +134,22 @@
                     tools:text="You need to enter at least N attributes to do a search" />
 
             </RelativeLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/enrollmentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="15dp"
+                android:onClick="@{(view)->presenter.onFabClick(view)}"
+                android:tint="@color/white"
+                app:backgroundTint="?attr/colorPrimary"
+                app:fabSize="normal"
+                app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"
+                app:elevation="7dp"
+                app:srcCompat='@{@drawable/ic_add}' />
 
             <!--END OF SCROLLING VIEW-->
 

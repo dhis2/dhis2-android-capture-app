@@ -61,4 +61,6 @@ interface FormView {
     void onBackPressed();
 
     void messageOnComplete(String content, boolean b);
+
+    void hideDates();
 }

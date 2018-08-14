@@ -22,7 +22,7 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by ppajuelo on 18/10/2017.
+ * QUADRAM. Created by ppajuelo on 18/10/2017.
  */
 
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
@@ -34,13 +34,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("LIFECYCLE", "FRAGMENT_ON_ATTACH");
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("LIFECYCLE", "FRAGMENT_ONCREATE_VIEW");
         return super.onCreateView(inflater, container, savedInstanceState);
 
     }
@@ -48,29 +46,21 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("LIFECYCLE", "FRAGMENT_STARTED");
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("LIFECYCLE", "FRAGMENT_RESUME");
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("LIFECYCLE", "FRAGMENT_PAUSE");
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("LIFECYCLE", "FRAGMENT_DESTROY");
-
     }
 
     //endregion

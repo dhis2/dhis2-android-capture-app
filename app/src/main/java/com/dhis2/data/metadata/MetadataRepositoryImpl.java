@@ -548,9 +548,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Flowable<Pair<Integer, Integer>> getDownloadedData() {
-
-        String TEI_COUNT = "SELECT DISTINCT COUNT (uid) FROM TrackedEntityInstance";
-        String EVENT_COUNT = "SELECT DISTINCT COUNT (uid) FROM Event";
+        String TEI_COUNT = "SELECT DISTINCT COUNT (uid) FROM TrackedEntityInstance WHERE TrackedEntityInstance.state != 'RELATIONSHIP'";
+        String EVENT_COUNT = "SELECT DISTINCT COUNT (uid) FROM Event WHERE Event.enrollment IS NULL";
 
         int currentTei = 0;
         int currentEvent = 0;

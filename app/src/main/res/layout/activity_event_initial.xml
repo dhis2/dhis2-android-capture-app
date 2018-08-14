@@ -192,8 +192,6 @@
                                     android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
 
                             </LinearLayout>
-
-
                         </LinearLayout>
 
                         <LinearLayout

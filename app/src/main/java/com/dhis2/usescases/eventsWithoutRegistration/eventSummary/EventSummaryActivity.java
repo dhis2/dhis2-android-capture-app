@@ -222,7 +222,6 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
-        binding.summarySectionsHeader.setText(String.format(getString(R.string.event_summary_sections_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         completionPercent = (int) (completionPerone * 100);
         ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);

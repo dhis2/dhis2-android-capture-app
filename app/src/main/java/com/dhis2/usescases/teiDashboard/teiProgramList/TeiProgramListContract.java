@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
 import com.dhis2.usescases.general.AbstractActivityContracts;
+import com.dhis2.usescases.main.program.ProgramViewModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -14,11 +15,11 @@ import java.util.List;
 public class TeiProgramListContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setActiveEnrollments(List<EnrollmentModel> enrollments);
+        void setActiveEnrollments(List<EnrollmentViewModel> enrollments);
 
-        void setOtherEnrollments(List<EnrollmentModel> enrollments);
+        void setOtherEnrollments(List<EnrollmentViewModel> enrollments);
 
-        void setPrograms(List<ProgramModel> programs);
+        void setPrograms(List<ProgramViewModel> programs);
 
         void goToEnrollmentScreen(String enrollmentUid);
 
@@ -30,9 +31,9 @@ public class TeiProgramListContract {
 
         void onBackClick();
 
-        void onEnrollClick(ProgramModel program);
+        void onEnrollClick(ProgramViewModel program);
 
-        void onActiveEnrollClick(EnrollmentModel enrollmentModel);
+        void onActiveEnrollClick(EnrollmentViewModel enrollmentModel);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

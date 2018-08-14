@@ -121,16 +121,27 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         calendar.add(Calendar.DAY_OF_MONTH, isEmpty(day.getText().toString()) ? 0 : -Integer.valueOf(day.getText().toString()));
         calendar.add(Calendar.MONTH, isEmpty(month.getText().toString()) ? 0 : -Integer.valueOf(month.getText().toString()));
         calendar.add(Calendar.YEAR, isEmpty(year.getText().toString()) ? 0 : -Integer.valueOf(year.getText().toString()));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         String birthDate = DateUtils.uiDateFormat().format(calendar.getTime());
-        date.setText(birthDate);
-        listener.onAgeSet(calendar.getTime());
+        if (!date.getText().toString().equals(birthDate)) {
+            date.setText(birthDate);
+            listener.onAgeSet(calendar.getTime());
+        }
     }
 
     private void handleDateInput(int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
+        selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        selectedCalendar.set(Calendar.MINUTE, 0);
+        selectedCalendar.set(Calendar.SECOND, 0);
+        selectedCalendar.set(Calendar.MILLISECOND, 0);
+
         String result = dateFormat.format(selectedCalendar.getTime());
 
         int[] dateDifference = DateUtils.getDifference(selectedCalendar.getTime(), Calendar.getInstance().getTime());
@@ -138,8 +149,10 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         month.setText(String.valueOf(dateDifference[1]));
         year.setText(String.valueOf(dateDifference[0]));
 
-        date.setText(result);
-        listener.onAgeSet(selectedCalendar.getTime());
+        if (!result.equals(date.getText().toString())) {
+            date.setText(result);
+            listener.onAgeSet(selectedCalendar.getTime());
+        }
     }
 
     public void setInitialValue(String initialValue) {
@@ -187,10 +200,10 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
     }
 
     public void setEditable(Boolean editable) {
-       date.setEnabled(editable);
-       day.setEnabled(editable);
-       month.setEnabled(editable);
-       year.setEnabled(editable);
+        date.setEnabled(editable);
+        day.setEnabled(editable);
+        month.setEnabled(editable);
+        year.setEnabled(editable);
     }
 
     public interface OnAgeSet {

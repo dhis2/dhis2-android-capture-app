@@ -119,6 +119,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String programStageUid;
     private OrgUnitDialog orgUnitDialog;
     private ProgramModel program;
+    private String savedLat, savedLon;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -490,15 +491,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (event.latitude() != null && event.longitude() != null) {
             runOnUiThread(() -> {
-                String savedLat = binding.lat.getText().toString();
-                String savedLon = binding.lon.getText().toString();
                 if (isEmpty(savedLat)) {
-
                     binding.lat.setText(event.latitude());
                     binding.lon.setText(event.longitude());
                 } else {
                     binding.lat.setText(savedLat);
                     binding.lon.setText(savedLon);
+                    savedLon = null;
+                    savedLat = null;
                 }
             });
         }
@@ -666,7 +666,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
-            setLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
+            savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
+            savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
         if (requestCode == RQ_PROGRAM_STAGE) {
             if (resultCode == RESULT_OK) {
@@ -788,7 +790,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();
 
-            if (eventId==null) {
+            if (eventId == null) {
 
                 FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                         .title(getString(R.string.tuto_event_initial_new_1))
