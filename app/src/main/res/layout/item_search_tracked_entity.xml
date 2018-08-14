@@ -88,7 +88,6 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/photo_temp_gray"
                 app:srcCompat = "@drawable/ic_tei_default"
                 android:tint="@color/white"
                 tools:ignore="ContentDescription" />
@@ -100,7 +99,6 @@
                 android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_alignEnd="@id/tracked_entity_image"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/ic_circle_red"
                 android:padding="8dp"
                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
                 app:srcCompat="@drawable/ic_warning_white"

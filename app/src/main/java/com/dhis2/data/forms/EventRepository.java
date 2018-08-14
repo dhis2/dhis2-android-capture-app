@@ -282,14 +282,6 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<String> autoGenerateEvent() {
-        return s -> {
-            // no-op. Events are only auto generated for Enrollments
-        };
-    }
-
-    @NonNull
-    @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() {
         return Observable.just(null);
     }

@@ -10,6 +10,7 @@ import com.dhis2.R;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.ActivityTeiProgramListBinding;
 import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import com.dhis2.usescases.main.program.ProgramViewModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -70,7 +71,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     }
 
     @Override
-    public void setPrograms(List<ProgramModel> programs) {
+    public void setPrograms(List<ProgramViewModel> programs) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
         }

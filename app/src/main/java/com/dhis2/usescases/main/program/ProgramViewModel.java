@@ -25,6 +25,8 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
         static final String TRACKED_ENTITY_TYPE_NAME = "trackedEntityName";
         static final String DESCRIPTION = "description";
         static final String PROGRAM_TYPE = "programType";
+        static final String ONLY_ENROLL_ONCE = "onlyEnrollOnce";
+        static final String ACCESS_DATA_WRITE = "accessDataWrite";
     }
 
     @NonNull
@@ -63,12 +65,20 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
     @ColumnName(Columns.DESCRIPTION)
     public abstract String description();
 
+    @NonNull
+    @ColumnName(Columns.ONLY_ENROLL_ONCE)
+    public abstract Boolean onlyEnrollOnce();
+
+    @NonNull
+    @ColumnName(Columns.ACCESS_DATA_WRITE)
+    public abstract Boolean accessDataWrite();
+
 
     @NonNull
     public static ProgramViewModel create(@NonNull String uid, @NonNull String displayName, @Nullable String color,
                                           @Nullable String icon, @NonNull Integer count, @Nullable String type,
-                                          @NonNull String typeName, @NonNull String programType, @Nullable String description) {
-        return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description);
+                                          @NonNull String typeName, @NonNull String programType, @Nullable String description, @NonNull Boolean onlyEnrollOnce, @NonNull Boolean accessDataWrite) {
+        return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite);
     }
 
     public static ProgramViewModel fromCursor(Cursor cursor) {

@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -150,7 +151,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     //region DATA
     @Override
     public void getTrakedEntities() {
-        if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null)
+        if (!NetworkUtils.isOnline(view.getContext()) || selectedProgram == null || Build.VERSION.SDK_INT <= 19)
             compositeDisposable.add(
                     view.offlinePage()
                             .startWith(0)

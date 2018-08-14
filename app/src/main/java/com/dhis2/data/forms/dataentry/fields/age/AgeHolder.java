@@ -52,7 +52,8 @@ public class AgeHolder extends FormViewHolder {
                 Timber::d));
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
-                    processor.onNext(RowAction.create(model.getValue().uid(), DateUtils.databaseDateFormat().format(ageDate)));
+                    if (model.getValue().value() == null || !model.getValue().value().equals(DateUtils.databaseDateFormat().format(ageDate)))
+                        processor.onNext(RowAction.create(model.getValue().uid(), DateUtils.databaseDateFormat().format(ageDate)));
                 }
         );
     }

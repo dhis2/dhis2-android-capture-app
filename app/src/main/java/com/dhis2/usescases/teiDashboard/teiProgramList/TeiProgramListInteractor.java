@@ -1,5 +1,6 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
+import com.dhis2.usescases.main.program.ProgramViewModel;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -113,7 +114,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void getAlreadyEnrolledPrograms(List<ProgramModel> programs) {
+    private void getAlreadyEnrolledPrograms(List<ProgramViewModel> programs) {
         compositeDisposable.add(teiProgramListRepository.alreadyEnrolledPrograms(trackedEntityId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -123,16 +124,18 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
         );
     }
 
-    private void deleteRepeatedPrograms(List<ProgramModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms) {
-        ArrayList<ProgramModel> programListToPrint = new ArrayList<>();
-        for (ProgramModel programModel1 : allPrograms) {
+    private void deleteRepeatedPrograms(List<ProgramViewModel> allPrograms, List<ProgramModel> alreadyEnrolledPrograms) {
+        ArrayList<ProgramViewModel> programListToPrint = new ArrayList<>();
+        for (ProgramViewModel programModel1 : allPrograms) {
             boolean isAlreadyEnrolled = false;
+            boolean onlyEnrollOnce = false;
             for (ProgramModel programModel2 : alreadyEnrolledPrograms) {
-                if (programModel1.uid().equals(programModel2.uid())) {
+                if (programModel1.id().equals(programModel2.uid())) {
                     isAlreadyEnrolled = true;
+                    onlyEnrollOnce = programModel2.onlyEnrollOnce();
                 }
             }
-            if (!isAlreadyEnrolled || !programModel1.onlyEnrollOnce()) {
+            if (!isAlreadyEnrolled || !onlyEnrollOnce) {
                 programListToPrint.add(programModel1);
             }
         }

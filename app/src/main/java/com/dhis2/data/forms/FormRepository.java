@@ -50,9 +50,6 @@ public interface FormRepository {
     Consumer<ReportStatus> storeReportStatus();
 
     @NonNull
-    Consumer<String> autoGenerateEvent();
-
-    @NonNull
     Observable<Trio<String, String, String>> useFirstStageDuringRegistration();
 
     @NonNull

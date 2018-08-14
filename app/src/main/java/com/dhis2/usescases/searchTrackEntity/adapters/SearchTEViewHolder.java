@@ -1,6 +1,7 @@
 package com.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,9 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
         setEnrollment(searchTeiModel.getEnrollments());
         setTEIData(searchTeiModel.getAttributeValues());
+
+        binding.trackedEntityImage.setBackground(ContextCompat.getDrawable(itemView.getContext(),R.drawable.photo_temp_gray));
+        binding.followUp.setBackground(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_circle_red));
 
         binding.executePendingBindings();
 

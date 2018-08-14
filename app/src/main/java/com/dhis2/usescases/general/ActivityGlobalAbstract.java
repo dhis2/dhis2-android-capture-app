@@ -107,14 +107,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
         super.onCreate(savedInstanceState);
 
-        Log.d("LIFECYCLE", getLocalClassName() + "-ON_CREATE");
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("LIFECYCLE", getLocalClassName() + "-ON_RESUME");
         LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         lifeCycleObservable.onNext(Status.ON_RESUME);
         setProgressBar(findViewById(R.id.toolbarProgress));
@@ -124,13 +121,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
         super.onPause();
-        Log.d("LIFECYCLE", getLocalClassName() + "-ON_PAUSE");
         lifeCycleObservable.onNext(Status.ON_PAUSE);
     }
 
     @Override
     protected void onDestroy() {
-        Log.d("LIFECYCLE", getLocalClassName() + "-ON_DESTROY");
         progressBar = null;
         super.onDestroy();
     }

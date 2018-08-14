@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.dhis2.R;
+import com.dhis2.usescases.main.program.ProgramViewModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -26,8 +27,8 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     private List<TeiProgramListItem> listItems;
     private List<EnrollmentViewModel> activeEnrollments;
     private List<EnrollmentViewModel> inactiveEnrollments;
-    private List<ProgramModel> programs;
-    private List<ProgramModel> possibleEnrollmentPrograms;
+    private List<ProgramViewModel> programs;
+    private List<ProgramViewModel> possibleEnrollmentPrograms;
 
     TeiProgramListAdapter(TeiProgramListContract.Presenter presenter) {
         this.presenter = presenter;
@@ -125,7 +126,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         orderList();
     }
 
-    void setPrograms(List<ProgramModel> programs) {
+    void setPrograms(List<ProgramViewModel> programs) {
         this.programs.clear();
         this.programs.addAll(programs);
         orderList();
@@ -154,11 +155,11 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
         boolean found;
         boolean active;
-        for (ProgramModel programModel : programs) {
+        for (ProgramViewModel programModel : programs) {
             found = false;
             active = false;
             for (EnrollmentViewModel enrollment : activeEnrollments) {
-                if (programModel.displayName().equals(enrollment.programName())) {
+                if (programModel.title().equals(enrollment.programName())) {
                     found = true;
 //                    active = enrollment.val0().enrollmentStatus() == EnrollmentStatus.ACTIVE;
                     active = true;
@@ -167,7 +168,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
             if (!found)
                 for (EnrollmentViewModel enrollment : inactiveEnrollments) {
-                    if (programModel.displayName().equals(enrollment.programName())) {
+                    if (programModel.title().equals(enrollment.programName())) {
                         found = true;
 //                        active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
                         active = false;
@@ -185,7 +186,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             TeiProgramListItem thirdTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.THIRD_TITLE);
             listItems.add(thirdTeiProgramListItem);
 
-            for (ProgramModel programToEnroll : possibleEnrollmentPrograms) {
+            for (ProgramViewModel programToEnroll : possibleEnrollmentPrograms) {
                 TeiProgramListItem teiProgramListItem = new TeiProgramListItem(null, programToEnroll, TeiProgramListItem.TeiProgramListItemViewType.PROGRAMS_TO_ENROLL);
                 listItems.add(teiProgramListItem);
             }

@@ -324,11 +324,13 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void syncReservedValues() {
+
         disposable.add(metadataRepository.getReserveUids()
                 .map(pairs -> {
-                    for (Pair<String, String> pair : pairs) {
+                    /*for (Pair<String, String> pair : pairs) {
                         userManager.getD2().popTrackedEntityAttributeReservedValue(pair.val0(), pair.val1());
-                    }
+                    }*/
+                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
                     return true;
                 })
                 .subscribeOn(Schedulers.io())
@@ -362,7 +364,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(teiLimit, limityByOU)));
     }
-
 
     @NonNull
     private Observable<List<Event>> events() {

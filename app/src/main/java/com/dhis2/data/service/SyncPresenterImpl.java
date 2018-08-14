@@ -86,7 +86,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        data -> Log.d("DONE", "DONE"),
+                        data -> Log.d("DONE", "Events done"),
                         Timber::d
                 )
         );
@@ -112,7 +112,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        data -> Log.d("DONE", "DONE"),
+                        data -> Log.d("DONE", "Tei done"),
                         Timber::d
                 )
         );

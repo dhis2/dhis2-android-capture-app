@@ -1,6 +1,7 @@
 package com.dhis2.usescases.teiDashboard.teiProgramList;
 
 import com.dhis2.R;
+import com.dhis2.usescases.main.program.ProgramViewModel;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -33,9 +34,9 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
-    public void onEnrollClick(ProgramModel program) {
+    public void onEnrollClick(ProgramViewModel program) {
         if (program.accessDataWrite())
-            interactor.enroll(program.uid(), teiUid);
+            interactor.enroll(program.id(), teiUid);
         else
             view.displayMessage(view.getContext().getString(R.string.search_access_error));
     }

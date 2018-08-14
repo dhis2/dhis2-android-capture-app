@@ -163,7 +163,7 @@ class FormPresenterImpl implements FormPresenter {
                 .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(/*formRepository.storeReportStatus()*/view::onNext, throwable -> {
+                .subscribe(view::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
