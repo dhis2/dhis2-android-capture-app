@@ -13,6 +13,8 @@ import com.dhis2.data.service.ServiceComponent;
 import com.dhis2.data.service.ServiceModule;
 import com.dhis2.usescases.about.AboutComponent;
 import com.dhis2.usescases.about.AboutModule;
+import com.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodComponent;
+import com.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -111,4 +113,7 @@ public interface UserComponent {
 
     @NonNull
     AboutComponent plus(AboutModule aboutModule);
+
+    @NonNull
+    DataSetPeriodComponent plus(DataSetPeriodModule dataSetPeriodModule);
 }
