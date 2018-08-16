@@ -983,7 +983,7 @@ public class Bindings {
         TypedArray b = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
         int colorPrimaryDark = a.getColor(0, 0);
         int colorPrimaryLight = b.getColor(0,0);
-        //int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.5f, imageView.getContext().getResources().getDisplayMetrics());
+
         int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
         ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
         ((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
