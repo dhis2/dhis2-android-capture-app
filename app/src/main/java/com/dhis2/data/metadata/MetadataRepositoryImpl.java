@@ -64,7 +64,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
     private static final String SELECT_ENROLLMENT_EVENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s != %s AND %s.%s =",
+            "SELECT * FROM %s WHERE %s.%s != %s AND %s.%s = ? LIMIT 1",
             EventModel.TABLE,
             EventModel.TABLE,
             EventModel.Columns.STATE,
@@ -110,7 +110,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String TEI_ORG_UNIT_QUERY = String.format(
             "SELECT * FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE  %s.%s = ?",
+                    "WHERE  %s.%s = ? LIMIT 1",
             OrganisationUnitModel.TABLE,
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID,
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
@@ -161,7 +161,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final Set<String> ATTR_PROGRAM_VALUE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
 
     private final String TE_ATTRIBUTE_QUERY = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ?",
+            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID);
 
     private final String RELATIONSHIP_TYPE_QUERY = String.format("SELECT %s.* FROM %s " +
@@ -193,13 +193,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
 
-    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ?",
+    private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
             ResourceModel.TABLE, ResourceModel.TABLE, ResourceModel.Columns.RESOURCE_TYPE);
 
     private static final String EXPIRY_DATE_PERIOD_QUERY = String.format(
             "SELECT program.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? " +
+                    "LIMIT 1",
             ProgramModel.TABLE,
             EventModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM,
             EventModel.TABLE, EventModel.Columns.UID);
@@ -221,20 +222,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid) {
         return briteDatabase
-                .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "'")
+                .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + trackedEntityUid + "' LIMIT 1")
                 .mapToOne(TrackedEntityTypeModel::create);
     }
 
     @Override
     public Observable<CategoryComboModel> getCategoryComboWithId(String categoryComboId) {
         return briteDatabase
-                .createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO + "'" + categoryComboId + "'")
+                .createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO + "'" + categoryComboId + "' LIMIT 1")
                 .mapToOne(CategoryComboModel::create);
     }
 
     public Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid) {
         return briteDatabase
-                .createQuery(TrackedEntityInstanceModel.TABLE, TRACKED_ENTITY_INSTANCE_QUERY + "'" + teiUid + "'")
+                .createQuery(TrackedEntityInstanceModel.TABLE, TRACKED_ENTITY_INSTANCE_QUERY + "'" + teiUid + "' LIMIT 1")
                 .mapToOne(TrackedEntityInstanceModel::create);
     }
 
@@ -255,21 +256,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId) {
         return briteDatabase
-                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION + "'" + categoryOptionId + "'")
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION + "'" + categoryOptionId + "' LIMIT 1")
                 .mapToOne(CategoryOptionModel::create);
     }
 
     @Override
     public Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId) {
         return briteDatabase
-                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + categoryOptionComboId + "'")
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + categoryOptionComboId + "' LIMIT 1")
                 .mapToOne(CategoryOptionComboModel::create);
     }
 
     @Override
     public Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid) {
         return briteDatabase
-                .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitUid + "'")
+                .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitUid + "' LIMIT 1")
                 .mapToOne(OrganisationUnitModel::create);
     }
 
@@ -327,7 +328,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .bIsToA("...")
                 .build();
         return briteDatabase
-                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + programID + "'")
+                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + programID + "' LIMIT 1")
                 .lift(Query.mapToOneOrDefault(RelationshipTypeModel::create, defaultRelationshipType));
     }
 
@@ -342,14 +343,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<ProgramStageModel> programStage(String programStageId) {
         return briteDatabase
-                .createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE + "'" + programStageId + "'")
+                .createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE + "'" + programStageId + "' LIMIT 1")
                 .mapToOne(ProgramStageModel::create);
     }
 
     @Override
     public Observable<DataElementModel> getDataElement(String dataElementUid) {
         return briteDatabase
-                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid + "'")
+                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + dataElementUid + "' LIMIT 1")
                 .mapToOne(DataElementModel::create);
     }
 
@@ -384,7 +385,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<Integer> getProgramStageDataElementCount(String programStageId) {
         String SELECT_PROGRAM_STAGE_COUNT = "SELECT COUNT(*) FROM " + ProgramStageDataElementModel.TABLE +
-                " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s'";
+                " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s' LIMIT 1";
         return briteDatabase
                 .createQuery(ProgramStageDataElementModel.TABLE, String.format(SELECT_PROGRAM_STAGE_COUNT, programStageId))
                 .mapToOne(cursor -> {
@@ -399,7 +400,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<Integer> getTrackEntityDataValueCount(String eventId) {
         String SELECT_TRACKED_ENTITY_COUNT = "SELECT COUNT(*) FROM " + TrackedEntityDataValueModel.TABLE +
-                " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + " = '%s'";
+                " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + " = '%s' LIMIT 1";
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, String.format(SELECT_TRACKED_ENTITY_COUNT, eventId))
                 .mapToOne(cursor -> {
@@ -450,7 +451,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     @Override
     public Observable<ProgramModel> getProgramWithId(String programUid) {
         return briteDatabase
-                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + programUid + "'")
+                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_ALL_QUERY + "'" + programUid + "' LIMIT 1")
                 .mapToOne(ProgramModel::create);
     }
 
@@ -489,7 +490,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<ObjectStyleModel> getObjectStyle(String uid) {
-        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT * FROM ObjectStyle WHERE uid = ?", uid)
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, "SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", uid)
                 .mapToOneOrDefault((ObjectStyleModel::create), ObjectStyleModel.builder().build());
     }
 
@@ -572,7 +573,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Flowable<Boolean> validateCredentials(String serverUrl, String username, String password) {
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT AuthenticatedUser.credentials, SystemInfo.contextPath FROM AuthenticatedUser JOIN SystemInfo")
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT AuthenticatedUser.credentials, SystemInfo.contextPath FROM AuthenticatedUser JOIN SystemInfo LIMIT 1")
                 .mapToOne(cursor -> {
                     String userCredentials = cursor.getString(0);
                     String currentServer = cursor.getString(1);
@@ -586,7 +587,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<String> getServerUrl() {
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo")
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
                 .mapToOne(cursor -> cursor.getString(0));
     }
 }

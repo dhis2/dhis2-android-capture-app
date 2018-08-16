@@ -34,7 +34,8 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     private static final String ORG_UNIT_NAME = "SELECT OrganisationUnit.displayName FROM OrganisationUnit " +
             "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ? " +
+            "LIMIT 1";
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
@@ -49,7 +50,7 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @Override
     public Observable<EventModel> eventModelDetail(String uid) {
         String SELECT_EVENT_WITH_UID = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.UID + "='" + uid + "' " +
-                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
         return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT_WITH_UID)
                 .mapToOne(EventModel::create);
     }
@@ -177,13 +178,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     @NonNull
     @Override
     public Flowable<EventStatus> eventStatus(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.status FROM Event WHERE Event.uid = ?", eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.status FROM Event WHERE Event.uid = ? LIMIT 1", eventUid)
                 .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0))).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Observable<ProgramModel> getProgram(String eventUid) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?", eventUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUid)
                 .mapToOne(ProgramModel::create);
     }
 

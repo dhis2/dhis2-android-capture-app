@@ -174,7 +174,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
     @Override
     public Observable<Boolean> writePermission(String programId) {
-        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ?";
+        String WRITE_PERMISSION = "SELECT ProgramStage.accessDataWrite FROM ProgramStage WHERE ProgramStage.program = ? LIMIT 1";
         return briteDatabase.createQuery(ProgramStageModel.TABLE, WRITE_PERMISSION, programId)
                 .mapToOne(cursor -> cursor.getInt(0) == 1);
     }

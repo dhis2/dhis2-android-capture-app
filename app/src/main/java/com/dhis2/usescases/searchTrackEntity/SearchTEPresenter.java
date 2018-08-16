@@ -387,7 +387,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         orgUnits -> {
                             if (orgUnits.size() > 1) {
                                 orgUnitDialog.setOrgUnits(orgUnits);
-                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                if (!orgUnitDialog.isAdded())
+                                    orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
                             } else
                                 enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
                         },

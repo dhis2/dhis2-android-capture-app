@@ -773,7 +773,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(data -> orgUnitDialog.dismiss());
-        orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
+        if (!orgUnitDialog.isAdded())
+            orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
     }
 
     private boolean catComboIsDefaultOrNull() {

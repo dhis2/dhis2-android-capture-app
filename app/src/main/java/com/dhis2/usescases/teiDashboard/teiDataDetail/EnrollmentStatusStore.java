@@ -98,7 +98,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
     @NonNull
     @Override
     public Flowable<EnrollmentStatus> enrollmentStatus(@NonNull String enrollmentUid) {
-        String query = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ?";
+        String query = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, query, enrollmentUid)
                 .mapToOne(EnrollmentModel::create)
                 .map(EnrollmentModel::enrollmentStatus).toFlowable(BackpressureStrategy.LATEST);

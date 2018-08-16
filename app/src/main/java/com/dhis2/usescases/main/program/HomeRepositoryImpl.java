@@ -57,7 +57,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
-            "WHERE TrackedEntityType.uid = ?";
+            "WHERE TrackedEntityType.uid = ? LIMIT 1";
 
     private final static String PROGRAM_MODELS = "SELECT " +
             "Program.uid, " +

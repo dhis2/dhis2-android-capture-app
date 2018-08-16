@@ -415,64 +415,65 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 "com.dhis2", Context.MODE_PRIVATE);
 
-        new Handler().postDelayed(() -> {
-            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_1))
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_2))
-                    .closeOnTouch(true)
-                    .build();
+        if (isAdded() && getAbstractActivity() != null) {
+            new Handler().postDelayed(() -> {
+                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_1))
+                        .closeOnTouch(true)
+                        .build();
+                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_2))
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_3))
-                    .focusOn(getAbstractActivity().findViewById(R.id.filter))
-                    .closeOnTouch(true)
-                    .dismissListener(new DismissListener() {
-                        @Override
-                        public void onDismiss(String id) {
-                            if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
-                                getAbstractActivity().findViewById(R.id.filter).performClick();
-                        }
+                FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_3))
+                        .focusOn(getAbstractActivity().findViewById(R.id.filter))
+                        .closeOnTouch(true)
+                        .dismissListener(new DismissListener() {
+                            @Override
+                            public void onDismiss(String id) {
+                                if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
+                                    getAbstractActivity().findViewById(R.id.filter).performClick();
+                            }
 
-                        @Override
-                        public void onSkipped(String id) {
+                            @Override
+                            public void onSkipped(String id) {
 
-                        }
-                    })
-                    .build();
+                            }
+                        })
+                        .build();
 
-            FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_4))
-                    .focusOn(binding.periodLayout)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_4))
+                        .focusOn(binding.periodLayout)
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_5))
-                    .focusOn(binding.buttonOrgUnit)
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
+                FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_5))
+                        .focusOn(binding.buttonOrgUnit)
+                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                        .closeOnTouch(true)
+                        .build();
 
-            FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_6))
-                    .focusOn(getAbstractActivity().findViewById(R.id.menu))
-                    .closeOnTouch(true)
-                    .dismissListener(new DismissListener() {
-                        @Override
-                        public void onDismiss(String id) {
+                FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                        .title(getString(R.string.tuto_main_6))
+                        .focusOn(getAbstractActivity().findViewById(R.id.menu))
+                        .closeOnTouch(true)
+                        .dismissListener(new DismissListener() {
+                            @Override
+                            public void onDismiss(String id) {
 //                            ((MainActivity)getAbstractActivity()).binding.menu.performClick();
-                        }
+                            }
 
-                        @Override
-                        public void onSkipped(String id) {
+                            @Override
+                            public void onSkipped(String id) {
 
-                        }
-                    })
-                    .build();
+                            }
+                        })
+                        .build();
 
            /* FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_main_7))
@@ -501,26 +502,26 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                     .closeOnTouch(true)
                     .build();
 */
-            ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-            steps.add(tuto1);
-            steps.add(tuto2);
-            steps.add(tuto3);
-            steps.add(tuto4);
-            steps.add(tuto5);
-            steps.add(tuto6);
+                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+                steps.add(tuto1);
+                steps.add(tuto2);
+                steps.add(tuto3);
+                steps.add(tuto4);
+                steps.add(tuto5);
+                steps.add(tuto6);
            /* steps.add(tuto7);
             steps.add(tuto8);
             steps.add(tuto9);
             steps.add(tuto10);*/
 
-            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SHOWN", false)) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
-            }
+                if (!prefs.getBoolean("TUTO_SHOWN", false)) {
+                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                    prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
+                }
 
-        }, 500);
-
+            }, 500);
+        }
     }
 }

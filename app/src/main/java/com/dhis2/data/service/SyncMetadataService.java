@@ -52,7 +52,8 @@ public class SyncMetadataService extends JobService implements SyncView {
 
     @Override
     public void onDestroy() {
-        syncPresenter.onDetach();
+        if (syncPresenter != null)
+            syncPresenter.onDetach();
         super.onDestroy();
     }
 

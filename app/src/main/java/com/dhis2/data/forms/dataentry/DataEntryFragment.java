@@ -63,11 +63,13 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
         this.section = args.section();
 
-        ((App) context.getApplicationContext())
-                .formComponent()
-                .plus(new DataEntryModule(context, args),
-                        new DataEntryStoreModule(args))
-                .inject(this);
+        if (((App) context.getApplicationContext()).formComponent() != null) {
+            ((App) context.getApplicationContext())
+                    .formComponent()
+                    .plus(new DataEntryModule(context, args),
+                            new DataEntryStoreModule(args))
+                    .inject(this);
+        }
     }
 
     public String getSection() {

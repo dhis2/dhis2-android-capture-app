@@ -438,7 +438,7 @@ public final class RulesRepository {
     }
 
     public Flowable<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUidToEvaluate)
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
                 .mapToOne(EventModel::create)
                 .flatMap(eventModel ->
                         briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
@@ -470,7 +470,7 @@ public final class RulesRepository {
     }
 
     public Flowable<RuleEnrollment> enrollment(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ?", eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ? LIMIT 1", eventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(eventModel -> {
                             if (eventModel.enrollment() != null)
