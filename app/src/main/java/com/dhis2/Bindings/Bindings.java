@@ -9,11 +9,11 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -972,6 +972,23 @@ public class Bindings {
                             Timber::d
                     );
 
+
+    }
+
+    @BindingAdapter("imageBackground")
+    public static void setImageBackground(ImageView imageView, Drawable drawable) {
+
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+        TypedArray b = imageView.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
+        int colorPrimaryDark = a.getColor(0, 0);
+        int colorPrimaryLight = b.getColor(0,0);
+
+        int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
+        ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
+        ((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
+
+        imageView.setBackground(drawable);
 
     }
 }

@@ -163,11 +163,11 @@
                                 android:id="@+id/programStageIcon"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
-                                android:background="@drawable/photo_temp"
                                 android:contentDescription='@{name}'
                                 android:padding="7dp"
                                 android:tint="?colorPrimaryDark"
-                                app:srcCompat="@drawable/ic_clinical_f_outline" />
+                                app:srcCompat="@drawable/ic_clinical_f_outline"
+                                app:imageBackground="@{ @drawable/photo_temp }"/>
 
                             <LinearLayout
                                 android:layout_width="0dp"
