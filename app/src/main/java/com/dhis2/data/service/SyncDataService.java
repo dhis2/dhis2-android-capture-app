@@ -34,6 +34,8 @@ public class SyncDataService extends JobService implements SyncView {
     // @NonNull
     SyncResult syncResult;
 
+    private JobParameters job;
+
 
     @Override
     public void onCreate() {
@@ -58,6 +60,7 @@ public class SyncDataService extends JobService implements SyncView {
 
     @Override
     public boolean onStartJob(JobParameters job) {
+        this.job = job;
         if (syncPresenter != null)
             syncPresenter.onAttach(this);
         syncResult = SyncResult.idle();
@@ -114,6 +117,7 @@ public class SyncDataService extends JobService implements SyncView {
                 break;
             case TEI:
                 syncPresenter.onDetach();
+                jobFinished(job, job.isRecurring());
                 break;
         }
     }
