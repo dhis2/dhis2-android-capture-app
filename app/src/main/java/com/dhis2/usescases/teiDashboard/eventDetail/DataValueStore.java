@@ -25,7 +25,7 @@ import io.reactivex.Flowable;
 final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
             " WHERE " + EventModel.Columns.UID + " = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
 
     @NonNull
     private final BriteDatabase briteDatabase;

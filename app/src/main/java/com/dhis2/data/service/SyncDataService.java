@@ -58,7 +58,8 @@ public class SyncDataService extends JobService implements SyncView {
 
     @Override
     public boolean onStartJob(JobParameters job) {
-        syncPresenter.onAttach(this);
+        if (syncPresenter != null)
+            syncPresenter.onAttach(this);
         syncResult = SyncResult.idle();
         if (!syncResult.inProgress()) {
             Log.d("SyncDataService", "Job tag " + job.getTag());

@@ -278,7 +278,13 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
                 dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
         if (success > 0) {
-            view.showToast(!dashboardProgramModel.getCurrentEnrollment().followUp() ?
+
+            boolean followUp = false;
+            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null){
+                followUp = dashboardProgramModel.getCurrentEnrollment().followUp();
+            }
+
+            view.showToast(!followUp ?
                     view.getContext().getString(R.string.follow_up_enabled) :
                     view.getContext().getString(R.string.follow_up_disabled));
             getData();

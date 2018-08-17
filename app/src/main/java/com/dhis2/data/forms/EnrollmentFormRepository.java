@@ -51,7 +51,8 @@ class EnrollmentFormRepository implements FormRepository {
     private static final String SELECT_TITLE = "SELECT Program.displayName\n" +
             "FROM Enrollment\n" +
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "LIMIT 1";
 
     private static final String SELECT_ENROLLMENT_UID = "SELECT Enrollment.uid\n" +
             "FROM Enrollment\n" +
@@ -59,17 +60,20 @@ class EnrollmentFormRepository implements FormRepository {
 
     private static final String SELECT_ENROLLMENT_STATUS = "SELECT Enrollment.status\n" +
             "FROM Enrollment\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "LIMIT 1";
 
     private static final String SELECT_ENROLLMENT_DATE = "SELECT Enrollment.enrollmentDate\n" +
             "FROM Enrollment\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "LIMIT 1";
 
     private static final String SELECT_ENROLLMENT_PROGRAM = "SELECT Program.*\n" +
             "FROM Program JOIN Enrollment ON Enrollment.program = Program.uid\n" +
-            "WHERE Enrollment.uid = ?";
+            "WHERE Enrollment.uid = ? " +
+            "LIMIT 1";
 
-    private static final String SELECT_INCIDENT_DATE = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ?";
+    private static final String SELECT_INCIDENT_DATE = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1";
 
     private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT ProgramStage.uid, " +
             "Program.uid, Enrollment.organisationUnit, ProgramStage.minDaysFromStart, ProgramStage.generatedByEnrollmentDate, Enrollment.incidentDate, Enrollment.enrollmentDate \n" +
@@ -192,7 +196,8 @@ class EnrollmentFormRepository implements FormRepository {
     public Flowable<String> reportDate() {
         return briteDatabase
                 .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid)
-                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST)
+                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0))
+                .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
@@ -436,7 +441,8 @@ class EnrollmentFormRepository implements FormRepository {
     public Observable<String> getTrackedEntityInstanceUid() {
         String SELECT_TE = "SELECT " + EnrollmentModel.TABLE + "." + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EnrollmentModel.TABLE +
-                " WHERE " + EnrollmentModel.Columns.UID + " = ?";
+                " WHERE " + EnrollmentModel.Columns.UID + " = ?" +
+                " LIMIT 1";
 
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
@@ -519,7 +525,8 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     private Flowable<String> enrollmentProgram() {
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
+        return briteDatabase
+                .createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
                 .mapToOne(cursor -> {
                     programUid = cursor.getString(0);
                     return programUid;

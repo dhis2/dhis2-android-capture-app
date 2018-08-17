@@ -27,6 +27,9 @@ public class OrgUnitUtils {
 
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
+        if (myOrgs == null){
+            myOrgs = new ArrayList<>();
+        }
         for (OrganisationUnitModel myorg : myOrgs) {
             myOrgUnitUids.add(myorg.uid());
             String[] pathName = myorg.displayNamePath().split("/");
@@ -47,8 +50,10 @@ public class OrgUnitUtils {
 
         Collections.sort(myOrgs, (org1, org2) -> org2.level().compareTo(org1.level()));
 
-        for (int i = 0; i < myOrgs.get(0).level(); i++) {
-            subLists.put(i + 1, new ArrayList<>());
+        if (!myOrgs.isEmpty() && myOrgs.get(0) != null && myOrgs.get(0).level() != null) {
+            for (int i = 0; i < myOrgs.get(0).level(); i++) {
+                subLists.put(i + 1, new ArrayList<>());
+            }
         }
 
         //Separamos las orunits en listas por nivel

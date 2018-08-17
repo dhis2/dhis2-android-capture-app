@@ -57,7 +57,8 @@ public class OrgUnitHolder extends FormViewHolder {
                         orgUnitDialog.dismiss();
                     })
                     .setNegativeListener(data -> orgUnitDialog.dismiss());
-            orgUnitDialog.show(fm, model.getValue().label());
+            if (!orgUnitDialog.isAdded())
+                orgUnitDialog.show(fm, model.getValue().label());
         });
 
 

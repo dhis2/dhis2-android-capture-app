@@ -22,7 +22,7 @@ import io.reactivex.Observable;
 public class SplashRepositoryImpl implements SplashRepository {
 
     private final String FLAG_QUERY = "SELECT " +
-            "SystemSetting.value FROM SystemSetting WHERE SystemSetting.key = 'flag'";
+            "SystemSetting.value FROM SystemSetting WHERE SystemSetting.key = 'flag' LIMIT 1";
 
     private final String EXPIRED_EVENTS = "SELECT * FROM Event WHERE Event.dueDate IS NOT NULL";
 

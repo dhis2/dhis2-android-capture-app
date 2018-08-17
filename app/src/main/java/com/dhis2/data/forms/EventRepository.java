@@ -57,7 +57,7 @@ public class EventRepository implements FormRepository {
     private static final String SELECT_PROGRAM_FROM_EVENT = String.format(
             "SELECT %s.* from %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? LIMIT 1",
             ProgramModel.TABLE, ProgramModel.TABLE, EventModel.TABLE,
             EventModel.TABLE, EventModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
             EventModel.TABLE, EventModel.Columns.UID);
@@ -68,7 +68,8 @@ public class EventRepository implements FormRepository {
             "FROM Event\n" +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ? " +
+            "LIMIT 1";
 
     private static final String SELECT_SECTIONS = "SELECT\n" +
             "  Program.uid AS programUid,\n" +
@@ -86,12 +87,14 @@ public class EventRepository implements FormRepository {
             "  Event.eventDate, ProgramStage.periodType\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ? " +
+            "LIMIT 1";
 
     private static final String SELECT_EVENT_STATUS = "SELECT\n" +
             "  Event.status\n" +
             "FROM Event\n" +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ? " +
+            "LIMIT 1";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -328,7 +331,7 @@ public class EventRepository implements FormRepository {
     public Observable<String> getTrackedEntityInstanceUid() {
         String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EventModel.TABLE +
-                " WHERE " + EventModel.Columns.UID + " = ?";
+                " WHERE " + EventModel.Columns.UID + " = ? LIMIT 1";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));
     }
 

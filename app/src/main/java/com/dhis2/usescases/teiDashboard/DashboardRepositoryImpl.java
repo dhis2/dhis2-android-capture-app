@@ -77,7 +77,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID
     );
 
-    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ?",
+    private final String ENROLLMENT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? AND %s.%s = ? LIMIT 1",
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
@@ -87,13 +87,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private final String PROGRAM_STAGE_FROM_EVENT = String.format(
             "SELECT %s.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+                    "WHERE %s.%s = ? " +
+                    "LIMIT 1",
             ProgramStageModel.TABLE, ProgramStageModel.TABLE, EventModel.TABLE,
             ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EventModel.TABLE, EventModel.Columns.UID);
 
     private final String GET_EVENT_FROM_UID = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ? ",
+            "SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
@@ -268,7 +269,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<ProgramModel> getProgramData(String programUid) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_QUERY + "'" + programUid + "'")
+        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_QUERY + "'" + programUid + "' LIMIT 1")
                 .mapToOne(ProgramModel::create);
     }
 
@@ -280,7 +281,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId) {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitId + "'")
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + orgUnitId + "' LIMIT 1")
                 .mapToOne(OrganisationUnitModel::create);
     }
 
