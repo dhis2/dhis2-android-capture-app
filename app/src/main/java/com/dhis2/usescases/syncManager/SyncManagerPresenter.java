@@ -1,7 +1,6 @@
 package com.dhis2.usescases.syncManager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.dhis2.data.metadata.MetadataRepository;
@@ -10,7 +9,6 @@ import com.dhis2.data.service.SyncMetadataService;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.login.LoginActivity;
 import com.dhis2.utils.Constants;
-import com.dhis2.utils.DateUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -20,7 +18,6 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
