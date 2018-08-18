@@ -360,13 +360,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onEnrollClick(View view) {
-        if (selectedProgram.accessDataWrite())
+        if (selectedProgram != null && selectedProgram.accessDataWrite() != null && selectedProgram.accessDataWrite())
             if (view.isEnabled()) {
                 enroll(selectedProgram.uid(), null);
             } else
                 this.view.displayMessage(view.getContext().getString(R.string.search_program_not_selected));
-        else
+        else {
             this.view.displayMessage(view.getContext().getString(R.string.search_access_error));
+        }
     }
 
     @Override
