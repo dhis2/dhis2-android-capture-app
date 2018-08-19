@@ -159,7 +159,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         } else if(programModel.programType().equals(ProgramType.WITHOUT_REGISTRATION.name())){
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
         } else {
-            view.startActivity(DataSetPeriodActivity.class, bundle, false, false, null);
+            view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
         }
     }
 

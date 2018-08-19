@@ -1,16 +1,22 @@
 package com.dhis2.usescases.datasets.datasetDetail;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.DataSetOrganisationUnitLinkModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,13 +32,32 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @NonNull
     @Override
-    public Observable<List<DataSetModel>> filteredDataSet(String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
-        return null;
+    public Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataSet, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
+        String SELECT_ORGUNIT = "SELECT " + DataSetModel.TABLE +"." +DataSetModel.Columns.UID +", "
+                                +OrganisationUnitModel.TABLE + "."+ OrganisationUnitModel.Columns.NAME +","
+                                + CategoryComboModel.TABLE + "."+ CategoryComboModel.Columns.NAME +","
+                                + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE +","
+
+                +" FROM " + OrganisationUnitModel.TABLE +
+                ", "+ DataSetOrganisationUnitLinkModel.TABLE + ", "
+                + DataSetModel.TABLE + ", "
+                + CategoryComboModel.TABLE +", "
+                + PeriodModel.TABLE +
+                " WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + OrganisationUnitModel.Columns.UID
+                + " AND " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID
+                + " AND " + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
+                + " AND " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO
+                + " AND " + DataSetModel.TABLE +"." + DataSetModel.Columns.UID +" = '"+ uidDataSet+"'";
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORGUNIT)
+                .mapToList( dataSet -> new DataSetDetailModel(dataSet.getColumnName(0),
+                        dataSet.getColumnName(1),
+                        dataSet.getColumnName(2),
+                        dataSet.getColumnName(3)));
     }
 
     @NonNull
     @Override
-    public Observable<List<DataSetModel>> filteredDataSet( List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel) {
+    public Observable<List<DataSetDetailModel>> filteredDataSet( List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel) {
         return null;
     }
 
@@ -44,14 +69,27 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    @NonNull
-    @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
-        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryOptionComboModel.TABLE + ".* FROM " + CategoryOptionComboModel.TABLE + " INNER JOIN " + CategoryComboModel.TABLE +
-                " ON " + CategoryOptionComboModel.TABLE + "." + CategoryOptionComboModel.Columns.CATEGORY_COMBO + " = " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID
-                + " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + categoryComboUid + "'";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO)
-                .mapToList(CategoryOptionComboModel::create);
+    private Observable<CategoryComboModel> catComboDataSet(String uidCatCombo) {
+        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryComboModel.TABLE + ".* FROM " + CategoryComboModel.TABLE +
+                 " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + uidCatCombo + "'";
+        return briteDatabase.createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO)
+                .mapToOne(CategoryComboModel::create);
+    }
+
+    private Observable<List<PeriodModel>> periodsDataSet(String periodType){
+        String SELECT_PERIOD = "SELECT " + PeriodModel.TABLE + ".* FROM " + PeriodModel.TABLE +
+                " WHERE " + PeriodModel.TABLE + "." + PeriodModel.Columns.PERIOD_TYPE + " = '" + periodType + "'";
+        return briteDatabase.createQuery(PeriodModel.TABLE, SELECT_PERIOD)
+                .mapToList(PeriodModel::create);
+    }
+
+    private Observable<OrganisationUnitModel> orgUnitDataSet(String periodType){
+        String SELECT_ORGUNIT = "SELECT " + OrganisationUnitModel.TABLE + ".* FROM " + OrganisationUnitModel.TABLE +
+                ", "+ DataSetOrganisationUnitLinkModel.TABLE + ", "+ DataSetModel.TABLE +
+                " WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + OrganisationUnitModel.Columns.UID
+                + " AND " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID;
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORGUNIT)
+                .mapToOne(OrganisationUnitModel::create);
     }
 
     @NonNull
