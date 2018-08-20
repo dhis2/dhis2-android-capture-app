@@ -2,8 +2,10 @@ package com.dhis2.usescases.qrReader;
 
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -389,7 +391,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         // READ MORE
         message = message + "\n\n" + getString(R.string.read_more_qr);
 
-        new AlertDialog.Builder(context, R.style.CustomDialog)
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.QR_SCANNER))
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
@@ -399,18 +401,14 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.download();
                     dialog.dismiss();
-                })
-                .show();
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(dialogInterface -> {
+            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+        });
+        alertDialog.show();
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     public void promtForEventWORegistrationMoreQr(){
@@ -441,7 +439,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         // READ MORE
         message = message + "\n\n" + getString(R.string.read_more_qr);
 
-        new AlertDialog.Builder(context, R.style.CustomDialog)
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.QR_SCANNER))
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
@@ -451,7 +449,12 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.downloadEventWORegistration();
                     dialog.dismiss();
-                })
-                .show();
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(dialogInterface -> {
+            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+        });
+        alertDialog.show();
     }
 }
