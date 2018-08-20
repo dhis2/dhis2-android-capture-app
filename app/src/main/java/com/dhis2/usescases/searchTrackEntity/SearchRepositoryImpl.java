@@ -412,9 +412,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                         tei.setOnline(false);
 
                         Cursor enrollmentCursor;
-                        if (selectedProgram != null)
+                       /* if (selectedProgram != null)
                             enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.STATUS = 'ACTIVE' AND Enrollment.program != ? GROUP BY Enrollment.program", tei.getTei().uid(), selectedProgram.uid());
-                        else
+                        else*/
                             enrollmentCursor = briteDatabase.query("SELECT * FROM Enrollment WHERE Enrollment.trackedEntityInstance = ? AND Enrollment.STATUS = 'ACTIVE' GROUP BY Enrollment.program", tei.getTei().uid());
 
                         if (enrollmentCursor != null) {
