@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus"/>
 
         <variable
             name="enrollment"
@@ -71,6 +72,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
