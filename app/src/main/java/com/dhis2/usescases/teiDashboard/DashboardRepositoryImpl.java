@@ -374,8 +374,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     values.put(EventModel.Columns.PROGRAM, event.program());
                     values.put(EventModel.Columns.PROGRAM_STAGE, event.programStage());
                     values.put(EventModel.Columns.ORGANISATION_UNIT, event.organisationUnit());
-                    values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(chosenDate));
-                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(chosenDate));
+                    values.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
+                    values.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(chosenDate.getTime()));
                     values.put(EventModel.Columns.STATE, State.TO_POST.toString());
 
                     if (briteDatabase.insert(EventModel.TABLE, values) <= 0) {
