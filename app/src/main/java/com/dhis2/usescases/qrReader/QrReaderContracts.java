@@ -48,6 +48,8 @@ public class QrReaderContracts {
         void goToDashBoard(String teiUid);
 
         void goToEvent(String eventUid, String programId, String orgUnit);
+
+        void showIdError();
     }
 
     public interface Presenter {

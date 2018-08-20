@@ -192,6 +192,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
+    public void showIdError() {
+        showError(getString(R.string.qr_no_id_error));
+    }
+
+    @Override
     public void downloadEventWORegistration(@NonNull String eventUid) {
         this.eventUid = eventUid;
         renderEventWORegistrationInfo(eventUid);
@@ -241,6 +246,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }
+
+
 
     @Override
     public void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data) {

@@ -244,6 +244,7 @@
     <string name="read_more_qr">Read next QR to get more info.</string>
     <string name="save_qr">Stop reading and save data</string>
     <string name="qr_no_data">no data</string>
+    <string name="qr_no_id_error">You need to scan the Identification QR before saving.</string>
     <string name="qr_error_id">Invalid QR code</string>
     <string name="qr_error_attr">This attribute can\'t be added</string>
     <string name="qr_error_enrollment">This enrollment can\'t be added</string>
