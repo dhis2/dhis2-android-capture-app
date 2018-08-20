@@ -150,6 +150,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             );
         getOrgUnits(programId);
         getProgramStages(programId);
+
         if (eventId != null)
             getEventSections(eventId);
 
