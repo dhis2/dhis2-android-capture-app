@@ -56,6 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:alpha="0"
+                    android:paddingBottom="80dp"
                     tools:src="@drawable/sierra_leone" />
 
                 <LinearLayout

@@ -191,6 +191,32 @@
                                     android:textSize="12sp"
                                     android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
 
+
+                                <LinearLayout
+                                    android:id="@+id/shareContainer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:onClick="@{(view)->presenter.onShareClick(view)}"
+                                    android:layout_gravity="right"
+                                    android:layout_marginTop="30dp">
+
+                                    <ImageView
+                                        android:id="@+id/shareIcon"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:srcCompat="@drawable/ic_share" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="2dp"
+                                        android:text="@string/share"
+                                        android:textColor="?colorPrimary"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -385,21 +411,6 @@
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
-                <Button
-                    android:id="@+id/share_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginStart="16dp"
-                    android:background="?attr/selector_button_round_7"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
-                    android:text="@string/share"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="15sp" />
             </RelativeLayout>
 
             <android.support.design.widget.NavigationView

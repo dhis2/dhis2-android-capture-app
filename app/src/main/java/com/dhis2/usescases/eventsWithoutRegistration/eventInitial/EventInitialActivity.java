@@ -256,25 +256,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (isNewEvent) {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.create);
-            if (binding.shareButton != null)
-                binding.shareButton.setVisibility(View.GONE);
+            //if (binding.shareButton != null)
+                //binding.shareButton.setVisibility(View.GONE);
         } else {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.update);
-            if (binding.shareButton != null)
-                binding.shareButton.setVisibility(View.VISIBLE);
+            //if (binding.shareButton != null)
+                //binding.shareButton.setVisibility(View.VISIBLE);
         }
-
-        if (binding.shareButton != null) {
+        /*if (binding.shareButton != null) {
             binding.shareButton.setOnClickListener(v -> {
                 Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
                 intent.putExtra("EVENT_UID", eventId);
                 startActivity(intent);
             });
-        }
-
+        }*/
         if (binding.actionButton != null) {
             binding.actionButton.setOnClickListener(v -> {
+
                 String formattedDate = null;
                 Date date = null;
                 try {
@@ -327,7 +326,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
             });
         }
-
         Bindings.setObjectStyleAndTint(binding.programStageIcon, binding.programStageIcon, programStageUid);
 
     }
@@ -782,6 +780,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 .setNegativeListener(data -> orgUnitDialog.dismiss());
         if (!orgUnitDialog.isAdded())
             orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
+    }
+
+    @Override
+    public void showQR() {
+        Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
+        intent.putExtra("EVENT_UID", eventId);
+        startActivity(intent);
     }
 
     private boolean catComboIsDefaultOrNull() {
