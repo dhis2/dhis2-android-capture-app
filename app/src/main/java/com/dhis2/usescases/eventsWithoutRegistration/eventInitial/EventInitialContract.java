@@ -3,6 +3,7 @@ package com.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import android.app.DatePickerDialog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.dhis2.data.forms.FormSectionViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -69,6 +70,8 @@ public class EventInitialContract {
         void setAccessDataWrite(Boolean canWrite);
 
         void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits);
+
+        void showQR();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -118,6 +121,8 @@ public class EventInitialContract {
         void getEventSections(@NonNull String eventId);
 
         List<OrganisationUnitModel> getOrgUnits();
+
+        void onShareClick(android.view.View mView);
     }
 
 }

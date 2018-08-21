@@ -211,7 +211,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
 
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, "QR");
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
+        //menu.getMenu().add(Menu.NONE, Menu.NONE, 1, "SMS");
 
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getOrder()) {

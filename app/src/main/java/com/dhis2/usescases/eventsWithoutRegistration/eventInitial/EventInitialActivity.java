@@ -255,17 +255,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (isNewEvent) {
             binding.actionButton.setText(R.string.create);
-            binding.shareButton.setVisibility(View.GONE);
+            //binding.shareButton.setVisibility(View.GONE);
         } else {
             binding.actionButton.setText(R.string.update);
-            binding.shareButton.setVisibility(View.VISIBLE);
+            //binding.shareButton.setVisibility(View.VISIBLE);
         }
 
-        binding.shareButton.setOnClickListener(v -> {
+        /*binding.shareButton.setOnClickListener(v -> {
             Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
             intent.putExtra("EVENT_UID", eventId);
             startActivity(intent);
-        });
+        });*/
 
         binding.actionButton.setOnClickListener(v -> {
 
@@ -775,6 +775,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 .setNegativeListener(data -> orgUnitDialog.dismiss());
         if (!orgUnitDialog.isAdded())
             orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
+    }
+
+    @Override
+    public void showQR() {
+        Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
+        intent.putExtra("EVENT_UID", eventId);
+        startActivity(intent);
     }
 
     private boolean catComboIsDefaultOrNull() {
