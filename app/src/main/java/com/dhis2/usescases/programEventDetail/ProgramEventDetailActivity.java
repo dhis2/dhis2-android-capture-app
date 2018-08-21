@@ -339,15 +339,23 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
-        if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
-            binding.catCombo.setVisibility(View.GONE);
+        ArrayList<CategoryOptionComboModel> catComboListFinal = new ArrayList<>();
+        if (catComboList != null){
+            for (CategoryOptionComboModel categoryOptionComboModel : catComboList){
+                if (!"default".equals(categoryOptionComboModel.displayName()) && !categoryOptionComboModel.uid().equals(CategoryComboModel.DEFAULT_UID)) {
+                    catComboListFinal.add(categoryOptionComboModel);
+                }
+            }
+        }
+
+        if ("default".equals(catCombo.displayName()) || catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboListFinal.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
         } else {
             binding.catCombo.setVisibility(View.VISIBLE);
             CatComboAdapter adapter = new CatComboAdapter(this,
                     R.layout.spinner_layout,
                     R.id.spinner_text,
-                    catComboList,
+                    catComboListFinal,
                     catCombo.displayName(),
                     R.color.white_faf);
 

@@ -264,12 +264,14 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     .dismissListener(new DismissListener() {
                         @Override
                         public void onDismiss(String id) {
-                            scrollView.scrollTo((int)getAbstractActivity().findViewById(R.id.radioMeta).getX(), (int)getAbstractActivity().findViewById(R.id.radioMeta).getY());
+                            if (scrollView != null) {
+                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.radioMeta).getX(), (int) getAbstractActivity().findViewById(R.id.radioMeta).getY());
+                            }
                         }
 
                         @Override
                         public void onSkipped(String id) {
-
+                            // unused
                         }
                     })
                     .build();

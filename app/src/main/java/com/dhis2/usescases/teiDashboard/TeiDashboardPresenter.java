@@ -264,13 +264,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = view.getAdapter().getItem(0);
-        Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
-        Bundle extras = new Bundle();
-        extras.putString("EVENT_UID", uid);
-        extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
-        intent.putExtras(extras);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-        teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
+        if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
+            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
+            Bundle extras = new Bundle();
+            extras.putString("EVENT_UID", uid);
+            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+            intent.putExtras(extras);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
+        }
     }
 
     @Override

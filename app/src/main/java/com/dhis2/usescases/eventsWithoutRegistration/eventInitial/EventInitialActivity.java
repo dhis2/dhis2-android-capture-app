@@ -254,73 +254,78 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         initProgressBar();
 
         if (isNewEvent) {
-            binding.actionButton.setText(R.string.create);
-            //binding.shareButton.setVisibility(View.GONE);
+            if (binding.actionButton != null)
+                binding.actionButton.setText(R.string.create);
+            //if (binding.shareButton != null)
+                //binding.shareButton.setVisibility(View.GONE);
         } else {
-            binding.actionButton.setText(R.string.update);
-            //binding.shareButton.setVisibility(View.VISIBLE);
+            if (binding.actionButton != null)
+                binding.actionButton.setText(R.string.update);
+            //if (binding.shareButton != null)
+                //binding.shareButton.setVisibility(View.VISIBLE);
         }
+        /*if (binding.shareButton != null) {
+            binding.shareButton.setOnClickListener(v -> {
+                Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
+                intent.putExtra("EVENT_UID", eventId);
+                startActivity(intent);
+            });
+        }*/
+        if (binding.actionButton != null) {
+            binding.actionButton.setOnClickListener(v -> {
 
-        /*binding.shareButton.setOnClickListener(v -> {
-            Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
-            intent.putExtra("EVENT_UID", eventId);
-            startActivity(intent);
-        });*/
+                String formattedDate = null;
+                Date date = null;
+                try {
+                    date = DateUtils.uiDateFormat().parse(selectedDateString);
+                    formattedDate = DateUtils.databaseDateFormat().format(date);
+                } catch (Exception e) {
+                    Timber.e(e);
+                }
 
-        binding.actionButton.setOnClickListener(v -> {
-
-            String formattedDate = null;
-            Date date = null;
-            try {
-                date = DateUtils.uiDateFormat().parse(selectedDateString);
-                formattedDate = DateUtils.databaseDateFormat().format(date);
-            } catch (Exception e) {
-                Timber.e(e);
-            }
-
-            if (isNewEvent) {
-                if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
-                    presenter.createEventPermanent(
-                            enrollmentUid,
-                            getTrackedEntityInstance,
-                            programStageModel.uid(),
-                            date,
-                            selectedOrgUnit,
-                            null,
-                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                            selectedLat, selectedLon);
-                } else if (eventCreationType.equals(SCHEDULENEW)) {
-                    presenter.scheduleEvent(
-                            enrollmentUid,
-                            programStageModel.uid(),
-                            date,
-                            selectedOrgUnit,
-                            null,
-                            catComboIsDefaultOrNull() ?
-                                    null : selectedCatOptionCombo.uid(),
-                            selectedLat, selectedLon);
+                if (isNewEvent) {
+                    if (eventCreationType.equals(REFERRAL) && tempCreate.equals(PERMANENT)) {
+                        presenter.createEventPermanent(
+                                enrollmentUid,
+                                getTrackedEntityInstance,
+                                programStageModel.uid(),
+                                date,
+                                selectedOrgUnit,
+                                null,
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                                selectedLat, selectedLon);
+                    } else if (eventCreationType.equals(SCHEDULENEW)) {
+                        presenter.scheduleEvent(
+                                enrollmentUid,
+                                programStageModel.uid(),
+                                date,
+                                selectedOrgUnit,
+                                null,
+                                catComboIsDefaultOrNull() ?
+                                        null : selectedCatOptionCombo.uid(),
+                                selectedLat, selectedLon);
+                    } else {
+                        presenter.createEvent(
+                                enrollmentUid,
+                                programStageModel.uid(),
+                                date,
+                                selectedOrgUnit,
+                                null,
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                                selectedLat, selectedLon);
+                    }
                 } else {
-                    presenter.createEvent(
-                            enrollmentUid,
+                    presenter.editEvent(
                             programStageModel.uid(),
-                            date,
+                            eventId,
+                            formattedDate,
                             selectedOrgUnit,
                             null,
                             catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                             selectedLat, selectedLon);
                 }
-            } else {
-                presenter.editEvent(
-                        programStageModel.uid(),
-                        eventId,
-                        formattedDate,
-                        selectedOrgUnit,
-                        null,
-                        catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                        selectedLat, selectedLon);
-            }
-        });
-
+            });
+        }
         Bindings.setObjectStyleAndTint(binding.programStageIcon, binding.programStageIcon, programStageUid);
 
     }
