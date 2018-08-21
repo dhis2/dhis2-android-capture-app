@@ -9,6 +9,7 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
+import com.dhis2.utils.DateUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -241,8 +242,16 @@ public class EventRepository implements FormRepository {
     @Override
     public Consumer<String> storeReportDate() {
         return reportDate -> {
+            Calendar cal = Calendar.getInstance();
+            Date date = DateUtils.databaseDateFormat().parse(reportDate);
+            cal.setTime(date);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
             ContentValues event = new ContentValues();
-            event.put(EventModel.Columns.EVENT_DATE, reportDate);
+            event.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
             event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 

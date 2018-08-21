@@ -343,11 +343,18 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
+            Calendar enrollmentDate = Calendar.getInstance();
+            enrollmentDate.setTime(currentDate);
+            enrollmentDate.set(Calendar.HOUR_OF_DAY, 0);
+            enrollmentDate.set(Calendar.MINUTE, 0);
+            enrollmentDate.set(Calendar.SECOND, 0);
+            enrollmentDate.set(Calendar.MILLISECOND, 0);
+
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
-                    .enrollmentDate(currentDate)
+                    .enrollmentDate(enrollmentDate.getTime())
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())
