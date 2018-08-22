@@ -5,7 +5,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -411,8 +410,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialogInterface -> {
-            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
-            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
         });
         alertDialog.show();
     }
@@ -459,8 +458,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialogInterface -> {
-            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
-            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            alertDialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+            alertDialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
         });
         alertDialog.show();
     }
