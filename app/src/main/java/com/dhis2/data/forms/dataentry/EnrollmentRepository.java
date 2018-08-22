@@ -131,6 +131,11 @@ final class EnrollmentRepository implements DataEntryRepository {
 
                 if(teiUid!=null) { //checks if tei has been deleted
                     dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+
+                    //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
+                    if(valueType == ValueType.NUMBER)
+                        dataValue = dataValue.substring(dataValue.startsWith("0") ? 1 : 0);
+
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
                             "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
                             "VALUES (?,?,?,?)";
