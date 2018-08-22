@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.dhis2.utils.Constants;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Unit;
@@ -81,6 +83,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 //        new PostData().execute();
 
         disposable.add(Observable.fromCallable(d2.syncSingleEvents())
+                .doOnError(throwable -> Log.d("EVENTS", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
                 .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
                 .subscribeOn(Schedulers.io())
@@ -107,6 +110,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void syncTrackedEntities() {
 
         disposable.add(Observable.fromCallable(d2.syncTrackedEntityInstances())
+                .doOnError(throwable -> Log.d("EVENTS", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
                 .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
                 .subscribeOn(Schedulers.io())

@@ -1,6 +1,7 @@
 package com.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -109,6 +110,20 @@ final class DataValueStore implements DataEntryStore {
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));
                         }
+                        /*String Query = "SELECT TrackedEntityInstance.* FROM TrackedEntityInstance " +
+                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
+                                "JOIN Event ON Event.enrollment = Enrollment.uid " +
+                                "where Event.uid = ?";
+                        Cursor tei = briteDatabase.query(Query, eventUid);
+                        if(tei.moveToFirst()){
+                            String teiId = tei.getString(0);
+                            ContentValues teiValues = new ContentValues();
+                            teiValues.put("state", State.TO_UPDATE.toString());
+                            if(briteDatabase.update("TrackedEntityInstance", teiValues, teiId) <= 0){
+                                throw new IllegalStateException(String.format(Locale.US, "TrackedEntityInstance=[%s] " +
+                                        "has not been successfully updated", teiId));
+                            }
+                        }*/
                     }
 
                     return Flowable.just(status);
