@@ -226,9 +226,23 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 if (currentPage == 1)
                                     return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData)
                                             .map(trackedEntityInstanceModels -> {
-                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
-                                                    list.add(new SearchTeiModel(tei, new ArrayList<>()));
-                                                return list;
+                                                List<SearchTeiModel> helperList = new ArrayList<>();
+
+                                                for(SearchTeiModel searchTeiModel: list){
+                                                    boolean toUpdate = false;
+                                                    for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
+                                                        if (searchTeiModel.getTei().uid().equals(tei.uid())) {
+                                                            toUpdate = true;
+                                                        }
+                                                    }
+                                                    if(!toUpdate)helperList.add(searchTeiModel);
+                                                }
+
+                                                for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
+                                                    helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                                }
+
+                                                return helperList;
                                             }).toFlowable(BackpressureStrategy.LATEST);
                                 else
                                     return Flowable.just(list);
