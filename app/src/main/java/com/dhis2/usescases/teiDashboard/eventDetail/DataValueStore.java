@@ -84,7 +84,8 @@ final class DataValueStore implements DataEntryStore {
 
         updateProgramTable(currentDate, eventModel.program());
 
-        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        if (eventModel != null)
+            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
     }
 
     @Override
@@ -95,7 +96,8 @@ final class DataValueStore implements DataEntryStore {
         contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
         if (eventDate.before(currentDate))
             contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        if (eventModel != null)
+            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
@@ -119,7 +121,9 @@ final class DataValueStore implements DataEntryStore {
         // ToDo: write test cases for different events
         return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                 TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
+                        TrackedEntityDataValueModel.Columns.EVENT + " = ?",
+                uid == null ? "" : uid,
+                eventUid == null ? "" : eventUid);
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
@@ -138,7 +142,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
@@ -148,7 +152,7 @@ final class DataValueStore implements DataEntryStore {
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
                         if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));

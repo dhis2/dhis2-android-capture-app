@@ -78,7 +78,7 @@ public class SplashRepositoryImpl implements SplashRepository {
         contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
 
         if (briteDatabase.update(EventModel.TABLE, contentValues,
-                EventModel.Columns.UID + " = ?", eventModel.uid()) <= 0) {
+                EventModel.Columns.UID + " = ?", eventModel != null && eventModel.uid() != null ? eventModel.uid() : "") <= 0) {
 
             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                     "has not been successfully updated", eventModel.uid()));

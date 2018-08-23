@@ -183,7 +183,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<String> title() {
         return briteDatabase
-                .createQuery(TITLE_TABLES, SELECT_TITLE, eventUid)
+                .createQuery(TITLE_TABLES, SELECT_TITLE, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> cursor.getString(0) + " - " + cursor.getString(1)).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -192,7 +192,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<String> reportDate() {
         return briteDatabase
-                .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid)
+                .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
                     PeriodType periodType = null;
                     String eventDate = cursor.getString(0) == null ? "" : cursor.getString(0);
@@ -206,7 +206,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<Pair<ProgramModel, String>> incidentDate() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create)
                 .map(programModel -> Pair.create(programModel, ""))
                 .toFlowable(BackpressureStrategy.LATEST)
@@ -215,7 +215,7 @@ public class EventRepository implements FormRepository {
 
     @Override
     public Flowable<ProgramModel> getAllowDatesInFuture() {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_FROM_EVENT, eventUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_FROM_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
@@ -224,7 +224,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<ReportStatus> reportStatus() {
         return briteDatabase
-                .createQuery(EventModel.TABLE, SELECT_EVENT_STATUS, eventUid)
+                .createQuery(EventModel.TABLE, SELECT_EVENT_STATUS, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> ReportStatus.fromEventStatus(EventStatus.valueOf(cursor.getString(0)))).toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
@@ -233,7 +233,7 @@ public class EventRepository implements FormRepository {
     @Override
     public Flowable<List<FormSectionViewModel>> sections() {
         return briteDatabase
-                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid)
+                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> mapToFormSectionViewModels(eventUid == null ? "" : eventUid, cursor))
                 .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
     }
@@ -257,7 +257,7 @@ public class EventRepository implements FormRepository {
 
             updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
-            briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid);
+            briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
     }
 
@@ -288,7 +288,7 @@ public class EventRepository implements FormRepository {
 
             updateProgramTable(Calendar.getInstance().getTime(), programUid);
 
-            briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid);
+            briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
         };
     }
 
@@ -307,7 +307,7 @@ public class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<List<FieldViewModel>> fieldValues() {
-        String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
+        String where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, String.format(Locale.US, QUERY, where))
                 .mapToList(this::transform);
     }
@@ -327,7 +327,8 @@ public class EventRepository implements FormRepository {
         String DELETE_WHERE_RELATIONSHIP = String.format(
                 "%s.%s = ",
                 EventModel.TABLE, EventModel.Columns.UID);
-        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + eventUid + "'");
+        String id = eventUid == null ? "" : eventUid;
+        briteDatabase.delete(EventModel.TABLE, DELETE_WHERE_RELATIONSHIP + "'" + id + "'");
     }
 
     @Override
@@ -341,7 +342,7 @@ public class EventRepository implements FormRepository {
         String SELECT_TE = "SELECT " + EventModel.TABLE + "." + EventModel.Columns.TRACKED_ENTITY_INSTANCE +
                 " FROM " + EventModel.TABLE +
                 " WHERE " + EventModel.Columns.UID + " = ? LIMIT 1";
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid).mapToOne(cursor -> cursor.getString(0));
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid == null ? "" : eventUid).mapToOne(cursor -> cursor.getString(0));
     }
 
     @NonNull
@@ -377,7 +378,7 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     private Flowable<String> eventProgram() {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create)
                 .map(programModel -> {
                     programUid = programModel.uid();

@@ -87,9 +87,9 @@ public final class AttributeValueStore implements DataEntryStore {
     private long update(@NonNull String attribute, @Nullable String value) {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
-        sqLiteBind(updateStatement, 2, value);
-        sqLiteBind(updateStatement, 3, enrollment);
-        sqLiteBind(updateStatement, 4, attribute);
+        sqLiteBind(updateStatement, 2, value == null ? "" : value);
+        sqLiteBind(updateStatement, 3, enrollment == null ? "" : enrollment);
+        sqLiteBind(updateStatement, 4, attribute == null ? "" : attribute);
 
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -102,11 +102,11 @@ public final class AttributeValueStore implements DataEntryStore {
         String created = BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime());
 
-        sqLiteBind(insertStatement, 1, created);
-        sqLiteBind(insertStatement, 2, created);
-        sqLiteBind(insertStatement, 3, value);
-        sqLiteBind(insertStatement, 4, attribute);
-        sqLiteBind(insertStatement, 5, enrollment);
+        sqLiteBind(insertStatement, 1, created == null ? "" : created);
+        sqLiteBind(insertStatement, 2, created == null ? "" : created);
+        sqLiteBind(insertStatement, 3, value == null ? "" : value);
+        sqLiteBind(insertStatement, 4, attribute == null ? "" : attribute);
+        sqLiteBind(insertStatement, 5, enrollment == null ? "" : enrollment);
 
         long inserted = briteDatabase.executeInsert(
                 TrackedEntityAttributeValueModel.TABLE, insertStatement);
@@ -117,7 +117,7 @@ public final class AttributeValueStore implements DataEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
@@ -125,8 +125,9 @@ public final class AttributeValueStore implements DataEntryStore {
                         ContentValues values = tei.toContentValues();
                         values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
 
+                        String teiUid = tei.uid() == null ? "" : tei.uid();
                         if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
-                                TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
+                                TrackedEntityInstanceModel.Columns.UID + " = ?", teiUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
                                     "has not been successfully updated", tei.uid()));

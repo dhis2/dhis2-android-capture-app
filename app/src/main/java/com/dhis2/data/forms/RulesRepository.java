@@ -218,14 +218,14 @@ public final class RulesRepository {
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
+        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid == null ? "" : programUid)
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -240,7 +240,7 @@ public final class RulesRepository {
 
     @NonNull
     private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
+        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid == null ? "" : programUid)
                 .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -438,12 +438,12 @@ public final class RulesRepository {
     }
 
     public Flowable<List<RuleEvent>> otherEvents(String eventUidToEvaluate) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                 .mapToOne(EventModel::create)
                 .flatMap(eventModel ->
-                        briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate)
+                        briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                                 .mapToOne(ProgramModel::create).flatMap(programModel ->
-                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid(), eventUidToEvaluate)
+                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid() == null ? "" : programModel.uid(), eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                                         .mapToList(cursor -> {
                                             List<RuleDataValue> dataValues = new ArrayList<>();
                                             String eventUid = cursor.getString(0);
@@ -470,7 +470,7 @@ public final class RulesRepository {
     }
 
     public Flowable<RuleEnrollment> enrollment(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ? LIMIT 1", eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(eventModel -> {
                             if (eventModel.enrollment() != null)

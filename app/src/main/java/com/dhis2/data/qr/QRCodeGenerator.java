@@ -13,10 +13,8 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -32,7 +30,6 @@ import static com.dhis2.data.qr.QRjson.DATA_JSON;
 import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
 import static com.dhis2.data.qr.QRjson.EVENTS_JSON;
 import static com.dhis2.data.qr.QRjson.EVENT_JSON;
-import static com.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
 import static com.dhis2.data.qr.QRjson.TEI_JSON;
 
 /**
@@ -70,12 +67,12 @@ public class QRCodeGenerator implements QRInterface {
         List<QrViewModel> bitmaps = new ArrayList<>();
 
         return
-                briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid)
+                briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, TEI, teiUid == null ? "" : teiUid)
                         .mapToOne(TrackedEntityInstanceModel::create)
                         .map(data -> bitmaps.add(new QrViewModel(TEI_JSON, gson.toJson(data))))
 
 
-                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid)
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, TEI_ATTR, teiUid == null ? "" : teiUid)
                                 .mapToList(TrackedEntityAttributeValueModel::create))
                         .map(data -> {
                             ArrayList<TrackedEntityAttributeValueModel> arrayListAux = new ArrayList<>();
@@ -103,7 +100,7 @@ public class QRCodeGenerator implements QRInterface {
                         .map(data -> bitmaps.add(new QrViewModel(RELATIONSHIP_JSON, gson.toJson(data))))*/
 
 
-                        .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid)
+                        .flatMap(data -> briteDatabase.createQuery(EnrollmentModel.TABLE, TEI_ENROLLMENTS, teiUid == null ? "" : teiUid)
                                 .mapToList(EnrollmentModel::create))
                         .map(data -> {
                             ArrayList<EnrollmentModel> arrayListAux = new ArrayList<>();
@@ -127,7 +124,7 @@ public class QRCodeGenerator implements QRInterface {
 
                         .flatMap(data ->
                                 Observable.fromIterable(data)
-                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid())
+                                        .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid() == null ? "" : enrollment.uid())
                                                 .mapToList(EventModel::create)
                                                 .map(eventList -> {
                                                             for (EventModel eventModel : eventList) {
@@ -148,13 +145,13 @@ public class QRCodeGenerator implements QRInterface {
         List<QrViewModel> bitmaps = new ArrayList<>();
 
         return
-                briteDatabase.createQuery(EventModel.TABLE, EVENT, eventUid)
+                briteDatabase.createQuery(EventModel.TABLE, EVENT, eventUid == null ? "" : eventUid)
                         .mapToOne(EventModel::create)
                         .map(data -> {
                             bitmaps.add(new QrViewModel(EVENT_JSON, gson.toJson(data)));
                             return data;
                         })
-                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, data.uid())
+                        .flatMap(data -> briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, data.uid() == null ? "" : data.uid())
                                 .mapToList(TrackedEntityDataValueModel::create))
                         .map(data -> {
                             ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();

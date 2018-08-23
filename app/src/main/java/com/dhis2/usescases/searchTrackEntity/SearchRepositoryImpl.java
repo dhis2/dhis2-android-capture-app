@@ -119,7 +119,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     @NonNull
     @Override
     public Observable<List<TrackedEntityAttributeModel>> programAttributes(String programId) {
-        return briteDatabase.createQuery(TABLE_SET, SELECT_PROGRAM_ATTRIBUTES + "'" + programId + "'")
+        String id = programId == null ? "" : programId;
+        return briteDatabase.createQuery(TABLE_SET, SELECT_PROGRAM_ATTRIBUTES + "'" + id + "'")
                 .mapToList(TrackedEntityAttributeModel::create);
     }
 
@@ -131,13 +132,15 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<OptionModel>> optionSet(String optionSetId) {
-        return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET + "'" + optionSetId + "'")
+        String id = optionSetId == null ? "" : optionSetId;
+        return briteDatabase.createQuery(OptionModel.TABLE, SELECT_OPTION_SET + "'" + id + "'")
                 .mapToList(OptionModel::create);
     }
 
     @Override
     public Observable<List<ProgramModel>> programsWithRegistration(String programTypeId) {
-        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION + "'" + programTypeId + "'")
+        String id = programTypeId == null ? "" : programTypeId;
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM_WITH_REGISTRATION + "'" + id + "'")
                 .mapToList(ProgramModel::create);
     }
 
@@ -395,7 +398,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         List<TrackedEntityInstance> teiNotFound = new ArrayList<>();
 
         for (TrackedEntityInstance tei : teis) {
-            Cursor cursor = briteDatabase.query(FIND_LOCAL_TEI, tei.uid());
+            String id = tei == null || tei.uid() == null ? "" : tei.uid();
+            Cursor cursor = briteDatabase.query(FIND_LOCAL_TEI, id);
             String foundUid = null;
             if (cursor != null && cursor.moveToFirst()) {
                 foundUid = cursor.getString(0);
@@ -437,10 +441,18 @@ public class SearchRepositoryImpl implements SearchRepository {
                         }
 
                         Cursor attributes;
-                        if (selectedProgram == null)
-                            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY, tei.getTei().uid());
-                        else
-                            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY, selectedProgram.uid(), tei.getTei().uid());
+                        if (selectedProgram == null) {
+                            String id = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+                            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY,
+                                    id);
+                        }
+                        else {
+                            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+                            String progId = selectedProgram != null && selectedProgram.uid() != null ? selectedProgram.uid() : "";
+                            attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY,
+                                    progId,
+                                    teiId);
+                        }
                         if (attributes != null) {
                             attributes.moveToFirst();
                             for (int i = 0; i < attributes.getCount(); i++) {
@@ -456,10 +468,19 @@ public class SearchRepositoryImpl implements SearchRepository {
 
                         String overdueProgram = " AND Enrollment.program = ?";
                         Cursor hasOverdueCursor;
-                        if (selectedProgram == null)
-                            hasOverdueCursor = briteDatabase.query(overdueQuery, tei.getTei().uid(), EventStatus.SKIPPED.name());
-                        else
-                            hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram, tei.getTei().uid(), EventStatus.SKIPPED.name(), selectedProgram.uid());
+                        if (selectedProgram == null) {
+                            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+                            hasOverdueCursor = briteDatabase.query(overdueQuery,
+                                    teiId, EventStatus.SKIPPED.name());
+                        }
+                        else {
+                            String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
+                            String progId = selectedProgram != null && selectedProgram.uid() != null ? selectedProgram.uid() : "";
+                            hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram,
+                                    teiId,
+                                    EventStatus.SKIPPED.name(),
+                                    progId);
+                        }
                         if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
                             tei.setHasOverdue(true);
                             hasOverdueCursor.close();
