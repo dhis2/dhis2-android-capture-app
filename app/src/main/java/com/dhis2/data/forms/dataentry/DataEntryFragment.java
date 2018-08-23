@@ -84,6 +84,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
+        if(dataEntryPresenter == null)
+            dataEntryPresenter.onAttach(this);
         setUpRecyclerView();
     }
 
