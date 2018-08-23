@@ -284,8 +284,16 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public Consumer<String> storeIncidentDate() {
         return incidentDate -> {
+            Calendar cal = Calendar.getInstance();
+            Date date = DateUtils.databaseDateFormat().parse(incidentDate);
+            cal.setTime(date);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
             ContentValues enrollment = new ContentValues();
-            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, incidentDate);
+            enrollment.put(EnrollmentModel.Columns.INCIDENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
 
@@ -375,8 +383,8 @@ class EnrollmentFormRepository implements FormRepository {
 
                     EventModel event = EventModel.builder()
                             .uid(codeGenerator.generate())
-                            .created(now)
-                            .lastUpdated(now)
+                            .created(Calendar.getInstance().getTime())
+                            .lastUpdated(Calendar.getInstance().getTime())
                             .eventDate(eventDate)
                             .dueDate(eventDate)
                             .enrollment(enrollmentUid)
@@ -497,16 +505,20 @@ class EnrollmentFormRepository implements FormRepository {
                         String programStageProgram = cursor.getString(1);
                         String enrollmentOrgUnit = cursor.getString(2);
                         String trackedEntityType = cursor.getString(3);
+
                         Calendar cal = Calendar.getInstance();
-                        cal.setTime(Calendar.getInstance().getTime());
-                        Date eventDate = cal.getTime();
+                        cal.setTime(cal.getTime());
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
 
                         Date createdDate = Calendar.getInstance().getTime();
                         EventModel event = EventModel.builder()
                                 .uid(codeGenerator.generate())
                                 .created(createdDate)
                                 .lastUpdated(createdDate)
-                                .eventDate(eventDate)
+                                .eventDate(cal.getTime())
                                 .enrollment(enrollmentUid)
                                 .program(programStageProgram)
                                 .programStage(programStageUid)

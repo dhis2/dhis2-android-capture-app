@@ -323,6 +323,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     ContentValues values = new ContentValues();
                     Calendar createdDate = Calendar.getInstance();
                     Calendar dueDate = Calendar.getInstance();
+                    dueDate.set(Calendar.HOUR_OF_DAY, 0);
+                    dueDate.set(Calendar.MINUTE, 0);
+                    dueDate.set(Calendar.SECOND, 0);
+                    dueDate.set(Calendar.MILLISECOND, 0);
+
                     if (standardInterval != null)
                         dueDate.add(Calendar.DAY_OF_YEAR, standardInterval);
 
@@ -365,6 +370,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .flatMap(event -> {
                     ContentValues values = new ContentValues();
                     Calendar createdDate = Calendar.getInstance();
+
+                    chosenDate.set(Calendar.HOUR_OF_DAY, 0);
+                    chosenDate.set(Calendar.MINUTE, 0);
+                    chosenDate.set(Calendar.SECOND, 0);
+                    chosenDate.set(Calendar.MILLISECOND, 0);
 
                     values.put(EventModel.Columns.UID, codeGenerator.generate());
                     values.put(EventModel.Columns.ENROLLMENT, event.enrollment());

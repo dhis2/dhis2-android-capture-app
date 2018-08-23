@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.utils.CodeGenerator;
+import com.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
@@ -22,6 +23,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -108,6 +110,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
 
         Date createDate = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
         if (date != null && date.after(createDate))
             return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
@@ -135,7 +143,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .program(programUid)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-                .eventDate(date)
+                .eventDate(cal.getTime())
                 .completedDate(null)
                 .dueDate(null)
                 .state(State.TO_POST)
@@ -169,6 +177,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                             @NonNull Date dueDate, @NonNull String orgUnitUid, @Nullable String categoryOptionsUid,
                                             @Nullable String categoryOptionComboUid, @NonNull String latitude, @NonNull String longitude) {
         Date createDate = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dueDate);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
         String uid = codeGenerator.generate();
 
@@ -183,9 +197,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .program(program)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-                .eventDate(dueDate)
+                .eventDate(cal.getTime())
                 .completedDate(null)
-                .dueDate(dueDate)
+                .dueDate(cal.getTime())
                 .state(State.TO_POST)
                 .attributeCategoryOptions(categoryOptionsUid)
                 .attributeOptionCombo(categoryOptionComboUid)
@@ -268,9 +282,21 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
 
         Date currentDate = Calendar.getInstance().getTime();
+        Date dueDate = null;
+        try {
+            dueDate = DateUtils.databaseDateFormat().parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dueDate);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EventModel.Columns.EVENT_DATE, date);
+        contentValues.put(EventModel.Columns.EVENT_DATE, dueDate.getTime());
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
         // TODO CRIS: CHECK IF THESE ARE WORKING...
         contentValues.put(EventModel.Columns.LATITUDE, latitude);
