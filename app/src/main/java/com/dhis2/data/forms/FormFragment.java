@@ -85,6 +85,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private LinearLayout dateLayout;
+    private final int RQ_EVENT = 9876;
 
 
     public FormFragment() {
@@ -420,6 +421,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 publishCoordinatesChanged(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
                 this.coordinatesView = null;
                 break;
+            case RQ_EVENT:
+                getActivity().finish();
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -459,11 +463,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 bundle.putString("TEI_UID", enrollmentTrio.val1());
                 if (!enrollmentTrio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
                     FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
-                    startActivity(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment));
+                    startActivityForResult(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment), RQ_EVENT);
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
                     startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+                    getActivity().finish();
                 }
-                getActivity().finish();
             } else {
                 checkAction();
             }
