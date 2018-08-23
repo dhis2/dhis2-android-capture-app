@@ -11,6 +11,8 @@ import com.dhis2.databinding.FormDateTimeTextBinding;
 import com.dhis2.databinding.FormTimeTextBinding;
 import com.dhis2.utils.DateUtils;
 
+import org.hisp.dhis.android.core.common.ValueType;
+
 import java.util.Date;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,6 +33,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     private final FlowableProcessor<RowAction> processor;
     @NonNull
     private BehaviorProcessor<DateTimeViewModel> model;
+    private DateTimeViewModel viewModel;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
@@ -109,13 +112,23 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
 
     public void update(DateTimeViewModel viewModel) {
+        this.viewModel = viewModel;
         model.onNext(viewModel);
     }
 
     @Override
     public void onDateSelected(Date date) {
+        String dateFormatted = "";
+        if(date != null)
+            if(viewModel.valueType() == ValueType.DATE)
+                dateFormatted = DateUtils.uiDateFormat().format(date);
+            else if(viewModel.valueType() == ValueType.TIME)
+                dateFormatted = date.toString();
+            else {
+                dateFormatted = DateUtils.databaseDateFormat().format(date);
+            }
         processor.onNext(
-                RowAction.create(model.getValue().uid(), date != null ? DateUtils.databaseDateFormat().format(date) : null)
+                RowAction.create(model.getValue().uid(), date != null ? dateFormatted : null)
         );
     }
 
