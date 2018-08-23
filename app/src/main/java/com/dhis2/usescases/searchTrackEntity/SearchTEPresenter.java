@@ -421,7 +421,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean isA, boolean online) {
+    public void addRelationship(String TEIuid, String relationshipTypeUid, boolean online) {
         if (!online) {
             String relationshipType;
             if (relationshipTypeUid == null)
@@ -430,15 +430,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 relationshipType = relationshipTypeUid;
 
             Intent intent = new Intent();
-            if (isA)
-                intent.putExtra("TEI_A_UID", TEIuid);
-            else
-                intent.putExtra("TEI_B_UID", TEIuid);
+            intent.putExtra("TEI_A_UID", TEIuid);
             intent.putExtra("RELATIONSHIP_TYPE_UID", relationshipType);
             view.getAbstractActivity().setResult(RESULT_OK, intent);
             view.getAbstractActivity().finish();
         } else {
-            downloadTeiForRelationship(TEIuid, relationshipTypeUid, isA);
+            downloadTeiForRelationship(TEIuid, relationshipTypeUid);
         }
     }
 
@@ -458,7 +455,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid, boolean isA) {
+    public void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
@@ -466,7 +463,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> addRelationship(TEIuid, relationshipTypeUid, isA, false),
+                                data -> addRelationship(TEIuid, relationshipTypeUid, false),
                                 t -> Log.d("ONLINE_SEARCH", t.getMessage()))
         );
     }
