@@ -1,19 +1,24 @@
 package com.dhis2.usescases.syncManager;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dhis2.App;
 import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
@@ -66,6 +71,22 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         // Required empty public constructor
     }
 
+    private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
+                if (((App) getActivity().getApplication()).isSyncing() &&
+                        getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
+                    binding.buttonSyncData.setEnabled(false);
+                    binding.buttonSyncMeta.setEnabled(false);
+                } else {
+                    binding.buttonSyncData.setEnabled(true);
+                    binding.buttonSyncMeta.setEnabled(true);
+                }
+            }
+        }
+    };
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -96,6 +117,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onResume() {
         super.onResume();
         presenter.init(this);
+        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
+
+        if(((App) getActivity().getApplication()).isSyncing()){
+            binding.buttonSyncData.setEnabled(false);
+            binding.buttonSyncMeta.setEnabled(false);
+        }
 
         showTutorial();
 
@@ -132,6 +159,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void onPause() {
         super.onPause();
         listenerDisposable.clear();
+        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).unregisterReceiver(syncReceiver);
         presenter.disponse();
     }
 
