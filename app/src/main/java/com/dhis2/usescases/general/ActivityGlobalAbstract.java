@@ -15,7 +15,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,7 +54,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
-    private ContentLoadingProgressBar progressBar;
+    public ContentLoadingProgressBar progressBar;
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
