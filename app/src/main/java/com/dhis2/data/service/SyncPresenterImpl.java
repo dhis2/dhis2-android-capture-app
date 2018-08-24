@@ -80,59 +80,73 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncEvents() {
 
-//        new PostData().execute();
-
+        Log.d("SYNC_EVENTS", "Sync up of Events are starting");
         disposable.add(Observable.fromCallable(d2.syncSingleEvents())
-                .doOnError(throwable -> Log.d("EVENTS", throwable.getMessage()))
+                .doOnError(throwable -> Log.d("SYNC_EVENTS", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
                 .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        data -> Log.d("DONE", "Events done"),
+                        data -> {
+                            Log.d("SYNC_EVENTS", "Sync up of Events are done");
+                            downloadEvents(); },
                         Timber::d
                 )
         );
 
-        disposable.add(
-                events()
-                        .subscribeOn(Schedulers.io())
-                        .map(response -> SyncResult.success())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .onErrorReturn(throwable -> SyncResult.failure(
-                                throwable.getMessage() == null ? "" : throwable.getMessage()))
-                        .startWith(SyncResult.progress())
-                        .subscribe(update(SyncState.EVENTS),
-                                Timber::d));
+
+    }
+
+    private void downloadEvents(){
+        Log.d("SYNC_EVENTS", "Sync down of Events are starting");
+        disposable.add(events()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .doFinally(()->Log.d("SYNC_EVENTS", "Sync down of events are done"))
+                .subscribe(
+                        update(SyncState.EVENTS),
+                        Timber::d)
+        );
     }
 
     @Override
     public void syncTrackedEntities() {
-
+        Log.d("SYNC_TEI", "Sync up of TEIs are done");
         disposable.add(Observable.fromCallable(d2.syncTrackedEntityInstances())
-                .doOnError(throwable -> Log.d("EVENTS", throwable.getMessage()))
+                .doOnError(throwable -> Log.d("SYNC_TEI", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
                 .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        data -> Log.d("DONE", "Tei done"),
+                        data -> {
+                            Log.d("SYNC_TEI", "Sync up of TEIs are done");
+                            downloadTrackedEntities();
+                        },
                         Timber::d
                 )
         );
 
-        disposable.add(
-                trackerData()
-                        .subscribeOn(Schedulers.io())
-                        .map(response -> SyncResult.success())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .onErrorReturn(throwable -> SyncResult.failure(
-                                throwable.getMessage() == null ? "" : throwable.getMessage()))
-                        .startWith(SyncResult.progress())
-                        .subscribe(update(SyncState.TEI),
-                                Timber::d
-                        ));
+    }
 
+    private void downloadTrackedEntities(){
+        Log.d("SYNC_TEI", "Sync down of TEIs are done");
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .doFinally(() -> Log.d("SYNC_TEI", "Sync down of TEIs are done"))
+                .subscribe(update(SyncState.TEI),
+                        Timber::d
+                ));
     }
 
     @Override

@@ -76,7 +76,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -92,7 +92,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues() {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";

@@ -71,11 +71,11 @@ public class SearchTEContractsModule {
 
         ProgramModel getProgramModel();
 
-        void addRelationship(String TEIuid, String relationshipTypeUid, boolean b, boolean online);
+        void addRelationship(String TEIuid, String relationshipTypeUid, boolean online);
 
         void downloadTei(String teiUid);
 
-        void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid, boolean b);
+        void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
     }

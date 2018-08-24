@@ -167,7 +167,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Flowable<List<FormSectionViewModel>> programStageSections(String eventUid) {
         return briteDatabase
-                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid)
+                .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> mapToFormSectionViewModels(eventUid, cursor))
                 .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
     }
@@ -198,10 +198,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     private String prepareStatement(String sectionUid, String eventUid) {
         String where;
         if (isEmpty(sectionUid)) {
-            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid, sectionUid);
+                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);
@@ -270,20 +270,20 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
 
             if (briteDatabase.update(EventModel.TABLE, values,
-                    EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+                    EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
 
                 throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                         "has not been successfully updated", event.uid()));
             }
 
-            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid);
+            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
             if (programCursor != null && cursor.moveToNext()) {
                 ProgramModel program = ProgramModel.create(programCursor);
                 programCursor.close();
                 ContentValues programValues = program.toContentValues();
                 values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
                 if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                        ProgramModel.Columns.UID + " = ?", program.uid()) <= 0) {
+                        ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
 
                     throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
                             "has not been successfully updated", event.uid()));
@@ -296,19 +296,19 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     @Override
     public Flowable<EventModel> getEvent(String eventId) {
-        return briteDatabase.createQuery(EventModel.TABLE, EVENT_QUERY, eventId)
+        return briteDatabase.createQuery(EventModel.TABLE, EVENT_QUERY, eventId == null ? "" : eventId)
                 .mapToOne(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Observable<Boolean> accessDataWrite(String eventId) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
                 .mapToOne(cursor -> cursor.getInt(0) == 1);
     }
 
     @NonNull
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
@@ -323,7 +323,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = parseDate(cursor.getString(0));
                     return RuleDataValue.create(eventDate, cursor.getString(1),

@@ -83,9 +83,9 @@ public final class AttrValueStore implements AttrEntryStore {
     private long update(@NonNull String attribute, @Nullable String value) {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
-        sqLiteBind(updateStatement, 2, value);
-        sqLiteBind(updateStatement, 3, enrollment);
-        sqLiteBind(updateStatement, 4, attribute);
+        sqLiteBind(updateStatement, 2, value == null ? "" : value);
+        sqLiteBind(updateStatement, 3, enrollment == null ? "" : value);
+        sqLiteBind(updateStatement, 4, attribute == null ? "" : value);
 
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -98,11 +98,11 @@ public final class AttrValueStore implements AttrEntryStore {
         String created = BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime());
 
-        sqLiteBind(insertStatement, 1, created);
-        sqLiteBind(insertStatement, 2, created);
-        sqLiteBind(insertStatement, 3, value);
-        sqLiteBind(insertStatement, 4, attribute);
-        sqLiteBind(insertStatement, 5, enrollment);
+        sqLiteBind(insertStatement, 1, created == null ? "" : created);
+        sqLiteBind(insertStatement, 2, created == null ? "" : created);
+        sqLiteBind(insertStatement, 3, value == null ? "" : value);
+        sqLiteBind(insertStatement, 4, attribute == null ? "" : attribute);
+        sqLiteBind(insertStatement, 5, enrollment == null ? "" : enrollment);
 
         long inserted = briteDatabase.executeInsert(
                 TrackedEntityAttributeValueModel.TABLE, insertStatement);
@@ -113,7 +113,7 @@ public final class AttrValueStore implements AttrEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||

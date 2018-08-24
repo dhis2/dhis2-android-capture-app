@@ -5,13 +5,13 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.dhis2.data.metadata.MetadataRepository;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.data.tuples.Trio;
 import com.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +76,8 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
-                    Trio<RelationshipTypeModel, String, Boolean> selectedRelationShip = (Trio<RelationshipTypeModel, String, Boolean>) parent.getItemAtPosition(position);
-                    presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(), selectedRelationShip.val0().uid(), selectedRelationShip.val2(),trackedEntityInstanceModel.isOnline());
+                    Pair<RelationshipTypeModel, String> selectedRelationShip = (Pair<RelationshipTypeModel, String>) parent.getItemAtPosition(position);
+                    presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(), selectedRelationShip.val0().uid(),trackedEntityInstanceModel.isOnline());
                 }
             }
 

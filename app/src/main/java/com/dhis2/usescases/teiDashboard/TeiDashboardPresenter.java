@@ -321,20 +321,19 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
-    public void addRelationship(String trackEntityInstance_A, String trackEntityInstance_B, String relationshipType) {
-        if (trackEntityInstance_A != null) {
-            if (!trackEntityInstance_A.equals(teUid))
-//                dashboardRepository.saveRelationship(trackEntityInstance_A, teUid, relationshipType);
-                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
-            else
-                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
-        } else {
-            if (!trackEntityInstance_B.equals(teUid))
-//                dashboardRepository.saveRelationship(teUid, trackEntityInstance_B, relationshipType);
-                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, teUid, trackEntityInstance_B);
-            else
-                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
-        }
+    public void addRelationship(String trackEntityInstance_A, String relationshipType) {
+        d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
+//        if (trackEntityInstance_A != null) {
+//            if (!trackEntityInstance_A.equals(teUid))
+//                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
+//            else
+//                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
+//        } else {
+//            if (!trackEntityInstance_B.equals(teUid))
+//                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, teUid, trackEntityInstance_B);
+//            else
+//                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
+//        }
     }
 
     @Override

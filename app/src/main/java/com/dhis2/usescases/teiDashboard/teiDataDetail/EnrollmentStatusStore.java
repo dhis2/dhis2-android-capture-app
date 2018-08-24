@@ -22,16 +22,10 @@ import io.reactivex.Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
-   /* private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
-            "SET lastUpdated = ?, value = ?\n" +
-            "WHERE trackedEntityInstance = (\n" +
-            "  SELECT trackedEntityInstance FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1\n" +
-            ") AND trackedEntityAttribute = ?;";*/
 
     private static final String UPDATE = "UPDATE Enrollment\n" +
             "SET lastUpdated = ?, status = ?\n" +
             "WHERE uid = ?;";
-
 
     private static final String INSERT = "INSERT INTO TrackedEntityAttributeValue ( " +
             "created, lastUpdated, value, trackedEntityAttribute, trackedEntityInstance" +
@@ -108,7 +102,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
         sqLiteBind(updateStatement, 2, value);
-        sqLiteBind(updateStatement, 3, enrollment);
+        sqLiteBind(updateStatement, 3, enrollment == null ? "" : enrollment);
 
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -120,7 +114,7 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||

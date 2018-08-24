@@ -91,7 +91,9 @@ class HomeRepositoryImpl implements HomeRepository {
     public Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program) {
         String queryFinal = null;
 
-        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, program.uid()).mapToList(EventModel::create)
+        String id = program == null || program.uid() == null ? "" : program.uid();
+
+        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, id).mapToList(EventModel::create)
                 .flatMap(data -> {
                     if (program.programType() == ProgramType.WITH_REGISTRATION)
                         return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_TYPE_NAME, program.trackedEntityType())
