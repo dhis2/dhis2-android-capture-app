@@ -1,7 +1,6 @@
 package com.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -20,8 +19,6 @@ import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
@@ -76,7 +73,7 @@ final class DataValueStore implements DataEntryStore {
         // ToDo: write test cases for different events
         return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                 TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
+                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid == null ? "" : uid, eventUid == null ? "" : eventUid);
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
@@ -95,7 +92,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
@@ -105,7 +102,7 @@ final class DataValueStore implements DataEntryStore {
                         values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
 
                         if (briteDatabase.update(EventModel.TABLE, values,
-                                EventModel.Columns.UID + " = ?", eventUid) <= 0) {
+                                EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));

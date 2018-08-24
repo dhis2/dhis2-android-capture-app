@@ -101,7 +101,7 @@ final class ProgramStageRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
 
-        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid);
+        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
         if (cursor != null && cursor.moveToFirst()) {
             renderingType = cursor.getString(0) != null ?
                     ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
@@ -109,7 +109,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             cursor.close();
         }
 
-        Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid);
+        Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid == null ? "" : eventUid);
         if (accessCursor != null && accessCursor.moveToFirst()) {
             accessDataWrite = accessCursor.getInt(0) == 1;
             accessCursor.close();
@@ -130,7 +130,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
             for (FieldViewModel fieldViewModel : fieldViewModels) {
                 if (!isEmpty(fieldViewModel.optionSet())) {
-                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet());
+                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
                     if (cursor != null && cursor.moveToFirst()) {
                         for (int i = 0; i < cursor.getCount(); i++) {
                             String uid = cursor.getString(0);
@@ -167,14 +167,14 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @Override
     public void assign(String field, String content) {
-        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field);
+        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityDataValue WHERE dataElement = ?", field == null ? "" : field);
         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
             TrackedEntityDataValueModel dataValue = TrackedEntityDataValueModel.create(dataValueCursor);
             ContentValues contentValues = dataValue.toContentValues();
             contentValues.put(TrackedEntityDataValueModel.Columns.VALUE, content);
-            int row = briteDatabase.update(TrackedEntityDataValueModel.TABLE, contentValues, "dataElement = ?", field);
+            int row = briteDatabase.update(TrackedEntityDataValueModel.TABLE, contentValues, "dataElement = ?", field == null ? "" : field);
             if (row == -1)
-                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field));
+                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field == null ? "" : field));
         }
     }
 
@@ -205,10 +205,10 @@ final class ProgramStageRepository implements DataEntryRepository {
     private String prepareStatement() {
         String where;
         if (isEmpty(sectionUid)) {
-            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
-                    "Field.section = '%s'", eventUid, sectionUid);
+                    "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
         }
 
         return String.format(Locale.US, QUERY, where);

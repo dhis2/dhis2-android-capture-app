@@ -122,7 +122,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     }
 
     private Flowable<List<RuleEvent>> ruleEvents(String enrollmentUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, enrollmentUid)
+        return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
@@ -132,7 +132,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
+                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
                     if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
                         for (int i = 0; i < dataValueCursor.getCount(); i++) {
                             Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
@@ -150,7 +150,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @NonNull
     private Flowable<List<RuleDataValue>> queryDataValues(String eventUid) {
         return briteDatabase.createQuery(Arrays.asList(EventModel.TABLE,
-                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid)
+                TrackedEntityDataValueModel.TABLE), QUERY_VALUES, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> {
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(0));
                     String value = cursor.getString(3) != null ? cursor.getString(3) : "";
@@ -161,13 +161,13 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
 
     private Flowable<RuleEnrollment> ruleEnrollemt(String enrollmentUid) {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
-                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
+                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST)
                 .flatMap(attributeValues ->
 
-                        briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
+                        briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid == null ? "" : enrollmentUid)
                                 .mapToOne(cursor -> {
                                     Date enrollmentDate = DateUtils.databaseDateFormat().parse(cursor.getString(2));
                                     Date incidentDate = cursor.isNull(1) ?
@@ -186,7 +186,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     @NonNull
     @Override
     public Observable<List<ProgramStageModel>> getProgramStages(String programUid) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programUid)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programUid == null ? "" : programUid)
                 .mapToList(ProgramStageModel::create);
     }
 
@@ -195,11 +195,11 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
     public Flowable<List<ProgramStageModel>> enrollmentProgramStages(String programId, String enrollmentUid) {
         List<ProgramStageModel> enrollmentStages = new ArrayList<>();
         List<ProgramStageModel> selectableStages = new ArrayList<>();
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, /*ENROLLMENT_PROGRAM_STAGES*/CURRENT_PROGRAM_STAGES, enrollmentUid)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, /*ENROLLMENT_PROGRAM_STAGES*/CURRENT_PROGRAM_STAGES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(ProgramStageModel::create)
                 .flatMap(data -> {
                     enrollmentStages.addAll(data);
-                    return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programId)
+                    return briteDatabase.createQuery(ProgramStageModel.TABLE, PROGRAM_STAGE_QUERY, programId == null ? "" : programId)
                             .mapToList(ProgramStageModel::create);
                 })
                 .map(data -> {

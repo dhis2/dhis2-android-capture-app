@@ -88,7 +88,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
         return briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
                 .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -123,7 +123,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                 String teiUid = null;
                 Cursor tei = briteDatabase.query("SELECT TrackedEntityInstance.uid FROM TrackedEntityInstance " +
                         "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid " +
-                        "WHERE Enrollment.uid = ?", enrollment);
+                        "WHERE Enrollment.uid = ?", enrollment == null ? "" : enrollment);
                 if (tei != null && tei.moveToFirst()) {
                     teiUid = tei.getString(0);
                     tei.close();
@@ -145,9 +145,9 @@ final class EnrollmentRepository implements DataEntryRepository {
                             .compileStatement(INSERT);
                     sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                             .format(Calendar.getInstance().getTime()));
-                    sqLiteBind(updateStatement, 2, dataValue);
-                    sqLiteBind(updateStatement, 3, uid);
-                    sqLiteBind(updateStatement, 4, teiUid);
+                    sqLiteBind(updateStatement, 2, dataValue == null ? "" : dataValue);
+                    sqLiteBind(updateStatement, 3, uid == null ? "" : uid);
+                    sqLiteBind(updateStatement, 4, teiUid == null ? "" : teiUid);
 
                     long insert = briteDatabase.executeInsert(
                             TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -166,14 +166,14 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @Override
     public void assign(String field, String content) {
-        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityAttributeValue WHERE trackedEntityAttribute = ?", field);
+        Cursor dataValueCursor = briteDatabase.query("SELECT * FROM TrackedEntityAttributeValue WHERE trackedEntityAttribute = ?", field == null ? "" : field);
         if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
             TrackedEntityAttributeValueModel dataValue = TrackedEntityAttributeValueModel.create(dataValueCursor);
             ContentValues contentValues = dataValue.toContentValues();
             contentValues.put(TrackedEntityAttributeValueModel.Columns.VALUE, content);
-            int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field);
+            int row = briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, contentValues, "trackedEntityAttribute = ?", field == null ? "" : field);
             if (row == -1)
-                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field));
+                Log.d(this.getClass().getSimpleName(), String.format("Error updating field %s", field == null ? "" : field));
         }
     }
 }

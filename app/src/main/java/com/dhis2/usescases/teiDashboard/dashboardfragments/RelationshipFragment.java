@@ -98,9 +98,8 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     String tei_a = data.getStringExtra("TEI_A_UID");
-                    String tei_b = data.getStringExtra("TEI_B_UID");
                     String relationshipType = data.getStringExtra("RELATIONSHIP_TYPE_UID");
-                    presenter.addRelationship(tei_a, tei_b, relationshipType);
+                    presenter.addRelationship(tei_a, relationshipType);
                 }
             }
         }

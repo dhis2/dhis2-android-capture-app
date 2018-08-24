@@ -86,7 +86,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @NonNull
     private Flowable<RuleEnrollment> queryEnrollment(
             @NonNull List<RuleAttributeValue> attributeValues) {
-        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid)
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, QUERY_ENROLLMENT, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToOne(cursor -> {
                     Date enrollmentDate = parseDate(cursor.getString(2));
                     Date incidentDate = cursor.isNull(1) ?
@@ -104,7 +104,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
     @NonNull
     private Flowable<List<RuleAttributeValue>> queryAttributeValues() {
         return briteDatabase.createQuery(Arrays.asList(EnrollmentModel.TABLE,
-                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid)
+                TrackedEntityAttributeValueModel.TABLE), QUERY_ATTRIBUTE_VALUES, enrollmentUid == null ? "" : enrollmentUid)
                 .mapToList(cursor -> RuleAttributeValue.create(
                         cursor.getString(0), cursor.getString(1))
                 ).toFlowable(BackpressureStrategy.LATEST);

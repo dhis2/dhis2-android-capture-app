@@ -1,6 +1,5 @@
 package com.dhis2.usescases.teiDashboard;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -23,7 +22,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by ppajuelo on 30/11/2017.
@@ -87,7 +85,7 @@ public class TeiDashboardContracts {
 
         void goToAddRelationship();
 
-        void addRelationship(String trackEntityInstance_A, String trackedEntityInstance_B, String relationshipType);
+        void addRelationship(String trackEntityInstance_A, String relationshipType);
 
         void deleteRelationship(Relationship relationshipModel);
 

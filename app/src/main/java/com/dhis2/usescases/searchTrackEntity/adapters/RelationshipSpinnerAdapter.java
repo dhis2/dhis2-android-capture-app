@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.dhis2.R;
-import com.dhis2.data.tuples.Trio;
+import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.ColorUtils;
 
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
@@ -21,21 +21,22 @@ import java.util.List;
 /**
  * Created by frodriguez on 6/6/2018.
  */
-public class RelationshipSpinnerAdapter extends ArrayAdapter<Trio<RelationshipTypeModel, String, Boolean>> {
+public class RelationshipSpinnerAdapter extends ArrayAdapter<Pair<RelationshipTypeModel, String>> {
 
-    private List<Trio<RelationshipTypeModel, String, Boolean>> data;
+    private List<Pair<RelationshipTypeModel, String>> data;
 
     public RelationshipSpinnerAdapter(@NonNull Context context, @NonNull List<RelationshipTypeModel> itemList) {
         super(context, android.R.layout.simple_spinner_dropdown_item);
         this.data = new ArrayList<>();
-        this.data.add(Trio.create(RelationshipTypeModel.builder().build(), context.getString(R.string.add_relation_button), false));
+        this.data.add(Pair.create(RelationshipTypeModel.builder().build(), context.getString(R.string.add_relation_button)));
         for (RelationshipTypeModel relationshipTypeModel : itemList) {
-            if (relationshipTypeModel.aIsToB().equals(relationshipTypeModel.bIsToA()))
-                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true));
-            else {
-                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true)); //for aIsToB
-                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.bIsToA(), false)); //for bIsToA
-            }
+            data.add(Pair.create(relationshipTypeModel, relationshipTypeModel.displayName()));
+//            if (relationshipTypeModel.aIsToB().equals(relationshipTypeModel.bIsToA()))
+//                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true));
+//            else {
+//                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.aIsToB(), true)); //for aIsToB
+//                data.add(Trio.create(relationshipTypeModel, relationshipTypeModel.bIsToA(), false)); //for bIsToA
+//            }
         }
         addAll(data);
         notifyDataSetChanged();

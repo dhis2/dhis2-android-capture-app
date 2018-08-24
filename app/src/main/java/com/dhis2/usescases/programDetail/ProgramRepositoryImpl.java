@@ -53,28 +53,34 @@ public class ProgramRepositoryImpl implements ProgramRepository {
     @NonNull
     @Override
     public Observable<List<TrackedEntityInstanceModel>> trackedEntityInstances(String programUid) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, programUid)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, programUid == null ? "" : programUid)
                 .mapToList(TrackedEntityInstanceModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> programAttributesValues(String programId, String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_PROGRAM_ATTRIBUTES_FOR_TEI, programId, teiUid)
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_PROGRAM_ATTRIBUTES_FOR_TEI,
+                programId == null ? "" : programId,
+                teiUid == null ? "" : teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<ProgramStageModel>> programStage(String programStageId, String teiUid) {
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_FOR_TEI, programStageId, teiUid)
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_PROGRAM_STAGE_FOR_TEI,
+                programStageId == null ? "" : programStageId,
+                teiUid == null ? "" : teiUid)
                 .mapToList(ProgramStageModel::create);
     }
 
     @NonNull
     @Override
     public Observable<List<EnrollmentModel>> enrollments(String programId, String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_ENROLLMENT_FOR_TEI, programId, teiUid)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_ENROLLMENT_FOR_TEI,
+                programId == null ? "" : programId,
+                teiUid == null ? "" : teiUid)
                 .mapToList(EnrollmentModel::create);
     }
 }
