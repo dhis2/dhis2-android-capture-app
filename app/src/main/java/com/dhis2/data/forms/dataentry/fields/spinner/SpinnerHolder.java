@@ -39,6 +39,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
     /* @NonNull
      private BehaviorProcessor<SpinnerViewModel> model;*/
     private SpinnerViewModel viewModel;
+    List<OptionModel> options;
 
     SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
         super(mBinding.getRoot());
@@ -78,6 +79,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
     public void update(SpinnerViewModel viewModel) {
 //        model.onNext(viewModel);
         this.viewModel = viewModel;
+        options = Bindings.setOptionSet(viewModel.optionSet());
 
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
         editText.setEnabled(viewModel.editable());
@@ -107,15 +109,18 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         String value = item.getTitle().toString();
+        String code = null;
+        for (OptionModel optionModel : options)
+            if(value.equals(optionModel.displayName()))
+                code = optionModel.code();
         processor.onNext(
-                RowAction.create(viewModel.uid(), value.equals(viewModel.label()) ? null : value)
+                RowAction.create(viewModel.uid(), code)
         );
         return false;
     }
 
     @Override
     public void onClick(View v) {
-        List<OptionModel> options = Bindings.setOptionSet(viewModel.optionSet());
         PopupMenu menu = new PopupMenu(itemView.getContext(), v);
         menu.setOnMenuItemClickListener(this);
         menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label());
