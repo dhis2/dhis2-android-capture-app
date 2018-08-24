@@ -32,6 +32,8 @@ class DhisCustomLauncher : AppWidgetProvider() {
         }
     }
 
+
+
     override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
     }
@@ -52,10 +54,16 @@ class DhisCustomLauncher : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.dhis_custom_launcher)
 
             views.setImageViewResource(R.id.appwidget_image, icon)
-
+            views.setOnClickPendingIntent(R.id.appwidget_image, getPendingIntent(context))
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
+
+        private fun getPendingIntent(context: Context): PendingIntent {
+            val intent = Intent(context, SplashActivity::class.java)
+            return PendingIntent.getActivity(context, 0, intent, 0)
+        }
     }
+
 }
 
