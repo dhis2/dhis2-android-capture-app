@@ -78,4 +78,6 @@ public interface DashboardRepository {
     Observable<Trio<ProgramIndicatorModel, String, String>> getLegendColorForIndicator(ProgramIndicatorModel programIndicator, String value);
 
     Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
+
+    void updateTeiState();
 }

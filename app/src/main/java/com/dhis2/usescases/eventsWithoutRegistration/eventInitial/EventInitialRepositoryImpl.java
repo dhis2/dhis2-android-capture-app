@@ -303,7 +303,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.MILLISECOND, 0);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EventModel.Columns.EVENT_DATE, dueDate.getTime());
+        contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(cal.getTime()));
         contentValues.put(EventModel.Columns.ORGANISATION_UNIT, orgUnitUid);
         // TODO CRIS: CHECK IF THESE ARE WORKING...
         contentValues.put(EventModel.Columns.LATITUDE, latitude);

@@ -67,7 +67,6 @@
         <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
         <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
-        <activity android:name=".data.forms.formActivityTest.FormActivityTest" />
 
         <service
             android:name=".data.service.SyncService"
