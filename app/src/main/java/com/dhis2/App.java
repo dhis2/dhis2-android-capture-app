@@ -1,6 +1,7 @@
 package com.dhis2;
 
 import android.databinding.ObservableBoolean;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
@@ -35,6 +36,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.Scheduler;
+import io.reactivex.android.plugins.RxAndroidPlugins;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 /**
@@ -89,6 +93,9 @@ public class App extends MultiDexApplication implements Components {
         setUpAppComponent();
         setUpServerComponent();
         setUpUserComponent();
+
+        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(),true);
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
 
     }
 
