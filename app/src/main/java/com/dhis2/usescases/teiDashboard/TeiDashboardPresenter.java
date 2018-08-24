@@ -28,6 +28,7 @@ import com.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import com.dhis2.utils.Constants;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -282,7 +283,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         if (success > 0) {
 
             boolean followUp = false;
-            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null){
+            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null) {
                 followUp = dashboardProgramModel.getCurrentEnrollment().followUp();
             }
 
@@ -322,18 +323,12 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
-        d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
-//        if (trackEntityInstance_A != null) {
-//            if (!trackEntityInstance_A.equals(teUid))
-//                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
-//            else
-//                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
-//        } else {
-//            if (!trackEntityInstance_B.equals(teUid))
-//                d2.relationshipModule().relationship.createTEIRelationship(relationshipType, teUid, trackEntityInstance_B);
-//            else
-//                view.displayMessage(view.getContext().getString(R.string.add_relationship_error));
-//        }
+        try {
+            d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
+            dashboardRepository.updateTeiState();
+        } catch (D2CallException e) {
+            Timber.d(e);
+        }
     }
 
     @Override

@@ -37,35 +37,37 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
 
         model = BehaviorProcessor.create();
 
-        disposable.add(model.subscribe(checkBoxViewModel -> {
-                    StringBuilder label = new StringBuilder(checkBoxViewModel.label());
-                    if (checkBoxViewModel.mandatory())
-                        label.append("*");
-                    binding.setLabel(label.toString());
-                    binding.setValueType(checkBoxViewModel.valueType());
-                    if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
-                        binding.customYesNo.getRadioGroup().check(R.id.yes);
-                    else if (checkBoxViewModel.value() != null)
-                        binding.customYesNo.getRadioGroup().check(R.id.no);
-                    else
-                        binding.customYesNo.getRadioGroup().check(R.id.no_value);
+        disposable.add(model
+                .filter(this::checkValue)
+                .subscribe(checkBoxViewModel -> {
+                            StringBuilder label = new StringBuilder(checkBoxViewModel.label());
+                            if (checkBoxViewModel.mandatory())
+                                label.append("*");
+                            binding.setLabel(label.toString());
+                            binding.setValueType(checkBoxViewModel.valueType());
+                            if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
+                                binding.customYesNo.getRadioGroup().check(R.id.yes);
+                            else if (checkBoxViewModel.value() != null)
+                                binding.customYesNo.getRadioGroup().check(R.id.no);
+                            else
+                                binding.customYesNo.getRadioGroup().check(R.id.no_value);
 
-                    if (checkBoxViewModel.warning() != null) {
-                        binding.warningError.setVisibility(View.VISIBLE);
-                        binding.warningError.setText(checkBoxViewModel.warning());
-                    } else if (checkBoxViewModel.error() != null) {
-                        binding.warningError.setVisibility(View.VISIBLE);
-                        binding.warningError.setText(checkBoxViewModel.error());
-                    } else {
-                        binding.warningError.setVisibility(View.GONE);
-                        binding.warningError.setText(null);
-                    }
+                            if (checkBoxViewModel.warning() != null) {
+                                binding.warningError.setVisibility(View.VISIBLE);
+                                binding.warningError.setText(checkBoxViewModel.warning());
+                            } else if (checkBoxViewModel.error() != null) {
+                                binding.warningError.setVisibility(View.VISIBLE);
+                                binding.warningError.setText(checkBoxViewModel.error());
+                            } else {
+                                binding.warningError.setVisibility(View.GONE);
+                                binding.warningError.setText(null);
+                            }
 
-                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                        radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
-                    }
-                },
-                Timber::d)
+                            for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                                radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
+                            }
+                        },
+                        Timber::d)
         );
 
         disposable.add(RxRadioGroup.checkedChanges(radioGroup).takeUntil(RxView.detaches(parent))
@@ -85,6 +87,10 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
                 .subscribe(
                         processor::onNext,
                         Timber::d));
+    }
+
+    private boolean checkValue(RadioButtonViewModel checkBoxViewModel) {
+        return model.getValue() == null || !model.getValue().equals(checkBoxViewModel);
     }
 
     public void update(RadioButtonViewModel viewModel) {

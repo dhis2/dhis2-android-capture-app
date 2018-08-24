@@ -33,6 +33,11 @@ public final class AttributeValueStore implements DataEntryStore {
             "  SELECT trackedEntityInstance FROM Enrollment WHERE uid = ? LIMIT 1\n" +
             "));";
 
+    private static final String DELETE = "DELETE FROM TrackedEntityAttributeValue " +
+            "WHERE trackedEntityInstance = (\n" +
+            "  SELECT trackedEntityInstance FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1\n" +
+            ") AND trackedEntityAttribute = ?;";
+
     private static final String SELECT_TEI = "SELECT *\n" +
             "FROM TrackedEntityInstance\n" +
             "WHERE uid IN (\n" +
@@ -50,6 +55,9 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement insertStatement;
 
+    @NonNull
+    private final SQLiteStatement deleteStatement;
+
  /*   @NonNull
     private final CurrentDateProvider currentDateProvider;*/
 
@@ -57,7 +65,7 @@ public final class AttributeValueStore implements DataEntryStore {
     private final String enrollment;
 
     public AttributeValueStore(@NonNull BriteDatabase briteDatabase
-                        /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
+            /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
 //        this.currentDateProvider = currentDateProvider;
@@ -66,6 +74,8 @@ public final class AttributeValueStore implements DataEntryStore {
                 .compileStatement(UPDATE);
         insertStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(INSERT);
+        deleteStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(DELETE);
     }
 
     @NonNull
@@ -73,6 +83,9 @@ public final class AttributeValueStore implements DataEntryStore {
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable
                 .defer(() -> {
+                    if(value==null)
+                        return Flowable.just(delete(uid));
+
                     long updated = update(uid, value);
                     if (updated > 0) {
                         return Flowable.just(updated);
@@ -113,6 +126,18 @@ public final class AttributeValueStore implements DataEntryStore {
         insertStatement.clearBindings();
 
         return inserted;
+    }
+
+    private long delete(@NonNull String attribute) {
+        sqLiteBind(deleteStatement, 1, enrollment == null ? "" : enrollment);
+        sqLiteBind(deleteStatement, 2, attribute == null ? "" : attribute);
+
+        long deleted = briteDatabase.executeUpdateDelete(
+                TrackedEntityAttributeValueModel.TABLE, deleteStatement);
+        deleteStatement.clearBindings();
+
+        return deleted;
+
     }
 
     @NonNull

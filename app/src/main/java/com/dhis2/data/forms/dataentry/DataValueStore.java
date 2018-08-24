@@ -33,8 +33,8 @@ final class DataValueStore implements DataEntryStore {
     private final String eventUid;
 
     DataValueStore(@NonNull BriteDatabase briteDatabase,
-            @NonNull UserRepository userRepository,
-            @NonNull String eventUid) {
+                   @NonNull UserRepository userRepository,
+                   @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -48,6 +48,9 @@ final class DataValueStore implements DataEntryStore {
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return userCredentials
                 .switchMap((userCredentials) -> {
+                    if (value == null)
+                        return Flowable.just(delete(uid));
+
                     long updated = update(uid, value);
                     if (updated > 0) {
                         return Flowable.just(updated);
@@ -89,6 +92,13 @@ final class DataValueStore implements DataEntryStore {
                         .build();
         return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
                 dataValueModel.toContentValues());
+    }
+
+    private long delete(@NonNull String uid) {
+        return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
+                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
+                        TrackedEntityDataValueModel.Columns.EVENT + " = ?",
+                uid == null ? "" : uid, eventUid == null ? "" : eventUid);
     }
 
     private Flowable<Long> updateEvent(long status) {

@@ -328,7 +328,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<String> generateNewEvent(String lastModifiedEventUid, Integer standardInterval) {
-        return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "": lastModifiedEventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, GET_EVENT_FROM_UID, lastModifiedEventUid == null ? "" : lastModifiedEventUid)
                 .mapToOne(EventModel::create)
                 .flatMap(event -> {
                     ContentValues values = new ContentValues();
@@ -410,6 +410,22 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
                     return Observable.just("Event Created");
                 });
+    }
+
+    @Override
+    public void updateTeiState() {
+        String GET_TEI = "SELECT * FROM TrackedEntityInstance WHERE uid = ? LIMIT 1";
+        Cursor teiCursor = briteDatabase.query(GET_TEI, teiUid);
+        if (teiCursor != null && teiCursor.moveToFirst()) {
+            TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
+            ContentValues contentValues = tei.toContentValues();
+            if (contentValues.get(TrackedEntityInstanceModel.Columns.STATE).equals(State.SYNCED.name())) {
+                contentValues.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());
+
+                briteDatabase.update(TrackedEntityInstanceModel.TABLE, contentValues, "uid = ?", teiUid);
+
+            }
+        }
     }
 
     @Override
