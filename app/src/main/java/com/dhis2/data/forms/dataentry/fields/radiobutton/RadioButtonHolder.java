@@ -38,7 +38,7 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
         model = BehaviorProcessor.create();
 
         disposable.add(model
-                .filter(this::checkValue)
+                //.filter(this::checkValue)
                 .subscribe(checkBoxViewModel -> {
                             StringBuilder label = new StringBuilder(checkBoxViewModel.label());
                             if (checkBoxViewModel.mandatory())
