@@ -11,6 +11,7 @@ import com.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -100,6 +101,14 @@ public class SearchRepositoryImpl implements SearchRepository {
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM
+    );
+
+    public final String PROGRAM_COLOR_QUERY = String.format(
+            "SELECT %s FROM %S " +
+                    "WHERE %s = 'Program' AND %s = ?",
+            ObjectStyleModel.Columns.COLOR, ObjectStyleModel.TABLE,
+            ObjectStyleModel.Columns.OBJECT_TABLE,
+            ObjectStyleModel.Columns.UID
     );
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
@@ -500,5 +509,14 @@ public class SearchRepositoryImpl implements SearchRepository {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
+    }
+
+    @Override
+    public String getProgramColor(@NonNull String programUid) {
+        Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid);
+        if(cursor.moveToFirst()) {
+            return cursor.getString(0);
+        }
+        return null;
     }
 }

@@ -3,6 +3,7 @@ package com.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
@@ -83,10 +84,11 @@ class EnrollmentFormRepository implements FormRepository {
             "WHERE Enrollment.uid = ?";
 
     private static final String SELECT_USE_FIRST_STAGE =
-            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType \n" +
+            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType, Event.uid\n" +
                     "FROM Enrollment\n" +
                     "  JOIN Program ON Enrollment.program = Program.uid\n" +
                     "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
+                    "  JOIN Event ON event.enrollment = Enrollment.uid\n" +
                     "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
@@ -505,35 +507,38 @@ class EnrollmentFormRepository implements FormRepository {
                         String programStageProgram = cursor.getString(1);
                         String enrollmentOrgUnit = cursor.getString(2);
                         String trackedEntityType = cursor.getString(3);
+                        String eventUid = cursor.getString(4);
 
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(cal.getTime());
-                        cal.set(Calendar.HOUR_OF_DAY, 0);
-                        cal.set(Calendar.MINUTE, 0);
-                        cal.set(Calendar.SECOND, 0);
-                        cal.set(Calendar.MILLISECOND, 0);
+                        if(isEmpty(eventUid)){
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(cal.getTime());
+                            cal.set(Calendar.HOUR_OF_DAY, 0);
+                            cal.set(Calendar.MINUTE, 0);
+                            cal.set(Calendar.SECOND, 0);
+                            cal.set(Calendar.MILLISECOND, 0);
 
-                        Date createdDate = Calendar.getInstance().getTime();
-                        EventModel event = EventModel.builder()
-                                .uid(codeGenerator.generate())
-                                .created(createdDate)
-                                .lastUpdated(createdDate)
-                                .eventDate(cal.getTime())
-                                .enrollment(enrollmentUid)
-                                .program(programStageProgram)
-                                .programStage(programStageUid)
-                                .organisationUnit(enrollmentOrgUnit)
-                                .status(EventStatus.ACTIVE)
-                                .state(State.TO_POST)
-                                .build();
+                            Date createdDate = Calendar.getInstance().getTime();
+                            EventModel event = EventModel.builder()
+                                    .uid(codeGenerator.generate())
+                                    .created(createdDate)
+                                    .lastUpdated(createdDate)
+                                    .eventDate(cal.getTime())
+                                    .enrollment(enrollmentUid)
+                                    .program(programStageProgram)
+                                    .programStage(programStageUid)
+                                    .organisationUnit(enrollmentOrgUnit)
+                                    .status(EventStatus.ACTIVE)
+                                    .state(State.TO_POST)
+                                    .build();
 
-                        if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
-                            throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                            if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                                throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                            }
+                            updateProgramTable(createdDate, programStageProgram);
+                            return Trio.create(enrollmentUid, trackedEntityType, event.uid());
                         }
 
-                        updateProgramTable(createdDate, programStageProgram);
-
-                        return Trio.create(enrollmentUid, trackedEntityType, event.uid());
+                        return Trio.create(enrollmentUid, trackedEntityType, eventUid);
                     } else {
                         Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
                         tetCursor.moveToFirst();

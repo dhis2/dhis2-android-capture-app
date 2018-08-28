@@ -43,6 +43,8 @@ public class SearchTEContractsModule {
         void clearData();
 
         void setTutorial();
+
+        void setProgramColor(String data);
     }
 
     public interface Presenter {
@@ -78,5 +80,7 @@ public class SearchTEContractsModule {
         void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid);
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+        String getProgramColor(String uid);
     }
 }

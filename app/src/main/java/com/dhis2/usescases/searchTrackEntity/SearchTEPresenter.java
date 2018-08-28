@@ -493,4 +493,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         bundle.putString("PROGRAM_UID", selectedProgram != null ? selectedProgram.uid() : null);
         view.startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
     }
+
+    @Override
+    public String getProgramColor(String uid) {
+        return  searchRepository.getProgramColor(uid);
+    }
 }
