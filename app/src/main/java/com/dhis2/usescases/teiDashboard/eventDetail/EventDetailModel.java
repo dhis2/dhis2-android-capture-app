@@ -123,4 +123,8 @@ public class EventDetailModel extends BaseObservable {
 
         return eventCatComboOptionName;
     }
+
+    public ProgramModel getProgram() {
+        return programModel;
+    }
 }

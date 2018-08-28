@@ -216,7 +216,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 year,
                 month,
                 day);
-        dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        if(!eventDetailModel.getProgram().selectEnrollmentDatesInFuture()){
+            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
         });
         dateDialog.show();
