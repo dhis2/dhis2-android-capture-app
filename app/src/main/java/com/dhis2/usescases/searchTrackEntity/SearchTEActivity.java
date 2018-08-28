@@ -6,18 +6,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 
 import com.dhis2.App;
@@ -32,6 +39,7 @@ import com.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
+import com.dhis2.utils.ColorUtils;
 import com.dhis2.utils.EndlessRecyclerViewScrollListener;
 import com.dhis2.utils.HelpManager;
 import com.dhis2.utils.NetworkUtils;
@@ -292,6 +300,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
+                    ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos -1);
+                    setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                     binding.enrollmentButton.setVisibility(View.VISIBLE);
                 } else {
@@ -312,6 +322,41 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             if (programModels.get(i).uid().equals(initialProgram)) {
                 binding.programSpinner.setSelection(i + 1);
             }
+        }
+    }
+
+    @Override
+    public void setProgramColor(String color) {
+        int programTheme = ColorUtils.getThemeFromColor(color);
+        int programColor = ColorUtils.getColorFrom(this, color);
+
+
+
+        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                "com.dhis2", Context.MODE_PRIVATE);
+        if (programTheme != -1) {
+            prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
+            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
+            binding.mainToolbar.setBackgroundColor(programColor);
+            binding.appbatlayout.setBackgroundColor(programColor);
+        } else {
+            prefs.edit().remove("PROGRAM_THEME").apply();
+            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary)));
+            binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        }
+
+        binding.executePendingBindings();
+        setTheme(prefs.getInt("PROGRAM_THEME", prefs.getInt("THEME", R.style.AppTheme)));
+
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            TypedValue typedValue = new TypedValue();
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryDark});
+            int colorToReturn = a.getColor(0, 0);
+            a.recycle();
+            window.setStatusBarColor(colorToReturn);
         }
     }
 }
