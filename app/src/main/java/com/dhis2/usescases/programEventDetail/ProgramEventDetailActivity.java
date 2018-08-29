@@ -47,7 +47,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 import timber.log.Timber;
 
 import static com.dhis2.utils.Period.DAILY;
@@ -131,6 +130,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         this.programModel = program;
         presenter.setProgram(program);
         binding.setName(program.displayName());
+
+        if (!program.accessDataWrite()){
+            binding.addEventButton.setVisibility(View.GONE);
+        }
+        else {
+            binding.addEventButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

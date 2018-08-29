@@ -176,6 +176,17 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         )
 
         );
+
+        compositeDisposable.add(
+                eventInitialRepository.programAccessDataWrite(programId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setAccessDataWrite,
+                                Timber::e
+                        )
+
+        );
     }
 
     @Override
