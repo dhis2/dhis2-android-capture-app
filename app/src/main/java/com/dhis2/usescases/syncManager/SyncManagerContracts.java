@@ -12,9 +12,6 @@ import io.reactivex.functions.Consumer;
 public class SyncManagerContracts {
 
     interface View extends AbstractActivityContracts.View {
-        void setLastDataSyncDate(String date);
-
-        void setLastMetaDataSyncDate(String date);
 
         Consumer<Pair<Integer, Integer>> setSyncData();
 

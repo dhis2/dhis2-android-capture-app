@@ -11,6 +11,8 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -118,5 +120,12 @@ public class DashboardProgramModel extends BaseObservable {
             if (enrollment.program().equals(uid))
                 return enrollment;
         return null;
+    }
+
+    public String getTrackedEntityAttributeValueBySortOrder(int sortOrder) {
+        if(sortOrder <= trackedEntityAttributeValues.size()){
+            return trackedEntityAttributeValues.get(sortOrder -  1).value();
+        }
+        return "";
     }
 }

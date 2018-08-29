@@ -82,6 +82,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 } else {
                     binding.buttonSyncData.setEnabled(true);
                     binding.buttonSyncMeta.setEnabled(true);
+                    setLastDataSyncDate();
+                    setLastMetaDataSyncDate();
                 }
             }
         }
@@ -143,16 +145,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-
-        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
-            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
-        else
-            binding.dataLastSync.setText(getString(R.string.sync_error_text));
-
-        if (prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true))
-            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
-        else
-            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+        setLastDataSyncDate();
+        setLastMetaDataSyncDate();
     }
 
     @Override
@@ -162,17 +156,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).unregisterReceiver(syncReceiver);
         presenter.disponse();
     }
-
-    @Override
-    public void setLastDataSyncDate(String date) {
-        binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), date));
-    }
-
-    @Override
-    public void setLastMetaDataSyncDate(String date) {
-        binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), date));
-    }
-
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
@@ -182,6 +165,20 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.teiCurrentData.setText(String.valueOf(syncParameters.val1()));
             binding.limitByOrgUnit.setChecked(prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false));
         };
+    }
+
+    public void setLastDataSyncDate() {
+        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
+            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+        else
+            binding.dataLastSync.setText(getString(R.string.sync_error_text));
+    }
+
+    public void setLastMetaDataSyncDate() {
+        if (prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true))
+            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+        else
+            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
     }
 
     private void initRadioGroups() {
