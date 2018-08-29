@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
+                android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -131,7 +131,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text='@{dashboardModel.getAttributeBySortOrder(1) +" "+ dashboardModel.getAttributeBySortOrder(2)}'
+                            android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(1) +" "+ dashboardModel.getTrackedEntityAttributeValueBySortOrder(2)}'
                             android:textColor="@color/gray_444"
                             android:textSize="16sp"
                             app:layout_constraintStart_toEndOf="@id/tei_image"
@@ -143,7 +143,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text='@{dashboardModel.getAttributeBySortOrder(3)}'
+                            android:text='@{dashboardModel.getTrackedEntityAttributeValueBySortOrder(3)}'
                             android:textColor="@color/gray_444"
                             android:textSize="14sp"
                             app:layout_constraintStart_toEndOf="@id/tei_image"

@@ -89,7 +89,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
-        String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2) + " - " + program.getCurrentProgram().displayShortName();
+        String title = program.getTrackedEntityAttributeValueBySortOrder(1) + " " + program.getTrackedEntityAttributeValueBySortOrder(2) + " - " + program.getCurrentProgram().displayShortName();
         binding.setTitle(title);
 
         binding.tabLayout.setVisibility(View.VISIBLE);
