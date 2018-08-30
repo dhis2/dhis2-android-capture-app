@@ -70,6 +70,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
+    private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?";
     private static final String OPTIONS = "SELECT Option.uid, Option.displayName FROM Option WHERE Option.optionSet = ?";
 
     @NonNull
@@ -115,9 +116,15 @@ final class ProgramStageRepository implements DataEntryRepository {
             accessCursor.close();
         }
 
+        Cursor programAccessCursor = briteDatabase.query(PROGRAM_ACCESS_QUERY, eventUid == null ? "" : eventUid);
+        if (programAccessCursor != null && programAccessCursor.moveToFirst()) {
+            accessDataWrite = accessDataWrite && programAccessCursor.getInt(0) == 1;
+            programAccessCursor.close();
+        }
+
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
-                .mapToList(cursor1 -> transform(cursor1))
+                .mapToList(this::transform)
                 .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.LATEST);
     }

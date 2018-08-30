@@ -64,7 +64,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
         binding.linearLayout.removeAllViews();
         boolean isFollowUp = false;
         for (EnrollmentModel enrollment : enrollments) {
-            if (enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE && binding.linearLayout.getChildCount() < 2 &&
+            if (binding.getPresenter().getProgramModel() != null && enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE && binding.linearLayout.getChildCount() < 2 &&
                  !binding.getPresenter().getProgramModel().uid().equals(enrollment.program())){
                 TrackEntityProgramsBinding programsBinding = DataBindingUtil.inflate(
                         LayoutInflater.from(binding.linearLayout.getContext()), R.layout.track_entity_programs, binding.linearLayout, false
@@ -74,12 +74,11 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
 
                 programsBinding.executePendingBindings();
                 FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                params.setFlexBasisPercent(.5f);
                 binding.linearLayout.addView(programsBinding.getRoot(), params);
                 binding.linearLayout.invalidate();
             }
 
-            if (enrollment.followUp() != null && enrollment.followUp() && binding.getPresenter().getProgramModel().uid().equals(enrollment.program()))
+            if (binding.getPresenter().getProgramModel() != null && enrollment.followUp() != null && enrollment.followUp() && binding.getPresenter().getProgramModel().uid().equals(enrollment.program()))
                 isFollowUp = true;
         }
 
