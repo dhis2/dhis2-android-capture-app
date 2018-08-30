@@ -15,6 +15,7 @@ import com.dhis2.utils.DateUtils;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
@@ -216,7 +217,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 year,
                 month,
                 day);
-        if(!eventDetailModel.getProgram().selectEnrollmentDatesInFuture()){
+        if(eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE){
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
