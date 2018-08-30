@@ -142,6 +142,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
 
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? LIMIT 1";
+    private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1";
 
 
     public EventSummaryRepositoryImpl(@NonNull Context context,
@@ -303,7 +304,9 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     @Override
     public Observable<Boolean> accessDataWrite(String eventId) {
         return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
-                .mapToOne(cursor -> cursor.getInt(0) == 1);
+                .mapToOne(cursor -> cursor.getInt(0) == 1)
+                .flatMap(programStageAccessDataWrite ->briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_ACCESS_QUERY, eventId == null ? "" : eventId)
+                        .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
     }
 
     @NonNull
