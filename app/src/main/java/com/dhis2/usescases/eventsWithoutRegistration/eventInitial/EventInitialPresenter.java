@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.dhis2.Bindings.Bindings;
@@ -67,6 +68,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private ProgramModel programModel;
     private CategoryComboModel catCombo;
     private String programId;
+    private String programStageId;
     private List<OrganisationUnitModel> orgUnits;
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -82,10 +84,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId) {
+    public void init(EventInitialContract.View mview, String programId, String eventId, String orgInitId, String programStageId) {
         view = mview;
         this.eventId = eventId;
         this.programId = programId;
+        this.programStageId = programStageId;
 
         compositeDisposable = new CompositeDisposable();
 
@@ -150,7 +153,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             )
             );
         getOrgUnits(programId);
-        getProgramStages(programId);
+        if(TextUtils.isEmpty(programStageId))
+            getProgramStages(programId);
+        else
+            getProgramStage(programStageId);
 
         if (eventId != null)
             getEventSections(eventId);

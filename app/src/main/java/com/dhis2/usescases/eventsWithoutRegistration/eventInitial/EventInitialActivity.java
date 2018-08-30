@@ -333,7 +333,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, programId, eventId, selectedOrgUnit);
+        presenter.init(this, programId, eventId, selectedOrgUnit,programStageUid);
     }
 
     @Override
