@@ -23,12 +23,12 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
         disposable = new CompositeDisposable();
     }
 
-    public void bind(DataSetDetailContract.Presenter presenter, DataSetModel dataset) {
+    public void bind(DataSetDetailContract.Presenter presenter, DataSetDetailModel dataset) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.dataset, dataset);
         binding.executePendingBindings();
         //FIXME revisar para que sirve esto
-        disposable.add(presenter.getDataSetDataValueNew(dataset)
+        /*disposable.add(presenter.getDataSetDataValueNew(dataset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -42,8 +42,8 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
                             binding.dataValue.setText(stringBuilder);
                         },
                         Timber::d
-                ));
+                ));*/
 
-        itemView.setOnClickListener(view -> presenter.onDataSetClick(dataset.uid(),/* dataset.organisationUnit() viene de otro lllaaaauuu*/null));
+        itemView.setOnClickListener(view -> presenter.onDataSetClick(dataset.getUidDataSet(),/* dataset.organisationUnit() viene de otro lllaaaauuu*/null));
     }
 }

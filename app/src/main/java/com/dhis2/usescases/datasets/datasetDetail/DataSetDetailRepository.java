@@ -31,7 +31,7 @@ public interface DataSetDetailRepository {
     @NonNull
     Observable<List<TrackedEntityDataValueModel>> dataSetDataValues(DataSetModel eventModel);
 
-    Observable<List<String>> dataSetValuesNew(DataSetModel eventModel);
+    Observable<List<String>> dataSetValuesNew(DataSetDetailModel eventModel);
 
     Observable<Boolean> writePermission(String programId);
 

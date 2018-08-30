@@ -8,10 +8,10 @@ import java.util.List;
 
 public class DataSetDiffCallback extends DiffUtil.Callback {
 
-    private List<DataSetModel> oldList;
-    private List<DataSetModel> newList;
+    private List<DataSetDetailModel> oldList;
+    private List<DataSetDetailModel> newList;
 
-    public DataSetDiffCallback(List<DataSetModel> oldList, List<DataSetModel> newList) {
+    public DataSetDiffCallback(List<DataSetDetailModel> oldList, List<DataSetDetailModel> newList) {
         this.oldList = oldList;
         this.newList = newList;
     }
@@ -28,10 +28,9 @@ public class DataSetDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldList.get(oldItemPosition).uid()
-                .equals(newList.get(newItemPosition).uid());
+        return oldList.get(oldItemPosition).getUidDataSet()
+                .equals(newList.get(newItemPosition).getUidDataSet());
     }
-
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         return oldList.get(oldItemPosition)

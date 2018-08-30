@@ -102,7 +102,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     }
 
     @Override
-    public void setData(List<DataSetModel> datasets) {
+    public void setData(List<DataSetDetailModel> datasets) {
         if(binding.recycler.getAdapter() == null){
             binding.recycler.setAdapter(adapter);
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));

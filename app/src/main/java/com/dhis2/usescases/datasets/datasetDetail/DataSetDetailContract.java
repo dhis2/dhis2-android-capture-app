@@ -21,7 +21,7 @@ import io.reactivex.Observable;
 public class DataSetDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setData(List<DataSetModel> events);
+        void setData(List<DataSetDetailModel> dataSetDetailModels);
 
         void addTree(TreeNode treeNode);
 
@@ -69,7 +69,7 @@ public class DataSetDetailContract {
 
         Observable<List<TrackedEntityDataValueModel>> getDataSetDataValue(DataSetModel event);
 
-        Observable<List<String>> getDataSetDataValueNew(DataSetModel event);
+        Observable<List<String>> getDataSetDataValueNew(DataSetDetailModel event);
 
         void showFilter();
 

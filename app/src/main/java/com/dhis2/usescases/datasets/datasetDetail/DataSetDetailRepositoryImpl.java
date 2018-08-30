@@ -2,6 +2,7 @@ package com.dhis2.usescases.datasets.datasetDetail;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import com.dhis2.utils.Period;
@@ -34,25 +35,27 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     @Override
     public Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataSet, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
         String SELECT_ORGUNIT = "SELECT " + DataSetModel.TABLE +"." +DataSetModel.Columns.UID +", "
-                                +OrganisationUnitModel.TABLE + "."+ OrganisationUnitModel.Columns.NAME +","
-                                + CategoryComboModel.TABLE + "."+ CategoryComboModel.Columns.NAME +","
-                                + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE +","
+                +OrganisationUnitModel.TABLE + "."+ OrganisationUnitModel.Columns.NAME +","
+                + CategoryComboModel.TABLE + "."+ CategoryComboModel.Columns.NAME +","
+                + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE
 
-                +" FROM " + OrganisationUnitModel.TABLE +
-                ", "+ DataSetOrganisationUnitLinkModel.TABLE + ", "
-                + DataSetModel.TABLE + ", "
-                + CategoryComboModel.TABLE +", "
-                + PeriodModel.TABLE +
-                " WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + OrganisationUnitModel.Columns.UID
-                + " AND " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID
-                + " AND " + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
-                + " AND " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO
-                + " AND " + DataSetModel.TABLE +"." + DataSetModel.Columns.UID +" = '"+ uidDataSet+"'";
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORGUNIT)
-                .mapToList( dataSet -> new DataSetDetailModel(dataSet.getColumnName(0),
-                        dataSet.getColumnName(1),
-                        dataSet.getColumnName(2),
-                        dataSet.getColumnName(3)));
+                +" FROM "+ DataSetModel.TABLE +
+                " JOIN "+ OrganisationUnitModel.TABLE + " ON "+ OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + DataSetOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT
+
+                +" JOIN "+ DataSetOrganisationUnitLinkModel.TABLE + " ON " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID
+                +" JOIN "+ CategoryComboModel.TABLE +" ON " + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
+                +" JOIN "+ PeriodModel.TABLE + " ON " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO;
+
+                if(!TextUtils.isEmpty(uidDataSet)){
+                    SELECT_ORGUNIT += " WHERE " + DataSetModel.TABLE +"." + DataSetModel.Columns.UID +" = '"+ uidDataSet+"'";
+                }
+
+
+        return briteDatabase.createQuery(DataSetModel.TABLE, SELECT_ORGUNIT)
+                .mapToList( dataSet -> new DataSetDetailModel(dataSet.getString(0),
+                        dataSet.getString(1),
+                        dataSet.getString(2),
+                        dataSet.getString(3)));
     }
 
     @NonNull
@@ -99,7 +102,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
     }
 
     @Override
-    public Observable<List<String>> dataSetValuesNew(DataSetModel eventModel) {
+    public Observable<List<String>> dataSetValuesNew(DataSetDetailModel eventModel) {
         return null;
     }
 

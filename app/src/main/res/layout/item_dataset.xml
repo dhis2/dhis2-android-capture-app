@@ -15,7 +15,7 @@
 
         <variable
             name="dataset"
-            type="org.hisp.dhis.android.core.dataset.DataSetModel" />
+            type="com.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -32,10 +32,10 @@
             android:textColor="@color/black_de0"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:date='@{dataset.created}'
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="04/10/2017 - 8:55 AM" />
+            tools:text="Org Unit"
+            android:text='@{dataset.nameOrgUnit}'/>
 
         <TextView
             android:id="@+id/entity_attribute_2"
@@ -45,39 +45,20 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/entity_attribute_1"
-            tools:text="Org Unit" />
-            <!--app:organisationUnitName='OrgUnit' Va dentro-->
+            tools:text="Period"
+            android:text='@{dataset.namePeriod}' />
 
-
-        <LinearLayout
-            android:id="@+id/entity_attribute_3"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/entity_attribute_2"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2">
+            android:layout_weight="1"
+            android:gravity="start"
+            android:textColor="@color/black_de0"
+            android:textSize="16sp"
+            android:text='@{dataset.nameCatCombo}'
+            tools:text="Cat combo"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2"/>
 
-            <TextView
-                android:id="@+id/dataValue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/black_de0"
-                android:textSize="16sp"
-                tools:text="Age 25" />
-
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:textColor="@color/black_de0"
-                android:textSize="16sp"
-                app:categoryOptionComboName='@{dataset.categoryCombo}'
-                tools:text="Cat combo" />
-
-        </LinearLayout>
 
         <ImageView
             android:id="@+id/sync_icon"
@@ -108,8 +89,8 @@
             app:layout_constraintEnd_toStartOf="@id/sync_icon"
 
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_edit" />
-        <!--app:eventWithoutRegistrationStatusIcon='@{dataset}' va dentro-->
+            tools:src="@drawable/ic_edit"
+            app:eventWithoutRegistrationStatusIcon='@{dataset}'/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -118,7 +99,6 @@
             app:layout_constraintBottom_toBottomOf="@id/status_icon"
             app:layout_constraintEnd_toStartOf="@id/status_icon"
             android:layout_marginStart="9dp"
-
             tools:text="@string/event_open" />
         <!--app:eventWithoutRegistrationStatusText='@{dataset}' va dentro-->
     </android.support.constraint.ConstraintLayout>

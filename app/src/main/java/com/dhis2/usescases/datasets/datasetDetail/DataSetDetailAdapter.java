@@ -17,7 +17,7 @@ import java.util.List;
 public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailViewHolder> {
 
     private DataSetDetailContract.Presenter presenter;
-    private List<DataSetModel> datasets;
+    private List<DataSetDetailModel> datasets;
 
     public DataSetDetailAdapter(DataSetDetailContract.Presenter presenter) {
         this.presenter = presenter;
@@ -35,7 +35,7 @@ public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailView
 
     @Override
     public void onBindViewHolder(@NonNull DataSetDetailViewHolder holder, int position) {
-        DataSetModel dataSetModel = datasets.get(position);
+        DataSetDetailModel dataSetModel = datasets.get(position);
         holder.bind(presenter, dataSetModel);
     }
 
@@ -44,7 +44,7 @@ public class DataSetDetailAdapter extends RecyclerView.Adapter<DataSetDetailView
         return datasets.size();
     }
 
-    public void setDatasets(List<DataSetModel> datasets){
+    public void setDatasets(List<DataSetDetailModel> datasets){
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DataSetDiffCallback(this.datasets, datasets));
         this.datasets.clear();
         this.datasets.addAll(datasets);

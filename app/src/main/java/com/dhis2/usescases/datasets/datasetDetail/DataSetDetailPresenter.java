@@ -143,7 +143,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public Observable<List<String>> getDataSetDataValueNew(DataSetModel dataSet) {
+    public Observable<List<String>> getDataSetDataValueNew(DataSetDetailModel dataSet) {
         return dataSetDetailRepository.dataSetValuesNew(dataSet);
     }
 
@@ -203,15 +203,15 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void getDataSetWithDates(List<Date> dates, Period period, String orgUnitQuery) {
         this.dates = dates;
         this.period = period;
-        lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATE_RANGES;
+        lastSearchType = DataSetDetailPresenter.LastSearchType.DATE_RANGES;
         //FIXME cuando haya datos para dataset hay que cambiarlo
         //ahora falla por que se va a hacer la select y no puede
-       /* compositeDisposable.add(dataSetDetailRepository.filteredDataSet(dates, period, categoryOptionComboModel)
+        compositeDisposable.add(dataSetDetailRepository.filteredDataSet("","", categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         view::setData,
-                        throwable -> view.renderError(throwable.getMessage())));*/
+                        throwable -> view.renderError(throwable.getMessage())));
     }
 
     @Override
@@ -224,7 +224,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         view.displayMessage(message);
     }
 
-    private void getCatCombo(ProgramModel programModel) {
+    /*private void getCatCombo(ProgramModel programModel) {
         compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
                 .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
                 .flatMap(catCombo -> {
@@ -235,5 +235,5 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
         );
-    }
+    }*/
 }
