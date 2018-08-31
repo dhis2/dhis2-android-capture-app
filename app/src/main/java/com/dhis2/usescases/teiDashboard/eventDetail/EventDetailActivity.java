@@ -77,6 +77,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
         binding.setEvent(eventDetailModel.getEventModel());
         binding.setStage(eventDetailModel.getProgramStage());
+        setDataEditable();
         binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 
         if(eventDetailModel.getOptionComboList().isEmpty()){

@@ -80,7 +80,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncEvents() {
 
-        Log.d("SYNC_EVENTS", "Sync up of Events are starting");
+        Log.d("SYNC_EVENTS", "Sync up of Events is starting");
         disposable.add(Observable.fromCallable(d2.syncSingleEvents())
                 .doOnError(throwable -> Log.d("SYNC_EVENTS", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
@@ -89,7 +89,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .observeOn(Schedulers.io())
                 .subscribe(
                         data -> {
-                            Log.d("SYNC_EVENTS", "Sync up of Events are done");
+                            Log.d("SYNC_EVENTS", "Sync up of Events is done");
                             downloadEvents(); },
                         Timber::d
                 )
@@ -99,7 +99,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     private void downloadEvents(){
-        Log.d("SYNC_EVENTS", "Sync down of Events are starting");
+        Log.d("SYNC_EVENTS", "Sync down of Events is starting");
         disposable.add(events()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
@@ -107,7 +107,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .doFinally(()->Log.d("SYNC_EVENTS", "Sync down of events are done"))
+                .doFinally(()->Log.d("SYNC_EVENTS", "Sync down of events is done"))
                 .subscribe(
                         update(SyncState.EVENTS),
                         Timber::d)
@@ -116,7 +116,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncTrackedEntities() {
-        Log.d("SYNC_TEI", "Sync up of TEIs are done");
+        Log.d("SYNC_TEI", "Sync up of TEIs is starting");
         disposable.add(Observable.fromCallable(d2.syncTrackedEntityInstances())
                 .doOnError(throwable -> Log.d("SYNC_TEI", throwable.getMessage()))
                 .map(webResponse -> SyncResult.success())
@@ -125,7 +125,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .observeOn(Schedulers.io())
                 .subscribe(
                         data -> {
-                            Log.d("SYNC_TEI", "Sync up of TEIs are done");
+                            Log.d("SYNC_TEI", "Sync up of TEIs is done");
                             downloadTrackedEntities();
                         },
                         Timber::d
@@ -135,7 +135,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     private void downloadTrackedEntities(){
-        Log.d("SYNC_TEI", "Sync down of TEIs are done");
+        Log.d("SYNC_TEI", "Sync down of TEIs is starting");
         disposable.add(trackerData()
                 .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
