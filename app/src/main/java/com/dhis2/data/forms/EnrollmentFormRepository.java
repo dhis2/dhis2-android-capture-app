@@ -3,7 +3,6 @@ package com.dhis2.data.forms;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
@@ -89,6 +88,13 @@ class EnrollmentFormRepository implements FormRepository {
                     "  JOIN Program ON Enrollment.program = Program.uid\n" +
                     "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
                     "  JOIN Event ON event.enrollment = Enrollment.uid\n" +
+                    "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
+
+    private static final String SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT =
+            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType\n" +
+                    "FROM Enrollment\n" +
+                    "  JOIN Program ON Enrollment.program = Program.uid\n" +
+                    "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
                     "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
@@ -501,15 +507,21 @@ class EnrollmentFormRepository implements FormRepository {
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //EnrollmentUid,
         return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid == null ? "" : enrollmentUid)
                 .map(query -> {
+                    String trackedEntityType = "";
+                    String eventUid;
                     Cursor cursor = query.run();
                     if (cursor != null && cursor.moveToFirst()) {
-                        String programStageUid = cursor.getString(0);
-                        String programStageProgram = cursor.getString(1);
-                        String enrollmentOrgUnit = cursor.getString(2);
-                        String trackedEntityType = cursor.getString(3);
-                        String eventUid = cursor.getString(4);
+                       trackedEntityType = cursor.getString(3);
+                       eventUid = cursor.getString(4);
 
-                        if(isEmpty(eventUid)){
+                        return Trio.create(enrollmentUid, trackedEntityType, eventUid);
+                    } else {
+                        Cursor newCursor = briteDatabase.query(SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT, enrollmentUid);
+                        if (newCursor.moveToFirst()) {
+                            String programStageUid = newCursor.getString(0);
+                            String programStageProgram = newCursor.getString(1);
+                            String enrollmentOrgUnit = newCursor.getString(2);
+
                             Calendar cal = Calendar.getInstance();
                             cal.setTime(cal.getTime());
                             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -536,14 +548,13 @@ class EnrollmentFormRepository implements FormRepository {
                             }
                             updateProgramTable(createdDate, programStageProgram);
                             return Trio.create(enrollmentUid, trackedEntityType, event.uid());
+
+                        } else {
+                            Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
+                            tetCursor.moveToFirst();
+
+                            return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
                         }
-
-                        return Trio.create(enrollmentUid, trackedEntityType, eventUid);
-                    } else {
-                        Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
-                        tetCursor.moveToFirst();
-
-                        return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
                     }
                 });
     }
