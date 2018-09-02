@@ -89,8 +89,8 @@
             app:layout_constraintEnd_toStartOf="@id/sync_icon"
 
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_edit"
-            app:eventWithoutRegistrationStatusIcon='@{dataset}'/>
+            tools:src="@drawable/ic_edit"/>
+        <!--app:eventWithoutRegistrationStatusIcon='@{dataset}'-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

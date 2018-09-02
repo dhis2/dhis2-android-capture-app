@@ -82,7 +82,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
 
-        programId = getIntent().getStringExtra("PROGRAM_UID");
+        programId = getIntent().getStringExtra("DATASET_UID");
         binding.setPresenter(presenter);
     }
 

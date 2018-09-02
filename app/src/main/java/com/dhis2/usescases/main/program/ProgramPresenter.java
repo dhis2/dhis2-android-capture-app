@@ -3,6 +3,7 @@ package com.dhis2.usescases.main.program;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.dhis2.R;
 import com.dhis2.data.tuples.Pair;
@@ -116,7 +117,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         Bundle bundle = new Bundle();
         String idTag = "PROGRAM_UID";
-        if(programModel.type() != null) {
+        if(programModel.type() != null && !TextUtils.isEmpty(programModel.type())) {
             bundle.putString("TRACKED_ENTITY_UID", programModel.type());
         } else {
             idTag = "DATASET_UID";

@@ -20,7 +20,7 @@ import io.reactivex.Observable;
 public interface DataSetDetailRepository {
 
     @NonNull
-    Observable<List<DataSetDetailModel>> filteredDataSet(String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
+    Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataset, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel);
 
     @NonNull
     Observable<List<DataSetDetailModel>> filteredDataSet(List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel);

@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -158,14 +159,14 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         this.fromDate = fromDate;
         this.toDate = toDate;
         lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATES;
-        Observable.just(dataSetDetailRepository.filteredDataSet(
+        Observable.just(dataSetDetailRepository.filteredDataSet(programId,
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate),
                 categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view::setData,
+                        list ->view.setData(getPeriodFromType(list)),
                         Timber::e));
     }
 
@@ -206,11 +207,11 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         lastSearchType = DataSetDetailPresenter.LastSearchType.DATE_RANGES;
         //FIXME cuando haya datos para dataset hay que cambiarlo
         //ahora falla por que se va a hacer la select y no puede
-        compositeDisposable.add(dataSetDetailRepository.filteredDataSet("","", categoryOptionComboModel)
+        compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        view::setData,
+                        list ->view.setData(getPeriodFromType(list)),
                         throwable -> view.renderError(throwable.getMessage())));
     }
 
@@ -224,16 +225,20 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         view.displayMessage(message);
     }
 
-    /*private void getCatCombo(ProgramModel programModel) {
-        compositeDisposable.add(metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
-                .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
-                .flatMap(catCombo -> {
-                    mCatCombo = catCombo;
-                    return dataSetDetailRepository.catCombo(programModel.categoryCombo());
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
-        );
-    }*/
+    private List<DataSetDetailModel> getPeriodFromType(List<DataSetDetailModel> listDataSetModel){
+        List<DataSetDetailModel> listFinal = new ArrayList<>();
+
+        for (DataSetDetailModel dataset: listDataSetModel){
+            DataSetDetailPeriodEnum periodEnum =
+                    DataSetDetailPeriodEnum.getDataSetPeriod(dataset.getNamePeriod());
+
+            List<DataSetDetailModel> listDataSet = periodEnum.getListDataSetWithPeriods(2018, dataset);
+            for(DataSetDetailModel datasetDetail: listDataSet){
+                listFinal.add(datasetDetail);
+            }
+        }
+
+        return listFinal;
+
+    }
 }

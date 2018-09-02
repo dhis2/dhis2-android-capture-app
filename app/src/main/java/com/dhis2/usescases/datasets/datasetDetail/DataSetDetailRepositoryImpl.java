@@ -11,8 +11,10 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.DataSetOrganisationUnitLinkModel;
+import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -33,24 +35,22 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
 
     @NonNull
     @Override
-    public Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataSet, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
+    public Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataSet, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
         String SELECT_ORGUNIT = "SELECT " + DataSetModel.TABLE +"." +DataSetModel.Columns.UID +", "
                 +OrganisationUnitModel.TABLE + "."+ OrganisationUnitModel.Columns.NAME +","
                 + CategoryComboModel.TABLE + "."+ CategoryComboModel.Columns.NAME +","
-                + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE
+                + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
 
                 +" FROM "+ DataSetModel.TABLE +
                 " JOIN "+ OrganisationUnitModel.TABLE + " ON "+ OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + DataSetOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT
-
                 +" JOIN "+ DataSetOrganisationUnitLinkModel.TABLE + " ON " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID
-                +" JOIN "+ CategoryComboModel.TABLE +" ON " + PeriodModel.TABLE + "."+ PeriodModel.Columns.PERIOD_TYPE + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
-                +" JOIN "+ PeriodModel.TABLE + " ON " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO;
-
-                if(!TextUtils.isEmpty(uidDataSet)){
-                    SELECT_ORGUNIT += " WHERE " + DataSetModel.TABLE +"." + DataSetModel.Columns.UID +" = '"+ uidDataSet+"'";
-                }
 
 
+                +" JOIN "+ CategoryComboModel.TABLE + " ON " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO;
+        if(!TextUtils.isEmpty(uidDataSet)) {
+            SELECT_ORGUNIT += " WHERE " + DataSetModel.TABLE + "." + DataSetModel.Columns.UID + " = '" + uidDataSet + "'";
+        }
+        SELECT_ORGUNIT += " GROUP BY "+DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE;
         return briteDatabase.createQuery(DataSetModel.TABLE, SELECT_ORGUNIT)
                 .mapToList( dataSet -> new DataSetDetailModel(dataSet.getString(0),
                         dataSet.getString(1),
