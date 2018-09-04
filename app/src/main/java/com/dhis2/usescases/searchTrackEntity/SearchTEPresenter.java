@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
@@ -203,7 +204,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return Flowable.defer(() -> Flowable.fromCallable(d2.queryTrackedEntityInstances(query)))
                                         .observeOn(Schedulers.io())
                                         .subscribeOn(Schedulers.io())
-                                        .doOnError(this::handleError);
+                                        .doOnError(this::handleError)
+                                        .onErrorReturn(data-> new ArrayList<>()); //If there is an error returns an empty list
 
                             })
                             .map(trackedEntityInstances -> {
@@ -302,6 +304,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     break;
             }
         }
+
+        Crashlytics.logException(throwable);
     }
 
     private void getTrackedEntityAttributes() {

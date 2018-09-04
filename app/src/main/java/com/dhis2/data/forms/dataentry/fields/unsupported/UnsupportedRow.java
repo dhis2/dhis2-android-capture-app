@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.Row;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
-import com.dhis2.databinding.FormButtonBinding;
 import com.dhis2.databinding.FormUnsupportedBinding;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -51,7 +50,7 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
 
     @Override
     public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel) {
-        binding.setLabel(viewModel.label());
+        binding.formButton.post(() -> binding.formButton.setText(viewModel.label()));
     }
 
     @Override

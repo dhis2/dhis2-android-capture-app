@@ -115,6 +115,12 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID,
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
 
+    private final String ENROLLMENT_ORG_UNIT_QUERY =
+            "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+                    "WHERE OrganisationUnit.uid IN (" +
+                    "SELECT Enrollment.organisationUnit FROM Enrollment " +
+                    "JOIN Program ON Program.uid = Enrollment.program WHERE Enrollment.trackedEntityInstance = ? AND Program.uid = ? LIMIT 1)";
+
 
     private Set<String> TEI_ORG_UNIT_TABLES = new HashSet<>(Arrays.asList(OrganisationUnitModel.TABLE, TrackedEntityInstanceModel.TABLE));
 
@@ -152,7 +158,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY = String.format(
             "SELECT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? AND %s.%s = ? AND "  +
+                    "WHERE %s.%s = ? AND %s.%s = ? AND " +
                     "%s.%s = 1 " +
                     "ORDER BY %s.%s ASC",
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
@@ -224,7 +230,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<TrackedEntityTypeModel> getTrackedEntity(String trackedEntityUid) {
-         String id = trackedEntityUid == null ? "" : trackedEntityUid;
+        String id = trackedEntityUid == null ? "" : trackedEntityUid;
         return briteDatabase
                 .createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_QUERY + "'" + id + "' LIMIT 1")
                 .mapToOne(TrackedEntityTypeModel::create);
@@ -289,6 +295,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(TEI_ORG_UNIT_TABLES, TEI_ORG_UNIT_QUERY, teiUid == null ? "" : teiUid)
                 .mapToOne(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public Observable<OrganisationUnitModel> getTeiOrgUnit(@NonNull String teiUid, @Nullable String programUid) {
+        if (programUid == null)
+            return getTeiOrgUnit(teiUid);
+        else
+            return briteDatabase
+                    .createQuery(TEI_ORG_UNIT_TABLES, ENROLLMENT_ORG_UNIT_QUERY, teiUid == null ? "" : teiUid, programUid)
+                    .mapToOne(OrganisationUnitModel::create);
     }
 
     @Override

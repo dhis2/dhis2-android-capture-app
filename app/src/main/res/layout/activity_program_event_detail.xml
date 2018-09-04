@@ -100,7 +100,7 @@
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="false"
+            android:clipToPadding="false"
             tools:openDrawer="end">
 
             <RelativeLayout
@@ -234,14 +234,14 @@
 
             <android.support.design.widget.NavigationView
                 android:id="@+id/org_unit_view"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="end"
                 android:layout_marginStart="-50dp"
                 android:background="@color/white_faf"
                 app:itemTextColor="?colorPrimary">
 
-                <LinearLayout
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -250,17 +250,33 @@
                         android:id="@+id/tree_view_container"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
                         android:paddingEnd="0dp"
                         android:paddingStart="20dp"
-                        android:paddingTop="40dp" />
+                        android:paddingTop="40dp"
+                        app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/org_unit_all"
+                        style="@style/TextButton"
+                        android:text="@string/select_all"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@string/cancel" />
+
+                    <Button
+                        android:id="@+id/org_unit_cancel"
+                        style="@style/TextButton"
+                        android:text="@string/cancel"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/org_unit_apply" />
 
                     <Button
                         android:id="@+id/org_unit_apply"
-                        style="@style/FullWidthButton"
-                        android:layout_gravity="bottom"
-                        android:text="@string/button_ok" />
-                </LinearLayout>
+                        style="@style/TextButton"
+                        android:text="@string/action_accept"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </android.support.constraint.ConstraintLayout>
             </android.support.design.widget.NavigationView>
         </android.support.v4.widget.DrawerLayout>
     </LinearLayout>

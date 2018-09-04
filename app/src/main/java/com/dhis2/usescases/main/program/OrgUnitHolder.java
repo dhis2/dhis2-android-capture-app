@@ -57,8 +57,9 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         });
 
         checkBox.setOnClickListener(v -> {
-            for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
-                ((OrgUnitHolder) treeNode.getViewHolder()).update();
+            if (!isMultiSelection)
+                for (TreeNode treeNode : node.getViewHolder().getTreeView().getSelected())
+                    ((OrgUnitHolder) treeNode.getViewHolder()).update();
             update();
         });
 
@@ -88,6 +89,14 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         textView.setTextColor(node.isSelected() ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.gray_444));
         checkBox.setChecked(node.isSelected());
         setSelectedSizeText();
+    }
+
+    public void check(){
+        checkBox.setChecked(true);
+    }
+
+    public void uncheck(){
+        checkBox.setChecked(false);
     }
 
     private void setSelectedSizeText() {
