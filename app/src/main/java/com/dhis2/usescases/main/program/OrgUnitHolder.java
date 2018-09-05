@@ -91,12 +91,14 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         setSelectedSizeText();
     }
 
-    public void check(){
-        checkBox.setChecked(true);
+    public void check() {
+        if (checkBox != null)
+            checkBox.setChecked(true);
     }
 
-    public void uncheck(){
-        checkBox.setChecked(false);
+    public void uncheck() {
+        if (checkBox != null)
+            checkBox.setChecked(false);
     }
 
     private void setSelectedSizeText() {

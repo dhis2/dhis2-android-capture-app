@@ -40,17 +40,17 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
     @Override
     public UnsupportedHolder onCreate(@NonNull ViewGroup parent) {
         binding = DataBindingUtil.inflate(inflater, R.layout.form_unsupported, parent, false);
-        if (isBgTransparent)
+       /* if (isBgTransparent)
             binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.gray_b2b));
         else
-            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.gray_b2b));
+            binding.formButton.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.gray_b2b));*/
 
         return new UnsupportedHolder(binding);
     }
 
     @Override
     public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel) {
-        binding.formButton.post(() -> binding.formButton.setText(viewModel.label()));
+        viewHolder.update(viewModel);
     }
 
     @Override

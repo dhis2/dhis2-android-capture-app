@@ -31,15 +31,15 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    @NonNull
-    private BehaviorProcessor<DateTimeViewModel> model;
-    private DateTimeViewModel viewModel;
+   /* @NonNull
+    private BehaviorProcessor<DateTimeViewModel> model;*/
+    private DateTimeViewModel dateTimeViewModel;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.disposable = new CompositeDisposable();
         this.processor = processor;
-        model = BehaviorProcessor.create();
+//        model = BehaviorProcessor.create();
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -53,7 +53,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             ((FormDateTimeTextBinding) binding).dateTimeView.setDateListener(this);
         }
 
-        model.subscribe(
+        /*model.subscribe(
                 dateTimeViewModel -> {
                     StringBuilder label = new StringBuilder(dateTimeViewModel.label());
                     if (dateTimeViewModel.mandatory())
@@ -107,28 +107,79 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                     binding.executePendingBindings();
                 },
                 Timber::d
-        );
+        );*/
     }
 
 
     public void update(DateTimeViewModel viewModel) {
-        this.viewModel = viewModel;
-        model.onNext(viewModel);
+        this.dateTimeViewModel = viewModel;
+//        model.onNext(viewModel);
+
+        StringBuilder label = new StringBuilder(dateTimeViewModel.label());
+        if (dateTimeViewModel.mandatory())
+            label.append("*");
+
+        binding.setVariable(BR.label, label.toString());
+
+        if (!isEmpty(dateTimeViewModel.value())) {
+            binding.setVariable(BR.initData, dateTimeViewModel.value());
+        } else {
+            binding.setVariable(BR.initData, null);
+        }
+
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
+
+        if (dateTimeViewModel.warning() != null) {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+
+        } else if (dateTimeViewModel.error() != null) {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+
+        } else {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+        }
+
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.setEditable(dateTimeViewModel.editable());
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.setEditable(dateTimeViewModel.editable());
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(dateTimeViewModel.editable());
+
+        binding.executePendingBindings();
     }
 
     @Override
     public void onDateSelected(Date date) {
         String dateFormatted = "";
-        if(date != null)
-            if(viewModel.valueType() == ValueType.DATE)
-                dateFormatted = DateUtils.uiDateFormat().format(date);
-            else if(viewModel.valueType() == ValueType.TIME)
-                dateFormatted = date.toString();
+        if(date != null) //Always stores a DATE in database format
+            if(dateTimeViewModel.valueType() == ValueType.DATE)
+                dateFormatted = DateUtils.databaseDateFormat().format(date);
+            else if(dateTimeViewModel.valueType() == ValueType.TIME)
+                dateFormatted = DateUtils.databaseDateFormat().format(date);
             else {
                 dateFormatted = DateUtils.databaseDateFormat().format(date);
             }
         processor.onNext(
-                RowAction.create(model.getValue().uid(), date != null ? dateFormatted : null)
+                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)
         );
     }
 

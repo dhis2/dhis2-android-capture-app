@@ -135,7 +135,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
 
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_QUERY = String.format(
-            "SELECT %s.* FROM %s " +
+            "SELECT DISTINCT %s.* FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = '1' GROUP BY %s.%s",
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE,
