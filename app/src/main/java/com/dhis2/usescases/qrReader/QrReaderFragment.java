@@ -64,6 +64,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     QrReaderContracts.Presenter presenter;
     private String eventUid;
     private List<Trio<TrackedEntityDataValueModel, String, Boolean>> eventData = new ArrayList<>();
+    private List<Trio<TrackedEntityDataValueModel, String, Boolean>> teiEventData = new ArrayList<>();
 
     private String teiUid;
     private List<Trio<String, String, Boolean>> attributes = new ArrayList<>();
@@ -107,6 +108,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     break;
                 case QRjson.DATA_JSON:
                     presenter.handleDataWORegistrationInfo(new JSONArray(qRjson.getData()));
+                    break;
+                case QRjson.DATA_JSON_WO_REGISTRATION:
+                    presenter.handleDataInfo(new JSONArray(qRjson.getData()));
                     break;
                 case QRjson.TEI_JSON:
                     presenter.handleTeiInfo(new JSONObject(qRjson.getData()));
@@ -261,6 +265,19 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             }
         }
         promtForEventWORegistrationMoreQr();
+    }
+
+    @Override
+    public void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data) {
+        for (Trio<TrackedEntityDataValueModel, String, Boolean> dataValue : data){
+            if (!dataValue.val2()){
+                showError(getString(R.string.qr_error_attr));
+            }
+            else if (!this.teiEventData.contains(dataValue)) {
+                this.teiEventData.add(dataValue);
+            }
+        }
+        promtForTEIMoreQr();
     }
 
     @Override
@@ -429,7 +446,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         }
 
         // ATTRIBUTES
-        message = message + getString(R.string.qr_attributes) + ":\n";
+        message = message + getString(R.string.qr_data_values) + ":\n";
 
         if (eventData != null && !eventData.isEmpty()) {
             for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : eventData) {

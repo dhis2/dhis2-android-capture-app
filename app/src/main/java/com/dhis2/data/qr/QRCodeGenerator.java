@@ -27,6 +27,7 @@ import timber.log.Timber;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
 import static com.dhis2.data.qr.QRjson.DATA_JSON;
+import static com.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
 import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
 import static com.dhis2.data.qr.QRjson.EVENTS_JSON;
 import static com.dhis2.data.qr.QRjson.EVENT_JSON;
@@ -126,14 +127,36 @@ public class QRCodeGenerator implements QRInterface {
                                 Observable.fromIterable(data)
                                         .flatMap(enrollment -> briteDatabase.createQuery(EventModel.TABLE, TEI_EVENTS, enrollment.uid() == null ? "" : enrollment.uid())
                                                 .mapToList(EventModel::create)
-                                                .map(eventList -> {
-                                                            for (EventModel eventModel : eventList) {
-                                                                bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(eventModel)));
-                                                            }
-                                                            return bitmaps;
-                                                        }
-                                                )
                                         )
+                        )
+                        .flatMap(data ->
+                                Observable.fromIterable(data)
+                                    .flatMap(event -> {
+                                        bitmaps.add(new QrViewModel(EVENTS_JSON, gson.toJson(event)));
+                                        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, TEI_DATA, event.uid() == null ? "" : event.uid())
+                                                        .mapToList(TrackedEntityDataValueModel::create)
+                                                        .map(dataValueList -> {
+                                                            ArrayList<TrackedEntityDataValueModel> arrayListAux = new ArrayList<>();
+                                                            // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                                                            int count = 0;
+                                                            for (int i = 0; i < dataValueList.size(); i++) {
+                                                                arrayListAux.add(dataValueList.get(i));
+                                                                if (count == 1){
+                                                                    count = 0;
+                                                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                                                    arrayListAux.clear();
+                                                                }
+                                                                else if (i == dataValueList.size()-1){
+                                                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                                                }
+                                                                else {
+                                                                    count++;
+                                                                }
+                                                            }
+                                                            return true;
+                                                        });
+                                            }
+                                    )
                         )
                         .map(data -> bitmaps);
     }
@@ -161,11 +184,11 @@ public class QRCodeGenerator implements QRInterface {
                                 arrayListAux.add(data.get(i));
                                 if (count == 1){
                                     count = 0;
-                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                    bitmaps.add(new QrViewModel(DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)));
                                     arrayListAux.clear();
                                 }
                                 else if (i == data.size()-1){
-                                    bitmaps.add(new QrViewModel(DATA_JSON, gson.toJson(arrayListAux)));
+                                    bitmaps.add(new QrViewModel(DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)));
                                 }
                                 else {
                                     count++;

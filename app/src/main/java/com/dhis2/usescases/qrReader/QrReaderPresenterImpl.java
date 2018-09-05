@@ -136,6 +136,61 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     }
 
     @Override
+    public void handleDataInfo(JSONArray jsonArray) {
+        ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
+        if (eventUid != null) {
+            try {
+                // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject attrValue = jsonArray.getJSONObject(i);
+                    TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
+                    trackedEntityDataValueModelBuilder.event(eventUid);
+                    if (attrValue.has("dataElement")) {
+                        trackedEntityDataValueModelBuilder.dataElement(attrValue.getString("dataElement"));
+                    }
+                    if (attrValue.has("storedBy")) {
+                        trackedEntityDataValueModelBuilder.storedBy(attrValue.getString("storedBy"));
+                    }
+                    if (attrValue.has("value")) {
+                        trackedEntityDataValueModelBuilder.value(attrValue.getString("value"));
+                    }
+                    if (attrValue.has("providedElsewhere")) {
+                        trackedEntityDataValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrValue.getString("providedElsewhere")));
+                    }
+                    if (attrValue.has("created")) {
+                        trackedEntityDataValueModelBuilder.created(simpleDateFormat.parse(attrValue.getString("created")));
+                    }
+                    if (attrValue.has("lastUpdated")) {
+                        trackedEntityDataValueModelBuilder.lastUpdated(simpleDateFormat.parse(attrValue.getString("lastUpdated")));
+                    }
+
+                    if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
+                        // LOOK FOR dataElement ON LOCAL DATABASE.
+                        Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
+                                " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
+                        // IF FOUND, OPEN DASHBOARD
+                        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                            this.dataJson.add(attrValue);
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                        } else {
+                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        }
+                    }
+                    else {
+                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                    }
+                }
+            } catch (JSONException | ParseException e) {
+                Timber.e(e);
+            }
+        }
+
+        view.renderTeiEventDataInfo(attributes);
+    }
+
+    @Override
     public void handleTeiInfo(JSONObject jsonObject) {
         this.teiJson = jsonObject;
         teiUid = null;

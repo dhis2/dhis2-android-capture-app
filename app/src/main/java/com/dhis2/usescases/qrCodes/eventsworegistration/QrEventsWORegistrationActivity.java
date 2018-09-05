@@ -20,8 +20,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import static com.dhis2.data.qr.QRjson.ATTR_JSON;
 import static com.dhis2.data.qr.QRjson.DATA_JSON;
+import static com.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
 import static com.dhis2.data.qr.QRjson.EVENT_JSON;
 
 /**
@@ -87,8 +87,8 @@ public class QrEventsWORegistrationActivity extends ActivityGlobalAbstract imple
                     case EVENT_JSON:
                         binding.setTitle(getString(R.string.qr_id));
                         break;
-                    case DATA_JSON:
-                        binding.setTitle(getString(R.string.qr_attributes));
+                    case DATA_JSON_WO_REGISTRATION:
+                        binding.setTitle(getString(R.string.qr_data_values));
                         break;
                     default:
                         break;
