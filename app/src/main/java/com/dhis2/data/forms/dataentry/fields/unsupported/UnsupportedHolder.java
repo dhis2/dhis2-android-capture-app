@@ -1,14 +1,18 @@
 package com.dhis2.data.forms.dataentry.fields.unsupported;
 
-import android.databinding.ViewDataBinding;
+import android.widget.Button;
 
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
+import com.dhis2.databinding.FormUnsupportedBinding;
 
 
 public class UnsupportedHolder extends FormViewHolder {
 
-    public UnsupportedHolder(ViewDataBinding binding) {
+    private final Button button;
+
+    public UnsupportedHolder(FormUnsupportedBinding binding) {
         super(binding);
+        button = binding.formButton;
     }
 
     @Override
@@ -17,4 +21,7 @@ public class UnsupportedHolder extends FormViewHolder {
     }
 
 
+    public void update(UnsupportedViewModel viewModel) {
+        button.setText(viewModel.label());
+    }
 }

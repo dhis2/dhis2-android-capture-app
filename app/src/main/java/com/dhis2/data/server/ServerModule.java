@@ -2,6 +2,7 @@ package com.dhis2.data.server;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.dhis2.data.dagger.PerServer;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -12,11 +13,15 @@ import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Module
 @PerServer
@@ -53,6 +58,17 @@ public class ServerModule {
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .addNetworkInterceptor(new StethoInterceptor())
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+
+                        Request request = chain.request();
+                        Response response = chain.proceed(request);
+                        if (response.code() != 200)
+                            Log.d("RESPONSE INTERCEPTOR", response.code() + " - " + response.message());
+                        return response;
+                    }
+                })
                 .build();
     }
 

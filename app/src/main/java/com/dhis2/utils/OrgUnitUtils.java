@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 24/05/2018.
@@ -27,7 +30,7 @@ public class OrgUnitUtils {
 
         List<OrganisationUnitModel> allOrgs = new ArrayList<>();
         ArrayList<String> myOrgUnitUids = new ArrayList<>();
-        if (myOrgs == null){
+        if (myOrgs == null) {
             myOrgs = new ArrayList<>();
         }
         for (OrganisationUnitModel myorg : myOrgs) {
@@ -68,14 +71,18 @@ public class OrgUnitUtils {
 
         SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
 
-        for (int level = keys.last(); level > 1; level--) {
-            for (TreeNode treeNode : subLists.get(level - 1)) {
-                for (TreeNode childTreeNode : subLists.get(level)) {
-                    if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                        treeNode.addChild(childTreeNode);
-                }
+        try {
+            for (int level = keys.last(); level > 1; level--) {
+                for (TreeNode treeNode : subLists.get(level - 1)) {
+                    for (TreeNode childTreeNode : subLists.get(level)) {
+                        if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                            treeNode.addChild(childTreeNode);
+                    }
 
+                }
             }
+        } catch (NoSuchElementException e) { //It seems keys.last() can result in a null
+            Timber.e(e);
         }
 
         TreeNode root = TreeNode.root();

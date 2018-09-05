@@ -1,6 +1,5 @@
 package com.dhis2.data.forms.dataentry.fields.radiobutton;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +8,8 @@ import android.widget.RadioGroup;
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.databinding.FormYesNoBinding;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxRadioGroup;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 
 /**
@@ -24,21 +18,21 @@ import timber.log.Timber;
 
 public class RadioButtonHolder extends RecyclerView.ViewHolder {
 
-    @NonNull
-    private
-    BehaviorProcessor<RadioButtonViewModel> model;
+    private final FlowableProcessor<RowAction> processor;
+    /* @NonNull
+     private BehaviorProcessor<RadioButtonViewModel> model;*/
     final RadioGroup radioGroup;
-    private CompositeDisposable disposable;
+    final FormYesNoBinding binding;
+
+    RadioButtonViewModel viewModel;
 
     RadioButtonHolder(ViewGroup parent, FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding.getRoot());
-        disposable = new CompositeDisposable();
         radioGroup = binding.customYesNo.getRadioGroup();
+        this.binding = binding;
+        this.processor = processor;
 
-        model = BehaviorProcessor.create();
-
-        disposable.add(model
-                //.filter(this::checkValue)
+      /*  model
                 .subscribe(checkBoxViewModel -> {
                             StringBuilder label = new StringBuilder(checkBoxViewModel.label());
                             if (checkBoxViewModel.mandatory())
@@ -67,10 +61,9 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
                                 radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
                             }
                         },
-                        Timber::d)
-        );
+                        Timber::d);
 
-        disposable.add(RxRadioGroup.checkedChanges(radioGroup).takeUntil(RxView.detaches(parent))
+        RxRadioGroup.checkedChanges(radioGroup).takeUntil(RxView.detaches(parent))
                 .filter(checkIc -> model.hasValue())
                 .map(checkId ->
                         {
@@ -86,20 +79,70 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
                 )
                 .subscribe(
                         processor::onNext,
-                        Timber::d));
+                        Timber::d);*/
     }
 
-    private boolean checkValue(RadioButtonViewModel checkBoxViewModel) {
+    /*private boolean checkValue(RadioButtonViewModel checkBoxViewModel) {
         return model.getValue() == null || !model.getValue().equals(checkBoxViewModel);
-    }
+    }*/
 
-    public void update(RadioButtonViewModel viewModel) {
+    public void update(RadioButtonViewModel checkBoxViewModel) {
 
-        model.onNext(viewModel);
+//        model.onNext(viewModel);
+
+        this.viewModel = checkBoxViewModel;
+
+        radioGroup.setOnCheckedChangeListener(null);
+
+        StringBuilder label = new StringBuilder(checkBoxViewModel.label());
+        if (checkBoxViewModel.mandatory())
+            label.append("*");
+        binding.setLabel(label.toString());
+        binding.setValueType(checkBoxViewModel.valueType());
+        if (checkBoxViewModel.value() != null && Boolean.valueOf(checkBoxViewModel.value()))
+            binding.customYesNo.getRadioGroup().check(R.id.yes);
+        else if (checkBoxViewModel.value() != null)
+            binding.customYesNo.getRadioGroup().check(R.id.no);
+        else
+            binding.customYesNo.getRadioGroup().check(R.id.no_value);
+
+        if (checkBoxViewModel.warning() != null) {
+            binding.warningError.setVisibility(View.VISIBLE);
+            binding.warningError.setText(checkBoxViewModel.warning());
+        } else if (checkBoxViewModel.error() != null) {
+            binding.warningError.setVisibility(View.VISIBLE);
+            binding.warningError.setText(checkBoxViewModel.error());
+        } else {
+            binding.warningError.setVisibility(View.GONE);
+            binding.warningError.setText(null);
+        }
+
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
+        }
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RowAction rowAction;
+                switch (checkedId) {
+                    case R.id.yes:
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(true));
+                        break;
+                    case R.id.no:
+                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(false));
+                        break;
+                    default:
+                        rowAction = RowAction.create(viewModel.uid(), null);
+                        break;
+                }
+                processor.onNext(rowAction);
+            }
+        });
+
 
     }
 
     public void dispose() {
-        disposable.clear();
     }
 }

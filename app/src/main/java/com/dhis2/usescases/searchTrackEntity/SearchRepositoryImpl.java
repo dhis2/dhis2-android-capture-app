@@ -297,7 +297,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @NonNull
     @Override
-    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData) {
+    public Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnit, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryData,Date enrollmentDate) {
         Date currentDate = Calendar.getInstance().getTime();
         return Observable.defer(() -> {
             TrackedEntityInstanceModel trackedEntityInstanceModel = null;
@@ -357,18 +357,18 @@ public class SearchRepositoryImpl implements SearchRepository {
                 }
             }
 
-            Calendar enrollmentDate = Calendar.getInstance();
+            /*Calendar enrollmentDate = Calendar.getInstance();
             enrollmentDate.setTime(currentDate);
             enrollmentDate.set(Calendar.HOUR_OF_DAY, 0);
             enrollmentDate.set(Calendar.MINUTE, 0);
             enrollmentDate.set(Calendar.SECOND, 0);
-            enrollmentDate.set(Calendar.MILLISECOND, 0);
+            enrollmentDate.set(Calendar.MILLISECOND, 0);*/
 
             EnrollmentModel enrollmentModel = EnrollmentModel.builder()
                     .uid(codeGenerator.generate())
                     .created(currentDate)
                     .lastUpdated(currentDate)
-                    .enrollmentDate(enrollmentDate.getTime())
+                    .enrollmentDate(enrollmentDate)
                     .program(programUid)
                     .organisationUnit(orgUnit)
                     .trackedEntityInstance(teiUid != null ? teiUid : trackedEntityInstanceModel.uid())

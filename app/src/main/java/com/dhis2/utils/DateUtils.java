@@ -339,7 +339,7 @@ public class DateUtils {
 
     public static int[] getDifference(Date startDate, Date endDate) {
 
-        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime());
+        org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
 
     }
@@ -693,8 +693,8 @@ public class DateUtils {
     }
 
     /**
-     * @param currentDate Date from which calculation will be carried out. Default value is today.
-     * @param expiryDays Number of extra days to add events on previous period
+     * @param currentDate      Date from which calculation will be carried out. Default value is today.
+     * @param expiryDays       Number of extra days to add events on previous period
      * @param expiryPeriodType Expiry Period
      * @return Min date to select
      */

@@ -1,11 +1,9 @@
 package com.dhis2.data.forms.dataentry.fields.orgUnit;
 
 import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import com.dhis2.R;
 import com.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -14,13 +12,11 @@ import com.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
+import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -36,8 +32,9 @@ public class OrgUnitHolder extends FormViewHolder {
     private List<OrganisationUnitModel> orgUnits;
     private OrgUnitDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
-    @NonNull
-    private BehaviorProcessor<OrgUnitViewModel> model;
+    private OrgUnitViewModel model;
+  /*  @NonNull
+    private BehaviorProcessor<OrgUnitViewModel> model;*/
 
     OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);
@@ -48,23 +45,23 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.editText.setOnClickListener(view -> {
             orgUnitDialog = new OrgUnitDialog()
-                    .setTitle(model.getValue().label())
+                    .setTitle(model.label())
                     .setMultiSelection(false)
                     .setOrgUnits(this.orgUnits)
                     .setPossitiveListener(data -> {
-                        processor.onNext(RowAction.create(model.getValue().uid(), orgUnitDialog.getSelectedOrgUnit()));
+                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit()));
                         this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                     })
                     .setNegativeListener(data -> orgUnitDialog.dismiss());
             if (!orgUnitDialog.isAdded())
-                orgUnitDialog.show(fm, model.getValue().label());
+                orgUnitDialog.show(fm, model.label());
         });
 
 
-        model = BehaviorProcessor.create();
+//        model = BehaviorProcessor.create();
 
-        compositeDisposable.add(
+       /* compositeDisposable.add(
                 model.subscribe(viewModel -> {
                             StringBuilder label = new StringBuilder(viewModel.label());
                             if (viewModel.mandatory())
@@ -84,7 +81,7 @@ public class OrgUnitHolder extends FormViewHolder {
                             editText.setEnabled(viewModel.editable());
                         },
                         Timber::d)
-        );
+        );*/
 
         getOrgUnits();
     }
@@ -95,7 +92,27 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     public void update(OrgUnitViewModel viewModel) {
-        model.onNext(viewModel);
+//        model.onNext(viewModel);
+
+        StringBuilder label = new StringBuilder(viewModel.label());
+        if (viewModel.mandatory())
+            label.append("*");
+        this.inputLayout.setHint(label.toString());
+
+        if (viewModel.warning() != null)
+            editText.setError(viewModel.warning());
+        else if (viewModel.error() != null)
+            editText.setError(viewModel.error());
+        else
+            editText.setError(null);
+
+        if (viewModel.value() != null) {
+            editText.post(() -> editText.setText(getOrgUnitName(viewModel.value())));
+        }
+        editText.setEnabled(viewModel.editable());
+
+        this.model = viewModel;
+
     }
 
     private String getOrgUnitName(String value) {
@@ -117,9 +134,9 @@ public class OrgUnitHolder extends FormViewHolder {
                         orgUnitViewModels ->
                         {
                             this.orgUnits = orgUnitViewModels;
-                            if (model.getValue().value() != null) {
+                            if (model.value() != null) {
                                 this.inputLayout.setHintAnimationEnabled(false);
-                                this.editText.setText(getOrgUnitName(model.getValue().value()));
+                                this.editText.setText(getOrgUnitName(model.value()));
                                 this.inputLayout.setHintAnimationEnabled(true);
                             }
                         },

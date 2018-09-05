@@ -161,7 +161,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         this.dates = dates;
         this.period = period;
         lastSearchType = LastSearchType.DATE_RANGES;
-        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel)
+        compositeDisposable.add(programEventDetailRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -183,7 +183,7 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
         Observable.just(programEventDetailRepository.filteredProgramEvents(programId,
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate),
-                categoryOptionComboModel)
+                categoryOptionComboModel, orgUnitQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

@@ -11,11 +11,11 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,7 +23,6 @@ import com.dhis2.Components;
 import com.dhis2.R;
 import com.dhis2.databinding.FragmentProgramBinding;
 import com.dhis2.usescases.general.FragmentGlobalAbstract;
-import com.dhis2.usescases.main.MainActivity;
 import com.dhis2.utils.CustomViews.RxDateDialog;
 import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.HelpManager;
@@ -100,6 +99,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         chosenDateYear.add(new Date());
         binding.programRecycler.setAdapter(new ProgramModelAdapter(presenter, currentPeriod));
         binding.programRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         return binding.getRoot();
     }
 
@@ -321,8 +321,17 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
-        binding.orgUnitCancel.setOnClickListener(view -> binding.drawerLayout.closeDrawer(Gravity.END));
-        binding.orgUnitAll.setOnClickListener(view -> treeView.selectAll(false));
+        binding.orgUnitCancel.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        });
+        binding.orgUnitAll.setOnClickListener(view -> {
+            treeView.selectAll(false);
+            for (TreeNode node : treeView.getSelected()) {
+                ((OrgUnitHolder) node.getViewHolder()).check();
+            }
+        });
         treeView = new AndroidTreeView(context, treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
@@ -352,6 +361,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void openDrawer() {
         binding.drawerLayout.openDrawer(Gravity.END);
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
     @Override
@@ -378,6 +388,8 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void apply() {
         binding.drawerLayout.closeDrawers();
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         orgUnitFilter = new StringBuilder();
         for (int i = 0; i < treeView.getSelected().size(); i++) {
             orgUnitFilter.append("'");
@@ -387,6 +399,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 orgUnitFilter.append(", ");
         }
 
+        if (treeView.getSelected().size() == 1) {
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        } else if (treeView.getSelected().size() > 1) {
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        }
 
         switch (currentPeriod) {
             case NONE:

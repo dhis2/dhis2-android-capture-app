@@ -20,16 +20,19 @@ import static android.text.TextUtils.isEmpty;
 
 public class AgeHolder extends FormViewHolder {
 
-    @NonNull
-    private BehaviorProcessor<AgeViewModel> model;
-    CompositeDisposable disposable;
+    FormAgeCustomBinding binding;
+   /* @NonNull
+    private BehaviorProcessor<AgeViewModel> model;*/
+//    CompositeDisposable disposable;
+    AgeViewModel ageViewModel;
 
     AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
-        disposable = new CompositeDisposable();
-        model = BehaviorProcessor.create();
+        this.binding = binding;
+//        disposable = new CompositeDisposable();
+//        model = BehaviorProcessor.create();
 
-        disposable.add(model.subscribe(ageViewModel -> {
+      /*  disposable.add(model.subscribe(ageViewModel -> {
                     StringBuilder label = new StringBuilder(ageViewModel.label());
                     if (ageViewModel.mandatory())
                         label.append("*");
@@ -49,22 +52,43 @@ public class AgeHolder extends FormViewHolder {
 
                     binding.executePendingBindings();
                 },
-                Timber::d));
+                Timber::d));*/
 
         binding.customAgeview.setAgeChangedListener(ageDate -> {
-                    if (model.getValue().value() == null || !model.getValue().value().equals(DateUtils.databaseDateFormat().format(ageDate)))
-                        processor.onNext(RowAction.create(model.getValue().uid(), DateUtils.databaseDateFormat().format(ageDate)));
+                    if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
+                        processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate)));
                 }
         );
     }
 
 
-    public void update(AgeViewModel viewModel) {
-        model.onNext(viewModel);
+    public void update(AgeViewModel ageViewModel) {
+//        model.onNext(viewModel);
+        this.ageViewModel = ageViewModel;
+
+        StringBuilder label = new StringBuilder(ageViewModel.label());
+        if (ageViewModel.mandatory())
+            label.append("*");
+        binding.customAgeview.setLabel(label.toString());
+        if (!isEmpty(ageViewModel.value())) {
+            binding.customAgeview.setInitialValue(ageViewModel.value());
+        }
+
+        if (ageViewModel.warning() != null)
+            binding.customAgeview.setWarningOrError(ageViewModel.warning());
+        else if (ageViewModel.error() != null)
+            binding.customAgeview.setWarningOrError(ageViewModel.error());
+        else
+            binding.customAgeview.setWarningOrError(null);
+
+        binding.customAgeview.setEditable(ageViewModel.editable());
+
+        binding.executePendingBindings();
+
     }
 
     @Override
     public void dispose() {
-        disposable.clear();
+//        disposable.clear();
     }
 }

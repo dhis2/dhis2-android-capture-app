@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dhis2.data.tuples.Pair;
-import com.dhis2.usescases.main.program.ProgramViewModel;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -30,7 +29,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -72,6 +70,8 @@ public interface MetadataRepository {
     Observable<OrganisationUnitModel> getOrganisationUnit(String orgUnitUid);
 
     Observable<OrganisationUnitModel> getTeiOrgUnit(String teiUid);
+
+    Observable<OrganisationUnitModel> getTeiOrgUnit(@NonNull String teiUid, @Nullable String programUid);
 
     Observable<List<OrganisationUnitModel>> getOrgUnitForOpenAndClosedDate(String currentDate);
 
@@ -132,7 +132,7 @@ public interface MetadataRepository {
 
     Observable<List<Pair<String, String>>> getReserveUids();
 
-    Observable<Boolean> hasOverdue(@Nullable String programUid,@NonNull String teiUid);
+    Observable<Boolean> hasOverdue(@Nullable String programUid, @NonNull String teiUid);
 
 
     @NonNull

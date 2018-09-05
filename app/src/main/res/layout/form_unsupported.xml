@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -14,13 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        android:focusable="true"
-        android:enabled="false"
         android:clickable="false"
+        android:enabled="false"
+        android:focusable="true"
         android:paddingEnd="0dp"
         android:paddingStart="20dp"
-        android:text="@{label}"
         android:textAlignment="viewStart"
-        android:textColor="?colorPrimary"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:textColor="@color/gray_b2b"
+        tools:text="Unsupported" />
 </layout>

@@ -1,11 +1,14 @@
 package com.dhis2.usescases.searchTrackEntity;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.dhis2.Bindings.Bindings;
 import com.dhis2.R;
 import com.dhis2.data.forms.FormActivity;
@@ -15,6 +18,7 @@ import com.dhis2.data.tuples.Pair;
 import com.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import com.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import com.dhis2.utils.CustomViews.OrgUnitDialog;
+import com.dhis2.utils.DateUtils;
 import com.dhis2.utils.NetworkUtils;
 
 import org.hisp.dhis.android.core.D2;
@@ -32,6 +36,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntityInstanceQuery;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +73,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private List<OrganisationUnitModel> orgUnits;
     private Integer currentPage;
+    private Date selectedEnrollmentDate;
 
     public SearchTEPresenter(SearchRepository searchRepository, MetadataRepository metadataRepository, D2 d2) {
         Bindings.setMetadataRepository(metadataRepository);
@@ -203,7 +210,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return Flowable.defer(() -> Flowable.fromCallable(d2.queryTrackedEntityInstances(query)))
                                         .observeOn(Schedulers.io())
                                         .subscribeOn(Schedulers.io())
-                                        .doOnError(this::handleError);
+                                        .doOnError(this::handleError)
+                                        .onErrorReturn(data -> new ArrayList<>()); //If there is an error returns an empty list
 
                             })
                             .map(trackedEntityInstances -> {
@@ -228,14 +236,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                             .map(trackedEntityInstanceModels -> {
                                                 List<SearchTeiModel> helperList = new ArrayList<>();
 
-                                                for(SearchTeiModel searchTeiModel: list){
+                                                for (SearchTeiModel searchTeiModel : list) {
                                                     boolean toUpdate = false;
                                                     for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
                                                         if (searchTeiModel.getTei().uid().equals(tei.uid())) {
                                                             toUpdate = true;
                                                         }
                                                     }
-                                                    if(!toUpdate)helperList.add(searchTeiModel);
+                                                    if (!toUpdate) helperList.add(searchTeiModel);
                                                 }
 
                                                 for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
@@ -302,6 +310,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                     break;
             }
         }
+
+        Crashlytics.logException(throwable);
     }
 
     private void getTrackedEntityAttributes() {
@@ -385,35 +395,80 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void enroll(String programUid, String uid) {
+        selectedEnrollmentDate = Calendar.getInstance().getTime();
+
         OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)
-                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid);
+                        enrollInOrgUnit(orgUnitDialog.getSelectedOrgUnit(), programUid, uid, selectedEnrollmentDate);
                     orgUnitDialog.dismiss();
                 })
                 .setNegativeListener(v -> orgUnitDialog.dismiss());
 
-        compositeDisposable.add(getOrgUnits()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        orgUnits -> {
-                            if (orgUnits.size() > 1) {
-                                orgUnitDialog.setOrgUnits(orgUnits);
-                                if (!orgUnitDialog.isAdded())
-                                    orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
-                            } else
-                                enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid);
-                        },
-                        Timber::d
-                )
-        );
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dateDialog = new DatePickerDialog(view.getContext(), (
+                (datePicker, year1, month1, day1) -> {
+                    Calendar selectedCalendar = Calendar.getInstance();
+                    selectedCalendar.set(Calendar.YEAR, year1);
+                    selectedCalendar.set(Calendar.MONTH, month1);
+                    selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                    selectedCalendar.set(Calendar.MINUTE, 0);
+                    selectedCalendar.set(Calendar.SECOND, 0);
+                    selectedCalendar.set(Calendar.MILLISECOND, 0);
+                    selectedEnrollmentDate = selectedCalendar.getTime();
+                    String enrollmentDate = DateUtils.uiDateFormat().format(selectedEnrollmentDate);
+
+                    compositeDisposable.add(getOrgUnits()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    allOrgUnits -> {
+                                        ArrayList<OrganisationUnitModel> orgUnits = new ArrayList<>();
+                                        for (OrganisationUnitModel orgUnit : allOrgUnits) {
+                                            boolean afterOpening = false;
+                                            boolean beforeClosing = false;
+                                            if (orgUnit.openingDate() == null || !selectedEnrollmentDate.before(orgUnit.openingDate()))
+                                                afterOpening = true;
+                                            if (orgUnit.closedDate() == null || !selectedEnrollmentDate.after(orgUnit.closedDate()))
+                                                beforeClosing = true;
+                                            if (afterOpening && beforeClosing)
+                                                orgUnits.add(orgUnit);
+                                        }
+                                        if (orgUnits.size() > 1) {
+                                            orgUnitDialog.setOrgUnits(orgUnits);
+                                            if (!orgUnitDialog.isAdded())
+                                                orgUnitDialog.show(view.getAbstracContext().getSupportFragmentManager(), "OrgUnitEnrollment");
+                                        } else
+                                            enrollInOrgUnit(orgUnits.get(0).uid(), programUid, uid, selectedEnrollmentDate);
+                                    },
+                                    Timber::d
+                            )
+                    );
+
+
+                }),
+                year,
+                month,
+                day);
+        if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
+            dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
+        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        dateDialog.show();
     }
 
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
         compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData)
+                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
@@ -495,6 +550,6 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public String getProgramColor(String uid) {
-        return  searchRepository.getProgramColor(uid);
+        return searchRepository.getProgramColor(uid);
     }
 }

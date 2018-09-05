@@ -11,6 +11,8 @@ import com.dhis2.databinding.ItemProgramModelBinding;
 import com.dhis2.utils.Period;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
 
     @Override
     public void onBindViewHolder(@NonNull ProgramModelHolder holder, int position) {
-        holder.bind(presenter,programList.get(holder.getAdapterPosition()),currentPeriod);
+        holder.bind(presenter, programList.get(holder.getAdapterPosition()), currentPeriod);
     }
 
 
@@ -54,6 +56,12 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
     }
 
     public void setData(List<ProgramViewModel> data) {
+        Collections.sort(data, new Comparator<ProgramViewModel>() {
+            @Override
+            public int compare(ProgramViewModel o1, ProgramViewModel o2) {
+                return o2.count() - o1.count();
+            }
+        });
         this.programList.clear();
         this.programList.addAll(data);
         notifyDataSetChanged();

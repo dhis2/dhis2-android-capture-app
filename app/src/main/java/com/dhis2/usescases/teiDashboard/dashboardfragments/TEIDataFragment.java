@@ -115,7 +115,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             Bundle bundle = new Bundle();
             bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
-            bundle.putString(ORG_UNIT, presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
+            bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
             bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
             bundle.putBoolean(NEW_EVENT, true);
 

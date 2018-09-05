@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.Gravity;
@@ -96,6 +97,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         programId = getIntent().getStringExtra("PROGRAM_UID");
         binding.setPresenter(presenter);
+
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
     }
 
     @Override
@@ -141,10 +145,13 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(Gravity.END))
+        if (!binding.drawerLayout.isDrawerOpen(Gravity.END)) {
             binding.drawerLayout.openDrawer(Gravity.END);
-        else
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }else {
             binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
@@ -311,10 +318,22 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
+        binding.orgUnitCancel.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        });
+        binding.orgUnitAll.setOnClickListener(view -> {
+            treeView.selectAll(false);
+            for (TreeNode node : treeView.getSelected()) {
+                ((OrgUnitHolder) node.getViewHolder()).check();
+            }
+        });
         treeView = new AndroidTreeView(getContext(), treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);
         treeView.setSelectionModeEnabled(true);
+        treeView.setUseAutoToggle(false);
 
         binding.treeViewContainer.addView(treeView.getView());
         if (presenter.getOrgUnits().size() < 25)
@@ -322,10 +341,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         treeView.setDefaultNodeClickListener((node, value) -> {
             if (treeView.getSelected().size() == 1 && !node.isSelected()) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
         });
@@ -430,6 +447,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void apply() {
         binding.drawerLayout.closeDrawers();
+        binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         orgUnitFilter = new StringBuilder();
         for (int i = 0; i < treeView.getSelected().size(); i++) {
             orgUnitFilter.append("'");
@@ -439,6 +458,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 orgUnitFilter.append(", ");
         }
 
+        if (treeView.getSelected().size() == 1) {
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        } else if (treeView.getSelected().size() > 1) {
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        }
 
         switch (currentPeriod) {
             case NONE:

@@ -9,7 +9,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,19 +22,12 @@ import com.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.dhis2.data.forms.dataentry.fields.RowAction;
 import com.dhis2.data.tuples.Pair;
 import com.dhis2.utils.Preconditions;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.functions.Predicate;
-import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
@@ -50,8 +42,9 @@ final class EditTextCustomHolder extends FieldViewHolder {
     private final TextInputLayout inputLayout;
     private EditText editText;
     private ImageView icon;
-    @NonNull
-    private BehaviorProcessor<EditTextModel> model;
+    /* @NonNull
+     private BehaviorProcessor<EditTextModel> model;*/
+    EditTextModel editTextModel;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
@@ -66,59 +59,68 @@ final class EditTextCustomHolder extends FieldViewHolder {
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
-        model = BehaviorProcessor.create();
-        model.subscribe(editTextModel -> {
-
-                    Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-                    editText.setEnabled(editTextModel.editable());
-                    editText.setText(editTextModel.value() == null ?
-                            null : valueOf(editTextModel.value()));
-
-                    setInputType(editTextModel.valueType());
-
-                    if (!isEmpty(editTextModel.warning())) {
-                        inputLayout.setError(editTextModel.warning());
-                    } else if (!isEmpty(editTextModel.error())) {
-                        inputLayout.setError(editTextModel.error());
-                    } else
-                        inputLayout.setError(null);
-
-
-                    editText.setSelection(editText.getText() == null ?
-                            0 : editText.getText().length());
-                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-                        StringBuilder label = new StringBuilder(editTextModel.label());
-                        if (editTextModel.mandatory())
-                            label.append("*");
-                        inputLayout.setHint(label);
-                    }
-
-                }
-                , t -> Log.d("DHIS_ERROR", t.getMessage()));
+//        model = BehaviorProcessor.create();
+//        model.subscribe(editTextModel -> {
+//
+//                    Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
+//                    editText.setEnabled(editTextModel.editable());
+//                    editText.setText(editTextModel.value() == null ?
+//                            null : valueOf(editTextModel.value()));
+//
+//                    setInputType(editTextModel.valueType());
+//
+//                    if (!isEmpty(editTextModel.warning())) {
+//                        inputLayout.setError(editTextModel.warning());
+//                    } else if (!isEmpty(editTextModel.error())) {
+//                        inputLayout.setError(editTextModel.error());
+//                    } else
+//                        inputLayout.setError(null);
+//
+//
+//                    editText.setSelection(editText.getText() == null ?
+//                            0 : editText.getText().length());
+//                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
+//                        StringBuilder label = new StringBuilder(editTextModel.label());
+//                        if (editTextModel.mandatory())
+//                            label.append("*");
+//                        inputLayout.setHint(label);
+//                    }
+//
+//                }
+//                , t -> Log.d("DHIS_ERROR", t.getMessage()));
 
 
         // show and hide hint
 
-        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && editTextModel != null && editTextModel.editable()) {
+                if (!isEmpty(editText.getText()))
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
+                else
+                    processor.onNext(RowAction.create(editTextModel.uid(), null));
+            }
+        });
+
+        /*ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
                 .publish();
 
         editTextObservable
                 .filter(hasFocus -> !hasFocus)
-                .filter(focusLost -> model.getValue() != null)
-                .filter(focusLost -> model.getValue().editable())
+                .filter(focusLost -> editTextModel != null)
+                .filter(focusLost -> editTextModel.editable())
                 .filter(focusLost -> validate())
-                .map(focusLost -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
+                .map(focusLost -> RowAction.create(editTextModel.uid(), !isEmpty(editText.getText()) ? editText.getText().toString() : null))
                 .subscribe(
                         processor::onNext,
                         Timber::d,
                         () ->
                         {
                             if (valueHasChanged() && validate()) {
-                                processor.onNext(RowAction.create(model.getValue().uid(),
-                                        editText.getText().toString()));
+                                processor.onNext(RowAction.create(editTextModel.uid(),
+                                        !isEmpty(editText.getText()) ? editText.getText().toString() : null));
                             }
-                        });
+                        });*/
 
 
 
@@ -143,16 +145,18 @@ final class EditTextCustomHolder extends FieldViewHolder {
                             }
                         });*/
 
-        editTextObservable.connect();
+//        editTextObservable.connect();
 //        textObservable.connect();
     }
 
     private void setInputType(ValueType valueType) {
 
-        editText.setFocusable(model.getValue().editable());
-        editText.setEnabled(model.getValue().editable());
+        editText.setFocusable(editTextModel.editable());
+        editText.setEnabled(editTextModel.editable());
 
-        if (model.getValue().editable())
+        editText.setFilters(new InputFilter[]{});
+
+        if (editTextModel.editable())
             switch (valueType) {
                 case PHONE_NUMBER:
                     editText.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -217,16 +221,41 @@ final class EditTextCustomHolder extends FieldViewHolder {
     @NonNull
     private Boolean valueHasChanged() {
         return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
-                model.getValue().value() == null ? "" : valueOf(model.getValue().value()));
+                editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
     @Override
-    public void update(@NonNull FieldViewModel editTextModel) {
-        model.onNext((EditTextModel) editTextModel);
+    public void update(@NonNull FieldViewModel model) {
+//        model.onNext((EditTextModel) editTextModel);
+        this.editTextModel = (EditTextModel) model;
+
+        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
+        editText.setEnabled(editTextModel.editable());
+        editText.setText(editTextModel.value() == null ?
+                null : valueOf(editTextModel.value()));
+
+        if (!isEmpty(editTextModel.warning())) {
+            inputLayout.setError(editTextModel.warning());
+        } else if (!isEmpty(editTextModel.error())) {
+            inputLayout.setError(editTextModel.error());
+        } else
+            inputLayout.setError(null);
+
+
+        editText.setSelection(editText.getText() == null ?
+                0 : editText.getText().length());
+        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
+            StringBuilder label = new StringBuilder(editTextModel.label());
+            if (editTextModel.mandatory())
+                label.append("*");
+            inputLayout.setHint(label);
+        }
+
+        setInputType(editTextModel.valueType());
     }
 
     private boolean validate() {
-        switch (model.getValue().valueType()) {
+        switch (editTextModel.valueType()) {
             case PHONE_NUMBER:
                 if (Patterns.PHONE.matcher(editText.getText().toString()).matches())
                     return true;
