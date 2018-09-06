@@ -142,14 +142,14 @@
 
             </LinearLayout>
 
-            <com.dhis2.utils.CustomViews.CoordinatesView
+            <org.dhis2.utils.CustomViews.CoordinatesView
                 android:id="@+id/coordinates_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
 
-        <com.dhis2.data.forms.AutoHidingTabLayout
+        <org.dhis2.data.forms.AutoHidingTabLayout
             android:id="@+id/tablayout_data_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

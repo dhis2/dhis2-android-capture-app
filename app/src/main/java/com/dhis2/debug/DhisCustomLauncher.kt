@@ -1,14 +1,14 @@
-package com.dhis2.debug
+package org.dhis2.debug
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
-import com.dhis2.R
+import org.dhis2.R
 import android.app.PendingIntent
 import android.app.Activity
 import android.content.Intent
-import com.dhis2.usescases.splash.SplashActivity
+import org.dhis2.usescases.splash.SplashActivity
 
 
 /**
@@ -47,7 +47,7 @@ class DhisCustomLauncher : AppWidgetProvider() {
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
                                      appWidgetId: Int) {
 
-            val prefs = context.getSharedPreferences("com.dhis2", Context.MODE_PRIVATE)
+            val prefs = context.getSharedPreferences("org.dhis2", Context.MODE_PRIVATE)
             val widgetImage = prefs.getString("FLAG",null)
             val icon = context.resources.getIdentifier(widgetImage,"drawable",context.packageName)
             // Construct the RemoteViews object

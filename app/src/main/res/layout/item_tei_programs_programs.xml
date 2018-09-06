@@ -10,7 +10,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
         <variable
             name="enrollment"
@@ -18,7 +18,7 @@
 
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.ProgramViewModel" />
+            type="org.dhis2.usescases.main.program.ProgramViewModel" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

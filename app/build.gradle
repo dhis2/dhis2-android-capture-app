@@ -28,7 +28,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "com.dhis2"
+        applicationId "org.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 27

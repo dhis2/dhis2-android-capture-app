@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
 
         <variable
             name="event"
