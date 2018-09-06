@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.eventDetail.EventDetailContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.eventDetail.EventDetailContracts.Presenter" />
 
         <variable
             name="event"
@@ -285,7 +285,7 @@
                                             tools:text="Sierre Leone" />
                                     </android.support.design.widget.TextInputLayout>
 
-                                    <com.dhis2.utils.CustomViews.CoordinatesView
+                                    <org.dhis2.utils.CustomViews.CoordinatesView
                                         android:id="@+id/captureCoordinates"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"

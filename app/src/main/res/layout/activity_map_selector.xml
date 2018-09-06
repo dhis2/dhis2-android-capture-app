@@ -64,7 +64,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.dhis2.usescases.map.MapSelectorActivity" />
+            tools:context="org.dhis2.usescases.map.MapSelectorActivity" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

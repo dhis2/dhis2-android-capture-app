@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.dhis2.utils.CustomViews.YesNoView
+        <org.dhis2.utils.CustomViews.YesNoView
             android:id="@+id/customYesNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

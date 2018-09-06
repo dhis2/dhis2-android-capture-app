@@ -6,7 +6,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEPresenter" />
 
         <variable
             name="attribute"

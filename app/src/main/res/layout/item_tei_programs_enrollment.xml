@@ -10,11 +10,11 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
         <variable
             name="enrollment"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
 
     </data>
 

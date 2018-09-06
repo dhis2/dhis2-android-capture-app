@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
 
         <variable
             name="theme"
@@ -17,7 +17,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.MainContracts.Presenter" />
+            type="org.dhis2.usescases.main.MainContracts.Presenter" />
 
         <variable
             name="currentFragment"

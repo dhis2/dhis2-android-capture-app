@@ -17,7 +17,7 @@
             type="java.lang.Boolean" />
     </data>
 
-    <com.dhis2.utils.CustomViews.DateView
+    <org.dhis2.utils.CustomViews.DateView
         android:id="@+id/dateView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

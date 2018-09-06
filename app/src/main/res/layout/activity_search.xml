@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
 
     </data>
 
@@ -147,7 +147,7 @@
                 android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
                 app:fabSize="normal"
-                app:layout_behavior="com.dhis2.utils.FixedBottomViewBehavior"
+                app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
                 app:elevation="7dp"
                 app:srcCompat='@{@drawable/ic_add}' />
 
