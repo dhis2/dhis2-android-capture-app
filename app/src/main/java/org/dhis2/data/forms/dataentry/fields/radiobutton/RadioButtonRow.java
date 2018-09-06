@@ -13,7 +13,7 @@ import org.dhis2.databinding.FormYesNoBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
 public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewModel> {

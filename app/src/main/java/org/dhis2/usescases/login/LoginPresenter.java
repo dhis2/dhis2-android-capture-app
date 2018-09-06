@@ -12,7 +12,6 @@ import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
@@ -71,7 +70,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(isUserLoggedIn -> {
                         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                "org.dhis2", Context.MODE_PRIVATE);
+                                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                         if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
                         } else if (prefs.getBoolean("SessionLocked", false)) {
@@ -108,8 +107,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
                 .switchMap(userManager -> {
                     SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
-                            "org.dhis2", Context.MODE_PRIVATE);
-                    prefs.edit().putString("SERVER", serverUrl).apply();
+                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                    prefs.edit().putString(Constants.SERVER, serverUrl).apply();
                     this.userManager = userManager;
                     return userManager.logIn(username, password);
                 })
@@ -155,7 +154,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void unlockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (prefs.getString("pin", "").equals(pin)) {
             prefs.edit().putBoolean("SessionLocked", false).apply();
             view.startActivity(MainActivity.class, null, true, true, null);
@@ -202,7 +201,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             data -> {
-                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences("org.dhis2", Context.MODE_PRIVATE);
+                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences();
                                 prefs.edit().putBoolean("SessionLocked", false).apply();
                                 prefs.edit().putString("pin", null).apply();
                                 view.handleLogout();
@@ -359,7 +358,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @NonNull
     private Observable<List<TrackedEntityInstance>> trackerData() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(teiLimit, limityByOU)));
@@ -368,7 +367,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @NonNull
     private Observable<List<Event>> events() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
 

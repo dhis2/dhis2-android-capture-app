@@ -5,7 +5,7 @@ import org.dhis2.data.dagger.PerActivity;
 import dagger.Subcomponent;
 
 /**
- * Created by frodriguez on 12/13/2017.
+ * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 @PerActivity
 @Subcomponent(modules = TeiDataDetailModule.class)

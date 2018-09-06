@@ -8,7 +8,7 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 
 /**
- * Created by Administrador on 18/12/2017.
+ * QUADRAM. Created by Administrador on 18/12/2017.
  */
 
 public class NotesViewholder extends RecyclerView.ViewHolder {

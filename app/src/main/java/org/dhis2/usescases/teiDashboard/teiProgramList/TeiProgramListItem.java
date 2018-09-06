@@ -4,13 +4,11 @@ import android.support.annotation.IntDef;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
-import org.hisp.dhis.android.core.program.ProgramModel;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by Cristian on 08/03/2018.
+ * QUADRAM. Created by Cristian on 08/03/2018.
  */
 
 public class TeiProgramListItem {

@@ -23,7 +23,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by ppajuelo on 10/10/2017.
+ * QUADRAM. Created by ppajuelo on 10/10/2017.
  */
 @Module
 final class AppModule {

@@ -99,7 +99,7 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();*/
             } else if (result.isSuccess()) {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress",false));
-                SharedPreferences prefs = getSharedPreferences("org.dhis2", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                 prefs.edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
                 prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, true).apply();
                 syncPresenter.onDetach();
@@ -112,7 +112,7 @@ public class SyncMetadataService extends JobService implements SyncView {
                         .build();*/
             } else if (!result.isSuccess()) {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress",false));
-                SharedPreferences prefs = getSharedPreferences("org.dhis2", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                 prefs.edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
                 prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, false).apply();
                 syncPresenter.onDetach();

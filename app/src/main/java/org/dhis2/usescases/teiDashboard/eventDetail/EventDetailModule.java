@@ -11,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by ppajuelo on 19/12/2017.
+ * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
 @Module

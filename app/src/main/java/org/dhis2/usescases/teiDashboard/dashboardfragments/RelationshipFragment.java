@@ -30,7 +30,7 @@ import io.reactivex.functions.Consumer;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 public class RelationshipFragment extends FragmentGlobalAbstract {

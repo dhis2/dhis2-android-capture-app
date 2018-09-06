@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by ppajuelo on 05/12/2017.
+ * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
 
 public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {

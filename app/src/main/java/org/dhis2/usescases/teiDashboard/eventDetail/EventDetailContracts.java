@@ -15,7 +15,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by ppajuelo on 19/12/2017.
+ * QUADRAM. Created by ppajuelo on 19/12/2017.
  */
 
 public class EventDetailContracts {

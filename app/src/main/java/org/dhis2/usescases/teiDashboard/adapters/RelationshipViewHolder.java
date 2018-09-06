@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 05/12/2017.
+ * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
 
 public class RelationshipViewHolder extends RecyclerView.ViewHolder {

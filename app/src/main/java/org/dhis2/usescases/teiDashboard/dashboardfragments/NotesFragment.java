@@ -25,7 +25,7 @@ import java.util.List;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 public class NotesFragment extends FragmentGlobalAbstract {

@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 import android.app.DatePickerDialog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -24,7 +23,7 @@ import java.util.List;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by Cristian on 01/03/2018.
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventInitialContract {

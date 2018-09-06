@@ -58,16 +58,13 @@ public class ServerModule {
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
+                .addInterceptor(chain -> {
 
-                        Request request = chain.request();
-                        Response response = chain.proceed(request);
-                        if (response.code() != 200)
-                            Log.d("RESPONSE INTERCEPTOR", response.code() + " - " + response.message());
-                        return response;
-                    }
+                    Request request = chain.request();
+                    Response response = chain.proceed(request);
+                    if (response.code() != 200)
+                        Log.d("RESPONSE INTERCEPTOR", response.code() + " - " + response.message());
+                    return response;
                 })
                 .build();
     }

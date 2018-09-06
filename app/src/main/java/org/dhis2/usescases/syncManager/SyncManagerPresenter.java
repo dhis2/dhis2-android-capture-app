@@ -29,7 +29,7 @@ import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_DATA_NOW;
 import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_META_NOW;
 
 /**
- * Created by lmartin on 21/03/2018.
+ * QUADRAM. Created by lmartin on 21/03/2018.
  */
 
 public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
@@ -162,7 +162,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void resetSyncParameters() {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);

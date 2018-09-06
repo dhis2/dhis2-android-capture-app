@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import org.dhis2.databinding.ItemDateBinding;
 
 /**
- * Created by ppajuelo on 05/12/2017.
+ * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
 
 class DateViewHolder extends RecyclerView.ViewHolder {

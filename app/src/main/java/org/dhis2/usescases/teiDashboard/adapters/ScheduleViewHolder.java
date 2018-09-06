@@ -6,10 +6,9 @@ import org.dhis2.BR;
 import org.dhis2.databinding.ItemScheduleBinding;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 class ScheduleViewHolder extends RecyclerView.ViewHolder {

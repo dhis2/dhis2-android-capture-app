@@ -9,7 +9,7 @@ import org.dhis2.databinding.ItemProgramStageBinding;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class ProgramStageSelectionViewHolder extends RecyclerView.ViewHolder {

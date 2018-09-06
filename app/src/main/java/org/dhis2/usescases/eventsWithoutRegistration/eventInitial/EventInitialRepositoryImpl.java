@@ -34,7 +34,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 
 /**
- * Created by Cristian on 22/03/2018.
+ * QUADRAM. Created by Cristian on 22/03/2018.
  */
 
 public class EventInitialRepositoryImpl implements EventInitialRepository {

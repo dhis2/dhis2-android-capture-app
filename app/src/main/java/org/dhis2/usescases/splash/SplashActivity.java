@@ -1,7 +1,6 @@
 package org.dhis2.usescases.splash;
 
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 

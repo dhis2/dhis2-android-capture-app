@@ -13,7 +13,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by frodriguez on 12/13/2017.
+ * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 @PerActivity
 @Module

@@ -3,7 +3,6 @@ package org.dhis2.data.forms;
 import android.support.annotation.NonNull;
 
 import org.dhis2.data.schedulers.SchedulerProvider;
-import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 

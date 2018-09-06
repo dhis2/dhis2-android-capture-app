@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentTeiDataBinding;
@@ -28,7 +27,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -42,15 +40,15 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ADDNEW;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ENROLLMENT_UID;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_CREATION_TYPE;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.REFERRAL;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.SCHEDULENEW;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.TRACKED_ENTITY_INSTANCE;
+import static org.dhis2.utils.Constants.ADDNEW;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.NEW_EVENT;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.REFERRAL;
+import static org.dhis2.utils.Constants.SCHEDULENEW;
+import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 /**
  * -Created by ppajuelo on 29/11/2017.
@@ -276,7 +274,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0)
                     presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
                 else {
-                    if(programStageFromEvent.periodType()== null || programStageFromEvent.periodType() == PeriodType.Daily) {
+                    if (programStageFromEvent.periodType() == null || programStageFromEvent.periodType() == PeriodType.Daily) {
                         Calendar calendar = Calendar.getInstance();
                         DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
                             Calendar chosenDate = Calendar.getInstance();
@@ -291,7 +289,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
                         }
                         datePickerDialog.show();
-                    }else{
+                    } else {
                         //TODO: SHOW PERIOD SELECTOR
                     }
                 }

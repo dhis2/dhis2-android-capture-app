@@ -19,7 +19,7 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 /**
- * Created by Administrador on 18/12/2017.
+ * QUADRAM. Created by Administrador on 18/12/2017.
  */
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesViewholder> {

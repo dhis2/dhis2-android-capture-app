@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by frodriguez on 4/16/2018.
+ * QUADRAM. Created by frodriguez on 4/16/2018.
  */
 
 public class SearchRelationshipAdapter extends RecyclerView.Adapter<SearchRelationshipViewHolder> {

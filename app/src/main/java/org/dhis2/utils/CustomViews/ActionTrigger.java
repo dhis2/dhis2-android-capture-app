@@ -7,7 +7,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.BehaviorSubject;
 
 /**
- * Created by ppajuelo on 15/01/2018.
+ * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
 public class ActionTrigger<T> {

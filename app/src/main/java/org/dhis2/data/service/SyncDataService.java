@@ -87,14 +87,14 @@ public class SyncDataService extends JobService implements SyncView {
 
             } else if (result.isSuccess()) {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
-                SharedPreferences prefs = getSharedPreferences("org.dhis2", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                 prefs.edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
                 prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
 
                 next(syncState);
             } else if (!result.isSuccess()) { // NOPMD
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
-                SharedPreferences prefs = getSharedPreferences("org.dhis2", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                 prefs.edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
                 prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, false).apply();
                 next(syncState);

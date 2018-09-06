@@ -23,7 +23,7 @@ import java.util.Date;
 import timber.log.Timber;
 
 /**
- * Created by frodriguez on 1/15/2018.
+ * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
 public class DateView extends RelativeLayout implements View.OnClickListener {

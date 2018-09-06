@@ -22,7 +22,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 
 /**
- * Created by ppajuelo on 05/12/2017.
+ * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
 
 public class DateDialog extends DialogFragment {

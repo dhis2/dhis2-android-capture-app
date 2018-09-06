@@ -23,6 +23,7 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -430,7 +431,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void setTutorial() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         if (isAdded() && getAbstractActivity() != null) {
             new Handler().postDelayed(() -> {

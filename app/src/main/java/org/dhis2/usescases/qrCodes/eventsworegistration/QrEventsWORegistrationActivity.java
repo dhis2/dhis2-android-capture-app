@@ -20,7 +20,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import static org.dhis2.data.qr.QRjson.DATA_JSON;
 import static org.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
 import static org.dhis2.data.qr.QRjson.EVENT_JSON;
 

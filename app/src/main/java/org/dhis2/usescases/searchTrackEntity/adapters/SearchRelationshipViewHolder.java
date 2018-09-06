@@ -6,7 +6,6 @@ import android.widget.AdapterView;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
@@ -22,7 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by frodriguez on 11/7/2017.
+ * QUADRAM. Created by frodriguez on 11/7/2017.
  */
 
 public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {

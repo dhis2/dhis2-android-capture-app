@@ -2,7 +2,6 @@ package org.dhis2.data.forms.dataentry.fields.unsupported;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

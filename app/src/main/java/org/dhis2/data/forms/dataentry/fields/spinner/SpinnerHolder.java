@@ -25,7 +25,7 @@ import io.reactivex.processors.FlowableProcessor;
 import static android.text.TextUtils.isEmpty;
 
 /**
- * Created by ppajuelo on 07/11/2017.
+ * QUADRAM. Created by ppajuelo on 07/11/2017.
  */
 
 public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {

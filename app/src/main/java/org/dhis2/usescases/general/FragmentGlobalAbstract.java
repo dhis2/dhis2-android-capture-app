@@ -1,20 +1,21 @@
 package org.dhis2.usescases.general;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.dhis2.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.dhis2.utils.Constants;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -121,8 +122,7 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
     public <T> void saveListToPreference(String key, List<T> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
-
-        getAbstracContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+        getSharedPreferences().edit().putString(key, json).apply();
     }
 
     @Override
@@ -133,6 +133,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
         }.getType();
 
         return gson.fromJson(json, type);
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences() {
+        return getAbstractActivity().getSharedPreferences();
     }
 
     @Override

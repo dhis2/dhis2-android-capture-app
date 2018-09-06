@@ -17,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 07/03/2018.
+ * QUADRAM. Created by ppajuelo on 07/03/2018.
  */
 
 public class CellHolder extends AbstractViewHolder {

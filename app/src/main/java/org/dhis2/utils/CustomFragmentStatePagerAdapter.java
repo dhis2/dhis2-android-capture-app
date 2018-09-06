@@ -14,19 +14,19 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 /**
- * Created by Administrador on 10/06/2018.
+ * QUADRAM. Created by Administrador on 10/06/2018.
  */
 
- public abstract class CustomFragmentStatePagerAdapter extends PagerAdapter {
+public abstract class CustomFragmentStatePagerAdapter extends PagerAdapter {
     private static final String TAG = "FragmentStatePagerAdapt";
     private static final boolean DEBUG = false;
 
     private final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
 
-    private ArrayList<Fragment.SavedState> mSavedState = new ArrayList<Fragment.SavedState>();
-    private ArrayList<String> mSavedFragmentTags = new ArrayList<String>();
-    private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
+    private ArrayList<Fragment.SavedState> mSavedState = new ArrayList<>();
+    private ArrayList<String> mSavedFragmentTags = new ArrayList<>();
+    private ArrayList<Fragment> mFragments = new ArrayList<>();
 
     private Fragment mCurrentPrimaryItem = null;
 
@@ -185,8 +185,8 @@ import java.util.ArrayList;
             }
 
             if (fss != null) {
-                for (int i=0; i<fss.length; i++) {
-                    mSavedState.add((Fragment.SavedState)fss[i]);
+                for (Parcelable fs : fss) {
+                    mSavedState.add((Fragment.SavedState) fs);
                 }
             }
             Iterable<String> keys = bundle.keySet();

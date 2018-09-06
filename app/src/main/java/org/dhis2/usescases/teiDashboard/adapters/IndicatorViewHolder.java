@@ -10,7 +10,7 @@ import org.dhis2.databinding.ItemIndicatorBinding;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 class IndicatorViewHolder extends RecyclerView.ViewHolder {

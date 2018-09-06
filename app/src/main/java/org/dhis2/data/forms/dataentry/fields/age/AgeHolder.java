@@ -1,16 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.age;
 
-import android.support.annotation.NonNull;
-
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
 import org.dhis2.utils.DateUtils;
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 

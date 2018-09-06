@@ -9,11 +9,7 @@ import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-
 import java.io.Serializable;
-import java.util.List;
 
 @AutoValue
 public abstract class HomeViewModel extends BaseObservable implements Serializable {

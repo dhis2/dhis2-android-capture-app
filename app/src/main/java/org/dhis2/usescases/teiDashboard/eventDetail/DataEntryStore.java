@@ -10,7 +10,7 @@ import java.util.Date;
 import io.reactivex.Flowable;
 
 /**
- * Created by ppajuelo on 28/02/2018.
+ * QUADRAM. Created by ppajuelo on 28/02/2018.
  */
 
 public interface DataEntryStore {

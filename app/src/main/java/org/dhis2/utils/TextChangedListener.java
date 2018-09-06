@@ -4,7 +4,7 @@ import android.databinding.adapters.TextViewBindingAdapter;
 import android.text.Editable;
 
 /**
- * Created by frodriguez on 1/22/2018.
+ * QUADRAM. Created by frodriguez on 1/22/2018.
  */
 
 public interface TextChangedListener extends TextViewBindingAdapter.OnTextChanged {

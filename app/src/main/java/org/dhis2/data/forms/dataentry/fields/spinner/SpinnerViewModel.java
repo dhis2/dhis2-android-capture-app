@@ -6,7 +6,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
 @AutoValue

@@ -15,13 +15,12 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
- * Created by Cristian E. on 02/11/2017.
+ * QUADRAM. Created by Cristian E. on 02/11/2017.
  */
 
 public interface EventDetailRepository {

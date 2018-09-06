@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.User;
 
 import io.reactivex.Observable;
-import retrofit2.Response;
 
 public interface UserManager {
 

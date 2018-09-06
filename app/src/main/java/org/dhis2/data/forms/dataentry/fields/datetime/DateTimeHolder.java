@@ -1,7 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
 import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
 
 import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -16,15 +15,13 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.Date;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
 
 /**
- * Created by frodriguez on 16/01/2018.
+ * QUADRAM. Created by frodriguez on 16/01/2018.
  */
 
 public class DateTimeHolder extends FormViewHolder implements OnDateSelected {

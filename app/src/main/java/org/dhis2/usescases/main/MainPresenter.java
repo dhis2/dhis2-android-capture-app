@@ -9,6 +9,7 @@ import org.dhis2.data.user.UserRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
 
@@ -71,7 +72,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void blockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putBoolean("SessionLocked", true).apply();
         if (pin != null) {
             prefs.edit().putString("pin", pin).apply();

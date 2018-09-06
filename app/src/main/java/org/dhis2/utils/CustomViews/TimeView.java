@@ -25,7 +25,7 @@ import java.util.Locale;
 import timber.log.Timber;
 
 /**
- * Created by frodriguez on 1/15/2018.
+ * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
 public class TimeView extends RelativeLayout implements View.OnClickListener {

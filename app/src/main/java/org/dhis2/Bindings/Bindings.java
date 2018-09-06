@@ -60,7 +60,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by ppajuelo on 28/09/2017.
+ * QUADRAM. Created by ppajuelo on 28/09/2017.
  */
 
 public class Bindings {

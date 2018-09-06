@@ -1,7 +1,7 @@
 package org.dhis2.utils;
 
 /**
- * Created by ppajuelo on 15/01/2018.
+ * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
 public class Constants {
@@ -41,16 +41,36 @@ public class Constants {
     public static final int TIME_15M = 900;
     public static final int TIME_HOURLY = 3600;
 
-    public static final String EVENT_UID = "EVENT_UID";
 
     //EVENT_CREATION
     public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
     public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
+    public static final String SCREEN_NAME = "SCREEN_NAME";
+    public static final String PROGRAM_THEME = "PROGRAM_THEME";
+    public static final String SERVER = "SERVER";
+    public static final String THEME = "THEME";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
     public static String LAST_META_SYNC = "last_meta_sync";
     public static String LAST_META_SYNC_STATUS = "last_meta_sync_status";
+
+    public static final String EVENT_UID = "EVENT_UID";
+
+    public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
+    public static final String TRACKED_ENTITY_INSTANCE = "TRACKED_ENTITY_INSTANCE";
+    public static final String REFERRAL = "REFERRAL";
+    public static final String ADDNEW = "ADDNEW";
+    public static final String SCHEDULENEW = "SCHEDULENEW";
+    public static final String PROGRAM_UID = "PROGRAM_UID";
+    public static final String NEW_EVENT = "NEW_EVENT";
+    public static final String ORG_UNIT = "ORG_UNIT";
+    public static final String ONE_TIME = "ONE_TIME";
+    public static final String PERMANENT = "PERMANENT";
+    public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
+    public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
+    public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
+
 
     private Constants() {
         // hide public constructor

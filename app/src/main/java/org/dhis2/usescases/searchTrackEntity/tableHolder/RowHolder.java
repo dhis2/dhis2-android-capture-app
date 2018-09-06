@@ -6,7 +6,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 /**
- * Created by ppajuelo on 07/03/2018.
+ * QUADRAM. Created by ppajuelo on 07/03/2018.
  */
 
 public class RowHolder extends AbstractViewHolder {

@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -34,9 +37,6 @@ import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -60,7 +60,20 @@ import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.Constants.ADDNEW;
+import static org.dhis2.utils.Constants.ENROLLMENT_UID;
+import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
+import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
+import static org.dhis2.utils.Constants.NEW_EVENT;
+import static org.dhis2.utils.Constants.ONE_TIME;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PERMANENT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+import static org.dhis2.utils.Constants.REFERRAL;
 import static org.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
+import static org.dhis2.utils.Constants.SCHEDULENEW;
+import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 
 /**
@@ -70,21 +83,6 @@ import static org.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 public class EventInitialActivity extends ActivityGlobalAbstract implements EventInitialContract.View, DatePickerDialog.OnDateSetListener, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
-
-    public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
-    public static final String TRACKED_ENTITY_INSTANCE = "TRACKED_ENTITY_INSTANCE";
-    public static final String REFERRAL = "REFERRAL";
-    public static final String ADDNEW = "ADDNEW";
-    public static final String SCHEDULENEW = "SCHEDULENEW";
-    public static final String PROGRAM_UID = "PROGRAM_UID";
-    public static final String NEW_EVENT = "NEW_EVENT";
-    public static final String EVENT_UID = "EVENT_UID";
-    public static final String ORG_UNIT = "ORG_UNIT";
-    public static final String ONE_TIME = "ONE_TIME";
-    public static final String PERMANENT = "PERMANENT";
-    public static final String ENROLLMENT_UID = "ENROLLMENT_UID";
-    public static final String EVENT_REPEATABLE = "EVENT_REPEATABLE";
-    public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
     @Inject
     EventInitialContract.Presenter presenter;
 
@@ -128,7 +126,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         programId = getIntent().getStringExtra(PROGRAM_UID);
         isNewEvent = getIntent().getBooleanExtra(NEW_EVENT, true);
-        eventId = getIntent().getStringExtra(EVENT_UID);
+        eventId = getIntent().getStringExtra(Constants.EVENT_UID);
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE);
         getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
         enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
@@ -257,12 +255,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.create);
             //if (binding.shareButton != null)
-                //binding.shareButton.setVisibility(View.GONE);
+            //binding.shareButton.setVisibility(View.GONE);
         } else {
             if (binding.actionButton != null)
                 binding.actionButton.setText(R.string.update);
             //if (binding.shareButton != null)
-                //binding.shareButton.setVisibility(View.VISIBLE);
+            //binding.shareButton.setVisibility(View.VISIBLE);
         }
         /*if (binding.shareButton != null) {
             binding.shareButton.setOnClickListener(v -> {
@@ -333,7 +331,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, programId, eventId, selectedOrgUnit,programStageUid);
+        presenter.init(this, programId, eventId, selectedOrgUnit, programStageUid);
     }
 
     @Override
@@ -785,7 +783,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void showQR() {
         Intent intent = new Intent(EventInitialActivity.this, QrEventsWORegistrationActivity.class);
-        intent.putExtra("EVENT_UID", eventId);
+        intent.putExtra(Constants.EVENT_UID, eventId);
         startActivity(intent);
     }
 
@@ -798,7 +796,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         super.setTutorial();
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();

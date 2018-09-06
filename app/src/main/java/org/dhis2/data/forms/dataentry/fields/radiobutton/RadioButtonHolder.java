@@ -121,23 +121,20 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
             radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
         }
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RowAction rowAction;
-                switch (checkedId) {
-                    case R.id.yes:
-                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(true));
-                        break;
-                    case R.id.no:
-                        rowAction = RowAction.create(viewModel.uid(), String.valueOf(false));
-                        break;
-                    default:
-                        rowAction = RowAction.create(viewModel.uid(), null);
-                        break;
-                }
-                processor.onNext(rowAction);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            RowAction rowAction;
+            switch (checkedId) {
+                case R.id.yes:
+                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(true));
+                    break;
+                case R.id.no:
+                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(false));
+                    break;
+                default:
+                    rowAction = RowAction.create(viewModel.uid(), null);
+                    break;
             }
+            processor.onNext(rowAction);
         });
 
 

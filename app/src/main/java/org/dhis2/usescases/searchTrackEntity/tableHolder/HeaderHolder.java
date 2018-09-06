@@ -5,7 +5,7 @@ import org.dhis2.utils.ColorUtils;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 /**
- * Created by ppajuelo on 07/03/2018.
+ * QUADRAM. Created by ppajuelo on 07/03/2018.
  */
 
 public class HeaderHolder extends AbstractViewHolder {

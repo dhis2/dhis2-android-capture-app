@@ -10,6 +10,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 
@@ -141,11 +142,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         int programTheme = ColorUtils.getThemeFromColor(programModel.color());
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
+            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
         } else
-            prefs.edit().remove("PROGRAM_THEME").apply();
+            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
 
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);

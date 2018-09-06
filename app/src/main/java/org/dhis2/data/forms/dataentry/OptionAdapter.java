@@ -19,7 +19,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import java.util.List;
 
 /**
- * Created by ppajuelo on 07/11/2017.
+ * QUADRAM. Created by ppajuelo on 07/11/2017.
  */
 
 public class OptionAdapter extends ArrayAdapter<OptionModel> {

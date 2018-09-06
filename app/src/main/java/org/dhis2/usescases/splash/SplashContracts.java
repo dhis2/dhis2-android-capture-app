@@ -1,6 +1,5 @@
 package org.dhis2.usescases.splash;
 
-import android.graphics.drawable.Drawable;
 import android.support.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
