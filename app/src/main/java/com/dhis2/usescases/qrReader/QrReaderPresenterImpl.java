@@ -53,6 +53,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     private JSONObject eventWORegistrationJson;
     private String eventUid;
     private ArrayList<JSONObject> dataJson = new ArrayList<>();
+    private ArrayList<JSONObject> teiDataJson = new ArrayList<>();
 
     private JSONObject teiJson;
     private JSONArray attrJson;
@@ -138,53 +139,54 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     @Override
     public void handleDataInfo(JSONArray jsonArray) {
         ArrayList<Trio<TrackedEntityDataValueModel, String, Boolean>> attributes = new ArrayList<>();
-        if (eventUid != null) {
-            try {
-                // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject attrValue = jsonArray.getJSONObject(i);
-                    TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
+        try {
+            // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject attrValue = jsonArray.getJSONObject(i);
+                TrackedEntityDataValueModel.Builder trackedEntityDataValueModelBuilder = TrackedEntityDataValueModel.builder();
 
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
-                    trackedEntityDataValueModelBuilder.event(eventUid);
-                    if (attrValue.has("dataElement")) {
-                        trackedEntityDataValueModelBuilder.dataElement(attrValue.getString("dataElement"));
-                    }
-                    if (attrValue.has("storedBy")) {
-                        trackedEntityDataValueModelBuilder.storedBy(attrValue.getString("storedBy"));
-                    }
-                    if (attrValue.has("value")) {
-                        trackedEntityDataValueModelBuilder.value(attrValue.getString("value"));
-                    }
-                    if (attrValue.has("providedElsewhere")) {
-                        trackedEntityDataValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrValue.getString("providedElsewhere")));
-                    }
-                    if (attrValue.has("created")) {
-                        trackedEntityDataValueModelBuilder.created(simpleDateFormat.parse(attrValue.getString("created")));
-                    }
-                    if (attrValue.has("lastUpdated")) {
-                        trackedEntityDataValueModelBuilder.lastUpdated(simpleDateFormat.parse(attrValue.getString("lastUpdated")));
-                    }
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.getDefault());
 
-                    if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
-                        // LOOK FOR dataElement ON LOCAL DATABASE.
-                        Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
-                                " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
-                        // IF FOUND, OPEN DASHBOARD
-                        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                            this.dataJson.add(attrValue);
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
-                        } else {
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
-                        }
-                    }
-                    else {
+                if (attrValue.has("event")) {
+                    trackedEntityDataValueModelBuilder.event(attrValue.getString("event"));
+                }
+                if (attrValue.has("dataElement")) {
+                    trackedEntityDataValueModelBuilder.dataElement(attrValue.getString("dataElement"));
+                }
+                if (attrValue.has("storedBy")) {
+                    trackedEntityDataValueModelBuilder.storedBy(attrValue.getString("storedBy"));
+                }
+                if (attrValue.has("value")) {
+                    trackedEntityDataValueModelBuilder.value(attrValue.getString("value"));
+                }
+                if (attrValue.has("providedElsewhere")) {
+                    trackedEntityDataValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrValue.getString("providedElsewhere")));
+                }
+                if (attrValue.has("created")) {
+                    trackedEntityDataValueModelBuilder.created(simpleDateFormat.parse(attrValue.getString("created")));
+                }
+                if (attrValue.has("lastUpdated")) {
+                    trackedEntityDataValueModelBuilder.lastUpdated(simpleDateFormat.parse(attrValue.getString("lastUpdated")));
+                }
+
+                if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
+                    // LOOK FOR dataElement ON LOCAL DATABASE.
+                    Cursor cursor = briteDatabase.query("SELECT * FROM " + DataElementModel.TABLE +
+                            " WHERE " + DataElementModel.Columns.UID + " = ?", attrValue.getString("dataElement"));
+                    // IF FOUND, OPEN DASHBOARD
+                    if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+                        this.teiDataJson.add(attrValue);
+                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), cursor.getString(cursor.getColumnIndex("formName")), true));
+                    } else {
                         attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
                 }
-            } catch (JSONException | ParseException e) {
-                Timber.e(e);
+                else {
+                    attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                }
             }
+        } catch (JSONException | ParseException e) {
+            Timber.e(e);
         }
 
         view.renderTeiEventDataInfo(attributes);
@@ -538,6 +540,37 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             }
         }
 
+        for (int i = 0; i < teiDataJson.size(); i++) {
+            try {
+                JSONObject attrV = teiDataJson.get(i);
+
+                TrackedEntityDataValueModel.Builder attrValueModelBuilder;
+                attrValueModelBuilder = TrackedEntityDataValueModel.builder();
+
+                if (attrV.has("event"))
+                    attrValueModelBuilder.event(attrV.getString("event"));
+                if (attrV.has("lastUpdated"))
+                    attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")));
+                if (attrV.has("dataElement"))
+                    attrValueModelBuilder.dataElement(attrV.getString("dataElement"));
+                if (attrV.has("storedBy"))
+                    attrValueModelBuilder.storedBy(attrV.getString("storedBy"));
+                if (attrV.has("value"))
+                    attrValueModelBuilder.value(attrV.getString("value"));
+                if (attrV.has("providedElsewhere"))
+                    attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString("providedElsewhere")));
+
+                TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
+
+                if (attrValueModel != null) {
+                    long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+                    Log.d("RESULT", "insert event " + result);
+                }
+
+            } catch (JSONException | ParseException e) {
+                Timber.e(e);
+            }
+        }
         view.goToDashBoard(teiUid);
     }
 

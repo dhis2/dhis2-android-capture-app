@@ -107,10 +107,10 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                     presenter.handleEventWORegistrationInfo(new JSONObject(qRjson.getData()));
                     break;
                 case QRjson.DATA_JSON:
-                    presenter.handleDataWORegistrationInfo(new JSONArray(qRjson.getData()));
+                    presenter.handleDataInfo(new JSONArray(qRjson.getData()));
                     break;
                 case QRjson.DATA_JSON_WO_REGISTRATION:
-                    presenter.handleDataInfo(new JSONArray(qRjson.getData()));
+                    presenter.handleDataWORegistrationInfo(new JSONArray(qRjson.getData()));
                     break;
                 case QRjson.TEI_JSON:
                     presenter.handleTeiInfo(new JSONObject(qRjson.getData()));
@@ -375,7 +375,6 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         }
 
 
-
         // EVENTS
         message = message + getString(R.string.qr_events) + ":\n";
 
@@ -410,6 +409,18 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
             message = message + getString(R.string.qr_no_data) + "\n\n";
         }
 
+        // ATTRIBUTES
+        message = message + getString(R.string.qr_data_values) + ":\n";
+
+        if (teiEventData != null && !teiEventData.isEmpty()) {
+            for (Trio<TrackedEntityDataValueModel, String, Boolean> attribute : teiEventData) {
+                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+            }
+            message = message + "\n";
+        }
+        else {
+            message = message + getString(R.string.qr_no_data) + "\n\n";
+        }
 
         // READ MORE
         message = message + "\n\n" + getString(R.string.read_more_qr);
