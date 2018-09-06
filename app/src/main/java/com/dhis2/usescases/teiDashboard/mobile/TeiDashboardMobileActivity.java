@@ -105,9 +105,10 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
-        adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
-        binding.teiPager.setAdapter(adapter);
-
+        if (adapter == null) {
+            adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
+            binding.teiPager.setAdapter(adapter);
+        }
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2);

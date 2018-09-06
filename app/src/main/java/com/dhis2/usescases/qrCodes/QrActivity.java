@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import static com.dhis2.data.qr.QRjson.ATTR_JSON;
 import static com.dhis2.data.qr.QRjson.DATA_JSON;
+import static com.dhis2.data.qr.QRjson.DATA_JSON_WO_REGISTRATION;
 import static com.dhis2.data.qr.QRjson.ENROLLMENT_JSON;
 import static com.dhis2.data.qr.QRjson.EVENTS_JSON;
 import static com.dhis2.data.qr.QRjson.EVENT_JSON;
@@ -90,7 +91,8 @@ public class QrActivity extends ActivityGlobalAbstract implements QrContracts.Vi
                         binding.setTitle(getString(R.string.qr_id));
                         break;
                     case DATA_JSON:
-                        binding.setTitle(getString(R.string.qr_attributes));
+                    case DATA_JSON_WO_REGISTRATION:
+                        binding.setTitle(getString(R.string.qr_data_values));
                         break;
                     case TEI_JSON:
                         binding.setTitle(getString(R.string.qr_id));

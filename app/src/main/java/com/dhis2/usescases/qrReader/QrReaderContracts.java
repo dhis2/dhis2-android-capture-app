@@ -33,6 +33,8 @@ public class QrReaderContracts {
 
         void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data);
 
+        void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValueModel, String, Boolean>> data);
+
         void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes);
 
         void renderEnrollmentInfo(@NonNull List<Pair<String, Boolean>> enrollments);
@@ -57,6 +59,8 @@ public class QrReaderContracts {
         void handleEventWORegistrationInfo(JSONObject jsonObject);
 
         void handleDataWORegistrationInfo(JSONArray jsonArray);
+
+        void handleDataInfo(JSONArray jsonArray);
 
         void handleTeiInfo(JSONObject jsonObject);
 

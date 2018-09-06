@@ -238,6 +238,7 @@
     <string name="button_ok">OK</string>
     <string name="qr_id">Identification</string>
     <string name="qr_attributes">Attributes</string>
+    <string name="qr_data_values">Data Values</string>
     <string name="qr_enrollment">Enrollments</string>
     <string name="qr_events">Events</string>
     <string name="qr_relationships">Relationships</string>
