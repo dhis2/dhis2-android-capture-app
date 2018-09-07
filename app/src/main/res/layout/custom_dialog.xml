@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
+
+        <variable name="title" type="java.lang.String"/>
+        <variable name="message" type="java.lang.String"/>
+        <variable name="negativeText" type="java.lang.String"/>
+        <variable name="positiveText" type="java.lang.String"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/title_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text='@{ title ?? "" }'
+            android:visibility="@{ TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE}"
+            android:layout_alignParentTop="true"
+            tools:text="DHIS" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_dialog"
+            android:gravity="center"
+            android:text='@{ message ?? "" }'
+            android:visibility="@{ TextUtils.isEmpty(message) ? View.INVISIBLE : View.VISIBLE}"
+            tools:text="Events are completed, do you want to close the program" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/message"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/negative"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text='@{ negativeText ?? "" }'
+                android:textSize="24sp"
+                android:visibility="@{ TextUtils.isEmpty(negativeText) ? View.GONE : View.VISIBLE}"
+                tools:text="Cancel"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/possitive"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text='@{ positiveText ?? "" }'
+                android:textSize="24sp"
+                tools:text="Accept"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

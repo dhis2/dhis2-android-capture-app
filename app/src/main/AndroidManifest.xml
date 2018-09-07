@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.dhis2">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="allowBackup">
+        <activity android:name=".usescases.splash.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="play.dhis2.org"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".usescases.login.LoginActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".usescases.main.MainActivity" />
+        <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />
+        <activity android:name=".usescases.searchTrackEntity.SearchTEActivity" />
+        <activity android:name=".usescases.teiDashboard.mobile.TeiDashboardMobileActivity" />
+        <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
+        <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
+        <activity android:name=".usescases.qrScanner.QRActivity" />
+        <activity android:name=".data.forms.FormActivity" />
+        <activity android:name=".data.forms.dataentry.DataEntryActivity" />
+        <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
+        <activity android:name=".usescases.map.MapSelectorActivity" />
+        <activity android:name=".usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity" />
+        <activity android:name=".usescases.programStageSelection.ProgramStageSelectionActivity" />
+        <activity
+            android:name=".usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
+        <activity android:name=".usescases.qrCodes.QrActivity" />
+        <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
+
+        <service
+            android:name=".data.service.SyncService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".data.service.SyncMetadataService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".data.service.SyncDataService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAGNpaLadezvuQFPLMpWEHqsTxLdNWhPGk" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
+
+        <receiver android:name=".widgets.DhisCustomLauncher">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dhis_custom_launcher_info" />
+        </receiver>
+
+    </application>
+
+</manifest>

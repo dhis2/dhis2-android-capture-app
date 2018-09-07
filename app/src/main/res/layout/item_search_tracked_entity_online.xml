@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="adapterPosition"
+            type="java.lang.Integer" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+
+        <variable
+            name="tei"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="followUp"
+            type="java.lang.Boolean" />
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/tracked_entity_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/photo_temp"
+                app:srcCompat = "@drawable/ic_tei_default"
+                android:tint="?attr/colorPrimaryDark"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/entity_attribute_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/entity_attribute_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
+                android:tint="?attr/colorPrimary"
+                app:srcCompat="@drawable/ic_download" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                app:progressColor="@{@color/colorPrimary}" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</layout>

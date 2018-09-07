@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AgeView">
+        <attr name="bgTransparent" format="boolean" />
+    </declare-styleable>
+
+    <attr name="colorPrimary" format="color"/>
+    <attr name="colorPrimaryLight" format="color"/>
+    <attr name="colorAccentAlpha" format="color"/>
+    <attr name="coloredBgTextColor" format="color"/>
+
+    <attr name="button_selector" format="reference"/>
+    <attr name="selector_button_round_20" format="reference"/>
+    <attr name="selector_button_round_7" format="reference"/>
+
+
+    <attr name="image_selector_bg" format="reference"/>
+    <attr name="period_button" format="reference"/>
+    <attr name="period_time_button" format="reference"/>
+    <attr name="toast_bg" format="reference"/>
+</resources>

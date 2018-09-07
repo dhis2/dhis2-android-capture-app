@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+    </data>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:background="@color/bg_gray_f1f"
+        android:paddingEnd="18dp"
+        android:paddingStart="18dp"
+        android:text="@string/active_programs"
+        android:textColor="@color/text_black_333"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+</layout>

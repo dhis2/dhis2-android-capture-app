@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_margin="5dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@{label}"
+            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:theme="@style/loginInputText"
+            tools:hint="time label">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/inputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:textAlignment="textStart"
+                android:textSize="15sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </RelativeLayout>
+</layout>

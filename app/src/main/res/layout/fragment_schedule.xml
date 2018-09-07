@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/schedule_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_schedule" />
+
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/schedule_content_options"
+            app:expanded_background_color="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
+
+        <ImageView
+            android:id="@+id/schedule_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_filter_list"
+            android:tint="?attr/colorPrimary"
+            android:layout_marginEnd="20dp"
+            tools:ignore="ContentDescription" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

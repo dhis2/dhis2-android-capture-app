@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <Button
+        android:id="@+id/button_org_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="15dp"
+        android:background="?attr/selector_button_round_20"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:minHeight="40dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:text="@string/org_unit"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textColor="?attr/colorAccent"
+        android:textSize="15sp" />
+</layout>

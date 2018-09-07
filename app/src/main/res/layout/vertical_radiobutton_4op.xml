@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="option1"
+            type="java.lang.String"/>
+        <variable
+            name="option2"
+            type="java.lang.String"/>
+        <variable
+            name="option3"
+            type="java.lang.String"/>
+        <variable
+            name="option4"
+            type="java.lang.String"/>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        >
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        tools:text="Question?"
+        android:gravity="start|center"
+        android:layout_marginEnd="5dp"
+        android:text='@{label}'
+        android:textColor="?attr/colorPrimary"
+        android:textColorHint="?attr/colorPrimary"
+        android:textSize="16sp"
+        android:layout_weight="1"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        >
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:checkedButton="@id/option1">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option1"
+            tools:text="Option 1"
+            android:text="@{option1}"
+            android:buttonTint="?colorPrimary"
+            android:visibility="visible"/>
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option2"
+            tools:text="Option 1"
+            android:text="@{option2}"
+            android:buttonTint="?colorPrimary"
+            android:visibility="visible"/>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option3"
+            tools:text="Option 1"
+            android:text="@{option3}"
+            android:buttonTint="?colorPrimary"
+            android:visibility="visible"/>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option4"
+            tools:text="Option 1"
+            android:text="@{option4}"
+            android:buttonTint="?colorPrimary"
+            android:visibility="visible"/>
+        </RadioGroup>
+    </LinearLayout>
+    </LinearLayout>
+</layout>

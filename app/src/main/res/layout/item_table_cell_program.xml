@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+        <variable
+            name="position"
+            type="java.lang.Integer" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/program_cell_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@{position%2 == 0 ? @color/gray_f6f : @color/gray_b2e}">
+
+        <include
+            android:id="@+id/enrollment_layout"
+            layout="@layout/track_entity_programs"
+            app:enrollment="@{enrollment}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/add_program"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_add_circle"
+            tools:ignore="ContentDescription" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

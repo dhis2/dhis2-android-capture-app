@@ -1,0 +1,353 @@
+<resources>
+    <string name="app_name">Dhis2</string>
+    <string name="logo_text">dhis</string>
+    <string name="logo_number">2</string>
+    <string name="google_api" translatable="false">AIzaSyATNJAcNH6YB8ZzkJbzh1vWOgMAKi7KEnQ</string>
+
+    <!-- Warnings and error messages -->
+    <string name="error">Error</string>
+    <string name="error_wrong_server_url">Wrong server url</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="error_unexpected_error">Unexpected error</string>
+    <string name="error_internal_server_error">Internal server error</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="no_value">no value</string>
+
+    <!-- SyncService strings: -->
+    <string name="sync_now">Synchronise now</string>
+    <string name="sync_text">Synchronising with server</string>
+    <string name="sync_title">Syncing now</string>
+
+    <string name="sync_metadata">Metadata</string>
+    <string name="sync_events">Events</string>
+    <string name="sync_tei">Tracked entities</string>
+
+    <string name="sync_complete_title">Finished</string>
+    <string name="sync_complete_text">Sync complete</string>
+
+    <string name="sync_error_title">Sync Error</string>
+    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+
+    <string name="search_result_text">%s results found</string>
+    <string name="add_new">Add new</string>
+    <string name="schedule_new">Schedule new</string>
+    <string name="referral">Referral</string>
+
+    <!-- Login -->
+    <string name="url_hint">Server url</string>
+    <string name="user_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="log_in_button">Log In</string>
+    <string name="unlock_button">Unlock session</string>
+    <string name="syncing_configuration">Syncing your Configuration</string>
+    <string name="syncing_data_shortly">Your Data will shortly be synced</string>
+    <string name="syncing_data">Syncing your Data</string>
+    <string name="configuration_ready">Your Configuration is ready</string>
+    <string name="data_ready">Your Data is ready</string>
+    <string name="configuration_sync_failed">Configuration sync failed</string>
+    <string name="data_sync_failed">Data sync failed</string>
+
+    <!--PERIOD-->
+    <string name="DAILY">Daily</string>
+    <string name="WEEKLY">Weekly</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="action_accept">Accept</string>
+
+    <!-- Input hints -->
+    <string name="search">Search</string>
+    <string name="enter_text">Enter text</string>
+    <string name="enter_long_text">Enter long text</string>
+    <string name="enter_number">Enter number</string>
+    <string name="enter_integer">Enter integer</string>
+    <string name="enter_negative_integer">Enter negative integer</string>
+    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
+    <string name="enter_positive_integer">Enter positive integer</string>
+    <string name="filter_options">Filter options</string>
+    <string name="choose_date">Choose date</string>
+
+    <!-- Status -->
+    <string name="program_completed">Program Completed</string>
+    <string name="program_inactive">Program inactive</string>
+
+    <string name="event_open">Open</string>
+    <string name="event_completed">Event Completed</string>
+    <string name="event_skipped">Event Skipped</string>
+    <string name="event_schedule">Event Schedule</string>
+    <string name="event_expired">Event Expired</string>
+    <string name="event_editing_expired">Editing Expired</string>
+    <string name="event_accepted">Event Accepted</string>
+    <string name="event_approved">Event Approved</string>
+    <string name="event_inactive">Event Inactive</string>
+    <string name="read_only">Read only</string>
+    <string name="complete">Complete</string>
+    <string name="completed">Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="re_open">re-open</string>
+    <string name="activate">activate</string>
+
+    <!-- State -->
+    <string name="state_synced">Sync</string>
+    <string name="state_to_post">To post</string>
+    <string name="state_to_update">To update</string>
+    <string name="state_to_delete">To delete</string>
+    <string name="state_error">Error</string>
+    <string name="action_sync">SYNC</string>
+
+    <!--Completion-->
+    <string name="completion">Completion</string>
+
+    <!--Event initial-->
+    <string name="create">Create</string>
+    <string name="update">Update</string>
+    <string name="date">Date</string>
+    <string name="org_unit">Org unit</string>
+    <string name="no_org_units">There aren\'t any open Organization Units for the selected date. Please select another date.</string>
+    <string name="category_option">Category option</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="new_event">New event</string>
+    <string name="failed_insert_event">Failed to insert new Event</string>
+    <string name="event_created">Event created</string>
+    <string name="event_updated">Event updated</string>
+    <string name="one_time">One time</string>
+    <string name="permanent">Permanent</string>
+
+    <!--Event Detail-->
+    <string name="event_date">Event date</string>
+    <string name="due_date">Due date</string>
+    <string name="cat_combo">Cat combo</string>
+    <string name="date_default">DD/MM/YYYY</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_event">Delete event</string>
+    <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
+    <string name="event_was_deleted">Event deleted successfully</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Enrollment List</string>
+    <string name="active_programs">Active programs</string>
+    <string name="to_enroll_programs">Programs to enroll</string>
+    <string name="enroll">Enroll</string>
+    <string name="last_visit">Last Visit:</string>
+    <string name="apply">apply</string>
+
+    <!--TEI DASHBOARD-->
+    <string name="see_details">See Details</string>
+    <string name="view_more">VIEW MORE</string>
+    <string name="edit">EDIT</string>
+    <string name="enrolling_ou">Enrolling OU:</string>
+    <string name="follow_up">Follow up</string>
+    <string name="follow_up_enabled">Follow up enabled</string>
+    <string name="follow_up_disabled">Follow up disabled</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="program_not_allow_events">This program does not allow more events</string>
+
+    <!--DONE TASKS-->
+    <string name="events">events</string>
+    <string name="relationships">relationships</string>
+    <string name="done_task">Home</string>
+    <string name="app_info">App Info</string>
+    <string name="log_out">Log Out</string>
+    <string name="block_session">Block Session</string>
+
+    <!--MAP SELECTION-->
+    <string name="select_location">Select location</string>
+
+    <!-- SYNC -->
+    <string name="a_minute">1 Minute</string>
+    <string name="fifteen_minute">15 Minutes</string>
+    <string name="a_hour">1 Hour</string>
+    <string name="a_day">1 Day (Default)</string>
+    <string name="Automatic_Sync_Data">Automatic Sync Data every:</string>
+    <string name="Manual">Manual</string>
+    <string name="Automatic_Sync_Metadata">Automatic Sync Configuration every:</string>
+    <string name="a_week">1 Week</string>
+    <string name="sync_max_parameters">Current sync parameters:</string>
+    <string name="sync_default_parameters">Reset to default</string>
+    <string name="wipe_data_meesage">Database will be deleted.\nYou will be asked to log in again.</string>
+    <string name="wipe_data_ok">Accept</string>
+    <string name="wipe_data_no">Cancel</string>
+    <string name="SYNC_DATA">SYNC Data Now</string>
+    <string name="SYNC_META">SYNC Configuration Now</string>
+    <string name="SYNC_MANAGER">Settings</string>
+    <string name="last_data_sync_date">Last sync on: %s</string>
+    <string name="last_metadata_sync_date">Last sync on: %s</string>
+
+    <!-- SEARCH TRACK ENTITY -->
+    <string name="enrollmment_date">Enrollment date</string>
+
+
+    <!--FORM FRAGMENT-->
+    <string name="report_date">Report date</string>
+    <string name="add_file">Add file</string>
+    <string name="write_new_note">Write new note</string>
+    <string name="clear">clear</string>
+    <string name="add_note">Add note</string>
+    <string name="revert">Revert</string>
+    <string name="activated">Activated</string>
+    <string name="enroll_in">Enroll in %s</string>
+    <string name="missing_mandatory_fields_title">Mandatory fields are missing</string>
+    <string name="missing_mandatory_fields_text">Some mandatory fields are missing. If you want to go back now, all saved information will be deleted.</string>
+    <string name="missing_mandatory_fields_events">Some mandatory fields are missing. You can go back now, but this event won\'t be able to be completed.</string>
+    <string name="missing_mandatory_fields_go_back">Delete and go back</string>
+
+    <!--EVENT SUMMARY-->
+    <string name="section_list">Section list</string>
+    <string name="event_summary_header">%s questions of %s completed</string>
+    <string name="event_summary_sections_header">%s of %s completed</string>
+    <string name="complete_and_close">Complete and close</string>
+
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Days</string>
+    <string name="hint_month">Months</string>
+    <string name="hint_year">Years</string>
+    <string name="week">Weeks</string>
+    <string name="incident_date">Incident date</string>
+    <string name="local_results">Local results</string>
+    <string name="online_results">Online results</string>
+    <string name="past_programs">Past programs</string>
+
+    <!--PERMISSIONS-->
+    <string name="permission_denied">You don\'t have the required permission to perform this action</string>
+    <string name="add_relation_button">Add as…</string>
+
+    <string name="date_dialog_clear">Clear</string>
+    <string name="period">Period</string>
+    <string name="org_unit_filter">(%d) Org Unit</string>
+    <string name="tuto_main_1">Welcome to dhis2</string>
+    <string name="tuto_main_2">Here you can see your activities</string>
+    <string name="tuto_main_3">You can apply a filter…</string>
+    <string name="tuto_main_4">…by changing the period and selecting dates…</string>
+    <string name="tuto_main_5">…or filter by Organisation Unit</string>
+    <string name="tuto_main_6">Check other actions on the main menu</string>
+
+    <!-- RELATIONSHIPS -->
+    <string name="default_relationship_label">Create relationship</string>
+    <string name="next">Next</string>
+    <string name="search_min_num_attr">You need to enter at least %d of the attributes to do a search</string>
+    <string name="search_max_tei_reached">There is more than %d results. Please enter further search criteria</string>
+    <string name="search_criteria_not_met">Your search criteria didn\'t return any result.\nRevise your criteria or enroll a new %s</string>
+    <string name="search_init">Enter your search criteria</string>
+
+    <!-- QR -->
+    <string name="QR_SCANNER">Import QR data</string>
+    <string name="SAVE">Save</string>
+    <string name="button_ok">OK</string>
+    <string name="qr_id">Identification</string>
+    <string name="qr_attributes">Attributes</string>
+    <string name="qr_data_values">Data Values</string>
+    <string name="qr_enrollment">Enrollments</string>
+    <string name="qr_events">Events</string>
+    <string name="qr_relationships">Relationships</string>
+    <string name="read_more_qr">Read next QR to get more info.</string>
+    <string name="save_qr">Stop reading and save data</string>
+    <string name="qr_no_data">no data</string>
+    <string name="qr_no_id_error">You need to scan the Identification QR before saving.</string>
+    <string name="qr_error_id">Invalid QR code</string>
+    <string name="qr_error_attr">This attribute can\'t be added</string>
+    <string name="qr_error_enrollment">This enrollment can\'t be added</string>
+    <string name="qr_error_event">This event can\'t be added</string>
+
+    <string name="jira_report">Report Jira Issue</string>
+    <string name="about">About</string>
+    <string name="programs_to_enroll">Programs to enroll</string>
+    <string name="select_all">select all</string>
+    <string name="empty_program_list">There is no information for the filters selected. Please try changing them.</string>
+    <string name="share">Share</string>
+    <string name="share_qr">Share QR</string>
+    <string name="teiType_search_online">Search by type is not possible for online search.\nPlease select a program from the list.</string>
+    <string name="max">MAX</string>
+    <string name="current">CURRENT</string>
+    <string name="tei">TEI</string>
+    <string name="limit_by_organisation_unit">Limit by organisation unit</string>
+    <string name="programs_list">Program list</string>
+    <string name="wipe_data">Reset app</string>
+    <string name="add_relationship_error">It\'s not possible to add this relationship</string>
+    <string name="warning_error_on_complete_title">Check this!</string>
+    <string name="save">Save</string>
+
+    <string name="downloaded_confirm">Do you want to add more data from QR?</string>
+
+    <!--ABOUT-->
+    <string name="about_app">App Version: %s</string>
+    <string name="about_sdk">SDK Version: %s</string>
+    <string name="about_connected">Connected to: %s</string>
+    <string name="about_user">Current user: %s</string>
+    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what's not supported</string>
+    <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
+    <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
+
+    <string name="login_error_null_pass">Password is missing. Please fill this field.</string>
+    <string name="login_error_null_username">Username is missing. Please fill this field.</string>
+    <string name="login_error_dhis_version">This server is running a dhis version different than 2.29. Update your server version or use the testing environment to proceed.</string>
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server url, username and password are correct and try again.</string>
+    <string name="login_error_error_response">The server could not complete this request.</string>
+    <string name="login_error_default">There has been a problem while trying to log into the server.</string>
+    <string name="login_error">Login error</string>
+    <string name="missing_mandatory_fields">Mandatory fields are missing</string>
+    <string name="online_search_unexpected">Unexpected error while searching online</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="online_search_error">Searching online returned an error</string>
+    <string name="online_search_response_error">Something went wrong in the server</string>
+    <string name="search_program_not_selected">Select a program to enable enrolling</string>
+    <string name="search_access_error">You don\'t have the requiered permission</string>
+    <string name="feature_unavaible">This functionality is not ready yet.</string>
+    <string name="relationship_label_error">Error getting relationship label</string>
+    <string name="all_tei_type">All %s</string>
+    <string name="invalid_phone_number">This is not a valid phone number</string>
+    <string name="invalid_email">This is not a valid email</string>
+    <string name="invalid_negative_number">Only negative numbers are allowed</string>
+    <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
+    <string name="invalid_possitive">Only positive numbers are allowed</string>
+    <string name="invalid_interval">Only values from 0 to 1 are allowed</string>
+    <string name="invalid_percentage">Only values from 0 to 100 are allowed</string>
+    <string name="date_dialog_tigle">Select dates to filter</string>
+    <string name="select_option">Select option</string>
+    <string name="issue_reported">Issue reported</string>
+    <string name="jira_credential_error">Check that your jira user and password are correct</string>
+    <string name="jira_issue_error">Error reporting the issue</string>
+    <string name="jira_fields_error">All fields are mandatory</string>
+    <string name="dialog_generate_new_event">Generate new event</string>
+    <string name="message_generate_new_event">Do you want to create another event?</string>
+    <string name="event_completed_title">Events Completed</string>
+    <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
+    <string name="check_event">Check</string>
+
+    <string name="burmesse_test">မြန်မာအက္ခရာ</string>
+    <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
+    <string name="menu_home">Home</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="showHelp">Show help</string>
+    <string name="tuto_settings_1">Synchronize your data…</string>
+    <string name="tuto_settings_2">…your configuration…</string>
+    <string name="tuto_settings_3">…set your local storage capacity…</string>
+    <string name="tuto_settings_4">…or delete everything to start over.</string>
+    <string name="tuto_search_1">Find your entities both in local memory and online server.</string>
+    <string name="tuto_search_2">You can switch to other programs</string>
+    <string name="tuto_search_3">Add new entities</string>
+    <string name="tuto_search_4">Click here to restart</string>
+    <string name="tuto_dashboard_1">This is the entity dashboard</string>
+    <string name="tuto_dashboard_2">See entities profile information…</string>
+    <string name="tuto_dashboard_3">…Share information via QR or SMS…</string>
+    <string name="tuto_dashboard_4">…Or mark the entity for follow-up</string>
+    <string name="tuto_dashboard_5">Click to create or schedule an event or refer to another Org Unit.</string>
+    <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
+    <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
+    <string name="tuto_dashboard_8">Click to see all enrollmets of your entity or create a new one.</string>
+    <string name="tuto_tei_event_1">Click to delete this event. This action cant be undone.</string>
+    <string name="tuto_tei_event_2">Complete the event.</string>
+    <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
+    <string name="tuto_program_event_2">Click to add a new event</string>
+    <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
+    <string name="tuto_event_initial_1">Click to check the event completion status.</string>
+    <string name="tuto_event_summary">Click to complete or re-open an event</string>
+    <string name="tuto_main_7">Read and store information from other devices via QR</string>
+    <string name="tuto_main_8">Synchronize your data with the server</string>
+    <string name="tuto_main_9">Block session with a 4 digit code. Do not forget your code!</string>
+    <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
+</resources>

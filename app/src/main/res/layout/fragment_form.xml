@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorlayout_form"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--SCROLLING VIEW-->
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="true"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+ -->
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager_dataentry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_white_f9f" />
+
+        <!--</FrameLayout>-->
+    </android.support.v4.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:background="?attr/button_selector"
+        android:elevation="8dp"
+        android:text="@string/next"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="?colorAccent"
+        app:backgroundTint="?colorPrimary"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:elevation="8dp" />
+
+    <!--END OF SCROLLING VIEW-->
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout_data_entry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary">
+        <!--app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"-->
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbarlayout_data_entry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+            app:titleEnabled="false">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:titleTextColor="@android:color/white" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+        <LinearLayout
+            android:id="@+id/data_entry_dates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout
+                android:id="@+id/date_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/report_date_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:hint="@string/report_date"
+                    android:textColorHint="@drawable/edit_text_hint_accent"
+                    android:theme="@style/loginInputTextAccent"
+                    tools:hint="Report Date">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/report_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="false"
+                        android:padding="8dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        tools:text="2018-04-04" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/incident_date_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:textColorHint="@drawable/edit_text_hint_accent"
+                    android:theme="@style/loginInputTextAccent"
+                    android:visibility="gone"
+                    tools:hint="Incident Date"
+                    tools:visibility="visible">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/incident_date_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="false"
+                        android:padding="8dp"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        tools:text="2018-04-04" />
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+            <org.dhis2.utils.CustomViews.CoordinatesView
+                android:id="@+id/coordinates_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <org.dhis2.data.forms.AutoHidingTabLayout
+            android:id="@+id/tablayout_data_entry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:tabMode="scrollable"
+            style="@style/DhisTabLayout"
+            app:tabTextAppearance="@style/DhisTabText" />
+
+    </android.support.design.widget.AppBarLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

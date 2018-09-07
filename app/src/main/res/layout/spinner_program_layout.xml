@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="programTitle"
+            type="java.lang.String" />
+    </data>
+
+    <TextView
+        android:id="@+id/spinner_text"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:drawableEnd="@{@drawable/ic_arrow_drop_down_black_24dp}"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:text="@{program.displayName!=null?program.displayName:programTitle}"
+        android:textColor="@color/text_black_333"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        tools:text="nameddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        tools:drawableEnd="@drawable/ic_arrow_drop_down_black_24dp"/>
+</layout>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingBottom="19.5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="29dp"
+        android:paddingTop="19.5dp">
+
+        <TextView
+            android:id="@+id/storeBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date"
+            tools:text="Store by" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_arrow_down"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/note_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:textColor="#787878"
+            android:textSize="14.2sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/arrow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/storeBy"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:textColor="#444444"
+            android:textSize="13.3sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="@id/storeBy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/storeBy"
+            tools:text="DD/MM/YYYY" />
+
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

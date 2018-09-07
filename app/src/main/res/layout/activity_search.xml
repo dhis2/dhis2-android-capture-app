@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/mainToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:onClick="@{()->presenter.onBackClick()}"
+                android:padding="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/back_button"
+                android:gravity="center_vertical"
+                android:text="@string/search"
+                android:textColor="@color/white_faf"
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="@id/back_button"
+                tools:ignore="RelativeOverlap" />
+
+            <ImageView
+                android:id="@+id/clear_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:onClick="@{()->presenter.onClearClick()}"
+                android:padding="10dp"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:srcCompat="@drawable/ic_refresh"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:onClick="showMoreOptions"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
+
+            <Spinner
+                android:id="@+id/program_spinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                app:layout_constraintEnd_toStartOf="@id/clear_button"
+                app:layout_constraintStart_toEndOf="@id/title"
+                tools:listitem=""
+                tools:prompt="Program Name" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/mainToolbar"
+            android:background="@color/gray_f6f">
+
+            <!--SCROLLING VIEW-->
+
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+            <RelativeLayout
+                android:id="@+id/messageContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:visibility="visible"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <TextView
+                    android:id="@+id/message"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:gravity="center_horizontal"
+                    android:textSize="18sp"
+                    tools:text="You need to enter at least N attributes to do a search" />
+
+            </RelativeLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/enrollmentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="15dp"
+                android:onClick="@{(view)->presenter.onFabClick(view)}"
+                android:tint="@color/white"
+                app:backgroundTint="?attr/colorPrimary"
+                app:fabSize="normal"
+                app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
+                app:elevation="7dp"
+                app:srcCompat='@{@drawable/ic_add}' />
+
+            <!--END OF SCROLLING VIEW-->
+
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbatlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary">
+
+
+                <android.support.design.widget.CollapsingToolbarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="true"
+                        android:orientation="vertical">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/form_recycler"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusableInTouchMode="true"
+                            app:initGrid="@{false}"
+                            app:spanCount="@{2}"
+                            app:spanSize="@{true}"
+                            tools:layout_height="100dp" />
+
+                    </LinearLayout>
+
+                </android.support.design.widget.CollapsingToolbarLayout>
+
+            </android.support.design.widget.AppBarLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+    </RelativeLayout>
+</layout>

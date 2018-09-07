@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="dashboardModel"
+            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick='@{()->presenter.onBackPressed()}'
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text='@{title}'
+                android:textColor="?colorAccent"
+                tools:text="TEI NAME" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_program_border"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
+                tools:ignore="ContentDescription" />
+
+        </LinearLayout>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".58" />
+
+        <FrameLayout
+            android:id="@+id/tei_main_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/DhisTabLayout"
+            app:tabTextAppearance="@style/DhisTabText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/tei_pager"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

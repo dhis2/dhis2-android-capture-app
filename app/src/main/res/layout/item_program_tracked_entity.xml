@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <import type="org.dhis2.utils.DateUtils" />
+
+        <variable
+            name="tei"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+
+        <variable
+            name="programStage"
+            type="org.hisp.dhis.android.core.program.ProgramStageModel" />
+
+    </data>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <ImageView
+            android:id="@+id/program_image"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            tools:ignore="ContentDescription" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/photo_temp"
+                android:tint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_person"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/enrollment_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Enrollment Date" />
+
+            <TextView
+                android:id="@+id/entity_attribute_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enrollment_date"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="Attr 1"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/entity_attribute_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_1"
+                android:layout_marginStart="25dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="Attr 2"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/entity_attribute_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_2"
+                android:layout_marginStart="25dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="Attr 3"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/program_org_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/entity_attribute_3"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:textColor="@color/black_de0"
+                android:textSize="16sp"
+                app:organisationUnitName="@{tei.organisationUnit()}"
+                tools:text="Org Unit" />
+
+            <TextView
+                android:id="@+id/program_attribute_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/program_org_unit"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10.7dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:text="@{programStage.displayName()}"
+                android:textColor="@color/black_de0"
+                android:textSize="16sp"
+                tools:text="Program Stage" />
+
+            <View
+                android:id="@+id/divisor"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/program_attribute_2"
+                android:layout_marginEnd="25dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/gray_dfe"
+                tools:ignore="InvalidId" />
+
+            <ImageView
+                android:id="@+id/followUp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_warning"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:id="@+id/icons_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/divisor"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/status_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:layout_marginTop="7dp"
+                    app:enrolmentIcon="@{enrollment.enrollmentStatus()}"
+                    app:srcCompat="@drawable/ic_lock_open_green"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="9dp"
+                    app:enrolmentText="@{enrollment.enrollmentStatus()}"
+                    tools:text="@string/event_open" />
+
+                <ImageView
+                    android:id="@+id/sync_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="9dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="7dp"
+                    app:stateIcon="@{tei.state()}"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_sync_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="9dp"
+                    app:stateText="@{tei.state()}"
+                    tools:text="@string/state_synced" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="attribute"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_margin="5dp"
+        tools:background="?colorPrimary">
+
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text='@{label , default=text}'
+            android:textAllCaps="false"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@color/white_faf"
+            android:textSize="16sp"
+            tools:text="WHOMCH Smocking cessation counselling provided fdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdfsfsdfsdf" />
+
+
+        <RadioGroup
+            android:id="@+id/radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+
+        <RadioButton
+                android:id="@+id/yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/white"
+                android:checked="false"
+                android:text="@string/yes"
+                android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/white"
+                android:checked="false"
+                android:text="@string/no"
+                android:textColor="@color/white" />
+
+            <RadioButton
+                android:id="@+id/no_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/white"
+                android:checked="false"
+                android:text="@string/no_value"
+                android:textColor="@color/white" />
+        </RadioGroup>
+    </LinearLayout>
+</layout>

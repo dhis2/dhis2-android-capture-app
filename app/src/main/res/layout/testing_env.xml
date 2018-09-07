@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/env_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Testing environment"
+        android:textColor="?colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/env_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="7dp"
+        android:text="urls:"
+        android:textColor="?colorPrimaryDark"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/env_title" />
+
+    <TextView
+        android:id="@+id/env_url_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="https://play.dhis2.org/android-previous1\nhttps://play.dhis2.org/android-current"
+        android:textStyle="bold"
+        android:layout_marginStart="40dp"
+        app:layout_constraintStart_toEndOf="@id/env_url"
+        android:layout_marginTop="7dp"
+        app:layout_constraintTop_toBottomOf="@id/env_title" />
+    <TextView
+        android:id="@+id/env_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="user:"
+        android:textColor="?colorPrimaryDark"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/env_url_data" />
+
+    <TextView
+        android:id="@+id/env_user_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="android"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/env_url_data"
+        app:layout_constraintTop_toBottomOf="@id/env_url_data" />
+
+    <TextView
+        android:id="@+id/env_pass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="pasw:"
+        android:textColor="?colorPrimaryDark"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/env_user" />
+
+    <TextView
+        android:id="@+id/env_pass_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Android123"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/env_url_data"
+        app:layout_constraintTop_toBottomOf="@id/env_user" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Log in and feel free to do changes as system is reset every night."
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/env_pass" />
+
+
+</android.support.constraint.ConstraintLayout>

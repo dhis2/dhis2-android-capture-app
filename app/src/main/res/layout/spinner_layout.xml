@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="option"
+            type="java.lang.String" />
+
+        <variable
+            name="optionSetName"
+            type="java.lang.String" />
+    </data>
+
+    <TextView
+        android:id="@+id/spinner_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:padding="5dp"
+        android:text="@{option!=null?option:optionSetName}"
+        android:textColor="?colorPrimary"
+        android:textSize="15sp"
+        tools:text="TEXTO" />
+</layout>

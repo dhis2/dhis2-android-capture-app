@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+
+        <variable
+            name="enrollment"
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/programImage"
+                android:contentDescription='@{enrollment.uid()}'
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
+                android:alpha="0.5"
+                app:srcCompat="@drawable/photo_temp" />
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/program_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text='@{enrollment.programName()}'
+                    android:textColor="@color/black_de0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="ANC PROGRAM\nfasdsadfg"
+                    android:alpha="0.5"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/org_unit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/gray_9b9"
+                        android:textSize="14sp"
+                        android:alpha="0.5"
+                        tools:text="Org unit"
+                        android:text='@{enrollment.orgUnitName()}'/>
+
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/black_de0"
+                        android:textSize="14sp"
+                        android:gravity="end"
+                        android:lines="1"
+                        android:ellipsize="end"
+                        app:date="@{enrollment.enrollmentDate()}"
+                        android:alpha="0.5"
+                        tools:text="DD/MM/YYYY"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:contentDescription='@{enrollment.uid()}'
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="top"
+                app:srcCompat="@drawable/ic_warning"
+                android:alpha="0.5"
+                android:visibility='@{enrollment.followUp() ? View.VISIBLE : View.INVISIBLE}'/>
+
+            <ImageView
+                android:contentDescription='@{enrollment.uid()}'
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="match_parent"
+                android:alpha="0.5"
+                app:srcCompat="@drawable/ic_keyboard_arrow_right" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray_afa"/>
+    </LinearLayout>
+</layout>

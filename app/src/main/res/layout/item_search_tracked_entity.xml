@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="followUp"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="isOnline"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="syncState"
+            type="org.hisp.dhis.android.core.common.State" />
+
+        <variable
+            name="orgUnit"
+            type="java.lang.String" />
+
+        <variable
+            name="attribute"
+            type="java.util.List&lt;org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel&gt;" />
+
+        <variable
+            name="programString"
+            type="java.lang.String" />
+
+        <variable
+            name="overdue"
+            type="java.lang.Boolean" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/tracked_entity_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/syncState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:visibility="@{isOnline?View.GONE:View.VISIBLE}"
+                app:stateIcon="@{syncState}"
+                tools:src="@drawable/ic_sync_green" />
+
+            <ImageView
+                android:id="@+id/download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:tint="?colorPrimary"
+                android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
+                app:srcCompat="@drawable/ic_download" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@id/syncState"
+                android:visibility="@{overdue? View.VISIBLE: View.GONE}"
+                app:srcCompat="@drawable/ic_overdue" />
+
+            <ImageView
+                android:id="@+id/tracked_entity_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="5dp"
+                app:srcCompat = "@drawable/ic_tei_default"
+                android:tint="@color/white"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/follow_up"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_alignBottom="@id/tracked_entity_image"
+                android:layout_alignEnd="@id/tracked_entity_image"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
+                app:srcCompat="@drawable/ic_warning_white"
+                tools:ignore="ContentDescription" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_toEndOf="@id/tracked_entity_image"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/entity_attribute_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size()>0 ? attribute.get(0).value() : "" , default="attribute 1"}'
+                    android:textColor="@color/text_black_333"
+                    android:textSize="18sp"
+                    android:visibility='@{attribute.size()>0?View.VISIBLE:View.GONE}' />
+
+                <TextView
+                    android:id="@+id/entity_attribute_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 1 ? attribute.get(1).value() : "" , default="attribute 2"}'
+                    android:textColor="@color/text_black_333"
+                    android:textSize="18sp"
+                    android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
+
+                <TextView
+                    android:id="@+id/entity_attribute_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text='@{attribute.size() > 2 ? attribute.get(2).value() : "", default="attribute 3"}'
+                    android:textColor="@color/text_black_333"
+                    android:textSize="18sp"
+                    android:visibility='@{attribute.size() > 2 ? View.VISIBLE : View.GONE}' />
+            </LinearLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tracked_entity_image"
+                android:layout_marginEnd="6dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                app:alignContent="stretch"
+                app:alignItems="flex_start"
+                app:showDivider="middle"
+                app:flexWrap="wrap">
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <RelativeLayout
+                android:id="@+id/buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linear_layout"
+                android:gravity="center_vertical">
+
+
+                <ImageView
+                    android:id="@+id/add_program"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="13.5dp"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_add_circle"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/view_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/add_program"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/view_more"
+                    android:textAllCaps="true"
+                    android:textColor="?colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap"
+                    tools:text="view more" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</layout>

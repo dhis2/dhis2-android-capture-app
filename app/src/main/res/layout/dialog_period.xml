@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?colorAccent"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:background="?colorPrimary"
+                android:gravity="center"
+                android:textColor="?colorAccent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="This is the title" />
+
+            <TextView
+                android:id="@+id/period_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                tools:text="Period: DAILY" />
+
+            <ImageButton
+                android:id="@+id/period_before"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                app:layout_constraintBottom_toTopOf="@id/clear_button"
+                app:layout_constraintTop_toBottomOf="@id/period_subtitle"
+                app:srcCompat="@drawable/ic_navigate_before" />
+
+            <ImageButton
+                android:id="@+id/period_next"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                app:layout_constraintBottom_toTopOf="@id/clear_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/period_subtitle"
+                app:srcCompat="@drawable/ic_navigate_next" />
+
+            <TextView
+                android:id="@+id/selected_period"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/period_before"
+                app:layout_constraintEnd_toStartOf="@id/period_next"
+                app:layout_constraintStart_toEndOf="@id/period_before"
+                app:layout_constraintTop_toTopOf="@id/period_before"
+                tools:text="26-06-1987" />
+
+            <Button
+                android:id="@+id/clear_button"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:text="@string/cancel"
+                android:textColor="?colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/accept_button" />
+
+            <Button
+                android:id="@+id/accept_button"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:text="@string/action_accept"
+                android:textColor="?colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
+</layout>

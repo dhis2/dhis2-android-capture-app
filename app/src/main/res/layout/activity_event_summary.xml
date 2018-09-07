@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="org.dhis2.R" />
+
+        <variable
+            name="name"
+            type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryContract.Presenter" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="@{()->presenter.onBackClick()}"
+                android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:text="@{ name }"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                tools:text="title" />
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                android:padding="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/toolbar_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingEnd="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingTop="8dp">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@+id/progressLayout"
+                            app:layout_constraintTop_toTopOf="@+id/progressLayout">
+
+                            <TextView
+                                android:id="@+id/sectiontitle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/section_list"
+                                android:textColor="@color/text_black_333"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="parent"/>
+
+                            <TextView
+                                android:id="@+id/summary_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/rubik_light"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="12sp"
+                                app:layout_constraintTop_toBottomOf="@+id/sectiontitle"
+                                tools:text="@string/event_summary_header" />
+                        </android.support.constraint.ConstraintLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/progressLayout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintEnd_toEndOf="parent">
+
+                            <ProgressBar
+                                android:id="@+id/progressGains"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="90dp"
+                                android:layout_height="90dp"
+                                android:layout_centerHorizontal="true"
+                                android:background="@drawable/circle_shape_thick"
+                                android:indeterminate="false"
+                                android:max="100"
+                                android:progress="0"
+                                android:progressDrawable="@drawable/progress_circle_thick" />
+
+                            <TextView
+                                android:id="@+id/progress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:textColor="@color/yellow_fdd"
+                                android:textSize="25sp"
+                                tools:text="100%" />
+                        </RelativeLayout>
+
+
+                    </android.support.constraint.ConstraintLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/event_section_rows"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:background="@color/gray_f6f" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray_dfe" />
+
+                <TextView
+                    android:id="@+id/action_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="16dp"
+                    android:background="?attr/selector_button_round_7"
+                    android:onClick="@{()->presenter.onDoAction()}"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/complete_and_close"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</layout>

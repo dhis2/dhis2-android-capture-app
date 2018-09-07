@@ -1,0 +1,261 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'io.fabric'
+//apply from: rootProject.file("plugins/android-paperwork.gradle")
+
+def libraries = rootProject.ext.libraries
+
+repositories {
+    // required by crashlytics
+    maven {
+        url("https://maven.fabric.io/public")
+    }
+
+    // used by sdk
+    maven {
+        url("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+    mavenCentral()
+}
+
+android {
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    defaultConfig {
+        applicationId "com.dhis2"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 30
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+
+        buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+    }
+
+    configurations.all*.exclude module: 'jsr305'
+
+
+    packagingOptions {
+        // excluding duplicate license files
+        // from jackson modules
+        exclude "META-INF/LICENSE"
+
+        // excluding duplicate rxjava properties file
+        // see https://github.com/ReactiveX/RxJava/issues/4445#issuecomment-243591879
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('dhis_keystore.jks')
+            storePassword KEYSTORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEYSTORE_PASSWORD
+        }
+    }
+
+    buildTypes {
+        debug {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".debug"
+
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = false
+
+            // Disable fabric build ID generation for debug builds
+//            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+        }
+        alpha {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".alpha"
+
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ext.enableCrashlytics = true
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    configurations.all {
+        resolutionStrategy.force 'junit:junit:4.12'
+    }
+}
+
+dependencies {
+
+
+    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+
+    //Support libraries
+    /*  implementation "com.android.support:appcompat-v7:${libraries.support}"
+    implementation "com.android.support:support-annotations:${libraries.support}"
+    implementation "com.android.support:cardview-v7:${libraries.support}"
+    implementation "com.android.support:design:${libraries.support}"*/
+    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:support-annotations:27.1.1"
+    implementation "com.android.support:cardview-v7:27.1.1"
+    implementation "com.android.support:design:27.1.1"
+    //implementation "com.android.support:multidex:${libraries.multidex}"
+    implementation "com.android.support:multidex:1.0.3"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    // Core module of the DHIS 2 Android SDK
+    implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
+        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
+    // RuleEngine module of the DHIS 2 Android SDK
+    /*implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
+        exclude group: "com.google.code.findbugs", module: "jsr305"
+    }*/
+    implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
+        exclude group: "com.google.code.findbugs", module: "jsr305"
+//        exclude group: "org.hisp.dhis", module: "core-rules"
+    }
+
+//    implementation"org.hisp.dhis.rules:rule-engine:2.30-SNAPSHOT"
+
+    //TreeView
+    implementation 'com.github.bmelnychuk:atv:1.2.9'
+    implementation 'com.android.support:support-v4:27.1.1'
+
+    // ReactiveX
+    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+
+    // Google dagger
+    implementation 'com.google.dagger:dagger:2.14.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
+
+    // Google's auto-value. Annotations are used only during compilation time, as well as
+    // annotation processor which hoops up into compilation process
+    compileOnly "com.google.auto.value:auto-value:${libraries.autovalue}"
+    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+
+    // Extension which generates mappers for work with cursors
+    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+
+    //square
+    implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
+//    implementation "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
+    implementation "com.github.lykmapipo:sqlbrite-migrations:v1.0.1"
+
+    // Jake Wharton libraries
+    //timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+    //rxbinding
+    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+
+    //FAB
+    implementation 'com.github.dekoservidoni:omfm:1.0.3'
+    implementation 'com.google.android:flexbox:0.3.1'
+
+    //TABLEVIEW
+    implementation 'com.evrencoskun.library:tableview:0.8.8'
+
+    //PIN LOCK
+    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+
+    //VISION (QR SCANNER)
+    implementation("com.google.android.gms:play-services-vision:${libraries.gmsVersion}") {
+        force = true
+    }
+
+    //LOCATION15.0.1
+    implementation("com.google.android.gms:play-services-location:15.0.1")
+    implementation("com.google.android.gms:play-services-maps:15.0.1")
+
+    //GSON
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    //FIREBASE
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+
+    //CRASHLYTICS
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+        transitive = true
+    }
+
+    //Test
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
+
+    })
+
+    testImplementation 'junit:junit:4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    //RXLint
+    implementation 'nl.littlerobots.rxlint:rxlint:1.6'
+
+    //JODA-TIME
+    implementation 'joda-time:joda-time:2.9.9'
+
+    // Zxing library
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+
+    //FancyShowCase
+    implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+
+    //Lottie animations
+    implementation 'com.airbnb.android:lottie:2.5.4'
+
+    //Glide load images
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+}
+
+apply plugin: 'kotlin-android-extensions'

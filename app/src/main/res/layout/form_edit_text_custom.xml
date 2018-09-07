@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="valueType"
+            type="org.hisp.dhis.android.core.common.ValueType" />
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="bgTransparent"
+            type="java.lang.Boolean" />
+
+    </data>
+
+    <org.dhis2.utils.CustomViews.CustomTextView
+        android:id="@+id/custom_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:isBgTransparent="@{ bgTransparent }"
+        app:label="@{ label }"
+        app:valueType="@{ valueType }" />
+
+</layout>

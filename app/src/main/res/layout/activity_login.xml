@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.login.LoginContracts.Presenter" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:focusableInTouchMode="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:id="@+id/logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/sync_layout"
+                    android:layout_below="@id/logo_layout"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:lottie_autoPlay="false"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/world_lottie" />
+
+                <include
+                    android:id="@+id/logo_layout"
+                    layout="@layout/logo_dhis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" />
+
+                <ImageView
+                    android:id="@+id/logo_flag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:alpha="0"
+                    android:paddingBottom="80dp"
+                    tools:src="@drawable/sierra_leone" />
+
+                <LinearLayout
+                    android:id="@+id/sync_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="bottom"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/metadataText"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/syncing_configuration"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="11sp"
+                        app:drawableEnd="@{@drawable/animator_sync}" />
+
+                    <TextView
+                        android:id="@+id/eventsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_margin="5dp"
+                        android:alpha=".3"
+                        android:gravity="center_vertical"
+                        android:text="@string/syncing_data_shortly"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center">
+
+
+                <ImageButton
+                    android:id="@+id/qr_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/full_width_button_bg"
+                    android:onClick="@{presenter::onQRClick}"
+                    app:srcCompat="@drawable/ic_qr"
+                    tools:ignore="ContentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/server_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/qr_button"
+                    android:hint="@string/url_hint"
+                    android:textColorHint="@color/text_black_808"
+                    android:theme="@style/loginInputText">
+
+                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                        android:id="@+id/server_url_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:imeOptions="actionNext"
+                        android:inputType="textUri"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:padding="5dp"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="17sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/server_url"
+                    android:layout_centerInParent="true"
+                    android:hint="@string/user_hint"
+                    android:textColorHint="@color/text_black_808"
+                    android:theme="@style/loginInputText">
+
+                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                        android:id="@+id/user_name_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="17sp" />
+
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/user_pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_name"
+                    android:layout_centerInParent="true"
+                    android:hint="@string/password_hint"
+                    android:textColorHint="@color/text_black_808"
+                    android:theme="@style/loginInputText">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPassword"
+                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:textColor="@color/text_black_333"
+                        android:textSize="17sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <include
+                    layout="@layout/testing_env"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_pass" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/login"
+                style="@style/FullWidthButton"
+                android:onClick="@{()-> presenter.onButtonClick()}"
+                android:text="@string/log_in_button"
+                android:visibility="@{presenter.isServerUrlSet &amp;&amp; presenter.isUserNameSet &amp;&amp; presenter.isUserPassSet ?View.VISIBLE:View.GONE, default = gone}" />
+
+            <LinearLayout
+                android:id="@+id/unlock_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/logout"
+                    style="@style/HalfWidthButton"
+                    android:onClick="onLogoutClick"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/log_out" />
+
+                <Button
+                    android:id="@+id/unlock"
+                    style="@style/HalfWidthButton"
+                    android:onClick="onUnlockClick"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/unlock_button" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- PIN LAYOUT -->
+
+        <include
+            android:id="@+id/pin_layout"
+            layout="@layout/pin_layout"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+</layout>

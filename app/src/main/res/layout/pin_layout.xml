@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+
+    </data>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorPrimary"
+        android:gravity="center"
+        android:visibility="visible">
+
+        <com.andrognito.pinlockview.IndicatorDots
+            android:id="@+id/indicator_dots"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <com.andrognito.pinlockview.PinLockView
+            android:id="@+id/pin_lock_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/indicator_dots"
+            android:layout_centerInParent="true"
+            app:indicatorType="fillWithAnimation"
+            app:keypadButtonSize="72dp"
+            app:keypadDeleteButtonSize="24dp"
+            app:keypadHorizontalSpacing="36dp"
+            app:keypadShowDeleteButton="true"
+            app:keypadTextColor="?colorAccent"
+            app:keypadVerticalSpacing="24dp"
+            app:pinLength="4" />
+    </RelativeLayout>
+</layout>

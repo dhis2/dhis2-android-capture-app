@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+    </data>
+
+    <Button
+        android:id="@+id/formButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:background="?colorPrimary"
+        android:focusable="true"
+        android:paddingEnd="0dp"
+        android:paddingStart="20dp"
+        android:text="@{label!=null?label:@string/add_file}"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false" />
+</layout>

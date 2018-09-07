@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        tools:background="?colorPrimary">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:hint='@{label}'
+            android:textColor="@color/white_faf"
+            android:textColorHint="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent"
+            tools:hint="Age">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/date_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:textColor="@color/white_faf"
+                tools:text="1987-06-26" />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_year"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_year"
+                android:inputType="date"
+                android:textColor="@color/white_faf" />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_month"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_month"
+                android:inputType="date"
+                android:textColor="@color/white_faf" />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/white_faf"
+            android:textColorHint="@drawable/edit_text_hint_accent"
+            android:theme="@style/loginInputTextAccent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_days"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_day"
+                android:inputType="date"
+                android:textColor="@color/white_faf" />
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+</layout>

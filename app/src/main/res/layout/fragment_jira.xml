@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.jira.JiraPresenter" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/userName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2.5dp"
+            android:hint="Jira user*"
+            android:textColorHint="?colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/userNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:onTextChanged="@{presenter::onJiraUserChanged}" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/pass"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2.5dp"
+            android:hint="Jira password*"
+            android:textColorHint="?colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/passEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textWebPassword"
+                android:maxLines="1"
+                android:onTextChanged="@{presenter::onJiraPassChanged}" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Summary*"
+            android:textColorHint="?colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintTop_toBottomOf="@id/userName">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/summaryEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:onTextChanged="@{presenter::onSummaryChanged}" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:hint="Description*"
+            android:textColorHint="?colorPrimary"
+            android:theme="@style/loginInputText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/summary">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/descriptionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onTextChanged="@{presenter::onDescriptionChanged}"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/sendReportButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="@{()->presenter.onSendClick()}"
+            app:backgroundTint="?colorPrimary"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_send"
+            app:tint="?colorAccent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

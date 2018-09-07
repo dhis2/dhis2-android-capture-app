@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus"/>
+
+        <variable
+            name="enrollment"
+            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+
+        <variable
+            name="trackEntity"
+            type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+
+        <variable
+            name="dashboardModel"
+            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/tei_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="10dp"
+            android:background="@color/bg_white_f9f">
+
+            <include
+                android:id="@+id/card_front"
+                layout="@layout/fragment_tei_data_card_front"
+                app:dashboardModel="@{dashboardModel}"
+                app:enrollment="@{enrollment}"
+                app:presenter="@{presenter}"
+                app:program="@{program}"
+                app:trackEntity="@{trackEntity}" />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/tei_recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="200dp"
+            android:paddingTop="10dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tei_data"
+            tools:listitem="@layout/item_event" />
+
+        <com.dekoservidoni.omfm.OneMoreFabMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
+            app:close_on_click="true"
+            app:color_main_button="?colorPrimary"
+            app:color_secondary_buttons="?colorPrimaryDark"
+            app:content_options="@menu/schedule_content_options"
+            app:expanded_background_color="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:size_main_button="@integer/omfm_fab_size_normal"
+            app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

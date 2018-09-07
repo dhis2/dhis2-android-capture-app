@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="label"
+            type="java.lang.String" />
+
+        <variable
+            name="optionSet"
+            type="java.lang.String" />
+
+        <variable
+            name="isBgTransparent"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="initialValue"
+            type="java.lang.String" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/renderImage"
+            android:theme="@style/loginInputText"
+            tools:hint="hint">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:textAlignment="textStart"
+                android:textColor="?colorPrimary"
+                android:textSize="15sp"
+                tools:text="hello" />
+
+        </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
+</layout>
