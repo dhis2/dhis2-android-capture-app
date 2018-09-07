@@ -28,11 +28,11 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "org.dhis2"
+        applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 27
-        versionName "1.0.0-BETA12"
+        versionCode 30
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

@@ -30,7 +30,7 @@
         android:id="@+id/env_url_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="https://play.dhis2.org/2.29\nhttps://play.dhis2.org/demo"
+        android:text="https://play.dhis2.org/android-previous1\nhttps://play.dhis2.org/android-current"
         android:textStyle="bold"
         android:layout_marginStart="40dp"
         app:layout_constraintStart_toEndOf="@id/env_url"

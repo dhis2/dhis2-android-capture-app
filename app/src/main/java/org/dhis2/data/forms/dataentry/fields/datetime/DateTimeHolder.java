@@ -9,7 +9,6 @@ import org.dhis2.databinding.FormDateTextBinding;
 import org.dhis2.databinding.FormDateTimeTextBinding;
 import org.dhis2.databinding.FormTimeTextBinding;
 import org.dhis2.utils.DateUtils;
-
 import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
@@ -28,8 +27,8 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-   /* @NonNull
-    private BehaviorProcessor<DateTimeViewModel> model;*/
+    /* @NonNull
+     private BehaviorProcessor<DateTimeViewModel> model;*/
     private DateTimeViewModel dateTimeViewModel;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
@@ -167,13 +166,13 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     @Override
     public void onDateSelected(Date date) {
         String dateFormatted = "";
-        if(date != null) //Always stores a DATE in database format
-            if(dateTimeViewModel.valueType() == ValueType.DATE)
-                dateFormatted = DateUtils.databaseDateFormat().format(date);
-            else if(dateTimeViewModel.valueType() == ValueType.TIME)
-                dateFormatted = DateUtils.databaseDateFormat().format(date);
+        if (date != null)
+            if (dateTimeViewModel.valueType() == ValueType.DATE)
+                dateFormatted = DateUtils.uiDateFormat().format(date);
+            else if (dateTimeViewModel.valueType() == ValueType.TIME)
+                dateFormatted = DateUtils.timeFormat().format(date);
             else {
-                dateFormatted = DateUtils.databaseDateFormat().format(date);
+                dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         processor.onNext(
                 RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)

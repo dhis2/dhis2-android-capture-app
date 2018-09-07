@@ -71,6 +71,14 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
             } catch (ParseException e) {
                 Timber.e(e);
             }
+
+            if (date == null)
+                try {
+                    date = DateUtils.databaseDateFormatNoMillis().parse(data);
+                } catch (ParseException e) {
+                    Timber.e(e);
+                }
+
             data = DateUtils.dateTimeFormat().format(date);
         } else {
             editText.setText("");

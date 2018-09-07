@@ -29,6 +29,7 @@ public class DateUtils {
     }
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
     private static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
     private static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
 
@@ -229,6 +230,12 @@ public class DateUtils {
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US);
     }
+    @NonNull
+    public static SimpleDateFormat databaseDateFormatNoMillis() {
+        return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US);
+    }
+
+
 
     /**********************
      FORMAT REGION*/
