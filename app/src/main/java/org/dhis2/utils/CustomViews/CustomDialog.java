@@ -15,7 +15,7 @@ import org.dhis2.databinding.CustomDialogBinding;
 import org.dhis2.utils.DialogClickListener;
 
 /**
- * Created by frodriguez on 5/4/2018.
+ * QUADRAM. Created by frodriguez on 5/4/2018.
  */
 
 public class CustomDialog extends AlertDialog implements View.OnClickListener {

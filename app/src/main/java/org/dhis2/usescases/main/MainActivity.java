@@ -11,10 +11,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.andrognito.pinlockview.PinLockListener;
@@ -27,10 +25,8 @@ import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.Period;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
@@ -159,7 +155,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public void onLockClick() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (prefs.getString("pin", null) == null) {
             binding.drawerLayout.closeDrawers();
             binding.pinLayout.getRoot().setVisibility(View.VISIBLE);

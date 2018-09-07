@@ -6,7 +6,7 @@ import org.dhis2.data.dagger.PerActivity;
 import dagger.Subcomponent;
 
 /**
- * Created by ppajuelo on 17/10/2017.
+ * QUADRAM. Created by ppajuelo on 17/10/2017.
  */
 @PerActivity
 @Subcomponent(modules = MainModule.class)

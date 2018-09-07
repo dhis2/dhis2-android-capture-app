@@ -6,7 +6,7 @@ import org.dhis2.usescases.general.AbstractActivityContracts;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by lmartin on 21/03/2018.
+ * QUADRAM. Created by lmartin on 21/03/2018.
  */
 
 public class SyncManagerContracts {

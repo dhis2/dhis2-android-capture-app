@@ -8,7 +8,7 @@ import com.google.auto.value.AutoValue;
 import org.hisp.dhis.android.core.common.ValueType;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
 @AutoValue

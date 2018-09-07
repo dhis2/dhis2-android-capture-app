@@ -6,7 +6,7 @@ import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 
 /**
- * Created by Administrador on 01/06/2018.
+ * QUADRAM. Created by Administrador on 01/06/2018.
  */
 
 public class HelpManager {

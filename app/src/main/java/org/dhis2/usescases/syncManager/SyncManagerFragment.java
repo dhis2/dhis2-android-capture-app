@@ -104,7 +104,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.setPresenter(presenter);
         prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         initRadioGroups();
 
@@ -278,7 +278,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void showTutorial() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())

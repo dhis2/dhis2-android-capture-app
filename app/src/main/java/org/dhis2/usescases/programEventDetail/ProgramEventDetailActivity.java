@@ -25,6 +25,7 @@ import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.CatComboAdapter;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -57,7 +58,7 @@ import static org.dhis2.utils.Period.WEEKLY;
 import static org.dhis2.utils.Period.YEARLY;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class ProgramEventDetailActivity extends ActivityGlobalAbstract implements ProgramEventDetailContract.View {
@@ -501,7 +502,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())

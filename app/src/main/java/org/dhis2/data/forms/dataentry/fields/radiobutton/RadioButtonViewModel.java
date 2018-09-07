@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import java.util.Locale;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 @AutoValue
 public abstract class RadioButtonViewModel extends FieldViewModel {

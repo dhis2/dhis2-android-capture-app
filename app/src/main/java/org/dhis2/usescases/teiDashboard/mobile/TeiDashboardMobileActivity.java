@@ -170,7 +170,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         super.setTutorial();
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
 
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())

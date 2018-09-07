@@ -14,7 +14,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reactivex.schedulers.Schedulers;
 
 @Module
 public class DbModule {

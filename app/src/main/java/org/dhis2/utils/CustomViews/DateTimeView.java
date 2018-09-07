@@ -22,7 +22,7 @@ import java.util.Date;
 import timber.log.Timber;
 
 /**
- * Created by frodriguez on 1/15/2018.
+ * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
 public class DateTimeView extends RelativeLayout implements View.OnClickListener, View.OnFocusChangeListener {
@@ -71,6 +71,14 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
             } catch (ParseException e) {
                 Timber.e(e);
             }
+
+            if (date == null)
+                try {
+                    date = DateUtils.databaseDateFormatNoMillis().parse(data);
+                } catch (ParseException e) {
+                    Timber.e(e);
+                }
+
             data = DateUtils.dateTimeFormat().format(date);
         } else {
             editText.setText("");

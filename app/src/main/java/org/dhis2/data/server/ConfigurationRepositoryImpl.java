@@ -5,10 +5,7 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import okhttp3.HttpUrl;
 
 public class ConfigurationRepositoryImpl implements ConfigurationRepository {

@@ -40,6 +40,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchRelationshipAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
@@ -333,21 +334,21 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
-            prefs.edit().putInt("PROGRAM_THEME", programTheme).apply();
+            prefs.edit().putInt(Constants.PROGRAM_THEME, programTheme).apply();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(programColor));
             binding.mainToolbar.setBackgroundColor(programColor);
             binding.appbatlayout.setBackgroundColor(programColor);
         } else {
-            prefs.edit().remove("PROGRAM_THEME").apply();
+            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
             binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary)));
             binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
             binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         }
 
         binding.executePendingBindings();
-        setTheme(prefs.getInt("PROGRAM_THEME", prefs.getInt("THEME", R.style.AppTheme)));
+        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();

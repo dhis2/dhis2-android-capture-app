@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Cristian on 08/02/2018.
+ * QUADRAM. Created by Cristian on 08/02/2018.
  */
 
 public class EventDetailModel extends BaseObservable {

@@ -17,7 +17,7 @@ import java.util.List;
 
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleViewHolder> {

@@ -50,7 +50,7 @@ import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 /**
- * Created by Cristian on 01/03/2018.
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventInitialPresenter implements EventInitialContract.Presenter {

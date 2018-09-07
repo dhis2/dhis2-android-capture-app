@@ -25,7 +25,7 @@ import java.io.IOException;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
- * Created by ppajuelo on 15/01/2018.
+ * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
 public class QRActivity extends ActivityGlobalAbstract {

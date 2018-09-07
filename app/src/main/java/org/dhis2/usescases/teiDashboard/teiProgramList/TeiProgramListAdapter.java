@@ -10,15 +10,11 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.program.ProgramModel;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEnrollmentViewHolder> {

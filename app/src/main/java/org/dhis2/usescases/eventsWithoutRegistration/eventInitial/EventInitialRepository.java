@@ -15,7 +15,7 @@ import java.util.List;
 import io.reactivex.Observable;
 
 /**
- * Created by Cristian E. on 02/11/2017.
+ * QUADRAM. Created by Cristian E. on 02/11/2017.
  */
 
 public interface EventInitialRepository {

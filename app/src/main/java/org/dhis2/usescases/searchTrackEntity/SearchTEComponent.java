@@ -5,7 +5,7 @@ import org.dhis2.data.dagger.PerActivity;
 import dagger.Subcomponent;
 
 /**
- * Created by ppajuelo on 31/10/2017.
+ * QUADRAM. Created by ppajuelo on 31/10/2017.
  */
 
 @PerActivity

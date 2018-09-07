@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by ppajuelo on 07/02/2018.
+ * QUADRAM. Created by ppajuelo on 07/02/2018.
  */
 
 @Module

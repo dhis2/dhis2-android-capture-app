@@ -8,7 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by ppajuelo on 04/12/2017.
+ * QUADRAM. Created by ppajuelo on 04/12/2017.
  */
 
 @Module

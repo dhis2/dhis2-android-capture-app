@@ -1,23 +1,14 @@
 package org.dhis2.usescases.main.program;
 
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramModelBinding;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Period;
-
-import org.hisp.dhis.android.core.program.ProgramType;
 
 /**
  * QUADRAM. Created by ppajuelo on 13/06/2018.

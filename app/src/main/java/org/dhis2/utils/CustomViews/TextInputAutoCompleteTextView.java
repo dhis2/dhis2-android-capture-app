@@ -9,7 +9,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 /**
- * Created by ppajuelo on 15/01/2018.
+ * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
 public class TextInputAutoCompleteTextView extends AppCompatAutoCompleteTextView {

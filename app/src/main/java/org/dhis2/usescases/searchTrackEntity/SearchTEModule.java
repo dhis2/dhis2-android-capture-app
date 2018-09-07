@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 

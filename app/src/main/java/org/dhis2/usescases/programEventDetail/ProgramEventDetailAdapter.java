@@ -13,7 +13,6 @@ import org.dhis2.databinding.ItemProgramEventBinding;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

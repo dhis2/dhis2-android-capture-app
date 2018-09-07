@@ -14,7 +14,7 @@ import org.dhis2.databinding.FormButtonBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
- * Created by ppajuelo on 19/03/2018.
+ * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
 
 public class FileRow implements Row<FileHolder, FileViewModel> {

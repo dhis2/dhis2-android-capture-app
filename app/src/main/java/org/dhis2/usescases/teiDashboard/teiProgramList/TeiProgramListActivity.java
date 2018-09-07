@@ -7,20 +7,16 @@ import android.support.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivityTeiProgramListBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.ProgramViewModel;
-
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class TeiProgramListActivity extends ActivityGlobalAbstract implements TeiProgramListContract.View {

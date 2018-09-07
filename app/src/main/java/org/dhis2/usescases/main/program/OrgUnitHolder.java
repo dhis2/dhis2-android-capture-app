@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import java.util.Locale;
 
 /**
- * Created by ppajuelo on 19/10/2017.
+ * QUADRAM. Created by ppajuelo on 19/10/2017.
  */
 
 public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitModel> {

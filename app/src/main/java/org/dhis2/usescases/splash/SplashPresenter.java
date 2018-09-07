@@ -12,6 +12,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.utils.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +73,7 @@ public class SplashPresenter implements SplashContracts.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(isUserLoggedIn -> {
                             SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                    "org.dhis2", Context.MODE_PRIVATE);
+                                    Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                             if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
                                 navigateToHomeView();
                             } else {

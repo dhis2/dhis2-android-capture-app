@@ -1,15 +1,12 @@
 package org.dhis2.usescases.main.program;
 
 import android.support.annotation.UiThread;
-import android.widget.ImageView;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 

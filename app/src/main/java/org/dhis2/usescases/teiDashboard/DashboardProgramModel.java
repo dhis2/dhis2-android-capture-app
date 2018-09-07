@@ -11,8 +11,6 @@ import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**

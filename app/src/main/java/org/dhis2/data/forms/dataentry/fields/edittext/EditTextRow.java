@@ -15,7 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
 public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {

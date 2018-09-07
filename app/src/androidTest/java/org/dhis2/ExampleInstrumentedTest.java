@@ -4,14 +4,10 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Constants;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +23,7 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("org.dhis2", appContext.getPackageName());
+        assertEquals(Constants.SHARE_PREFS, appContext.getPackageName());
     }
 
 

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Administrador on 15/06/2018.
+ * QUADRAM. Created by Administrador on 15/06/2018.
  */
 
 public abstract class FieldViewHolder extends RecyclerView.ViewHolder {

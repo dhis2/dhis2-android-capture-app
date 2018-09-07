@@ -43,7 +43,7 @@ import io.reactivex.Observable;
 import static android.text.TextUtils.isEmpty;
 
 /**
- * Created by Cristian on 22/03/2018.
+ * QUADRAM. Created by Cristian on 22/03/2018.
  */
 
 public class EventSummaryRepositoryImpl implements EventSummaryRepository {

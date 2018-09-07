@@ -16,7 +16,7 @@ import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.ColorUtils;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder {

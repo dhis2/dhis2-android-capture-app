@@ -12,7 +12,6 @@ import org.dhis2.utils.CustomViews.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
-import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Observable;

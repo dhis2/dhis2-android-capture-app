@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 import io.reactivex.Observable;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
 public interface ProgramRepository {

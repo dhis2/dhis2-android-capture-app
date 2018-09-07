@@ -1,6 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -41,7 +40,7 @@ import me.toptas.fancyshowcase.FocusShape;
 import static android.text.TextUtils.isEmpty;
 
 /**
- * Created by Cristian on 01/03/2018.
+ * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
 public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
@@ -256,8 +255,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     public void setTutorial() {
         super.setTutorial();
 
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences();
 
         new Handler().postDelayed(() -> {
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();

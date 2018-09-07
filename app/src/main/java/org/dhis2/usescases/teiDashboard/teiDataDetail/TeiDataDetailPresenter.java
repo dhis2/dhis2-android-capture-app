@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
- * Created by frodriguez on 12/13/2017.
+ * QUADRAM. Created by frodriguez on 12/13/2017.
  */
 
 public class TeiDataDetailPresenter implements TeiDataDetailContracts.Presenter {

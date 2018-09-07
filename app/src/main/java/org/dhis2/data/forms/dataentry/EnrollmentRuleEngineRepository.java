@@ -21,8 +21,6 @@ import java.util.List;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
-
 public final class EnrollmentRuleEngineRepository implements RuleEngineRepository {
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +

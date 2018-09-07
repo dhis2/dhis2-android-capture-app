@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.dhis2.utils.Constants;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Unit;
@@ -163,7 +161,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @NonNull
     private Observable<List<TrackedEntityInstance>> trackerData() {
         SharedPreferences prefs = syncView.getContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         return Observable.defer(() -> Observable.fromCallable(d2.downloadTrackedEntityInstances(teiLimit, limityByOU)));
@@ -172,7 +170,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @NonNull
     private Observable<List<Event>> events() {
         SharedPreferences prefs = syncView.getContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
         return Observable.defer(() -> Observable.fromCallable(d2.downloadSingleEvents(eventLimit, limityByOU)));

@@ -279,8 +279,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void saveTheme(Integer themeId) {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
-        prefs.edit().putInt("THEME", themeId).apply();
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putInt(Constants.THEME, themeId).apply();
         setTheme(themeId);
 
         int startColor = ContextCompat.getColor(this, R.color.colorPrimary);
@@ -299,7 +299,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     public void saveFlag(String s) {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString("FLAG", s).apply();
 
         binding.logoFlag.setImageResource(getResources().getIdentifier(s, "drawable", getPackageName()));

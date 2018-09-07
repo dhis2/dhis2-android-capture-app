@@ -23,7 +23,7 @@ import java.util.List;
 import io.reactivex.Observable;
 
 /**
- * Created by ppajuelo on 02/11/2017.
+ * QUADRAM. Created by ppajuelo on 02/11/2017.
  */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {

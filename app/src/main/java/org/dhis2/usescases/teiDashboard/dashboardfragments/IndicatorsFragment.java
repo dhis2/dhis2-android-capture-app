@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.FragmentIndicatorsBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -26,7 +25,7 @@ import io.reactivex.functions.Consumer;
 
 
 /**
- * Created by ppajuelo on 29/11/2017.
+ * QUADRAM. Created by ppajuelo on 29/11/2017.
  */
 
 public class IndicatorsFragment extends FragmentGlobalAbstract {

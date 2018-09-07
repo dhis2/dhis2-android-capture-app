@@ -2,10 +2,6 @@ package org.dhis2.utils;
 
 import org.dhis2.R;
 
-/**
- * Created by ppajuelo on 16/01/2018.
- */
-
 public enum Period {
     NONE(R.string.period),
     DAILY (R.string.DAILY),
@@ -13,9 +9,12 @@ public enum Period {
     MONTHLY(R.string.MONTHLY),
     YEARLY(R.string.YEARLY);
 
+    /**
+     * QUADRAM. Created by ppajuelo on 16/01/2018.
+     */
     private final int name;
 
-    private Period(int id){
+    Period(int id){
         name = id;
     }
 

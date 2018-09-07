@@ -24,7 +24,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
- * Created by ppajuelo on 30/11/2017.
+ * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
 
 public class TeiDashboardContracts {

@@ -5,7 +5,6 @@ import android.content.Context;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.metadata.MetadataRepository;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
 
 import org.hisp.dhis.android.core.D2;
 
@@ -13,7 +12,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by frodriguez on 4/13/2018.
+ * QUADRAM. Created by frodriguez on 4/13/2018.
  */
 
 @Module

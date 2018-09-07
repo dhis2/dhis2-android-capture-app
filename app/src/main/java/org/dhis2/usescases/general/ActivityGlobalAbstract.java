@@ -19,13 +19,18 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
@@ -35,8 +40,6 @@ import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CoordinatesView;
 import org.dhis2.utils.HelpManager;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -86,23 +89,22 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     //LIFECYCLE REGION
 
     public void setScreenName(String name) {
-        Crashlytics.setString("SCREEN_NAME", name);
+        Crashlytics.setString(Constants.SCREEN_NAME, name);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
-       /* if (!BuildConfig.DEBUG)
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);TODO:ACTIVATE FOR FINAL BUILD*/
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                "org.dhis2", Context.MODE_PRIVATE);
+        if (!BuildConfig.DEBUG)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        SharedPreferences prefs = getSharedPreferences();
         if (this instanceof MainActivity || this instanceof LoginActivity || this instanceof SplashActivity) {
-            prefs.edit().remove("PROGRAM_THEME").apply();
+            prefs.edit().remove(Constants.PROGRAM_THEME).apply();
         }
 
-        setTheme(prefs.getInt("PROGRAM_THEME", prefs.getInt("THEME", R.style.AppTheme)));
+        setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
-        Crashlytics.setString("SERVER", prefs.getString("SERVER", null));
+        Crashlytics.setString(Constants.SERVER, prefs.getString(Constants.SERVER, null));
 
         super.onCreate(savedInstanceState);
 
@@ -143,7 +145,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         HelpManager.getInstance().showHelp();
     }
 
-    public void showMoreOptions(View view){
+    public void showMoreOptions(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
         try {
             Field[] fields = popupMenu.getClass().getDeclaredFields();
@@ -227,11 +229,16 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     @Override
     public <T> List<T> getListFromPreference(String key) {
         Gson gson = new Gson();
-        String json = getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        String json = getSharedPreferences().getString(key, "[]");
         Type type = new TypeToken<List<T>>() {
         }.getType();
 
         return gson.fromJson(json, type);
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences() {
+        return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE);
     }
 
     public Observable<Status> observableLifeCycle() {
@@ -289,7 +296,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Constants.RQ_MAP_LOCATION_VIEW:
-                if(coordinatesView!=null && resultCode == RESULT_OK && data.getExtras()!=null) {
+                if (coordinatesView != null && resultCode == RESULT_OK && data.getExtras() != null) {
                     coordinatesView.updateLocation(Double.valueOf(data.getStringExtra(MapSelectorActivity.LATITUDE)), Double.valueOf(data.getStringExtra(MapSelectorActivity.LONGITUDE)));
                 }
                 this.coordinatesView = null;

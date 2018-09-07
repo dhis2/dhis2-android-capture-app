@@ -47,8 +47,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/arrow"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/storeBy"
-            tools:text="@string/lorem" />
+            app:layout_constraintTop_toBottomOf="@id/storeBy"/>
 
         <TextView
             android:id="@+id/date"

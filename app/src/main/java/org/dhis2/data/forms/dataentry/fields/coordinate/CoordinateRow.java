@@ -13,7 +13,7 @@ import org.dhis2.databinding.CustomFormCoordinateBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 /**
- * Created by frodriguez on 1/24/2018.
+ * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
 public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel> {

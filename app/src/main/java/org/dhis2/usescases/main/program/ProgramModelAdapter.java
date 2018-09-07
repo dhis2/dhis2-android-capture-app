@@ -56,12 +56,7 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
     }
 
     public void setData(List<ProgramViewModel> data) {
-        Collections.sort(data, new Comparator<ProgramViewModel>() {
-            @Override
-            public int compare(ProgramViewModel o1, ProgramViewModel o2) {
-                return o2.count() - o1.count();
-            }
-        });
+        Collections.sort(data, (o1, o2) -> o2.count() - o1.count());
         this.programList.clear();
         this.programList.addAll(data);
         notifyDataSetChanged();

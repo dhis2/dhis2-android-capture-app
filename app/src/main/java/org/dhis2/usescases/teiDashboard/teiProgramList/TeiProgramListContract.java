@@ -3,13 +3,10 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-
 import java.util.List;
 
 /**
- * Created by Cristian on 13/02/2017.
+ * QUADRAM. Created by Cristian on 13/02/2017.
  */
 
 public class TeiProgramListContract {

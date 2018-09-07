@@ -11,7 +11,7 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
- * Created by ppajuelo on 15/01/2018.
+ * QUADRAM. Created by ppajuelo on 15/01/2018.
  */
 
 @PerActivity

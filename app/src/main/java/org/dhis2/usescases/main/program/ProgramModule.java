@@ -1,7 +1,7 @@
 package org.dhis2.usescases.main.program;
 
 import org.dhis2.data.dagger.PerFragment;
-import org.dhis2.data.metadata.MetadataRepository;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;

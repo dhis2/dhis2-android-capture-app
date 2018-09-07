@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by frodriguez on 6/6/2018.
+ * QUADRAM. Created by frodriguez on 6/6/2018.
  */
 public class RelationshipSpinnerAdapter extends ArrayAdapter<Pair<RelationshipTypeModel, String>> {
 

@@ -22,7 +22,7 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
- * Created by frodriguez on 11/7/2017.
+ * QUADRAM. Created by frodriguez on 11/7/2017.
  */
 
 public class SearchTEViewHolder extends RecyclerView.ViewHolder {

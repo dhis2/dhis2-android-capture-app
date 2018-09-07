@@ -12,14 +12,13 @@ import org.dhis2.databinding.ItemRelationshipBinding;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 
 import org.hisp.dhis.android.core.relationship.Relationship;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ppajuelo on 05/12/2017.
+ * QUADRAM. Created by ppajuelo on 05/12/2017.
  */
 
 public class RelationshipAdapter extends RecyclerView.Adapter<RelationshipViewHolder> {

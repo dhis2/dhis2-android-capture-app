@@ -28,7 +28,7 @@ import java.util.Locale;
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
- * Created by Administrador on 21/03/2018.
+ * QUADRAM. Created by Administrador on 21/03/2018.
  */
 
 public class CoordinatesView extends RelativeLayout implements View.OnClickListener {

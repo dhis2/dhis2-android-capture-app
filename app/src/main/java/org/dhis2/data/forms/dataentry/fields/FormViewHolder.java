@@ -4,7 +4,7 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 /**
- * Created by ppajuelo on 06/11/2017.
+ * QUADRAM. Created by ppajuelo on 06/11/2017.
  */
 
 public abstract class FormViewHolder extends RecyclerView.ViewHolder {

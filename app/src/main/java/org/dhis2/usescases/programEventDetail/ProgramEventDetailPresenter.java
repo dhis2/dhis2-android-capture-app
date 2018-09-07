@@ -3,8 +3,8 @@ package org.dhis2.usescases.programEventDetail;
 import android.os.Bundle;
 
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.Period;
-
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -16,13 +16,13 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.EVENT_UID;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.NEW_EVENT;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.ORG_UNIT;
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_UID;
+import static org.dhis2.utils.Constants.NEW_EVENT;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
+
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
@@ -89,7 +89,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void onEventClick(String eventId, String orgUnit) {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(EVENT_UID, eventId);
+        bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
         bundle.putBoolean(NEW_EVENT, false);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
