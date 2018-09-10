@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
 
         <variable
             name="theme"
@@ -17,7 +17,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.MainContracts.Presenter" />
+            type="org.dhis2.usescases.main.MainContracts.Presenter" />
 
         <variable
             name="currentFragment"
@@ -36,14 +36,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?colorPrimary"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:elevation="10dp">
+                android:elevation="10dp"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/menu"
@@ -57,32 +56,70 @@
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="start"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical"
                     android:text="@string/done_task"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/filter"
+                    app:layout_constraintStart_toEndOf="@id/menu"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/filter"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="6dp"
                     android:onClick="@{()->presenter.showFilter()}"
                     android:padding="8dp"
-                    android:layout_marginEnd="6dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_filter"
                     tools:ignore="ContentDescription" />
 
-            </LinearLayout>
+                <ImageView
+                    android:id="@+id/moreOptions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="6dp"
+                    android:onClick="showMoreOptions"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_more"
+                    tools:ignore="ContentDescription" />
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_end="10dp" />
+
+                <android.support.v4.widget.ContentLoadingProgressBar
+                    android:id="@+id/toolbarProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:padding="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/guideline"
+                    tools:visibility="visible" />
+
+            </android.support.constraint.ConstraintLayout>
 
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:layout_below="@id/toolbar" />
+                android:layout_below="@id/toolbar"
+                android:clipToPadding="false" />
         </RelativeLayout>
 
         <!--End of Main Content-->
@@ -92,132 +129,26 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="?colorPrimary"
-            app:itemTextColor="?colorPrimary">
+            android:background="@color/bg_white_fdf"
+            app:headerLayout="@layout/header_menu"
+            app:itemIconTint="@color/icon_color_989"
+            app:itemTextColor="@color/text_black_333"
+            app:menu="@menu/main_menu" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <include
+            android:id="@+id/pin_layout"
+            layout="@layout/layout_pin"
+            />
 
-                <TextView
-                    android:id="@+id/user_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:gravity="center"
-                    android:text="@{userName, default=user_name}"
-                    android:textColor="@color/white_dfd"
-                    android:textSize="21sp" />
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/block_button"
-                    android:layout_below="@id/user_info"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/menu_done_tasks"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_done_tasks)}"
-                        android:padding="10dp"
-                        android:text="@string/done_task"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="18sp"
-                        app:currentFragment="@{currentFragment}" />
-
-                    <TextView
-                        android:id="@+id/qr_scan"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.qr_scan)}"
-                        android:padding="10dp"
-                        android:text="@string/QR_SCANNER"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="18sp"
-                        app:currentFragment="@{currentFragment}" />
-
-                    <TextView
-                        android:id="@+id/sync_manager"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.sync_manager)}"
-                        android:padding="10dp"
-                        android:text="@string/SYNC_MANAGER"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="18sp"
-                        app:currentFragment="@{currentFragment}" />
-
-                    <TextView
-                        android:id="@+id/menu_about"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->presenter.changeFragment(R.id.menu_about)}"
-                        android:padding="10dp"
-                        android:text="@string/about"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="18sp"
-                        app:currentFragment="@{currentFragment}" />
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/logout_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="bottom"
-                    android:background="?colorPrimaryDark"
-                    android:onClick="@{() -> presenter.logOut()}"
-                    android:text="@string/log_out"
-                    android:textColor="@color/white_faf" />
-
-                <Button
-                    android:id="@+id/block_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_above="@+id/logout_button"
-                    android:layout_alignParentStart="true"
-                    android:layout_gravity="bottom"
-                    android:background="?colorPrimaryDark"
-                    android:onClick="onLockClick"
-                    android:text="@string/block_session"
-                    android:textColor="@color/white_faf" />
-
-                <TextView
-                    android:id="@+id/menu_jira"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:onClick="@{()->presenter.changeFragment(R.id.menu_jira)}"
-                    android:text="@string/jira_report"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="18sp"
-
-                    android:layout_above="@id/block_button"
-                    android:background="@drawable/jira_button"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="24dp"
-                    android:padding="6dp"/>
-            </RelativeLayout>
-
-        </android.support.design.widget.NavigationView>
-
-        <RelativeLayout
+        <!--<RelativeLayout
             android:id="@+id/pin_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?colorPrimary"
-            android:gravity="center"
-            android:visibility="gone"
+            android:background="@color/bg_gray_ccc"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:visibility="gone">
 
             <com.andrognito.pinlockview.IndicatorDots
                 android:id="@+id/indicator_dots"
@@ -235,10 +166,11 @@
                 app:keypadDeleteButtonSize="24dp"
                 app:keypadHorizontalSpacing="36dp"
                 app:keypadShowDeleteButton="true"
+                android:textSize="30sp"
                 app:keypadTextColor="?colorAccent"
                 app:keypadVerticalSpacing="24dp"
                 app:pinLength="4" />
-        </RelativeLayout>
+        </RelativeLayout>-->
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

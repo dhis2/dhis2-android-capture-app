@@ -24,7 +24,7 @@
             android:id="@+id/viewpager_dataentry"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white" />
+            android:background="@color/bg_white_f9f" />
 
         <!--</FrameLayout>-->
     </android.support.v4.widget.NestedScrollView>
@@ -32,14 +32,18 @@
     <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:background="?attr/button_selector"
         android:elevation="8dp"
         android:text="@string/next"
+        android:textSize="12sp"
+        android:textStyle="bold"
         android:textColor="?colorAccent"
         app:backgroundTint="?colorPrimary"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         app:elevation="8dp" />
 
     <!--END OF SCROLLING VIEW-->
@@ -82,6 +86,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
+                android:id="@+id/date_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -105,7 +110,6 @@
                         android:cursorVisible="false"
                         android:padding="8dp"
                         android:textAlignment="textStart"
-                        android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         tools:text="2018-04-04" />
@@ -131,7 +135,6 @@
                         android:cursorVisible="false"
                         android:padding="8dp"
                         android:textAlignment="textStart"
-                        android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         tools:text="2018-04-04" />
@@ -139,14 +142,14 @@
 
             </LinearLayout>
 
-            <com.dhis2.utils.CustomViews.CoordinatesView
+            <org.dhis2.utils.CustomViews.CoordinatesView
                 android:id="@+id/coordinates_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
 
-        <com.dhis2.data.forms.AutoHidingTabLayout
+        <org.dhis2.data.forms.AutoHidingTabLayout
             android:id="@+id/tablayout_data_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

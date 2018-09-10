@@ -47,7 +47,6 @@
                 android:enabled="@{isEditable.get()}"
                 android:imeOptions="actionNext"
                 android:textAlignment="textStart"
-                android:textAllCaps="false"
                 android:textColor="?colorAccent"
                 android:textSize="15sp"
                 tools:text="hello" />

@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus"/>
 
         <variable
             name="enrollment"
@@ -17,11 +18,11 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
             name="dashboardModel"
-            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
 
         <variable
             name="program"
@@ -40,7 +41,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:background="@color/bg_white_f9f">
 
             <include
                 android:id="@+id/card_front"
@@ -70,6 +72,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"

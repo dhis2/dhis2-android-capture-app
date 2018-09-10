@@ -7,11 +7,11 @@
 
         <variable
             name="relationship"
-            type="org.hisp.dhis.android.core.relationship.RelationshipModel" />
+            type="org.hisp.dhis.android.core.relationship.Relationship" />
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
             name="teiName"
@@ -21,36 +21,33 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/gray_border_box"
-        android:paddingBottom="19.5dp"
+        android:layout_height="56dp"
+        android:background="@color/bg_gray_f2f"
+        android:paddingBottom="8dp"
         android:paddingEnd="10dp"
         android:paddingStart="29dp"
-        android:paddingTop="19.5dp">
+        android:paddingTop="8dp"
+        >
 
         <TextView
             android:id="@+id/relationshipName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textColor="#787878"
-            android:textSize="14.2sp"
+            android:textColor="@color/text_black_333"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mother:" />
+            tools:text="Mother" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/rubik_light"
             android:maxLines="2"
             android:text="@{teiName}"
             android:textColor="#444444"
-            android:textSize="13.3sp"
-            android:textStyle="normal"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tei_relationship_link"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,8 +56,9 @@
 
         <ImageView
             android:id="@+id/clear_relationship_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
             android:onClick="@{ () -> presenter.deleteRelationship(relationship)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,9 +68,10 @@
 
         <ImageView
             android:id="@+id/tei_relationship_link"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clear_relationship_button"
             app:layout_constraintTop_toTopOf="parent"

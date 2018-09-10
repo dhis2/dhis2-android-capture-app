@@ -10,15 +10,12 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
 
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -37,11 +34,13 @@
             android:paddingTop="8dp">
 
             <ImageView
-                android:layout_width="0dp"
+                android:id="@+id/programImage"
+                android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.5"
                 android:contentDescription='@{enrollment.uid()}'
-                android:padding="8dp"
+                android:layout_margin="8dp"
                 app:srcCompat="@drawable/photo_temp" />
 
 
@@ -56,10 +55,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:textColor="@color/black_de0"
+                    android:text='@{enrollment.programName()}'
+                    android:textColor="@color/text_black_333"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:programName='@{enrollment.program}'
                     tools:text="ANC PROGRAMffffffffffffffffffff" />
 
 
@@ -74,9 +73,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
-                        android:textColor="@color/gray_9b9"
+                        android:text='@{enrollment.orgUnitName()}'
+                        android:textColor="@color/text_black_333"
                         android:textSize="14sp"
-                        app:organisationUnitName='@{enrollment.organisationUnit()}'
                         tools:text="ORG UNIT" />
 
 
@@ -89,9 +88,9 @@
                         android:ellipsize="end"
                         android:gravity="end"
                         android:lines="1"
-                        android:textColor="@color/black_de0"
+                        android:textColor="@color/text_black_333"
                         android:textSize="14sp"
-                        app:date="@{enrollment.enrollmentDate()}"
+                        app:date='@{enrollment.enrollmentDate()}'
                         tools:text="DD/MM/YYYY" />
                 </LinearLayout>
             </LinearLayout>
@@ -111,6 +110,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:contentDescription='@{enrollment.uid()}'
+                android:tint="?colorPrimary"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>
 

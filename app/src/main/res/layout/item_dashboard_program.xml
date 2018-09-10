@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
             name="program"
@@ -27,28 +27,27 @@
 
         <ImageView
             android:id="@+id/program_image"
-            android:layout_width="130dp"
+            android:layout_width="75dp"
             android:layout_height="0dp"
-            android:padding="8dp"
             android:background="?attr/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@id/enrollmentDateLabel"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="?attr/colorPrimaryLight"
+            app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_program_default"/>
+            tools:src="@drawable/ic_program_default" />
 
         <TextView
             android:id="@+id/program_last_date_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="7.8dp"
-            android:layout_marginTop="5.4dp"
             android:ellipsize="end"
             android:gravity="bottom"
             android:maxLines="1"
             android:text="@{program.incidentDateLabel()}"
-            android:textColor="@color/gray_9b9"
-            android:textSize="14sp"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/program_last_date"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toBottomOf="@id/program_name"
@@ -59,14 +58,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="7.8dp"
-            android:layout_marginTop="5.4dp"
             android:gravity="bottom"
-            android:textColor="@color/gray_666"
-            android:textSize="14sp"
+
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
             app:date="@{enrollment.incidentDate ()}"
             app:layout_constraintEnd_toStartOf="@id/overdue"
-            app:layout_constraintTop_toBottomOf="@id/program_name"
-            tools:text="date" />
+            app:layout_constraintTop_toTopOf="@id/program_last_date_label"
+            tools:text="2018-04-29" />
 
         <TextView
             android:id="@+id/enrollmentDateLabel"
@@ -74,14 +73,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="7.8dp"
-            android:layout_marginTop="5.4dp"
             android:ellipsize="end"
-            android:gravity="bottom"
-            android:maxLines="1"
             android:paddingBottom="5dp"
+            android:maxLines="1"
             android:text="@{program.enrollmentDateLabel()}"
-            android:textColor="@color/gray_9b9"
-            android:textSize="14sp"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/enrollmentDate"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toBottomOf="@id/program_last_date"
@@ -93,29 +90,26 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="7.8dp"
-            android:gravity="bottom"
             android:paddingBottom="5dp"
-            android:textColor="@color/gray_666"
-            android:textSize="14sp"
+            android:textColor="@color/text_black_333"
+            android:textSize="12sp"
             app:date="@{enrollment.enrollmentDate()}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/enrollmentDateLabel"
             app:layout_constraintEnd_toStartOf="@id/overdue"
-            tools:layout_editor_absoluteY="85dp"
-            tools:text="enrollmentDate" />
+            tools:text="2018-04-09" />
 
 
         <TextView
             android:id="@+id/program_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="7.8dp"
             android:layout_weight="1"
             android:lines="2"
-            android:padding="5dp"
             android:text="@{program.displayName()}"
+            android:textColor="@color/text_black_333"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="?colorPrimary"
-            android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintStart_toEndOf="@id/program_image"
             app:layout_constraintTop_toTopOf="parent"
@@ -134,7 +128,7 @@
             android:id="@+id/overdue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="15dp"
             android:onClick="@{()->presenter.showDescription(program.description())}"

@@ -10,15 +10,11 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
 
         <variable
             name="enrollment"
-            type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
-
-        <variable
-            name="program"
-            type="org.hisp.dhis.android.core.program.ProgramModel" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
     </data>
 
     <LinearLayout
@@ -36,11 +32,12 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/programImage"
                 android:contentDescription='@{enrollment.uid()}'
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:padding="8dp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
                 android:alpha="0.5"
                 app:srcCompat="@drawable/photo_temp" />
 
@@ -56,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    app:programName='@{enrollment.program}'
+                    android:text='@{enrollment.programName()}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -79,7 +76,7 @@
                         android:textSize="14sp"
                         android:alpha="0.5"
                         tools:text="Org unit"
-                        app:organisationUnitName='@{enrollment.organisationUnit()}'/>
+                        android:text='@{enrollment.orgUnitName()}'/>
 
 
                     <TextView

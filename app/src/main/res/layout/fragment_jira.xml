@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.jira.JiraPresenter" />
+            type="org.dhis2.usescases.jira.JiraPresenter" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -95,8 +94,7 @@
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onTextChanged="@{presenter::onDescriptionChanged}"
-                tools:text="@string/lorem" />
+                android:onTextChanged="@{presenter::onDescriptionChanged}"/>
 
         </android.support.design.widget.TextInputLayout>
 

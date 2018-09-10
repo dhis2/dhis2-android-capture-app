@@ -82,6 +82,7 @@
             android:layout_margin="10dp"
             android:background="@drawable/selector_gray_button_round_7"
             android:padding="6dp"
+            app:backgroundTint="@color/white"
             app:srcCompat="@drawable/ic_my_location" />
 
         <ImageButton
@@ -91,6 +92,7 @@
             android:layout_margin="10dp"
             android:background="@drawable/selector_gray_button_round_7"
             android:padding="6dp"
+            app:backgroundTint="@color/white"
             app:srcCompat="@drawable/ic_map" />
     </LinearLayout>
 

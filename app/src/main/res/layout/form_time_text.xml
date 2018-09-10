@@ -17,7 +17,7 @@
             type="java.lang.Boolean" />
     </data>
 
-    <com.dhis2.utils.CustomViews.TimeView
+    <org.dhis2.utils.CustomViews.TimeView
         android:id="@+id/timeView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

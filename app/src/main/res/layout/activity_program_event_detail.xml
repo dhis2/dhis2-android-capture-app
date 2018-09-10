@@ -4,7 +4,7 @@
 
     <data>
 
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
 
         <variable
             name="name"
@@ -12,7 +12,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
+            type="org.dhis2.usescases.programEventDetail.ProgramEventDetailContract.Presenter" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -33,35 +33,74 @@
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
                 android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="start"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="2"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                app:layout_constraintEnd_toStartOf="@id/filter"
+                tools:text="TITLE" />
 
             <ImageView
                 android:id="@+id/filter"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
                 android:onClick="@{()->presenter.showFilter()}"
                 android:padding="8dp"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:srcCompat="@drawable/ic_filter"
                 tools:ignore="ContentDescription" />
-        </LinearLayout>
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:onClick="showMoreOptions"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/toolbar_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v4.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="false"
+            android:clipToPadding="false"
             tools:openDrawer="end">
 
             <RelativeLayout
@@ -195,14 +234,14 @@
 
             <android.support.design.widget.NavigationView
                 android:id="@+id/org_unit_view"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="end"
                 android:layout_marginStart="-50dp"
                 android:background="@color/white_faf"
                 app:itemTextColor="?colorPrimary">
 
-                <LinearLayout
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -211,17 +250,33 @@
                         android:id="@+id/tree_view_container"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
                         android:paddingEnd="0dp"
                         android:paddingStart="20dp"
-                        android:paddingTop="40dp" />
+                        android:paddingTop="40dp"
+                        app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/org_unit_all"
+                        style="@style/TextButton"
+                        android:text="@string/select_all"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@string/cancel" />
+
+                    <Button
+                        android:id="@+id/org_unit_cancel"
+                        style="@style/TextButton"
+                        android:text="@string/cancel"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/org_unit_apply" />
 
                     <Button
                         android:id="@+id/org_unit_apply"
-                        style="@style/FullWidthButton"
-                        android:layout_gravity="bottom"
-                        android:text="@string/button_ok" />
-                </LinearLayout>
+                        style="@style/TextButton"
+                        android:text="@string/action_accept"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </android.support.constraint.ConstraintLayout>
             </android.support.design.widget.NavigationView>
         </android.support.v4.widget.DrawerLayout>
     </LinearLayout>

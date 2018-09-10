@@ -20,7 +20,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="1dp"
         app:eventColor="@{event.status()}"
         tools:background="@color/event_green">
@@ -30,10 +30,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
-            android:paddingBottom="5dp"
+            android:paddingBottom="8dp"
             android:paddingEnd="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="5dp"
+            android:paddingTop="8dp"
             android:transitionName="shared_view">
 
 
@@ -55,46 +55,32 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif"
                 android:gravity="start|center"
                 android:text='@{stage.displayName,default="Stage Name"}'
-                android:textColor="#444444"
+                android:textColor="@color/text_black_333"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:maxLines="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/status_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/event_date"
                 tools:text="ANC 4\ndf" />
 
-            <ImageView
-                android:id="@+id/arrow_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down"
-                app:tint="?colorPrimaryDark"
-                tools:ignore="ContentDescription" />
-
-
             <LinearLayout
                 android:id="@+id/status_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/arrow_down"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/event_icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     app:eventStatusIcon="@{event}"
                     app:enrollmentStatusIcon="@{enrollment}"
                     app:srcCompat="@drawable/ic_edit"
@@ -104,7 +90,6 @@
                     android:id="@+id/status_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
                     android:gravity="center_horizontal"
                     android:textColor="@color/icon_color"
                     android:textSize="12sp"

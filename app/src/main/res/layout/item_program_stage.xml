@@ -3,22 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
         <variable
             name="presenter"
-            type="com.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.Presenter" />
+            type="org.dhis2.usescases.programStageSelection.ProgramStageSelectionContract.Presenter" />
 
         <variable
             name="programStage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="42dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -27,29 +29,29 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:background="@drawable/photo_temp"
-            app:srcCompat="@drawable/ic_clinical_f_outline"
             android:padding="7dp"
             android:tint="?colorPrimaryDark"
+            app:srcCompat="@drawable/ic_clinical_f_outline"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:gravity="center_horizontal"
-            android:textColor="?colorPrimary"
             android:layout_marginTop="20dp"
-            tools:text="Program Stage displayName"
-            android:text='@{programStage.displayName()}'/>
+            android:gravity="center_horizontal"
+            android:text='@{programStage.displayName()}'
+            android:textColor="?colorPrimary"
+            android:textSize="18sp"
+            tools:text="Program Stage displayName" />
 
-        <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
             android:layout_marginTop="16dp"
-            android:visibility="gone"
             android:gravity="center_horizontal"
-            android:text="@string/fake_program_stage_description"/>
+            android:text="@{programStage.description()}"
+            android:textSize="15sp"
+            android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}"
+            tools:text="PROGRAM STAGE DESCRIPTION" />
     </LinearLayout>
 </layout>

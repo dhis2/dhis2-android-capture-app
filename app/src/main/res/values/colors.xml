@@ -293,6 +293,7 @@
 
     <color name="colorBackGround">#c4c4c4</color>
     <color name="colorBackGroundLight">#e7e7e7</color>
+    <color name="bg_gray_f2f">#f2f2f2</color>
     <color name="yellow_fdd">#fdd35d</color>
     <color name="yellow_f5c">#f5c641</color>
     <color name="yellow_ffe">#ffeaad</color>
@@ -304,13 +305,22 @@
     <color name="defaultColor_3">#d6dda1</color>
     <color name="defaultColor_4">#dca0d5</color>
 
+    <color name="text_black_333">#333333</color>
+    <color name="text_black_808">#808080</color>
+    <color name="bg_black_e6e">#e6e6e6</color>
+    <color name="bg_white_fdf">#fdfdfe</color>
+    <color name="bg_gray_ccc">#cccccc</color>
+    <color name="bg_gray_f1f">#f1f1f2</color>
+    <color name="bg_white_f9f">#f9faf9</color>
     <color name="icon_color">#787878</color>
+    <color name="icon_color_989">#989898</color>
     <color name="black_de0">#de000000</color>
     <color name="white_faf">#fafafa</color>
     <color name="white_dfd">#dfdfdf</color>
     <color name="white_d6d">#d6d6d6</color>
     <color name="gray_666">#666666</color>
     <color name="gray_444">#444444</color>
+    <color name="gray_d7d">#d7d7d7</color>
     <color name="gray_814">#81444444</color>
     <color name="gray_afa">#afafaf</color>
     <color name="gray_b2b">#b2b2b2</color>

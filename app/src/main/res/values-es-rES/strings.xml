@@ -113,6 +113,7 @@
     <string name="deactivate">Desactivar</string>
     <string name="program_not_allow_events">Este programa no admite más eventos</string>
     <string name="events">Eventos</string>
+    <string name="relationships">relaciones</string>
     <string name="done_task">Inicio</string>
     <string name="app_info">Informacion</string>
     <string name="log_out">Cerrar Sesion</string>
@@ -177,6 +178,7 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Admisiones</string>
     <string name="qr_events">Eventos</string>
+    <string name="qr_relationships">Relaciones</string>
     <string name="read_more_qr">Lee el siguiente QR para obtener más información.</string>
     <string name="save_qr">Parar de leer y guardar datos</string>
     <string name="qr_no_data">sin datos</string>
@@ -210,6 +212,7 @@
     <string name="enrollmment_date">Fecha de inscripción</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>
     <string name="save">Guardar</string>
+    <string name="downloaded_confirm">Quieres añadir más información de los QRs?</string>
 
     <!--ABOUT-->
     <string name="about_app">Versión de la app: %s</string>

@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.dhis2">
+    package="org.dhis2">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -35,11 +34,8 @@
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="play.dhis2.org"
                     android:scheme="https" />
@@ -66,6 +62,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardActivity" />
         <activity android:name=".usescases.qrCodes.QrActivity" />
+        <activity android:name=".usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity" />
 
         <service
             android:name=".data.service.SyncService"
@@ -73,6 +70,7 @@
             android:exported="false" />
         <service
             android:name=".data.service.SyncMetadataService"
+            android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
@@ -80,6 +78,7 @@
         </service>
         <service
             android:name=".data.service.SyncDataService"
+            android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
@@ -94,6 +93,17 @@
             android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
 
         <activity android:name=".usescases.dataset.dataSetPeriod.DataSetPeriodActivity"></activity>
+
+        <receiver android:name=".widgets.DhisCustomLauncher">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dhis_custom_launcher_info" />
+        </receiver>
+
     </application>
 
 </manifest>

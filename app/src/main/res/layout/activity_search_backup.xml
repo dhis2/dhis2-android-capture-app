@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
+            type="org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule.Presenter" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout

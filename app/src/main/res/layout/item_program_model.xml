@@ -9,32 +9,49 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
+            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
 
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.ProgramViewModel" />
+            type="org.dhis2.usescases.main.program.ProgramViewModel" />
 
         <variable
             name="currentPeriod"
-            type="com.dhis2.utils.Period" />
+            type="org.dhis2.utils.Period" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}"
+        android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:layout_height="wrap_content">
+        android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}">
 
         <ImageView
             android:id="@+id/program_image"
             android:layout_width="130dp"
             android:layout_height="100dp"
-            android:padding="8dp"
             android:background="?attr/colorPrimaryLight"
+            android:padding="8dp"
             tools:background="?attr/colorPrimaryLight"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_with_registration"/>
+            tools:src="@drawable/ic_with_registration" />
+
+        <TextView
+            android:id="@+id/count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="@color/text_black_333"
+            android:textSize="18sp"
+            android:text="@{program.count().toString()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/program_image"
+            android:textStyle="bold"
+            tools:text="155" />
 
         <TextView
             android:id="@+id/events_number"
@@ -44,13 +61,13 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="?colorPrimary"
+            android:textColor="@color/text_black_333"
             android:textSize="18sp"
-            android:layout_marginStart="5dp"
-            app:backgroundTint="?attr/colorPrimary"
+            android:fontFamily="@font/rubik_light"
+            android:text="@{program.typeName()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/program_image"
-            tools:text="155 Events" />
+            app:layout_constraintStart_toEndOf="@id/count"
+            tools:text="Events" />
 
         <TextView
             android:id="@+id/program_name"
@@ -62,7 +79,7 @@
             android:lines="2"
             android:padding="5dp"
             android:text="@{program.title()}"
-            android:textColor="?colorPrimary"
+            android:textColor="@color/text_black_333"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/sync_status"

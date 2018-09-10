@@ -5,7 +5,9 @@
 
     <data>
 
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
+
+        <import type="android.view.View" />
 
         <variable
             name="name"
@@ -25,7 +27,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
     </data>
 
     <LinearLayout
@@ -35,7 +37,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -47,6 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
+                app:layout_constraintStart_toStartOf="parent"
                 android:padding="15dp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -58,12 +61,18 @@
                 android:gravity="start"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
+                app:layout_constraintEnd_toStartOf="@+id/percentage"
+                app:layout_constraintStart_toEndOf="@id/menu"
+                tools:text="TITLE\ntest\n234"
                 android:textSize="20sp" />
 
             <RelativeLayout
+                android:id="@+id/percentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp">
+                android:padding="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions">
 
                 <ProgressBar
                     android:id="@+id/progressGains"
@@ -83,9 +92,38 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:textColor="@color/yellow_fdd"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="100%"/>
             </RelativeLayout>
-        </LinearLayout>
+
+            <ImageView
+                android:id="@+id/moreOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMoreOptions"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_more"
+                tools:ignore="ContentDescription" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/toolbar_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="10dp" />
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/toolbarProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:padding="0dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
+                tools:visibility="visible" />
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v4.widget.DrawerLayout
             android:id="@+id/drawer_layout"
@@ -115,33 +153,36 @@
                             android:orientation="horizontal">
 
                             <ImageView
+                                android:id="@+id/programStageIcon"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
+                                android:background="@drawable/photo_temp"
                                 android:contentDescription='@{name}'
-                                app:srcCompat="@drawable/photo_temp" />
+                                android:padding="7dp"
+                                android:tint="?colorPrimaryDark"
+                                app:srcCompat="@drawable/ic_clinical_f_outline" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:padding="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:padding="5dp">
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text='@{programStage.displayName()}'
-                                    tools:text="Program Stage Name"
                                     android:textColor="?colorPrimary"
-                                    android:textSize="14sp" />
+                                    android:textSize="14sp"
+                                    tools:text="Program Stage Name" />
 
-                                <!--TODO CRIS: ADD HERE PROGRAM STAGE DESCRIPTION WHEN AVAILABLE ON SDK-->
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/fake_program_stage_description"
-                                    android:visibility="gone"
-                                    android:textSize="12sp" />
+                                    android:text="@{programStage.description()}"
+                                    android:textSize="12sp"
+                                    android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
 
                             </LinearLayout>
                         </LinearLayout>
@@ -168,7 +209,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
-                                    android:text='@{event != null ? DateUtils.uiDateFormat().format(event.eventDate()) : ""}'
+                                    android:text="@{eventDate}"
                                     android:textSize="15sp" />
                             </android.support.design.widget.TextInputLayout>
 
@@ -184,7 +225,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
-                                    android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
                                     android:textSize="15sp" />
                             </android.support.design.widget.TextInputLayout>
 
@@ -217,7 +257,6 @@
                                     android:layout_marginStart="4dp"
                                     android:background="@color/black_de0" />
                             </LinearLayout>
-
 
 
                         </LinearLayout>
@@ -346,6 +385,22 @@
                     android:text="@string/create"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/share_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/selector_button_round_7"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:text="@string/share"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
             </RelativeLayout>
 
             <android.support.design.widget.NavigationView
