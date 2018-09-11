@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
@@ -12,7 +13,6 @@ import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
-
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -28,6 +28,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/12/2017.
@@ -72,7 +74,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                                         eventDetailRepository.programStageSection(eventUid),
                                         eventDetailRepository.programStageDataElement(eventUid),
                                         eventDetailRepository.programStage(eventUid),
-                                        eventDetailRepository.orgUnitName(eventUid),
+                                        eventDetailRepository.orgUnit(eventUid),
                                         eventDetailRepository.getCategoryOptionCombos(),
                                         eventDetailRepository.getProgram(eventUid),
                                         EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
@@ -122,23 +124,36 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     }
 
     @Override
-    public void eventStatus(EventModel eventModel, ProgramStageModel stageModel) {
+    public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
+
+        buttonView.requestFocus();
+
         if (stageModel.accessDataWrite()) {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
-            List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
-            boolean mandatoryOk = true;
-            boolean hasError = false;
-            for (Fragment dataEntryFragment : sectionFragments) {
-                mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
-                hasError =((DataEntryFragment) dataEntryFragment).checkErrors();
+
+            if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
+                view.showInfoDialog("Error", formFragment.hasErrorOnComple().content());
+            } else {
+
+                List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
+                boolean mandatoryOk = true;
+                boolean hasError = false;
+                for (Fragment dataEntryFragment : sectionFragments) {
+                    mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
+                    hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
+                }
+                if (mandatoryOk && !hasError) {
+
+                    if (!isEmpty(formFragment.getMessageOnComplete()))
+                        view.showInfoDialog("Warning", formFragment.getMessageOnComplete());
+
+                    dataEntryStore.updateEventStatus(eventModel);
+                    changedEventStatus = true;
+                } else if (!mandatoryOk)
+                    view.showInfoDialog("Unable to complete", view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+                else
+                    view.showInfoDialog("Unable to complete", "Some fields have errors. Please, check them to be able to complete");
             }
-            if (mandatoryOk && !hasError) {
-                dataEntryStore.updateEventStatus(eventModel);
-                changedEventStatus = true;
-            } else if(!mandatoryOk)
-                view.displayMessage(view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
-            else
-                view.showInfoDialog("Unable to complete","Some fields have errors. Please, check them to be able to complete");
         } else
             view.displayMessage(null);
     }
@@ -217,9 +232,17 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                 year,
                 month,
                 day);
-        if(eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE){
+        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
+
+        if (eventDetailModel.orgUnitOpeningDate() != null) {
+            dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
+        }
+
+        if (eventDetailModel.orgUnitClosingDate() != null)
+            dateDialog.getDatePicker().setMaxDate(eventDetailModel.orgUnitClosingDate().getTime());
+
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
         });
         dateDialog.show();
