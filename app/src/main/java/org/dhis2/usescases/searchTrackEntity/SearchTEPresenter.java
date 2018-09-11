@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
@@ -17,10 +18,10 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.data.api.OuMode;
@@ -190,7 +191,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 List<String> filterList = new ArrayList<>();
                                 if (queryData != null) {
                                     for (String key : queryData.keySet()) {
-                                        filterList.add(key + ":LIKE:" + queryData.get(key));
+                                        if (key.equals(Constants.ENROLLMENT_DATE_UID))
+                                            filterList.add("programStartDate=" + queryData.get(key));
+                                        else if(!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                            filterList.add(key + ":LIKE:" + queryData.get(key));
                                     }
                                 }
                                 List<String> orgUnitsUids = new ArrayList<>();

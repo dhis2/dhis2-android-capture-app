@@ -131,9 +131,11 @@
                 android:layout_gravity="end|bottom"
                 android:layout_marginBottom="15dp"
                 android:layout_marginEnd="22.5dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
-                android:onClick="@{()->presenter.eventStatus(event,stage)}"
+                android:onClick="@{view->presenter.eventStatus(view,event,stage)}"
                 android:textColor="@color/white_faf" />
 
             <FrameLayout

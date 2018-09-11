@@ -13,6 +13,7 @@ import org.dhis2.utils.Result;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.rules.models.RuleAction;
+import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
@@ -248,6 +249,8 @@ class FormPresenterImpl implements FormPresenter {
 
     private void applyRuleEffects(Map<String, FormSectionViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
+        view.setErrorOnCompletion(null);
+        view.setWarningOnCompletion(null);
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
 
@@ -256,7 +259,11 @@ class FormPresenterImpl implements FormPresenter {
                 fieldViewModels.remove(hideSection.programStageSection());
             } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
                 RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
+                view.setWarningOnCompletion(warningOnCompletion);
                 view.messageOnComplete(warningOnCompletion.content(), true);
+            }else if(ruleAction instanceof RuleActionErrorOnCompletion){
+                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
+                view.setErrorOnCompletion(errorOnCompletion);
             }
         }
     }

@@ -47,6 +47,9 @@ public interface EventDetailRepository {
     @NonNull
     Observable<String> orgUnitName(String eventUid);
 
+    @NonNull
+    Observable<OrganisationUnitModel> orgUnit(String eventUid);
+
     Observable<List<OrganisationUnitModel>> getOrgUnits();
 
     Observable<Pair<String,List<CategoryOptionComboModel>>> getCategoryOptionCombos();

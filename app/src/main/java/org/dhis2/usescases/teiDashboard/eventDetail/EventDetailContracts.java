@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -56,7 +57,7 @@ public class EventDetailContracts {
 
         void back();
 
-        void eventStatus(EventModel eventModel, ProgramStageModel stageModel);
+        void eventStatus(android.view.View view, EventModel eventModel, ProgramStageModel stageModel);
 
         void editData();
 

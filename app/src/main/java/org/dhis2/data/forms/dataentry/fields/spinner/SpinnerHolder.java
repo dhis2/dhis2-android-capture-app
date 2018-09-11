@@ -123,7 +123,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
     public void onClick(View v) {
         PopupMenu menu = new PopupMenu(itemView.getContext(), v);
         menu.setOnMenuItemClickListener(this);
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label());
+//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
         for (OptionModel optionModel : options)
             menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
         menu.show();
