@@ -34,10 +34,11 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
 
-
     public DateAdapter(Period period) {
         currentPeriod = period;
         Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
+        int year = calendar.get(Calendar.YEAR);
 
         do {
             String date = null;
@@ -74,7 +75,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
                     break;
             }
 
-        } while (calendar.get(Calendar.YEAR) > 2000);
+        } while (calendar.get(Calendar.YEAR) > year - 11); //show last 10 years
 
     }
 

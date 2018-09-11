@@ -2,9 +2,9 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
 
-import org.dhis2.data.tuples.Pair;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
@@ -33,6 +33,10 @@ import io.reactivex.Observable;
 public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     private static final String ORG_UNIT_NAME = "SELECT OrganisationUnit.displayName FROM OrganisationUnit " +
+            "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
+            "WHERE Event.uid = ? " +
+            "LIMIT 1";
+    private static final String ORG_UNIT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
             "JOIN Event ON Event.organisationUnit = OrganisationUnit.uid " +
             "WHERE Event.uid = ? " +
             "LIMIT 1";
@@ -147,6 +151,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     public Observable<String> orgUnitName(String eventUid) {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_NAME, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> cursor.getString(0));
+    }
+
+    @NonNull
+    @Override
+    public Observable<OrganisationUnitModel> orgUnit(String eventUid) {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT, eventUid == null ? "" : eventUid)
+                .mapToOne(OrganisationUnitModel::create);
     }
 
     @Override
