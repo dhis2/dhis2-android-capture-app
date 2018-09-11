@@ -309,7 +309,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:gravity="end"
-                        android:text='@{dashboardModel.getOrgUnit().displayShortName(),default="OrgUnit"}'
+                        android:text='@{dashboardModel.getOrgUnit().displayName(),default="OrgUnit"}'
                         android:textColor="@color/gray_444"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toEndOf="parent"
