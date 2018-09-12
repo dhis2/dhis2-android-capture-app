@@ -42,8 +42,6 @@
         android:textStyle="bold"
         android:textColor="?colorAccent"
         app:backgroundTint="?colorPrimary"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         app:elevation="8dp" />
 
     <!--END OF SCROLLING VIEW-->
