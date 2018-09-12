@@ -23,6 +23,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.jakewharton.rxbinding2.view.RxView;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
@@ -38,11 +41,10 @@ import org.dhis2.utils.CustomViews.CoordinatesView;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.Preconditions;
-import com.google.android.gms.maps.model.LatLng;
-import com.jakewharton.rxbinding2.view.RxView;
-
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
+import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -89,6 +91,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private LinearLayout dateLayout;
     private NestedScrollView nestedScrollView;
     private final int RQ_EVENT = 9876;
+    private RuleActionErrorOnCompletion errorOnCompletion;
+    private RuleActionWarningOnCompletion warningOnCompletion;
 
 
     public FormFragment() {
@@ -546,5 +550,23 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onBackPressed() {
         formPresenter.checkMandatoryFields();
+    }
+
+    public RuleActionErrorOnCompletion hasErrorOnComple() {
+        return errorOnCompletion;
+    }
+
+    public String getMessageOnComplete() {
+        return messageOnComplete;
+    }
+
+    @Override
+    public void setErrorOnCompletion(RuleActionErrorOnCompletion errorOnCompletion) {
+        this.errorOnCompletion = errorOnCompletion;
+    }
+
+    @Override
+    public void setWarningOnCompletion(RuleActionWarningOnCompletion warningOnCompletion) {
+        this.warningOnCompletion = warningOnCompletion;
     }
 }

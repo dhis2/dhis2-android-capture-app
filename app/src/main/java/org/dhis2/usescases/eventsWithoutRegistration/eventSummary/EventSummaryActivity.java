@@ -22,7 +22,6 @@ import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
@@ -186,7 +185,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     public void accessDataWrite(Boolean canWrite) {
         binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
 
-        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
 
@@ -210,13 +209,33 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             sectionView.findViewById(R.id.empty_progress)
                     .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
 
-            for (FieldViewModel fields : updates)
-                if (fields.error() != null) {
-                    sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
-                    sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
-                            showInfoDialog("Error",
-                                    String.format("Field %s has an error. Please check its value and fix it to be able to complete the event",fields.label())));
+            List<String> missingMandatoryFields = new ArrayList<>();
+            List<String> errorFields = new ArrayList<>();
+            for (FieldViewModel fields : updates) {
+                if (fields.error() != null)
+                    errorFields.add(fields.label());
+                if (fields.mandatory() && fields.value() == null)
+                    missingMandatoryFields.add(fields.label());
+            }
+            if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
+                sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
+
+                StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
+                for (String missinField : missingMandatoryFields) {
+                    missingString.append(String.format("\n- %s", missinField));
                 }
+
+                StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
+                for (String errorField : errorFields) {
+                    errorString.append(String.format("\n- %s", errorField));
+                }
+
+                sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
+                        showInfoDialog("Error",
+                                missingString.append("\n").append(errorString.toString()).toString()
+                        )
+                );
+            }
 
         }
 
@@ -261,20 +280,20 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             ArrayList<FancyShowCaseView> steps = new ArrayList<>();
 
 
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_event_summary))
-                        .focusOn(binding.actionButton)
-                        .closeOnTouch(true)
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .build();
-                steps.add(tuto1);
+            FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                    .title(getString(R.string.tuto_event_summary))
+                    .focusOn(binding.actionButton)
+                    .closeOnTouch(true)
+                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .build();
+            steps.add(tuto1);
 
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+            HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
-                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                    prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
-                }
+            if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
+                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
+            }
 
         }, 500);
     }

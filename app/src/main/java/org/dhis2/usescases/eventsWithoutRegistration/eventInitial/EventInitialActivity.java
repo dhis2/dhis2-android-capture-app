@@ -374,14 +374,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
-                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
+//                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) && !!!! Coordinates are not mandatory
                     selectedCatCombo != null && selectedCatOptionCombo != null &&
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
         else
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
-                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) &&
+//                    (!(programStageModel != null && programStageModel.captureCoordinates()) || (isCompleted(selectedLat) && isCompleted(selectedLon))) && !!!!! Coordinates are not mandatory
                     ((!eventCreationType.equals(REFERRAL)) || (eventCreationType.equals(REFERRAL) && tempCreate != null));
     }
 
