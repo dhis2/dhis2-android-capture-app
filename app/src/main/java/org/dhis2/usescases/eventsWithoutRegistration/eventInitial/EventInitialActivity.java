@@ -466,14 +466,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 }
                 if (!fixedOrgUnit) {
                     selectedOrgUnit = ((OrganisationUnitModel) value).uid();
-                    binding.orgUnit.setText(((OrganisationUnitModel) value).displayShortName());
+                    binding.orgUnit.setText(((OrganisationUnitModel) value).displayName());
                 }
                 binding.drawerLayout.closeDrawers();
             }
         });
 
         if (treeView.getSelected() != null && !treeView.getSelected().isEmpty() && !fixedOrgUnit) {
-            binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayShortName());
+            binding.orgUnit.setText(((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).displayName());
             selectedOrgUnit = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).uid();
             selectedOrgUnitOpeningDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).openingDate();
             selectedOrgUnitClosedDate = ((OrganisationUnitModel) treeView.getSelected().get(0).getValue()).closedDate();

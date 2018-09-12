@@ -113,7 +113,7 @@ public class EventRepository implements FormRepository {
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
-            "        DataElement.formName AS formLabel,\n" +
+            "        DataElement.displayFormName AS formLabel,\n" +
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
