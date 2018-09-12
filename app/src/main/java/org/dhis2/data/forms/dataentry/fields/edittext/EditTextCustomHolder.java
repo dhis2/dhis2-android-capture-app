@@ -17,12 +17,11 @@ import android.widget.ImageView;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.forms.dataentry.fields.FieldViewHolder;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Preconditions;
-
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -37,7 +36,7 @@ import static java.lang.String.valueOf;
  * QUADRAM. Created by frodriguez on 18/01/2018..
  */
 
-final class EditTextCustomHolder extends FieldViewHolder {
+final class EditTextCustomHolder extends FormViewHolder {
 
     private final TextInputLayout inputLayout;
     private EditText editText;
@@ -49,46 +48,14 @@ final class EditTextCustomHolder extends FieldViewHolder {
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
-        super(binding.getRoot());
+        super(binding);
 
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
 
         inputLayout = binding.getRoot().findViewById(R.id.input_layout);
-
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
-
-//        model = BehaviorProcessor.create();
-//        model.subscribe(editTextModel -> {
-//
-//                    Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-//                    editText.setEnabled(editTextModel.editable());
-//                    editText.setText(editTextModel.value() == null ?
-//                            null : valueOf(editTextModel.value()));
-//
-//                    setInputType(editTextModel.valueType());
-//
-//                    if (!isEmpty(editTextModel.warning())) {
-//                        inputLayout.setError(editTextModel.warning());
-//                    } else if (!isEmpty(editTextModel.error())) {
-//                        inputLayout.setError(editTextModel.error());
-//                    } else
-//                        inputLayout.setError(null);
-//
-//
-//                    editText.setSelection(editText.getText() == null ?
-//                            0 : editText.getText().length());
-//                    if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-//                        StringBuilder label = new StringBuilder(editTextModel.label());
-//                        if (editTextModel.mandatory())
-//                            label.append("*");
-//                        inputLayout.setHint(label);
-//                    }
-//
-//                }
-//                , t -> Log.d("DHIS_ERROR", t.getMessage()));
-
 
         // show and hide hint
 
@@ -101,52 +68,6 @@ final class EditTextCustomHolder extends FieldViewHolder {
             }
         });
 
-        /*ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
-                .takeUntil(RxView.detaches(parent))
-                .publish();
-
-        editTextObservable
-                .filter(hasFocus -> !hasFocus)
-                .filter(focusLost -> editTextModel != null)
-                .filter(focusLost -> editTextModel.editable())
-                .filter(focusLost -> validate())
-                .map(focusLost -> RowAction.create(editTextModel.uid(), !isEmpty(editText.getText()) ? editText.getText().toString() : null))
-                .subscribe(
-                        processor::onNext,
-                        Timber::d,
-                        () ->
-                        {
-                            if (valueHasChanged() && validate()) {
-                                processor.onNext(RowAction.create(editTextModel.uid(),
-                                        !isEmpty(editText.getText()) ? editText.getText().toString() : null));
-                            }
-                        });*/
-
-
-
-        /*ConnectableObservable<CharSequence> textObservable = RxTextView.textChanges(editText).takeUntil(RxView.detaches(parent))
-                .publish();
-
-        textObservable
-                .debounce(400, TimeUnit.MILLISECONDS)
-                .filter(text -> valueHasChanged())
-                .filter(text -> model.getValue() != null)
-                .filter(text -> model.getValue().editable())
-                .filter(text -> validate())
-                .map(text -> RowAction.create(model.getValue().uid(), text.toString()))
-                .subscribe(
-                        processor::onNext,
-                        Timber::d,
-                        () ->
-                        {
-                            if (valueHasChanged() && validate()) {
-                                processor.onNext(RowAction.create(model.getValue().uid(),
-                                        editText.getText().toString()));
-                            }
-                        });*/
-
-//        editTextObservable.connect();
-//        textObservable.connect();
     }
 
     private void setInputType(ValueType valueType) {
@@ -224,7 +145,6 @@ final class EditTextCustomHolder extends FieldViewHolder {
                 editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
     }
 
-    @Override
     public void update(@NonNull FieldViewModel model) {
 //        model.onNext((EditTextModel) editTextModel);
         this.editTextModel = (EditTextModel) model;
@@ -245,11 +165,18 @@ final class EditTextCustomHolder extends FieldViewHolder {
         editText.setSelection(editText.getText() == null ?
                 0 : editText.getText().length());
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-            StringBuilder label = new StringBuilder(editTextModel.label());
+            label = new StringBuilder(editTextModel.label());
             if (editTextModel.mandatory())
                 label.append("*");
             inputLayout.setHint(label);
+
+            if (label.length() > 16)
+                description.setVisibility(View.VISIBLE);
+            else
+                description.setVisibility(View.GONE);
+
         }
+
 
         setInputType(editTextModel.valueType());
     }

@@ -19,6 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentProgramBinding;
@@ -28,9 +31,6 @@ import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.text.SimpleDateFormat;
@@ -332,6 +332,14 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             for (TreeNode node : treeView.getSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).check();
             }
+        });
+
+        binding.orgUnitUnselectAll.setOnClickListener(view -> {
+            for (TreeNode node : treeView.getSelected()) {
+                ((OrgUnitHolder) node.getViewHolder()).uncheck();
+            }
+            treeView.deselectAll();
+
         });
         treeView = new AndroidTreeView(context, treeNode);
 

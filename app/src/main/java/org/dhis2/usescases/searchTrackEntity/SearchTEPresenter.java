@@ -171,7 +171,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .map(trackedEntityInstanceModels -> {
                                 List<SearchTeiModel> teiModels = new ArrayList<>();
                                 for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels)
-                                    teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) //If fetching for relationship, discard selected TEI
+                                        teiModels.add(new SearchTeiModel(tei, new ArrayList<>()));
                                 return teiModels;
                             })
                             .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
@@ -193,7 +194,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
                                             filterList.add("programStartDate=" + queryData.get(key));
-                                        else if(!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
+                                        else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             filterList.add(key + ":LIKE:" + queryData.get(key));
                                     }
                                 }
@@ -223,13 +224,15 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 TrackedEntityInstanceModelBuilder teiBuilder = new TrackedEntityInstanceModelBuilder();
 
                                 for (TrackedEntityInstance tei : trackedEntityInstances) {
-                                    List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                                    TrackedEntityAttributeValueModelBuilder attrValueBuilder = new TrackedEntityAttributeValueModelBuilder(tei);
-                                    for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                        attributeModels.add(attrValueBuilder.buildModel(attrValue));
+                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) { //If fetching for relationship, discard selected TEI
+                                        List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
+                                        TrackedEntityAttributeValueModelBuilder attrValueBuilder = new TrackedEntityAttributeValueModelBuilder(tei);
+                                        for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
+                                            attributeModels.add(attrValueBuilder.buildModel(attrValue));
+                                        }
+                                        SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
+                                        teiList.add(teiModel);
                                     }
-                                    SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
-                                    teiList.add(teiModel);
                                 }
                                 return teiList;
                             })
@@ -247,11 +250,13 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                                             toUpdate = true;
                                                         }
                                                     }
-                                                    if (!toUpdate) helperList.add(searchTeiModel);
+                                                    if (!toUpdate)
+                                                        helperList.add(searchTeiModel);
                                                 }
 
                                                 for (TrackedEntityInstanceModel tei : trackedEntityInstanceModels) {
-                                                    helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
+                                                    if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI()))
+                                                        helperList.add(new SearchTeiModel(tei, new ArrayList<>()));
                                                 }
 
                                                 return helperList;
@@ -268,6 +273,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     private Pair<List<SearchTeiModel>, String> getMessage(List<SearchTeiModel> teiList) {
+
         String messageId = "";
         if (selectedProgram != null && !selectedProgram.displayFrontPageList()) {
             if (selectedProgram != null && selectedProgram.minAttributesRequiredToSearch() > queryData.size())

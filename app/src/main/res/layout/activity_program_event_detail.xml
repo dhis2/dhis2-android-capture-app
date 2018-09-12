@@ -260,6 +260,12 @@
                         android:id="@+id/org_unit_all"
                         style="@style/TextButton"
                         android:text="@string/select_all"
+                        app:layout_constraintBottom_toTopOf="@id/org_unit_unselect_all"
+                        app:layout_constraintEnd_toStartOf="@string/cancel" />
+                    <Button
+                        android:id="@+id/org_unit_unselect_all"
+                        style="@style/TextButton"
+                        android:text="@string/clear_all"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@string/cancel" />
 
