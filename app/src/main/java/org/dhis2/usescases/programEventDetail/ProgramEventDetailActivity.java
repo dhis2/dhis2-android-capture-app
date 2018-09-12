@@ -330,6 +330,14 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 ((OrgUnitHolder) node.getViewHolder()).check();
             }
         });
+
+        binding.orgUnitUnselectAll.setOnClickListener(view -> {
+            for (TreeNode node : treeView.getSelected()) {
+                ((OrgUnitHolder) node.getViewHolder()).uncheck();
+            }
+            treeView.deselectAll();
+
+        });
         treeView = new AndroidTreeView(getContext(), treeNode);
 
         treeView.setDefaultContainerStyle(R.style.TreeNodeStyle, false);

@@ -110,7 +110,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                     prefs.edit().putString(Constants.SERVER, serverUrl).apply();
                     this.userManager = userManager;
-                    return userManager.logIn(username, password);
+                    return userManager.logIn(username.trim(), password);
                 })
                 .map(user -> {
                     if (user == null)

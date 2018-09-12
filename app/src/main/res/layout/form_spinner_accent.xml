@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
 
         <variable
             name="label"
@@ -38,25 +40,41 @@
             tools:srcCompat="@drawable/sierra_leone"
             tools:visibility="visible" />
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/renderImage"
-            android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent"
-            tools:hint="this is the hint">
+            android:layout_below="@id/renderImage"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_editText"
-                android:layout_width="match_parent"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:textAlignment="textStart"
-                android:textColor="?colorAccent"
-                android:textSize="15sp"
-                tools:text="hello" />
+                android:layout_below="@+id/renderImage"
+                android:layout_weight="1"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputTextAccent"
+                tools:hint="this is the hint">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:textAlignment="textStart"
+                    android:textColor="?colorAccent"
+                    android:textSize="15sp"
+                    tools:text="hello" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent" />
+        </LinearLayout>
     </RelativeLayout>
 </layout>
