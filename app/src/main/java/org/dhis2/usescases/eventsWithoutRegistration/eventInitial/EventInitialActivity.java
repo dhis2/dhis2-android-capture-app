@@ -34,6 +34,7 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationAc
 import org.dhis2.utils.CatComboAdapter2;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
@@ -421,6 +422,18 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (periodType == null)
             binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
+       /* else
+            binding.date.setOnClickListener(v ->
+                    new PeriodDialog()
+                            .setPeriod(periodType)
+                            .setPossitiveListener(selectedDate -> {
+                                binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
+                                binding.date.clearFocus();
+                                if (!fixedOrgUnit)
+                                    binding.orgUnit.setText("");
+                                presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+                            } )
+                            .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));*/ //TODO: RESTORE FOR V1.0.2
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);

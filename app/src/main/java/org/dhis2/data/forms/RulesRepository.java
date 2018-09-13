@@ -98,7 +98,7 @@ public final class RulesRepository {
             "  \"DATAELEMENT_NEWEST_EVENT_PROGRAM\",\n" +
             "  \"DATAELEMENT_CURRENT_EVENT\",\n" +
             "  \"DATAELEMENT_PREVIOUS_EVENT\",\n" +
-            "  \"CALCULATED_VALUE\",\n" +
+//            "  \"CALCULATED_VALUE\",\n" + TODO: RESTORE WHEN SUPPORTED
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 

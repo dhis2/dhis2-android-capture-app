@@ -1,7 +1,6 @@
 package org.dhis2;
 
 import org.dhis2.utils.DateUtils;
-
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Test;
 
@@ -107,6 +106,41 @@ public class ExampleUnitTest {
         Date minDate = DateUtils.getInstance().expDate(dateInRange, expiryDays, periodType);
 
         assertEquals("2018-07-23", DateUtils.uiDateFormat().format(minDate));
+
+    }
+
+    @Test
+    public void getNextPeriod() throws ParseException {
+        String currentDate = "2018-09-13";
+
+        String[] expectedResults = new String[]{
+                "2018-09-14",//Daily
+                "2018-09-17",//Weekly
+                "2018-09-19",//WeeklyWednesday
+                "2018-09-20",//WeeklyThursday
+                "2018-09-22",//WeeklySaturday
+                "2018-09-23",//WeeklySunday
+                "2018-09-24",//BiWeekly
+                "2018-10-01",//Monthly
+                "2018-11-01",//BiMonthly
+                "2019-01-01",//Quarterly
+                "2019-01-01",//SixMonthly
+                "2018-10-01",//SixMonthlyApril
+                "2019-01-01",//Yearly
+                "2019-04-01",//FinancialApril
+                "2019-07-01",//FinancialJuly
+                "2018-10-01"};//FinancialOct
+
+        Date testDate = DateUtils.uiDateFormat().parse(currentDate);
+
+
+        int i = 0;
+        for (PeriodType period : PeriodType.values()) {
+            Date minDate = DateUtils.getInstance().getNextPeriod(period, testDate, 1);
+
+            assertEquals(expectedResults[i], DateUtils.uiDateFormat().format(minDate));
+            i++;
+        }
 
     }
 }
