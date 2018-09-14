@@ -85,7 +85,12 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
         editText.setEnabled(viewModel.editable());
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
-        editText.setText(viewModel.value());
+        if(viewModel.value() != null){
+            for (OptionModel optionModel : options)
+                if(viewModel.value().equals(optionModel.code()))
+                    editText.setText(optionModel.displayName());
+        }
+
 
         if (!isEmpty(viewModel.warning())) {
             inputLayout.setError(viewModel.warning());
@@ -123,7 +128,7 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
     public void onClick(View v) {
         PopupMenu menu = new PopupMenu(itemView.getContext(), v);
         menu.setOnMenuItemClickListener(this);
-        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label());
+//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
         for (OptionModel optionModel : options)
             menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
         menu.show();

@@ -3,12 +3,6 @@ package org.dhis2.usescases.syncManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.service.SyncDataService;
-import org.dhis2.data.service.SyncMetadataService;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.usescases.login.LoginActivity;
-import org.dhis2.utils.Constants;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -17,7 +11,15 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 
+import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.service.SyncDataService;
+import org.dhis2.data.service.SyncMetadataService;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+
+import java.io.File;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -194,9 +196,32 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         try {
             dispatcher.cancelAll();
             d2.wipeDB().call();
+
+            // clearing cache data
+            deleteDir(view.getAbstracContext().getCacheDir());
+
+            view.getAbstracContext().getSharedPreferences().edit().clear().apply();
+
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
             Timber.e(e);
+        }
+    }
+
+    private static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if (dir != null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
         }
     }
 }

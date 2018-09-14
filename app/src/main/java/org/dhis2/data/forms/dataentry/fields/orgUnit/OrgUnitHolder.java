@@ -4,12 +4,13 @@ import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class OrgUnitHolder extends FormViewHolder {
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
+    private final ImageView description;
     private List<OrganisationUnitModel> orgUnits;
     private OrgUnitDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
@@ -40,6 +42,7 @@ public class OrgUnitHolder extends FormViewHolder {
         compositeDisposable = new CompositeDisposable();
         this.editText = binding.getRoot().findViewById(R.id.input_editText);
         this.inputLayout = binding.getRoot().findViewById(R.id.input_layout);
+        this.description = binding.getRoot().findViewById(R.id.descriptionLabel);
         this.orgUnitsObservable = orgUnits;
 
         this.editText.setOnClickListener(view -> {
@@ -97,6 +100,11 @@ public class OrgUnitHolder extends FormViewHolder {
         if (viewModel.mandatory())
             label.append("*");
         this.inputLayout.setHint(label.toString());
+
+        if (label.length() > 16)
+            description.setVisibility(View.VISIBLE);
+        else
+            description.setVisibility(View.GONE);
 
         if (viewModel.warning() != null)
             editText.setError(viewModel.warning());

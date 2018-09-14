@@ -4,9 +4,9 @@ import android.databinding.BaseObservable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,18 +33,18 @@ public class EventDetailModel extends BaseObservable {
     private final String catComboName;
     private EventModel eventModel;
     private List<TrackedEntityDataValueModel> dataValueModelList;
-    private final String orgUnitName;
+    private final OrganisationUnitModel orgUnit;
 
     EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
                      List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage, String orgUnitName, Pair<String, List<CategoryOptionComboModel>> optionComboList, ProgramModel programModel) {
+                     ProgramStageModel programStage, OrganisationUnitModel orgUnit, Pair<String, List<CategoryOptionComboModel>> optionComboList, ProgramModel programModel) {
         this.eventModel = eventModel;
         this.dataValueModelList = dataValueModelList;
         this.dataElemets = programStageDataElementModelList;
         this.stageSections = programStageSectionModelList;
         this.programStage = programStage;
         fieldsElements = new HashMap<>();
-        this.orgUnitName = orgUnitName;
+        this.orgUnit = orgUnit;
         this.catComboName = optionComboList.val0();
         this.optionComboList = optionComboList.val1();
         this.programModel = programModel;
@@ -101,8 +102,16 @@ public class EventDetailModel extends BaseObservable {
         return catComboName;
     }
 
+    public Date orgUnitOpeningDate() {
+        return orgUnit.openingDate();
+    }
+
+    public Date orgUnitClosingDate() {
+        return orgUnit.closedDate();
+    }
+
     public String getOrgUnitName() {
-        return orgUnitName;
+        return orgUnit.displayName();
     }
 
     public List<CategoryOptionComboModel> getOptionComboList() {

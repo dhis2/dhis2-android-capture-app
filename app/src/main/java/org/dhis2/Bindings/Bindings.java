@@ -572,7 +572,7 @@ public class Bindings {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            programModel -> textView.setText(programModel.displayShortName()),
+                            programModel -> textView.setText(programModel.displayName()),
                             Timber::d
                     );
     }
@@ -585,7 +585,7 @@ public class Bindings {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            organisationUnitModel -> textView.setText(organisationUnitModel.displayShortName()),
+                            organisationUnitModel -> textView.setText(organisationUnitModel.displayName()),
                             Timber::d
                     );
     }
@@ -736,7 +736,7 @@ public class Bindings {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dataModel -> view.setHint(dataModel.displayShortName()),
+                            dataModel -> view.setHint(dataModel.displayName()),
                             Timber::d
                     );
     }
@@ -749,7 +749,7 @@ public class Bindings {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            dataModel -> view.setHint(dataModel.displayShortName()),
+                            dataModel -> view.setHint(dataModel.displayName()),
                             Timber::d
                     );
     }

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
         <variable
             name="label"
             type="java.lang.String" />
@@ -15,24 +19,51 @@
         android:padding="5dp"
         tools:background="?attr/colorPrimary">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/button"
+
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@{label}"
-            tools:hint="Date label"
-            android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent">
+            android:layout_below="@id/renderImage"
+            android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/inputEditText"
-                android:layout_width="match_parent"
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:textAlignment="textStart"
-                android:textSize="15sp" />
+                android:layout_weight="1"
+                android:hint="@{label}"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputTextAccent"
+                tools:hint="Date label">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/inputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:textAlignment="textStart"
+                    android:textSize="15sp" />
 
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent" />
+        </LinearLayout>
     </RelativeLayout>
 </layout>

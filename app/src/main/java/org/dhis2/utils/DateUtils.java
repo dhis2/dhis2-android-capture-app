@@ -55,9 +55,10 @@ public class DateUtils {
     }
 
 
-    private Date getFirstDayOfCurrentWeek() {
+    private Date getFirstDayOfCurrentWeek(Calendar calendar) {
 
-        Calendar calendar = getCalendar();
+        if (calendar == null)
+            calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
         return calendar.getTime();
@@ -230,11 +231,11 @@ public class DateUtils {
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US);
     }
+
     @NonNull
     public static SimpleDateFormat databaseDateFormatNoMillis() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US);
     }
-
 
 
     /**********************
@@ -503,7 +504,7 @@ public class DateUtils {
                     now.add(Calendar.DAY_OF_YEAR, 1);
                     break;
             }
-
+            now.setTime(getNextPeriod(periodType,now.getTime(),1));
         }
 
         return newDate;
@@ -868,5 +869,114 @@ public class DateUtils {
 
             return calendar.getTime();
         }
+    }
+
+    /**
+     * @param period      Period in which the date will be selected
+     * @param currentDate Current selected date
+     * @param page        1 for next, 0 for now, -1 for previous
+     * @return Next/Previous date calculated from the currentDate and Period
+     */
+    public Date getNextPeriod(PeriodType period, Date currentDate, int page) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        int extra;
+        switch (period) {
+            case Daily:
+                calendar.add(Calendar.DAY_OF_YEAR, page);
+                break;
+            case Weekly:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case WeeklyWednesday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                break;
+            case WeeklyThursday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                break;
+            case WeeklySaturday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                break;
+            case WeeklySunday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            case BiWeekly:
+                extra = calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.WEEK_OF_YEAR, page * extra);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case Monthly:
+                calendar.add(Calendar.MONTH, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case BiMonthly:
+                extra = (calendar.get(Calendar.MONTH) + 1) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case Quarterly:
+                extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthly:
+                extra = 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthlyApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else if (calendar.get(Calendar.MONTH) >= Calendar.APRIL && calendar.get(Calendar.MONTH) < Calendar.OCTOBER)
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.MONTH, page * 6);
+                break;
+            case Yearly:
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_YEAR, 1);
+                break;
+            case FinancialApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialJuly:
+                if (calendar.get(Calendar.MONTH) < Calendar.JULY) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialOct:
+                if (calendar.get(Calendar.MONTH) < Calendar.OCTOBER) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            default:
+                break;
+        }
+        return calendar.getTime();
     }
 }

@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:layoutDirection="rtl"
-            android:text="@{attribute.displayShortName,default=text}"
+            android:text="@{attribute.displayName,default=text}"
             android:textAlignment="textStart"
             android:textColor="@color/white_faf"
             android:textSize="16sp" />

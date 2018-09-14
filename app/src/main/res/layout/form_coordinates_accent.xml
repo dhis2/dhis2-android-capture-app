@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
 
         <variable
             name="label"
@@ -11,89 +12,115 @@
 
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_margin="5dp"
+        android:padding="5dp"
         android:baselineAligned="false"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:background="@color/colorPrimary">
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="0dp"
+        <ImageView
+            android:id="@+id/renderImage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@{label}"
-            android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent">
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            tools:srcCompat="@drawable/sierra_leone"
+            tools:visibility="visible" />
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/latlong"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textSize="15sp" />
-
-        </android.support.design.widget.TextInputLayout>
-
-
-       <!-- <android.support.design.widget.TextInputLayout
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/latitude"
-            android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent">
+            android:layout_below="@id/renderImage">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/lat"
-                android:layout_width="match_parent"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textSize="15sp" />
+                android:layout_weight="1"
+                android:hint="@{label}"
+                android:textColorHint="@drawable/edit_text_hint_accent"
+                android:theme="@style/loginInputTextAccent">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/latlong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:textSize="15sp" />
 
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/longitude"
-            android:textColorHint="@drawable/edit_text_hint_accent"
-            android:theme="@style/loginInputTextAccent">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/lon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textSize="15sp" />
-
-        </android.support.design.widget.TextInputLayout>-->
+            </android.support.design.widget.TextInputLayout>
 
 
-        <ImageButton
-            android:id="@+id/location1"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/selector_gray_button_round_7"
-            android:padding="6dp"
-            app:backgroundTint="@color/white"
-            app:srcCompat="@drawable/ic_my_location" />
+            <!-- <android.support.design.widget.TextInputLayout
+                 android:layout_width="0dp"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:hint="@string/latitude"
+                 android:textColorHint="@drawable/edit_text_hint_accent"
+                 android:theme="@style/loginInputTextAccent">
 
-        <ImageButton
-            android:id="@+id/location2"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/selector_gray_button_round_7"
-            android:padding="6dp"
-            app:backgroundTint="@color/white"
-            app:srcCompat="@drawable/ic_map" />
-    </LinearLayout>
+                 <android.support.design.widget.TextInputEditText
+                     android:id="@+id/lat"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:inputType="numberDecimal"
+                     android:textSize="15sp" />
+
+             </android.support.design.widget.TextInputLayout>
+
+
+             <android.support.design.widget.TextInputLayout
+                 android:layout_width="0dp"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:hint="@string/longitude"
+                 android:textColorHint="@drawable/edit_text_hint_accent"
+                 android:theme="@style/loginInputTextAccent">
+
+                 <android.support.design.widget.TextInputEditText
+                     android:id="@+id/lon"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:inputType="numberDecimal"
+                     android:textSize="15sp" />
+
+             </android.support.design.widget.TextInputLayout>-->
+
+
+            <ImageButton
+                android:id="@+id/location1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/selector_gray_button_round_7"
+                android:padding="6dp"
+                app:backgroundTint="@color/white"
+                app:srcCompat="@drawable/ic_my_location" />
+
+            <ImageButton
+                android:id="@+id/location2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/selector_gray_button_round_7"
+                android:padding="6dp"
+                app:backgroundTint="@color/white"
+                app:srcCompat="@drawable/ic_map" />
+
+
+            <ImageView
+                android:id="@+id/descriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                app:srcCompat="@drawable/ic_info_outline"
+                app:tint="?colorAccent" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </layout>

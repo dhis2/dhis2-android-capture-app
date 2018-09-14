@@ -15,7 +15,6 @@ import android.view.Window;
 import org.dhis2.R;
 import org.dhis2.databinding.DialogPeriodBinding;
 import org.dhis2.utils.DateUtils;
-
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Calendar;
@@ -27,7 +26,7 @@ import java.util.Date;
 
 public class PeriodDialog extends DialogFragment {
     DialogPeriodBinding binding;
-    private View.OnClickListener possitiveListener;
+    private OnDateSet possitiveListener;
     private View.OnClickListener negativeListener;
     private String title;
 
@@ -48,7 +47,7 @@ public class PeriodDialog extends DialogFragment {
         return this;
     }
 
-    public PeriodDialog setPossitiveListener(View.OnClickListener listener) {
+    public PeriodDialog setPossitiveListener(OnDateSet listener) {
         this.possitiveListener = listener;
         return this;
     }
@@ -86,10 +85,11 @@ public class PeriodDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_period, container, false);
 
         binding.title.setText(title);
-        binding.acceptButton.setOnClickListener(possitiveListener);
-        binding.clearButton.setOnClickListener(negativeListener);
+        binding.acceptButton.setOnClickListener(view -> possitiveListener.onDateSet(currentDate));
+        binding.clearButton.setOnClickListener(view -> dismiss());
 
         binding.periodSubtitle.setText(period.name());
+        currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
         binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
 
         binding.periodBefore.setOnClickListener(view -> previousPeriod());
@@ -99,10 +99,16 @@ public class PeriodDialog extends DialogFragment {
     }
 
     public void nextPeriod() {
-
+        currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
+        binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
     }
 
     public void previousPeriod() {
+        currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
+        binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
+    }
 
+    public interface OnDateSet {
+        void onDateSet(Date selectedDate);
     }
 }

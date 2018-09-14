@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.crashlytics.android.Crashlytics;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.Row;
@@ -28,7 +29,7 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -102,10 +103,9 @@ public class FormAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FieldViewModel viewModel;
-
         if (position < programData) {
             viewModel = DateTimeViewModel.create(
-                    String.valueOf(programModel.id() + position),
+                    position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
                     holder.getAdapterPosition() == 0 ?
                             programModel.enrollmentDateLabel() != null && programModel.enrollmentDateLabel().isEmpty() ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
                             programModel.incidentDateLabel() != null && programModel.incidentDateLabel().isEmpty() ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
@@ -117,7 +117,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
-            String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
+            //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
+            String label = attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
                     viewModel = EditTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated());
@@ -130,7 +131,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), queryData.get(attr.uid()), null, true);
+                    viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet(), queryData.get(attr.uid()), null, true);
                     break;
                 case COORDINATES:
                     viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true);
