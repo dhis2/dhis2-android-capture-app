@@ -33,6 +33,7 @@ public class PeriodDialog extends DialogFragment {
     private Context context;
     private Date currentDate;
     private PeriodType period;
+    private Date minDate;
 
 
     public PeriodDialog() {
@@ -85,11 +86,24 @@ public class PeriodDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_period, container, false);
 
         binding.title.setText(title);
-        binding.acceptButton.setOnClickListener(view -> possitiveListener.onDateSet(currentDate));
+        binding.acceptButton.setOnClickListener(view -> {
+            if (minDate != null && minDate.equals(currentDate))
+                binding.periodBefore.setEnabled(false);
+            else
+                binding.periodBefore.setEnabled(true);
+
+            possitiveListener.onDateSet(currentDate);
+        });
         binding.clearButton.setOnClickListener(view -> dismiss());
 
         binding.periodSubtitle.setText(period.name());
-        currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
+        if (minDate == null || currentDate.after(minDate))
+            currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
+        else if(minDate != null && currentDate.before(minDate))
+            currentDate = DateUtils.getInstance().getNextPeriod(period,minDate,0);
+        else
+            currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
+
         binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
 
         binding.periodBefore.setOnClickListener(view -> previousPeriod());
@@ -106,6 +120,11 @@ public class PeriodDialog extends DialogFragment {
     public void previousPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
         binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
+    }
+
+    public PeriodDialog setMinDate(Date minDate) {
+        this.minDate = minDate;
+        return this;
     }
 
     public interface OnDateSet {
