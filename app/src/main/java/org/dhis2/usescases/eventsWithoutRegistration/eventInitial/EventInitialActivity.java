@@ -422,7 +422,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         if (periodType == null)
             binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
-       /* else
+        else
             binding.date.setOnClickListener(v ->
                     new PeriodDialog()
                             .setPeriod(periodType)
@@ -433,7 +433,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                     binding.orgUnit.setText("");
                                 presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
                             } )
-                            .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));*/ //TODO: RESTORE FOR V1.0.2
+                            .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
