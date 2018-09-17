@@ -119,7 +119,7 @@ public class EventDetailModel extends BaseObservable {
     }
 
     public boolean hasExpired() {
-        return eventModel.completedDate() != null && DateUtils.getInstance().hasExpired(eventModel.completedDate(), programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType());
+        return eventModel.completedDate() != null && DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType());
     }
 
     public String getEventCatComboOptionName() {

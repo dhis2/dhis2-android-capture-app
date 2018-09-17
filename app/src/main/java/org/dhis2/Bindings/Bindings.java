@@ -429,7 +429,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                                             } else {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
@@ -478,7 +478,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_open));
@@ -494,7 +494,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -619,8 +619,21 @@ public class Bindings {
     public static void setEventWithoutRegistrationStatusText(TextView textView, EventModel eventModel) {
         switch (eventModel.status()) {
             case ACTIVE:
-                textView.setText(textView.getContext().getString(R.string.event_open));
-                textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
+                metadataRepository.getExpiryDateFromEvent(eventModel.uid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                program -> {
+                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        textView.setText(textView.getContext().getString(R.string.event_editing_expired));
+                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
+                                    } else {
+                                        textView.setText(textView.getContext().getString(R.string.event_open));
+                                        textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.yellow_fdd));
+                                    }
+                                },
+                                Timber::d
+                        );
                 break;
             case COMPLETED:
                 metadataRepository.getExpiryDateFromEvent(eventModel.uid())
@@ -628,7 +641,7 @@ public class Bindings {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
                                         textView.setText(textView.getContext().getString(R.string.event_editing_expired));
                                         textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                                     } else {
@@ -651,7 +664,20 @@ public class Bindings {
     public static void setEventWithoutRegistrationStatusIcon(ImageView imageView, EventModel eventModel) {
         switch (eventModel.status()) {
             case ACTIVE:
-                imageView.setImageResource(R.drawable.ic_edit_yellow);
+                if (metadataRepository != null)
+                    metadataRepository.getExpiryDateFromEvent(eventModel.uid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    program -> {
+                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                            imageView.setImageResource(R.drawable.ic_eye_red);
+                                        } else {
+                                            imageView.setImageResource(R.drawable.ic_edit_yellow);
+                                        }
+                                    },
+                                    Timber::d
+                            );
                 break;
             case COMPLETED:
                 if (metadataRepository != null)
@@ -660,7 +686,7 @@ public class Bindings {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel.completedDate(), program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
                                             imageView.setImageResource(R.drawable.ic_eye_red);
                                         } else {
                                             imageView.setImageResource(R.drawable.ic_eye_grey);
