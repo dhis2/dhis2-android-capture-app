@@ -9,15 +9,15 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.main.program.ProgramContract.Presenter" />
+            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
 
         <variable
             name="program"
-            type="com.dhis2.usescases.main.program.ProgramViewModel" />
+            type="org.dhis2.usescases.main.program.ProgramViewModel" />
 
         <variable
             name="currentPeriod"
-            type="com.dhis2.utils.Period" />
+            type="org.dhis2.utils.Period" />
     </data>
 
     <android.support.constraint.ConstraintLayout

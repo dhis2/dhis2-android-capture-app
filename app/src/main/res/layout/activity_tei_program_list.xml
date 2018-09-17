@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListContract.Presenter" />
     </data>
 
     <LinearLayout

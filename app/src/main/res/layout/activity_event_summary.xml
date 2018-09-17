@@ -4,13 +4,13 @@
 
     <data>
 
-        <import type="com.dhis2.R" />
+        <import type="org.dhis2.R" />
         <variable
             name="name"
             type="java.lang.String"/>
         <variable
             name="presenter"
-            type="com.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryContract.Presenter" />
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryContract.Presenter" />
     </data>
 
     <LinearLayout

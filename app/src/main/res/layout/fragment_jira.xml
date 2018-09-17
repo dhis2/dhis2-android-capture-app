@@ -6,7 +6,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.jira.JiraPresenter" />
+            type="org.dhis2.usescases.jira.JiraPresenter" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

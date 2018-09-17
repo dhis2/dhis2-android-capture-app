@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
         <variable
             name="trackEntity"
@@ -15,7 +15,7 @@
 
         <variable
             name="dashboardModel"
-            type="com.dhis2.usescases.teiDashboard.DashboardProgramModel" />
+            type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout

@@ -13,7 +13,7 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.qrCodes.QrContracts.Presenter"/>
+            type="org.dhis2.usescases.qrCodes.QrContracts.Presenter"/>
     </data>
 
     <LinearLayout

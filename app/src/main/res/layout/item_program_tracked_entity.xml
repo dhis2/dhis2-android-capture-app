@@ -8,7 +8,7 @@
 
         <import type="java.lang.String" />
 
-        <import type="com.dhis2.utils.DateUtils" />
+        <import type="org.dhis2.utils.DateUtils" />
 
         <variable
             name="tei"

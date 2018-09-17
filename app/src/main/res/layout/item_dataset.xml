@@ -11,11 +11,11 @@
 
         <variable
             name="presenter"
-            type="com.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
 
         <variable
             name="dataset"
-            type="com.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
