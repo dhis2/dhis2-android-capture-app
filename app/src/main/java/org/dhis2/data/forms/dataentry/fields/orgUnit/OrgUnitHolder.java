@@ -46,6 +46,7 @@ public class OrgUnitHolder extends FormViewHolder {
         this.orgUnitsObservable = orgUnits;
 
         this.editText.setOnClickListener(view -> {
+            editText.setEnabled(false);
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(model.label())
                     .setMultiSelection(false)
@@ -54,8 +55,12 @@ public class OrgUnitHolder extends FormViewHolder {
                         processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit()));
                         this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
+                        editText.setEnabled(true);
                     })
-                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+                    .setNegativeListener(data-> {
+                        orgUnitDialog.dismiss();
+                        editText.setEnabled(true);
+                    });
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(fm, model.label());
         });

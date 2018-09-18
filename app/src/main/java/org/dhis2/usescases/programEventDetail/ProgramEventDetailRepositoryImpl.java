@@ -1,20 +1,21 @@
 package org.dhis2.usescases.programEventDetail;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,13 +28,6 @@ import io.reactivex.Observable;
  */
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
-
-    private final String EVENT_DATA_VALUES = "SELECT TrackedEntityDataValue.* FROM TrackedEntityDataValue WHERE TrackedEntityDataValue.event = ?\n" +
-            "AND TrackedEntityDataValue.dataElement IN\n" +
-            "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
-            "WHERE ProgramStageDataElement.displayInReports = 1\n" +
-            "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
-            ")";
 
     private final String EVENT_DATA_VALUES_NEW = "SELECT TrackedEntityDataValue.value, DataElement.optionSet FROM TrackedEntityDataValue " +
             "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
@@ -61,7 +55,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         programUid == null ? "" : programUid,
                         fromDate == null ? "" : fromDate,
                         toDate == null ? "" : toDate))
-                .mapToList(EventModel::create);
+                .mapToList(cursor -> {
+                    EventModel eventModel = EventModel.create(cursor);
+
+                    Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
+                    if (program != null && program.moveToFirst()) {
+                        ProgramModel programModel = ProgramModel.create(program);
+                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                            ContentValues contentValues = eventModel.toContentValues();
+                            contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
+                            briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                        }
+                        program.close();
+                    }
+                    return eventModel;
+                });
     }
 
     @NonNull
@@ -98,7 +106,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid == null ? "" : programUid))
-                    .mapToList(EventModel::create);
+                    .mapToList(cursor -> {
+                        EventModel eventModel = EventModel.create(cursor);
+
+                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
+                        if (program != null && program.moveToFirst()) {
+                            ProgramModel programModel = ProgramModel.create(program);
+                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                                ContentValues contentValues = eventModel.toContentValues();
+                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
+                                briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                            }
+                            program.close();
+                        }
+                        return eventModel;
+                    });
         }
     }
 
@@ -120,7 +142,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 fromDate == null ? "" : fromDate,
                 toDate == null ? "" : toDate,
                 id))
-                .mapToList(EventModel::create);
+                .mapToList(cursor -> {
+                    EventModel eventModel = EventModel.create(cursor);
+
+                    Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
+                    if (program != null && program.moveToFirst()) {
+                        ProgramModel programModel = ProgramModel.create(program);
+                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                            ContentValues contentValues = eventModel.toContentValues();
+                            contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
+                            briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                        }
+                        program.close();
+                    }
+                    return eventModel;
+                });
     }
 
     @NonNull
@@ -161,7 +197,21 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO,
                     programUid == null ? "" : programUid,
                     id))
-                    .mapToList(EventModel::create);
+                    .mapToList(cursor -> {
+                        EventModel eventModel = EventModel.create(cursor);
+
+                        Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
+                        if (program != null && program.moveToFirst()) {
+                            ProgramModel programModel = ProgramModel.create(program);
+                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                                ContentValues contentValues = eventModel.toContentValues();
+                                contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
+                                briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                            }
+                            program.close();
+                        }
+                        return eventModel;
+                    });
         }
     }
 
@@ -184,14 +234,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 .mapToList(CategoryOptionComboModel::create);
     }
 
-    @NonNull
     @Override
-    public Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel) {
-        String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        return briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, EVENT_DATA_VALUES, id)
-                .mapToList(TrackedEntityDataValueModel::create);
-    }
-
     public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
         List<String> values = new ArrayList<>();
         String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();

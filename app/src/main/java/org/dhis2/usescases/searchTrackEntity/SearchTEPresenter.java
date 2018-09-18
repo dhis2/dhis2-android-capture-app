@@ -321,7 +321,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             }
         }
 
-        Crashlytics.logException(throwable);
+//        Crashlytics.logException(throwable);
     }
 
     private void getTrackedEntityAttributes() {

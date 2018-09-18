@@ -57,8 +57,6 @@ public class ProgramEventDetailContract {
 
         void onOrgUnitButtonClick();
 
-        ProgramModel getCurrentProgram();
-
         void addEvent();
 
         void onBackClick();
@@ -70,8 +68,6 @@ public class ProgramEventDetailContract {
         void clearCatComboFilters(String orgUnitQuery);
 
         void onEventClick(String eventId, String orgUnit);
-
-        Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
 
         Observable<List<String>> getEventDataValueNew(EventModel event);
 
@@ -90,9 +86,6 @@ public class ProgramEventDetailContract {
         void getOrgUnits(Date date);
 
         void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
-
-        Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event);
-
 
         Observable<List<String>> getEventDataValueNew(EventModel event);
 

@@ -99,11 +99,6 @@ public class ProgramEventDetailInteractor implements ProgramEventDetailContract.
     }
 
     @Override
-    public Observable<List<TrackedEntityDataValueModel>> getEventDataValue(EventModel event) {
-        return programEventDetailRepository.eventDataValues(event);
-    }
-
-    @Override
     public Observable<List<String>> getEventDataValueNew(EventModel event) {
         return programEventDetailRepository.eventDataValuesNew(event);
     }

@@ -229,7 +229,7 @@
                                 android:id="@+id/date_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@{programStage.executionDateLabel()}"
+                                android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"
                                 android:textColorHint="@color/colorPrimary">
 
                                 <android.support.design.widget.TextInputEditText

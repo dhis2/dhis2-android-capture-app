@@ -33,9 +33,6 @@ public interface ProgramEventDetailRepository {
     @NonNull
     Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
 
-    @NonNull
-    Observable<List<TrackedEntityDataValueModel>> eventDataValues(EventModel eventModel);
-
     Observable<List<String>> eventDataValuesNew(EventModel eventModel);
 
     Observable<Boolean> writePermission(String programId);

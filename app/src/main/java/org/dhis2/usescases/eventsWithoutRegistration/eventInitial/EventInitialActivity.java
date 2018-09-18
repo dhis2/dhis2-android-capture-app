@@ -451,6 +451,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 binding.location1.setEnabled(false);
                 binding.location2.setEnabled(false);
                 binding.temp.setEnabled(false);
+                binding.actionButton.setVisibility(View.GONE);
             }
         }
     }
@@ -658,11 +659,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             }
             // ONLY PAST DATES AND TODAY
-            else if (eventCreationType.equals(ADDNEW)) {
+            else /*if (eventCreationType.equals(ADDNEW)) */{
                 //If expiryPeriodType is not null set a minumn date
                 if (program.expiryPeriodType() != null) {
                     Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-                    datePickerDialog.getDatePicker().setMinDate(minDate.getTime() - 1000);
+                    datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
                 }
                 datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
             }

@@ -102,7 +102,7 @@ public class PeriodDialog extends DialogFragment {
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
@@ -122,12 +122,12 @@ public class PeriodDialog extends DialogFragment {
 
     public void nextPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
-        binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
     }
 
     public void previousPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
-        binding.selectedPeriod.setText(DateUtils.uiDateFormat().format(currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
     }
 
     private void checkConstraintDates() {
