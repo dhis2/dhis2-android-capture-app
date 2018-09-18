@@ -256,11 +256,15 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date completedDate, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
-        if (completedDate == null)
-            return false;
+    public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
-        expiredDate.setTime(completedDate);
+
+        if (event.completedDate() != null)
+            expiredDate.setTime(event.completedDate());
+        else {
+            expiredDate.setTime(event.eventDate());
+            expiredDate.set(Calendar.HOUR_OF_DAY, 24);
+        }
 
         if (expiryPeriodType == null) {
             if (completeEventExpiryDays > 0)

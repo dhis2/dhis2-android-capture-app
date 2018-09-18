@@ -440,6 +440,19 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.location1.setOnClickListener(v -> presenter.onLocationClick());
             binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
         }
+
+        if(eventModel != null){
+            if(DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())){
+                binding.date.setEnabled(false);
+                binding.catCombo.setEnabled(false);
+                binding.lat.setEnabled(false);
+                binding.lon.setEnabled(false);
+                binding.orgUnit.setEnabled(false);
+                binding.location1.setEnabled(false);
+                binding.location2.setEnabled(false);
+                binding.temp.setEnabled(false);
+            }
+        }
     }
 
     @Override
