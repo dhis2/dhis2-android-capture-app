@@ -504,7 +504,7 @@ public class DateUtils {
                     now.add(Calendar.DAY_OF_YEAR, 1);
                     break;
             }
-            now.setTime(getNextPeriod(periodType,now.getTime(),1));
+            now.setTime(getNextPeriod(periodType, now.getTime(), 1));
         }
 
         return newDate;
@@ -978,5 +978,66 @@ public class DateUtils {
                 break;
         }
         return calendar.getTime();
+    }
+
+    //TODO: All periods should have its own ui format.
+    public SimpleDateFormat getPeriodUIFormat(PeriodType periodType, Date date) {
+        SimpleDateFormat sdf = null;
+
+        switch (periodType) {
+            case Daily:
+                sdf = uiDateFormat();
+                break;
+            case Weekly:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case WeeklyWednesday:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case WeeklyThursday:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case WeeklySaturday:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case WeeklySunday:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case BiWeekly:
+                sdf = new SimpleDateFormat("w yyyy", Locale.US);
+                break;
+            case Monthly:
+                sdf = new SimpleDateFormat("MMM yyyy", Locale.US);
+                break;
+            case BiMonthly:
+                sdf = new SimpleDateFormat("MMM yyyy", Locale.US);
+                break;
+            case Quarterly:
+                sdf = new SimpleDateFormat("MMM yyyy", Locale.US);
+                break;
+            case SixMonthly:
+
+                break;
+            case SixMonthlyApril:
+
+                break;
+            case Yearly:
+
+                break;
+            case FinancialApril:
+
+                break;
+            case FinancialJuly:
+
+                break;
+            case FinancialOct:
+
+                break;
+            default:
+                sdf = uiDateFormat();
+                break;
+        }
+
+        return sdf;
     }
 }

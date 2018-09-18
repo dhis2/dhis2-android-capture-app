@@ -45,8 +45,7 @@
                 android:gravity="start|center"
                 android:text='@{label}'
                 android:textAllCaps="false"
-                android:textColor="?attr/colorPrimary"
-                android:textColorHint="?attr/colorPrimary"
+                android:textColor="@color/text_black_808"
                 android:textSize="16sp"
                 tools:text="WHOMCH Smocking cessation counselling provided fdsfsdfsdfsdfsdfsdfsdfsdfsdfsdfdfsfsdfsdf" />
 
@@ -68,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:checked="false"
                         android:text="@string/yes"
-                        android:textColor="?attr/colorPrimary"
+                        android:textColor="@color/text_black_333"
                         app:buttonTint="?attr/colorPrimary" />
 
                     <RadioButton
@@ -77,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:checked="false"
                         android:text="@string/no"
-                        android:textColor="?attr/colorPrimary"
+                        android:textColor="@color/text_black_333"
                         app:buttonTint="?attr/colorPrimary" />
 
                     <RadioButton
@@ -86,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:checked="false"
                         android:text="@string/no_value"
-                        android:textColor="?attr/colorPrimary"
+                        android:textColor="@color/text_black_333"
                         app:buttonTint="?attr/colorPrimary" />
 
                 </RadioGroup>

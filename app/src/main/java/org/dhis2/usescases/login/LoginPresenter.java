@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+
 import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
@@ -16,8 +18,6 @@ import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
@@ -124,6 +124,23 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .subscribe(
                         this::handleResponse,
                         this::handleError));
+    }
+
+    @Override
+    public void onTestingEnvironmentClick(int dhisVersion) {
+        switch (dhisVersion) {
+            case 29:
+                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-previous1");
+                break;
+            case 30:
+                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
+                break;
+        }
+
+        view.getBinding().userName.getEditText().setText("android");
+        view.getBinding().userPass.getEditText().setText("Android123");
+
+        onButtonClick();
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {

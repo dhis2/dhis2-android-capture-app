@@ -152,10 +152,10 @@ dependencies {
     }*/
     implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-//        exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-//    implementation"org.hisp.dhis.rules:rule-engine:2.30-SNAPSHOT"
+    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
 
     //TreeView
     implementation 'com.github.bmelnychuk:atv:1.2.9'

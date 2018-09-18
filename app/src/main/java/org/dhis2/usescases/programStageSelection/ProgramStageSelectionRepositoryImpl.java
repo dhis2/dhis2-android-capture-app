@@ -22,6 +22,7 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "WHERE Enrollment.uid = ?";
 
     private final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
-            "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ?)";
+            "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ?) ORDER BY ProgramStage.sortOrder ASC";
 
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +
@@ -117,6 +118,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         .ruleVariables(variables)
                                         .build().toEngineBuilder()
                                         .events(ruleEvents)
+                                        .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                                         .build())
                         .cacheWithInitialCapacity(1);
     }
@@ -143,7 +145,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
 
                     return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, dataValues);
+                            status, eventDate, dueDate,orgUnit, dataValues,programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -178,7 +180,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                     String programName = cursor.getString(5);
 
                                     return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, attributeValues);
+                                            incidentDate, enrollmentDate, status, orgUnit, attributeValues,programName);
                                 }).toFlowable(BackpressureStrategy.LATEST)
                 );
     }

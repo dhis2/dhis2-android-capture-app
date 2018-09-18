@@ -19,13 +19,13 @@ import android.widget.ArrayAdapter;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
+
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-
 import org.hisp.dhis.android.core.common.D2ErrorCode;
 
 import java.util.List;
@@ -72,6 +72,19 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
+
+        binding.testingEnvironment.login229.setOnClickListener(
+                view -> {
+                    presenter.onTestingEnvironmentClick(29);
+                }
+        );
+
+        binding.testingEnvironment.login230.setOnClickListener(
+                view -> {
+                    presenter.onTestingEnvironmentClick(30);
+                }
+        );
+
         setAutocompleteAdapters();
     }
 

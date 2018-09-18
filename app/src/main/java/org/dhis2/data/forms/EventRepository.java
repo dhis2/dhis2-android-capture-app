@@ -26,10 +26,12 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -164,10 +166,13 @@ public class EventRepository implements FormRepository {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
                             builder.events(events);
                             if (!isEmpty(enrollment.enrollment()))
                                 builder.enrollment(enrollment);
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             return builder.build();
                         }))
                 .cacheWithInitialCapacity(1);
