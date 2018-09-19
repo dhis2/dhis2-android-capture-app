@@ -85,7 +85,7 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
 
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit,dataValues,programStage);
+                            status, eventDate, dueDate,dataValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

@@ -258,7 +258,7 @@ public final class RulesRepository {
             }
 
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(actions), ""));//TODO: SHOULD ADD NAME?
+                    rawRule.val3(), new ArrayList<>(actions)));
         }
 
         return rules;
@@ -282,7 +282,7 @@ public final class RulesRepository {
                 actions = new ArrayList<>();
             }*/
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(pairActions), "")); //TODO: SHOULD ADD NAME?
+                    rawRule.val3(), new ArrayList<>(pairActions)));
         }
 
         return rules;
@@ -467,7 +467,7 @@ public final class RulesRepository {
                                             }
 
                                             return RuleEvent.create(eventUid, cursor.getString(1),
-                                                    status, eventDate, dueDate, orgUnit, dataValues, programStage);
+                                                    status, eventDate, dueDate, dataValues);
                                         }))).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -486,8 +486,7 @@ public final class RulesRepository {
                                                 Calendar.getInstance().getTime(),
                                                 Calendar.getInstance().getTime(),
                                                 RuleEnrollment.Status.CANCELLED,
-                                                eventModel.organisationUnit(),
-                                                new ArrayList<>(), ""));
+                                                new ArrayList<>()));
                         }
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -514,7 +513,7 @@ public final class RulesRepository {
                     String programName = cursor.getString(5);
 
                     return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, orgUnit, attributeValues, programName);
+                            incidentDate, enrollmentDate, status, attributeValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

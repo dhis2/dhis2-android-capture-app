@@ -130,10 +130,6 @@ dependencies {
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
     //Support libraries
-    /*  implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:support-annotations:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"*/
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.android.support:support-annotations:27.1.1"
     implementation "com.android.support:cardview-v7:27.1.1"
@@ -147,15 +143,15 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
     // RuleEngine module of the DHIS 2 Android SDK
-    /*implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
+    implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-    }*/
+    }
     implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-        exclude group: "org.hisp.dhis", module: "core-rules"
+//        exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
 
     //TreeView
     implementation 'com.github.bmelnychuk:atv:1.2.9'

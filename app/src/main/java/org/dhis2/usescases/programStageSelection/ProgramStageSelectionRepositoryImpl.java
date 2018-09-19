@@ -22,7 +22,6 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
-import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,7 +117,6 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                         .ruleVariables(variables)
                                         .build().toEngineBuilder()
                                         .events(ruleEvents)
-                                        .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
                                         .build())
                         .cacheWithInitialCapacity(1);
     }
@@ -145,7 +143,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
 
                     return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate,orgUnit, dataValues,programStage);
+                            status, eventDate, dueDate, dataValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -180,7 +178,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                     String programName = cursor.getString(5);
 
                                     return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, orgUnit, attributeValues,programName);
+                                            incidentDate, enrollmentDate, status, attributeValues);
                                 }).toFlowable(BackpressureStrategy.LATEST)
                 );
     }
