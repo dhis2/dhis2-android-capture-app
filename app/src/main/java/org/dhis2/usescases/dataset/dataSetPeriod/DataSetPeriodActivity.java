@@ -1,12 +1,12 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
-import com.dhis2.App;
-import com.dhis2.R;
-import com.dhis2.databinding.ActivityDataSetPeriodBinding;
-import com.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.App;
+import org.dhis2.R;
+import org.dhis2.databinding.ActivityDataSetPeriodBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import org.hisp.dhis.android.core.dataset.DataSet;
 

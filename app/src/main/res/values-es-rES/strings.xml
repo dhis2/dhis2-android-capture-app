@@ -113,7 +113,6 @@
     <string name="deactivate">Desactivar</string>
     <string name="program_not_allow_events">Este programa no admite más eventos</string>
     <string name="events">Eventos</string>
-    <string name="relationships">relaciones</string>
     <string name="done_task">Inicio</string>
     <string name="app_info">Informacion</string>
     <string name="log_out">Cerrar Sesion</string>
@@ -178,7 +177,6 @@
     <string name="qr_attributes">Atributos</string>
     <string name="qr_enrollment">Admisiones</string>
     <string name="qr_events">Eventos</string>
-    <string name="qr_relationships">Relaciones</string>
     <string name="read_more_qr">Lee el siguiente QR para obtener más información.</string>
     <string name="save_qr">Parar de leer y guardar datos</string>
     <string name="qr_no_data">sin datos</string>
@@ -212,15 +210,15 @@
     <string name="enrollmment_date">Fecha de inscripción</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>
     <string name="save">Guardar</string>
-    <string name="downloaded_confirm">Quieres añadir más información de los QRs?</string>
-
+    <string name="report_period">Reporte periodo</string>
+    <string name="cat_option">Cat opción</string>
     <!--ABOUT-->
     <string name="about_app">Versión de la app: %s</string>
     <string name="about_sdk">Versión del SDK: %s</string>
     <string name="about_connected">Conectado a: %s</string>
     <string name="about_user">Usuario actual: %s</string>
     <string name="about_more">Más sobre esta app: lee read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">aquí</a> sobre lo que está y no está soportado</string>
-    <string name="about_git">Esta versión de la app y versiones anteriores, así como el código fuente está disponible en <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver  <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_git">Esta versión de la app y versiones anteriores, así como el código fuente está disponible en <a href="https://github.org.dhis2/dhis2-android-capture-app">GitHub</a>. DHIS 2 Android Capture tiene licencia según los términos del GNU General Public License publicada por la Free Software Foundation - ver  <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">Desarrollada y mantenida por el proyecto <a href="https://www.dhis2.org/">DHIS2</a>, parte de la Universidad de Oslo,  <a href="https://www.mn.uio.no/ifi/english/">departamento de informática</a>.</string>
     <string name="about_contact">Para más información o preguntas sobre la aplicación, por favor escribe a  <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
     <string name="login_error_null_pass">La contraseña está vacía. Completa este campo por favor.</string>

@@ -1,6 +1,6 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
-import com.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.usescases.general.AbstractActivityContracts;
 
 import org.hisp.dhis.android.core.dataset.DataSet;
 
@@ -15,7 +15,7 @@ public class DataSetPeriodContract {
     }
 
     public interface Presenter {
-        void init(DataSetPeriodContract.View view, String dataSetId);
+        void init(View view, String dataSetId);
         void onBackClick();
         void showFilter();
         void addDataSet();

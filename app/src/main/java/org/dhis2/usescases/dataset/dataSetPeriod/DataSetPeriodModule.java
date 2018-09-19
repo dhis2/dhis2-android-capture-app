@@ -1,7 +1,8 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
-import com.dhis2.data.dagger.PerActivity;
 import com.squareup.sqlbrite2.BriteDatabase;
+
+import org.dhis2.data.dagger.PerActivity;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,13 +15,13 @@ public class DataSetPeriodModule {
 
     @Provides
     @PerActivity
-    DataSetPeriodContract.View providesView(DataSetPeriodActivity activity){
+    DataSetPeriodContract.View providesView(DataSetPeriodActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    DataSetPeriodContract.Presenter providesPresenter(DataSetPeriodRepository repository){
+    DataSetPeriodContract.Presenter providesPresenter(DataSetPeriodRepository repository) {
         return new DataSetPeriodPresenter(repository);
     }
 
@@ -28,6 +29,6 @@ public class DataSetPeriodModule {
     @PerActivity
     DataSetPeriodRepository providesRepository(BriteDatabase briteDatabase) {
         return new DataSetPeriodRepositoryImpl(briteDatabase);
-        }
+    }
 
 }

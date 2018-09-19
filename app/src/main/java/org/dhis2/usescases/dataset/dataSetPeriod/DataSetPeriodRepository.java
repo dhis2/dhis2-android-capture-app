@@ -1,4 +1,4 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
 import org.hisp.dhis.android.core.dataset.DataSet;
 import org.hisp.dhis.android.core.period.PeriodModel;

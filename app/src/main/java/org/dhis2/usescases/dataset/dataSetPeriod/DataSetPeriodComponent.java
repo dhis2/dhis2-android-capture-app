@@ -1,6 +1,6 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
-import com.dhis2.data.dagger.PerActivity;
+import org.dhis2.data.dagger.PerActivity;
 
 import dagger.Subcomponent;
 

@@ -1,4 +1,4 @@
-package com.dhis2.usescases.dataset.dataSetPeriod;
+package org.dhis2.usescases.dataset.dataSetPeriod;
 
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -25,8 +25,9 @@ public class DataSetPeriodRepositoryImpl implements DataSetPeriodRepository {
 
     @Override
     public Observable<DataSet> getDataSet(String dataSetId) {
-        return briteDatabase.createQuery(DataSetModel.TABLE, DATASET_BY_ID, dataSetId)
-                .mapToOne(DataSetModel::create);
+        return null;
+        /*return briteDatabase.createQuery(DataSetModel.TABLE, DATASET_BY_ID, dataSetId)
+                .mapToOne(DataSetModel::create);*/
     }
 
     @Override

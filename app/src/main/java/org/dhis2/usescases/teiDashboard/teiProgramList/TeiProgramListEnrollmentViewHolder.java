@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 
-import com.android.databinding.library.baseAdapters.BR;
+import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentBinding;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;

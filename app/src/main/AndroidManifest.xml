@@ -93,6 +93,8 @@
             android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
 
         <activity android:name=".usescases.dataset.dataSetPeriod.DataSetPeriodActivity"></activity>
+        <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
+        <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
 
         <receiver android:name=".widgets.DhisCustomLauncher">
             <intent-filter>
