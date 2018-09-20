@@ -25,6 +25,7 @@ import org.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -290,7 +291,15 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         }
                         datePickerDialog.show();
                     } else {
-                        //TODO: SHOW PERIOD SELECTOR
+                        new PeriodDialog()
+                                .setPeriod(programStageFromEvent.periodType())
+                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(),Calendar.getInstance().getTime(),0))
+                                .setPossitiveListener(selectedDate -> {
+                                    Calendar chosenDate = Calendar.getInstance();
+                                    chosenDate.setTime(selectedDate);
+                                    presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
+                                } )
+                                .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
                     }
                 }
                 break;

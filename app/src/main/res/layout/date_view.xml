@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:hint='@{attribute!=null?attribute.displayShortName:label,default=text}'
+            android:hint='@{attribute!=null?attribute.displayName:label,default=text}'
             android:imeOptions="actionNext"
             android:inputType="text"
             android:textAlignment="textStart"

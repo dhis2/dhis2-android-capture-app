@@ -1,5 +1,6 @@
 package org.dhis2.data.forms;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -88,6 +89,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private LinearLayout dateLayout;
+    private NestedScrollView nestedScrollView;
     private final int RQ_EVENT = 9876;
     private RuleActionErrorOnCompletion errorOnCompletion;
     private RuleActionWarningOnCompletion warningOnCompletion;
@@ -131,7 +133,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        NestedScrollView nestedScrollView = view.findViewById(R.id.content_frame);
+        nestedScrollView = view.findViewById(R.id.content_frame);
         dateLayout = view.findViewById(R.id.date_layout);
         nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
@@ -183,12 +185,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
     }
 
+    @SuppressLint("RxDefaultScheduler")
     @NonNull
     @Override
     public Observable<ReportStatus> eventStatusChanged() {
         undoObservable = PublishSubject.create();
-        return undoObservable.mergeWith(RxView.clicks(nextButton).map(o -> getReportStatusFromButton()));
-//        return undoObservable.mergeWith(RxView.focusChanges(nextButton).debounce(1500, TimeUnit.MILLISECONDS).filter(focus -> focus).map(o -> getReportStatusFromButton()));
+        return undoObservable.mergeWith(RxView.clicks(nextButton).map(o -> getReportStatusFromButton())).debounce(500, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -355,6 +357,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
 
     private ReportStatus getReportStatusFromButton() {
+        dateLayout.requestFocus();
         return nextButton.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 

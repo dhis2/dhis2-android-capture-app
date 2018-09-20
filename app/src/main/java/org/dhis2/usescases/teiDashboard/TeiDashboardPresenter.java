@@ -313,6 +313,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
+            extras.putString("FROM_RELATIONSHIP_TEI", teUid);
             extras.putString("TRACKED_ENTITY_UID", teType);
             extras.putString("PROGRAM_UID", programUid);
             intent.putExtras(extras);

@@ -45,6 +45,8 @@ public class SearchTEContractsModule {
         void setTutorial();
 
         void setProgramColor(String data);
+
+        String fromRelationshipTEI();
     }
 
     public interface Presenter {

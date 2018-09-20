@@ -98,7 +98,7 @@ public final class RulesRepository {
             "  \"DATAELEMENT_NEWEST_EVENT_PROGRAM\",\n" +
             "  \"DATAELEMENT_CURRENT_EVENT\",\n" +
             "  \"DATAELEMENT_PREVIOUS_EVENT\",\n" +
-            "  \"CALCULATED_VALUE\",\n" +
+//            "  \"CALCULATED_VALUE\",\n" + TODO: RESTORE WHEN SUPPORTED
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
@@ -142,7 +142,7 @@ public final class RulesRepository {
             "  ProgramStage.displayName\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.program = ? AND Event.uid != ?\n" +
+            "WHERE Event.program = ? AND Event.uid != ? AND Event.eventDate <= ? \n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     /**
@@ -157,7 +157,7 @@ public final class RulesRepository {
             "  ProgramStage.displayName\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.enrollment = ? AND Event.uid != ?\n" +
+            "WHERE Event.enrollment = ? AND Event.uid != ? AND Event.eventDate <= ?\n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC LIMIT 10";
 
     private static final String QUERY_VALUES = "SELECT " +
@@ -443,7 +443,10 @@ public final class RulesRepository {
                 .flatMap(eventModel ->
                         briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                                 .mapToOne(ProgramModel::create).flatMap(programModel ->
-                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS, programModel.uid() == null ? "" : programModel.uid(), eventUidToEvaluate == null ? "" : eventUidToEvaluate)
+                                briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
+                                        programModel.uid() == null ? "" : programModel.uid(),
+                                        eventUidToEvaluate == null ? "" : eventUidToEvaluate,
+                                        DateUtils.databaseDateFormat().format(eventModel.eventDate()))
                                         .mapToList(cursor -> {
                                             List<RuleDataValue> dataValues = new ArrayList<>();
                                             String eventUid = cursor.getString(0);
