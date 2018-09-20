@@ -31,11 +31,13 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 30
-        versionName "1.0.0"
+        versionCode 32
+        versionName "1.0.2_prerelease"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
+
+        setProperty("archivesBaseName","dhis2-v"+versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
@@ -67,6 +69,7 @@ android {
             // custom application suffix which allows to
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
+            versionNameSuffix = "_training"
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
@@ -130,10 +133,6 @@ dependencies {
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
     //Support libraries
-    /*  implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:support-annotations:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"*/
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.android.support:support-annotations:27.1.1"
     implementation "com.android.support:cardview-v7:27.1.1"
@@ -147,15 +146,15 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
     // RuleEngine module of the DHIS 2 Android SDK
-    /*implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
+    implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-    }*/
+    }
     implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
 //        exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-//    implementation"org.hisp.dhis.rules:rule-engine:2.30-SNAPSHOT"
+//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
 
     //TreeView
     implementation 'com.github.bmelnychuk:atv:1.2.9'
@@ -217,7 +216,7 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     //CRASHLYTICS
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
 

@@ -20,8 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/filter_layout"
@@ -123,6 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:layout_marginStart="-50dp"
             android:background="@color/white_faf"
             app:itemTextColor="?colorPrimary">
 
@@ -145,6 +145,13 @@
                     android:id="@+id/org_unit_all"
                     style="@style/TextButton"
                     android:text="@string/select_all"
+                    app:layout_constraintBottom_toTopOf="@id/org_unit_unselect_all"
+                    app:layout_constraintEnd_toStartOf="@string/cancel" />
+
+                <Button
+                    android:id="@+id/org_unit_unselect_all"
+                    style="@style/TextButton"
+                    android:text="@string/clear_all"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@string/cancel" />
 

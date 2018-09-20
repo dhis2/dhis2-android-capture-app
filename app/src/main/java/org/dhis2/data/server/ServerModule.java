@@ -4,21 +4,19 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.dhis2.data.dagger.PerServer;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import org.dhis2.data.dagger.PerServer;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -59,7 +57,6 @@ public class ServerModule {
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .addNetworkInterceptor(new StethoInterceptor())
                 .addInterceptor(chain -> {
-
                     Request request = chain.request();
                     Response response = chain.proceed(request);
                     if (response.code() != 200)

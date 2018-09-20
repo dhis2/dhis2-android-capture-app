@@ -26,7 +26,6 @@ import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -34,6 +33,9 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
+import org.hisp.dhis.android.core.relationship.RelationshipHelper;
+import org.hisp.dhis.android.core.relationship.RelationshipItem;
+import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -99,7 +101,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     dashboardRepository.getTEIEnrollmentEvents(programUid, teUid),
                     metadataRepository.getProgramTrackedEntityAttributes(programUid),
                     dashboardRepository.getTEIAttributeValues(programUid, teUid),
-                    metadataRepository.getTeiOrgUnit(teUid,programUid),
+                    metadataRepository.getTeiOrgUnit(teUid, programUid),
                     metadataRepository.getTeiActivePrograms(teUid),
                     DashboardProgramModel::new)
                     .subscribeOn(Schedulers.io())
@@ -313,6 +315,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
+            extras.putString("FROM_RELATIONSHIP_TEI", teUid);
             extras.putString("TRACKED_ENTITY_UID", teType);
             extras.putString("PROGRAM_UID", programUid);
             intent.putExtras(extras);
@@ -324,8 +327,9 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
         try {
-            d2.relationshipModule().relationship.createTEIRelationship(relationshipType, trackEntityInstance_A, teUid);
-            dashboardRepository.updateTeiState();
+            Relationship relationship = RelationshipHelper.teiToTeiRelationship(trackEntityInstance_A, teUid, relationshipType);
+            d2.relationshipModule().relationships.add(relationship);
+//            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2CallException e) {
             Timber.d(e);
         }
@@ -333,21 +337,28 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void deleteRelationship(Relationship relationship) {
-//        dashboardRepository.deleteRelationship(relationshipModel); TODO: HOW TO DELETE NOW?
-        view.showInfoDialog("Info", view.getContext().getString(R.string.feature_unavaible));
+        try {
+            d2.relationshipModule().relationships.uid(relationship.uid()).delete();
+        } catch (D2CallException e) {
+            Timber.d(e);
+        }
     }
 
     @Override
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
-                Observable.just(d2.relationshipModule().relationship.getRelationshipsByTEI(teUid))
-                        .flatMapIterable(list -> list)
+//                Observable.just(d2.relationshipModule().relationships.getRelationshipsByTEI(teUid))
+                Observable.just(d2.relationshipModule().relationships.getByItem(
+                        RelationshipItem.builder().trackedEntityInstance(
+                                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
+                        )
+                ).flatMapIterable(list -> list)
                         .map(relationship -> {
                             RelationshipType relationshipType = null;
-                            for (RelationshipType type : d2.relationshipModule().relationshipType.getAll())
+                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.getSet())
                                 if (type.uid().equals(relationship.relationshipType()))
                                     relationshipType = type;
-                            return Pair.create(relationship, relationshipType); //TODO: relationshipType is never going to be null. right?
+                            return Pair.create(relationship, relationshipType);
                         }).toList()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

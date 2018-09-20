@@ -81,6 +81,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     private SearchRelationshipAdapter searchRelationshipAdapter;
 
     private boolean fromRelationship = false;
+    private String fromRelationshipTeiUid;
+
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -113,6 +115,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
+            fromRelationshipTeiUid = getIntent().getStringExtra("FROM_RELATIONSHIP_TEI");
         } catch (Exception e) {
             Timber.d(e.getMessage());
         }
@@ -359,5 +362,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             a.recycle();
             window.setStatusBarColor(colorToReturn);
         }
+    }
+
+    @Override
+    public String fromRelationshipTEI() {
+        return fromRelationshipTeiUid;
     }
 }

@@ -133,6 +133,7 @@
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:padding="5dp"
                         android:textColor="@color/text_black_333"
+                        android:text="https://"
                         android:textSize="17sp" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -182,6 +183,7 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <include
+                    android:id="@+id/testingEnvironment"
                     layout="@layout/testing_env"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -85,7 +85,12 @@ public class SpinnerHolder extends RecyclerView.ViewHolder implements View.OnCli
         editText.setEnabled(viewModel.editable());
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
-        editText.setText(viewModel.value());
+        if(viewModel.value() != null){
+            for (OptionModel optionModel : options)
+                if(viewModel.value().equals(optionModel.code()))
+                    editText.setText(optionModel.displayName());
+        }
+
 
         if (!isEmpty(viewModel.warning())) {
             inputLayout.setError(viewModel.warning());

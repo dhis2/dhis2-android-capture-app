@@ -117,7 +117,8 @@ public class FormAdapter extends RecyclerView.Adapter {
 
         } else {
             TrackedEntityAttributeModel attr = attributeList.get(holder.getAdapterPosition() - programData);
-            String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
+            //String label = attr.displayShortName() != null ? attr.displayShortName() : attr.displayName();
+            String label = attr.displayName();
             switch (holder.getItemViewType()) {
                 case EDITTEXT:
                     viewModel = EditTextViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), label, 1, attr.valueType(), null, !attr.generated());
@@ -130,7 +131,7 @@ public class FormAdapter extends RecyclerView.Adapter {
                     viewModel = RadioButtonViewModel.fromRawValue(attr.uid(), label, attr.valueType(), false, queryData.get(attr.uid()), null, true);
                     break;
                 case SPINNER:
-                    viewModel = SpinnerViewModel.create(attr.uid(), label, "Hola", false, attr.optionSet(), queryData.get(attr.uid()), null, true);
+                    viewModel = SpinnerViewModel.create(attr.uid(), label, "", false, attr.optionSet(), queryData.get(attr.uid()), null, true);
                     break;
                 case COORDINATES:
                     viewModel = CoordinateViewModel.create(attr.uid(), label, false, queryData.get(attr.uid()), null, true);

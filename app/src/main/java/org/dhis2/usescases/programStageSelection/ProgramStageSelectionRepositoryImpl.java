@@ -48,7 +48,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
             "WHERE Enrollment.uid = ?";
 
     private final String CURRENT_PROGRAM_STAGES = "SELECT ProgramStage.* FROM ProgramStage WHERE ProgramStage.uid IN " +
-            "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ?)";
+            "(SELECT DISTINCT Event.programStage FROM Event WHERE Event.enrollment = ?) ORDER BY ProgramStage.sortOrder ASC";
 
     private static final String QUERY_ENROLLMENT = "SELECT\n" +
             "  Enrollment.uid,\n" +

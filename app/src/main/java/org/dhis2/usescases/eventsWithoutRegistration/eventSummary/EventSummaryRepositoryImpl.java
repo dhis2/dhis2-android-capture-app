@@ -93,7 +93,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
-            "        DataElement.formName AS formLabel,\n" +
+            "        DataElement.displayFormName AS formLabel,\n" +
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
@@ -319,7 +319,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, dataValues);
+                            status, eventDate, dueDate,dataValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

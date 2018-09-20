@@ -55,9 +55,10 @@ public class DateUtils {
     }
 
 
-    private Date getFirstDayOfCurrentWeek() {
+    private Date getFirstDayOfCurrentWeek(Calendar calendar) {
 
-        Calendar calendar = getCalendar();
+        if (calendar == null)
+            calendar = getCalendar();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
         return calendar.getTime();
@@ -230,11 +231,11 @@ public class DateUtils {
     public static SimpleDateFormat databaseDateFormat() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION, Locale.US);
     }
+
     @NonNull
     public static SimpleDateFormat databaseDateFormatNoMillis() {
         return new SimpleDateFormat(DATABASE_FORMAT_EXPRESSION_NO_MILLIS, Locale.US);
     }
-
 
 
     /**********************
@@ -255,16 +256,20 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
-    public boolean hasExpired(@NonNull Date completedDate, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
-        if (completedDate == null)
-            return false;
+    public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
-        expiredDate.setTime(completedDate);
+
+        if (event.completedDate() != null)
+            expiredDate.setTime(event.completedDate());
+        else {
+            expiredDate.setTime(event.eventDate());
+            expiredDate.set(Calendar.HOUR_OF_DAY, 24);
+        }
 
         if (expiryPeriodType == null) {
             if (completeEventExpiryDays > 0)
                 expiredDate.add(Calendar.DAY_OF_YEAR, completeEventExpiryDays);
-            return expiredDate.getTime().before(getToday());
+            return expiredDate.getTime().before(getNextPeriod(expiryPeriodType, expiredDate.getTime(), 0));
         } else {
             switch (expiryPeriodType) {
                 case Daily:
@@ -503,7 +508,7 @@ public class DateUtils {
                     now.add(Calendar.DAY_OF_YEAR, 1);
                     break;
             }
-
+            now.setTime(getNextPeriod(periodType, now.getTime(), 1));
         }
 
         return newDate;
@@ -632,72 +637,6 @@ public class DateUtils {
         return date.getTime();
     }
 
-    /**
-     * @param period      Period in which the date will be selected
-     * @param currentDate Current selected date
-     * @param page        1 for next, 0 for now, -1 for previous
-     * @return Next/Previous date calculated from the currentDate and Period
-     */
-    public Date getPeriodDate(PeriodType period, Date currentDate, int page) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentDate);
-
-        switch (period) {
-            case Daily:
-                calendar.add(Calendar.DAY_OF_YEAR, page);
-                break;
-            case Weekly:
-
-                break;
-            case WeeklyWednesday:
-
-                break;
-            case WeeklyThursday:
-
-                break;
-            case WeeklySaturday:
-
-                break;
-            case WeeklySunday:
-
-                break;
-            case BiWeekly:
-
-                break;
-            case Monthly:
-
-                break;
-            case BiMonthly:
-
-                break;
-            case Quarterly:
-
-                break;
-            case SixMonthly:
-
-                break;
-            case SixMonthlyApril:
-
-                break;
-            case Yearly:
-
-                break;
-            case FinancialApril:
-
-                break;
-            case FinancialJuly:
-
-                break;
-            case FinancialOct:
-
-                break;
-            default:
-
-                break;
-        }
-        return calendar.getTime();
-    }
 
     /**
      * @param currentDate      Date from which calculation will be carried out. Default value is today.
@@ -707,7 +646,7 @@ public class DateUtils {
      */
     public Date expDate(@Nullable Date currentDate, int expiryDays, @Nullable PeriodType expiryPeriodType) {
 
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = getCalendar();
 
         if (currentDate != null)
             calendar.setTime(currentDate);
@@ -719,7 +658,8 @@ public class DateUtils {
         } else {
             switch (expiryPeriodType) {
                 case Daily:
-                    break;
+                    calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
+                    return calendar.getTime();
                 case Weekly:
                     calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
                     Date firstDateOfWeek = calendar.getTime();
@@ -868,5 +808,210 @@ public class DateUtils {
 
             return calendar.getTime();
         }
+    }
+
+    /**
+     * @param period      Period in which the date will be selected
+     * @param currentDate Current selected date
+     * @param page        1 for next, 0 for now, -1 for previous
+     * @return Next/Previous date calculated from the currentDate and Period
+     */
+    public Date getNextPeriod(PeriodType period, Date currentDate, int page) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        int extra;
+        if (period == null)
+            period = PeriodType.Daily;
+
+        switch (period) {
+            case Daily:
+                calendar.add(Calendar.DAY_OF_YEAR, page);
+                break;
+            case Weekly:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case WeeklyWednesday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                break;
+            case WeeklyThursday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                break;
+            case WeeklySaturday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                break;
+            case WeeklySunday:
+                calendar.add(Calendar.WEEK_OF_YEAR, page);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            case BiWeekly:
+                extra = calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.WEEK_OF_YEAR, page * extra);
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case Monthly:
+                calendar.add(Calendar.MONTH, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case BiMonthly:
+                extra = (calendar.get(Calendar.MONTH) + 1) % 2 == 0 ? 1 : 2;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case Quarterly:
+                extra = 1 + 4 - (calendar.get(Calendar.MONTH) + 1) % 4;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthly:
+                extra = 1 + 6 - (calendar.get(Calendar.MONTH) + 1) % 6;
+                calendar.add(Calendar.MONTH, page * extra);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case SixMonthlyApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else if (calendar.get(Calendar.MONTH) >= Calendar.APRIL && calendar.get(Calendar.MONTH) < Calendar.OCTOBER)
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.MONTH, page * 6);
+                break;
+            case Yearly:
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_YEAR, 1);
+                break;
+            case FinancialApril:
+                if (calendar.get(Calendar.MONTH) < Calendar.APRIL) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.APRIL);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialJuly:
+                if (calendar.get(Calendar.MONTH) < Calendar.JULY) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.JULY);
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case FinancialOct:
+                if (calendar.get(Calendar.MONTH) < Calendar.OCTOBER) {
+                    calendar.add(Calendar.YEAR, -1);
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                } else
+                    calendar.set(Calendar.MONTH, Calendar.OCTOBER);
+
+                calendar.add(Calendar.YEAR, page);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                break;
+            default:
+                break;
+        }
+        return calendar.getTime();
+    }
+
+    public String getPeriodUIString(PeriodType periodType, Date date) {
+
+        String formattedDate;
+        Date initDate = getNextPeriod(periodType, date, 0);
+
+        Calendar cal = getCalendar();
+        cal.setTime(getNextPeriod(periodType, date, 1));
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        Date endDate = cal.getTime();
+        String periodString = "%s - %s";
+        if (periodType == null)
+            periodType = PeriodType.Daily;
+        switch (periodType) {
+            case Daily:
+                formattedDate = uiDateFormat().format(initDate);
+                break;
+            case Weekly:
+                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case WeeklyWednesday:
+                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case WeeklyThursday:
+                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case WeeklySaturday:
+                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case WeeklySunday:
+                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case BiWeekly:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("w yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case Monthly:
+                formattedDate = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case BiMonthly:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case Quarterly:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case SixMonthly:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case SixMonthlyApril:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case Yearly:
+                formattedDate = new SimpleDateFormat("yyyy", Locale.getDefault()).format(initDate);
+                break;
+            case FinancialApril:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case FinancialJuly:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            case FinancialOct:
+                formattedDate = String.format(periodString,
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                );
+                break;
+            default:
+                formattedDate = uiDateFormat().format(initDate);
+                break;
+        }
+
+        return formattedDate;
     }
 }

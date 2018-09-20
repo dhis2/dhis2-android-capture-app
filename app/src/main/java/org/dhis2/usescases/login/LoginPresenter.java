@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+
 import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
@@ -16,8 +18,6 @@ import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
@@ -110,7 +110,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             Constants.SHARE_PREFS, Context.MODE_PRIVATE);
                     prefs.edit().putString(Constants.SERVER, serverUrl).apply();
                     this.userManager = userManager;
-                    return userManager.logIn(username, password);
+                    return userManager.logIn(username.trim(), password);
                 })
                 .map(user -> {
                     if (user == null)
@@ -124,6 +124,23 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .subscribe(
                         this::handleResponse,
                         this::handleError));
+    }
+
+    @Override
+    public void onTestingEnvironmentClick(int dhisVersion) {
+        switch (dhisVersion) {
+            case 29:
+                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-previous1");
+                break;
+            case 30:
+                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
+                break;
+        }
+
+        view.getBinding().userName.getEditText().setText("android");
+        view.getBinding().userPass.getEditText().setText("Android123");
+
+        onButtonClick();
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {
@@ -175,6 +192,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
                 case EVENTS:
                     syncReservedValues();
+                    syncAggregatesData();
                     syncTrackedEntities();
                     break;
                 case TEI:
@@ -341,6 +359,16 @@ public class LoginPresenter implements LoginContracts.Presenter {
         );
     }
 
+    @Override
+    public void syncAggregatesData() {
+        disposable.add(aggregatesData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> Timber.log(1, "AGGREGATE DONE"),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
+    }
+
     @NonNull
     private Consumer<SyncResult> update(LoginActivity.SyncState syncState) {
         return result -> {
@@ -372,6 +400,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
 
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(eventLimit, limityByOU)));
+    }
+
+    @NonNull
+    private Observable<Unit> aggregatesData() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncAggregatedData()));
     }
 
 }

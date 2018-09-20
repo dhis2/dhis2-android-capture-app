@@ -7,13 +7,13 @@ import android.os.Bundle;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -114,8 +114,13 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onItemClick(ProgramViewModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();
-        bundle.putString("PROGRAM_UID", programModel.id());
-        bundle.putString("TRACKED_ENTITY_UID", programModel.type());
+        String idTag = "PROGRAM_UID";
+        if (programModel.type() != null) {
+            bundle.putString("TRACKED_ENTITY_UID", programModel.type());
+        } else {
+            idTag = "DATASET_UID";
+        }
+        bundle.putString(idTag, programModel.id());
 
         switch (currentPeriod) {
             case NONE:
@@ -150,8 +155,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         if (programModel.programType().equals(ProgramType.WITH_REGISTRATION.name())) {
             view.startActivity(SearchTEActivity.class, bundle, false, false, null);
-        } else {
+        } else if (programModel.programType().equals(ProgramType.WITHOUT_REGISTRATION.name())) {
             view.startActivity(ProgramEventDetailActivity.class, bundle, false, false, null);
+        } else {
+            view.startActivity(DataSetDetailActivity.class, bundle, false, false, null);
         }
     }
 

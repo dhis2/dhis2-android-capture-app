@@ -56,7 +56,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
 
         List<String> headers = new ArrayList<>();
         for (TrackedEntityAttributeModel trackedEntityAttributeModel : formData) {
-            headers.add(trackedEntityAttributeModel.displayShortName());
+            headers.add(trackedEntityAttributeModel.displayName());
         }
 
         List<List<String>> cellItems = new ArrayList<>();

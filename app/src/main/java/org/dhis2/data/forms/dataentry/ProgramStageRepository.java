@@ -50,7 +50,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
-            "        DataElement.formName AS formLabel,\n" +
+            "        DataElement.displayFormName AS formLabel,\n" +
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +

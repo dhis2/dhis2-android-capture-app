@@ -73,6 +73,8 @@ public class LoginContracts {
 
         void onButtonClick();
 
+        void onTestingEnvironmentClick(int dhisVersion);
+
         void onQRClick(android.view.View v);
 
         ObservableField<Boolean> isServerUrlSet();
@@ -101,11 +103,11 @@ public class LoginContracts {
 
         void syncReservedValues();
 
+        void syncAggregatesData();
+
     }
 
     public interface Interactor {
-
-
 
 
     }

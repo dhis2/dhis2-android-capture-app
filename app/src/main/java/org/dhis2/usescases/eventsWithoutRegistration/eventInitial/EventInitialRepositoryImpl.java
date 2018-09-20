@@ -122,9 +122,10 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        if (date != null && date.after(createDate))
+        //If we are creating a new event, do not schedule it
+        /*if (date != null && date.after(createDate))
             return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
-                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);
+                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);*/
 
 
         String uid = codeGenerator.generate();

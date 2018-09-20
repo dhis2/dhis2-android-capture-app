@@ -64,6 +64,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private boolean canComplete = true;
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
+    private EventModel eventModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,23 +129,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setActionButton(EventModel eventModel) {
-        switch (eventModel.status()) {
-            case ACTIVE:
-                binding.actionButton.setText(getString(R.string.complete_and_close));
-                break;
-            case SKIPPED:
-                binding.actionButton.setVisibility(View.GONE);
-                break;
-            case VISITED:
-                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                break;
-            case SCHEDULE:
-                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                break;
-            case COMPLETED:
-                binding.actionButton.setText(getString(R.string.re_open));
-                break;
-        }
+        this.eventModel = eventModel;
+
     }
 
     @Override
@@ -183,7 +169,26 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void accessDataWrite(Boolean canWrite) {
-        binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+
+        switch (eventModel.status()) {
+            case ACTIVE:
+                binding.actionButton.setText(getString(R.string.complete_and_close));
+                binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                break;
+            case SKIPPED:
+                binding.actionButton.setVisibility(View.GONE);
+                break;
+            case VISITED:
+                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                break;
+            case SCHEDULE:
+                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                break;
+            case COMPLETED:
+                binding.actionButton.setText(getString(R.string.re_open));
+                binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                break;
+        }
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
