@@ -403,7 +403,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     @NonNull
-    private Observable<Void> aggregatesData() {
+    private Observable<Unit> aggregatesData() {
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncAggregatedData()));
     }
 
