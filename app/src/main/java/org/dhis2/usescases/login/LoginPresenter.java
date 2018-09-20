@@ -192,6 +192,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
                 case EVENTS:
                     syncReservedValues();
+                    syncAggregatesData();
                     syncTrackedEntities();
                     break;
                 case TEI:
@@ -358,6 +359,16 @@ public class LoginPresenter implements LoginContracts.Presenter {
         );
     }
 
+    @Override
+    public void syncAggregatesData() {
+        disposable.add(aggregatesData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> Timber.log(1, "AGGREGATE DONE"),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
+    }
+
     @NonNull
     private Consumer<SyncResult> update(LoginActivity.SyncState syncState) {
         return result -> {
@@ -389,6 +400,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
         boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
 
         return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(eventLimit, limityByOU)));
+    }
+
+    @NonNull
+    private Observable<Void> aggregatesData() {
+        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncAggregatedData()));
     }
 
 }
