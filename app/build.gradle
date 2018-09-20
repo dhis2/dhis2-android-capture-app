@@ -31,11 +31,13 @@ android {
         applicationId "com.dhis2"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 31
-        versionName "1.0.1"
+        versionCode 32
+        versionName "1.0.2_prerelease"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
+
+        setProperty("archivesBaseName","dhis2-v"+versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
@@ -67,6 +69,7 @@ android {
             // custom application suffix which allows to
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
+            versionNameSuffix = "_training"
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
