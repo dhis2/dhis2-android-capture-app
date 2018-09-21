@@ -2,30 +2,36 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
-import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
-import org.dhis2.utils.Period;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.category.CategoryCombo;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataset.DataSetDataElementLinkModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.dataset.DataSetOrganisationUnitLinkModel;
+import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.period.PeriodType;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
+
+    private final static String GET_DATA_SETS = "SELECT " +
+            "DataValue.organisationUnit, " +
+            "DataValue.period, " +
+            "DataValue.attributeOptionCombo " +
+            "FROM DataValue " +
+            "JOIN DataSetDataElementLink " +
+            "ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
+            "WHERE DataSetDataElementLink.dataSet = ? %s " +
+            "GROUP BY DataValue.period,DataValue.organisationUnit,DataValue.categoryOptionCombo";
+
+    private final static String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
+    private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period = ? ";
 
     private final BriteDatabase briteDatabase;
 
@@ -33,36 +39,6 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    @NonNull
-    @Override
-    public Observable<List<DataSetDetailModel>> filteredDataSet(String uidDataSet, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel) {
-        String SELECT_ORGUNIT = "SELECT " + DataSetModel.TABLE +"." +DataSetModel.Columns.UID +", "
-                +OrganisationUnitModel.TABLE + "."+ OrganisationUnitModel.Columns.NAME +","
-                + CategoryComboModel.TABLE + "."+ CategoryComboModel.Columns.NAME +","
-                + DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE
-
-                +" FROM "+ DataSetModel.TABLE +
-                " JOIN "+ OrganisationUnitModel.TABLE + " ON "+ OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + DataSetOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT
-                +" JOIN "+ DataSetOrganisationUnitLinkModel.TABLE + " ON " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID
-
-
-                +" JOIN "+ CategoryComboModel.TABLE + " ON " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = " + DataSetModel.TABLE + "." + DataSetModel.Columns.CATEGORY_COMBO;
-        if(!TextUtils.isEmpty(uidDataSet)) {
-            SELECT_ORGUNIT += " WHERE " + DataSetModel.TABLE + "." + DataSetModel.Columns.UID + " = '" + uidDataSet + "'";
-        }
-        SELECT_ORGUNIT += " GROUP BY "+DataSetModel.TABLE + "."+ DataSetModel.Columns.PERIOD_TYPE;
-        return briteDatabase.createQuery(DataSetModel.TABLE, SELECT_ORGUNIT)
-                .mapToList( dataSet -> new DataSetDetailModel(dataSet.getString(0),
-                        dataSet.getString(1),
-                        dataSet.getString(2),
-                        dataSet.getString(3)));
-    }
-
-    @NonNull
-    @Override
-    public Observable<List<DataSetDetailModel>> filteredDataSet( List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel) {
-        return null;
-    }
 
     @NonNull
     @Override
@@ -72,42 +48,86 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    private Observable<CategoryComboModel> catComboDataSet(String uidCatCombo) {
-        String SELECT_CATEGORY_COMBO = "SELECT " + CategoryComboModel.TABLE + ".* FROM " + CategoryComboModel.TABLE +
-                 " WHERE " + CategoryComboModel.TABLE + "." + CategoryComboModel.Columns.UID + " = '" + uidCatCombo + "'";
-        return briteDatabase.createQuery(CategoryComboModel.TABLE, SELECT_CATEGORY_COMBO)
-                .mapToOne(CategoryComboModel::create);
-    }
-
-    private Observable<List<PeriodModel>> periodsDataSet(String periodType){
-        String SELECT_PERIOD = "SELECT " + PeriodModel.TABLE + ".* FROM " + PeriodModel.TABLE +
-                " WHERE " + PeriodModel.TABLE + "." + PeriodModel.Columns.PERIOD_TYPE + " = '" + periodType + "'";
-        return briteDatabase.createQuery(PeriodModel.TABLE, SELECT_PERIOD)
-                .mapToList(PeriodModel::create);
-    }
-
-    private Observable<OrganisationUnitModel> orgUnitDataSet(String periodType){
-        String SELECT_ORGUNIT = "SELECT " + OrganisationUnitModel.TABLE + ".* FROM " + OrganisationUnitModel.TABLE +
-                ", "+ DataSetOrganisationUnitLinkModel.TABLE + ", "+ DataSetModel.TABLE +
-                " WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = "+ DataSetOrganisationUnitLinkModel.TABLE + "." + OrganisationUnitModel.Columns.UID
-                + " AND " + DataSetOrganisationUnitLinkModel.TABLE + "."+ DataSetOrganisationUnitLinkModel.Columns.DATA_SET + " = " + DataSetModel.TABLE + "."+ DataSetModel.Columns.UID;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORGUNIT)
-                .mapToOne(OrganisationUnitModel::create);
-    }
-
-    @NonNull
     @Override
-    public Observable<List<TrackedEntityDataValueModel>> dataSetDataValues(DataSetModel eventModel) {
-        return null;
-    }
+    public Flowable<List<DataSetDetailModel>> dataSetGroups(String dataSetUid, List<String> orgUnits, PeriodType selectedPeriodType, int page) {
+        String SQL = GET_DATA_SETS;
+        String orgUnitFilter = "";
+        if (orgUnits != null && !orgUnits.isEmpty()) {
+            StringBuilder orgUnitUids = new StringBuilder("");
+            for (int i = 0; i < orgUnits.size(); i++) {
+                orgUnitUids.append(orgUnits.get(i));
+                if (i != orgUnits.size() - 1)
+                    orgUnitUids.append(",");
+            }
 
-    @Override
-    public Observable<List<String>> dataSetValuesNew(DataSetDetailModel eventModel) {
-        return null;
-    }
+            orgUnitFilter = String.format(DATA_SETS_ORG_UNIT_FILTER, orgUnitFilter);
+        }
 
-    @Override
-    public Observable<Boolean> writePermission(String programId) {
-        return null;
+        SQL = String.format(SQL, orgUnitFilter);
+
+        return briteDatabase.createQuery(DataValueModel.TABLE, SQL, dataSetUid)
+                .mapToList(cursor -> {
+                    String organisationUnitUid = cursor.getString(0);
+                    String period = cursor.getString(1);
+                    String categoryOptionCombo = cursor.getString(2);
+
+                    String orgUnitName = "";
+                    String periodName = "";
+                    String catOptCombName = "";
+                    State state = State.SYNCED;
+                    Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", organisationUnitUid);
+                    if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
+                        orgUnitName = orgUnitCursor.getString(0);
+                        orgUnitCursor.close();
+                    }
+
+                    Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period);
+                    if (periodCursor != null && periodCursor.moveToFirst()) {
+                        PeriodModel periodModel = PeriodModel.create(periodCursor);
+                        periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate());
+                        periodCursor.close();
+                    }
+
+                    Cursor catOptCombCursor = briteDatabase.query("SELECT CategoryOptionCombo.displayName FROM CategoryOptionCombo WHERE uid = ?", categoryOptionCombo);
+                    if (catOptCombCursor != null && catOptCombCursor.moveToFirst()) {
+                        catOptCombName = catOptCombCursor.getString(0);
+                        catOptCombCursor.close();
+                    }
+
+                    Cursor stateCursor = briteDatabase.query("SELECT DataValue.state FROM DataValue " +
+                                    "WHERE period = ? AND organisationUnit = ? AND attributeOptionCombo = ? " +
+                                    "AND state != 'SYNCED'",
+                            period, organisationUnitUid, categoryOptionCombo);
+                    if (stateCursor != null && stateCursor.moveToFirst()) {
+                        State errorState = null;
+                        State toPost = null;
+                        State toUpdate = null;
+                        for (int i = 0; i < cursor.getCount(); i++) {
+                            State stateValue = State.valueOf(cursor.getString(0));
+                            switch (stateValue) {
+                                case ERROR:
+                                    errorState = State.ERROR;
+                                    break;
+                                case TO_POST:
+                                    toPost = State.TO_POST;
+                                    break;
+                                case TO_UPDATE:
+                                    toUpdate = State.TO_UPDATE;
+                                    break;
+                            }
+                            cursor.moveToNext();
+                        }
+                        stateCursor.close();
+
+                        if (errorState != null)
+                            state = errorState;
+                        else if (toUpdate != null)
+                            state = toUpdate;
+                        else if (toPost != null)
+                            state = toPost;
+                    }
+
+                    return DataSetDetailModel.create(organisationUnitUid, categoryOptionCombo, period, orgUnitName, catOptCombName, periodName, state);
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

@@ -13,26 +13,21 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
 import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.data.service.DataServiceModule;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailContract;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailModule;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +38,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
+import io.reactivex.processors.PublishProcessor;
 import timber.log.Timber;
 
 import static org.dhis2.utils.Period.DAILY;
@@ -51,13 +48,13 @@ import static org.dhis2.utils.Period.NONE;
 import static org.dhis2.utils.Period.WEEKLY;
 import static org.dhis2.utils.Period.YEARLY;
 
-public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View{
+public class DataSetDetailActivity extends ActivityGlobalAbstract implements DataSetDetailContract.View {
 
     private ActivityDatasetDetailBinding binding;
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
-    private String programId;
+    private String dataSetUid;
     private Period currentPeriod = Period.NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();
     private SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
@@ -69,6 +66,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Inject
     DataSetDetailContract.Presenter presenter;
 
+    private static PublishProcessor<Integer> currentPage;
     DataSetDetailAdapter adapter;
 
     @Override
@@ -81,16 +79,18 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         chosenDateMonth.add(new Date());
         chosenDateYear.add(new Date());
 
-        programId = getIntent().getStringExtra("DATASET_UID");
+        dataSetUid = getIntent().getStringExtra("DATASET_UID");
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
+
+        currentPage = PublishProcessor.create();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.init(this, programId, currentPeriod);
+        presenter.init(this);
 
         presenter.getDataSetWithDates(null, currentPeriod, orgUnitFilter.toString());
     }
@@ -104,7 +104,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void setData(List<DataSetDetailModel> datasets) {
-        if(binding.recycler.getAdapter() == null){
+        if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
@@ -303,6 +303,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
             pickerDialog.show();
         }
     }
+
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
         if (catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboList == null || catComboList.isEmpty()) {
@@ -394,6 +395,16 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addDatasetButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public Flowable<Integer> dataSetPage() {
+        return currentPage;
+    }
+
+    @Override
+    public String dataSetUid() {
+        return dataSetUid;
     }
 
     private void checkFilterEnabled() {

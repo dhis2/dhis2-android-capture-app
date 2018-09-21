@@ -31,6 +31,8 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * Created by ppajuelo on 18/10/2017.f
  */
@@ -114,12 +116,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     public void onItemClick(ProgramViewModel programModel, Period currentPeriod) {
 
         Bundle bundle = new Bundle();
-        String idTag = "PROGRAM_UID";
-        if (programModel.type() != null) {
+        String idTag;
+        if (!isEmpty(programModel.type())) {
             bundle.putString("TRACKED_ENTITY_UID", programModel.type());
-        } else {
-            idTag = "DATASET_UID";
         }
+
+        if (programModel.typeName().equals("DataSets"))
+            idTag = "DATASET_UID";
+        else
+            idTag = "PROGRAM_UID";
+
         bundle.putString(idTag, programModel.id());
 
         switch (currentPeriod) {
