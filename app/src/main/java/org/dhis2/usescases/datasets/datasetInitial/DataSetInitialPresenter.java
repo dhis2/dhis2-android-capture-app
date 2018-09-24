@@ -1,16 +1,6 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.app.DatePickerDialog;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import org.dhis2.data.metadata.MetadataRepository;
-
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-
-import java.util.Date;
-import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -19,114 +9,78 @@ import timber.log.Timber;
 
 public class DataSetInitialPresenter implements DataSetInitialContract.Presenter {
 
-    private String datasetId;
     private CompositeDisposable compositeDisposable;
-    private final MetadataRepository metadataRepository;
     private DataSetInitialRepository dataSetInitialRepository;
+    private DataSetInitialContract.View view;
 
-    public DataSetInitialPresenter(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
+    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository) {
+        this.dataSetInitialRepository = dataSetInitialRepository;
     }
 
-    @Override
-    public void init(DataSetInitialContract.View view, String datasetId, String orgUnitId) {
-        this.datasetId = datasetId;
-        compositeDisposable = new CompositeDisposable();
 
+    @Override
+    public void init(DataSetInitialContract.View view) {
+        this.view = view;
+        compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(
+                dataSetInitialRepository.dataSet()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                Timber::d
+                        ));
     }
 
     @Override
     public void onBackClick() {
-
+        view.back();
     }
 
     @Override
-    public void createDataSet(String enrollmentUid, String programStageModel, Date date, String orgUnitUid, String catOption, String catOptionCombo, String latitude, String longitude) {
-
+    public void onOrgUnitSelectorClick() {
+        compositeDisposable.add(
+                dataSetInitialRepository.orgUnits()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.showOrgUnitDialog(data),
+                                Timber::d
+                        )
+        );
     }
 
     @Override
-    public void createDataSetPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel, Date date, String orgUnitUid, String catOption, String catOptionCombo, String latitude, String longitude) {
-
+    public void onReportPeriodClick(PeriodType periodType) {
+        view.showPeriodSelector(periodType);
     }
 
     @Override
-    public void scheduleDataSet(String enrollmentUid, String programStageModel, Date dueDate, String orgUnitUid, String catOption, String catOptionCombo, String latitude, String longitude) {
-
+    public void onCatOptionClick(String catOptionUid) {
+        compositeDisposable.add(
+                dataSetInitialRepository.catCombo(catOptionUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.showCatComboSelector(catOptionUid,data),
+                                Timber::d
+                        )
+        );
     }
 
     @Override
-    public void editDataSet(String programStageModel, String eventUid, String date, String orgUnitUid, String catOption, String catOptionCombo, String latitude, String longitude) {
+    public void onActionButtonClick(DataSetInitialContract.Action action) {
 
     }
 
-    @Override
-    public void onDateClick(@Nullable DatePickerDialog.OnDateSetListener listener) {
-
-    }
-
-    @Override
-    public void onOrgUnitButtonClick() {
-
-    }
-
-    @Override
-    public void onLocationClick() {
-
-    }
-
-    @Override
-    public void onLocation2Click() {
-
-    }
-
-    @Override
-    public void getCatOption(String categoryOptionComboId) {
-
-    }
-
-    @Override
-    public void filterOrgUnits(String date) {
-
-    }
-
-    @Override
-    public void getSectionCompletion(@Nullable String sectionUid) {
-
-    }
-
-    @Override
-    public void goToSummary() {
-
-    }
-
-    @Override
-    public void getDataSet(String programUid, String enrollmentUid, String programStageUid, PeriodType periodType) {
-
-    }
-
-    @Override
-    public void getOrgUnits(String programId) {
-
-    }
-
-    @Override
-    public void getDataSetSections(@NonNull String eventId) {
-
-    }
-
-    @Override
-    public List<OrganisationUnitModel> getOrgUnits() {
-        return null;
-    }
 
     @Override
     public void onDettach() {
-
+        compositeDisposable.clear();
     }
 
     @Override
     public void displayMessage(String message) {
-
+        view.displayMessage(message);
     }
 }

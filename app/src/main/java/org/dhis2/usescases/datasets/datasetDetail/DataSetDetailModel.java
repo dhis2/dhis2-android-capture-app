@@ -34,4 +34,5 @@ public abstract class DataSetDetailModel {
     public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state) {
         return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state);
     }
+
 }

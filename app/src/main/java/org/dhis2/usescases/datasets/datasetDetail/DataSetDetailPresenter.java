@@ -7,7 +7,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailInteractor;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
@@ -95,9 +98,9 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void addDataSet() {
         Bundle bundle = new Bundle();
-        bundle.putBoolean(NEW_EVENT, true);
+        bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
 
-        Toast.makeText(view.getContext(), "DATA SET CLICK", Toast.LENGTH_LONG).show();
+        view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
     }
 
     @Override

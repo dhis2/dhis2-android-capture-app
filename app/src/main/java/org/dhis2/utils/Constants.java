@@ -49,6 +49,7 @@ public class Constants {
     public static final String PROGRAM_THEME = "PROGRAM_THEME";
     public static final String SERVER = "SERVER";
     public static final String THEME = "THEME";
+    public static final String DATA_SET_UID = "DATA_SET_UID";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
