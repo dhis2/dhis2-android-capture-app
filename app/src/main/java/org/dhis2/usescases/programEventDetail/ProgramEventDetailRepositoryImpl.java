@@ -8,6 +8,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
@@ -29,15 +30,17 @@ import io.reactivex.Observable;
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
-    private final String EVENT_DATA_VALUES_NEW = "SELECT TrackedEntityDataValue.value, DataElement.optionSet FROM TrackedEntityDataValue " +
+    private final String EVENT_DATA_VALUES_NEW = "SELECT " +
+            "TrackedEntityDataValue.*, " +
+            "DataElement.valueType, " +
+            "DataElement.optionSet " +
+            "FROM TrackedEntityDataValue " +
             "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
             "AND TrackedEntityDataValue.dataElement IN\n" +
             "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
             "WHERE ProgramStageDataElement.displayInReports = '1'\n" +
             "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
             ")";
-
-    private final String OPTION = "SELECT Option.displayName FROM Option WHERE Option.uid = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -61,10 +64,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
                     if (program != null && program.moveToFirst()) {
                         ProgramModel programModel = ProgramModel.create(program);
-                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
                             ContentValues contentValues = eventModel.toContentValues();
                             contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                            briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                            briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
                         }
                         program.close();
                     }
@@ -112,10 +115,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
                         if (program != null && program.moveToFirst()) {
                             ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
                                 ContentValues contentValues = eventModel.toContentValues();
                                 contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
                             }
                             program.close();
                         }
@@ -148,10 +151,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
                     if (program != null && program.moveToFirst()) {
                         ProgramModel programModel = ProgramModel.create(program);
-                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
                             ContentValues contentValues = eventModel.toContentValues();
                             contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                            briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                            briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
                         }
                         program.close();
                     }
@@ -203,10 +206,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                         Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
                         if (program != null && program.moveToFirst()) {
                             ProgramModel programModel = ProgramModel.create(program);
-                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(),programModel.completeEventsExpiryDays(),programModel.expiryPeriodType())){
+                            if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
                                 ContentValues contentValues = eventModel.toContentValues();
                                 contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                                briteDatabase.update(EventModel.TABLE,contentValues,"uid = ?",eventModel.uid());
+                                briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
                             }
                             program.close();
                         }
@@ -241,11 +244,8 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
         Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES_NEW, id);
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
-                String value = cursor.getString(0);
-
+                String value = ValueUtils.transform(briteDatabase, cursor).value();
                 values.add(value);
-
-
                 cursor.moveToNext();
             }
             cursor.close();

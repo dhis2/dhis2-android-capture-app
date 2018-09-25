@@ -105,7 +105,7 @@ public class EventRepository implements FormRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name,\n" +
+            "  Option.displayName,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
             "  Event.status,\n" +

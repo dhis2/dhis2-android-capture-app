@@ -30,8 +30,9 @@ public class ExpressionEvaluatorImpl implements RuleExpressionEvaluator {
         }
 
         try {
-            return JEXL.createExpression(expression).evaluate(null).toString();
-        } catch (DuktapeException e) {
+            String result = JEXL.createExpression(expression).evaluate(null).toString();
+            return result;
+        } catch (Exception e) {
             return expression;
         }
     }

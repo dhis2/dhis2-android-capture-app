@@ -149,7 +149,7 @@ class EnrollmentFormRepository implements FormRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name,\n" +
+            "  Option.displayName,\n" +
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +

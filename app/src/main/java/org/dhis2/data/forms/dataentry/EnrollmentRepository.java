@@ -37,7 +37,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name,\n" +
+            "  Option.displayName,\n" +
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
