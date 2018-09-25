@@ -1,48 +1,38 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-public class DataSetDetailModel {
+import android.support.annotation.NonNull;
 
-    private String uidDataSet;
-    private String nameOrgUnit;
-    private String nameCatCombo;
-    private String namePeriod;
+import com.google.auto.value.AutoValue;
 
-    public DataSetDetailModel(String uidDataSet, String nameOrgUnit, String nameCatCombo, String namePeriod) {
-        this.uidDataSet = uidDataSet;
-        this.nameOrgUnit = nameOrgUnit;
-        this.nameCatCombo = nameCatCombo;
-        this.namePeriod = namePeriod;
+import org.hisp.dhis.android.core.common.State;
+
+@AutoValue
+public abstract class DataSetDetailModel {
+
+    @NonNull
+    public abstract String orgUnitUid();
+
+    @NonNull
+    public abstract String catOptionComboUid();
+
+    @NonNull
+    public abstract String periodId();
+
+    @NonNull
+    public abstract String nameOrgUnit();
+
+    @NonNull
+    public abstract String nameCatCombo();
+
+    @NonNull
+    public abstract String namePeriod();
+
+    @NonNull
+    public abstract State state();
+
+    @NonNull
+    public static DataSetDetailModel create(@NonNull String orgUnitUid, @NonNull String catOptionComboUid, @NonNull String periodId, @NonNull String orgUnitName, String nameCatCombo, String namePeriod, State state) {
+        return new AutoValue_DataSetDetailModel(orgUnitUid, catOptionComboUid, periodId, orgUnitName, nameCatCombo, namePeriod, state);
     }
 
-    public String getUidDataSet() {
-        return uidDataSet;
-    }
-
-    public void setUidDataSet(String uidDataSet) {
-        this.uidDataSet = uidDataSet;
-    }
-
-    public String getNameOrgUnit() {
-        return nameOrgUnit;
-    }
-
-    public void setNameOrgUnit(String nameOrgUnit) {
-        this.nameOrgUnit = nameOrgUnit;
-    }
-
-    public String getNameCatCombo() {
-        return nameCatCombo;
-    }
-
-    public void setNameCatCombo(String nameCatCombo) {
-        this.nameCatCombo = nameCatCombo;
-    }
-
-    public String getNamePeriod() {
-        return namePeriod;
-    }
-
-    public void setNamePeriod(String namePeriod) {
-        this.namePeriod = namePeriod;
-    }
 }

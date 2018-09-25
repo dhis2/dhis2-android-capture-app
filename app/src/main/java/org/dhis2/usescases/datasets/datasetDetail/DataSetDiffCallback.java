@@ -2,8 +2,6 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.support.v7.util.DiffUtil;
 
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-
 import java.util.List;
 
 public class DataSetDiffCallback extends DiffUtil.Callback {
@@ -28,9 +26,10 @@ public class DataSetDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldList.get(oldItemPosition).getUidDataSet()
-                .equals(newList.get(newItemPosition).getUidDataSet());
+        return oldList.get(oldItemPosition)
+                .equals(newList.get(newItemPosition));
     }
+
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         return oldList.get(oldItemPosition)

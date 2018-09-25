@@ -3,22 +3,20 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailContract;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailInteractor;
-import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,24 +24,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.EVENT_UID;
 import static org.dhis2.utils.Constants.NEW_EVENT;
-import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     private DataSetDetailRepository dataSetDetailRepository;
     private DataSetDetailContract.View view;
-    private String programId;
-    private ProgramModel program;
     private CategoryOptionComboModel categoryOptionComboModel;
     private MetadataRepository metadataRepository;
     private int lastSearchType;
@@ -54,6 +46,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     private CompositeDisposable compositeDisposable;
     private List<OrganisationUnitModel> orgUnits;
     private CategoryComboModel mCatCombo;
+    private List<String> selectedOrgUnits;
+    private PeriodType selectedPeriodType;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LastSearchType.DATES, LastSearchType.DATE_RANGES})
@@ -69,12 +63,20 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void init(DataSetDetailContract.View view, String programId, Period period) {
+    public void init(DataSetDetailContract.View view) {
         this.view = view;
-        //FIXME creo que hay que quitarlo, los dataset creo que no tienen programs
-        this.programId = programId;
-
         getOrgUnits(null);
+        compositeDisposable.add(
+                view.dataSetPage()
+                        .startWith(0)
+                        .flatMap(page -> dataSetDetailRepository.dataSetGroups(view.dataSetUid(), selectedOrgUnits, selectedPeriodType, page))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                Timber::d
+                        )
+        );
     }
 
     @Override
@@ -92,19 +94,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         view.openDrawer();
     }
 
-    @Override
-    public ProgramModel getCurrentProgram() {
-        return program;
-    }
 
     @Override
     public void addDataSet() {
-        //FIXME cambiar por la actividad de un datasetinitialactiviy
         Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        bundle.putBoolean(NEW_EVENT, true);
+        bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
 
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+        view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
     }
 
     @Override
@@ -114,7 +110,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String
+            orgUnitQuery) {
         updateFilters(categoryOptionComboModel, orgUnitQuery);
     }
 
@@ -125,28 +122,12 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onDataSetClick(String eventId, String orgUnit) {
-        //FIXME tambien cambiar por la DataSetInitialActivity
-        Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID, programId);
-        bundle.putString(EVENT_UID, eventId);
-        bundle.putString(ORG_UNIT, orgUnit);
-        bundle.putBoolean(NEW_EVENT, false);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+
     }
 
     @Override
     public List<OrganisationUnitModel> getOrgUnits() {
         return this.orgUnits;
-    }
-
-    @Override
-    public Observable<List<TrackedEntityDataValueModel>> getDataSetDataValue(DataSetModel dataSet) {
-        return dataSetDetailRepository.dataSetDataValues(dataSet);
-    }
-
-    @Override
-    public Observable<List<String>> getDataSetDataValueNew(DataSetDetailModel dataSet) {
-        return dataSetDetailRepository.dataSetValuesNew(dataSet);
     }
 
     @Override
@@ -160,7 +141,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         this.fromDate = fromDate;
         this.toDate = toDate;
         lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATES;
-        Observable.just(dataSetDetailRepository.filteredDataSet(programId,
+        /*Observable.just(dataSetDetailRepository.filteredDataSet(programId,
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate),
                 categoryOptionComboModel)
@@ -168,7 +149,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         list ->view.setData(getPeriodFromType(list)),
-                        Timber::e));
+                        Timber::e));*/
     }
 
     @Override
@@ -186,11 +167,12 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                 ));
     }
 
-    private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+    private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String
+            orgUnitQuery) {
         this.categoryOptionComboModel = categoryOptionComboModel;
         switch (lastSearchType) {
             case LastSearchType.DATES:
-                getDataSets( this.fromDate, this.toDate, orgUnitQuery);
+                getDataSets(this.fromDate, this.toDate, orgUnitQuery);
                 break;
             case LastSearchType.DATE_RANGES:
                 getDataSetWithDates(this.dates, this.period, orgUnitQuery);
@@ -208,12 +190,12 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         lastSearchType = LastSearchType.DATE_RANGES;
         //FIXME cuando haya datos para dataset hay que cambiarlo
         //ahora falla por que se va a hacer la select y no puede
-        compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
+       /* compositeDisposable.add(dataSetDetailRepository.filteredDataSet(programId,"","", categoryOptionComboModel)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         list ->view.setData(getPeriodFromType(list)),
-                        throwable -> view.renderError(throwable.getMessage())));
+                        throwable -> view.renderError(throwable.getMessage())));*/
     }
 
     @Override
@@ -224,22 +206,5 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void displayMessage(String message) {
         view.displayMessage(message);
-    }
-
-    private List<DataSetDetailModel> getPeriodFromType(List<DataSetDetailModel> listDataSetModel){
-        List<DataSetDetailModel> listFinal = new ArrayList<>();
-
-        for (DataSetDetailModel dataset: listDataSetModel){
-            DataSetDetailPeriodEnum periodEnum =
-                    DataSetDetailPeriodEnum.getDataSetPeriod(dataset.getNamePeriod());
-
-            List<DataSetDetailModel> listDataSet = periodEnum.getListDataSetWithPeriods(2018, dataset);
-            for(DataSetDetailModel datasetDetail: listDataSet){
-                listFinal.add(datasetDetail);
-            }
-        }
-
-        return listFinal;
-
     }
 }

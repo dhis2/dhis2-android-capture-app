@@ -13,7 +13,7 @@ public enum DataSetDetailPeriodEnum {
     DAILY("Daily") {
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
-            if(year <= maxDate().year().get()){
+            /*if(year <= maxDate().year().get()){
 
                 for(int month = 1; month<= maxDate().monthOfYear().get(); month++){
                     DateTime currentMonth = new DateTime().withMonthOfYear(month);
@@ -28,7 +28,7 @@ public enum DataSetDetailPeriodEnum {
                     }
 
                 }
-            }
+            }*/
 
             return listDataSet;
         }
@@ -67,7 +67,7 @@ public enum DataSetDetailPeriodEnum {
     BIWEEKLY("BiWeekly"){
         public List<DataSetDetailModel> getListDataSetWithPeriods(int year, DataSetDetailModel dataset){
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
-            if(year <= maxDate().year().get()){
+            /*if(year <= maxDate().year().get()){
                 int biweek = 1;
                 for(int week = 1; week < maxDate().getWeekOfWeekyear(); week++){
                     DateTime currentWeek = new DateTime().withWeekOfWeekyear(week);
@@ -82,7 +82,7 @@ public enum DataSetDetailPeriodEnum {
                     biweek ++;
                     week ++;
                 }
-            }
+            }*/
             return listDataSet;
         }
     },
@@ -116,7 +116,7 @@ public enum DataSetDetailPeriodEnum {
     YEARLY("Yearly"){
         public List<DataSetDetailModel> getListDataSetWithPeriods(int currentYear, DataSetDetailModel dataset){
             List<DataSetDetailModel> listDataSet = new ArrayList<>();
-            if(currentYear <= maxDate().year().get()){
+           /* if(currentYear <= maxDate().year().get()){
 
                 for(int year = currentYear; year > 2008; year--){
                     DateTime currentMonth = new DateTime().withYear(year);
@@ -126,7 +126,7 @@ public enum DataSetDetailPeriodEnum {
                             date));
 
                 }
-            }
+            }*/
             return listDataSet;
         }
     }
@@ -138,7 +138,7 @@ public enum DataSetDetailPeriodEnum {
 
     public static List<DataSetDetailModel> getListDataSetWithPeriodsWeeks(int year, DataSetDetailModel dataset, int day){
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
-        if(year <= maxDate().year().get()){
+        /*if(year <= maxDate().year().get()){
 
             for(int week = 1; week < maxDate().getWeekOfWeekyear(); week++){
                 DateTime currentWeek = new DateTime().withWeekOfWeekyear(week).withDayOfWeek(day);
@@ -151,13 +151,13 @@ public enum DataSetDetailPeriodEnum {
                         dataset.getNameOrgUnit(),dataset.getNameCatCombo(),
                         date));
             }
-        }
+        }*/
         return listDataSet;
     }
 
     public static List<DataSetDetailModel> getListDataSetWithPeriodsMonth(int year, DataSetDetailModel dataset, int startMonth, int period){
         List<DataSetDetailModel> listDataSet = new ArrayList<>();
-        if(year <= maxDate().year().get()){
+        /*if(year <= maxDate().year().get()){
 
             for(int month = 1; month< maxDate().monthOfYear().get(); month++){
                 DateTime currentMonth = new DateTime().withMonthOfYear(month).withYear(year).withMonthOfYear(startMonth + month - 1);
@@ -173,7 +173,7 @@ public enum DataSetDetailPeriodEnum {
 
                 month = month+period;
             }
-        }
+        }*/
 
         return listDataSet;
     }

@@ -16,8 +16,9 @@ import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodComponent;
 import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
-import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
+import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -127,4 +128,7 @@ public interface UserComponent {
 
     @NonNull
     DataSetDetailComponent plus(DataSetDetailModule dataSetDetailModel);
+
+    @NonNull
+    DataSetInitialComponent plus(DataSetInitialModule dataSetInitialModule);
 }

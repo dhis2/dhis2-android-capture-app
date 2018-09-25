@@ -76,27 +76,56 @@ class EnrollmentFormRepository implements FormRepository {
 
     private static final String SELECT_INCIDENT_DATE = "SELECT Enrollment.* FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1";
 
-    private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT ProgramStage.uid, " +
-            "Program.uid, Enrollment.organisationUnit, ProgramStage.minDaysFromStart, ProgramStage.generatedByEnrollmentDate, Enrollment.incidentDate, Enrollment.enrollmentDate, ProgramStage.periodType \n" +
+    private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT " +
+            "ProgramStage.uid, " +
+            "Program.uid, " +
+            "Enrollment.organisationUnit, " +
+            "ProgramStage.minDaysFromStart, " +
+            "ProgramStage.generatedByEnrollmentDate, " +
+            "Enrollment.incidentDate, " +
+            "Enrollment.enrollmentDate, " +
+            "ProgramStage.periodType \n" +
             "FROM Enrollment\n" +
             "  JOIN Program ON Enrollment.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
-            "WHERE Enrollment.uid = ?";
+            "  JOIN ProgramStage ON Program.uid = ProgramStage.program \n" +
+            "WHERE Enrollment.uid = ? AND ProgramStage.autoGenerateEvent = 1";
+
+    private static final String GET_FIRST_STAGE = "SELECT " +
+            "ProgramStage.* FROM ProgramStage " +
+            "WHERE ProgramStage.program = ? " +
+            "AND ProgramStage.sortOrder != 0 " +
+            "ORDER BY ProgramStage.sortOrder ASC LIMIT 1";
+    private static final String CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT = "SELECT " +
+            "Event.uid, " +
+            "Program.trackedEntityType "+
+            "FROM Event " +
+            "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
+            "JOIN Program ON Program.uid = Enrollment.program " +
+            "WHERE Event.programStage = ? AND Enrollment.uid = ?";
 
     private static final String SELECT_USE_FIRST_STAGE =
-            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType, Event.uid\n" +
+            "SELECT ProgramStage.uid, " +
+                    "ProgramStage.program, " +
+                    "Enrollment.organisationUnit, " +
+                    "Program.trackedEntityType, " +
+                    "Event.uid\n" +
                     "FROM Enrollment\n" +
                     "  JOIN Program ON Enrollment.program = Program.uid\n" +
                     "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
                     "  JOIN Event ON event.enrollment = Enrollment.uid\n" +
-                    "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
+                    "WHERE Enrollment.uid = ? AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1) " +
+                    "ORDER BY ProgramStage.sortOrder ASC LIMIT 1";
 
     private static final String SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT =
-            "SELECT ProgramStage.uid, ProgramStage.program, Enrollment.organisationUnit, Program.trackedEntityType\n" +
+            "SELECT ProgramStage.uid, " +
+                    "ProgramStage.program, " +
+                    "Enrollment.organisationUnit, " +
+                    "Program.trackedEntityType\n" +
                     "FROM Enrollment\n" +
                     "  JOIN Program ON Enrollment.program = Program.uid\n" +
                     "  JOIN ProgramStage ON Program.uid = ProgramStage.program\n" +
-                    "WHERE Enrollment.uid = ? AND ProgramStage.sortOrder = 1 AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1)";
+                    "WHERE Enrollment.uid = ? AND (Program.useFirstStageDuringRegistration  = 1 OR ProgramStage.openAfterEnrollment = 1) " +
+                    "ORDER BY ProgramStage.sortOrder ASC";
 
     private static final String SELECT_PROGRAM = "SELECT \n" +
             "  program\n" +
@@ -510,7 +539,57 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //EnrollmentUid,
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid == null ? "" : enrollmentUid)
+
+        return briteDatabase.createQuery(ProgramStageModel.TABLE, GET_FIRST_STAGE, programUid)
+                .mapToOne(ProgramStageModel::create)
+                .map(programStage->{
+                    Cursor eventCursor = briteDatabase.query(CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT,programStage.uid(),enrollmentUid);
+                    if(eventCursor!=null && eventCursor.moveToFirst()){ //Event exist
+                        return Trio.create(enrollmentUid,eventCursor.getString(1),eventCursor.getString(0));
+                    }else{//Event does not exist
+                        Cursor newCursor = briteDatabase.query(SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT, enrollmentUid);
+                        if (newCursor.moveToFirst()) {
+                            String programStageUid = programStage.uid();
+                            String programStageProgram = programStage.program();
+                            String enrollmentOrgUnit = newCursor.getString(2);
+                            String trackedEntityType = newCursor.getString(3);
+
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(cal.getTime());
+                            cal.set(Calendar.HOUR_OF_DAY, 0);
+                            cal.set(Calendar.MINUTE, 0);
+                            cal.set(Calendar.SECOND, 0);
+                            cal.set(Calendar.MILLISECOND, 0);
+
+                            Date createdDate = Calendar.getInstance().getTime();
+                            EventModel event = EventModel.builder()
+                                    .uid(codeGenerator.generate())
+                                    .created(createdDate)
+                                    .lastUpdated(createdDate)
+                                    .eventDate(cal.getTime())
+                                    .enrollment(enrollmentUid)
+                                    .program(programStageProgram)
+                                    .programStage(programStageUid)
+                                    .organisationUnit(enrollmentOrgUnit)
+                                    .status(EventStatus.ACTIVE)
+                                    .state(State.TO_POST)
+                                    .build();
+
+                            if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                                throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+                            }
+                            updateProgramTable(createdDate, programStageProgram);
+                            return Trio.create(enrollmentUid, trackedEntityType, event.uid());
+                    } else {
+                            Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
+                            tetCursor.moveToFirst();
+
+                            return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
+                        }
+                }});
+
+
+        /*return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid == null ? "" : enrollmentUid)
                 .map(query -> {
                     String trackedEntityType = "";
                     String eventUid;
@@ -561,7 +640,7 @@ class EnrollmentFormRepository implements FormRepository {
                             return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
                         }
                     }
-                });
+                });*/
     }
 
     @NonNull

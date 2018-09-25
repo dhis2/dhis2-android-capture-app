@@ -44,6 +44,6 @@ public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
                         Timber::d
                 ));*/
 
-        itemView.setOnClickListener(view -> presenter.onDataSetClick(dataset.getUidDataSet(),/* dataset.organisationUnit() viene de otro lllaaaauuu*/null));
+//        itemView.setOnClickListener(view -> presenter.onDataSetClick(dataset.getUidDataSet(),null));
     }
 }

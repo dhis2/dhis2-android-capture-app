@@ -1,22 +1,17 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailContract;
-import org.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 
 public class DataSetDetailContract {
 
@@ -42,18 +37,20 @@ public class DataSetDetailContract {
         void apply();
 
         void setWritePermission(Boolean aBoolean);
+
+        Flowable<Integer> dataSetPage();
+
+        String dataSetUid();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view, String programId, Period period);
+        void init(View view);
 
         void onTimeButtonClick();
 
         void onDateRangeButtonClick();
 
         void onOrgUnitButtonClick();
-
-        ProgramModel getCurrentProgram();
 
         void addDataSet();
 
@@ -66,10 +63,6 @@ public class DataSetDetailContract {
         void onDataSetClick(String eventId, String orgUnit);
 
         List<OrganisationUnitModel> getOrgUnits();
-
-        Observable<List<TrackedEntityDataValueModel>> getDataSetDataValue(DataSetModel event);
-
-        Observable<List<String>> getDataSetDataValueNew(DataSetDetailModel event);
 
         void showFilter();
 
