@@ -104,7 +104,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'" +
+                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
                     "THEN %s.%s ELSE %s.%s END DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
