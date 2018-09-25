@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.text.SimpleDateFormat;
@@ -258,6 +259,11 @@ public class DateUtils {
 
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
+
+        if(event.status() == EventStatus.COMPLETED){
+            if (completeEventExpiryDays == 0)
+                return false;
+        }
 
         if (event.completedDate() != null)
             expiredDate.setTime(event.completedDate());
