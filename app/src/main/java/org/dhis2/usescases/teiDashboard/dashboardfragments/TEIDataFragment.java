@@ -225,7 +225,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public Consumer<ProgramStageModel> displayGenerateEvent() {
         return programStageModel -> {
             this.programStageFromEvent = programStageModel;
-            if (programStageModel.displayGenerateEventBox()) {
+            if (programStageModel.displayGenerateEventBox() || programStageModel.allowGenerateNextVisit()) {
                 dialog = new CustomDialog(
                         getContext(),
                         getString(R.string.dialog_generate_new_event),
