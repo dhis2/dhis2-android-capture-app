@@ -3,14 +3,15 @@ package org.dhis2.usescases.programStageSelection;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.forms.RulesRepository;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
@@ -109,7 +110,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
         this.cachedRuleEngineFlowable =
                 Flowable.zip(
                         rulesRepository.rulesNew(programUid),
-                        rulesRepository.ruleVariables(programUid),
+                        rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
                         (rules, variables, ruleEvents) ->
                                 RuleEngineContext.builder(evaluator)
@@ -130,7 +131,13 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String programStage = cursor.getString(6);
-                    RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
+                    String eventStatus;
+                    if (cursor.getString(2).equals(EventStatus.VISITED.name()))
+                        eventStatus = EventStatus.ACTIVE.name();
+                    else
+                        eventStatus = cursor.getString(2);
+
+                    RuleEvent.Status status = RuleEvent.Status.valueOf(eventStatus);
 
                     Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid == null ? "" : eventUid);
                     if (dataValueCursor != null && dataValueCursor.moveToFirst()) {

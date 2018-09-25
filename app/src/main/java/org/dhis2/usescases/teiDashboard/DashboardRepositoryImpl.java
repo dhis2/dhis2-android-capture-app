@@ -11,6 +11,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -132,7 +133,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final Set<String> EVENTS_PROGRAM_STAGE_TABLE = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE, ProgramStageModel.TABLE));
 
     private final String ATTRIBUTE_VALUES_QUERY = String.format(
-            "SELECT TrackedEntityAttributeValue.*, TrackedEntityAttribute.valueType FROM %s " +
+            "SELECT TrackedEntityAttributeValue.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
@@ -147,7 +148,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
     private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
-            "SELECT %s.*, TrackedEntityAttribute.valueType FROM %s " +
+            "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? GROUP BY %s.%s",
@@ -437,48 +438,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> {
-                        TrackedEntityAttributeValueModel teAttrValue = TrackedEntityAttributeValueModel.create(cursor);
-                        int valueTypeIndex = cursor.getColumnIndex("valueType");
-                        if (cursor.getString(valueTypeIndex).equals(ValueType.ORGANISATION_UNIT.name())) {
-                            String orgUnitUid = cursor.getString(cursor.getColumnIndex("value"));
-                            Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid);
-                            if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-                                String orgUnitName = orgUnitCursor.getString(0);
-                                teAttrValue = TrackedEntityAttributeValueModel.builder()
-                                        .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                                        .lastUpdated(teAttrValue.lastUpdated())
-                                        .created(teAttrValue.created())
-                                        .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                        .value(orgUnitName)
-                                        .build();
-                                orgUnitCursor.close();
-                            }
-                        }
-                        return teAttrValue;
-                    });
+                    .mapToList(cursor -> ValueUtils.transform(briteDatabase,cursor));
         else
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> {
-                        TrackedEntityAttributeValueModel teAttrValue = TrackedEntityAttributeValueModel.create(cursor);
-                        int valueTypeIndex = cursor.getColumnIndex("valueType");
-                        if (cursor.getString(valueTypeIndex).equals(ValueType.ORGANISATION_UNIT.name())) {
-                            String orgUnitUid = cursor.getString(cursor.getColumnIndex("value"));
-                            Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid);
-                            if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
-                                String orgUnitName = orgUnitCursor.getString(0);
-                                teAttrValue = TrackedEntityAttributeValueModel.builder()
-                                        .trackedEntityInstance(teAttrValue.trackedEntityInstance())
-                                        .lastUpdated(teAttrValue.lastUpdated())
-                                        .created(teAttrValue.created())
-                                        .trackedEntityAttribute(teAttrValue.trackedEntityAttribute())
-                                        .value(orgUnitName)
-                                        .build();
-                                orgUnitCursor.close();
-                            }
-                        }
-                        return teAttrValue;
-                    });
+                    .mapToList(cursor -> ValueUtils.transform(briteDatabase,cursor));
     }
 
     @Override
