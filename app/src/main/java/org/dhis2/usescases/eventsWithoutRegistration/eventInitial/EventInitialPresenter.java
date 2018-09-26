@@ -11,6 +11,9 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
@@ -23,9 +26,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -122,7 +122,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                                                 .observeOn(AndroidSchedulers.mainThread());
                                     }
                             )
-                            .subscribeOn(Schedulers.io())
+                            .subscribeOn(AndroidSchedulers.mainThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
@@ -153,7 +153,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             )
             );
         getOrgUnits(programId);
-        if(TextUtils.isEmpty(programStageId))
+        if (TextUtils.isEmpty(programStageId))
             getProgramStages(programId);
         else
             getProgramStage(programStageId);
@@ -227,6 +227,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onShareClick(View mView) {
         view.showQR();
+    }
+
+    @Override
+    public void deleteEvent() {
+        if (eventId != null) {
+            eventInitialRepository.deleteEvent(eventId);
+            view.showEventWasDeleted();
+        } else
+            view.displayMessage("This event has not been created yet");
     }
 
     @Override
@@ -401,8 +410,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.showFields(sectionUid), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));

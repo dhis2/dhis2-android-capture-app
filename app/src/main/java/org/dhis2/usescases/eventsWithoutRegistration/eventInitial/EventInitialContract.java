@@ -71,6 +71,8 @@ public class EventInitialContract {
         void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits);
 
         void showQR();
+
+        void showEventWasDeleted();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -122,6 +124,8 @@ public class EventInitialContract {
         List<OrganisationUnitModel> getOrgUnits();
 
         void onShareClick(android.view.View mView);
+
+        void deleteEvent();
     }
 
 }

@@ -50,8 +50,6 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
     }
 
     public void setEvents(List<EventModel> events){
-      /*  Collections.sort(this.events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
-        Collections.sort(events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));*/
 
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, events));
         this.events.clear();

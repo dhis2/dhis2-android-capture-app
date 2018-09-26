@@ -63,7 +63,7 @@
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
-
+<!--
             <ImageView
                 android:id="@+id/toolbarDelete"
                 android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
                 android:padding="10dp"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:srcCompat="@drawable/ic_delete"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription" />-->
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -93,7 +93,7 @@
                 android:tint="?colorAccent"
                 android:visibility="@{isEditable ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/toolbarDelete"
+                app:layout_constraintEnd_toStartOf="@+id/moreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_edit"
                 tools:visibility="gone" />
