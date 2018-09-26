@@ -441,7 +441,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                             })
                             .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));
         }
-        
+
         binding.date.setText(selectedDateString);
 
         if (program.captureCoordinates()) {
