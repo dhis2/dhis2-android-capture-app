@@ -6,10 +6,10 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.D2CallException;
@@ -41,7 +41,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
-            "  Enrollment.status\n" +
+            "  Enrollment.status,\n" +
+            "  Field.displayDescription\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -52,7 +53,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
-            "        TrackedEntityAttribute.generated AS generated\n" +
+            "        TrackedEntityAttribute.generated AS generated,\n" +
+            "        TrackedEntityAttribute.displayDescription AS displayDescription\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -113,7 +115,7 @@ final class EnrollmentRepository implements DataEntryRepository {
         String optionCodeName = cursor.getString(6);
 
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
-
+        String description = cursor.getString(11);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -129,14 +131,14 @@ final class EnrollmentRepository implements DataEntryRepository {
                     tei.close();
                 }
 
-                if(teiUid!=null) { //checks if tei has been deleted
+                if (teiUid != null) { //checks if tei has been deleted
                     dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
-                    if(valueType == ValueType.NUMBER)
-                        while(dataValue.startsWith("0")){
+                    if (valueType == ValueType.NUMBER)
+                        while (dataValue.startsWith("0")) {
                             dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
-                    }
+                        }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
                             "(lastUpdated, value, trackedEntityAttribute, trackedEntityInstance)\n" +
@@ -160,7 +162,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description);
 
     }
 

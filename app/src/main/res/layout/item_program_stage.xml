@@ -49,9 +49,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
-            android:text="@{programStage.description()}"
+            android:text="@{programStage.displayDescription()}"
             android:textSize="15sp"
-            android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}"
+            android:visibility="@{programStage.displayDescription()!=null?View.VISIBLE:View.GONE}"
             tools:text="PROGRAM STAGE DESCRIPTION" />
     </LinearLayout>
 </layout>

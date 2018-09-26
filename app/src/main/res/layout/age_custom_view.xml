@@ -10,6 +10,10 @@
         <variable
             name="label"
             type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
     </data>
 
     <RelativeLayout
@@ -38,8 +42,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:hint='@{label}'
-                android:theme="@style/loginInputText"
                 android:textColorHint="@color/text_black_808"
+                android:theme="@style/loginInputText"
                 tools:hint="Age">
 
                 <android.support.design.widget.TextInputEditText
@@ -65,8 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="date"
-                    android:textColorHint="@color/text_black_333"
-                    />
+                    android:textColorHint="@color/text_black_333" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -83,8 +86,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_month"
                     android:inputType="date"
-                    android:textColorHint="@color/text_black_333"
-                    />
+                    android:textColorHint="@color/text_black_333" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -109,7 +111,7 @@
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                android:visibility="@{(label.length()>16||description!=null)?View.VISIBLE : View.GONE}"
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary" />
         </LinearLayout>

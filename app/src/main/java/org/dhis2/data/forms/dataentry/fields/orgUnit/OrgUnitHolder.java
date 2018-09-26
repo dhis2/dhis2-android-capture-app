@@ -57,7 +57,7 @@ public class OrgUnitHolder extends FormViewHolder {
                         orgUnitDialog.dismiss();
                         editText.setEnabled(true);
                     })
-                    .setNegativeListener(data-> {
+                    .setNegativeListener(data -> {
                         orgUnitDialog.dismiss();
                         editText.setEnabled(true);
                     });
@@ -65,30 +65,6 @@ public class OrgUnitHolder extends FormViewHolder {
                 orgUnitDialog.show(fm, model.label());
         });
 
-
-//        model = BehaviorProcessor.create();
-
-       /* compositeDisposable.add(
-                model.subscribe(viewModel -> {
-                            StringBuilder label = new StringBuilder(viewModel.label());
-                            if (viewModel.mandatory())
-                                label.append("*");
-                            this.inputLayout.setHint(label.toString());
-
-                            if (viewModel.warning() != null)
-                                editText.setError(viewModel.warning());
-                            else if (viewModel.error() != null)
-                                editText.setError(viewModel.error());
-                            else
-                                editText.setError(null);
-
-                            if (viewModel.value() != null && !viewModel.value().equals(viewModel.value())) {
-                                getOrgUnits();
-                            }
-                            editText.setEnabled(viewModel.editable());
-                        },
-                        Timber::d)
-        );*/
 
         getOrgUnits();
     }
@@ -99,14 +75,14 @@ public class OrgUnitHolder extends FormViewHolder {
     }
 
     public void update(OrgUnitViewModel viewModel) {
-//        model.onNext(viewModel);
 
-        StringBuilder label = new StringBuilder(viewModel.label());
+        descriptionText = viewModel.description();
+        label = new StringBuilder(viewModel.label());
         if (viewModel.mandatory())
             label.append("*");
         this.inputLayout.setHint(label.toString());
 
-        if (label.length() > 16)
+        if (label.length() > 16 || viewModel.description() != null)
             description.setVisibility(View.VISIBLE);
         else
             description.setVisibility(View.GONE);

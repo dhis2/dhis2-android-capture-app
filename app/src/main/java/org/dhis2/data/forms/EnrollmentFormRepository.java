@@ -22,6 +22,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -142,6 +143,7 @@ class EnrollmentFormRepository implements FormRepository {
     private static final String SELECT_VALUES = "SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
             "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = TrackedEntityAttributeValue.trackedEntityInstance " +
             "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?";
+
     private static final String QUERY = "SELECT \n" +
             "  Field.id,\n" +
             "  Field.label,\n" +
@@ -153,7 +155,8 @@ class EnrollmentFormRepository implements FormRepository {
             "  Field.allowFutureDate,\n" +
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
-            "  Enrollment.status\n" +
+            "  Enrollment.status,\n" +
+            "  Field.displayDescription\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -164,7 +167,8 @@ class EnrollmentFormRepository implements FormRepository {
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
             "        ProgramTrackedEntityAttribute.allowFutureDate AS allowFutureDate,\n" +
-            "        TrackedEntityAttribute.generated AS generated\n" +
+            "        TrackedEntityAttribute.generated AS generated,\n" +
+            "        TrackedEntityAttribute.displayDescription AS displayDescription\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
@@ -517,6 +521,7 @@ class EnrollmentFormRepository implements FormRepository {
         String section = cursor.getString(7);
         Boolean allowFutureDates = cursor.getInt(8) == 1;
         EnrollmentStatus status = EnrollmentStatus.valueOf(cursor.getString(10));
+        String description = cursor.getString(11);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -533,7 +538,7 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null,description);
     }
 
     @NonNull

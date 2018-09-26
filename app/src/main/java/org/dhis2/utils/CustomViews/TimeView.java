@@ -38,6 +38,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     private OnDateSelected listener;
 
     private String label;
+    private String description;
 
     public TimeView(Context context) {
         super(context);
@@ -77,6 +78,12 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     public void setLabel(String label) {
         this.label = label;
         binding.setVariable(BR.label, label);
+        binding.executePendingBindings();
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+        binding.setVariable(BR.description, description);
         binding.executePendingBindings();
     }
 

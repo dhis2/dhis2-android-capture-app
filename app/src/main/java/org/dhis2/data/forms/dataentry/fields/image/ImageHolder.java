@@ -1,9 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.data.forms.dataentry.fields.FieldViewHolder;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
 
@@ -19,7 +23,7 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 31/05/2018.
  */
 
-public class ImageHolder extends RecyclerView.ViewHolder {
+public class ImageHolder extends FormViewHolder {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
@@ -30,7 +34,7 @@ public class ImageHolder extends RecyclerView.ViewHolder {
     ImageViewModel model;
 
     public ImageHolder(FormImageBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType, View rootView, FlowableProcessor<String> imageSelector) {
-        super(rootView != null ? rootView : mBinding.getRoot());
+        super(mBinding);
         this.processor = processor;
         this.binding = mBinding;
         this.disposable = new CompositeDisposable();
@@ -70,7 +74,8 @@ public class ImageHolder extends RecyclerView.ViewHolder {
         this.model = viewModel;
 
         this.isEditable = viewModel.editable();
-        StringBuilder label = new StringBuilder(viewModel.label());
+        descriptionText = viewModel.description();
+        label = new StringBuilder(viewModel.label());
         if (viewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());

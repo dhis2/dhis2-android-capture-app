@@ -95,6 +95,13 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
             ((FormCoordinatesAccentBinding) binding).setLabel(label);
     }
 
+    public void setDescription(String description) {
+        if (binding instanceof FormCoordinatesBinding)
+            ((FormCoordinatesBinding) binding).setDescription(description);
+        else
+            ((FormCoordinatesAccentBinding) binding).setDescription(description);
+    }
+
     public void setInitialValue(String initialValue) {
         this.latLong.setText(initialValue.replace("[", "").replace("]", ""));
     }
