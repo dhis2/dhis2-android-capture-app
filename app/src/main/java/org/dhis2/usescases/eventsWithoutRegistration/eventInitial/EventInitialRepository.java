@@ -62,4 +62,6 @@ public interface EventInitialRepository {
     Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
 
     Observable<Boolean> accessDataWrite(String programId);
+
+    void deleteEvent(String eventId);
 }

@@ -631,7 +631,7 @@ public class Bindings {
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
                                             categoryOptionModel -> {
-                                                if (!CategoryComboModel.DEFAULT_UID.equals(categoryOptionModel.uid())) {
+                                                if (!categoryOptionModel.isDefault()) {
                                                     textView.setText(categoryOptionComboModel.displayName());
                                                 } else {
                                                     textView.setText("");
