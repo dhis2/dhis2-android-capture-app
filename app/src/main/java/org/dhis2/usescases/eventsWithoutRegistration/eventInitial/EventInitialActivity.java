@@ -412,6 +412,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         this.program = program;
+        this.periodType = program.expiryPeriodType();
+
         String activityTitle;
         if (eventCreationType.equals(REFERRAL)) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
@@ -420,9 +422,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        if (periodType == null)
+        Calendar now = Calendar.getInstance();
+        if (periodType == null) {
+            selectedDateString = String.format(Locale.getDefault(), "%s-%02d-%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
             binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
-        else
+        } else {
+            now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), 0));
+            selectedDateString = String.format(Locale.getDefault(), "%s-%02d-%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
             binding.date.setOnClickListener(v ->
                     new PeriodDialog()
                             .setPeriod(periodType)
@@ -432,8 +438,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 if (!fixedOrgUnit)
                                     binding.orgUnit.setText("");
                                 presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
-                            } )
+                            })
                             .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));
+        }
+        
+        binding.date.setText(selectedDateString);
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
@@ -515,9 +524,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
 
         if (event.eventDate() != null)
-            binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
-        else
-            binding.setEventDate("");
+            binding.date.setText(DateUtils.uiDateFormat().format(event.eventDate()));
 
         if (event.latitude() != null && event.longitude() != null) {
             runOnUiThread(() -> {
