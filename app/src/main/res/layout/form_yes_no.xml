@@ -14,6 +14,10 @@
             name="label"
             type="java.lang.String" />
 
+        <variable
+            name="description"
+            type="java.lang.String" />
+
     </data>
 
     <LinearLayout
@@ -24,6 +28,7 @@
             android:id="@+id/customYesNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:description="@{description}"
             app:label="@{label}"
             app:valueType="@{ valueType }" />
 
@@ -31,10 +36,10 @@
             android:id="@+id/warningError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:gravity="center"
-            tools:text="This is a error message"
             android:background="@color/white"
-            android:visibility="gone"/>
+            android:gravity="center"
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:text="This is a error message" />
     </LinearLayout>
 </layout>

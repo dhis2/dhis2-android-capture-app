@@ -322,4 +322,5 @@
     <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
     <string name="qr_data_values">data</string>
     <string name="qr_no_id_error">not found</string>
+    <string name="info">Info</string>
 </resources>

@@ -42,6 +42,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
     private OnAgeSet listener;
     private LayoutInflater inflater;
     private String label;
+    private String description;
 
     public AgeView(Context context) {
         super(context);
@@ -64,12 +65,16 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
 
     }
 
-    public void setLabel(String label) {
+    public void setLabel(String label,String description) {
         this.label = label;
-        if (binding instanceof AgeCustomViewAccentBinding)
+        this.description = description;
+        if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
-        else
+            ((AgeCustomViewAccentBinding) binding).setDescription(description);
+        }else {
             ((AgeCustomViewBinding) binding).setLabel(label);
+            ((AgeCustomViewBinding) binding).setDescription(description);
+        }
     }
 
     public void setWarningOrError(String warningOrError) {

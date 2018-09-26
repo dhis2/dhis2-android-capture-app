@@ -64,6 +64,11 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
         binding.executePendingBindings();
     }
 
+    public void setDescription(String description) {
+        binding.setVariable(BR.description, description);
+        binding.executePendingBindings();
+    }
+
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int i) {
 
