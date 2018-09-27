@@ -211,7 +211,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void setDate() {
 
-        if (eventDetailModel.getProgramStage().periodType() == PeriodType.Daily)
+        if (eventDetailModel.getProgramStage().periodType()==null || eventDetailModel.getProgramStage().periodType() == PeriodType.Daily)
             openDailySelector();
         else
             openPeriodSelector();

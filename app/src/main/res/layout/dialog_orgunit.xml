@@ -24,9 +24,10 @@
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:background="?colorPrimary"
+                android:background="@color/colorGreyDefault"
                 android:gravity="center"
                 android:textColor="?colorAccent"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -36,6 +37,7 @@
                 android:id="@+id/tree_container"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:padding="5dp"
                 app:layout_constraintBottom_toTopOf="@id/clear_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +53,7 @@
                 android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:text="@string/cancel"
-                android:textColor="?colorPrimary"
+                android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/accept_button" />
 
@@ -64,7 +66,7 @@
                 android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:text="@string/action_accept"
-                android:textColor="?colorPrimary"
+                android:textColor="@color/colorGreyDefault"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </android.support.constraint.ConstraintLayout>

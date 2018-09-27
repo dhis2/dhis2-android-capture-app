@@ -21,7 +21,10 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -49,34 +52,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     }
 
     @NonNull
-    private Observable<List<EventModel>> programEvents(String programUid, String fromDate, String toDate) {
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.EVENT_DATE + " BETWEEN '%s' and '%s' " +
-                "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                "ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
-        return briteDatabase.createQuery(EventModel.TABLE,
-                String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES,
-                        programUid == null ? "" : programUid,
-                        fromDate == null ? "" : fromDate,
-                        toDate == null ? "" : toDate))
-                .mapToList(cursor -> {
-                    EventModel eventModel = EventModel.create(cursor);
+    private Flowable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery, int page) {
+        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
 
-                    Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                    if (program != null && program.moveToFirst()) {
-                        ProgramModel programModel = ProgramModel.create(program);
-                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                            ContentValues contentValues = eventModel.toContentValues();
-                            contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                            briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                        }
-                        program.close();
-                    }
-                    return eventModel;
-                });
-    }
-
-    @NonNull
-    private Observable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery) {
         if (dates != null) {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND (%s) " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
@@ -95,10 +73,10 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
             SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
 
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES,
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery,
                     programUid == null ? "" : programUid,
                     dateQuery == null ? "" : dateQuery))
-                    .mapToList(EventModel::create);
+                    .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
         } else {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
@@ -108,7 +86,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
             SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
 
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES, programUid == null ? "" : programUid))
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery, programUid == null ? "" : programUid))
                     .mapToList(cursor -> {
                         EventModel eventModel = EventModel.create(cursor);
 
@@ -123,11 +101,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                             program.close();
                         }
                         return eventModel;
-                    });
+                    }).toFlowable(BackpressureStrategy.LATEST);
         }
     }
 
-    @NonNull
+    /*@NonNull
     @Override
     public Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
         if (categoryOptionComboModel == null) {
@@ -160,13 +138,20 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     }
                     return eventModel;
                 });
-    }
+    }*/
 
     @NonNull
     @Override
-    public Observable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates, Period period, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+    public Flowable<List<EventModel>> filteredProgramEvents(String programUid, List<Date> dates,
+                                                            Period period,
+                                                            CategoryOptionComboModel categoryOptionComboModel,
+                                                            String orgUnitQuery,
+                                                            int page) {
+
+        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
+
         if (categoryOptionComboModel == null) {
-            return programEvents(programUid, dates, period, orgUnitQuery);
+            return programEvents(programUid, dates, period, orgUnitQuery, page);
         }
         if (dates != null) {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' AND (%s) " +
@@ -184,11 +169,11 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
 
             String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO,
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
                     programUid == null ? "" : programUid,
                     id,
                     dateQuery))
-                    .mapToList(EventModel::create);
+                    .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
         } else {
             String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s' " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
@@ -197,7 +182,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                 SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
 
             String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO,
+            return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO + pageQuery,
                     programUid == null ? "" : programUid,
                     id))
                     .mapToList(cursor -> {
@@ -214,7 +199,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                             program.close();
                         }
                         return eventModel;
-                    });
+                    }).toFlowable(BackpressureStrategy.LATEST);
         }
     }
 

@@ -3,13 +3,9 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
-import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModel;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailInteractor;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
@@ -20,7 +16,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +23,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.dhis2.utils.Constants.NEW_EVENT;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
@@ -140,7 +133,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     public void getDataSets(Date fromDate, Date toDate, String orgUnitQuery) {
         this.fromDate = fromDate;
         this.toDate = toDate;
-        lastSearchType = ProgramEventDetailInteractor.LastSearchType.DATES;
+        lastSearchType = LastSearchType.DATES;
         /*Observable.just(dataSetDetailRepository.filteredDataSet(programId,
                 DateUtils.getInstance().formatDate(fromDate),
                 DateUtils.getInstance().formatDate(toDate),
