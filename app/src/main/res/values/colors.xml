@@ -22,6 +22,8 @@
     <color name="colorPrimaryDarkOrange">#CF4500</color>
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
+    <color name="colorGreyDefault">#4d4d4d</color>
+
     <!--region BACKEND COLOR-->
     <!--BACKEND 64 COLOR THEMES-->
     <!--region 1 TO 10-->
