@@ -1,20 +1,27 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
@@ -27,21 +34,73 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 public class ProgramEventDetailPresenter implements ProgramEventDetailContract.Presenter {
 
+    private final ProgramEventDetailRepository eventRepository;
+    private final MetadataRepository metaRepository;
     private ProgramEventDetailContract.View view;
-    private final ProgramEventDetailContract.Interactor interactor;
     public ProgramModel program;
     public String programId;
+    private CompositeDisposable compositeDisposable;
+    private CategoryOptionComboModel categoryOptionComboModel;
+    private List<OrganisationUnitModel> orgUnits;
 
-    ProgramEventDetailPresenter(ProgramEventDetailContract.Interactor interactor) {
-        this.interactor = interactor;
+    //Search fields
+    private CategoryComboModel mCatCombo;
+    private List<Date> dates;
+    private Period period;
+    private String orgUnitQuery;
+
+    ProgramEventDetailPresenter(
+            @NonNull ProgramEventDetailRepository programEventDetailRepository,
+            @NonNull MetadataRepository metadataRepository) {
+        this.eventRepository = programEventDetailRepository;
+        this.metaRepository = metadataRepository;
     }
 
     @Override
     public void init(ProgramEventDetailContract.View mview, String programId, Period period) {
         view = mview;
+        compositeDisposable = new CompositeDisposable();
         this.programId = programId;
 
-        interactor.init(view, programId, period);
+        compositeDisposable.add(metaRepository.getProgramWithId(programId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        programModel -> {
+                            view.setProgram(programModel);
+                            view.setWritePermission(programModel.accessDataWrite());
+                            getCatCombo(programModel);
+                        },
+                        Timber::d)
+        );
+
+        compositeDisposable.add(eventRepository.orgUnits()
+                .map(orgUnits -> {
+                    this.orgUnits = orgUnits;
+                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        treeNode -> view.addTree(treeNode),
+                        throwable -> view.renderError(throwable.getMessage())
+                ));
+
+        getProgramEventsWithDates();
+
+    }
+
+    private void getCatCombo(ProgramModel programModel) {
+        compositeDisposable.add(metaRepository.getCategoryComboWithId(programModel.categoryCombo())
+                .filter(categoryComboModel -> categoryComboModel != null && !categoryComboModel.isDefault() && !categoryComboModel.uid().equals(CategoryComboModel.DEFAULT_UID))
+                .flatMap(catCombo -> {
+                    this.mCatCombo = catCombo;
+                    return eventRepository.catCombo(programModel.categoryCombo());
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(catComboOptions -> view.setCatComboOptions(mCatCombo, catComboOptions), Timber::d)
+        );
     }
 
     @Override
@@ -66,23 +125,40 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery) {
-        interactor.getProgramEventsWithDates(programId, dates, period, orgUnitQuery);
+    public void getProgramEventsWithDates() {
+        compositeDisposable.add(
+                view.currentPage()
+                        .startWith(0)
+                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                throwable -> view.renderError(throwable.getMessage())));
     }
 
     @Override
     public List<OrganisationUnitModel> getOrgUnits() {
-        return interactor.getOrgUnits();
+        return this.orgUnits;
+    }
+
+    @Override
+    public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
+        this.dates = selectedDates;
+        this.period = currentPeriod;
+        this.orgUnitQuery = orgUnits;
     }
 
     @Override
     public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
-        interactor.updateFilters(categoryOptionComboModel, orgUnitQuery);
+        this.categoryOptionComboModel = categoryOptionComboModel;
+
     }
 
     @Override
     public void clearCatComboFilters(String orgUnitQuery) {
-        interactor.updateFilters(null, orgUnitQuery);
+        this.categoryOptionComboModel = null;
+
     }
 
     @Override
@@ -97,7 +173,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public Observable<List<String>> getEventDataValueNew(EventModel event) {
-        return interactor.getEventDataValueNew(event);
+        return eventRepository.eventDataValuesNew(event);
     }
 
     public void addEvent() {
@@ -114,7 +190,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void onDettach() {
-        interactor.onDettach();
+        compositeDisposable.clear();
     }
 
     @Override

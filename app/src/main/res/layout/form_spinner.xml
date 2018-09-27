@@ -67,7 +67,7 @@
                     android:imeOptions="actionNext"
                     android:maxLines="1"
                     android:textAlignment="textStart"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/text_black_333"
                     android:textSize="15sp"
                     tools:text="hello" />
 

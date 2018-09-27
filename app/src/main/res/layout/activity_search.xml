@@ -75,6 +75,7 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:padding="10dp"
+                android:dropDownWidth="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/clear_button"
                 app:layout_constraintStart_toEndOf="@id/title"
                 tools:listitem=""
