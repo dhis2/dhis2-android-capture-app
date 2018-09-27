@@ -1,43 +1,43 @@
 <resources>
 
     <style name="DatePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/red_060</item>
-        <item name="android:colorAccent">@color/red_060</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="DatePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="DatePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimaryGreen</item>
-        <item name="android:colorAccent">@color/colorPrimaryGreen</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="DatePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimaryOrange</item>
-        <item name="android:colorAccent">@color/colorPrimaryOrange</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimary</item>
-        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/red_060</item>
-        <item name="android:colorAccent">@color/red_060</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimaryGreen</item>
-        <item name="android:colorAccent">@color/colorPrimaryGreen</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/colorPrimaryOrange</item>
-        <item name="android:colorAccent">@color/colorPrimaryOrange</item>
+        <item name="colorAccent">@color/colorGreyDefault</item>
+        <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="DhisTabLayout" parent="Base.Widget.Design.TabLayout">
@@ -125,4 +125,14 @@
         <item name="android:textColor">?colorPrimary</item>
     </style>
 
+    <style name="ButtonRoundedGrey" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingStart">10sp</item>
+        <item name="android:paddingEnd">10sp</item>
+        <item name="android:background">?attr/selector_button_round_7</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

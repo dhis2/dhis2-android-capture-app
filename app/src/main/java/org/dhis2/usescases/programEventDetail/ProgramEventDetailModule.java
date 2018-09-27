@@ -28,15 +28,9 @@ public class ProgramEventDetailModule {
 
     @Provides
     @PerActivity
-    ProgramEventDetailContract.Presenter providesPresenter(ProgramEventDetailContract.Interactor interactor) {
-        return new ProgramEventDetailPresenter(interactor);
-    }
-
-    @Provides
-    @PerActivity
-    ProgramEventDetailContract.Interactor provideInteractor(@NonNull ProgramEventDetailRepository programEventDetailRepository,
-                                                            @NonNull MetadataRepository metadataRepository) {
-        return new ProgramEventDetailInteractor(programEventDetailRepository, metadataRepository);
+    ProgramEventDetailContract.Presenter providesPresenter(@NonNull ProgramEventDetailRepository programEventDetailRepository,
+                                                           @NonNull MetadataRepository metadataRepository) {
+        return new ProgramEventDetailPresenter(programEventDetailRepository,metadataRepository);
     }
 
     @Provides
