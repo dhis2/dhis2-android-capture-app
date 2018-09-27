@@ -180,8 +180,9 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text='@{programStage.displayName()}'
-                                    android:textColor="?colorPrimary"
+                                    android:textColor="@color/text_black_333"
                                     android:textSize="14sp"
+                                    android:textStyle="bold"
                                     tools:text="Program Stage Name" />
 
                                 <TextView
@@ -214,7 +215,7 @@
                                         android:layout_marginStart="8dp"
                                         android:layout_marginTop="2dp"
                                         android:text="@string/share"
-                                        android:textColor="?colorPrimary"
+                                        android:textColor="@color/text_black_4d4d4d"
                                         android:textSize="16sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
@@ -231,7 +232,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/date"
@@ -250,7 +251,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:hint="@string/org_unit"
-                            android:textColorHint="@color/colorPrimary">
+                            android:textColorHint="@color/text_black_808">
 
                             <android.support.design.widget.TextInputEditText
                                 android:id="@+id/org_unit"
@@ -331,7 +332,7 @@
                                 android:layout_marginEnd="21dp"
                                 android:layout_weight="1"
                                 android:hint="@string/latitude"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/lat"
@@ -350,7 +351,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:hint="@string/longitude"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/lon"
