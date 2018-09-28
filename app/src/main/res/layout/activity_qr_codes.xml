@@ -130,6 +130,14 @@
                     android:gravity="center"
                     android:textSize="18sp" />
             </RelativeLayout>
+            <View
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_margin="4dp"
+                android:background="@color/bg_gray_ccc"
+                android:layout_alignParentStart="true"
+                android:layout_alignBottom="@+id/view_pager"/>
         </RelativeLayout>
     </LinearLayout>
 </layout>
