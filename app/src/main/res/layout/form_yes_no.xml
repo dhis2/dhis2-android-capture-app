@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             app:description="@{description}"
             app:label="@{label}"
-            app:valueType="@{ valueType }" />
+            app:valueType="@{valueType}" />
 
         <TextView
             android:id="@+id/warningError"

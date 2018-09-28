@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
-
 import org.hisp.dhis.android.core.common.ValueType;
 
 
@@ -56,6 +55,8 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
 
         if (valueType == ValueType.TRUE_ONLY)
             no.setVisibility(View.GONE);
+        else
+            no.setVisibility(View.VISIBLE);
 
     }
 

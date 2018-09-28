@@ -17,8 +17,7 @@
             type="org.dhis2.usescases.teiDashboard.teiProgramList.EnrollmentViewModel" />
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -27,25 +26,35 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:orientation="horizontal"
             android:paddingBottom="8dp"
-            android:orientation="horizontal">
+            android:paddingTop="8dp">
 
-            <ImageView
-                android:id="@+id/programImage"
-                android:contentDescription='@{enrollment.uid()}'
-                android:layout_width="80dp"
+            <RelativeLayout
+                android:id="@+id/iconBg"
+                android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
+                android:layout_weight="1"
                 android:alpha="0.5"
-                app:srcCompat="@drawable/photo_temp" />
+                tools:background="@drawable/photo_temp">
+
+                <ImageView
+
+                    android:id="@+id/programImage"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_centerInParent="true"
+                    android:padding="3dp"
+                    app:srcCompat="@drawable/ic_program_default" />
+            </RelativeLayout>
 
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:orientation="vertical">
 
                 <TextView
@@ -53,12 +62,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
+                    android:alpha="0.5"
                     android:text='@{enrollment.programName()}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="ANC PROGRAM\nfasdsadfg"
-                    android:alpha="0.5"/>
+                    tools:text="ANC PROGRAM\nfasdsadfg" />
 
 
                 <LinearLayout
@@ -70,55 +79,56 @@
                         android:id="@+id/org_unit"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:text='@{enrollment.orgUnitName()}'
                         android:textColor="@color/gray_9b9"
                         android:textSize="14sp"
-                        android:alpha="0.5"
-                        tools:text="Org unit"
-                        android:text='@{enrollment.orgUnitName()}'/>
+                        tools:text="Org unit" />
 
 
                     <TextView
                         android:id="@+id/date"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
-                        android:textColor="@color/black_de0"
-                        android:textSize="14sp"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:ellipsize="end"
                         android:gravity="end"
                         android:lines="1"
-                        android:ellipsize="end"
+                        android:textColor="@color/black_de0"
+                        android:textSize="14sp"
                         app:date="@{enrollment.enrollmentDate()}"
-                        android:alpha="0.5"
-                        tools:text="DD/MM/YYYY"/>
+                        tools:text="DD/MM/YYYY" />
                 </LinearLayout>
             </LinearLayout>
 
             <ImageView
-                android:contentDescription='@{enrollment.uid()}'
                 android:layout_width="0dp"
-                android:layout_weight="0.4"
                 android:layout_height="20dp"
-                android:layout_marginTop="16dp"
                 android:layout_gravity="top"
-                app:srcCompat="@drawable/ic_warning"
+                android:layout_marginTop="16dp"
+                android:layout_weight="0.4"
                 android:alpha="0.5"
-                android:visibility='@{enrollment.followUp() ? View.VISIBLE : View.INVISIBLE}'/>
+                android:contentDescription='@{enrollment.uid()}'
+                android:visibility='@{enrollment.followUp() ? View.VISIBLE : View.INVISIBLE}'
+                app:srcCompat="@drawable/ic_warning" />
 
             <ImageView
-                android:contentDescription='@{enrollment.uid()}'
                 android:layout_width="0dp"
-                android:layout_weight="0.4"
                 android:layout_height="match_parent"
+                android:layout_weight="0.4"
                 android:alpha="0.5"
+                android:contentDescription='@{enrollment.uid()}'
+                android:tint="@color/colorGreyDefault"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_afa"/>
+            android:background="@color/gray_afa" />
     </LinearLayout>
 </layout>

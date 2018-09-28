@@ -74,9 +74,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:dropDownWidth="match_parent"
+                android:dropDownWidth="400dp"
+                android:dropDownVerticalOffset="?actionBarSize"
+                android:dropDownHorizontalOffset ="10dp"
                 android:padding="10dp"
-                android:spinnerMode="dropdown"
+                tools:listitem="@layout/spinner_program_layout"
                 app:layout_constraintEnd_toStartOf="@id/clear_button"
                 app:layout_constraintStart_toEndOf="@id/title" />
 
