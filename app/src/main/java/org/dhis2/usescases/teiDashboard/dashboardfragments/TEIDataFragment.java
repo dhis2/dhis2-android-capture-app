@@ -84,9 +84,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         return instance;
     }
 
-    public static TEIDataFragment createInstance() {
+  /*  public static TEIDataFragment createInstance() {
         return instance = new TEIDataFragment();
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {

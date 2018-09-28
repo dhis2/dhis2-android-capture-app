@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,7 +18,6 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.NotesAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
-
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 
 import java.util.List;
@@ -59,6 +59,17 @@ public class NotesFragment extends FragmentGlobalAbstract {
         binding.notesRecycler.setAdapter(noteAdapter);
         binding.buttonAdd.setOnClickListener(this::addNote);
         binding.buttonDelete.setOnClickListener(this::clearNote);
+        binding.editNote.setOnTouchListener((v, event) -> {
+            if (v.getId() == R.id.edit_note) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_UP:
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+            }
+            return false;
+        });
         return binding.getRoot();
     }
 
