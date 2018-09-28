@@ -262,7 +262,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));
-                    view.renderInvalidCredentialsError();
+//                    view.renderInvalidCredentialsError();
                     break;
                 case API_UNSUCCESSFUL_RESPONSE:
                     view.renderError(d2CallException.errorCode());

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -329,7 +330,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false)) {
+            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false)&& !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
             }
