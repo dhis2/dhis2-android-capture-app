@@ -3,6 +3,7 @@ package org.dhis2;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.apache.commons.jexl2.JexlEngine;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.ConfigurationRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
@@ -11,6 +12,7 @@ import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.squareup.duktape.Duktape;
 
+import org.dhis2.utils.ExpressionEvaluatorImpl;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
@@ -40,10 +42,16 @@ final class AppModule {
         return application;
     }
 
-    @Provides
+   /* @Provides
     @Singleton
     Duktape duktape() {
         return Duktape.create();
+    }*/
+
+    @Provides
+    @Singleton
+    JexlEngine jexlEngine() {
+        return new JexlEngine();
     }
 
     @Provides
@@ -64,10 +72,16 @@ final class AppModule {
         return new CodeGeneratorImpl();
     }
 
-    @Provides
+    /*@Provides
     @Singleton
     RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull Duktape duktape) {
         return new DuktapeEvaluator(duktape);
+    }*/
+
+    @Provides
+    @Singleton
+    RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull JexlEngine jexlEngine) {
+        return new ExpressionEvaluatorImpl(jexlEngine);
     }
 
     @Provides

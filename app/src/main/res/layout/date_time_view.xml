@@ -38,7 +38,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:hint="@{label}"
-            android:textColorHint="@drawable/edit_text_hint_primary"
+            android:textColorHint="@color/text_black_808"
             android:theme="@style/loginInputText"
             tools:hint="Date label">
 
@@ -48,6 +48,7 @@
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:textAlignment="textStart"
+                android:textColor="@color/text_black_333"
                 android:textSize="15sp" />
 
         </android.support.design.widget.TextInputLayout>

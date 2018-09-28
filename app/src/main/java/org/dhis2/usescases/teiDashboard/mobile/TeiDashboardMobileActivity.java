@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
 import org.dhis2.data.forms.FormViewArguments;
@@ -232,7 +233,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false)) {
+            if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false)&& !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
             }

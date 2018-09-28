@@ -12,10 +12,12 @@ import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.Calendar;
@@ -208,6 +210,16 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void setDate() {
+
+        if (eventDetailModel.getProgramStage().periodType()==null || eventDetailModel.getProgramStage().periodType() == PeriodType.Daily)
+            openDailySelector();
+        else
+            openPeriodSelector();
+
+
+    }
+
+    private void openDailySelector() {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -246,5 +258,31 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
         });
         dateDialog.show();
+    }
+
+    private void openPeriodSelector() {
+        PeriodDialog periodDialog = new PeriodDialog()
+                .setPeriod(eventDetailModel.getProgramStage().periodType())
+                .setPossitiveListener(selectedDate -> {
+                    String result = DateUtils.uiDateFormat().format(selectedDate);
+                    view.setDate(result);
+
+                    if (eventDetailModel.getProgramStage().accessDataWrite()) {
+                        dataEntryStore.updateEvent(selectedDate, eventDetailModel.getEventModel());
+                    }
+                });
+
+        if (eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE) {
+            periodDialog.setMaxDate(Calendar.getInstance().getTime());
+        }
+
+        if (eventDetailModel.orgUnitOpeningDate() != null) {
+            periodDialog.setMinDate(eventDetailModel.orgUnitOpeningDate());
+        }
+
+        if (eventDetailModel.orgUnitClosingDate() != null)
+            periodDialog.setMaxDate(eventDetailModel.orgUnitClosingDate());
+
+        periodDialog.show(view.getAbstractActivity().getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
     }
 }

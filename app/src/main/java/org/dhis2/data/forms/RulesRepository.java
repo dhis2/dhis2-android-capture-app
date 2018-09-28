@@ -3,12 +3,12 @@ package org.dhis2.data.forms;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.RuleVariableCalculatedValue;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -266,7 +266,7 @@ public final class RulesRepository {
 
     @NonNull
     private static List<Rule> mapActionsToRulesNew(
-            @NonNull List<Quartet<String, String, Integer, String>> rawRules,
+            @NonNull List<Quartet<String, String, Integer, String>> rawRules, //ProgramRule uid, stage, priority and condition
             @NonNull List<Pair<String, RuleAction>> ruleActions) {
         List<Rule> rules = new ArrayList<>();
 
@@ -281,7 +281,6 @@ public final class RulesRepository {
             /*if (actions == null) {
                 actions = new ArrayList<>();
             }*/
-
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
                     rawRule.val3(), new ArrayList<>(pairActions)));
         }
@@ -337,7 +336,7 @@ public final class RulesRepository {
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:
                 return RuleVariableNewestEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
-                if(stage==null)
+                if (stage == null)
                     stage = "";
                 return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
             case DATAELEMENT_PREVIOUS_EVENT:

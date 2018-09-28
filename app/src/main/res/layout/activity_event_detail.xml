@@ -124,6 +124,17 @@
             android:background="@android:color/white">
 
             <!--SCROLLING VIEW-->
+
+
+            <FrameLayout
+                android:id="@+id/dataFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/appbarlayout" />
+
             <Button
                 android:id="@+id/deactivate_button"
                 android:layout_width="125dp"
@@ -137,15 +148,6 @@
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"
                 android:textColor="@color/white_faf" />
-
-            <FrameLayout
-                android:id="@+id/dataFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/appbarlayout" />
             <!--END OF SCROLLING VIEW-->
 
             <!--<android.support.constraint.ConstraintLayout

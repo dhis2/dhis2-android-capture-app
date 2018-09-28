@@ -93,7 +93,7 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
         this.viewModel = checkBoxViewModel;
 
         radioGroup.setOnCheckedChangeListener(null);
-
+        binding.customYesNo.setValueType(checkBoxViewModel.valueType());
         StringBuilder label = new StringBuilder(checkBoxViewModel.label());
         if (checkBoxViewModel.mandatory())
             label.append("*");
@@ -125,13 +125,13 @@ public class RadioButtonHolder extends RecyclerView.ViewHolder {
             RowAction rowAction;
             switch (checkedId) {
                 case R.id.yes:
-                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(true));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true));
                     break;
                 case R.id.no:
-                    rowAction = RowAction.create(viewModel.uid(), String.valueOf(false));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false));
                     break;
                 default:
-                    rowAction = RowAction.create(viewModel.uid(), null);
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), null);
                     break;
             }
             processor.onNext(rowAction);

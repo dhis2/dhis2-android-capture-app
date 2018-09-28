@@ -7,6 +7,7 @@
         android:id="@+id/recyclerview_data_entry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="80dp"
         android:clipToPadding="false"/>
 
 </FrameLayout>
