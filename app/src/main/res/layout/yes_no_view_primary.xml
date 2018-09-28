@@ -72,7 +72,8 @@
                         android:checked="false"
                         android:text="@string/yes"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333"
+                        tools:checked="true"/>
 
                     <RadioButton
                         android:id="@+id/no"
@@ -81,7 +82,7 @@
                         android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333" />
 
                     <RadioButton
                         android:id="@+id/no_value"
@@ -90,7 +91,7 @@
                         android:checked="false"
                         android:text="@string/no_value"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333" />
 
                 </RadioGroup>
 

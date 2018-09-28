@@ -2,6 +2,8 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -19,7 +21,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     public TeiDashboardContracts.Presenter presenter;
 
     public DashboardProgramModel programModel;
-    public DashboardPagerAdapter adapter;
 
     public String teiUid;
     public String programUid;
@@ -53,7 +54,7 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    public DashboardPagerAdapter getAdapter() {
+    public FragmentStatePagerAdapter getAdapter() {
         return null;
     }
 

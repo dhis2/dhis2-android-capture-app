@@ -74,11 +74,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
+                android:dropDownWidth="match_parent"
                 android:padding="10dp"
+                android:spinnerMode="dropdown"
                 app:layout_constraintEnd_toStartOf="@id/clear_button"
-                app:layout_constraintStart_toEndOf="@id/title"
-                tools:listitem=""
-                tools:prompt="Program Name" />
+                app:layout_constraintStart_toEndOf="@id/title" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline"
@@ -106,7 +106,6 @@
             android:background="@color/gray_f6f">
 
             <!--SCROLLING VIEW-->
-
 
 
             <android.support.v7.widget.RecyclerView
@@ -146,9 +145,9 @@
                 android:onClick="@{(view)->presenter.onFabClick(view)}"
                 android:tint="@color/white"
                 app:backgroundTint="?attr/colorPrimary"
+                app:elevation="7dp"
                 app:fabSize="normal"
                 app:layout_behavior="org.dhis2.utils.FixedBottomViewBehavior"
-                app:elevation="7dp"
                 app:srcCompat='@{@drawable/ic_add}' />
 
             <!--END OF SCROLLING VIEW-->

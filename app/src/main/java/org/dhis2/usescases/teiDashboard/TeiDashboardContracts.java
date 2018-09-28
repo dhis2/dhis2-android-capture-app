@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.widget.TextView;
 
 import org.dhis2.data.tuples.Pair;
@@ -39,7 +40,7 @@ public class TeiDashboardContracts {
 
         String getToolbarTitle();
 
-        DashboardPagerAdapter getAdapter();
+        FragmentStatePagerAdapter getAdapter();
 
         void showQR();
 
