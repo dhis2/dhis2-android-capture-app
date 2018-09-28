@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+
+        <variable
+            name="dataset"
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/entity_attribute_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{dataset.nameOrgUnit}'
+            android:textColor="@color/black_de0"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Org Unit" />
+
+        <TextView
+            android:id="@+id/entity_attribute_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{dataset.namePeriod}'
+            android:textColor="@color/black_de0"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_1"
+            tools:text="Period" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:text='@{dataset.nameCatCombo.equals("default")?"":dataset.nameCatCombo}'
+            android:textColor="@color/black_de0"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/entity_attribute_2"
+            tools:text="Cat combo" />
+
+
+        <ImageView
+            android:id="@+id/sync_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:stateIcon='@{dataset.state}'
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_sync" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="9dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sync_icon"
+            app:stateText='@{dataset.state}'
+            tools:text="@string/state_synced" />
+
+        <ImageView
+            android:id="@+id/status_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/sync_icon"
+            app:layout_constraintTop_toTopOf="parent"
+
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_edit" />
+        <!--app:eventWithoutRegistrationStatusIcon='@{dataset}'-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="9dp"
+            app:layout_constraintBottom_toBottomOf="@id/status_icon"
+            app:layout_constraintEnd_toStartOf="@id/status_icon"
+            app:layout_constraintTop_toTopOf="@id/status_icon"
+            tools:text="@string/event_open" />
+        <!--app:eventWithoutRegistrationStatusText='@{dataset}' va dentro-->
+    </android.support.constraint.ConstraintLayout>
+</layout>

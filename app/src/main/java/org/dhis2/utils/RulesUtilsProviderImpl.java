@@ -55,8 +55,8 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayText.content(), false, displayText.data(), "Information", 1, ValueType.TEXT,
-                        fieldViewModels.get(0).programStageSection() != null ? fieldViewModels.get(0).programStageSection() : null,
-                        false);
+                        fieldViewModels.get(0).programStageSection(),
+                        false,null);
                 fieldViewModels.put(uid, textViewModel);
             } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
                 String uid = codeGenerator.generate();
@@ -65,7 +65,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                         (RuleActionDisplayKeyValuePair) ruleAction;
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, displayText.data(), displayText.content(), 1, ValueType.TEXT, null, false);
+                        displayText.content(), false, displayText.data(), displayText.content(), 1, ValueType.TEXT, null, false,null);
                 fieldViewModels.put(uid, textViewModel);
 
             } else if (ruleAction instanceof RuleActionHideSection) {

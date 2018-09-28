@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -14,8 +16,6 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -84,11 +84,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name,\n" +
+            "  Option.displayName,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
             "  Event.status,\n" +
-            "  Field.formLabel\n" +
+            "  Field.formLabel,\n" +
+            "  Field.displayDescription\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -101,7 +102,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
             "        ProgramStageDataElement.programStageSection AS section,\n" +
-            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate\n" +
+            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
+            "        DataElement.displayDescription AS displayDescription\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
@@ -214,6 +216,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         String optionCodeName = cursor.getString(6);
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formName = cursor.getString(10);
+        String description = cursor.getString(11);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -221,7 +224,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         return fieldFactory.create(cursor.getString(0), formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null);
+                eventStatus == EventStatus.ACTIVE, null, description);
     }
 
     @NonNull
@@ -305,7 +308,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
     public Observable<Boolean> accessDataWrite(String eventId) {
         return briteDatabase.createQuery(ProgramStageModel.TABLE, ACCESS_QUERY, eventId == null ? "" : eventId)
                 .mapToOne(cursor -> cursor.getInt(0) == 1)
-                .flatMap(programStageAccessDataWrite ->briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_ACCESS_QUERY, eventId == null ? "" : eventId)
+                .flatMap(programStageAccessDataWrite -> briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_ACCESS_QUERY, eventId == null ? "" : eventId)
                         .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
     }
 
@@ -319,7 +322,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate,dataValues);
+                            status, eventDate, dueDate, dataValues);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

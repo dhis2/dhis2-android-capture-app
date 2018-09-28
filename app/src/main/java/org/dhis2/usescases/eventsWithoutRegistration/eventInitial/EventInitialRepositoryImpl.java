@@ -7,10 +7,11 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.dhis2.utils.CodeGenerator;
-import org.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.utils.CodeGenerator;
+import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
@@ -87,10 +88,19 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<List<CategoryOptionComboModel>> catCombo(String categoryComboUid) {
+    public Observable<CategoryComboModel> catComboModel(String programUid) {
+        String catComboQuery = "SELECT * FROM CategoryCombo JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?";
+        return briteDatabase.createQuery(CategoryComboModel.TABLE, catComboQuery, programUid).mapToOne(CategoryComboModel::create);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
         String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
                 CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, SELECT_CATEGORY_COMBO, categoryComboUid == null ? "" : categoryComboUid)
+        String catComboQuery = "SELECT * FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
+                "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery,programUid)
                 .mapToList(CategoryOptionComboModel::create);
     }
 
@@ -370,6 +380,25 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .mapToOne(cursor -> cursor.getInt(0) == 1)
                 .flatMap(programStageAccessDataWrite ->
                         briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_WRITE_PERMISSION, programId == null ? "" : programId)
-                        .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
+                                .mapToOne(cursor -> (cursor.getInt(0) == 1) && programStageAccessDataWrite));
+    }
+
+    @Override
+    public void deleteEvent(String eventId) {
+        Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId);
+        if (eventCursor != null && eventCursor.moveToNext()) {
+            EventModel eventModel = EventModel.create(eventCursor);
+            if (eventModel.state() == State.TO_POST) {
+                String DELETE_WHERE = String.format(
+                        "%s.%s = ?",
+                        EventModel.TABLE, EventModel.Columns.UID
+                );
+                briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventId);
+            } else {
+                ContentValues contentValues = eventModel.toContentValues();
+                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
+                briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
+            }
+        }
     }
 }

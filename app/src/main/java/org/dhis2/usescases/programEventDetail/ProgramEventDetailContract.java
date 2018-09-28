@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 /**
@@ -39,13 +40,13 @@ public class ProgramEventDetailContract {
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
 
-        void setOrgUnitFilter(StringBuilder orgUnitFilter);
-
         void showHideFilter();
 
         void apply();
 
         void setWritePermission(Boolean aBoolean);
+
+        Flowable<Integer> currentPage();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -73,24 +74,10 @@ public class ProgramEventDetailContract {
 
         void showFilter();
 
-        void getProgramEventsWithDates(List<Date> dates, Period period, String orgUnitQuery);
+        void getProgramEventsWithDates();
 
         List<OrganisationUnitModel> getOrgUnits();
-    }
 
-    public interface Interactor extends AbstractActivityContracts.Interactor {
-        void init(View view, String programId, Period period);
-
-        void getEvents(String programId, Date fromDate, Date toDate, String orgUnitQuery);
-
-        void getOrgUnits(Date date);
-
-        void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
-
-        Observable<List<String>> getEventDataValueNew(EventModel event);
-
-        void getProgramEventsWithDates(String programId, List<Date> dates, Period period, String orgUnitQuery);
-
-        List<OrganisationUnitModel> getOrgUnits();
+        void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits);
     }
 }

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramEventBinding;
-
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.List;
 
 /**
  * Created by Cristian on 13/02/2018.
- *
  */
 
 public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEventDetailViewHolder> {
@@ -49,13 +47,15 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         return events != null ? events.size() : 0;
     }
 
-    public void setEvents(List<EventModel> events){
-      /*  Collections.sort(this.events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));
-        Collections.sort(events, (ob1, ob2) -> ob2.lastUpdated().compareTo(ob1.lastUpdated()));*/
+    public void setEvents(List<EventModel> events, int currentPage) {
 
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, events));
-        this.events.clear();
+        if (currentPage == 0)
+            this.events = new ArrayList<>();
+//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, newList));
         this.events.addAll(events);
-        diffResult.dispatchUpdatesTo(this);
+
+        notifyDataSetChanged();
+
+//        diffResult.dispatchUpdatesTo(this);
     }
 }

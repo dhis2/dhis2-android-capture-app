@@ -223,6 +223,12 @@ public final class RulesRepository {
     }
 
     @NonNull
+    public Flowable<List<RuleVariable>> ruleVariablesProgramStages(@NonNull String programUid) {
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
+                .mapToList(RulesRepository::mapToRuleVariableProgramStages).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid == null ? "" : programUid)
@@ -333,6 +339,50 @@ public final class RulesRepository {
                 return RuleVariableAttribute.create(name, attribute, mimeType);
             case DATAELEMENT_CURRENT_EVENT:
                 return RuleVariableCurrentEvent.create(name, dataElement, mimeType);
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM:
+                return RuleVariableNewestEvent.create(name, dataElement, mimeType);
+            case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
+                if (stage == null)
+                    stage = "";
+                return RuleVariableNewestStageEvent.create(name, dataElement, stage, mimeType);
+            case DATAELEMENT_PREVIOUS_EVENT:
+                return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
+            case CALCULATED_VALUE:
+                return RuleVariableCalculatedValue.create(name);
+            default:
+                throw new IllegalArgumentException("Unsupported variable " +
+                        "source type: " + sourceType);
+        }
+    }
+
+    @NonNull
+    private static RuleVariable mapToRuleVariableProgramStages(@NonNull Cursor cursor) {
+        String name = cursor.getString(0);
+        String stage = cursor.getString(1);
+        String sourceType = cursor.getString(2);
+        String dataElement = cursor.getString(3);
+        String attribute = cursor.getString(4);
+
+        // Mime types of the attribute and data element.
+        String attributeType = cursor.getString(5);
+        String elementType = cursor.getString(6);
+
+        // String representation of value type.
+        RuleValueType mimeType = null;
+        if (!isEmpty(attributeType)) {
+            mimeType = convertType(attributeType);
+        } else if (!isEmpty(elementType)) {
+            mimeType = convertType(elementType);
+        }
+
+        if (mimeType == null)
+//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
+            mimeType = RuleValueType.TEXT;
+
+        switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
+            case TEI_ATTRIBUTE:
+                return RuleVariableAttribute.create(name, attribute, mimeType);
+            case DATAELEMENT_CURRENT_EVENT:
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:
                 return RuleVariableNewestEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:

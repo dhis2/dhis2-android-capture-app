@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -22,6 +23,7 @@ import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
 import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
+import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
@@ -40,6 +42,7 @@ import me.toptas.fancyshowcase.FocusShape;
 public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
 
     ActivityDashboardMobileBinding binding;
+    public FragmentStatePagerAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,11 +59,22 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
+
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (adapter == null) {
+            if (!getResources().getBoolean(R.bool.is_tablet))
+                adapter = new DashboardPagerAdapter(getSupportFragmentManager(), programUid);
+            else
+                adapter = new DashboardPagerTabletAdapter(getSupportFragmentManager(), programUid);
+            binding.teiPager.setAdapter(adapter);
+        }
+
         init(teiUid, programUid);
     }
 
@@ -77,10 +91,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setData(DashboardProgramModel program) {
-        if (adapter == null) {
-            adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
-            binding.teiPager.setAdapter(adapter);
-        }
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()
@@ -105,10 +115,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
-        if (adapter == null) {
-            adapter = new DashboardPagerAdapter(getSupportFragmentManager(), program, getResources().getBoolean(R.bool.is_tablet));
-            binding.teiPager.setAdapter(adapter);
-        }
+
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
         String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2);
@@ -122,7 +129,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
-    public DashboardPagerAdapter getAdapter() {
+    public FragmentStatePagerAdapter getAdapter() {
         return adapter;
     }
 
@@ -159,7 +166,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
                 programUid = data.getStringExtra("CHANGE_PROGRAM");
-                init(teiUid, data.getStringExtra("CHANGE_PROGRAM"));
+                adapter = null;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

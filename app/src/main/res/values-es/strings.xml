@@ -256,7 +256,7 @@
   <string name="dialog_generate_new_event">Generar nuevo evento</string>
   <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
   <string name="event_completed_title">Eventos Completados</string>
-  <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
+  <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quieres completar el programa también?</string>
   <string name="check_event">Verificar</string>
   <string name="burmesse_test">" "</string>
   <string name="chinesse_test">" "</string>

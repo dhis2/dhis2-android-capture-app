@@ -12,7 +12,6 @@ import org.dhis2.data.forms.dataentry.fields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
-
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -72,19 +71,20 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
                                  @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value,
-                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType) {
+                                 @Nullable String section, @Nullable Boolean allowFutureDates, @NonNull Boolean editable, @Nullable ProgramStageSectionRenderingType renderingType,
+                                 @Nullable String description) {
         isNull(type, "type must be supplied");
 
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
-                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable);
+                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description);
             else
-                return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory); //transforms option set into image option selector
+                return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory, description); //transforms option set into image option selector
         }
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -98,25 +98,25 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case INTEGER_ZERO_OR_POSITIVE:
             case UNIT_INTERVAL:
             case URL:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description);
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable);
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description);
             case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable);
+                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description);
             case FILE_RESOURCE:
             case IMAGE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
-                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable);
+                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description);
             default:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description);
         }
     }
 }

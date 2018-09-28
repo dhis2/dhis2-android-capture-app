@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
+import android.widget.PopupMenu;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -33,10 +34,12 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.CatComboAdapter2;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -47,6 +50,8 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -412,6 +417,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         this.program = program;
+        this.periodType = program.expiryPeriodType();
+
         String activityTitle;
         if (eventCreationType.equals(REFERRAL)) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
@@ -420,9 +427,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        if (periodType == null)
+        Calendar now = Calendar.getInstance();
+        if (periodType == null) {
+            selectedDateString = String.format(Locale.getDefault(), "%s-%02d-%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
             binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
-        else
+        } else {
+            now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), 0));
+            selectedDateString = String.format(Locale.getDefault(), "%s-%02d-%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
             binding.date.setOnClickListener(v ->
                     new PeriodDialog()
                             .setPeriod(periodType)
@@ -432,8 +443,11 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 if (!fixedOrgUnit)
                                     binding.orgUnit.setText("");
                                 presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
-                            } )
+                            })
                             .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));
+        }
+
+        binding.date.setText(selectedDateString);
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
@@ -515,9 +529,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
 
         if (event.eventDate() != null)
-            binding.setEventDate(DateUtils.uiDateFormat().format(event.eventDate()));
-        else
-            binding.setEventDate("");
+            binding.date.setText(DateUtils.uiDateFormat().format(event.eventDate()));
 
         if (event.latitude() != null && event.longitude() != null) {
             runOnUiThread(() -> {
@@ -861,5 +873,66 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
 
         }, 500);
+    }
+
+    @Override
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    showTutorial(false);
+                    break;
+                case R.id.menu_delete:
+                    confirmDeleteEvent();
+                    break;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    public void confirmDeleteEvent() {
+        new CustomDialog(
+                this,
+                getString(R.string.delete_event),
+                getString(R.string.confirm_delete_event),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                0,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        presenter.deleteEvent();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        // dismiss
+                    }
+                }
+        ).show();
+    }
+
+    @Override
+    public void showEventWasDeleted() {
+        showToast(getString(R.string.event_was_deleted));
+        finish();
     }
 }
