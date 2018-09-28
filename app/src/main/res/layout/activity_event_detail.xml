@@ -206,6 +206,7 @@
                                     android:layout_height="wrap_content"
                                     app:alignContent="stretch"
                                     app:alignItems="stretch"
+                                    android:layout_margin="7dp"
                                     app:flexWrap="wrap">
 
 
