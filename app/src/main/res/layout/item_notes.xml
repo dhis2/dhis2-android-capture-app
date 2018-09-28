@@ -11,16 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:paddingBottom="19.5dp"
+        android:paddingBottom="5dp"
         android:paddingEnd="10dp"
-        android:paddingStart="29dp"
-        android:paddingTop="19.5dp">
+        android:background="@color/colorBackGroundLight"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp">
 
         <TextView
             android:id="@+id/storeBy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@color/colorGreyDefault"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date"
@@ -30,6 +31,7 @@
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -41,13 +43,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="sans-serif"
+            android:maxLines="1"
             android:textColor="#787878"
             android:textSize="14.2sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/arrow"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/storeBy"/>
+            app:layout_constraintTop_toBottomOf="@id/storeBy"
+            tools:text="@string/lorem" />
 
         <TextView
             android:id="@+id/date"

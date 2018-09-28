@@ -7,8 +7,6 @@
 
         <import type="android.view.View" />
 
-        <import type="String" />
-
         <variable
             name="enrollment"
             type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
@@ -94,7 +92,7 @@
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:layout_gravity="center_vertical"
-            android:background='@{enrollment.followUp() ? @drawable/ic_circle_red : @color/transparent}'
+            android:background='@{enrollment.followUp() ? @drawable/ic_circle_red : null}'
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
             android:padding="6dp"
             android:tint="@{enrollment.followUp() ? @color/white : @color/text_black_333}"
