@@ -118,7 +118,7 @@
                                 android:textColor="@color/text_black_333"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                app:layout_constraintStart_toStartOf="parent"/>
+                                app:layout_constraintStart_toStartOf="parent" />
 
                             <TextView
                                 android:id="@+id/summary_header"
@@ -191,24 +191,15 @@
                     android:layout_height="1dp"
                     android:background="@color/gray_dfe" />
 
-                <TextView
+                <Button
                     android:id="@+id/action_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ButtonRoundedGrey"
                     android:layout_gravity="end"
                     android:layout_marginBottom="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="16dp"
-                    android:background="?attr/selector_button_round_7"
                     android:onClick="@{()->presenter.onDoAction()}"
-                    android:paddingBottom="8dp"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:text="@string/complete_and_close"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="15sp" />
+                    android:text="@string/complete_and_close" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

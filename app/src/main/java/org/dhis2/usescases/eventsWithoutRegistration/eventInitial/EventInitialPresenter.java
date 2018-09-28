@@ -19,6 +19,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Quartet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -42,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -94,64 +97,44 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
-        if (eventId != null)
+        if (eventId != null) {
             compositeDisposable.add(
-                    eventInitialRepository.event(eventId)
-                            .flatMap(
-                                    eventModel -> {
-                                        view.setEvent(eventModel);
-                                        return metadataRepository.getProgramWithId(programId)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
-                            .flatMap(
-                                    programModel -> {
-                                        this.programModel = programModel;
-                                        view.setProgram(programModel);
-                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
-                            .flatMap(
-                                    catCombo -> {
-                                        this.catCombo = catCombo;
-                                        return eventInitialRepository.catCombo(programModel.categoryCombo())
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
-                            .subscribeOn(AndroidSchedulers.mainThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
-                                    error -> Timber.log(1, error)
-                            )
-            );
-        else
-            compositeDisposable.add(
-                    metadataRepository.getProgramWithId(programId)
-                            .flatMap(
-                                    programModel -> {
-                                        this.programModel = programModel;
-                                        view.setProgram(programModel);
-                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo());
-                                    }
-                            )
-                            .flatMap(
-                                    catCombo -> {
-                                        this.catCombo = catCombo;
-                                        return eventInitialRepository.catCombo(programModel.categoryCombo());
-                                    }
-                            )
+                    Flowable.zip(
+                            eventInitialRepository.event(eventId).toFlowable(BackpressureStrategy.LATEST),
+                            metadataRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catComboModel(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Quartet::create
+                    )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
-                                    Timber::d
-                            )
+                            .subscribe(quartetFlowable -> {
+                                this.programModel = quartetFlowable.val1();
+                                this.catCombo = quartetFlowable.val2();
+                                view.setEvent(quartetFlowable.val0());
+                                view.setProgram(quartetFlowable.val1());
+                                view.setCatComboOptions(catCombo, quartetFlowable.val3());
+                            }, Timber::d)
             );
+
+        } else
+            compositeDisposable.add(
+                    Flowable.zip(
+                            metadataRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catComboModel(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Trio::create
+                    )
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(trioFlowable -> {
+                                this.programModel = trioFlowable.val0();
+                                this.catCombo = trioFlowable.val1();
+                                view.setProgram(trioFlowable.val0());
+                                view.setCatComboOptions(catCombo, trioFlowable.val2());
+                            }, Timber::d)
+            );
+
         getOrgUnits(programId);
         if (TextUtils.isEmpty(programStageId))
             getProgramStages(programId);

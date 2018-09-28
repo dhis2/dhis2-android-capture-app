@@ -31,17 +31,11 @@
 
     <Button
         android:id="@+id/next"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        style="@style/ButtonRoundedGrey"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:background="?attr/button_selector"
         android:elevation="8dp"
         android:text="@string/next"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:textColor="?colorAccent"
-        app:backgroundTint="?colorPrimary"
         app:elevation="8dp" />
 
     <!--END OF SCROLLING VIEW-->
@@ -150,11 +144,11 @@
 
         <org.dhis2.data.forms.AutoHidingTabLayout
             android:id="@+id/tablayout_data_entry"
+            style="@style/DhisTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:tabMode="scrollable"
-            style="@style/DhisTabLayout"
             app:tabTextAppearance="@style/DhisTabText" />
 
     </android.support.design.widget.AppBarLayout>

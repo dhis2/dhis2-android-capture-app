@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 
 import org.dhis2.databinding.ItemNotesBinding;
 import org.dhis2.utils.DateUtils;
@@ -27,5 +28,14 @@ public class NotesViewholder extends RecyclerView.ViewHolder {
         binding.noteText.setText(note.value());
         binding.storeBy.setText(note.storedBy());
         binding.executePendingBindings();
+        itemView.setOnClickListener(view->{
+            if(binding.noteText.getMaxLines() == 1) {
+                binding.noteText.setMaxLines(Integer.MAX_VALUE);
+                binding.noteText.setEllipsize(null);
+            }else{
+                binding.noteText.setMaxLines(1);
+                binding.noteText.setEllipsize(TextUtils.TruncateAt.END);
+            }
+        });
     }
 }

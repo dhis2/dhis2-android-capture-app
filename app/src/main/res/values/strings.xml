@@ -323,4 +323,6 @@
     <string name="qr_data_values">data</string>
     <string name="qr_no_id_error">not found</string>
     <string name="info">Info</string>
+    
+    <string name="text_plus_colon">%s:</string>
 </resources>
