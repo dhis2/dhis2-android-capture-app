@@ -2,6 +2,7 @@ package org.dhis2.utils;
 
 import java.util.List;
 
+import me.toptas.fancyshowcase.BuildConfig;
 import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 

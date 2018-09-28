@@ -28,6 +28,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -245,7 +246,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false)) {
+            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false)&& !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
             }

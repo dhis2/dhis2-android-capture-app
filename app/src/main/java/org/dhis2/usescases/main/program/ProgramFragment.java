@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentProgramBinding;
@@ -542,7 +543,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_SHOWN", false)) {
+                if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                     prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
                 }
