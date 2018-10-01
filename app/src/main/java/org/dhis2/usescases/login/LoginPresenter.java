@@ -191,11 +191,13 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     syncEvents();
                     break;
                 case EVENTS:
-                    syncReservedValues();
-                    syncAggregatesData();
+//                    syncAggregatesData();
                     syncTrackedEntities();
                     break;
                 case TEI:
+                    syncReservedValues();
+                    break;
+                case RESERVED_VALUES:
                     Intent intent = new Intent(view.getContext(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     view.getContext().startActivity(intent);
@@ -324,10 +326,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
         disposable.add(trackerData()
                 .subscribeOn(Schedulers.io())
-                .map(response -> {
-//                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
-                    return SyncResult.success();
-                })
+                .map(response -> SyncResult.success())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
@@ -350,10 +349,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
                     return true;
                 })
+                .map(response -> SyncResult.success())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
-                        data -> Timber.log(1, "DONE"),
+                        update(LoginActivity.SyncState.RESERVED_VALUES),
                         Timber::d
                 )
         );

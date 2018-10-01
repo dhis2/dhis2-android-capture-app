@@ -89,7 +89,9 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.allowFutureDate,\n" +
             "  Event.status,\n" +
             "  Field.formLabel,\n" +
-            "  Field.displayDescription\n" +
+            "  Field.displayDescription,\n" +
+            "  Field.formOrder,\n" +
+            "  Field.sectionOrder\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -101,11 +103,13 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageDataElement.programStageSection AS section,\n" +
+            "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
-            "        DataElement.displayDescription AS displayDescription\n" +
+            "        DataElement.displayDescription AS displayDescription,\n" +
+            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.dataElement = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
@@ -114,7 +118,10 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
             " %s  " +
-            "ORDER BY Field.formOrder ASC;";
+            "ORDER BY CASE" +
+            " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
+            " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
+            " END ASC;";
 
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +
