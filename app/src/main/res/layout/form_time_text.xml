@@ -9,6 +9,10 @@
             type="java.lang.String" />
 
         <variable
+            name="description"
+            type="java.lang.String" />
+
+        <variable
             name="initData"
             type="java.lang.String" />
 
@@ -22,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:initData="@{initData}"
-        app:label="@{label}" />
+        app:label="@{label}"
+        app:description="@{description}"/>
 
 </layout>

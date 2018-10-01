@@ -16,39 +16,11 @@ import static android.text.TextUtils.isEmpty;
 public class AgeHolder extends FormViewHolder {
 
     FormAgeCustomBinding binding;
-   /* @NonNull
-    private BehaviorProcessor<AgeViewModel> model;*/
-//    CompositeDisposable disposable;
     AgeViewModel ageViewModel;
 
     AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.binding = binding;
-//        disposable = new CompositeDisposable();
-//        model = BehaviorProcessor.create();
-
-      /*  disposable.add(model.subscribe(ageViewModel -> {
-                    StringBuilder label = new StringBuilder(ageViewModel.label());
-                    if (ageViewModel.mandatory())
-                        label.append("*");
-                    binding.customAgeview.setLabel(label.toString());
-                    if (!isEmpty(ageViewModel.value())) {
-                        binding.customAgeview.setInitialValue(ageViewModel.value());
-                    }
-
-                    if (ageViewModel.warning() != null)
-                        binding.customAgeview.setWarningOrError(ageViewModel.warning());
-                    else if (ageViewModel.error() != null)
-                        binding.customAgeview.setWarningOrError(ageViewModel.error());
-                    else
-                        binding.customAgeview.setWarningOrError(null);
-
-                    binding.customAgeview.setEditable(ageViewModel.editable());
-
-                    binding.executePendingBindings();
-                },
-                Timber::d));*/
-
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
                         processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate)));
@@ -61,10 +33,11 @@ public class AgeHolder extends FormViewHolder {
 //        model.onNext(viewModel);
         this.ageViewModel = ageViewModel;
 
-        StringBuilder label = new StringBuilder(ageViewModel.label());
+        descriptionText = ageViewModel.description();
+        label = new StringBuilder(ageViewModel.label());
         if (ageViewModel.mandatory())
             label.append("*");
-        binding.customAgeview.setLabel(label.toString());
+        binding.customAgeview.setLabel(label.toString(),ageViewModel.description());
         if (!isEmpty(ageViewModel.value())) {
             binding.customAgeview.setInitialValue(ageViewModel.value());
         }

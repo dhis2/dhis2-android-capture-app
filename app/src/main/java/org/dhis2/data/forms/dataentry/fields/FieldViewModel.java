@@ -42,4 +42,7 @@ public abstract class FieldViewModel {
 
     @NonNull
     public abstract FieldViewModel withError(@NonNull String error);
+
+    @Nullable
+    public abstract String description();
 }

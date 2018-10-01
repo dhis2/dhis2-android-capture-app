@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -25,6 +26,9 @@ public interface EventInitialRepository {
 
     @NonNull
     Observable<List<OrganisationUnitModel>> orgUnits(String programId);
+
+    @NonNull
+    Observable<CategoryComboModel> catComboModel(String programUid);
 
     @NonNull
     Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
@@ -62,4 +66,6 @@ public interface EventInitialRepository {
     Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
 
     Observable<Boolean> accessDataWrite(String programId);
+
+    void deleteEvent(String eventId);
 }

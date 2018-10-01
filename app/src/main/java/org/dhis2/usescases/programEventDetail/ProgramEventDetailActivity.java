@@ -15,9 +15,13 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -28,11 +32,9 @@ import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -48,6 +50,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
+import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
 
@@ -71,7 +75,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Inject
     ProgramEventDetailAdapter adapter;
     private Period currentPeriod = Period.NONE;
-    ProgramModel programModel;
 
     private Date chosenDateDay = new Date();
     private ArrayList<Date> chosenDateWeek = new ArrayList<>();
@@ -84,6 +87,8 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     private StringBuilder orgUnitFilter = new StringBuilder();
     private boolean isFilteredByCatCombo = false;
     private String programId;
+    private static PublishProcessor<Integer> pageProcessor;
+    private EndlessRecyclerViewScrollListener endlessScrollListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,14 +106,20 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
+        pageProcessor = PublishProcessor.create();
+
+        endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                pageProcessor.onNext(page);
+            }
+        };
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.init(this, programId, currentPeriod);
-
-        presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
     }
 
     @Override
@@ -122,26 +133,18 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     public void setData(List<EventModel> events) {
         if (binding.recycler.getAdapter() == null) {
             binding.recycler.setAdapter(adapter);
+            binding.recycler.addOnScrollListener(endlessScrollListener);
             binding.recycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         }
-        adapter.setEvents(events);
+        adapter.setEvents(events, endlessScrollListener.getCurrentPage());
 
-        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
 
     @Override
     public void setProgram(ProgramModel program) {
-        this.programModel = program;
-        presenter.setProgram(program);
         binding.setName(program.displayName());
-
-        if (!program.accessDataWrite()){
-            binding.addEventButton.setVisibility(View.GONE);
-        }
-        else {
-            binding.addEventButton.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -149,7 +152,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (!binding.drawerLayout.isDrawerOpen(Gravity.END)) {
             binding.drawerLayout.openDrawer(Gravity.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-        }else {
+        } else {
             binding.drawerLayout.closeDrawer(Gravity.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
@@ -187,8 +190,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             }
                             binding.buttonPeriodText.setText(textToShow);
 
-                            // TODO
-                            presenter.getProgramEventsWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
+                            presenter.setFilters(selectedDates, currentPeriod, orgUnitFilter.toString());
+                            endlessScrollListener.resetState(0);
+                            pageProcessor.onNext(0);
+//                            presenter.getProgramEventsWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
 
                         } else {
                             ArrayList<Date> date = new ArrayList<>();
@@ -214,8 +219,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             }
                             binding.buttonPeriodText.setText(text);
 
-                            // TODO
-                            presenter.getProgramEventsWithDates(date, currentPeriod, orgUnitFilter.toString());
+                            presenter.setFilters(date, currentPeriod, orgUnitFilter.toString());
+                            endlessScrollListener.resetState(0);
+                            pageProcessor.onNext(0);
+//                            presenter.getProgramEventsWithDates(date, currentPeriod, orgUnitFilter.toString());
                         }
                     },
                     Timber::d);
@@ -228,8 +235,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 Date[] dates = DateUtils.getInstance().getDateFromDateAndPeriod(calendar.getTime(), currentPeriod);
                 ArrayList<Date> day = new ArrayList<>();
                 day.add(dates[0]);
-                // TODO
-                presenter.getProgramEventsWithDates(day, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(day, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(day, currentPeriod, orgUnitFilter.toString());
                 binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
                 chosenDateDay = dates[0];
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -270,8 +280,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         switch (currentPeriod) {
             case NONE:
-                // TODO
-                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
+                presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 textToShow = getString(R.string.period);
                 break;
             case DAILY:
@@ -280,8 +292,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!datesD.isEmpty())
                     textToShow = DateUtils.getInstance().formatDate(datesD.get(0));
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
-                // TODO
-                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
                 if (!chosenDateWeek.isEmpty()) {
@@ -290,8 +305,11 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     textToShow = weeklyFormat.format(chosenDateWeek.get(0)) + ", " + yearFormat.format(chosenDateWeek.get(0));
                 }
                 if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1) textToShow += "... ";
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
                 if (!chosenDateMonth.isEmpty()) {
@@ -299,15 +317,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                     textToShow = dateFormatted.substring(0, 1).toUpperCase() + dateFormatted.substring(1);
                 }
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
                 if (!chosenDateYear.isEmpty())
                     textToShow = yearFormat.format(chosenDateYear.get(0));
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
 
@@ -372,15 +396,15 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList) {
         ArrayList<CategoryOptionComboModel> catComboListFinal = new ArrayList<>();
-        if (catComboList != null){
-            for (CategoryOptionComboModel categoryOptionComboModel : catComboList){
+        if (catComboList != null) {
+            for (CategoryOptionComboModel categoryOptionComboModel : catComboList) {
                 if (!"default".equals(categoryOptionComboModel.displayName()) && !categoryOptionComboModel.uid().equals(CategoryComboModel.DEFAULT_UID)) {
                     catComboListFinal.add(categoryOptionComboModel);
                 }
             }
         }
 
-        if ("default".equals(catCombo.displayName()) || catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboListFinal.isEmpty()) {
+        if (catCombo.isDefault() || "default".equals(catCombo.displayName()) || catCombo.uid().equals(CategoryComboModel.DEFAULT_UID) || catComboListFinal.isEmpty()) {
             binding.catCombo.setVisibility(View.GONE);
         } else {
             binding.catCombo.setVisibility(View.VISIBLE);
@@ -413,11 +437,6 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 }
             });
         }
-    }
-
-    @Override
-    public void setOrgUnitFilter(StringBuilder orgUnitFilter) {
-        this.orgUnitFilter = orgUnitFilter;
     }
 
     @Override
@@ -475,26 +494,37 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         switch (currentPeriod) {
             case NONE:
-                // TODO
-                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
+
+                presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
-                // TODO
-                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
+                presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
-                // TODO
-                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
+                pageProcessor.onNext(0);
+//                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
     }
@@ -537,5 +567,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         }, 500);
 
+    }
+
+    @Override
+    public Flowable<Integer> currentPage() {
+        return pageProcessor;
     }
 }

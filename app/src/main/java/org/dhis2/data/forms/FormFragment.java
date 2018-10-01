@@ -89,6 +89,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private LinearLayout dateLayout;
+    private View datesLayout;
     private NestedScrollView nestedScrollView;
     private final int RQ_EVENT = 9876;
     private RuleActionErrorOnCompletion errorOnCompletion;
@@ -140,7 +141,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         tabLayout = view.findViewById(R.id.tablayout_data_entry);
         toolbar = view.findViewById(R.id.toolbar);
         View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
-        View datesLayout = view.findViewById(R.id.data_entry_dates);
+        datesLayout = view.findViewById(R.id.data_entry_dates);
         reportDate = view.findViewById(R.id.report_date);
         incidentDateLayout = view.findViewById(R.id.incident_date_layout);
         incidentDate = view.findViewById(R.id.incident_date_text);
@@ -357,7 +358,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
 
     private ReportStatus getReportStatusFromButton() {
-        dateLayout.requestFocus();
+        datesLayout.requestFocus();
         return nextButton.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 

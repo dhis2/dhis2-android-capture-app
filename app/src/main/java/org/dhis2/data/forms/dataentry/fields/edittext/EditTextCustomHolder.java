@@ -61,7 +61,7 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
-                if (!isEmpty(editText.getText()))
+                if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
                 else
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
@@ -170,14 +170,14 @@ final class EditTextCustomHolder extends FormViewHolder {
                 label.append("*");
             inputLayout.setHint(label);
 
-            if (label.length() > 16)
+            if (label.length() > 16 || model.description() != null)
                 description.setVisibility(View.VISIBLE);
             else
                 description.setVisibility(View.GONE);
 
         }
 
-
+        descriptionText = editTextModel.description();
         setInputType(editTextModel.valueType());
     }
 
@@ -229,7 +229,6 @@ final class EditTextCustomHolder extends FormViewHolder {
                 if (Float.valueOf(editText.getText().toString()) >= 0 && Float.valueOf(editText.getText().toString()) <= 100)
                     return true;
                 else {
-
                     inputLayout.setError(editText.getContext().getString(R.string.invalid_percentage));
                     return false;
                 }

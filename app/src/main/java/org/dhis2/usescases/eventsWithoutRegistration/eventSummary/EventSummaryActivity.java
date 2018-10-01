@@ -92,6 +92,12 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    @Override
     public void setProgram(@NonNull ProgramModel program) {
         binding.setName(program.displayName());
     }

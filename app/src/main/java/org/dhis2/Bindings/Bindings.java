@@ -33,7 +33,6 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -429,7 +428,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                                             } else {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
@@ -479,7 +478,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_open));
@@ -495,7 +494,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -511,7 +510,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_schedule));
@@ -631,9 +630,11 @@ public class Bindings {
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(
                                             categoryOptionModel -> {
-                                                if (!CategoryComboModel.DEFAULT_UID.equals(categoryOptionModel.uid())) {
+                                                if (!categoryOptionModel.isDefault()) {
+                                                    textView.setVisibility(View.VISIBLE);
                                                     textView.setText(categoryOptionComboModel.displayName());
                                                 } else {
+                                                    textView.setVisibility(View.GONE);
                                                     textView.setText("");
                                                 }
                                             },

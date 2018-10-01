@@ -62,6 +62,10 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         binding.setLabel(label);
         binding.executePendingBindings();
     }
+    public void setDescription(String description) {
+        binding.setDescription(description);
+        binding.executePendingBindings();
+    }
 
     public void initData(String data) {
         if (data != null) {

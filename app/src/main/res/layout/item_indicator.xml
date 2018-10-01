@@ -16,10 +16,6 @@
             type="java.lang.String" />
 
         <variable
-            name="presenter"
-            type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
-
-        <variable
             name="colorBg"
             type="java.lang.Integer" />
     </data>
@@ -85,11 +81,11 @@
                 tools:text="James Johnson" />
 
             <ImageView
+                android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->presenter.onDescriptionClick(indicator.description())}"
                 android:tint="?colorPrimary"
-                android:visibility="@{indicator.description()!=null? View.VISIBLE: View.GONE}"
+                android:visibility="@{indicator.displayDescription()!=null? View.VISIBLE: View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/indicator_value"
                 app:srcCompat="@drawable/ic_info_outline" />

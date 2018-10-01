@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -25,12 +27,13 @@ import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -80,9 +83,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         setDataEditable();
         binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 
-        if(eventDetailModel.getOptionComboList().isEmpty()){
+        if (eventDetailModel.getOptionComboList().isEmpty()) {
             binding.categoryComboLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             binding.categoryComboLayout.setVisibility(View.VISIBLE);
             binding.categoryComboLayout.setHint(eventDetailModel.getCatComboName());
             binding.categoryCombo.setText(eventDetailModel.getEventCatComboOptionName());
@@ -106,7 +109,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
                         false, true), "EVENT_DATA_ENTRY")
                 .commit();
 
-        if(!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
 
@@ -222,7 +225,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
                     .title(getString(R.string.tuto_tei_event_1))
-                    .focusOn(getAbstractActivity().findViewById(R.id.toolbarDelete))
+                    .focusOn(getAbstractActivity().findViewById(R.id.moreOptions))
                     .closeOnTouch(true)
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -246,5 +249,38 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
         }, 500);
 
+    }
+
+    @Override
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    showTutorial(false);
+                    break;
+                case R.id.menu_delete:
+                    presenter.confirmDeleteEvent();
+                    break;
+            }
+            return false;
+        });
+        popupMenu.show();
     }
 }

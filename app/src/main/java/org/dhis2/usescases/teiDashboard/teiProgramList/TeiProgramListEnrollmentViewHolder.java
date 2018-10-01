@@ -6,8 +6,9 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
-import com.android.databinding.library.baseAdapters.BR;
+import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentBinding;
 import org.dhis2.databinding.ItemTeiProgramsEnrollmentInactiveBinding;
@@ -36,10 +37,14 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
         if (enrollment != null) {
 
             ImageView programImage;
-            if (binding instanceof ItemTeiProgramsEnrollmentBinding)
+            RelativeLayout iconBg;
+            if (binding instanceof ItemTeiProgramsEnrollmentBinding) {
                 programImage = ((ItemTeiProgramsEnrollmentBinding) binding).programImage;
-            else
+                iconBg = ((ItemTeiProgramsEnrollmentBinding) binding).iconBg;
+            } else {
                 programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
+                iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
+            }
 
             int color = enrollment != null ? ColorUtils.getColorFrom(itemView.getContext(), enrollment.color()) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
             int icon;
@@ -56,14 +61,20 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
 
             Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            programImage.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+            iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
 
         } else if (programModel != null) {
             ImageView programImage;
-            if (binding instanceof ItemTeiProgramsProgramsBinding)
+            RelativeLayout iconBg;
+            if (binding instanceof ItemTeiProgramsProgramsBinding) {
                 programImage = ((ItemTeiProgramsProgramsBinding) binding).programImage;
-            else
+                iconBg = ((ItemTeiProgramsProgramsBinding) binding).iconBg;
+
+            } else {
                 programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
+                iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
+
+            }
 
             int color = programModel != null ? ColorUtils.getColorFrom(itemView.getContext(), programModel.color()) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
             int icon;
@@ -80,7 +91,7 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
             programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
 
             Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            programImage.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+            iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
         }
 
         binding.executePendingBindings();

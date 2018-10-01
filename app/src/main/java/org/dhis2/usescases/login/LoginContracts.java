@@ -103,11 +103,11 @@ public class LoginContracts {
 
         void syncReservedValues();
 
+        void syncAggregatesData();
+
     }
 
     public interface Interactor {
-
-
 
 
     }

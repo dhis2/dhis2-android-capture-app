@@ -33,7 +33,7 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
                         @NonNull String title,
                         @NonNull String message,
                         @NonNull String positiveText,
-                        @NonNull String negativeText,
+                        @Nullable String negativeText,
                         int requestCode,
                         @Nullable DialogClickListener listener) {
         super(context);
@@ -87,14 +87,14 @@ public class CustomDialog extends AlertDialog implements View.OnClickListener {
             case R.id.negative:
                 if (listener != null) {
                     listener.onNegative();
-                    dismiss();
                 }
+                dismiss();
                 break;
             case R.id.possitive:
                 if (listener != null) {
                     listener.onPositive();
-                    dismiss();
                 }
+                dismiss();
                 break;
             default:
                 break;

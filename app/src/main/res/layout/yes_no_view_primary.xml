@@ -13,6 +13,10 @@
         <variable
             name="label"
             type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -68,7 +72,8 @@
                         android:checked="false"
                         android:text="@string/yes"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333"
+                        tools:checked="true"/>
 
                     <RadioButton
                         android:id="@+id/no"
@@ -77,7 +82,7 @@
                         android:checked="false"
                         android:text="@string/no"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333" />
 
                     <RadioButton
                         android:id="@+id/no_value"
@@ -86,7 +91,7 @@
                         android:checked="false"
                         android:text="@string/no_value"
                         android:textColor="@color/text_black_333"
-                        app:buttonTint="?attr/colorPrimary" />
+                        app:buttonTint="@color/text_black_333" />
 
                 </RadioGroup>
 
@@ -96,7 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                    android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorPrimary" />
             </LinearLayout>

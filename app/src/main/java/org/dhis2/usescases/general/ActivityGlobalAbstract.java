@@ -39,6 +39,7 @@ import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CoordinatesView;
+import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.HelpManager;
 
 import java.lang.reflect.Field;
@@ -307,15 +308,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     public void showDescription(String description) {
-        showInfoDialog("Description", description);
-       /* LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
-        ((TextView) layout.findViewById(R.id.toast_message)).setText(description);
-        Toast toast = new Toast(this);
-        toast.setView(layout);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.show();*/
+        new CustomDialog(
+                getAbstracContext(),
+                getString(R.string.info),
+                description,
+                getString(R.string.action_accept),
+                null,
+                Constants.DESCRIPTION_DIALOG,
+                null
+        ).show();
     }
 
     protected int getPrimaryColor() {

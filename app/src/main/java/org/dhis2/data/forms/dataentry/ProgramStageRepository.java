@@ -6,10 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -38,11 +38,14 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
             "  Value.value,\n" +
-            "  Option.name,\n" +
+            "  Option.displayName,\n" +
             "  Field.section,\n" +
             "  Field.allowFutureDate,\n" +
             "  Event.status,\n" +
-            "  Field.formLabel\n" +
+            "  Field.formLabel,\n" +
+            "  Field.displayDescription,\n" +
+            "  Field.formOrder,\n" +
+            "  Field.sectionOrder\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -54,10 +57,13 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageDataElement.programStageSection AS section,\n" +
-            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate\n" +
+            "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
+            "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
+            "        DataElement.displayDescription AS displayDescription,\n" +
+            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+            "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.dataElement = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
@@ -66,7 +72,10 @@ final class ProgramStageRepository implements DataEntryRepository {
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
             " %s  " +
-            "ORDER BY Field.formOrder ASC;";
+            "ORDER BY CASE" +
+            " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
+            " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
+            " END ASC;";
 
     private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
@@ -146,7 +155,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description()));
 
                             cursor.moveToNext();
                         }
@@ -198,13 +207,14 @@ final class ProgramStageRepository implements DataEntryRepository {
         Boolean allowFutureDates = cursor.getInt(8) == 1;
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formLabel = cursor.getString(10);
+        String description = cursor.getString(11);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
 
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType, description);
     }
 
     @NonNull

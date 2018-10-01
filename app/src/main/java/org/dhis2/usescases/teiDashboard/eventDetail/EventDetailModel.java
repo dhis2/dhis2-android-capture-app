@@ -26,7 +26,7 @@ public class EventDetailModel extends BaseObservable {
 
     private final List<ProgramStageDataElementModel> dataElemets;
     private final List<ProgramStageSectionModel> stageSections;
-    private final HashMap<String, List<ProgramStageDataElementModel>> fieldsElements;
+//    private final HashMap<String, List<ProgramStageDataElementModel>> fieldsElements;
     private final ProgramStageModel programStage;
     private final List<CategoryOptionComboModel> optionComboList;
     private final ProgramModel programModel;
@@ -43,17 +43,17 @@ public class EventDetailModel extends BaseObservable {
         this.dataElemets = programStageDataElementModelList;
         this.stageSections = programStageSectionModelList;
         this.programStage = programStage;
-        fieldsElements = new HashMap<>();
+//        fieldsElements = new HashMap<>();
         this.orgUnit = orgUnit;
         this.catComboName = optionComboList.val0();
         this.optionComboList = optionComboList.val1();
         this.programModel = programModel;
 
-        setUpFields();
+//        setUpFields();
 
     }
 
-    private void setUpFields() {
+   /* private void setUpFields() {
 
         ArrayList<ProgramStageDataElementModel> sectionDataElements = new ArrayList<>();
         for (ProgramStageDataElementModel de : dataElemets) {
@@ -69,12 +69,12 @@ public class EventDetailModel extends BaseObservable {
                     sectionDataElements.add(de);
             fieldsElements.put(section.uid(), sectionDataElements);
         }
-    }
+    }*/
 
     EventModel getEventModel() {
         return eventModel;
     }
-
+/*
     List<ProgramStageSectionModel> getStageSections() {
         return stageSections;
     }
@@ -92,7 +92,7 @@ public class EventDetailModel extends BaseObservable {
                 return trackedEntityDataValueModel.value();
         }
         return null;
-    }
+    }*/
 
     public ProgramStageModel getProgramStage() {
         return programStage;

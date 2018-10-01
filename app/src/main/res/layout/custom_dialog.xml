@@ -8,46 +8,81 @@
 
         <import type="android.text.TextUtils" />
 
-        <variable name="title" type="java.lang.String"/>
-        <variable name="message" type="java.lang.String"/>
-        <variable name="negativeText" type="java.lang.String"/>
-        <variable name="positiveText" type="java.lang.String"/>
+        <variable
+            name="title"
+            type="java.lang.String" />
+
+        <variable
+            name="message"
+            type="java.lang.String" />
+
+        <variable
+            name="negativeText"
+            type="java.lang.String" />
+
+        <variable
+            name="positiveText"
+            type="java.lang.String" />
 
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="20dp">
+        android:paddingBottom="5dp">
 
-        <TextView
-            android:id="@+id/title_dialog"
+        <LinearLayout
+            android:id="@+id/header"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:text='@{ title ?? "" }'
-            android:visibility="@{ TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE}"
-            android:layout_alignParentTop="true"
-            tools:text="DHIS" />
+            android:layout_height="wrap_content"
+            android:background="?colorPrimary">
+
+            <TextView
+                android:id="@+id/title_dialog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:minHeight="50dp"
+                android:padding="5dp"
+                android:text='@{ title ?? "" }'
+                android:textColor="?colorAccent"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="@{ TextUtils.isEmpty(title) ? View.INVISIBLE : View.VISIBLE}"
+                tools:text="Info" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="10dp"
+                android:tint="?colorAccent"
+                tools:src="@drawable/ic_info_outline" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/title_dialog"
-            android:gravity="center"
+            android:layout_below="@+id/header"
+            android:layout_margin="8dp"
+            android:gravity="center|start"
+            android:maxHeight="250dp"
+            android:minHeight="60dp"
+            android:scrollbars="vertical"
             android:text='@{ message ?? "" }'
+            android:textColor="@color/text_black_333"
+            android:textSize="16sp"
             android:visibility="@{ TextUtils.isEmpty(message) ? View.INVISIBLE : View.VISIBLE}"
-            tools:text="Events are completed, do you want to close the program" />
+            tools:text="@tools:sample/lorem/random" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="15dp"
             android:layout_below="@id/message"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -58,10 +93,12 @@
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text='@{ negativeText ?? "" }'
-                android:textSize="24sp"
+                android:textColor="@color/text_black_333"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:visibility="@{ TextUtils.isEmpty(negativeText) ? View.GONE : View.VISIBLE}"
                 tools:text="Cancel"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/possitive"
@@ -71,7 +108,9 @@
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text='@{ positiveText ?? "" }'
-                android:textSize="24sp"
+                android:textColor="@color/text_black_333"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 tools:text="Accept"
                 tools:visibility="visible" />
 

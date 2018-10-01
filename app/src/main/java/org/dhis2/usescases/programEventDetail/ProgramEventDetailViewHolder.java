@@ -3,8 +3,8 @@ package org.dhis2.usescases.programEventDetail;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.databinding.library.baseAdapters.BR;
-import org.dhis2.databinding.ItemProgramEventBinding;
 
+import org.dhis2.databinding.ItemProgramEventBinding;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,7 +41,9 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                             int valuesSize = values.size() > 3 ? 3 : values.size();
                             for (int i = 0; i < valuesSize; i++) {
                                 if (values.get(i) != null)
-                                    stringBuilder.append(values.get(i)).append("\n");
+                                    stringBuilder.append(values.get(i));
+                                if (i != valuesSize - 1)
+                                    stringBuilder.append("\n");
                             }
                             binding.dataValue.setText(stringBuilder);
                         },

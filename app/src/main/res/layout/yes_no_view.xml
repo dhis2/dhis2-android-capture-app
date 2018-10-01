@@ -13,6 +13,10 @@
         <variable
             name="label"
             type="java.lang.String" />
+
+        <variable
+            name="description"
+            type="java.lang.String" />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -99,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:visibility="@{label.length()>16?View.VISIBLE : View.GONE}"
+                    android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorAccent" />
             </LinearLayout>

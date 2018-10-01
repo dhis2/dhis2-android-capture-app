@@ -11,11 +11,16 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
+import org.dhis2.data.tuples.Quartet;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryRepository;
 import org.dhis2.usescases.map.MapSelectorActivity;
@@ -23,9 +28,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Result;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -42,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -94,66 +97,46 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
-        if (eventId != null)
+        if (eventId != null) {
             compositeDisposable.add(
-                    eventInitialRepository.event(eventId)
-                            .flatMap(
-                                    eventModel -> {
-                                        view.setEvent(eventModel);
-                                        return metadataRepository.getProgramWithId(programId)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
-                            .flatMap(
-                                    programModel -> {
-                                        this.programModel = programModel;
-                                        view.setProgram(programModel);
-                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo())
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
-                            .flatMap(
-                                    catCombo -> {
-                                        this.catCombo = catCombo;
-                                        return eventInitialRepository.catCombo(programModel.categoryCombo())
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread());
-                                    }
-                            )
+                    Flowable.zip(
+                            eventInitialRepository.event(eventId).toFlowable(BackpressureStrategy.LATEST),
+                            metadataRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catComboModel(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Quartet::create
+                    )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
-                                    error -> Timber.log(1, error)
-                            )
+                            .subscribe(quartetFlowable -> {
+                                this.programModel = quartetFlowable.val1();
+                                this.catCombo = quartetFlowable.val2();
+                                view.setEvent(quartetFlowable.val0());
+                                view.setProgram(quartetFlowable.val1());
+                                view.setCatComboOptions(catCombo, quartetFlowable.val3());
+                            }, Timber::d)
             );
-        else
+
+        } else
             compositeDisposable.add(
-                    metadataRepository.getProgramWithId(programId)
-                            .flatMap(
-                                    programModel -> {
-                                        this.programModel = programModel;
-                                        view.setProgram(programModel);
-                                        return metadataRepository.getCategoryComboWithId(programModel.categoryCombo());
-                                    }
-                            )
-                            .flatMap(
-                                    catCombo -> {
-                                        this.catCombo = catCombo;
-                                        return eventInitialRepository.catCombo(programModel.categoryCombo());
-                                    }
-                            )
+                    Flowable.zip(
+                            metadataRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catComboModel(programId).toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.catCombo(programId).toFlowable(BackpressureStrategy.LATEST),
+                            Trio::create
+                    )
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    catComboOptions -> view.setCatComboOptions(catCombo, catComboOptions),
-                                    Timber::d
-                            )
+                            .subscribe(trioFlowable -> {
+                                this.programModel = trioFlowable.val0();
+                                this.catCombo = trioFlowable.val1();
+                                view.setProgram(trioFlowable.val0());
+                                view.setCatComboOptions(catCombo, trioFlowable.val2());
+                            }, Timber::d)
             );
+
         getOrgUnits(programId);
-        if(TextUtils.isEmpty(programStageId))
+        if (TextUtils.isEmpty(programStageId))
             getProgramStages(programId);
         else
             getProgramStage(programStageId);
@@ -227,6 +210,15 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void onShareClick(View mView) {
         view.showQR();
+    }
+
+    @Override
+    public void deleteEvent() {
+        if (eventId != null) {
+            eventInitialRepository.deleteEvent(eventId);
+            view.showEventWasDeleted();
+        } else
+            view.displayMessage("This event has not been created yet");
     }
 
     @Override
@@ -401,8 +393,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
 
         compositeDisposable.add(viewModelsFlowable
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view.showFields(sectionUid), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
