@@ -1,5 +1,9 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
+import android.os.Bundle;
+
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -62,15 +66,22 @@ public class DataSetInitialPresenter implements DataSetInitialContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> view.showCatComboSelector(catOptionUid,data),
+                                data -> view.showCatComboSelector(catOptionUid, data),
                                 Timber::d
                         )
         );
     }
 
     @Override
-    public void onActionButtonClick(DataSetInitialContract.Action action) {
-
+    public void onActionButtonClick() {
+        Bundle bundle = DataSetTableActivity.getBundle(
+                view.getDataSetUid(),
+                view.getSelectedOrgUnit(),
+                view.getPeriodType(),
+                DateUtils.databaseDateFormat().format(view.getSelectedPeriod()),
+                view.getSelectedCatOptions()
+        );
+        view.startActivity(DataSetTableActivity.class, bundle, true, false, null);
     }
 
 

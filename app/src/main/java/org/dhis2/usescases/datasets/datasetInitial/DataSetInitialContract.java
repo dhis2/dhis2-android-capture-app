@@ -5,6 +5,8 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class DataSetInitialContract {
@@ -14,11 +16,6 @@ public class DataSetInitialContract {
         ACTION_UPDATE,
         ACTION_CHECK
     }
-
-    public static final int ACTION_CREATE = 0;
-    public static final int ACTION_UPDATE = 1;
-    public static final int ACTION_CHECK = 2;
-
 
     public interface View extends AbstractActivityContracts.View {
 
@@ -31,12 +28,18 @@ public class DataSetInitialContract {
         void showPeriodSelector(PeriodType periodType);
 
         void showCatComboSelector(String catOptionUid, List<CategoryOptionModel> data);
+
+        String getDataSetUid();
+        String getSelectedOrgUnit();
+        Date getSelectedPeriod();
+        String getSelectedCatOptions();
+
+        String getPeriodType();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(View view);
 
-        /*Actions*/
         void onBackClick();
 
         void onOrgUnitSelectorClick();
@@ -45,7 +48,7 @@ public class DataSetInitialContract {
 
         void onCatOptionClick(String catOptionUid);
 
-        void onActionButtonClick(Action action);
+        void onActionButtonClick();
     }
 
 
