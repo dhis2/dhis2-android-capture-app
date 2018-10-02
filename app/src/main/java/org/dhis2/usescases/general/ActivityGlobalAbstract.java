@@ -209,14 +209,8 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void displayMessage(String message) {
         if (message == null)
             message = getString(R.string.permission_denied);
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast, findViewById(R.id.custom_toast_layout_id));
-        ((TextView) layout.findViewById(R.id.toast_message)).setText(message);
-        Toast toast = new Toast(this);
-        toast.setView(layout);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
+
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
