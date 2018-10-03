@@ -39,6 +39,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.utils.Constants.ADDNEW;
@@ -84,9 +85,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         return instance;
     }
 
-  /*  public static TEIDataFragment createInstance() {
+    public static TEIDataFragment createInstance() {
         return instance = new TEIDataFragment();
-    }*/
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -313,4 +314,5 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         if (dialog.getRequestCode() == RC_GENERATE_EVENT)
             presenter.areEventsCompleted(this);
     }
+
 }

@@ -53,7 +53,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     private boolean isPinScreenVisible = false;
 
     enum SyncState {
-        METADATA, EVENTS, TEI, RESERVED_VALUES
+        METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
     }
 
     @Override

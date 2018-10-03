@@ -52,6 +52,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -421,28 +422,32 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        Calendar now = Calendar.getInstance();
+        Calendar now = DateUtils.getInstance().getCalendar();
         if (periodType == null) {
             selectedDate = now.getTime();
             selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
-            binding.date.setOnClickListener(v -> presenter.onDateClick(EventInitialActivity.this));
         } else {
             now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), 0));
             selectedDate = now.getTime();
             selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
-            binding.date.setOnClickListener(v ->
-                    new PeriodDialog()
-                            .setPeriod(periodType)
-                            .setPossitiveListener(selectedDate -> {
-                                this.selectedDate = selectedDate;
-                                binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
-                                binding.date.clearFocus();
-                                if (!fixedOrgUnit)
-                                    binding.orgUnit.setText("");
-                                presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
-                            })
-                            .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName()));
         }
+
+        binding.date.setOnClickListener(view -> {
+            if (periodType == null)
+                presenter.onDateClick(EventInitialActivity.this);
+            else
+                new PeriodDialog()
+                        .setPeriod(periodType)
+                        .setPossitiveListener(selectedDate -> {
+                            this.selectedDate = selectedDate;
+                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
+                            binding.date.clearFocus();
+                            if (!fixedOrgUnit)
+                                binding.orgUnit.setText("");
+                            presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+                        })
+                        .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+        });
 
         binding.date.setText(selectedDateString);
 
@@ -596,6 +601,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.coordinatesLayout.setVisibility(View.GONE);
         }
         binding.setProgramStage(programStage);
+        if (periodType == null)
+            periodType = programStage.periodType();
     }
 
     @Override
@@ -683,11 +690,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         String date = String.format(Locale.getDefault(), "%s-%02d-%02d", year, month + 1, day);
-        binding.date.setText(date);
+        try {
+            selectedDate = DateUtils.uiDateFormat().parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
+        binding.date.setText(selectedDateString);
         binding.date.clearFocus();
         if (!fixedOrgUnit)
             binding.orgUnit.setText("");
-        presenter.filterOrgUnits(date);
+        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
     }
 
     @Override

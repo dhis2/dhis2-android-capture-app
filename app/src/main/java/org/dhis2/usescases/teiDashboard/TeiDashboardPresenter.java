@@ -252,7 +252,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void seeDetails(View sharedView, DashboardProgramModel dashboardProgramModel) {
-        Fragment teiFragment = view.getAdapter().getItem(0);
+        Fragment teiFragment = TEIDataFragment.getInstance();
         Intent intent = new Intent(view.getContext(), TeiDataDetailActivity.class);
         Bundle extras = new Bundle();
         extras.putString("TEI_UID", teUid);
@@ -266,7 +266,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onEventSelected(String uid, View sharedView) {
-        Fragment teiFragment = view.getAdapter().getItem(0);
+        Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
             Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
             Bundle extras = new Bundle();
@@ -341,18 +341,20 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             d2.relationshipModule().relationships.uid(relationship.uid()).delete();
         } catch (D2CallException e) {
             Timber.d(e);
+        } finally {
+            subscribeToRelationships(RelationshipFragment.getInstance());
         }
     }
 
     @Override
     public void subscribeToRelationships(RelationshipFragment relationshipFragment) {
         compositeDisposable.add(
-//                Observable.just(d2.relationshipModule().relationships.getRelationshipsByTEI(teUid))
-                Observable.just(d2.relationshipModule().relationships.getByItem(
-                        RelationshipItem.builder().trackedEntityInstance(
-                                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
-                        )
-                ).flatMapIterable(list -> list)
+                Flowable.just(
+                        d2.relationshipModule().relationships.getByItem(
+                                RelationshipItem.builder().trackedEntityInstance(
+                                        RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teUid).build()).build()
+                        ))
+                        .flatMapIterable(list -> list)
                         .map(relationship -> {
                             RelationshipType relationshipType = null;
                             for (RelationshipType type : d2.relationshipModule().relationshipTypes.getSet())
@@ -363,7 +365,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                relationshipFragment.setRelationships(),
+                                RelationshipFragment.getInstance().setRelationships(),
                                 Timber::d
                         )
         );

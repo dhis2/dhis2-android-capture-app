@@ -10,6 +10,12 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.DataSetModel;
+
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -23,6 +29,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Inject
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
+    private DataSetSectionAdapter viewPagerAdapter;
 
     public static Bundle getBundle(@NonNull String dataSetUid,
                                    @NonNull String orgUnitUid,
@@ -63,5 +70,22 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     protected void onPause() {
         presenter.onDettach();
         super.onPause();
+    }
+
+    @Override
+    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<CategoryOptionComboModel>> catOptions) {
+        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
+        binding.viewPager.setAdapter(viewPagerAdapter);
+        binding.tabLayout.setupWithViewPager(binding.viewPager);
+        viewPagerAdapter.swapData(dataElements);
+    }
+
+    @Override
+    public void setDataSet(DataSetModel data) {
+        binding.dataSetName.setText(data.displayName());
+    }
+
+    public DataSetTableContract.Presenter getPresenter() {
+        return presenter;
     }
 }

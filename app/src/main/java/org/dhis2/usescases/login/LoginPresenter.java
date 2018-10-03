@@ -191,10 +191,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     syncEvents();
                     break;
                 case EVENTS:
-                    syncAggregatesData();
                     syncTrackedEntities();
                     break;
                 case TEI:
+           /*         syncAggregatesData();
+                    break;
+                case AGGREGATES:*/
                     syncReservedValues();
                     break;
                 case RESERVED_VALUES:
@@ -207,7 +209,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
             }
         else {
-            view.displayMessage("Something went wrong during syncronisation");
+            view.displayMessage(syncResult.message());
             new Handler().postDelayed(this::logOut, 1500);
         }
     }
@@ -265,7 +267,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));
-//                    view.renderInvalidCredentialsError();
                     break;
                 case API_UNSUCCESSFUL_RESPONSE:
                     view.renderError(d2CallException.errorCode());
@@ -323,10 +324,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void syncTrackedEntities() {
-
         disposable.add(trackerData()
-                .subscribeOn(Schedulers.io())
                 .map(response -> SyncResult.success())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
@@ -334,22 +334,33 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .subscribe(update(LoginActivity.SyncState.TEI),
                         throwable -> view.displayMessage(throwable.getMessage())
                 ));
-
     }
 
 
     @Override
+    public void syncAggregatesData() {
+        disposable.add(aggregatesData()
+                .map(response -> SyncResult.success())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .subscribe(update(LoginActivity.SyncState.AGGREGATES),
+                        throwable -> view.displayMessage(throwable.getMessage())
+                ));
+    }
+
+    @Override
     public void syncReservedValues() {
 
-        disposable.add(metadataRepository.getReserveUids()
-                .map(pairs -> {
-                    /*for (Pair<String, String> pair : pairs) {
-                        userManager.getD2().popTrackedEntityAttributeReservedValue(pair.val0(), pair.val1());
-                    }*/
+        disposable.add(Observable.just(true)
+                .map(init -> {
                     userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
                     return true;
                 })
                 .map(response -> SyncResult.success())
+                .onErrorReturn(error -> SyncResult.success())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(
@@ -359,15 +370,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
         );
     }
 
-    @Override
-    public void syncAggregatesData() {
-        disposable.add(aggregatesData()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> Timber.log(1, "AGGREGATE DONE"),
-                        throwable -> view.displayMessage(throwable.getMessage())
-                ));
-    }
 
     @NonNull
     private Consumer<SyncResult> update(LoginActivity.SyncState syncState) {

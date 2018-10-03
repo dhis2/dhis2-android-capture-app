@@ -18,6 +18,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -73,16 +74,17 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.setDataSetModel(dataSetInitialModel);
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
-        for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
-            selectedCatOptions.put(categoryModel.uid(), null);
-            ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
-            categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
-            categoryComboBinding.inputEditText.setOnClickListener(view -> {
-                selectedView = view;
-                presenter.onCatOptionClick(categoryModel.uid());
-            });
-            binding.catComboContainer.addView(categoryComboBinding.getRoot());
-        }
+        if (!dataSetInitialModel.categoryCombo().equals(CategoryComboModel.DEFAULT_UID))
+            for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
+                selectedCatOptions.put(categoryModel.uid(), null);
+                ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
+                categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
+                categoryComboBinding.inputEditText.setOnClickListener(view -> {
+                    selectedView = view;
+                    presenter.onCatOptionClick(categoryModel.uid());
+                });
+                binding.catComboContainer.addView(categoryComboBinding.getRoot());
+            }
         checkActionVisivbility();
     }
 

@@ -249,9 +249,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.incidentDateLabel())}'
+                    android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
+                    android:visibility="@{dashboardModel.currentEnrollment.incidentDate()==null?View.GONE:View.VISIBLE}"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -260,7 +261,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel())}'
+                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
+                    android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
                     app:layout_constraintTop_toBottomOf="@id/incident_date_label"
