@@ -1045,7 +1045,7 @@ public class Bindings {
 
         int px = (int) (1 * Resources.getSystem().getDisplayMetrics().density);
         ((GradientDrawable) drawable.mutate()).setStroke(px, colorPrimaryDark);
-        ((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
+        //((GradientDrawable) drawable.mutate()).setColor(colorPrimaryLight);
 
         imageView.setBackground(drawable);
 
