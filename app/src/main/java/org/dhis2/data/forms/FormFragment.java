@@ -44,6 +44,7 @@ import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
+import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
 import java.util.List;
@@ -94,6 +95,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private final int RQ_EVENT = 9876;
     private RuleActionErrorOnCompletion errorOnCompletion;
     private RuleActionWarningOnCompletion warningOnCompletion;
+    private RuleActionShowError showError;
 
 
     public FormFragment() {
@@ -557,6 +559,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return errorOnCompletion;
     }
 
+    public RuleActionShowError hasError(){
+        return showError;
+    }
+
     public String getMessageOnComplete() {
         return messageOnComplete;
     }
@@ -569,5 +575,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void setWarningOnCompletion(RuleActionWarningOnCompletion warningOnCompletion) {
         this.warningOnCompletion = warningOnCompletion;
+    }
+
+    @Override
+    public void setShowError(RuleActionShowError showError) {
+        this.showError = showError;
     }
 }

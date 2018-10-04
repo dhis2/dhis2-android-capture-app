@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
+import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
 import java.util.List;
@@ -67,5 +68,8 @@ interface FormView {
     void hideDates();
 
     void setErrorOnCompletion(RuleActionErrorOnCompletion errorOnCompletion);
+
     void setWarningOnCompletion(RuleActionWarningOnCompletion errorOnCompletion);
+
+    void setShowError(RuleActionShowError showError);
 }

@@ -135,8 +135,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
             if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
                 view.showInfoDialog("Error", formFragment.hasErrorOnComple().content());
+            }else if(formFragment.hasError() != null){
+                view.showInfoDialog("Error", formFragment.hasError().content());
             } else {
-
                 List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
                 boolean mandatoryOk = true;
                 boolean hasError = false;

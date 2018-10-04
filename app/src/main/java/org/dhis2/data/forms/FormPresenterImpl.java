@@ -16,6 +16,7 @@ import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
+import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -251,6 +252,7 @@ class FormPresenterImpl implements FormPresenter {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.setErrorOnCompletion(null);
         view.setWarningOnCompletion(null);
+        view.setShowError(null);
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
 
@@ -264,6 +266,9 @@ class FormPresenterImpl implements FormPresenter {
             }else if(ruleAction instanceof RuleActionErrorOnCompletion){
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 view.setErrorOnCompletion(errorOnCompletion);
+            }else if(ruleAction instanceof RuleActionShowError){
+                RuleActionShowError showError = (RuleActionShowError)ruleAction;
+                view.setShowError(showError);
             }
         }
     }
