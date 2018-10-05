@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -52,7 +53,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     private boolean isPinScreenVisible = false;
 
     enum SyncState {
-        METADATA, EVENTS, TEI, RESERVED_VALUES
+        METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
     }
 
     @Override
@@ -180,11 +181,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             params.height = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
-            binding.lottieView.setVisibility(View.VISIBLE);
-            binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
-            binding.lottieView.useHardwareAcceleration(true);
-            binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-            binding.lottieView.playAnimation();
+            if(Build.VERSION.SDK_INT > 21) {
+                binding.lottieView.setVisibility(View.VISIBLE);
+                binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
+                binding.lottieView.useHardwareAcceleration(true);
+                binding.lottieView.enableMergePathsForKitKatAndAbove(true);
+                binding.lottieView.playAnimation();
+            }
         }
     }
 

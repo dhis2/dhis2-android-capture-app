@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
@@ -137,12 +135,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            view.clearData();
+                            HashMap<String, String> queryDataBU = new HashMap(queryData);
                             if (!isEmpty(data.value()))
                                 queryData.put(data.id(), data.value());
                             else
                                 queryData.remove(data.id());
-                            getTrakedEntities();
+
+                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                                view.clearData();
+                                if (!isEmpty(data.value()))
+                                    queryData.put(data.id(), data.value());
+                                else
+                                    queryData.remove(data.id());
+                                getTrakedEntities();
+                            }
                         },
                         Timber::d)
         );

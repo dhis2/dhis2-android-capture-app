@@ -3,11 +3,11 @@ package org.dhis2.usescases.main.program;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -83,7 +83,7 @@ class HomeRepositoryImpl implements HomeRepository {
     private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
             "WHERE dataSet = ? ";
 
-    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE,OrganisationUnitProgramLinkModel.TABLE};
+    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
     private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
@@ -119,7 +119,11 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId) {
+    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize) {
+
+        int orgUnits = orgUnitsId != null ? orgUnitsId.split(",").length : 0;
+        boolean filteringOrgs = orgUnitsId!=null && orgUnitsSize != orgUnits;
+
         return briteDatabase.createQuery(TABLE_SET, PROGRAM_MODELS)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
@@ -132,7 +136,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
                     //QUERYING Program EVENTS - dates filter
                     String queryFinal;
-                    if(!programType.isEmpty()){
+                    if (!programType.isEmpty()) {
                         StringBuilder dateQuery = new StringBuilder("");
                         if (dates != null && !dates.isEmpty()) {
                             String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
@@ -181,18 +185,18 @@ class HomeRepositoryImpl implements HomeRepository {
                             typeName = typeCursor.getString(0);
                             typeCursor.close();
                         }
-                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())){
+                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())) {
                         typeName = "Events";
                     } else {
                         typeName = "DataSets";
                     }
 
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description,true,true);
-                }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, true);
+                }).map(list -> checkCount(list, period, filteringOrgs)).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period) {
-        if (period == null)
+    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period, boolean filteringOrgs) {
+        if (period == null && !filteringOrgs)
             return list;
         else {
             List<ProgramViewModel> models = new ArrayList<>();

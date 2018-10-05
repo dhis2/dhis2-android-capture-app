@@ -19,13 +19,14 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.RelationshipAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
 
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.processors.FlowableProcessor;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -40,7 +41,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
 
     private DashboardProgramModel dashboardProgramModel;
     static RelationshipFragment instance;
-    static RelationshipAdapter relationshipAdapter;
+    private RelationshipAdapter relationshipAdapter;
 
     static public RelationshipFragment getInstance() {
         if (instance == null) {
@@ -87,7 +88,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         binding.executePendingBindings();
     }
 
-    public Consumer<List<Pair<Relationship,RelationshipType>>> setRelationships() {
+    public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
         return relationships -> relationshipAdapter.addItems(relationships);
     }
 

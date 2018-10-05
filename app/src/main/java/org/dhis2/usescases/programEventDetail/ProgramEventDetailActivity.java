@@ -119,6 +119,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+        adapter.clearData();
         presenter.init(this, programId, currentPeriod);
     }
 
@@ -141,6 +142,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
+
 
     @Override
     public void setProgram(ProgramModel program) {

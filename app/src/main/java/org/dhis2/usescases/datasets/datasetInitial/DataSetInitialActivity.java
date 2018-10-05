@@ -18,6 +18,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -39,11 +40,12 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
     private HashMap<String, CategoryOptionModel> selectedCatOptions;
     private OrganisationUnitModel selectedOrgUnit;
     private Date selectedPeriod;
+    private String dataSetUid;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
+        dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
         ((App) getApplicationContext()).userComponent().plus(new DataSetInitialModule(dataSetUid)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_initial);
@@ -72,16 +74,17 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.setDataSetModel(dataSetInitialModel);
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
-        for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
-            selectedCatOptions.put(categoryModel.uid(), null);
-            ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
-            categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
-            categoryComboBinding.inputEditText.setOnClickListener(view -> {
-                selectedView = view;
-                presenter.onCatOptionClick(categoryModel.uid());
-            });
-            binding.catComboContainer.addView(categoryComboBinding.getRoot());
-        }
+        if (!dataSetInitialModel.categoryCombo().equals(CategoryComboModel.DEFAULT_UID))
+            for (CategoryModel categoryModel : dataSetInitialModel.categories()) {
+                selectedCatOptions.put(categoryModel.uid(), null);
+                ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
+                categoryComboBinding.inputLayout.setHint(categoryModel.displayName());
+                categoryComboBinding.inputEditText.setOnClickListener(view -> {
+                    selectedView = view;
+                    presenter.onCatOptionClick(categoryModel.uid());
+                });
+                binding.catComboContainer.addView(categoryComboBinding.getRoot());
+            }
         checkActionVisivbility();
     }
 
@@ -138,6 +141,38 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
             return false;
         });
         menu.show();
+    }
+
+    @Override
+    public String getDataSetUid() {
+        return dataSetUid;
+    }
+
+    @Override
+    public String getSelectedOrgUnit() {
+        return selectedOrgUnit.uid();
+    }
+
+    @Override
+    public Date getSelectedPeriod() {
+        return selectedPeriod;
+    }
+
+    @Override
+    public String getSelectedCatOptions() {
+        StringBuilder catComb = new StringBuilder("");
+        for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
+            CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
+            catComb.append(catOpt.code());
+            if (i < selectedCatOptions.values().size() - 1)
+                catComb.append(", ");
+        }
+        return catComb.toString();
+    }
+
+    @Override
+    public String getPeriodType() {
+        return binding.getDataSetModel().periodType().name();
     }
 
     private void checkActionVisivbility() {

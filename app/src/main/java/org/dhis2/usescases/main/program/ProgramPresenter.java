@@ -73,7 +73,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .flatMap(datePeriodOrgs -> homeRepository.programModels(
                                 (List<Date>) datePeriodOrgs.val0(),
                                 (Period) datePeriodOrgs.val1(),
-                                (String) datePeriodOrgs.val2()))
+                                (String) datePeriodOrgs.val2(),
+                                myOrgs.size()))
                         .subscribeOn(Schedulers.from(executorService))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

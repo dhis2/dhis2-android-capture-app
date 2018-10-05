@@ -11,7 +11,7 @@
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="95dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:minHeight="40dp"
         android:minWidth="65dp"
         android:paddingEnd="5dp"

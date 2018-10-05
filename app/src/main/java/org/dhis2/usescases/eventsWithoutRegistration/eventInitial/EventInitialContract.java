@@ -60,7 +60,7 @@ public class EventInitialContract {
 
         void showProgramStageSelection();
 
-        void setReportDate(String format);
+        void setReportDate(Date date);
 
         void setOrgUnit(String orgUnitId, String orgUnitName);
 

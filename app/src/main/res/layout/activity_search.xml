@@ -74,13 +74,13 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:dropDownWidth="400dp"
+                android:dropDownHorizontalOffset="10dp"
                 android:dropDownVerticalOffset="?actionBarSize"
-                android:dropDownHorizontalOffset ="10dp"
+                android:dropDownWidth="400dp"
                 android:padding="10dp"
-                tools:listitem="@layout/spinner_program_layout"
                 app:layout_constraintEnd_toStartOf="@id/clear_button"
-                app:layout_constraintStart_toEndOf="@id/title" />
+                app:layout_constraintStart_toEndOf="@id/title"
+                tools:listitem="@layout/spinner_program_layout" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline"
@@ -134,6 +134,22 @@
                     android:textSize="18sp"
                     tools:text="You need to enter at least N attributes to do a search" />
 
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/progressLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:visibility="visible"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="5dp"
+                    app:progressColor="@{@color/colorPrimary}" />
             </RelativeLayout>
 
             <android.support.design.widget.FloatingActionButton

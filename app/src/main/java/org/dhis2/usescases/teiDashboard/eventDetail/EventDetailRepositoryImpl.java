@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -200,6 +201,16 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
     public Observable<ProgramModel> getProgram(String eventUid) {
         return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create);
+    }
+
+    @Override
+    public void saveCatOption(CategoryOptionComboModel selectedOption) {
+        ContentValues event = new ContentValues();
+        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
+        event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+        // TODO: and if so, keep the TO_POST state
+
+        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

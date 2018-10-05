@@ -1,15 +1,22 @@
 package org.dhis2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.ObservableBoolean;
+import android.os.Build;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.stetho.Stetho;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.security.ProviderInstaller;
+
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.dagger.PerServer;
 import org.dhis2.data.dagger.PerUser;
@@ -29,8 +36,6 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
-import com.facebook.stetho.Stetho;
-
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
@@ -96,8 +101,30 @@ public class App extends MultiDexApplication implements Components {
         setUpServerComponent();
         setUpUserComponent();
 
-        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(),true);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            upgradeSecurityProvider();
+
+        Scheduler asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true);
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> asyncMainThreadScheduler);
+
+    }
+
+    private void upgradeSecurityProvider() {
+        try {
+            ProviderInstaller.installIfNeededAsync(this, new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() {
+                    Log.e(App.class.getName(), "New security provider installed.");
+                }
+
+                @Override
+                public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
+                    Log.e(App.class.getName(), "New security provider install failed.");
+                }
+            });
+        } catch (Exception ex) {
+            Log.e(App.class.getName(), "Unknown issue trying to install a new security provider", ex);
+        }
 
     }
 

@@ -205,6 +205,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void clearData() {
+        binding.progressLayout.setVisibility(View.VISIBLE);
         endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
         if (fromRelationship)
             searchRelationshipAdapter.clear();
@@ -263,7 +264,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
-
+            binding.progressLayout.setVisibility(View.GONE);
             if (!fromRelationship) {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);

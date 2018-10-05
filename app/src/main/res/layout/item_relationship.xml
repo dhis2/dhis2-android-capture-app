@@ -27,6 +27,8 @@
         android:paddingEnd="10dp"
         android:paddingStart="29dp"
         android:paddingTop="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         >
 
         <TextView

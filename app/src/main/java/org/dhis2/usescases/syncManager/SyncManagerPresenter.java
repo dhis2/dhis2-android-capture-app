@@ -195,8 +195,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void wipeDb() {
         try {
             dispatcher.cancelAll();
-            d2.wipeDB().call();
-
+            d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 

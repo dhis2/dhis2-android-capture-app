@@ -2,8 +2,10 @@ package org.dhis2.usescases.qrScanner;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +15,7 @@ import android.view.SurfaceHolder;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityQrBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import com.google.android.gms.vision.CameraSource;
@@ -100,4 +103,17 @@ public class QRActivity extends ActivityGlobalAbstract {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 101: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setUpSourceCamera();
+                } else {
+                    finish();
+                }
+            }
+        }
+    }
 }

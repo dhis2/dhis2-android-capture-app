@@ -96,17 +96,19 @@
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
             android:padding="6dp"
             android:tint="@{enrollment.followUp() ? @color/white : @color/text_black_333}"
+            android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_warning_white"
             tools:ignore="ContentDescription"
-            tools:tint="@color/text_black_333"/>
+            tools:tint="@color/text_black_333" />
 
 
         <RelativeLayout
             android:id="@+id/program_lock_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toStartOf="@id/follow_up"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -249,9 +251,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.incidentDateLabel())}'
+                    android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
+                    android:visibility="@{dashboardModel.currentEnrollment.incidentDate()==null?View.GONE:View.VISIBLE}"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -260,9 +263,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel())}'
+                    android:text='@{@string/text_plus_colon(program.enrollmentDateLabel()!=null?program.enrollmentDateLabel():@string/enrollmment_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
+                    android:visibility="@{dashboardModel.currentEnrollment.enrollmentDate()==null?View.GONE:View.VISIBLE}"
                     app:layout_constraintTop_toBottomOf="@id/incident_date_label"
                     tools:text="Date of enrollment:" />
 
