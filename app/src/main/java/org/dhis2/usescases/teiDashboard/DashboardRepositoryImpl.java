@@ -14,7 +14,6 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
@@ -438,10 +437,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase,cursor));
+                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
         else
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_NO_PROGRAM_QUERY, teiUid == null ? "" : teiUid)
-                    .mapToList(cursor -> ValueUtils.transform(briteDatabase,cursor));
+                    .mapToList(cursor -> ValueUtils.transform(briteDatabase, cursor));
     }
 
     @Override

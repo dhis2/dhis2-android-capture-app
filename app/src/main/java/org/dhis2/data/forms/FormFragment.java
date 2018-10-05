@@ -37,10 +37,13 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.CustomViews.CoordinatesView;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.Preconditions;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
@@ -90,7 +93,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private LinearLayout dateLayout;
-    private View datesLayout;
+    public View datesLayout;
     private NestedScrollView nestedScrollView;
     private final int RQ_EVENT = 9876;
     private RuleActionErrorOnCompletion errorOnCompletion;
@@ -559,7 +562,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         return errorOnCompletion;
     }
 
-    public RuleActionShowError hasError(){
+    public RuleActionShowError hasError() {
         return showError;
     }
 
@@ -580,5 +583,10 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void setShowError(RuleActionShowError showError) {
         this.showError = showError;
+    }
+
+    @Override
+    public void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels) {
+        new CategoryComboDialog(getAbstracContext(), categoryComboModel, categoryOptionComboModels, 123, selectedOption -> formPresenter.saveCategoryOption(selectedOption)).show();
     }
 }

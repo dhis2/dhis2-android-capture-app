@@ -412,7 +412,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         this.program = program;
-        this.periodType = program.expiryPeriodType();
+//        this.periodType = program.expiryPeriodType(); TODO: expiryPeriodType only for expiry logic!
 
         String activityTitle;
         if (eventCreationType.equals(REFERRAL)) {

@@ -39,7 +39,6 @@ import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
-import io.reactivex.processors.FlowableProcessor;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.utils.Constants.ADDNEW;
@@ -236,8 +235,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         RC_GENERATE_EVENT,
                         this);
                 dialog.show();
-            } else
-                presenter.areEventsCompleted(this);
+            } else if (programStageModel.remindCompleted())
+                askCompleteProgram();
         };
     }
 
@@ -257,6 +256,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             }
 
         };
+    }
+
+    private void askCompleteProgram(){
+        dialog = new CustomDialog(
+                getContext(),
+                getString(R.string.event_completed_title),
+                getString(R.string.event_completed_message),
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                RC_EVENTS_COMPLETED,
+                this);
+        dialog.show();
     }
 
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
@@ -294,12 +305,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                     } else {
                         new PeriodDialog()
                                 .setPeriod(programStageFromEvent.periodType())
-                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(),Calendar.getInstance().getTime(),0))
+                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(), Calendar.getInstance().getTime(), 0))
                                 .setPossitiveListener(selectedDate -> {
                                     Calendar chosenDate = Calendar.getInstance();
                                     chosenDate.setTime(selectedDate);
                                     presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
-                                } )
+                                })
                                 .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
                     }
                 }
@@ -311,8 +322,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     @Override
     public void onNegative() {
-        if (dialog.getRequestCode() == RC_GENERATE_EVENT)
-            presenter.areEventsCompleted(this);
+        if (dialog.getRequestCode() == RC_GENERATE_EVENT && programStageFromEvent.remindCompleted())
+            askCompleteProgram();
     }
 
 }

@@ -21,9 +21,6 @@
             name="stage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
-        <variable
-            name="isEditable"
-            type="Boolean" />
     </data>
 
 
@@ -55,24 +52,12 @@
                 android:id="@id/title"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/edit_mode"
+                app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
-
-<!--
-            <ImageView
-                android:id="@+id/toolbarDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:onClick="@{()->presenter.confirmDeleteEvent()}"
-                android:padding="10dp"
-                app:layout_constraintEnd_toStartOf="@id/moreOptions"
-                app:srcCompat="@drawable/ic_delete"
-                tools:ignore="ContentDescription" />-->
 
             <ImageView
                 android:id="@+id/moreOptions"
@@ -84,19 +69,6 @@
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/edit_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:onClick="@{()->presenter.editData()}"
-                android:padding="10dp"
-                android:tint="?colorAccent"
-                android:visibility="@{isEditable ? View.VISIBLE : View.GONE}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/moreOptions"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_edit"
-                tools:visibility="gone" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/toolbar_guideline"
@@ -140,10 +112,8 @@
                 android:layout_width="125dp"
                 android:layout_height="34dp"
                 android:layout_gravity="end|bottom"
-                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="22.5dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"
@@ -154,156 +124,157 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">-->
 
-                <android.support.design.widget.AppBarLayout
-                    android:id="@+id/appbarlayout"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbarlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.design.widget.CollapsingToolbarLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                    <android.support.design.widget.CollapsingToolbarLayout
+                    <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                        android:layout_height="wrap_content">
 
-                        <android.support.constraint.ConstraintLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:transitionName="shared_view">
 
                             <LinearLayout
+                                android:id="@+id/program_description"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:transitionName="shared_view">
+                                android:padding="10dp">
 
-                                <LinearLayout
-                                    android:id="@+id/program_description"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:padding="10dp">
+                                    android:textColor="?colorPrimary"
+                                    android:textSize="16sp"
+                                    app:programStage='@{event.programStage()}'
+                                    tools:text="Program Stage Name" />
 
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textColor="?colorPrimary"
-                                        android:textSize="16sp"
-                                        app:programStage='@{event.programStage()}'
-                                        tools:text="Program Stage Name" />
-
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="14sp"
-                                        app:programStageDescription='@{event.programStage()}' />
-
-                                </LinearLayout>
-
-                                <com.google.android.flexbox.FlexboxLayout
-                                    android:id="@+id/event_data_layout"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    app:alignContent="stretch"
-                                    app:alignItems="stretch"
-                                    android:layout_margin="7dp"
-                                    app:flexWrap="wrap">
-
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@{stage.executionDateLabel()!=null?stage.executionDateLabel():@string/event_date}"
-                                        android:theme="@style/loginInputText"
-                                        app:layout_flexBasisPercent="50%">
-
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/event_date"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:clickable="true"
-                                            android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : isEditable}"
-                                            android:focusable="false"
-                                            android:inputType="date"
-                                            android:onClick="@{ () -> presenter.setDate()}"
-                                            app:date="@{event.eventDate()}"
-                                            tools:text="2018-01-01" />
-                                    </android.support.design.widget.TextInputLayout>
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@string/due_date"
-                                        android:theme="@style/loginInputText"
-                                        android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
-                                        app:layout_flexBasisPercent="50%">
-
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/due_date"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:clickable="true"
-                                            android:enabled="@{isEditable}"
-                                            android:focusable="false"
-                                            android:inputType="date"
-                                            app:date="@{event.dueDate()}"
-                                            tools:text="2018-01-01" />
-                                    </android.support.design.widget.TextInputLayout>
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:id="@+id/category_combo_layout"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@string/cat_combo"
-                                        android:theme="@style/loginInputText"
-                                        app:layout_flexBasisPercent="50%">
-
-                                        <android.support.design.widget.TextInputEditText
-                                            android:id="@+id/category_combo"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:clickable="true"
-                                            android:enabled="@{isEditable}"
-                                            android:focusable="false"
-                                            android:inputType="date"
-                                            tools:ignore="LabelFor" />
-                                    </android.support.design.widget.TextInputLayout>
-
-
-                                    <android.support.design.widget.TextInputLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:hint="@string/org_unit"
-                                        android:theme="@style/loginInputText"
-                                        app:layout_flexBasisPercent="50%">
-
-                                        <EditText
-                                            android:id="@+id/org_unit"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:clickable="true"
-                                            android:enabled="@{isEditable}"
-                                            android:focusable="false"
-                                            android:inputType="date"
-                                            android:onClick="@{()->presenter.onOrgUnitClick()}"
-                                            tools:ignore="LabelFor"
-                                            tools:text="Sierre Leone" />
-                                    </android.support.design.widget.TextInputLayout>
-
-                                    <org.dhis2.utils.CustomViews.CoordinatesView
-                                        android:id="@+id/captureCoordinates"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:visibility="@{stage.captureCoordinates()?View.VISIBLE:View.GONE}"
-                                        app:layout_flexBasisPercent="100%" />
-                                </com.google.android.flexbox.FlexboxLayout>
-
+                                    android:textSize="14sp"
+                                    app:programStageDescription='@{event.programStage()}' />
 
                             </LinearLayout>
 
-                        </android.support.constraint.ConstraintLayout>
-                    </android.support.design.widget.CollapsingToolbarLayout>
-                </android.support.design.widget.AppBarLayout>
+                            <com.google.android.flexbox.FlexboxLayout
+                                android:id="@+id/event_data_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="7dp"
+                                app:alignContent="stretch"
+                                app:alignItems="stretch"
+                                app:flexWrap="wrap">
+
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@{stage.executionDateLabel()!=null?stage.executionDateLabel():@string/event_date}"
+                                    android:theme="@style/loginInputText"
+                                    app:layout_flexBasisPercent="50%">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/event_date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="true"
+                                        android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : false}"
+                                        android:focusable="false"
+                                        android:inputType="date"
+                                        android:onClick="@{ () -> presenter.setDate()}"
+                                        app:date="@{event.eventDate()}"
+                                        tools:text="2018-01-01" />
+                                </android.support.design.widget.TextInputLayout>
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/due_date"
+                                    android:theme="@style/loginInputText"
+                                    android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
+                                    app:layout_flexBasisPercent="50%">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/due_date"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="true"
+                                        android:enabled="false"
+                                        android:focusable="false"
+                                        android:inputType="date"
+                                        app:date="@{event.dueDate()}"
+                                        tools:text="2018-01-01" />
+                                </android.support.design.widget.TextInputLayout>
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:id="@+id/category_combo_layout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/cat_combo"
+                                    android:theme="@style/loginInputText"
+                                    app:layout_flexBasisPercent="50%">
+
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/category_combo"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="true"
+                                        android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : false}"
+                                        android:focusable="false"
+                                        android:inputType="date"
+                                        android:onClick="@{ () -> presenter.selectCatOption()}"
+                                        tools:ignore="LabelFor" />
+                                </android.support.design.widget.TextInputLayout>
+
+
+                                <android.support.design.widget.TextInputLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/org_unit"
+                                    android:theme="@style/loginInputText"
+                                    app:layout_flexBasisPercent="50%">
+
+                                    <EditText
+                                        android:id="@+id/org_unit"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="true"
+                                        android:enabled="false"
+                                        android:focusable="false"
+                                        android:inputType="date"
+                                        android:onClick="@{()->presenter.onOrgUnitClick()}"
+                                        tools:ignore="LabelFor"
+                                        tools:text="Sierre Leone" />
+                                </android.support.design.widget.TextInputLayout>
+
+                                <org.dhis2.utils.CustomViews.CoordinatesView
+                                    android:id="@+id/captureCoordinates"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="@{stage.captureCoordinates()?View.VISIBLE:View.GONE}"
+                                    app:layout_flexBasisPercent="100%" />
+                            </com.google.android.flexbox.FlexboxLayout>
+
+
+                        </LinearLayout>
+
+                    </android.support.constraint.ConstraintLayout>
+                </android.support.design.widget.CollapsingToolbarLayout>
+            </android.support.design.widget.AppBarLayout>
 
 
             <!--</android.support.constraint.ConstraintLayout>-->

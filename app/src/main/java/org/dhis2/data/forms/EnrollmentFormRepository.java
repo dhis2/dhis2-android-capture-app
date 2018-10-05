@@ -13,6 +13,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryCombo;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -22,7 +25,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
@@ -98,7 +100,7 @@ class EnrollmentFormRepository implements FormRepository {
             "ORDER BY ProgramStage.sortOrder ASC LIMIT 1";
     private static final String CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT = "SELECT " +
             "Event.uid, " +
-            "Program.trackedEntityType "+
+            "Program.trackedEntityType " +
             "FROM Event " +
             "JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
             "JOIN Program ON Program.uid = Enrollment.program " +
@@ -135,7 +137,8 @@ class EnrollmentFormRepository implements FormRepository {
             "LIMIT 1;";
 
     private static final String SELECT_TE_TYPE = "SELECT " +
-            "Program.uid, Enrollment.trackedEntityInstance\n" +
+            "Program.uid," +
+            "Enrollment.trackedEntityInstance\n" +
             "FROM Program\n" +
             "JOIN Enrollment ON Enrollment.program = Program.uid\n" +
             "WHERE Enrollment.uid = ? LIMIT 1";
@@ -509,6 +512,16 @@ class EnrollmentFormRepository implements FormRepository {
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, enrollmentUid == null ? "" : enrollmentUid).mapToOne(cursor -> cursor.getString(0));
     }
 
+    @Override
+    public Observable<Trio<Boolean,CategoryComboModel,List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
+        return null;
+    }
+
+    @Override
+    public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
+
+    }
+
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
@@ -538,20 +551,71 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null,description);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description);
     }
 
     @NonNull
     @Override
-    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //EnrollmentUid,
+    public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
 
-        return briteDatabase.createQuery(ProgramStageModel.TABLE, GET_FIRST_STAGE, programUid)
+        return briteDatabase.createQuery(ProgramModel.TABLE, "SELECT * FROM Program WHERE uid = ?", programUid)
+                .mapToOne(ProgramModel::create)
+                .flatMap(programModel ->
+                        briteDatabase.createQuery(ProgramStageModel.TABLE, "SELECT * FROM ProgramStage WHERE program = ? ORDER BY ProgramStage.sortOrder", programModel.uid())
+                                .mapToList(ProgramStageModel::create).map(programstages -> Trio.create(programModel.useFirstStageDuringRegistration(), programstages, programModel.trackedEntityType())))
+                .map(data -> {
+                    ProgramStageModel stageToOpen = null;
+                    if (data.val0()) {
+                        stageToOpen = data.val1().get(0);
+                    } else {
+                        for (ProgramStageModel programStage : data.val1()) {
+                            if (programStage.openAfterEnrollment() && stageToOpen == null)
+                                stageToOpen = programStage;
+                        }
+                    }
+
+                    if (stageToOpen != null) { //we should check if event exist (if not create) and open
+                        Cursor eventCursor = briteDatabase.query("SELECT Event.uid FROM Event WHERE Event.programStage = ? AND Event.enrollment = ?", stageToOpen.uid(), enrollmentUid);
+                        if (eventCursor != null && eventCursor.moveToFirst()) {
+                            return Trio.create(enrollmentUid, data.val2(), eventCursor.getString(0));
+                        } else {
+                            Cursor enrollmentOrgUnitCursor = briteDatabase.query("SELECT Enrollment.organisationUnit FROM Enrollment WHERE Enrollment.uid = ?", enrollmentUid);
+                            if (enrollmentOrgUnitCursor != null && enrollmentOrgUnitCursor.moveToFirst()) {
+                                Date createdDate = DateUtils.getInstance().getCalendar().getTime();
+                                EventModel eventToCreate = EventModel.builder()
+                                        .uid(codeGenerator.generate())
+                                        .created(createdDate)
+                                        .lastUpdated(createdDate)
+                                        .eventDate(createdDate)
+                                        .enrollment(enrollmentUid)
+                                        .program(stageToOpen.program())
+                                        .programStage(stageToOpen.uid())
+                                        .organisationUnit(enrollmentOrgUnitCursor.getString(0))
+                                        .status(EventStatus.ACTIVE)
+                                        .state(State.TO_POST)
+                                        .build();
+                                if (briteDatabase.insert(EventModel.TABLE, eventToCreate.toContentValues()) < 0) {
+                                    throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + eventToCreate));
+                                }
+                                return Trio.create(enrollmentUid, data.val2(), eventToCreate.uid());
+                            }else
+                                throw new IllegalArgumentException("Can't create event in enrollment with null organisation unit");
+                        }
+                    } else { //open Dashboard
+                        Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
+                        tetCursor.moveToFirst();
+
+                        return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
+                    }
+                });
+
+        /*return briteDatabase.createQuery(ProgramStageModel.TABLE, GET_FIRST_STAGE, programUid)
                 .mapToOne(ProgramStageModel::create)
-                .map(programStage->{
-                    Cursor eventCursor = briteDatabase.query(CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT,programStage.uid(),enrollmentUid);
-                    if(eventCursor!=null && eventCursor.moveToFirst()){ //Event exist
-                        return Trio.create(enrollmentUid,eventCursor.getString(1),eventCursor.getString(0));
-                    }else{//Event does not exist
+                .map(programStage -> {
+                    Cursor eventCursor = briteDatabase.query(CHECK_IF_FIRST_STAGE_EVENT_EXIST_IN_ENROLLMENT, programStage.uid(), enrollmentUid);
+                    if (eventCursor != null && eventCursor.moveToFirst() && programStage.openAfterEnrollment()) { //Event exist && openAfterEnrollment
+                        return Trio.create(enrollmentUid, eventCursor.getString(1), eventCursor.getString(0));
+                    } else {//Event does not exist
                         Cursor newCursor = briteDatabase.query(SELECT_USE_FIRST_STAGE_WITHOUT_AUTOGENERATE_EVENT, enrollmentUid);
                         if (newCursor.moveToFirst()) {
                             String programStageUid = programStage.uid();
@@ -585,13 +649,14 @@ class EnrollmentFormRepository implements FormRepository {
                             }
                             updateProgramTable(createdDate, programStageProgram);
                             return Trio.create(enrollmentUid, trackedEntityType, event.uid());
-                    } else {
+                        } else {
                             Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
                             tetCursor.moveToFirst();
 
                             return Trio.create(tetCursor.getString(0), tetCursor.getString(1), "");
                         }
-                }});
+                    }
+                });*/
 
 
         /*return briteDatabase.createQuery(ProgramStageModel.TABLE, SELECT_USE_FIRST_STAGE, enrollmentUid == null ? "" : enrollmentUid)

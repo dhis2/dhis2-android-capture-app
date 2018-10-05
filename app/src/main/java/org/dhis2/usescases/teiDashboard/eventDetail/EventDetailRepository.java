@@ -58,4 +58,6 @@ public interface EventDetailRepository {
     Flowable<EventStatus> eventStatus(String eventUid);
 
     Observable<ProgramModel> getProgram(String eventUid);
+
+    void saveCatOption(CategoryOptionComboModel selectedOption);
 }

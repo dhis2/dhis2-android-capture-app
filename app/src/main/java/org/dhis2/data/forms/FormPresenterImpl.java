@@ -3,6 +3,8 @@ package org.dhis2.data.forms;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.forms.dataentry.EnrollmentRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.EventsRuleEngineRepository;
 import org.dhis2.data.forms.dataentry.RuleEngineRepository;
@@ -10,8 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import com.squareup.sqlbrite2.BriteDatabase;
-
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -121,8 +122,17 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(program -> view.initReportDatePicker(program.selectEnrollmentDatesInFuture(), program.selectIncidentDatesInFuture()),
                             Timber::e)
             );
-        }else
+        } else {
             view.hideDates();
+            compositeDisposable.add(formRepository.getProgramCategoryCombo()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(hasOptionCatComboAndOption -> {
+                                if (!hasOptionCatComboAndOption.val0() && !hasOptionCatComboAndOption.val1().isDefault())
+                                    view.showCatComboDialog(hasOptionCatComboAndOption.val1(), hasOptionCatComboAndOption.val2());
+                            },
+                            Timber::e));
+        }
 
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
@@ -263,11 +273,11 @@ class FormPresenterImpl implements FormPresenter {
                 RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
                 view.setWarningOnCompletion(warningOnCompletion);
                 view.messageOnComplete(warningOnCompletion.content(), true);
-            }else if(ruleAction instanceof RuleActionErrorOnCompletion){
+            } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
                 RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
                 view.setErrorOnCompletion(errorOnCompletion);
-            }else if(ruleAction instanceof RuleActionShowError){
-                RuleActionShowError showError = (RuleActionShowError)ruleAction;
+            } else if (ruleAction instanceof RuleActionShowError) {
+                RuleActionShowError showError = (RuleActionShowError) ruleAction;
                 view.setShowError(showError);
             }
         }
@@ -387,5 +397,10 @@ class FormPresenterImpl implements FormPresenter {
                             Timber::e)
             );
         }
+    }
+
+    @Override
+    public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
+        formRepository.saveCategoryOption(selectedOption);
     }
 }

@@ -13,6 +13,8 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.DateUtils;
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -352,6 +354,40 @@ public class EventRepository implements FormRepository {
                 " FROM " + EventModel.TABLE +
                 " WHERE " + EventModel.Columns.UID + " = ? LIMIT 1";
         return briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_TE, eventUid == null ? "" : eventUid).mapToOne(cursor -> cursor.getString(0));
+    }
+
+    @Override
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .flatMap(eventModel -> briteDatabase.createQuery(CategoryComboModel.TABLE, "SELECT CategoryCombo.* FROM CategoryCombo " +
+                        "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE Program.uid = ?", eventModel.program())
+                        .mapToOne(CategoryComboModel::create)
+                        .flatMap(categoryComboModel ->
+                                briteDatabase.createQuery(CategoryOptionComboModel.TABLE, "SELECT * FROM CategoryOptionCombo " +
+                                        "WHERE categoryCombo = ?", categoryComboModel.uid())
+                                        .mapToList(CategoryOptionComboModel::create)
+                                        .map(categoryOptionComboModels -> {
+                                            boolean eventHastOptionSelected = false;
+                                            for (CategoryOptionComboModel options : categoryOptionComboModels) {
+                                                if (eventModel.attributeOptionCombo() != null && eventModel.attributeOptionCombo().equals(options.uid()))
+                                                    eventHastOptionSelected = true;
+                                            }
+                                            return Trio.create(eventHastOptionSelected, categoryComboModel, categoryOptionComboModels);
+                                        })
+                        )
+                );
+
+    }
+
+    @Override
+    public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
+        ContentValues event = new ContentValues();
+        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
+        event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+        // TODO: and if so, keep the TO_POST state
+
+        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     @NonNull
