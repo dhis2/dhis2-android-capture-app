@@ -261,15 +261,19 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             switch (event.status()) {
                 case ACTIVE:
                     values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
+                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                     break;
                 case SKIPPED:
                     values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                     break;
                 case VISITED:
                     values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                     break;
                 case SCHEDULE:
                     values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
+                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
                     break;
                 case COMPLETED:
                     values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?

@@ -125,6 +125,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private OrgUnitDialog orgUnitDialog;
     private ProgramModel program;
     private String savedLat, savedLon;
+    private Boolean canWrite;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -320,14 +321,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedLat, selectedLon);
                     }
                 } else {
-                    presenter.editEvent(
-                            programStageModel.uid(),
-                            eventId,
-                            formattedDate,
-                            selectedOrgUnit,
-                            null,
-                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                            selectedLat, selectedLon);
+                    if (canWrite==null || canWrite)
+                        presenter.editEvent(
+                                programStageModel.uid(),
+                                eventId,
+                                formattedDate,
+                                selectedOrgUnit,
+                                null,
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                                selectedLat, selectedLon);
+                    else
+                        startFormActivity(eventId);
                 }
             });
         }
@@ -802,6 +806,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setAccessDataWrite(Boolean canWrite) {
         if (!canWrite) {
+            this.canWrite = canWrite;
             binding.date.setEnabled(false);
             binding.orgUnit.setEnabled(false);
             binding.catCombo.setEnabled(false);

@@ -12,6 +12,8 @@ interface SyncPresenter {
 
     void syncTrackedEntities();
 
+    void syncAggregateData();
+
     @UiThread
     void onAttach(@NonNull SyncView view);
 

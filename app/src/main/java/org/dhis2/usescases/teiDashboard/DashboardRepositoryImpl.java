@@ -105,7 +105,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s = ? " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                    "THEN %s.%s ELSE %s.%s END DESC",
+                    "THEN %s.%s ELSE %s.%s END, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
@@ -137,14 +137,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
-                    "AND %s.%s = 1 " +
                     "ORDER BY %s.%s",
             TrackedEntityAttributeValueModel.TABLE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
     private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
             "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
@@ -156,27 +154,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE);
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
-
-    /*private final String RELATIONSHIP_QUERY = String.format(
-            "SELECT Relationship.* FROM %s " +
-                    "WHERE %s.%s = ? OR %s.%s = ?",
-            RelationshipModel.TABLE,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);*/
-
-    /*private final String INSERT_RELATIONSHIP = String.format(
-            "INSERT INTO %s (%s, %s, %s) " +
-                    "VALUES (?, ?, ?);",
-            RelationshipModel.TABLE,
-            RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
-    );*/
-
-    private static final String DELETE_WHERE_RELATIONSHIP = String.format(
-            "%s.%s = ",
-            RelationshipModel.TABLE, RelationshipModel.Columns.ID
-    );
-
-    private static final Set<String> RELATIONSHIP_TABLE = new HashSet<>(Arrays.asList(RelationshipModel.TABLE, ProgramModel.TABLE));
 
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> ATTRIBUTE_TABLE_SET = new HashSet<>(Arrays.asList(ATTRUBUTE_TABLES));

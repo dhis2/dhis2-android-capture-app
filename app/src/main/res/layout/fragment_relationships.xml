@@ -22,21 +22,12 @@
         android:layout_height="match_parent"
         android:background="@color/bg_white_f9f">
 
-        <!-- <android.support.constraint.Guideline
-             android:id="@+id/top_guideline"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:orientation="horizontal"
-             app:layout_constraintGuide_begin="10dp"
-             app:layout_constraintTop_toTopOf="parent" />-->
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/relationship_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:paddingBottom="50dp"
-            android:paddingTop="8dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/item_relationship" />
 

@@ -41,6 +41,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CoordinatesView;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.OnDialogClickListener;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -279,6 +280,36 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             alertDialog.show();
 
         }
+    }
+
+    @Override
+    public AlertDialog showInfoDialog(String title, String message, OnDialogClickListener clickListener) {
+        if (getActivity() != null) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+
+            //TITLE
+            final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
+            ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
+            int colorPrimary = ColorUtils.getPrimaryColor(getActivity(), ColorUtils.ColorType.PRIMARY);
+            alertDialog.setCustomTitle(titleView);
+
+            //BODY
+            final View msgView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_body, null);
+            ((TextView) msgView.findViewById(R.id.dialogBody)).setText(message);
+            msgView.findViewById(R.id.dialogAccept).setOnClickListener(view -> {
+                clickListener.onPossitiveClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            msgView.findViewById(R.id.dialogCancel).setOnClickListener(view -> {
+                clickListener.onNegativeClick(alertDialog);
+                alertDialog.dismiss();
+            });
+            alertDialog.setView(msgView);
+
+            return alertDialog;
+
+        } else
+            return null;
     }
 
     @Override

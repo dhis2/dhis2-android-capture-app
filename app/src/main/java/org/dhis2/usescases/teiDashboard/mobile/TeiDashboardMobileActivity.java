@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -69,11 +70,34 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         super.onResume();
 
         if (adapter == null) {
-            if (!getResources().getBoolean(R.bool.is_tablet))
-                adapter = new DashboardPagerAdapter(getSupportFragmentManager(), programUid);
-            else
-                adapter = new DashboardPagerTabletAdapter(getSupportFragmentManager(), programUid);
-            binding.teiPager.setAdapter(adapter);
+            if (!getResources().getBoolean(R.bool.is_tablet)) {
+                adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
+                binding.teiPager.setAdapter(adapter);
+                binding.tabLayout.setVisibility(View.VISIBLE);
+            } else {
+                adapter = new DashboardPagerTabletAdapter(this, getSupportFragmentManager(), programUid);
+                binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int i, float v, int i1) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int i) {
+                        binding.sectionTitle.setText(adapter.getPageTitle(i));
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int i) {
+
+                    }
+                });
+                binding.sectionTitle.setText(adapter.getPageTitle(0));
+                binding.teiPager.setAdapter(adapter);
+                binding.tabLayout.setVisibility(View.GONE);
+                binding.dotsIndicator.setVisibility(View.VISIBLE);
+                binding.dotsIndicator.setViewPager(binding.teiPager);
+            }
         }
 
         init(teiUid, programUid);
@@ -100,10 +124,13 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
-        String title = program.getTrackedEntityAttributeValueBySortOrder(1) + " " + program.getTrackedEntityAttributeValueBySortOrder(2) + " - " + program.getCurrentProgram().displayName();
+        String title = String.format("%s %s - %s",
+                program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
+                program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
+                program.getCurrentProgram().displayName()
+        );
         binding.setTitle(title);
 
-        binding.tabLayout.setVisibility(View.VISIBLE);
         binding.executePendingBindings();
         this.programModel = program;
         TEIDataFragment.getInstance().setData(programModel);
@@ -117,11 +144,19 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
 
+
+        if (getResources().getBoolean(R.bool.is_tablet))
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
+                    .commit();
+
         binding.setDashboardModel(program);
         binding.setTrackEntity(program.getTei());
-        String title = program.getAttributeBySortOrder(1) + " " + program.getAttributeBySortOrder(2);
-        binding.setTitle(title);
-        binding.tabLayout.setVisibility(View.GONE);
+        String title = String.format("%s %s - %s",
+                program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
+                program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
+                program.getCurrentProgram().displayName()
+        );        binding.setTitle(title);
         binding.executePendingBindings();
         this.programModel = program;
         TEIDataFragment.getInstance().setData(programModel);
@@ -240,7 +275,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false)&& !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean("TUTO_DASHBOARD_SHOWN", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_DASHBOARD_SHOWN", true).apply();
             }
