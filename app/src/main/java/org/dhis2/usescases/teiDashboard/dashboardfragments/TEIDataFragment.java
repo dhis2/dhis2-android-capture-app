@@ -28,6 +28,7 @@ import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -44,7 +45,6 @@ import static android.app.Activity.RESULT_OK;
 import static org.dhis2.utils.Constants.ADDNEW;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.REFERRAL;
@@ -116,17 +116,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
             bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
             bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
-            bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
                 case R.id.referral:
-                    bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.REFERAL.name());
                     break;
                 case R.id.addnew:
-                    bundle.putString(EVENT_CREATION_TYPE, ADDNEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.ADDNEW.name());
                     break;
                 case R.id.schedulenew:
-                    bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.SCHEDULE.name());
                     break;
                 default:
                     break;

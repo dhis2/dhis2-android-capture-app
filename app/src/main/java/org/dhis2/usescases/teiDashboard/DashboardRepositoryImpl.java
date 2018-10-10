@@ -178,7 +178,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.*, ProgramTrackedEntityAttribute.sortOrder FROM TrackedEntityAttributeValue " +
             "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttributeValue.trackedEntityAttribute " +
             "WHERE TrackedEntityAttributeValue.trackedEntityInstance = ? " +
-            "AND ProgramTrackedEntityAttribute.program = ? ORDER BY ProgramTrackedEntityAttribute.sortOrder";
+            "ORDER BY ProgramTrackedEntityAttribute.sortOrder";
 
     private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
                     "JOIN %s ON %s.%s = %s.%s\n" +
@@ -220,7 +220,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid, programUid)
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
     }
 

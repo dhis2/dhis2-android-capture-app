@@ -3,6 +3,8 @@ package org.dhis2.data.forms.dataentry.fields;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import javax.annotation.Nonnull;
+
 public abstract class FieldViewModel {
 
     @NonNull
@@ -45,4 +47,7 @@ public abstract class FieldViewModel {
 
     @Nullable
     public abstract String description();
+
+    @Nonnull
+    public abstract FieldViewModel withValue(String data);
 }

@@ -127,7 +127,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         if (sectionsToHide == null || sectionUid == null)
             sectionsToHide = new ArrayList<>();
 
-        if (sectionUid!=null && !sectionsToHide.contains(sectionUid))
+        if (sectionUid != null && !sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
     }
 
@@ -260,10 +260,10 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     errorString.append(String.format("\n- %s", errorField));
                 }
 
+                String finalMessage = missingString.append("\n").append(errorString.toString()).toString();
+
                 sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
-                        showInfoDialog("Error",
-                                missingString.append("\n").append(errorString.toString()).toString()
-                        )
+                        showInfoDialog("Error", finalMessage)
                 );
             }
 
@@ -321,7 +321,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
             }
 

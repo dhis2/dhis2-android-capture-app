@@ -9,6 +9,8 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
 
+import javax.annotation.Nonnull;
+
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -43,5 +45,12 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     public FieldViewModel setMandatory() {
         return new AutoValue_EditTextViewModel(uid(), label(), true,
                 value(), programStageSection(), null, editable(), null, description(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
+    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                data, programStageSection(), null, editable(), null, description(), hint(), maxLines(), InputType.TYPE_CLASS_TEXT, valueType(), warning(), error());
     }
 }

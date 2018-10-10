@@ -144,7 +144,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {
-        return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+        String urlToCanonized = serverUrl.trim();
+        urlToCanonized  = urlToCanonized.replace(" ","");
+        return urlToCanonized.endsWith("/") ? urlToCanonized : urlToCanonized + "/";
     }
 
     @Override

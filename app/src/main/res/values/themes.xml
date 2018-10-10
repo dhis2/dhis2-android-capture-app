@@ -23,6 +23,9 @@
 
         <item name="android:fontFamily">@font/rubik_regular</item>
 
+        <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+
     </style>
 
     <style name="RedTheme" parent="Theme.AppCompat.Light.NoActionBar">
