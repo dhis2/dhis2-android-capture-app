@@ -2,10 +2,14 @@ package org.dhis2;
 
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.rules.models.Rule;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -139,6 +143,48 @@ public class ExampleUnitTest {
             Date minDate = DateUtils.getInstance().getNextPeriod(period, testDate, 1);
 
             assertEquals(expectedResults[i], DateUtils.uiDateFormat().format(minDate));
+            i++;
+        }
+
+    }
+
+    @Test
+    public void sortNullLast(){
+
+        ArrayList<Integer> testList = new ArrayList<>();
+        testList.add(5);
+        testList.add(7);
+        testList.add(null);
+        testList.add(9);
+        testList.add(3);
+
+        ArrayList<Integer> expectedResults = new ArrayList<>();
+        expectedResults.add(3);
+        expectedResults.add(5);
+        expectedResults.add(7);
+        expectedResults.add(9);
+        expectedResults.add(null);
+
+        Collections.sort(testList, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer rule1, Integer rule2) {
+                Integer priority1 = rule1;
+                Integer priority2 = rule2;
+
+                if(priority1!=null && priority2 !=null)
+                    return priority1.compareTo(priority2);
+                else if(priority1 != null)
+                    return -1;
+                else if(priority2 != null)
+                    return 1;
+                else
+                    return 0;
+            }
+        });
+
+        int i = 0;
+        for (Integer integer : testList) {
+            assertEquals(expectedResults.get(i), integer);
             i++;
         }
 
