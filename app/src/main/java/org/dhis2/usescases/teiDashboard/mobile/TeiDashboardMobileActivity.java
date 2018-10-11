@@ -119,7 +119,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
+                    .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
                     .commit();
 
         binding.setDashboardModel(program);
@@ -127,7 +127,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         String title = String.format("%s %s - %s",
                 program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
                 program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                program.getCurrentProgram().displayName()
+                program.getCurrentProgram()!=null?program.getCurrentProgram().displayName():getString(R.string.dashboard_overview)
         );
         binding.setTitle(title);
 
@@ -147,7 +147,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
+                    .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
                     .commit();
 
         binding.setDashboardModel(program);
@@ -155,7 +155,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         String title = String.format("%s %s - %s",
                 program.getTrackedEntityAttributeValueBySortOrder(1) != null ? program.getTrackedEntityAttributeValueBySortOrder(1) : "",
                 program.getTrackedEntityAttributeValueBySortOrder(2) != null ? program.getTrackedEntityAttributeValueBySortOrder(2) : "",
-                program.getCurrentProgram().displayName()
+                program.getCurrentProgram()!=null?program.getCurrentProgram().displayName():getString(R.string.dashboard_overview)
         );        binding.setTitle(title);
         binding.executePendingBindings();
         this.programModel = program;

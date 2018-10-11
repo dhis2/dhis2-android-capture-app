@@ -72,7 +72,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
+            android:visibility="@{enrollment==null || enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
