@@ -81,17 +81,6 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
         }
-        alpha {
-            // custom application suffix which allows to
-            // install debug and release builds at the same time
-            applicationIdSuffix = ".alpha"
-
-            // Disable fabric build ID generation for debug builds
-            ext.enableCrashlytics = false
-
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.debug
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -129,6 +118,7 @@ android {
 
 dependencies {
 
+    implementation project(":customFab")
 
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
@@ -192,6 +182,8 @@ dependencies {
 
     //FAB
     implementation 'com.github.dekoservidoni:omfm:1.0.3'
+
+    //FLEXBOX
     implementation 'com.google.android:flexbox:0.3.1'
 
     //TABLEVIEW
@@ -256,7 +248,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
-
 }
 
 apply plugin: 'kotlin-android-extensions'

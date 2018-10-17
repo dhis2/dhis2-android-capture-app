@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
@@ -38,8 +39,10 @@ import org.hisp.dhis.android.core.relationship.RelationshipItem;
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
 import org.hisp.dhis.android.core.relationship.RelationshipType;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -50,6 +53,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.hisp.dhis.android.core.common.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -209,6 +214,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         );
     }
 
+
     @Override
     public void onShareClick(View mView) {
         PopupMenu menu = new PopupMenu(view.getContext(), mView);
@@ -309,15 +315,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
 
     @Override
-    public void goToAddRelationship() {
+    public void goToAddRelationship(String teiTypeToAdd) {
         if (programWritePermission) {
             Fragment relationshipFragment = RelationshipFragment.getInstance();
             Intent intent = new Intent(view.getContext(), SearchTEActivity.class);
             Bundle extras = new Bundle();
             extras.putBoolean("FROM_RELATIONSHIP", true);
             extras.putString("FROM_RELATIONSHIP_TEI", teUid);
-            extras.putString("TRACKED_ENTITY_UID", teType);
-            extras.putString("PROGRAM_UID", programUid);
+            extras.putString("TRACKED_ENTITY_UID", teiTypeToAdd);
+            extras.putString("PROGRAM_UID", null);
             intent.putExtras(extras);
             relationshipFragment.startActivityForResult(intent, Constants.REQ_ADD_RELATIONSHIP);
         } else
@@ -327,13 +333,17 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void addRelationship(String trackEntityInstance_A, String relationshipType) {
         try {
-            Relationship relationship = RelationshipHelper.teiToTeiRelationship(trackEntityInstance_A, teUid, relationshipType);
+            Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstance_A, relationshipType);
             d2.relationshipModule().relationships.add(relationship);
 //            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2CallException e) {
-            Timber.d(e);
+            if (e.errorCode() == CANT_CREATE_EXISTING_OBJECT)
+                view.displayMessage(e.errorDescription());
+            else
+                Timber.d(e);
         }
     }
+
 
     @Override
     public void deleteRelationship(Relationship relationship) {
@@ -362,12 +372,45 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 if (type.uid().equals(relationship.relationshipType()))
                                     relationshipType = type;
                             return Pair.create(relationship, relationshipType);
-                        }).toList()
+                        })
+                        .toList()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 RelationshipFragment.getInstance().setRelationships(),
                                 Timber::d
+                        )
+        );
+    }
+
+
+    @Override
+    public void subscribeToRelationshipTypes(RelationshipFragment relationshipFragment) {
+        compositeDisposable.add(
+                dashboardRepository.relationshipsForTeiType(teType)
+                        .map(list -> {
+                            List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
+                            for (Pair<RelationshipTypeModel, String> rType : list) {
+                                finalList.add(Trio.create(rType.val0(), rType.val1(), R.drawable.ic_person));
+                            }
+                            return finalList;
+                        })
+                        /*.filter(relationshipType -> {
+                            if (relationshipType.fromConstraint() != null)
+                                return relationshipType.fromConstraint().trackedEntityType().uid().equals(teType);
+                            else
+                                return true;
+                        })
+                        .flatMap(relationshipType ->
+                                dashboardRepository.getObjectStyle(view.getContext(), relationshipType.toConstraint() != null ? relationshipType.toConstraint().trackedEntityType().uid() : teUid)
+                                        .map(objectStyleModel -> Pair.create(relationshipType, objectStyleModel.val1())).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .toList()*/
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                RelationshipFragment.getInstance().setRelationshipTypes()
+                                , t -> Log.d("RELATIONSHIP TYPE SIZE", "RelationshipType error")
                         )
         );
     }

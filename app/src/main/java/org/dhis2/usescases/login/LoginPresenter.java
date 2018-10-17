@@ -196,9 +196,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     syncTrackedEntities();
                     break;
                 case TEI:
-                    /*syncAggregatesData();
+                    syncAggregatesData();
                     break;
-                case AGGREGATES:*/
+                case AGGREGATES:
                     syncReservedValues();
                     break;
                 case RESERVED_VALUES:

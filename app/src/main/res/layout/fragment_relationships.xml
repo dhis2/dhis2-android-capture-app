@@ -25,13 +25,13 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/relationship_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="50dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_relationship" />
+            tools:listitem="@layout/item_relationship"/>
 
-        <android.support.design.widget.FloatingActionButton
+        <!--<android.support.design.widget.FloatingActionButton
             android:id="@+id/button_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,33 +42,31 @@
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_add" />-->
 
-        <!--<ImageView
-            android:id="@+id/button_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="60dp"
-            android:layout_marginTop="9dp"
-            android:onClick="@{ () -> presenter.goToAddRelationship() }"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/relationship_recycler"
-            app:srcCompat="@drawable/ic_add_circle"
-            tools:ignore="ContentDescription" />-->
-        <!--
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
-                    android:fontFamily="sans-serif"
-                    android:text='@{relationshipType, default="Add new relationship"}'
-                    android:textColor="#444444"
-                    android:textSize="13.3sp"
-                    android:textStyle="normal"
-                    app:layout_constraintBottom_toBottomOf="@id/button_add"
-                    app:layout_constraintEnd_toStartOf="@id/button_add"
-                    app:layout_constraintTop_toTopOf="@id/button_add"
-                    tools:text="Add child" />-->
+        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
+            android:id="@+id/rfabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+           >
+
+            <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
+                android:id="@+id/rfab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                app:rfab_color_normal="?colorPrimary"
+                app:rfab_color_pressed="?colorPrimaryDark"
+                android:layout_alignParentEnd="true"
+                tools:rfab_shadow_radius="7dp"
+                tools:rfab_shadow_color="#999999"
+                tools:rfab_shadow_dx="0dp"
+                tools:rfab_shadow_dy="9dp"
+                />
+        </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
+
 
     </android.support.constraint.ConstraintLayout>
 </layout>

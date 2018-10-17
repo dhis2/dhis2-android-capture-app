@@ -286,6 +286,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:layout_marginEnd="12dp">
+
                                 <ImageButton
                                     android:id="@+id/location1"
                                     android:layout_width="32dp"

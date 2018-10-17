@@ -51,20 +51,22 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         setTEIData(teiModel.getAttributeValues());
         //endregion
 
-        if (presenter.getProgramModel() != null)
+       /* if (presenter.getProgramModel() != null)
             compositeDisposable.add(
                     metadataRepository.getRelationshipTypeList()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(this::setRelationshipTypeList, Timber::d)
-            );
+            );*/
 
         binding.executePendingBindings();
+
+        itemView.setOnClickListener(view->presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(),trackedEntityInstanceModel.isOnline()));
 
 
     }
 
-    private void setRelationshipTypeList(List<RelationshipTypeModel> relationshipTypesModels) {
+   /* private void setRelationshipTypeList(List<RelationshipTypeModel> relationshipTypesModels) {
 
         this.relationshipTypes.clear();
         this.relationshipTypes.addAll(relationshipTypesModels);
@@ -85,7 +87,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
-    }
+    }*/
 
     private void setTEIData(List<TrackedEntityAttributeValueModel> trackedEntityAttributeValueModels) {
         binding.setAttribute(trackedEntityAttributeValueModels);

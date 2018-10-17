@@ -42,13 +42,10 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.utils.Constants.ADDNEW;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.REFERRAL;
-import static org.dhis2.utils.Constants.SCHEDULENEW;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 /**

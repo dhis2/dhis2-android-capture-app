@@ -1,18 +1,22 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -27,7 +31,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -408,6 +412,42 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             }
         }
+    }
+
+    @Override
+    public Observable<Pair<String, Integer>> getObjectStyle(Context context, String uid) {
+        String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, GET_OBJECT_STYLE, uid)
+                .mapToOneOrDefault(ObjectStyleModel::create, ObjectStyleModel.builder().icon("ic_person").color("#ffffff").build())
+                .map(objectStyleModel -> {
+                    Integer iconRes;
+                    if (objectStyleModel.icon() != null) {
+                        Resources resources = context.getResources();
+                        String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                        iconRes = resources.getIdentifier(iconName, "drawable", context.getPackageName());
+                    } else {
+                        iconRes = R.drawable.ic_person;
+                    }
+
+                    return Pair.create(objectStyleModel.color() != null ? objectStyleModel.color() : "#ffffff", iconRes);
+                });
+    }
+
+    @Override
+    public Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType) {
+        String RELATIONSHIP_QUERY =
+                "SELECT FROMTABLE.*, TOTABLE.trackedEntityType AS toTeiType FROM " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'FROM') " +
+                        "AS FROMTABLE " +
+                        "JOIN " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'TO') " +
+                        "AS TOTABLE " +
+                        "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
+                        "WHERE FROMTABLE.trackedEntityType = ?";
+        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
     }
 
     @Override

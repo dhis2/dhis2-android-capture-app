@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RapidFloatingActionLayout">
+        <attr name="rfal_frame_color" format="color"/>
+        <attr name="rfal_frame_alpha" format="float"/>
+    </declare-styleable>
+
+    <declare-styleable name="RapidFloatingActionButton">
+        <attr name="rfab_size" format="enum">
+            <!-- 56dp -->
+            <enum name="normal" value="0"/>
+            <!-- 40dp -->
+            <enum name="mini" value="1"/>
+        </attr>
+        <attr name="rfab_drawable" format="reference"/>
+        <attr name="rfab_color_normal" format="color"/>
+        <attr name="rfab_color_pressed" format="color"/>
+        <attr name="rfab_shadow_radius" format="dimension"/>
+        <attr name="rfab_shadow_color" format="color"/>
+        <attr name="rfab_shadow_dx" format="dimension"/>
+        <attr name="rfab_shadow_dy" format="dimension"/>
+        <!-- identificationCode用于确定唯一个RFAB，目前用在通过RapidFloatingActionButtonGroup中获取某一个RFAB -->
+        <attr name="rfab_identification_code" format="string"/>
+    </declare-styleable>
+
+
+
+</resources>

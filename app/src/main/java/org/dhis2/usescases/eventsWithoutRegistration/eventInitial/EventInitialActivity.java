@@ -73,9 +73,7 @@ import static org.dhis2.utils.Constants.ONE_TIME;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.REFERRAL;
 import static org.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
-import static org.dhis2.utils.Constants.SCHEDULENEW;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 
@@ -352,13 +350,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void checkActionButtonVisibility() {
 
-        if(eventUid == null){
-            if(isFormCompleted())
+        if (eventUid == null) {
+            if (isFormCompleted())
                 binding.actionButton.setVisibility(View.VISIBLE); //If creating a new event, show only if minimun data is completed
             else
                 binding.actionButton.setVisibility(View.GONE);
 
-        }else{
+        } else {
             binding.actionButton.setVisibility(View.VISIBLE); //Show actionButton always for already created events
         }
 
@@ -388,7 +386,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private boolean isEventOpen() {
-        return eventUid!=null || (eventModel != null && eventModel.status() != EventStatus.COMPLETED);
+        return eventUid != null || (eventModel != null && eventModel.status() != EventStatus.COMPLETED);
     }
 
     private boolean isSelectedDateBetweenOpeningAndClosedDates() {
@@ -409,7 +407,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         this.program = program;
 
         String activityTitle;
-        if (eventCreationType.equals(REFERRAL)) {
+        if (eventCreationType == EventCreationType.REFERAL) {
             activityTitle = program.displayName() + " - " + getString(R.string.referral);
         } else {
             activityTitle = eventUid == null ? program.displayName() + " - " + getString(R.string.new_event) : program.displayName();
@@ -418,10 +416,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         Calendar now = DateUtils.getInstance().getCalendar();
         if (periodType == null) {
-            selectedDate = now.getTime();
+
+            if (eventCreationType != EventCreationType.SCHEDULE)
+                selectedDate = now.getTime();
+            else
+                selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+
             selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+
         } else {
-            now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), 0));
+            now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
             selectedDate = now.getTime();
             selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
         }
@@ -565,7 +569,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void onEventCreated(String eventUid) {
         showToast(getString(R.string.event_created));
-        if (!eventCreationType.equals(SCHEDULENEW) && !eventCreationType.equals(REFERRAL)) {
+        if (eventCreationType != EventCreationType.SCHEDULE && eventCreationType != EventCreationType.REFERAL) {
             startFormActivity(eventUid);
         } else {
             finish();
@@ -659,24 +663,24 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        if (programStageModel != null && programStageModel.hideDueDate())
+        /*if (programStageModel != null && programStageModel.hideDueDate())
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
-        else {
-            // ONLY FUTURE DATES
-            if (eventCreationType.equals(SCHEDULENEW)) {
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-                datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-            }
-            // ONLY PAST DATES AND TODAY
-            else {
-                //If expiryPeriodType is not null set a minumn date
-                if (program.expiryPeriodType() != null) {
-                    Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-                    datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
-                }
-                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
-            }
+        else {*/
+        // ONLY FUTURE DATES
+        if (eventCreationType == EventCreationType.SCHEDULE) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
         }
+        // ONLY PAST DATES AND TODAY
+        else {
+            //If expiryPeriodType is not null set a minumn date
+            if (program.expiryPeriodType() != null) {
+                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+                datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
+            }
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+        }
+//        }
         datePickerDialog.show();
     }
 
