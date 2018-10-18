@@ -55,8 +55,13 @@ public class IndicatorsFragment extends FragmentGlobalAbstract {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_indicators, container, false);
         adapter = new IndicatorsAdapter();
         binding.indicatorsRecycler.setAdapter(adapter);
-        presenter.subscribeToIndicators(this);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.subscribeToIndicators(this);
     }
 
     @Override

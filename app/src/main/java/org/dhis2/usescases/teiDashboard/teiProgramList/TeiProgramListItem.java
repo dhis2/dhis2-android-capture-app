@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 public class TeiProgramListItem {
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({TeiProgramListItemViewType.FIRST_TITLE, TeiProgramListItemViewType.ACTIVE_ENROLLMENT,
+    @IntDef({TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD,TeiProgramListItemViewType.FIRST_TITLE, TeiProgramListItemViewType.ACTIVE_ENROLLMENT,
             TeiProgramListItemViewType.PROGRAM, TeiProgramListItemViewType.SECOND_TITLE,
             TeiProgramListItemViewType.INACTIVE_ENROLLMENT, TeiProgramListItemViewType.THIRD_TITLE,
             TeiProgramListItemViewType.PROGRAMS_TO_ENROLL})
@@ -26,6 +26,7 @@ public class TeiProgramListItem {
         int INACTIVE_ENROLLMENT = 4;
         int THIRD_TITLE = 5;
         int PROGRAMS_TO_ENROLL = 6;
+        int ALL_PROGRAMS_DASHBOARD = 7;
     }
 
     private EnrollmentViewModel enrollmentModel;

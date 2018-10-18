@@ -25,12 +25,12 @@ android {
         abortOnError false
     }
 
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.dhis2"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 34
         versionName "1.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -81,17 +81,6 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
         }
-        alpha {
-            // custom application suffix which allows to
-            // install debug and release builds at the same time
-            applicationIdSuffix = ".alpha"
-
-            // Disable fabric build ID generation for debug builds
-            ext.enableCrashlytics = false
-
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.debug
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -129,14 +118,15 @@ android {
 
 dependencies {
 
+    implementation project(":customFab")
 
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
     //Support libraries
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation "com.android.support:support-annotations:27.1.1"
-    implementation "com.android.support:cardview-v7:27.1.1"
-    implementation "com.android.support:design:27.1.1"
+    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "com.android.support:support-annotations:28.0.0"
+    implementation "com.android.support:cardview-v7:28.0.0"
+    implementation "com.android.support:design:28.0.0"
     //implementation "com.android.support:multidex:${libraries.multidex}"
     implementation "com.android.support:multidex:1.0.3"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
@@ -158,7 +148,7 @@ dependencies {
 
     //TreeView
     implementation 'com.github.bmelnychuk:atv:1.2.9'
-    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:support-v4:28.0.0'
 
     // ReactiveX
     implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
@@ -192,6 +182,8 @@ dependencies {
 
     //FAB
     implementation 'com.github.dekoservidoni:omfm:1.0.3'
+
+    //FLEXBOX
     implementation 'com.google.android:flexbox:0.3.1'
 
     //TABLEVIEW
@@ -255,6 +247,7 @@ dependencies {
     //Glide load images
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 }
 
 apply plugin: 'kotlin-android-extensions'

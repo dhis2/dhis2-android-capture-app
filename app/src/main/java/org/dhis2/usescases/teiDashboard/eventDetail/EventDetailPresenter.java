@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -15,6 +16,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -135,9 +137,9 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             formFragment.datesLayout.getRootView().requestFocus();
             new Handler().postDelayed(() -> {
                 if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
-                    view.showInfoDialog("Error", formFragment.hasErrorOnComple().content());
+                    view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasErrorOnComple().content());
                 } else if (formFragment.hasError() != null) {
-                    view.showInfoDialog("Error", formFragment.hasError().content());
+                    view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasError().content());
                 } else {
                     List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
                     boolean mandatoryOk = true;
@@ -148,19 +150,35 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                     }
                     if (mandatoryOk && !hasError) {
 
-                        if (!isEmpty(formFragment.getMessageOnComplete()))
-                            view.showInfoDialog("Warning", formFragment.getMessageOnComplete());
+                        if (!isEmpty(formFragment.getMessageOnComplete())) {
+                            final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
+                                @Override
+                                public void onPossitiveClick(AlertDialog alertDialog) {
+                                    updateEventStatus(eventModel);
+                                }
 
-                        dataEntryStore.updateEventStatus(eventModel);
-                        changedEventStatus = true;
+                                @Override
+                                public void onNegativeClick(AlertDialog alertDialog) {
+
+                                }
+                            });
+                            dialog.show();
+                        } else {
+                            updateEventStatus(eventModel);
+                        }
                     } else if (!mandatoryOk)
-                        view.showInfoDialog("Unable to complete", view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
                     else
-                        view.showInfoDialog("Unable to complete", "Some fields have errors. Please, check them to be able to complete");
+                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
                 }
             }, 1500);
         } else
             view.displayMessage(null);
+    }
+
+    private void updateEventStatus(EventModel eventModel) {
+        dataEntryStore.updateEventStatus(eventModel);
+        changedEventStatus = true;
     }
 
     @Override

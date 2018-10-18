@@ -31,6 +31,8 @@ public class TeiProgramListContract {
         void onEnrollClick(ProgramViewModel program);
 
         void onActiveEnrollClick(EnrollmentViewModel enrollmentModel);
+
+        void onUnselectEnrollment();
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {

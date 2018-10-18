@@ -57,7 +57,8 @@ public class RelationshipViewHolder extends RecyclerView.ViewHolder {
 
         binding.setPresenter(presenter);
         binding.setRelationship(relationship);
-        binding.relationshipName.setText(from?relationships.val1().aIsToB():relationships.val1().bIsToA());
+        String relationshipNameText = from?relationships.val1().aIsToB():relationships.val1().bIsToA();
+        binding.relationshipName.setText(relationshipNameText!=null?relationshipNameText:relationships.val1().displayName());
         binding.executePendingBindings();
 
 //        presenter.subscribeToRelationshipLabel(relationship, binding.relationshipName);

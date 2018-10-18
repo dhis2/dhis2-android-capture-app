@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
@@ -17,12 +18,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity.PROGRAM_STAGE_UID;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
 import static org.dhis2.utils.Constants.EVENT_PERIOD_TYPE;
 import static org.dhis2.utils.Constants.EVENT_REPEATABLE;
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
@@ -90,11 +89,10 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE));
         bundle.putString(ORG_UNIT, getIntent().getStringExtra(ORG_UNIT));
         bundle.putString(ENROLLMENT_UID, getIntent().getStringExtra(ENROLLMENT_UID));
-        bundle.putBoolean(NEW_EVENT, getIntent().getBooleanExtra(NEW_EVENT, true));
         bundle.putString(EVENT_CREATION_TYPE, getIntent().getStringExtra(EVENT_CREATION_TYPE));
         bundle.putBoolean(EVENT_REPEATABLE, repeatable);
         bundle.putSerializable(EVENT_PERIOD_TYPE, periodType);
-        bundle.putString(PROGRAM_STAGE_UID, programStageUid);
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
 
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }

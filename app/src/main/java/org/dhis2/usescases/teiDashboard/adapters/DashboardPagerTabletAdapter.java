@@ -1,9 +1,11 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
@@ -15,12 +17,14 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
 
     private static final int MOVILE_DASHBOARD_SIZE = 3;
+    private final Context context;
     private String currentProgram;
 
 
-    public DashboardPagerTabletAdapter(FragmentManager fm, String program) {
+    public DashboardPagerTabletAdapter(Context context, FragmentManager fm, String program) {
         super(fm);
         this.currentProgram = program;
+        this.context = context;
     }
 
     @Override
@@ -45,13 +49,11 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             default:
-                return "Overview";
+                return context.getString(R.string.dashboard_relationships);
             case 1:
-                return "Relationships";
+                return context.getString(R.string.dashboard_indicators);
             case 2:
-                return "Indicators";
-            case 3:
-                return "Notes";
+                return context.getString(R.string.dashboard_notes);
         }
     }
 }

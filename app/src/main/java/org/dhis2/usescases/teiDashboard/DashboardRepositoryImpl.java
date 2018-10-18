@@ -1,18 +1,22 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -27,7 +31,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -105,7 +109,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s = ? " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                    "THEN %s.%s ELSE %s.%s END DESC",
+                    "THEN %s.%s ELSE %s.%s END, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
@@ -137,14 +141,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
-                    "AND %s.%s = 1 " +
                     "ORDER BY %s.%s",
             TrackedEntityAttributeValueModel.TABLE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
     private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
             "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
@@ -156,27 +158,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE);
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
-
-    /*private final String RELATIONSHIP_QUERY = String.format(
-            "SELECT Relationship.* FROM %s " +
-                    "WHERE %s.%s = ? OR %s.%s = ?",
-            RelationshipModel.TABLE,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);*/
-
-    /*private final String INSERT_RELATIONSHIP = String.format(
-            "INSERT INTO %s (%s, %s, %s) " +
-                    "VALUES (?, ?, ?);",
-            RelationshipModel.TABLE,
-            RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
-    );*/
-
-    private static final String DELETE_WHERE_RELATIONSHIP = String.format(
-            "%s.%s = ",
-            RelationshipModel.TABLE, RelationshipModel.Columns.ID
-    );
-
-    private static final Set<String> RELATIONSHIP_TABLE = new HashSet<>(Arrays.asList(RelationshipModel.TABLE, ProgramModel.TABLE));
 
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> ATTRIBUTE_TABLE_SET = new HashSet<>(Arrays.asList(ATTRUBUTE_TABLES));
@@ -201,7 +182,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.*, ProgramTrackedEntityAttribute.sortOrder FROM TrackedEntityAttributeValue " +
             "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttributeValue.trackedEntityAttribute " +
             "WHERE TrackedEntityAttributeValue.trackedEntityInstance = ? " +
-            "AND ProgramTrackedEntityAttribute.program = ? ORDER BY ProgramTrackedEntityAttribute.sortOrder";
+            "ORDER BY ProgramTrackedEntityAttribute.sortOrder";
 
     private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
                     "JOIN %s ON %s.%s = %s.%s\n" +
@@ -243,7 +224,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid, programUid)
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
@@ -431,6 +412,42 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             }
         }
+    }
+
+    @Override
+    public Observable<Pair<String, Integer>> getObjectStyle(Context context, String uid) {
+        String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
+        return briteDatabase.createQuery(ObjectStyleModel.TABLE, GET_OBJECT_STYLE, uid)
+                .mapToOneOrDefault(ObjectStyleModel::create, ObjectStyleModel.builder().icon("ic_person").color("#ffffff").build())
+                .map(objectStyleModel -> {
+                    Integer iconRes;
+                    if (objectStyleModel.icon() != null) {
+                        Resources resources = context.getResources();
+                        String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
+                        iconRes = resources.getIdentifier(iconName, "drawable", context.getPackageName());
+                    } else {
+                        iconRes = R.drawable.ic_person;
+                    }
+
+                    return Pair.create(objectStyleModel.color() != null ? objectStyleModel.color() : "#ffffff", iconRes);
+                });
+    }
+
+    @Override
+    public Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType) {
+        String RELATIONSHIP_QUERY =
+                "SELECT FROMTABLE.*, TOTABLE.trackedEntityType AS toTeiType FROM " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'FROM') " +
+                        "AS FROMTABLE " +
+                        "JOIN " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'TO') " +
+                        "AS TOTABLE " +
+                        "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
+                        "WHERE FROMTABLE.trackedEntityType = ?";
+        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
     }
 
     @Override

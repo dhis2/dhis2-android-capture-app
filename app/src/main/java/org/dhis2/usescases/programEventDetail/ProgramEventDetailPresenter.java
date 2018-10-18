@@ -23,7 +23,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
@@ -167,7 +166,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-        bundle.putBoolean(NEW_EVENT, false);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 
@@ -179,7 +177,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void addEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, programId);
-        bundle.putBoolean(NEW_EVENT, true);
         view.startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 

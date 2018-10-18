@@ -144,7 +144,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {
-        return serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+        String urlToCanonized = serverUrl.trim();
+        urlToCanonized  = urlToCanonized.replace(" ","");
+        return urlToCanonized.endsWith("/") ? urlToCanonized : urlToCanonized + "/";
     }
 
     @Override
@@ -194,9 +196,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     syncTrackedEntities();
                     break;
                 case TEI:
-                    /*syncAggregatesData();
+                    syncAggregatesData();
                     break;
-                case AGGREGATES:*/
+                case AGGREGATES:
                     syncReservedValues();
                     break;
                 case RESERVED_VALUES:

@@ -112,8 +112,8 @@
                 android:layout_width="125dp"
                 android:layout_height="34dp"
                 android:layout_gravity="end|bottom"
-                android:layout_marginEnd="22.5dp"
                 android:layout_marginBottom="15dp"
+                android:layout_marginEnd="22.5dp"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"
@@ -205,7 +205,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/due_date"
                                     android:theme="@style/loginInputText"
-                                    android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
+                                    android:visibility="@{stage.hideDueDate()&amp;&amp;event.dueDate()==null?View.GONE:View.VISIBLE}"
                                     app:layout_flexBasisPercent="50%">
 
                                     <android.support.design.widget.TextInputEditText

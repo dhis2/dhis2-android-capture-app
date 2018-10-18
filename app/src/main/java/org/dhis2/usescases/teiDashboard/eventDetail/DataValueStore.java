@@ -4,15 +4,16 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.dhis2.data.user.UserRepository;
-import org.dhis2.utils.DateUtils;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.user.UserRepository;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
@@ -71,21 +72,25 @@ final class DataValueStore implements DataEntryStore {
         switch (eventModel.status()) {
             case COMPLETED:
                 eventStatus = EventStatus.ACTIVE.name(); //TODO: should check if visited/skiped/overdue
+                contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
                 break;
             case SCHEDULE:
                 eventStatus = EventStatus.ACTIVE.name();
+                contentValues.putNull(EventModel.Columns.COMPLETE_DATE);
                 break;
             default:
                 eventStatus = EventStatus.COMPLETED.name();
+                contentValues.put(EventModel.Columns.COMPLETE_DATE, DateUtils.databaseDateFormat().format(currentDate));
                 break;
 
         }
         contentValues.put(EventModel.Columns.STATUS, eventStatus);
-
+        contentValues.put(EventModel.Columns.STATE, eventModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
         updateProgramTable(currentDate, eventModel.program());
 
-        if (eventModel != null)
+        if (eventModel != null) {
             briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        }
     }
 
     @Override

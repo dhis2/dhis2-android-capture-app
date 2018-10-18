@@ -30,15 +30,6 @@ import io.reactivex.Observable;
 
 class HomeRepositoryImpl implements HomeRepository {
 
-
-    private final static String SELECT_PROGRAMS = "SELECT " +
-            "Program.* FROM Program " +
-            "JOIN Event ON Event.program = Program.uid " +
-            "WHERE (%s) " +
-            "AND Event.organisationUnit IN (%s) " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-            "GROUP BY Program.uid ORDER BY Program.displayName";
-
     private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
             "WHERE %s " +
             "Event.program = ? " +
@@ -50,11 +41,6 @@ class HomeRepositoryImpl implements HomeRepository {
             "Event.program = ? " +
             "AND Event.state != 'TO_DELETE' " +
             "GROUP BY Enrollment.trackedEntityInstance";
-
-    private final static String SELECT_EVENTS_NO_DATE = "SELECT Event.* FROM Event " +
-            "WHERE Event.organisationUnit IN (%s) " +
-            "AND Event.program = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
 
     private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
             "WHERE TrackedEntityType.uid = ? LIMIT 1";
@@ -68,7 +54,7 @@ class HomeRepositoryImpl implements HomeRepository {
             "Program.trackedEntityType," +
             "Program.description " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid GROUP BY Program.uid "/* +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " +
             "UNION " +
             "SELECT DataSet.uid, " +
             "DataSet.displayName, " +
@@ -78,18 +64,13 @@ class HomeRepositoryImpl implements HomeRepository {
             "'', " +
             "DataSet.description " +
             "FROM DataSet " +
-            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid"*/;
+            "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
 
     private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
             "WHERE dataSet = ? ";
 
     private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-
-    private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
-    private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
-    private static final Set<String> SELECT_SET = new HashSet<>(Arrays.asList(SELECT_TABLE_NAMES));
-    private static final Set<String> SELECT_SET_2 = new HashSet<>(Arrays.asList(SELECT_TABLE_NAMES_2));
 
     private final static String SELECT_ORG_UNITS =
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
@@ -123,8 +104,14 @@ class HomeRepositoryImpl implements HomeRepository {
 
         int orgUnits = orgUnitsId != null ? orgUnitsId.split(",").length : 0;
         boolean filteringOrgs = orgUnitsId!=null && orgUnitsSize != orgUnits;
+        //QUERYING Program - orgUnit filter
+        String orgQuery = "";
+        if (orgUnitsId != null)
+            orgQuery = String.format("WHERE OrganisationUnitProgramLink.organisationUnit IN (%s)", orgUnitsId);
 
-        return briteDatabase.createQuery(TABLE_SET, PROGRAM_MODELS)
+        String programQuery = PROGRAM_MODELS.replace("%s",orgQuery);
+
+        return briteDatabase.createQuery(TABLE_SET, programQuery)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
                     String displayName = cursor.getString(1);
@@ -148,17 +135,14 @@ class HomeRepositoryImpl implements HomeRepository {
                             }
                         }
 
-                        //QUERYING Program Events - orgUnit filter
-                        String orgQuery = "";
-                        if (orgUnitsId != null)
-                            orgQuery = String.format("Event.organisationUnit IN (%s)", orgUnitsId);
+
 
 
                         String filter = "";
-                        if (!dateQuery.toString().isEmpty() && !orgQuery.isEmpty())
-                            filter = dateQuery.toString() + " AND " + orgQuery + " AND ";
-                        else if (!dateQuery.toString().isEmpty() || !orgQuery.isEmpty())
-                            filter = dateQuery.toString() + orgQuery + " AND ";
+                        if (!dateQuery.toString().isEmpty())
+                            filter = dateQuery.toString() + " AND ";
+                        else if (!dateQuery.toString().isEmpty())
+                            filter = dateQuery.toString() + " AND ";
 
                         if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
                             queryFinal = String.format(SELECT_TEIS, filter);
@@ -192,11 +176,11 @@ class HomeRepositoryImpl implements HomeRepository {
                     }
 
                     return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, true);
-                }).map(list -> checkCount(list, period, filteringOrgs)).toFlowable(BackpressureStrategy.LATEST);
+                }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
     }
 
-    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period, boolean filteringOrgs) {
-        if (period == null && !filteringOrgs)
+    private List<ProgramViewModel> checkCount(List<ProgramViewModel> list, Period period) {
+        if (period == null)
             return list;
         else {
             List<ProgramViewModel> models = new ArrayList<>();

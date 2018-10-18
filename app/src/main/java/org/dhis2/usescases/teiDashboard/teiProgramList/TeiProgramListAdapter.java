@@ -42,6 +42,9 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
         ViewDataBinding binding;
 
         switch (viewType) {
+            case TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD:
+                binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_all_programs_dashboard_title, parent, false);
+                break;
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
                 binding = DataBindingUtil.inflate(inflater, R.layout.item_tei_programs_active_title, parent, false);
                 break;
@@ -79,6 +82,9 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     @Override
     public void onBindViewHolder(@NonNull TeiProgramListEnrollmentViewHolder holder, int position) {
         switch (listItems.get(position).getViewType()) {
+            case TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD:
+                holder.bind(presenter,null,null);
+                break;
             case TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE:
                 holder.bind(presenter, null, null);
                 break;
@@ -131,6 +137,9 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
     private void orderList() {
         listItems.clear();
 
+        TeiProgramListItem allProgramsDashBoardItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.ALL_PROGRAMS_DASHBOARD);
+        listItems.add(allProgramsDashBoardItem);
+
         TeiProgramListItem firstTeiProgramListItem = new TeiProgramListItem(null, null, TeiProgramListItem.TeiProgramListItemViewType.FIRST_TITLE);
         listItems.add(firstTeiProgramListItem);
 
@@ -157,7 +166,6 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             for (EnrollmentViewModel enrollment : activeEnrollments) {
                 if (programModel.title().equals(enrollment.programName())) {
                     found = true;
-//                    active = enrollment.val0().enrollmentStatus() == EnrollmentStatus.ACTIVE;
                     active = true;
                 }
             }
@@ -166,7 +174,6 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
                 for (EnrollmentViewModel enrollment : inactiveEnrollments) {
                     if (programModel.title().equals(enrollment.programName())) {
                         found = true;
-//                        active = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
                         active = false;
                     }
                 }

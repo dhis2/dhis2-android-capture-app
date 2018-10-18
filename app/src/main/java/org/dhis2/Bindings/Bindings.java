@@ -42,7 +42,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import java.text.ParseException;
@@ -268,37 +267,6 @@ public class Bindings {
 
                             },
                             Timber::d);
-    }
-
-    @BindingAdapter("randomColor")
-    public static void setRandomColor(ImageView imageView, String textToColor) {
-        String color;
-        if (textToColor != null)
-            color = String.format("#%X", String.valueOf(textToColor).hashCode());
-        else
-            color = "#FFFFFF";
-
-        imageView.setBackgroundColor(Color.parseColor(color));
-    }
-
-
-    @BindingAdapter("tintRandomColor")
-    public static void setTintRandomColor(ImageView imageView, String textToColor) {
-        String color;
-        if (textToColor != null)
-            color = String.format("#%X", textToColor.hashCode());
-        else
-            color = "#FFFFFF";
-
-        Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program).mutate();
-        if (drawable != null)
-            drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN);
-        imageView.setImageDrawable(drawable);
-    }
-
-    @BindingAdapter("programTypeIcon")
-    public static void setProgramIcon(ImageView view, ProgramType programType) {
-        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_program_default));
     }
 
     @BindingAdapter("progressColor")

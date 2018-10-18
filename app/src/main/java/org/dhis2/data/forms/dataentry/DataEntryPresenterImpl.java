@@ -186,7 +186,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = codeGenerator.generate();
                 RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false,null);
+                        displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
                 fieldViewModels.put(uid, textViewModel);
 
             } else if (ruleAction instanceof RuleActionHideSection) {
@@ -200,10 +200,15 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 else {
                     String value = fieldViewModels.get(assign.field()).value();
 
-                    if (value == null || !value.equals(ruleEffect.data()))
+                    if (value == null || !value.equals(ruleEffect.data())) {
                         save(assign.field(), ruleEffect.data());
+                    }
+
+                    fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
 
                 }
+
+
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent
