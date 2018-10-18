@@ -27,11 +27,13 @@ import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.TlsVersion;
+import timber.log.Timber;
 
 @Module
 @PerServer
@@ -79,7 +81,7 @@ public class ServerModule {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             try {
 
-                SSLContext sc = SSLContext.getInstance("TLSv1.2");
+                SSLContext sc = SSLContext.getInstance("TLS"/*"TLSv1.2"*/);
                 sc.init(null, null, null);
 
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
@@ -93,7 +95,11 @@ public class ServerModule {
                 X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
 
                 ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                        .tlsVersions(TlsVersion.TLS_1_2)
+                        .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
+                        .cipherSuites(
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
                         .build();
 
                 List<ConnectionSpec> specs = new ArrayList<>();
@@ -105,8 +111,9 @@ public class ServerModule {
                         .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()), trustManager)
                         .connectionSpecs(specs);
 
-            } catch (Exception e) {
 
+            } catch (Exception e) {
+                Timber.e(e);
             }
 
         }
