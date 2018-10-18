@@ -140,7 +140,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
 
         RelationshipFragment.getInstance().setData(program);
-        TEIDataFragment.getInstance().setData(programModel);
+//        TEIDataFragment.getInstance().setData(programModel);
 
 //        binding.teiPager.setOffscreenPageLimit(6);
 
@@ -167,7 +167,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.setTitle(title);
         binding.executePendingBindings();
         this.programModel = program;
-        TEIDataFragment.getInstance().setData(programModel);
+
         binding.teiPager.setOffscreenPageLimit(6);
 
     }

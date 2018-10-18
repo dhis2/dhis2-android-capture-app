@@ -600,6 +600,13 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         binding.setProgramStage(programStage);
         if (periodType == null)
             periodType = programStage.periodType();
+
+        if(eventCreationType == EventCreationType.SCHEDULE)
+            binding.dateLayout.setHint(getString(R.string.due_date));
+        else if(programStage.executionDateLabel()!=null)
+            binding.dateLayout.setHint(programStage.executionDateLabel());
+        else
+            binding.dateLayout.setHint(getString(R.string.event_date));
     }
 
     @Override

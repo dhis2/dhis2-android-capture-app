@@ -391,7 +391,8 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .map(list -> {
                             List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
                             for (Pair<RelationshipTypeModel, String> rType : list) {
-                                finalList.add(Trio.create(rType.val0(), rType.val1(), R.drawable.ic_person));
+                                int iconResId = dashboardRepository.getObjectStyle(view.getContext(),rType.val1());
+                                finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId));
                             }
                             return finalList;
                         })

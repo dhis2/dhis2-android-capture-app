@@ -25,6 +25,8 @@
 
         <item name="textInputStyle">@style/Widget.Design.TextInputLayout</item>
         <item name="navigationViewStyle">@style/Widget.Design.NavigationView</item>
+        <item name="chipGroupStyle">@style/Widget.MaterialComponents.ChipGroup</item>
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Action</item>
 
     </style>
 
