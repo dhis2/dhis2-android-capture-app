@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
-
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -129,6 +128,8 @@ public interface MetadataRepository {
     Observable<ObjectStyleModel> getObjectStyle(String uid);
 
     Observable<List<OrganisationUnitModel>> getOrganisationUnits();
+
+    Observable<List<OrganisationUnitModel>> getSearchOrganisationUnits();
 
     Observable<List<Pair<String, String>>> getReserveUids();
 

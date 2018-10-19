@@ -14,8 +14,8 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="90dp"
             android:layout_marginTop="90dp"
+            android:layout_marginBottom="90dp"
             android:background="?colorAccent"
             android:orientation="vertical"
             tools:ignore="UselessParent">
@@ -27,16 +27,17 @@
                 android:background="@color/colorGreyDefault">
 
                 <EditText
+                    android:id="@+id/orgUnitEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/bg_rounded_corners_white"
-                    android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_search"
+                    android:drawablePadding="10dp"
                     android:drawableTint="@color/icon_color"
-                    android:paddingEnd="5dp"
                     android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:textColor="@color/colorGreyDefault"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -48,26 +49,27 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.design.chip.ChipGroup
+                android:id="@+id/results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/title">
+
                 <android.support.design.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:chipBackgroundColor="@color/red_060"
-                    android:text="Hola"/>
+                    android:text="chip text" />
             </android.support.design.chip.ChipGroup>
 
-            <RelativeLayout
-                android:id="@+id/tree_container"
+            <TextView
+                android:id="@+id/recycler"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:padding="5dp"
                 app:layout_constraintBottom_toTopOf="@id/clear_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/data_layout" />
+                app:layout_constraintTop_toBottomOf="@id/results" />
 
             <Button
                 android:id="@+id/clear_button"

@@ -536,6 +536,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<List<OrganisationUnitModel>> getSearchOrganisationUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit " +
+                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
+                "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_TEI_SEARCH')")
+                .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
     public Observable<List<Pair<String, String>>> getReserveUids() {
         Cursor cursor = briteDatabase.query(RESERVED_UIDS, "1");
         List<Pair<String, String>> pairs = new ArrayList<>();
