@@ -41,6 +41,8 @@ public class DataSetDetailContract {
         Flowable<Integer> dataSetPage();
 
         String dataSetUid();
+
+        Boolean accessDataWrite();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

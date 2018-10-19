@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -52,7 +53,8 @@ class HomeRepositoryImpl implements HomeRepository {
             "ObjectStyle.icon," +
             "Program.programType," +
             "Program.trackedEntityType," +
-            "Program.description " +
+            "Program.description, " +
+            "'true' " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
             "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " +
             "UNION " +
@@ -62,7 +64,8 @@ class HomeRepositoryImpl implements HomeRepository {
             "null, " +
             "'', " +
             "'', " +
-            "DataSet.description " +
+            "DataSet.description, " +
+            "DataSet.accessDataWrite " +
             "FROM DataSet " +
             "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
 
@@ -120,7 +123,7 @@ class HomeRepositoryImpl implements HomeRepository {
                     String programType = cursor.getString(4);
                     String teiType = cursor.getString(5);
                     String description = cursor.getString(6);
-
+                    String accessDataWrite = Objects.equals(cursor.getString(7), "1") ? "true" : "false";
                     //QUERYING Program EVENTS - dates filter
                     String queryFinal;
                     if (!programType.isEmpty()) {
@@ -175,7 +178,7 @@ class HomeRepositoryImpl implements HomeRepository {
                         typeName = "DataSets";
                     }
 
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, true);
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, Boolean.valueOf(accessDataWrite));
                 }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
     }
 

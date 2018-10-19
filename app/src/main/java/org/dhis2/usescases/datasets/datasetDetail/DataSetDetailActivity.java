@@ -55,6 +55,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     private ArrayList<Date> chosenDateMonth = new ArrayList<>();
     private ArrayList<Date> chosenDateYear = new ArrayList<>();
     private String dataSetUid;
+    private Boolean accessWriteData;
     private Period currentPeriod = Period.NONE;
     private StringBuilder orgUnitFilter = new StringBuilder();
     private SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
@@ -80,6 +81,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         chosenDateYear.add(new Date());
 
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
+        accessWriteData = Boolean.valueOf(getIntent().getStringExtra("ACCESS_DATA"));
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
@@ -405,6 +407,11 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
     @Override
     public String dataSetUid() {
         return dataSetUid;
+    }
+
+    @Override
+    public Boolean accessDataWrite() {
+        return accessWriteData;
     }
 
     private void checkFilterEnabled() {

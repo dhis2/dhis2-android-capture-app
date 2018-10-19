@@ -66,7 +66,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view::setData,
+                                dataSetDetailModels -> {
+                                    view.setData(dataSetDetailModels);
+                                    view.setWritePermission(view.accessDataWrite());
+                                },
                                 Timber::d
                         )
         );
