@@ -251,4 +251,13 @@ public class ExampleUnitTest {
             // handle
         }
     }
+
+    @Test
+    public void splitPath(){
+        String testPath = "/level1/level2/level3/level4";
+
+        String[] splitted = testPath.split("/");
+
+        assertTrue(splitted.length == 5);
+    }
 }

@@ -82,11 +82,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
                     .setRecurring(true)
                     .setLifetime(Lifetime.FOREVER)
                     .setTrigger(Trigger.executionWindow(seconds, seconds + 60))
-//                    .setReplaceCurrent(true)
+                    .setReplaceCurrent(true)
                     .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
-                    .setConstraints(
-                            Constraint.ON_ANY_NETWORK
-                    )
+                    .setConstraints(Constraint.ON_ANY_NETWORK)
                     .build();
 
             dispatcher.mustSchedule(dataJob);

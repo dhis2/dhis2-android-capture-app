@@ -139,7 +139,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         setViewpagerAdapter();
 
 
-        RelationshipFragment.getInstance().setData(program);
+//        RelationshipFragment.getInstance().setData(program);
 //        TEIDataFragment.getInstance().setData(programModel);
 
 //        binding.teiPager.setOffscreenPageLimit(6);
@@ -168,8 +168,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.executePendingBindings();
         this.programModel = program;
 
-        binding.teiPager.setOffscreenPageLimit(6);
+        setViewpagerAdapter();
 
+//        RelationshipFragment.getInstance().setData(program);
     }
 
     @Override

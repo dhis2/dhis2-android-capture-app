@@ -28,7 +28,6 @@ import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -60,7 +59,9 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new EventDetailModule(getIntent().getStringExtra("EVENT_UID"))).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(
+                new EventDetailModule(getIntent().getStringExtra("EVENT_UID"),
+                        getIntent().getStringExtra("TEI_UID"))).inject(this);
         supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
         eventUid = getIntent().getStringExtra("EVENT_UID");

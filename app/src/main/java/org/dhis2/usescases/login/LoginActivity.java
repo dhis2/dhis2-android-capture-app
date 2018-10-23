@@ -178,10 +178,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.login.setVisibility(View.GONE);
         if (binding.logo != null) {
             ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+            if (binding.guideline != null)
+                binding.guideline.setGuidelinePercent(1);
             params.height = MATCH_PARENT;
+            params.width = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
-            if(Build.VERSION.SDK_INT > 21) {
+            if (Build.VERSION.SDK_INT > 21) {
                 binding.lottieView.setVisibility(View.VISIBLE);
                 binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
                 binding.lottieView.useHardwareAcceleration(true);

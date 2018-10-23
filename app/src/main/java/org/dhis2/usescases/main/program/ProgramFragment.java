@@ -28,8 +28,8 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.OrgUnitCascadeDialog;
 import org.dhis2.utils.CustomViews.RxDateDialog;
+import org.dhis2.utils.CustomViews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
@@ -243,7 +243,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             case NONE:
                 getSelectedPrograms(null, currentPeriod, orgUnitFilter.toString());
                 textToShow = getString(R.string.period);
-                new OrgUnitCascadeDialog().setTitle("test").show(getChildFragmentManager(), "TEST");
                 break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
