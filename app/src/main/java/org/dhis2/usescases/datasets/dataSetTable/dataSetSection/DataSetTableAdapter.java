@@ -12,13 +12,14 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel, DataElementModel, String> {
+class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
     public DataSetTableAdapter(Context context) {
         super(context);
     }
@@ -55,7 +56,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionComboModel,
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
-        ((DataSetCell) holder).bind(columnPosition + "-" + rowPosition);
+        ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
 
 
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;

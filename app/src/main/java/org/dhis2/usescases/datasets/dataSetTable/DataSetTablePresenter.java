@@ -4,7 +4,9 @@ import android.util.Log;
 
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     private final DataSetTableRepository tableRepository;
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
-    private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
+    private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionModel>>> tableData;
+    private List<DataValue> dataValues;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
@@ -41,7 +44,10 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> Log.d("SATA_SETS", "VALUES LIST SIZE = " + data.size()),
+                                data -> {
+                                    dataValues = data;
+                                    view.setDataValue(data);
+                                    },
                                 Timber::e
                         )
         );
@@ -81,8 +87,13 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public List<CategoryOptionComboModel> getCatOptionCombos(String key) {
+    public List<CategoryOptionModel> getCatOptionCombos(String key) {
         return tableData.val1().get( tableData.val0().get(key).get(0).categoryCombo());
+    }
+
+    @Override
+    public List<DataValue> getDataValues() {
+        return dataValues;
     }
 
     @Override

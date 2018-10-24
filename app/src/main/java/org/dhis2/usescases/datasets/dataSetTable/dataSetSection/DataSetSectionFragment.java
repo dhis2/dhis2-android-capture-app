@@ -17,10 +17,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -68,13 +71,23 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         String dataSetSection = getArguments().getString(Constants.DATA_SET_SECTION);
 
         List<DataElementModel> dataElements = presenter.getDataElements(dataSetSection);
-        List<CategoryOptionComboModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
-
+        List<CategoryOptionModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
+        List<DataValue> dataValues = presenter.getDataValues();
         ArrayList<List<String>> cells = new ArrayList<>();
         for (DataElementModel de : dataElements) {
             ArrayList<String> values = new ArrayList<>();
-            for (CategoryOptionComboModel catOpt : catOptions) {
-                values.add(catOpt.uid());
+            for (CategoryOptionModel catOpt : catOptions) {
+                boolean exitsValue = false;
+                for(DataValue dataValue: dataValues){
+
+                    if(Objects.equals(dataValue.categoryOptionCombo(), catOpt.uid())
+                            && Objects.equals(dataValue.dataElement(), de.uid()) ) {
+                        values.add(dataValue.value());
+                        exitsValue = true;
+                    }
+                }
+                if(!exitsValue)
+                    values.add("");
             }
             cells.add(values);
         }

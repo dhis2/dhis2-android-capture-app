@@ -11,8 +11,11 @@ import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.datavalue.DataValue;
+import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.List;
 import java.util.Map;
@@ -73,7 +76,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<CategoryOptionComboModel>> catOptions) {
+    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<CategoryOptionModel>> catOptions) {
         viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
@@ -83,6 +86,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     @Override
     public void setDataSet(DataSetModel data) {
         binding.dataSetName.setText(data.displayName());
+    }
+
+    @Override
+    public void setDataValue(List<DataValue> data) {
+        String a = "";
     }
 
     public DataSetTableContract.Presenter getPresenter() {
