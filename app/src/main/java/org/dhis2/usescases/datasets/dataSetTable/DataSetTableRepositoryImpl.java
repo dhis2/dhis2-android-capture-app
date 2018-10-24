@@ -111,9 +111,14 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 .flatMap(dataElementModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
+
+    /**
+     *
+     * returns Map key =
+     * */
     @Override
     public Flowable<Map<String, List<CategoryOptionModel>>> getCatOptions() {
-        String query = "SELECT CategoryOption.*, section.name FROM CategoryOption " +
+        String query = "SELECT CategoryOption.*, section.displayName as SectionName FROM CategoryOption " +
                 "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOption.uid " +
                 "JOIN Category ON CategoryCategoryOptionLink.category = Category.uid " +
                 "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
@@ -123,16 +128,17 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 "JOIN Section ON Section.uid = SectionDataElementLink.section " +
                 "JOIN SectionDataElementLink ON SectionDataElementLink.dataElement = DataElement.uid " +
                 "WHERE DataSetDataElementLink.dataSet = ? " +
-                "GROUP BY CategoryOption.uid ORDER BY SectionDataElementLink.section, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+                "GROUP BY CategoryOption.uid, Section.displayName ORDER BY SectionDataElementLink.section, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
         Map<String, List<CategoryOptionModel>> map = new HashMap<>();
 
         return briteDatabase.createQuery(CategoryOptionModel.TABLE, query, dataSetUid)
                 .mapToList(cursor -> {
                     CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
-                    if (map.get(catOption.name()) == null) {
-                        map.put(catOption.name(), new ArrayList<>());
+                    String sectionName = cursor.getString(cursor.getColumnIndex("SectionName"));
+                    if (map.get(sectionName) == null) {
+                        map.put(sectionName, new ArrayList<>());
                     }
-                    map.get(catOption.name()).add(catOption);
+                    map.get(sectionName).add(catOption);
                     return catOption;
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }

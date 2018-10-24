@@ -88,7 +88,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public List<CategoryOptionModel> getCatOptionCombos(String key) {
-        return tableData.val1().get( tableData.val0().get(key).get(0).categoryCombo());
+        return tableData.val1().get(key);
     }
 
     @Override
