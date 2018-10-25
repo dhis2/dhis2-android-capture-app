@@ -218,4 +218,29 @@ final class SyncPresenterImpl implements SyncPresenter {
             }
         };
     }
+
+    @Override
+    public void syncAndDownloadEvents(Context context) throws Exception {
+        d2.syncSingleEvents().call();
+        SharedPreferences prefs = context.getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        d2.downloadSingleEvents(eventLimit, limityByOU).call();
+    }
+
+    @Override
+    public void syncAndDownloadTeis(Context context) throws Exception {
+        d2.syncTrackedEntityInstances().call();
+        SharedPreferences prefs = context.getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        d2.downloadTrackedEntityInstances(teiLimit, limityByOU).call();
+    }
+
+    @Override
+    public void syncMetadata(Context context) throws Exception {
+        d2.syncMetaData().call();
+    }
 }

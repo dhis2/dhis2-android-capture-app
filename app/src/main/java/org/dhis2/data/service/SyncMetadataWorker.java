@@ -26,15 +26,15 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 23/10/2018.
  */
 
-public class SyncDataWorker extends Worker {
+public class SyncMetadataWorker extends Worker {
 
-    private final static String data_channel = "sync_data_notification";
-    private final static int SYNC_DATA_ID = 8071986;
+    private final static String metadata_channel = "sync_metadata_notification";
+    private final static int SYNC_METADATA_ID = 26061987;
 
     @Inject
     SyncPresenter presenter;
 
-    public SyncDataWorker(
+    public SyncMetadataWorker(
             @NonNull Context context,
             @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -43,48 +43,47 @@ public class SyncDataWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        ((App) getApplicationContext()).userComponent().plus(new SyncDataWorkerModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SyncMetadataWorkerModule()).inject(this);
 
-        triggerNotification(SYNC_DATA_ID,
+        triggerNotification(SYNC_METADATA_ID,
                 getApplicationContext().getString(R.string.app_name),
-                getApplicationContext().getString(R.string.syncing_data));
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", true));
+                getApplicationContext().getString(R.string.syncing_configuration));
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", true));
 
-        boolean isEventOk = true;
-        boolean isTeiOk = true;
+        boolean isMetaOk = true;
 
         try {
-            presenter.syncAndDownloadEvents(getApplicationContext());
+            presenter.syncMetadata(getApplicationContext());
         } catch (Exception e) {
             Timber.e(e);
-            isEventOk = false;
-        }
-        try {
-            presenter.syncAndDownloadTeis(getApplicationContext());
-        } catch (Exception e) {
-            Timber.e(e);
-            isTeiOk = false;
+            isMetaOk = false;
         }
 
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
+        prefs.edit().putString(Constants.LAST_META_SYNC, lastDataSyncDate).apply();
+        prefs.edit().putBoolean(Constants.LAST_META_SYNC_STATUS, isMetaOk).apply();
 
-        Log.d(this.getClass().getSimpleName(),"Last data sync at: "+lastDataSyncDate);
-        Log.d(this.getClass().getSimpleName(),"Last data sync saved: "+prefs.getString(Constants.LAST_DATA_SYNC,"Not saved"));
+        Log.d(this.getClass().getSimpleName(), "Last metadata sync at: " + lastDataSyncDate);
+        Log.d(this.getClass().getSimpleName(), "Last metadata sync saved: " + prefs.getString(Constants.LAST_META_SYNC, "Not saved"));
 
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("metaSyncInProgress", false));
 
         cancelNotification();
 
         return Result.SUCCESS;
     }
 
+    @Override
+    public void onStopped(boolean cancelled) {
+        super.onStopped(cancelled);
+        Log.d(this.getClass().getSimpleName(),"Metadata process finished");
+    }
+
     private void triggerNotification(int id, String title, String content) {
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), data_channel)
+                new NotificationCompat.Builder(getApplicationContext(), metadata_channel)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
                         .setContentText(content)
@@ -100,6 +99,6 @@ public class SyncDataWorker extends Worker {
     private void cancelNotification() {
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(getApplicationContext());
-        notificationManager.cancel(SYNC_DATA_ID);
+        notificationManager.cancel(SYNC_METADATA_ID);
     }
 }

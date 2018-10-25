@@ -244,6 +244,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
             view.saveUsersData();
             if (NetworkUtils.isOnline(view.getContext())) {
                 view.handleSync();
+                metadataRepository.createErrorTable();
                 sync();
             } else
                 view.startActivity(MainActivity.class, null, true, true, null);

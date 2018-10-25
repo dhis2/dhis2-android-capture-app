@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.ErrorMessageModel;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -144,4 +146,8 @@ public interface MetadataRepository {
     Flowable<Boolean> validateCredentials(String serverUrl, String username, String password);
 
     Observable<String> getServerUrl();
+
+    void createErrorTable();
+
+    Observable<List<ErrorMessageModel>> getSyncErrors();
 }

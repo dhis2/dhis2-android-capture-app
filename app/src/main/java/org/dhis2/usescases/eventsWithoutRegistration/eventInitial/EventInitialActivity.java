@@ -757,10 +757,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
 
         List<FieldViewModel> realUpdates = new ArrayList<>();
-        if (sectionsToHide != null && !sectionsToHide.isEmpty())
+        if (sectionsToHide != null && !sectionsToHide.isEmpty()) {
             for (FieldViewModel fieldViewModel : updates)
                 if (!sectionsToHide.contains(fieldViewModel.programStageSection()))
                     realUpdates.add(fieldViewModel);
+        }else
+            realUpdates.addAll(updates);
 
         int completedSectionFields = calculateCompletedFields(realUpdates);
         int totalSectionFields = realUpdates.size();

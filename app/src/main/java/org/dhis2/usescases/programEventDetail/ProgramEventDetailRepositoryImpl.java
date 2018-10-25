@@ -34,19 +34,7 @@ import io.reactivex.Observable;
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
-    private final String EVENT_DATA_VALUES_NEW = "SELECT " +
-            "TrackedEntityDataValue.*, " +
-            "DataElement.valueType, " +
-            "DataElement.optionSet " +
-            "FROM TrackedEntityDataValue " +
-            "JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement WHERE TrackedEntityDataValue.event = ?\n" +
-            "AND TrackedEntityDataValue.dataElement IN\n" +
-            "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
-            "WHERE ProgramStageDataElement.displayInReports = '1'\n" +
-            "ORDER BY ProgramStageDataElement.sortOrder ASC LIMIT 3\n" +
-            ")";
-
-    private final String EVENT_DATA_VALUES = "SELECT " +
+   /* private final String EVENT_DATA_VALUES = "SELECT " +
             "DE.uid, " +
             "DE.displayName, " +
             "DE.valueType, " +
@@ -61,7 +49,33 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             "FROM ProgramStageDataElement " +
             "JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
             "WHERE ProgramStageDataElement.displayInReports = 1 GROUP BY DataElement.uid) AS DE ON DE.uid = TrackedEntityDataValue.dataElement " +
-            "WHERE TrackedEntityDataValue.event = ?";
+            "WHERE TrackedEntityDataValue.event = ?";*/
+
+    /*private final String EVENT_DATA_VALUES = "SELECT \n" +
+            " DataElement.uid,\n" +
+            " DataElement.displayName,\n" +
+            " DataElement.valueType, \n" +
+            " DataElement.optionSet, ProgramStageDataElement.displayInReports, \n" +
+            "TrackedEntityDataValue.value \n" +
+            " FROM TrackedEntityDataValue \n" +
+            " JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement\n" +
+            " JOIN Event ON Event.uid = TrackedEntityDataValue.event\n" +
+            " JOIN ProgramStageDataElement ON ProgramStageDataElement.programStage = Event.programStage\n" +
+            " WHERE ProgramStageDataElement.displayInReports = 1\n" +
+            " AND Event.uid = ?\n" +
+            " ORDER BY ProgramStageDataElement.sortOrder ASC LIMIT 3";*/
+    private final String EVENT_DATA_VALUES = "SELECT \n" +
+            " DataElement.uid, \n" +
+            " DataElement.displayName, \n" +
+            " DataElement.valueType,\n" +
+            " DataElement.optionSet, \n" +
+            " ProgramStageDataElement.displayInReports, \n" +
+            " TrackedEntityDataValue.value \n" +
+            " FROM TrackedEntityDataValue \n" +
+            " JOIN ProgramStageDataElement ON ProgramStageDataElement.dataElement = TrackedEntityDataValue.dataElement \n" +
+            " JOIN Event ON Event.programStage = ProgramStageDataElement.programStage \n" +
+            " JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement \n" +
+            " WHERE TrackedEntityDataValue.event = ? AND Event.uid = ? AND ProgramStageDataElement.displayInReports = 1 ORDER BY sortOrder";
 
     private final BriteDatabase briteDatabase;
 
@@ -244,7 +258,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
         List<String> values = new ArrayList<>();
         String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id);
+        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id,id);
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 String value = cursor.getString(cursor.getColumnIndex("value"));
