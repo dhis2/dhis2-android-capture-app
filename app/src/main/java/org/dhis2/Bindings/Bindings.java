@@ -462,7 +462,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -515,7 +515,7 @@ public class Bindings {
                     .subscribe(
                             program -> {
                                 int eventColor;
-                                if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                     eventColor = R.color.event_red;
                                 } else {
                                     switch (event.status()) {
@@ -638,7 +638,7 @@ public class Bindings {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                    if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                         textView.setText(textView.getContext().getString(R.string.event_editing_expired));
                                         textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                                     } else {
@@ -687,7 +687,7 @@ public class Bindings {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                             imageView.setImageResource(R.drawable.ic_eye_red);
                                         } else {
                                             imageView.setImageResource(R.drawable.ic_eye_grey);

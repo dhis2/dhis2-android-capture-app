@@ -257,6 +257,7 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
+    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
@@ -1019,5 +1020,20 @@ public class DateUtils {
         }
 
         return formattedDate;
+    }
+
+    public Boolean isEventExpired(@Nullable Date currentDate, Date completedDay, int compExpDays){
+
+        Calendar calendar = getCalendar();
+
+        if (currentDate != null)
+            calendar.setTime(currentDate);
+
+        Date date = calendar.getTime();
+
+        if(completedDay!=null)
+            return completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+        else
+            return false;
     }
 }
