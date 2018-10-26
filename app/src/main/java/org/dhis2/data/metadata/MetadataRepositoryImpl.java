@@ -638,8 +638,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public void createErrorTable() {
-        String CREATE_ERROR_TABLE = "CREATE TABLE ErrorMessage(\n" +
-                "errorDate DATE(),\n" +
+        String CREATE_ERROR_TABLE = "CREATE TABLE IF NOT EXISTS ErrorMessage(\n" +
+                "errorDate TEXT,\n" +
                 "errorMessage TEXT,\n" +
                 "errorCode INT(3),\n" +
                 "errorDescription TEXT\n" +

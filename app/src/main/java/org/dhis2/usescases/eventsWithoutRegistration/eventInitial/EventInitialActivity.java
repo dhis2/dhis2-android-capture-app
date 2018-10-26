@@ -378,12 +378,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
                     selectedCatCombo != null && selectedCatOptionCombo != null &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType != EventCreationType.REFERAL && tempCreate != null));
+                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
         else
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType != EventCreationType.REFERAL && tempCreate != null));
+                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
     }
 
     private boolean isEventOpen() {

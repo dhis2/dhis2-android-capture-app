@@ -86,8 +86,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 } else {
                     binding.buttonSyncData.setEnabled(true);
                     binding.buttonSyncMeta.setEnabled(true);
-                    setLastDataSyncDate();
-                    setLastMetaDataSyncDate();
+
+                    setLastSyncDate();
                     presenter.checkData();
                 }
             }
@@ -115,7 +115,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         binding.radioData.setOnCheckedChangeListener((radioGroup, i) -> saveTimeData(i));
         binding.radioMeta.setOnCheckedChangeListener((radioGroup, i) -> saveTimeMeta(i));
-
 
         return binding.getRoot();
     }
@@ -150,8 +149,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-        setLastDataSyncDate();
-        setLastMetaDataSyncDate();
+
+        setLastSyncDate();
     }
 
     @Override
@@ -173,10 +172,10 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
-    public void setLastDataSyncDate() {
-        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
+  /*  public void setLastDataSyncDate() {
+        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true)) {
             binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
-        else {
+        } else {
             binding.dataLastSync.setText(getString(R.string.sync_error_text));
         }
     }
@@ -186,6 +185,25 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
         else
             binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+    }*/
+
+    public void setLastSyncDate() {
+        boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
+        boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
+
+        if (dataStatus) {
+            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+        } else {
+            binding.dataLastSync.setText(getString(R.string.sync_error_text));
+        }
+        if (metaStatus)
+            binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
+        else
+            binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+        if (!metaStatus || !dataStatus)
+            binding.buttonSyncError.setVisibility(View.VISIBLE);
+        else
+            binding.buttonSyncError.setVisibility(View.GONE);
     }
 
     private void initRadioGroups() {

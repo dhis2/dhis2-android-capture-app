@@ -116,7 +116,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
                 SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
 
-            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC";
+            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES += " ORDER BY " + EventModel.TABLE + "." + EventModel.Columns.EVENT_DATE + " DESC, Event.lastUpdated DESC";
 
             return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES + pageQuery, programUid == null ? "" : programUid))
                     .mapToList(cursor -> {

@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -25,6 +24,7 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +57,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
+    private HashMap<String, FieldViewModel> currentFieldViewModels;
 
     DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
                            @NonNull DataEntryStore dataEntryStore,
@@ -139,6 +140,10 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
 
+        if (this.currentFieldViewModels == null)
+            this.currentFieldViewModels = new HashMap<>();
+        this.currentFieldViewModels.putAll(fieldViewModels);
+
         return new ArrayList<>(fieldViewModels.values());
     }
 
@@ -152,6 +157,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     }
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
@@ -177,11 +183,22 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.remove(hideField.field());
                 dataEntryStore.save(hideField.field(), null);
             } else if (ruleAction instanceof RuleActionDisplayText) {
-                String uid = codeGenerator.generate();
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
+                String uid = displayText.content();
+
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
-                fieldViewModels.put(uid, textViewModel);
+
+                if (this.currentFieldViewModels == null ||
+                        !this.currentFieldViewModels.containsKey(uid)) {
+                    fieldViewModels.put(uid, textViewModel);
+                } else if (this.currentFieldViewModels.containsKey(uid) &&
+                        !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
+                    fieldViewModels.put(uid, textViewModel);
+                }else{
+                    
+                }
+
             /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now
                 String uid = codeGenerator.generate();
                 RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;

@@ -27,6 +27,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
@@ -116,6 +117,8 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                 RuleEngineContext.builder(evaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
+                                        .calculatedValueMap(new HashMap<>())
+                                        .supplementaryData(new HashMap<>())
                                         .build().toEngineBuilder()
                                         .events(ruleEvents)
                                         .build())
@@ -150,7 +153,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
 
                     return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, dataValues);
+                            status, eventDate, dueDate, orgUnit, dataValues,programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -185,7 +188,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                     String programName = cursor.getString(5);
 
                                     return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, attributeValues);
+                                            incidentDate, enrollmentDate, status, orgUnit, attributeValues, programName);
                                 }).toFlowable(BackpressureStrategy.LATEST)
                 );
     }

@@ -136,15 +136,15 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
     // RuleEngine module of the DHIS 2 Android SDK
-    implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
+   /* implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-    }
+    }*/
     implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-//        exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
 
     //TreeView
     implementation 'com.github.bmelnychuk:atv:1.2.9'
@@ -206,7 +206,10 @@ dependencies {
 
     //JOB SCHEDULER
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
-    implementation "android.arch.work:work-runtime:1.0.0-alpha10"
+    implementation ("android.arch.work:work-runtime:1.0.0-alpha10"){
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+
+    }
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {

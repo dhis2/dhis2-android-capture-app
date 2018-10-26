@@ -263,8 +263,8 @@ public final class RulesRepository {
                 actions = new ArrayList<>();
             }
 
-            rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(actions)));
+           /* rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
+                    rawRule.val3(), new ArrayList<>(actions)));*/
         }
 
         return rules;
@@ -288,7 +288,7 @@ public final class RulesRepository {
                 actions = new ArrayList<>();
             }*/
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(pairActions)));
+                    rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
         }
 
         return rules;
@@ -518,14 +518,16 @@ public final class RulesRepository {
                                             }
 
                                             return RuleEvent.create(eventUid, cursor.getString(1),
-                                                    status, eventDate, dueDate, dataValues);
+                                                    status, eventDate, dueDate, orgUnit, dataValues, programStage);
                                         }))).toFlowable(BackpressureStrategy.LATEST);
     }
 
     public Flowable<RuleEnrollment> enrollment(String eventUid) {
-        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
-                .mapToOne(EventModel::create)
-                .flatMap(eventModel -> {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.*, Program.displayName FROM Event JOIN Program ON Program.uid = Event.program WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
+                .mapToOne(cursor -> Pair.create(EventModel.create(cursor),cursor.getString(cursor.getColumnIndex("displayName"))))
+                .flatMap(pair -> {
+                    EventModel eventModel = pair.val0();
+                    String programName = pair.val1();
                             if (eventModel.enrollment() != null)
                                 return queryAttributeValues(eventModel.enrollment())
                                         .switchMap(ruleAttributeValues ->
@@ -537,7 +539,9 @@ public final class RulesRepository {
                                                 Calendar.getInstance().getTime(),
                                                 Calendar.getInstance().getTime(),
                                                 RuleEnrollment.Status.CANCELLED,
-                                                new ArrayList<>()));
+                                                eventModel.organisationUnit(),
+                                                new ArrayList<>(),
+                                                programName));
                         }
                 ).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -564,7 +568,7 @@ public final class RulesRepository {
                     String programName = cursor.getString(5);
 
                     return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, attributeValues);
+                            incidentDate, enrollmentDate, status, orgUnit, attributeValues, programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

@@ -34,6 +34,7 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
@@ -216,6 +217,8 @@ class EnrollmentFormRepository implements FormRepository {
                                 RuleEngineContext.builder(expressionEvaluator)
                                         .rules(rules)
                                         .ruleVariables(variables)
+                                        .calculatedValueMap(new HashMap<>())
+                                        .supplementaryData(new HashMap<>())
                                         .build().toEngineBuilder()
                                         .build()))
                 .cacheWithInitialCapacity(1);

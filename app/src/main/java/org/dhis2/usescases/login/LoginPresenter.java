@@ -17,6 +17,7 @@ import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.Unit;
@@ -24,6 +25,7 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -190,12 +192,17 @@ public class LoginPresenter implements LoginContracts.Presenter {
         if (syncResult.isSuccess() || syncState != LoginActivity.SyncState.METADATA)
             switch (syncState) {
                 case METADATA:
+                    view.getSharedPreferences().edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_META_SYNC_STATUS, true).apply();
                     syncEvents();
                     break;
                 case EVENTS:
                     syncTrackedEntities();
                     break;
                 case TEI:
+                    view.getSharedPreferences().edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
+                    syncEvents();
                     syncAggregatesData();
                     break;
                 case AGGREGATES:
