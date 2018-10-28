@@ -19,7 +19,7 @@ public class DataSetTableContract {
 
         void setDataSet(DataSetModel data);
 
-        void setDataValue(List<DataValue> data);
+        void setDataValue(List<DataSetTableModel> data);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -30,6 +30,6 @@ public class DataSetTableContract {
 
         List<CategoryOptionModel> getCatOptionCombos(String string);
 
-        List<DataValue> getDataValues();
+        List<DataSetTableModel> getDataValues();
     }
 }

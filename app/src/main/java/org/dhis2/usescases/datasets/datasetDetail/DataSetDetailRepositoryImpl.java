@@ -28,7 +28,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
             "JOIN DataSetDataElementLink " +
             "ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
             "WHERE DataSetDataElementLink.dataSet = ? %s " +
-            "GROUP BY DataValue.period,DataValue.organisationUnit,DataValue.categoryOptionCombo";
+            "GROUP BY DataValue.period,DataValue.organisationUnit,DataValue.attributeOptionCombo";
 
     private final static String DATA_SETS_ORG_UNIT_FILTER = "AND DataValue.organisationUnit IN (%s) ";
     private final static String DATA_SETS_PERIOD_FILTER = "AND DataValue.period = ? ";

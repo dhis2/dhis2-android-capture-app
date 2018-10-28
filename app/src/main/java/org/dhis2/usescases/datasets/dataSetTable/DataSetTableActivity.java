@@ -89,8 +89,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setDataValue(List<DataValue> data) {
-        String a = "";
+    public void setDataValue(List<DataSetTableModel> data) {
     }
 
     public DataSetTableContract.Presenter getPresenter() {

@@ -19,5 +19,5 @@ public interface DataSetTableRepository {
 
     Flowable<Map<String, List<CategoryOptionModel>>> getCatOptions();
 
-    Flowable<List<DataValue>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb);
+    Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb);
 }

@@ -13,6 +13,7 @@ import org.dhis2.R;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -72,15 +73,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
         List<DataElementModel> dataElements = presenter.getDataElements(dataSetSection);
         List<CategoryOptionModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
-        List<DataValue> dataValues = presenter.getDataValues();
+        List<DataSetTableModel> dataValues = presenter.getDataValues();
         ArrayList<List<String>> cells = new ArrayList<>();
         for (DataElementModel de : dataElements) {
             ArrayList<String> values = new ArrayList<>();
             for (CategoryOptionModel catOpt : catOptions) {
                 boolean exitsValue = false;
-                for(DataValue dataValue: dataValues){
+                for(DataSetTableModel dataValue: dataValues){
 
-                    if(Objects.equals(dataValue.categoryOptionCombo(), catOpt.uid())
+                    if(Objects.equals(dataValue.catOption(), catOpt.uid())
                             && Objects.equals(dataValue.dataElement(), de.uid()) ) {
                         values.add(dataValue.value());
                         exitsValue = true;

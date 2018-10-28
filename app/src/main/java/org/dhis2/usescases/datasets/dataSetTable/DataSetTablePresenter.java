@@ -23,7 +23,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionModel>>> tableData;
-    private List<DataValue> dataValues;
+    private List<DataSetTableModel> dataValues;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
@@ -92,7 +92,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public List<DataValue> getDataValues() {
+    public List<DataSetTableModel> getDataValues() {
         return dataValues;
     }
 
