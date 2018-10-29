@@ -14,6 +14,7 @@ import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.data.service.SyncResult;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
@@ -147,7 +148,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     private String canonizeUrl(@NonNull String serverUrl) {
         String urlToCanonized = serverUrl.trim();
-        urlToCanonized  = urlToCanonized.replace(" ","");
+        urlToCanonized = urlToCanonized.replace(" ", "");
         return urlToCanonized.endsWith("/") ? urlToCanonized : urlToCanonized + "/";
     }
 

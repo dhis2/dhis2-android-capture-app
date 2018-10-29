@@ -18,9 +18,13 @@ buildscript {
         classpath "hu.supercluster:paperwork-plugin:1.2.7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.fabric.tools:gradle:1.25.4'
-
     }
 }
+
+plugins {
+    id "org.sonarqube" version "2.6.2"
+}
+
 
 allprojects {
     repositories {
@@ -89,4 +93,5 @@ ext {
             errorpronecore   : "2.0.15"
     ]
 }
+
 
