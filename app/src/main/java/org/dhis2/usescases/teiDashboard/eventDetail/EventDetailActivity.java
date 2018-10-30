@@ -66,7 +66,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
         super.onCreate(savedInstanceState);
         eventUid = getIntent().getStringExtra("EVENT_UID");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_detail);
-        binding.title.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
+        binding.teiName.setText(getIntent().getStringExtra("TOOLBAR_TITLE"));
         binding.setPresenter(presenter);
     }
 

@@ -49,7 +49,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@id/title"
+                android:id="@+id/teiName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -205,7 +205,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/due_date"
                                     android:theme="@style/loginInputText"
-                                    android:visibility="@{stage.hideDueDate()&amp;&amp;event.dueDate()==null?View.GONE:View.VISIBLE}"
+                                    android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
                                     app:layout_flexBasisPercent="50%">
 
                                     <android.support.design.widget.TextInputEditText

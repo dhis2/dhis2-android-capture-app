@@ -202,8 +202,8 @@
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
-    <string name="event_summary_header">%s questions of %s completed</string>
-    <string name="event_summary_sections_header">%s of %s completed</string>
+    <string name="event_summary_header" formatted="false">%s questions of %s completed</string>
+    <string name="event_summary_sections_header" formatted="false">%s of %s completed</string>
     <string name="complete_and_close">Complete and close</string>
 
     <!--AGE CUSTOM VIEW-->
@@ -281,7 +281,7 @@
     <string name="about_sdk">SDK Version: %s</string>
     <string name="about_connected">Connected to: %s</string>
     <string name="about_user">Current user: %s</string>
-    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what's not supported</string>
+    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what\'s not supported</string>
     <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
     <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>

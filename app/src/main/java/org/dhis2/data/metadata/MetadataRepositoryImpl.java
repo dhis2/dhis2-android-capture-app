@@ -47,6 +47,7 @@ import java.util.Set;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 
 /**
@@ -644,7 +645,11 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 "errorCode INT(3),\n" +
                 "errorDescription TEXT\n" +
                 ")";
-        briteDatabase.execute(CREATE_ERROR_TABLE);
+        try {
+            briteDatabase.execute(CREATE_ERROR_TABLE);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
     }
 
     @Override

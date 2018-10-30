@@ -8,7 +8,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.RuleVariableCalculatedValue;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -42,6 +41,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 import org.hisp.dhis.rules.models.RuleValueType;
 import org.hisp.dhis.rules.models.RuleVariable;
 import org.hisp.dhis.rules.models.RuleVariableAttribute;
+import org.hisp.dhis.rules.models.RuleVariableCalculatedValue;
 import org.hisp.dhis.rules.models.RuleVariableCurrentEvent;
 import org.hisp.dhis.rules.models.RuleVariableNewestEvent;
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent;
@@ -98,7 +98,7 @@ public final class RulesRepository {
             "  \"DATAELEMENT_NEWEST_EVENT_PROGRAM\",\n" +
             "  \"DATAELEMENT_CURRENT_EVENT\",\n" +
             "  \"DATAELEMENT_PREVIOUS_EVENT\",\n" +
-//            "  \"CALCULATED_VALUE\",\n" + TODO: RESTORE WHEN SUPPORTED
+            "  \"CALCULATED_VALUE\",\n" +
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
@@ -204,12 +204,6 @@ public final class RulesRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    /*@NonNull
-    Flowable<List<Rule>> rules(@NonNull String programUid) {
-        return Flowable.combineLatest(queryRules(programUid),
-                queryRuleActions(programUid), RulesRepository::mapActionsToRules);
-    }
-*/
     @NonNull
     public Flowable<List<Rule>> rulesNew(@NonNull String programUid) {
         return Flowable.combineLatest(queryRules(programUid),
@@ -234,15 +228,6 @@ public final class RulesRepository {
         return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid == null ? "" : programUid)
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
-
-  /*  @NonNull
-    private Flowable<Map<String, Collection<RuleAction>>> queryRuleActions(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
-                .mapToList(RulesRepository::mapToActionPairs)
-                .switchMap(pairs -> Flowable.fromIterable(pairs))
-                        .toMultimap(Pair::val0,
-                                Pair::val1)));
-    }*/
 
     @NonNull
     private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
@@ -348,7 +333,7 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-                return RuleVariableCalculatedValue.create(name);
+                return RuleVariableCalculatedValue.create(name, dataElement, mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -383,6 +368,7 @@ public final class RulesRepository {
             case TEI_ATTRIBUTE:
                 return RuleVariableAttribute.create(name, attribute, mimeType);
             case DATAELEMENT_CURRENT_EVENT:
+                return RuleVariableCurrentEvent.create(name,dataElement,mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:
                 return RuleVariableNewestEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE:
@@ -392,7 +378,7 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-                return RuleVariableCalculatedValue.create(name);
+                return RuleVariableCalculatedValue.create(name, dataElement, mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -524,10 +510,10 @@ public final class RulesRepository {
 
     public Flowable<RuleEnrollment> enrollment(String eventUid) {
         return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.*, Program.displayName FROM Event JOIN Program ON Program.uid = Event.program WHERE Event.uid = ? LIMIT 1", eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> Pair.create(EventModel.create(cursor),cursor.getString(cursor.getColumnIndex("displayName"))))
+                .mapToOne(cursor -> Pair.create(EventModel.create(cursor), cursor.getString(cursor.getColumnIndex("displayName"))))
                 .flatMap(pair -> {
-                    EventModel eventModel = pair.val0();
-                    String programName = pair.val1();
+                            EventModel eventModel = pair.val0();
+                            String programName = pair.val1();
                             if (eventModel.enrollment() != null)
                                 return queryAttributeValues(eventModel.enrollment())
                                         .switchMap(ruleAttributeValues ->
