@@ -7,9 +7,11 @@ import android.support.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -76,7 +78,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     }
 
     @Override
-    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<CategoryOptionModel>> catOptions) {
+    public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> catOptions) {
         viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);

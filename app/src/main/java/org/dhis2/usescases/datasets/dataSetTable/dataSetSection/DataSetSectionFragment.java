@@ -10,20 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.datavalue.DataValue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,8 +36,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
     FragmentDatasetSectionBinding binding;
     private DataSetTableContract.Presenter presenter;
-    private ActivityGlobalAbstract activity;
+    private DataSetTableActivity activity;
     private DataSetTableAdapter adapter;
+    private String sectionUid;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid) {
@@ -51,7 +54,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        activity = (ActivityGlobalAbstract) context;
+        activity = (DataSetTableActivity) context;
         presenter = ((DataSetTableActivity) context).getPresenter();
     }
 
@@ -65,37 +68,40 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
+        sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
+
+        presenter.getData(this, sectionUid);
 
         adapter = new DataSetTableAdapter(getAbstracContext());
         binding.tableView.setAdapter(adapter);
 
-        String dataSetSection = getArguments().getString(Constants.DATA_SET_SECTION);
+    }
 
-        List<DataElementModel> dataElements = presenter.getDataElements(dataSetSection);
-        List<CategoryOptionModel> catOptions = presenter.getCatOptionCombos(dataSetSection);
-        List<DataSetTableModel> dataValues = presenter.getDataValues();
+    public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
+                        Map<String, List<CategoryOptionComboModel>> catOptionsCombo){
+
         ArrayList<List<String>> cells = new ArrayList<>();
-        for (DataElementModel de : dataElements) {
+        for (DataElementModel de : dataElements.get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
-            for (CategoryOptionModel catOpt : catOptions) {
+            for (CategoryOptionComboModel catOpts : catOptionsCombo.get(sectionUid)) {
                 boolean exitsValue = false;
-                for(DataSetTableModel dataValue: dataValues){
+                for (DataSetTableModel dataValue : dataValues) {
 
-                    if(Objects.equals(dataValue.catOption(), catOpt.uid())
-                            && Objects.equals(dataValue.dataElement(), de.uid()) ) {
+                    if (Objects.equals(dataValue.categoryOptionCombo(), catOpts.uid())
+                            && Objects.equals(dataValue.dataElement(), de.uid())) {
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
                 }
-                if(!exitsValue)
+                if (!exitsValue)
                     values.add("");
             }
             cells.add(values);
         }
 
         adapter.setAllItems(
-                catOptions,
-                dataElements,
+                catOptions.get(sectionUid).get(catOptions.get(sectionUid).size()-1),
+                dataElements.get(sectionUid),
                 cells);
     }
 }

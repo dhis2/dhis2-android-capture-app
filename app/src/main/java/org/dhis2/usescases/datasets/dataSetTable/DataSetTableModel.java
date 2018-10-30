@@ -14,12 +14,16 @@ import org.hisp.dhis.android.core.data.database.DbPeriodTypeColumnAdapter;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
+import java.util.List;
+
 import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.CATEGORY_OPTION;
+import static org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel.Columns.LIST_CATEGORY_OPTION;
 
 @AutoValue
 public abstract class DataSetTableModel{
     public static class Columns extends DataSetModel.Columns {
         public static final String CATEGORY_OPTION = "catOption";
+        public static final String LIST_CATEGORY_OPTION = "listCategory";
     }
 
     public static DataSetTableModel fromCursor(Cursor cursor){
@@ -27,8 +31,8 @@ public abstract class DataSetTableModel{
     }
     public static DataSetTableModel create(Long id, String dataElement, String period, String organisationUnit,
                                            String categoryOptionCombo, String attributeOptionCombo, String value, String storedBy,
-                                           String catOption) {
-        return new AutoValue_DataSetTableModel(id, dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storedBy, catOption);
+                                           String catOption, List<String> listCategory) {
+        return new AutoValue_DataSetTableModel(id, dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storedBy, catOption, listCategory);
     }
 
 
@@ -69,4 +73,7 @@ public abstract class DataSetTableModel{
     @ColumnName(CATEGORY_OPTION)
     public abstract String catOption();
 
+    @Nullable
+    @ColumnName(LIST_CATEGORY_OPTION)
+    public abstract List<String> listCategoryOption();
 }

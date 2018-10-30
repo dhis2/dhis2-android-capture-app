@@ -2,16 +2,14 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryOption;
+import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
-import org.hisp.dhis.android.core.common.BaseDataModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
-import org.hisp.dhis.android.core.datavalue.DataValue;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
-import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.ArrayList;
@@ -47,14 +45,18 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     private final String PERIOD_CODE = "SELECT Period.* FROM Period WHERE Period.periodType = ? AND Period.startDate = ? LIMIT 1";
     private final String DATA_VALUES = "SELECT DataValue.*, CategoryOptionComboCategoryOptionLink.categoryOption as catOption FROM DataValue " +
             "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = DataValue.categoryOptionCombo " +
+            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataValue.dataElement " +
             "WHERE DataValue.organisationUnit = ? " +
             "AND DataValue.attributeOptionCombo = ? " +
+            "AND DataSetDataElementLink.dataSet = ? " +
             "AND DataValue.period = ?";
     private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
-    private final String CATEGORY_OPTION = "SELECT CategoryOption.*, section.displayName as SectionName FROM CategoryOption " +
+    private final String CATEGORY_OPTION = "SELECT CategoryOption.*, Category.uid AS category, section.displayName as SectionName," +
+            "CategoryCategoryComboLink.sortOrder as sortOrder FROM CategoryOption " +
             "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOption.uid " +
             "JOIN Category ON CategoryCategoryOptionLink.category = Category.uid " +
             "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.category = Category.uid " +
+            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOption = CategoryOption.uid " +
             "JOIN DataElement ON DataElement.categoryCombo = CategoryCategoryComboLink.categoryCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
             "JOIN CategoryCombo ON CategoryCombo.uid = DataElement.categoryCombo " +
@@ -62,6 +64,17 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
+    private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
+            "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
+            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
+            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
+            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            "LEFT JOIN (SELECT section.displayName, section.uid, SectionDataElementLINK.dataElement as dataelement FROM Section " +
+            "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
+            "WHERE DataSetDataElementLink.dataSet = ? " +
+            "GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -123,42 +136,94 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                 .flatMap(dataElementModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
-
-    /**
-     *
-     * returns Map key =
-     * */
     @Override
-    public Flowable<Map<String, List<CategoryOptionModel>>> getCatOptions() {
-        Map<String, List<CategoryOptionModel>> map = new HashMap<>();
+    public Flowable<Map<String, List<CategoryOptionComboModel>>> getCatOptionCombo() {
+        Map<String, List<CategoryOptionComboModel>> map = new HashMap<>();
 
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION, dataSetUid)
+        return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION_COMBO, dataSetUid)
                 .mapToList(cursor -> {
-                    CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
+                    CategoryOptionComboModel catOptionCombo = CategoryOptionComboModel.create(cursor);
                     String sectionName = cursor.getString(cursor.getColumnIndex("SectionName"));
                     if (sectionName == null)
                         sectionName = "NO_SECTION";
                     if (map.get(sectionName) == null) {
                         map.put(sectionName, new ArrayList<>());
                     }
-                    map.get(sectionName).add(catOption);
+
+                    map.get(sectionName).add(catOptionCombo);
+
+                    return catOptionCombo;
+                }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    /**
+     * returns Map key =
+     */
+    @Override
+    public Flowable<Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> getCatOptions() {
+        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map = new HashMap<>();
+
+        return briteDatabase.createQuery(CategoryOptionModel.TABLE, CATEGORY_OPTION, dataSetUid)
+                .mapToList(cursor -> {
+                    CategoryOptionModel catOption = CategoryOptionModel.create(cursor);
+                    CategoryModel category = CategoryModel.builder().uid(cursor.getString(cursor.getColumnIndex("category"))).build();
+                    String sectionName = cursor.getString(cursor.getColumnIndex("SectionName"));
+                    if (sectionName == null)
+                        sectionName = "NO_SECTION";
+                    if (map.get(sectionName) == null) {
+                        map.put(sectionName, new ArrayList<>());
+                    }
+                    if(map.get(sectionName).size() == 0){
+                        List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
+                        list.add(Pair.create(catOption, category));
+                        map.get(sectionName).add(list);
+                    }else {
+
+                        if (map.get(sectionName).get(map.get(sectionName).size()-1).get(0).val1().uid().equals(cursor.getString(cursor.getColumnIndex("category")))) {
+                            map.get(sectionName).get(map.get(sectionName).size()-1).add(Pair.create(catOption, category));
+                        } else {
+                            List<Pair<CategoryOptionModel, CategoryModel>> list = new ArrayList<>();
+                            list.add(Pair.create(catOption, category));
+                            map.get(sectionName).add(list);
+                        }
+
+                    }
+
                     return catOption;
                 }).flatMap(categoryOptionComboModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
     public Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb) {
-        return  briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb, periodType)
-                        .mapToList(cursor -> DataSetTableModel.create(
-                                cursor.getLong(cursor.getColumnIndex(DataValueModel.Columns.ID)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.DATA_ELEMENT)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.PERIOD)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ORGANISATION_UNIT)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.CATEGORY_OPTION_COMBO)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.VALUE)),
-                                cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.STORED_BY)),
-                                cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION))
-                                )).toFlowable(BackpressureStrategy.LATEST);
+        List<DataSetTableModel> listData = new ArrayList<>();
+        return briteDatabase.createQuery(DataValueModel.TABLE, DATA_VALUES, orgUnitUid, catOptionComb,dataSetUid, periodType)
+                .mapToList(cursor -> {
+
+                    for (DataSetTableModel dataValue : listData) {
+                        if (dataValue.dataElement().equals(cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.DATA_ELEMENT)))
+                                && dataValue.categoryOptionCombo().equals(cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.CATEGORY_OPTION_COMBO)))) {
+                            dataValue.listCategoryOption().add(cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)));
+
+                            return dataValue;
+                        }
+                    }
+
+                    List<String> listCatOptions = new ArrayList<>();
+                    listCatOptions.add(cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)));
+                    DataSetTableModel dataValue = DataSetTableModel.create(
+                            cursor.getLong(cursor.getColumnIndex(DataValueModel.Columns.ID)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.DATA_ELEMENT)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.PERIOD)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ORGANISATION_UNIT)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.CATEGORY_OPTION_COMBO)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.VALUE)),
+                            cursor.getString(cursor.getColumnIndex(DataValueModel.Columns.STORED_BY)),
+                            cursor.getString(cursor.getColumnIndex(DataSetTableModel.Columns.CATEGORY_OPTION)),
+                            listCatOptions);
+                    listData.add(dataValue);
+                    return dataValue;
+
+                }).map(data->listData).toFlowable(BackpressureStrategy.LATEST);
     }
 }
