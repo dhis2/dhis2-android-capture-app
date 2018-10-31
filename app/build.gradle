@@ -4,6 +4,7 @@ apply plugin: 'io.fabric'
 //apply from: rootProject.file("plugins/android-paperwork.gradle")
 
 def libraries = rootProject.ext.libraries
+def versions = rootProject.ext.versions
 
 repositories {
     // required by crashlytics
@@ -25,14 +26,14 @@ android {
         abortOnError false
     }
 
-    compileSdkVersion 28
-    buildToolsVersion '27.0.3'
+    compileSdkVersion versions.sdk
+    buildToolsVersion versions.tools
     defaultConfig {
         applicationId "com.dhis2"
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 34
-        versionName "1.0.3"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
+        versionCode versions.vCode
+        versionName versions.vName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -69,7 +70,6 @@ android {
             // custom application suffix which allows to
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "_training"
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
@@ -120,45 +120,59 @@ dependencies {
 
     implementation project(":customFab")
 
-    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
-    //Support libraries
-    implementation "com.android.support:appcompat-v7:28.0.0"
-    implementation "com.android.support:support-annotations:28.0.0"
-    implementation "com.android.support:cardview-v7:28.0.0"
-    implementation "com.android.support:design:28.0.0"
-    //implementation "com.android.support:multidex:${libraries.multidex}"
-    implementation "com.android.support:multidex:1.0.3"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    //region SUPPORT LIBRARIES
+    implementation "com.android.support:appcompat-v7:${libraries.support}"
+    implementation "com.android.support:support-annotations:${libraries.support}"
+    implementation "com.android.support:cardview-v7:${libraries.support}"
+    implementation "com.android.support:design:${libraries.support}"
+    implementation "com.android.support:support-v4:${libraries.support}"
 
-    // Core module of the DHIS 2 Android SDK
+    implementation "com.android.support:multidex:${libraries.multidex}"
+    implementation "com.android.support.constraint:constraint-layout:${libraries.constraintlayout}"
+    //endregion
+
+    //region DHIS2 LIBRARIES
     implementation("org.hisp.dhis:android-core:${libraries.dhis2sdk}") {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
-    // RuleEngine module of the DHIS 2 Android SDK
-    implementation("org.hisp.dhis:core-rules:${libraries.dhis2sdk}") {
-        exclude group: "com.google.code.findbugs", module: "jsr305"
-    }
+
     implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
-//        exclude group: "org.hisp.dhis", module: "core-rules"
+        exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    //endregion
 
+    //region UI LIBRARIES
     //TreeView
-    implementation 'com.github.bmelnychuk:atv:1.2.9'
-    implementation 'com.android.support:support-v4:28.0.0'
+    implementation "com.github.bmelnychuk:atv:${libraries.atv}"
+    //FAB
+    implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
+    //FLEXBOX
+    implementation "com.google.android:flexbox:${libraries.flexbox}"
+    //TABLEVIEW
+    implementation "com.evrencoskun.library:tableview:${libraries.tableview}"
+    //PIN LOCK
+    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
+    //endregion
 
-    // ReactiveX
+    //region RXJAVA
     implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     implementation "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+    //rxbinding
+    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+    //endregion
 
-    // Google dagger
-    implementation 'com.google.dagger:dagger:2.14.1'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
+    //region DAGGER
+    implementation "com.google.dagger:dagger:${libraries.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    //endregion
 
+    //region GOOGLE AUTO VALUE
     // Google's auto-value. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
     compileOnly "com.google.auto.value:auto-value:${libraries.autovalue}"
@@ -167,45 +181,37 @@ dependencies {
     // Extension which generates mappers for work with cursors
     annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+    //endregion
 
+    //region BRITEDATABASE
     //square
     implementation "com.squareup.sqlbrite3:sqlbrite:${libraries.sqlbrite}"
-//    implementation "com.squareup.sqlbrite2:sqlbrite-interop:${libraries.sqlbrite}"
     implementation "com.github.lykmapipo:sqlbrite-migrations:v1.0.1"
+    //endregion
 
-    // Jake Wharton libraries
-    //timber
-    implementation "com.jakewharton.timber:timber:${libraries.timber}"
-    //rxbinding
-    implementation "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
-    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
-
-    //FAB
-    implementation 'com.github.dekoservidoni:omfm:1.0.3'
-
-    //FLEXBOX
-    implementation 'com.google.android:flexbox:0.3.1'
-
-    //TABLEVIEW
-    implementation 'com.evrencoskun.library:tableview:0.8.8'
-
-    //PIN LOCK
-    implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
-
+    //region PLAY SERVICES
     //VISION (QR SCANNER)
     implementation("com.google.android.gms:play-services-vision:${libraries.gmsVersion}") {
         force = true
     }
+    //LOCATION
+    implementation("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
+    implementation("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
+    //endregion
 
-    //LOCATION15.0.1
-    implementation("com.google.android.gms:play-services-location:15.0.1")
-    implementation("com.google.android.gms:play-services-maps:15.0.1")
-
+    // Jake Wharton libraries
+    //timber
+    implementation "com.jakewharton.timber:timber:${libraries.timber}"
+        
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
 
-    //FIREBASE
+    //JOB SCHEDULER
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    implementation ("android.arch.work:work-runtime:1.0.0-alpha10"){
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+
+    }
 
     //CRASHLYTICS
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
@@ -247,7 +253,11 @@ dependencies {
     //Glide load images
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
+    implementation "com.tbuonomo.andrui:viewpagerdotsindicator:${libraries.indicatordots}"
+
+    //Paperwork
+    implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+
 }
 
 apply plugin: 'kotlin-android-extensions'

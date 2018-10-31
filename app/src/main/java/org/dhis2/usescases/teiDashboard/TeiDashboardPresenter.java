@@ -74,8 +74,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
-    private TEIDataFragment teiDataFragment;
-    private String eventUid;
 
     TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
@@ -134,7 +132,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            view::setDataWithOutProgram,
+                            dashboardProgramModel -> {
+                                this.dashboardProgramModel = dashboardProgramModel;
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                                view.setData(dashboardProgramModel);
+                            },
                             throwable -> Log.d("ERROR", throwable.getMessage()))
             );
         }
@@ -278,6 +280,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             Bundle extras = new Bundle();
             extras.putString("EVENT_UID", uid);
             extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+            extras.putString("TEI_UID", teUid);
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
@@ -391,26 +394,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .map(list -> {
                             List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
                             for (Pair<RelationshipTypeModel, String> rType : list) {
-                                finalList.add(Trio.create(rType.val0(), rType.val1(), R.drawable.ic_person));
+                                int iconResId = dashboardRepository.getObjectStyle(view.getAbstracContext(), rType.val1());
+                                finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId));
                             }
                             return finalList;
                         })
-                        /*.filter(relationshipType -> {
-                            if (relationshipType.fromConstraint() != null)
-                                return relationshipType.fromConstraint().trackedEntityType().uid().equals(teType);
-                            else
-                                return true;
-                        })
-                        .flatMap(relationshipType ->
-                                dashboardRepository.getObjectStyle(view.getContext(), relationshipType.toConstraint() != null ? relationshipType.toConstraint().trackedEntityType().uid() : teUid)
-                                        .map(objectStyleModel -> Pair.create(relationshipType, objectStyleModel.val1())).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .toList()*/
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                RelationshipFragment.getInstance().setRelationshipTypes()
-                                , t -> Log.d("RELATIONSHIP TYPE SIZE", "RelationshipType error")
+                                RelationshipFragment.getInstance().setRelationshipTypes(),
+                                Timber::e
                         )
         );
     }

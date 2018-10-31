@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 
-import org.dhis2.R;
-import org.dhis2.data.tuples.Pair;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite.Query;
 
+import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.ErrorMessageModel;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -45,6 +47,7 @@ import java.util.Set;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 
 /**
@@ -536,6 +539,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<List<OrganisationUnitModel>> getSearchOrganisationUnits() {
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit " +
+                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
+                "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_TEI_SEARCH')")
+                .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
     public Observable<List<Pair<String, String>>> getReserveUids() {
         Cursor cursor = briteDatabase.query(RESERVED_UIDS, "1");
         List<Pair<String, String>> pairs = new ArrayList<>();
@@ -624,5 +635,31 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     public Observable<String> getServerUrl() {
         return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
                 .mapToOne(cursor -> cursor.getString(0));
+    }
+
+    @Override
+    public void createErrorTable() {
+        String CREATE_ERROR_TABLE = "CREATE TABLE IF NOT EXISTS ErrorMessage(\n" +
+                "errorDate TEXT,\n" +
+                "errorMessage TEXT,\n" +
+                "errorCode INT(3),\n" +
+                "errorDescription TEXT\n" +
+                ")";
+        try {
+            briteDatabase.execute(CREATE_ERROR_TABLE);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
+
+    @Override
+    public Observable<List<ErrorMessageModel>> getSyncErrors() {
+        return briteDatabase.createQuery(ErrorMessageModel.TABLE, "SELECT * FROM ErrorMessage ORDER BY errorDate DESC")
+                .mapToList(cursor -> new ErrorMessageModel(
+                        cursor.getInt(cursor.getColumnIndex("errorCode")),
+                        cursor.getString(cursor.getColumnIndex("errorMessage")),
+                        cursor.getString(cursor.getColumnIndex("errorDescription")),
+                        DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex("errorDate")))
+                ));
     }
 }

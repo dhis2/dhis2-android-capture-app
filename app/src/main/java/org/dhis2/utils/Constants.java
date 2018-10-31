@@ -38,8 +38,8 @@ public class Constants {
     public static final int TIME_MANUAL = 0;
 
     // DATA SYNC TIME RANGES
-    public static final int TIME_15M = 900;
-    public static final int TIME_HOURLY = 3600;
+    public static final int TIME_15M = 15*60;
+    public static final int TIME_HOURLY = 60*60;
 
 
     //EVENT_CREATION

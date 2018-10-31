@@ -24,6 +24,7 @@ import com.andrognito.pinlockview.PinLockListener;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -178,10 +179,13 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.login.setVisibility(View.GONE);
         if (binding.logo != null) {
             ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+            if (binding.guideline != null)
+                binding.guideline.setGuidelinePercent(1);
             params.height = MATCH_PARENT;
+            params.width = MATCH_PARENT;
             binding.logo.setLayoutParams(params);
             binding.syncLayout.setVisibility(View.VISIBLE);
-            if(Build.VERSION.SDK_INT > 21) {
+            if (Build.VERSION.SDK_INT > 21) {
                 binding.lottieView.setVisibility(View.VISIBLE);
                 binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
                 binding.lottieView.useHardwareAcceleration(true);

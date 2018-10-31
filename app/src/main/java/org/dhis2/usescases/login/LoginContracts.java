@@ -5,9 +5,9 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
+import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-
 import org.hisp.dhis.android.core.common.D2ErrorCode;
 
 import io.reactivex.functions.Consumer;

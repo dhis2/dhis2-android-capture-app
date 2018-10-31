@@ -32,6 +32,7 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -79,12 +80,13 @@ public class EventRepository implements FormRepository {
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
             "  ProgramStageSection.displayName AS programStageDisplayName,\n" +
-            "  ProgramStageSection.mobileRenderType AS renderType\n" +
+            "  ProgramStageSection.mobileRenderType AS renderType,\n" +
+            "  ProgramStageSection.sortOrder AS sectionOrder\n" +
             "FROM Event\n" +
             "  JOIN Program ON Event.program = Program.uid\n" +
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ?";
+            "WHERE Event.uid = ? ORDER BY ProgramStageSection.sortOrder";
 
     private static final String SELECT_EVENT_DATE = "SELECT\n" +
             "  Event.eventDate, ProgramStage.periodType\n" +
@@ -175,6 +177,8 @@ public class EventRepository implements FormRepository {
                             RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
                                     .rules(rules)
                                     .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
                             builder.events(events);
                             if (!isEmpty(enrollment.enrollment()))

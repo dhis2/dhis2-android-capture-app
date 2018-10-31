@@ -11,9 +11,6 @@
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
 
-        <variable
-            name="relationshipType"
-            type="java.lang.String" />
     </data>
 
 
