@@ -3,9 +3,12 @@ package org.dhis2.usescases.datasets.datasetDetail;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.support.constraint.ConstraintLayout;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
@@ -23,6 +26,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static org.dhis2.utils.Constants.DEFAULT_CAT_OPTION;
+import static org.dhis2.utils.Constants.DEFAULT_CAT_OPTION_COMBO;
+import static org.dhis2.utils.Constants.ORG_UNIT;
+import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
@@ -66,7 +74,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                view::setData,
+                                dataSetDetailModels -> {
+                                    view.setData(dataSetDetailModels);
+                                    view.setWritePermission(view.accessDataWrite());
+                                },
                                 Timber::d
                         )
         );
@@ -114,8 +125,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void onDataSetClick(String eventId, String orgUnit) {
-
+    public void onDataSetClick(String orgUnit, String periodType, String initPeriodType, String catOptionComb) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putString(Constants.PERIOD_TYPE, periodType);
+        bundle.putString(Constants.CAT_COMB, catOptionComb);
+        bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
+        view.startActivity(DataSetTableActivity.class, bundle, false, false, null);
     }
 
     @Override

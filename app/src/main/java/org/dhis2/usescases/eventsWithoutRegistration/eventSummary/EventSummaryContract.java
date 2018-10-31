@@ -40,6 +40,7 @@ public class EventSummaryContract {
         void accessDataWrite(Boolean canWrite);
 
         void fieldWithError(boolean b);
+        void setHideSection(String sectionUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nonnull;
+
 /**
  * QUADRAM. Created by ppajuelo on 19/03/2018.
  */
@@ -34,5 +36,12 @@ public abstract class FileViewModel extends FieldViewModel {
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_FileViewModel(uid(), label(), mandatory(), value(), programStageSection(),
                 allowFutureDate(), editable(), optionSet(), warning, error(),description());
+    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_FileViewModel(uid(), label(), mandatory(), data, programStageSection(),
+                allowFutureDate(), editable(), optionSet(), warning(), error(),description());
     }
 }

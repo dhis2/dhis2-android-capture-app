@@ -44,6 +44,11 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
+    public void onUnselectEnrollment() {
+        view.changeCurrentProgram(null);
+    }
+
+    @Override
     public void onDettach() {
         interactor.onDettach();
     }

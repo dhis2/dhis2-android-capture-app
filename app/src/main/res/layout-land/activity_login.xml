@@ -199,6 +199,7 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <include
+                    android:id="@+id/testingEnvironment"
                     layout="@layout/testing_env"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -216,22 +217,22 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:visibility="gone">
 
                 <Button
                     android:id="@+id/logout"
                     style="@style/HalfWidthButton"
+                    android:layout_marginEnd="4dp"
                     android:onClick="onLogoutClick"
-                    android:text="@string/log_out"
-                    android:layout_marginEnd="4dp"/>
+                    android:text="@string/log_out" />
 
                 <Button
                     android:id="@+id/unlock"
                     style="@style/HalfWidthButton"
-                    android:onClick="onUnlockClick"
                     android:layout_marginStart="4dp"
+                    android:onClick="onUnlockClick"
                     android:text="@string/unlock_button" />
 
             </LinearLayout>

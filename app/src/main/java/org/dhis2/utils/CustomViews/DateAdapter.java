@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDateBinding;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateViewHolder> {
 
     public DateAdapter(Period period) {
         currentPeriod = period;
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = DateUtils.getInstance().getCalendar();
         calendar.add(Calendar.YEAR, 1); //let's the user select dates in the next year
         int year = calendar.get(Calendar.YEAR);
 

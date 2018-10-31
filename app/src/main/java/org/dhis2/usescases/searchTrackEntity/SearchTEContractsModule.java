@@ -6,7 +6,6 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -76,6 +75,8 @@ public class SearchTEContractsModule {
         ProgramModel getProgramModel();
 
         void addRelationship(String TEIuid, String relationshipTypeUid, boolean online);
+
+        void addRelationship(String TEIuid, boolean online);
 
         void downloadTei(String teiUid);
 

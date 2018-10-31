@@ -3,11 +3,11 @@ package org.dhis2.usescases.main.program;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -29,15 +30,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 class HomeRepositoryImpl implements HomeRepository {
-
-
-    private final static String SELECT_PROGRAMS = "SELECT " +
-            "Program.* FROM Program " +
-            "JOIN Event ON Event.program = Program.uid " +
-            "WHERE (%s) " +
-            "AND Event.organisationUnit IN (%s) " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-            "GROUP BY Program.uid ORDER BY Program.displayName";
 
     private final static String SELECT_EVENTS = "SELECT Event.* FROM Event " +
             "WHERE %s " +
@@ -51,11 +43,6 @@ class HomeRepositoryImpl implements HomeRepository {
             "AND Event.state != 'TO_DELETE' " +
             "GROUP BY Enrollment.trackedEntityInstance";
 
-    private final static String SELECT_EVENTS_NO_DATE = "SELECT Event.* FROM Event " +
-            "WHERE Event.organisationUnit IN (%s) " +
-            "AND Event.program = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-
     private final static String TRACKED_ENTITY_TYPE_NAME = "SELECT TrackedEntityType.displayName FROM TrackedEntityType " +
             "WHERE TrackedEntityType.uid = ? LIMIT 1";
 
@@ -66,9 +53,10 @@ class HomeRepositoryImpl implements HomeRepository {
             "ObjectStyle.icon," +
             "Program.programType," +
             "Program.trackedEntityType," +
-            "Program.description " +
+            "Program.description, " +
+            "'true' " +
             "FROM Program LEFT JOIN ObjectStyle ON ObjectStyle.uid = Program.uid " +
-            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid GROUP BY Program.uid " +
+            "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = Program.uid %s GROUP BY Program.uid " +
             "UNION " +
             "SELECT DataSet.uid, " +
             "DataSet.displayName, " +
@@ -76,20 +64,16 @@ class HomeRepositoryImpl implements HomeRepository {
             "null, " +
             "'', " +
             "'', " +
-            "DataSet.description " +
+            "DataSet.description, " +
+            "DataSet.accessDataWrite " +
             "FROM DataSet " +
             "JOIN DataSetOrganisationUnitLink ON DataSetOrganisationUnitLink.dataSet = DataSet.uid GROUP BY DataSet.uid";
 
     private final static String AGGREGATE_FROM_DATASET = "SELECT * FROM DataSetDataElementLink " +
             "WHERE dataSet = ? ";
 
-    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE,OrganisationUnitProgramLinkModel.TABLE};
+    private static final String[] TABLE_NAMES = new String[]{ProgramModel.TABLE, ObjectStyleModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
-
-    private final static String[] SELECT_TABLE_NAMES = new String[]{ProgramModel.TABLE, EventModel.TABLE, OrganisationUnitProgramLinkModel.TABLE};
-    private final static String[] SELECT_TABLE_NAMES_2 = new String[]{ProgramModel.TABLE, EventModel.TABLE};
-    private static final Set<String> SELECT_SET = new HashSet<>(Arrays.asList(SELECT_TABLE_NAMES));
-    private static final Set<String> SELECT_SET_2 = new HashSet<>(Arrays.asList(SELECT_TABLE_NAMES_2));
 
     private final static String SELECT_ORG_UNITS =
             "SELECT * FROM " + OrganisationUnitModel.TABLE;
@@ -119,8 +103,18 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId) {
-        return briteDatabase.createQuery(TABLE_SET, PROGRAM_MODELS)
+    public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize) {
+
+        int orgUnits = orgUnitsId != null ? orgUnitsId.split(",").length : 0;
+        boolean filteringOrgs = orgUnitsId!=null && orgUnitsSize != orgUnits;
+        //QUERYING Program - orgUnit filter
+        String orgQuery = "";
+        if (orgUnitsId != null)
+            orgQuery = String.format("WHERE OrganisationUnitProgramLink.organisationUnit IN (%s)", orgUnitsId);
+
+        String programQuery = PROGRAM_MODELS.replace("%s",orgQuery);
+
+        return briteDatabase.createQuery(TABLE_SET, programQuery)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
                     String displayName = cursor.getString(1);
@@ -129,10 +123,10 @@ class HomeRepositoryImpl implements HomeRepository {
                     String programType = cursor.getString(4);
                     String teiType = cursor.getString(5);
                     String description = cursor.getString(6);
-
+                    String accessDataWrite = Objects.equals(cursor.getString(7), "1") ? "true" : "false";
                     //QUERYING Program EVENTS - dates filter
                     String queryFinal;
-                    if(!programType.isEmpty()){
+                    if (!programType.isEmpty()) {
                         StringBuilder dateQuery = new StringBuilder("");
                         if (dates != null && !dates.isEmpty()) {
                             String queryFormat = "(%s BETWEEN '%s' AND '%s') ";
@@ -144,17 +138,14 @@ class HomeRepositoryImpl implements HomeRepository {
                             }
                         }
 
-                        //QUERYING Program Events - orgUnit filter
-                        String orgQuery = "";
-                        if (orgUnitsId != null)
-                            orgQuery = String.format("Event.organisationUnit IN (%s)", orgUnitsId);
+
 
 
                         String filter = "";
-                        if (!dateQuery.toString().isEmpty() && !orgQuery.isEmpty())
-                            filter = dateQuery.toString() + " AND " + orgQuery + " AND ";
-                        else if (!dateQuery.toString().isEmpty() || !orgQuery.isEmpty())
-                            filter = dateQuery.toString() + orgQuery + " AND ";
+                        if (!dateQuery.toString().isEmpty())
+                            filter = dateQuery.toString() + " AND ";
+                        else if (!dateQuery.toString().isEmpty())
+                            filter = dateQuery.toString() + " AND ";
 
                         if (programType.equals(ProgramType.WITH_REGISTRATION.name())) {
                             queryFinal = String.format(SELECT_TEIS, filter);
@@ -181,13 +172,13 @@ class HomeRepositoryImpl implements HomeRepository {
                             typeName = typeCursor.getString(0);
                             typeCursor.close();
                         }
-                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())){
+                    } else if (programType.equals(ProgramType.WITHOUT_REGISTRATION.name())) {
                         typeName = "Events";
                     } else {
                         typeName = "DataSets";
                     }
 
-                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description,true,true);
+                    return ProgramViewModel.create(uid, displayName, color, icon, count, teiType, typeName, programType, description, true, Boolean.valueOf(accessDataWrite));
                 }).map(list -> checkCount(list, period)).toFlowable(BackpressureStrategy.LATEST);
     }
 

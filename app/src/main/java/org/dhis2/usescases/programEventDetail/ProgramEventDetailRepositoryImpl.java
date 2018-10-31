@@ -12,6 +12,7 @@ import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -42,8 +43,25 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
             "AND TrackedEntityDataValue.dataElement IN\n" +
             "(SELECT ProgramStageDataElement.dataElement FROM ProgramStageDataElement\n" +
             "WHERE ProgramStageDataElement.displayInReports = '1'\n" +
-            "ORDER BY ProgramStageDataElement.sortOrder ASC\n" +
+            "ORDER BY ProgramStageDataElement.sortOrder ASC LIMIT 3\n" +
             ")";
+
+    private final String EVENT_DATA_VALUES = "SELECT " +
+            "DE.uid, " +
+            "DE.displayName, " +
+            "DE.valueType, " +
+            "DE.optionSet, " +
+            "TrackedEntityDataValue.value " +
+            "FROM TrackedEntityDataValue " +
+            "JOIN (" +
+            "SELECT DataElement.uid AS uid, " +
+            "DataElement.displayName AS displayName, " +
+            "DataElement.valueType AS valueType, " +
+            "DataElement.optionSet AS optionSet " +
+            "FROM ProgramStageDataElement " +
+            "JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
+            "WHERE ProgramStageDataElement.displayInReports = 1 GROUP BY DataElement.uid) AS DE ON DE.uid = TrackedEntityDataValue.dataElement " +
+            "WHERE TrackedEntityDataValue.event = ?";
 
     private final BriteDatabase briteDatabase;
 
@@ -226,10 +244,15 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
         List<String> values = new ArrayList<>();
         String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES_NEW, id);
+        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id);
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
-                String value = ValueUtils.transform(briteDatabase, cursor).value();
+                String value = cursor.getString(cursor.getColumnIndex("value"));
+                if(cursor.getString(cursor.getColumnIndex("optionSet"))!=null)
+                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase,cursor.getString(cursor.getColumnIndex("optionSet")),value);
+                else if(cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase,value);
+
                 values.add(value);
                 cursor.moveToNext();
             }

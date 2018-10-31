@@ -18,6 +18,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.common.D2CallException;
 
 import java.io.File;
 
@@ -195,8 +196,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void wipeDb() {
         try {
             dispatcher.cancelAll();
-            d2.wipeDB().call();
-
+            d2.wipeModule().wipeEverything();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 
@@ -204,6 +204,15 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
+
+    @Override
+    public void deleteLocalData() {
+        try {
+            d2.wipeModule().wipeData();
+        } catch (D2CallException e) {
             Timber.e(e);
         }
     }

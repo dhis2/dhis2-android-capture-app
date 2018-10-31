@@ -91,7 +91,7 @@
                     android:visibility='@{attribute.size() > 1 ? View.VISIBLE : View.GONE}' />
 
             </LinearLayout>
-
+<!--
             <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/relationship_spinner"
                 android:layout_width="150dp"
@@ -103,7 +103,7 @@
                 android:background="?attr/button_selector"
                 android:prompt="@string/add_relation_button"
                 android:spinnerMode="dropdown"
-                tools:text="Add as..."/>
+                tools:text="Add as..."/>-->
 
         </RelativeLayout>
 

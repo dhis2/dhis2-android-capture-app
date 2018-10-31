@@ -61,4 +61,24 @@ public class ValueUtils {
         return teAttrValue;
     }
 
+    public static String optionSetCodeToDisplayName(BriteDatabase briteDatabase, String optionSet, String optionSetCode) {
+        String displayName = optionSetCode;
+        Cursor optionsCursor = briteDatabase.query("SELECT * FROM Option WHERE optionSet = ? AND code = ? LIMIT 1", optionSet, optionSetCode);
+        if (optionsCursor != null && optionsCursor.moveToFirst()) {
+            OptionModel optionModel = OptionModel.create(optionsCursor);
+            displayName = optionModel.displayName();
+            optionsCursor.close();
+        }
+        return displayName;
+    }
+
+    public static String orgUnitUidToDisplayName(BriteDatabase briteDatabase, String value) {
+        String displayName = value;
+        Cursor orgUnitCursor = briteDatabase.query("SELECT OrganisationUnit.displayName FROM OrganisationUnit WHERE OrganisationUnit.uid = ?", value);
+        if (orgUnitCursor != null && orgUnitCursor.moveToFirst()) {
+            displayName = orgUnitCursor.getString(0);
+            orgUnitCursor.close();
+        }
+        return displayName;
+    }
 }

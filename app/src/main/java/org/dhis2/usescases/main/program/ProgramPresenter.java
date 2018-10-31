@@ -73,7 +73,8 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .flatMap(datePeriodOrgs -> homeRepository.programModels(
                                 (List<Date>) datePeriodOrgs.val0(),
                                 (Period) datePeriodOrgs.val1(),
-                                (String) datePeriodOrgs.val2()))
+                                (String) datePeriodOrgs.val2(),
+                                myOrgs.size()))
                         .subscribeOn(Schedulers.from(executorService))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -127,7 +128,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             idTag = "PROGRAM_UID";
 
         bundle.putString(idTag, programModel.id());
-
+        bundle.putString("ACCESS_DATA", programModel.accessDataWrite().toString());
         switch (currentPeriod) {
             case NONE:
                 bundle.putInt("CURRENT_PERIOD", R.string.period);

@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Cristian on 13/02/2018.
+ * QUADRAM. Created by Cristian on 13/02/2018.
  */
 
 public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEventDetailViewHolder> {
@@ -57,5 +56,9 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         notifyDataSetChanged();
 
 //        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public void clearData() {
+        this.events.clear();
     }
 }

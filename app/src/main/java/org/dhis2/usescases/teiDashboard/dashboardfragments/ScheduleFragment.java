@@ -22,6 +22,7 @@ import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.List;
@@ -33,7 +34,6 @@ import io.reactivex.processors.PublishProcessor;
 import static org.dhis2.utils.Constants.ADDNEW;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.REFERRAL;
@@ -85,21 +85,18 @@ public class ScheduleFragment extends FragmentGlobalAbstract implements View.OnC
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
             bundle.putString(ORG_UNIT, presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
             bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().organisationUnit());
-            bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
                 case R.id.referral:
-                    bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.REFERAL.name());
                     break;
                 case R.id.addnew:
-                    bundle.putString(EVENT_CREATION_TYPE, ADDNEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.ADDNEW.name());
                     break;
                 case R.id.schedulenew:
-                    bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.SCHEDULE.name());
                     break;
             }
-
-//            startActivity(EventInitialActivity.class, bundle, false, false, null);
 
             startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
 

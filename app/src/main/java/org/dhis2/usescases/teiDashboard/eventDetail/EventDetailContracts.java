@@ -7,6 +7,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -46,6 +47,7 @@ public class EventDetailContracts {
 
         void setDate(String result);
 
+        void showCatOptionDialog();
     }
 
     public interface Presenter {
@@ -70,6 +72,10 @@ public class EventDetailContracts {
         void onOrgUnitClick();
 
         void setDate();
+
+        void selectCatOption();
+
+        void changeCatOption(CategoryOptionComboModel selectedOption);
     }
 
 

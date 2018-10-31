@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormActivity;
@@ -42,6 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -137,12 +137,20 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                            view.clearData();
+                            HashMap<String, String> queryDataBU = new HashMap(queryData);
                             if (!isEmpty(data.value()))
                                 queryData.put(data.id(), data.value());
                             else
                                 queryData.remove(data.id());
-                            getTrakedEntities();
+
+                            if (!queryData.equals(queryDataBU)) { //Only when queryData has changed
+                                view.clearData();
+                                if (!isEmpty(data.value()))
+                                    queryData.put(data.id(), data.value());
+                                else
+                                    queryData.remove(data.id());
+                                getTrakedEntities();
+                            }
                         },
                         Timber::d)
         );
@@ -285,11 +293,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
             else if (teiList.isEmpty())
                 messageId = view.getContext().getString(R.string.search_init);
         } else if (selectedProgram == null) {
-            if (queryData.isEmpty())
+            if (queryData.isEmpty() && view.fromRelationshipTEI() == null)
                 messageId = view.getContext().getString(R.string.search_init);
             else if (teiList.isEmpty())
                 messageId = String.format(view.getContext().getString(R.string.search_criteria_not_met), getTrackedEntityName().displayName());
-            else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS) {
+            else if (teiList.size() > MAX_NO_SELECTED_PROGRAM_RESULTS && view.fromRelationshipTEI() == null) {
                 messageId = String.format(view.getContext().getString(R.string.search_max_tei_reached), MAX_NO_SELECTED_PROGRAM_RESULTS);
             }
         } else {
@@ -518,6 +526,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
+    public void addRelationship(String TEIuid, boolean online) {
+        if (!online) {
+            Intent intent = new Intent();
+            intent.putExtra("TEI_A_UID", TEIuid);
+            view.getAbstractActivity().setResult(RESULT_OK, intent);
+            view.getAbstractActivity().finish();
+        } else {
+            downloadTeiForRelationship(TEIuid, null);
+        }
+    }
+
+    @Override
     public void downloadTei(String teiUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
@@ -533,7 +553,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void downloadTeiForRelationship(String TEIuid, String relationshipTypeUid) {
+    public void downloadTeiForRelationship(String TEIuid, @Nullable String relationshipTypeUid) {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
@@ -541,7 +561,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> addRelationship(TEIuid, relationshipTypeUid, false),
+                                data -> {
+                                    if (relationshipTypeUid == null)
+                                        addRelationship(TEIuid, false);
+                                    else
+                                        addRelationship(TEIuid, relationshipTypeUid, false);
+                                },
                                 t -> Log.d("ONLINE_SEARCH", t.getMessage()))
         );
     }

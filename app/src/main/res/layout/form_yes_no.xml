@@ -22,11 +22,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <org.dhis2.utils.CustomViews.YesNoView
             android:id="@+id/customYesNo"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:description="@{description}"
             app:label="@{label}"
@@ -40,6 +41,8 @@
             android:gravity="center"
             android:textSize="18sp"
             android:visibility="gone"
-            tools:text="This is a error message" />
+            android:textColor="@color/colorPrimaryOrange"
+            tools:text="This is a error message"
+            tools:visibility="visible"/>
     </LinearLayout>
 </layout>

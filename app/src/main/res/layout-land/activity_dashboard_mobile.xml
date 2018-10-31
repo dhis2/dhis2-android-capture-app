@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="title"
             type="String" />
+
         <variable
             name="presenter"
             type="org.dhis2.usescases.teiDashboard.TeiDashboardContracts.Presenter" />
+
         <variable
             name="trackEntity"
             type="org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel" />
@@ -53,9 +56,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 android:padding="10dp"
                 app:srcCompat="@drawable/ic_program_border"
-                android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
                 tools:ignore="ContentDescription" />
 
         </LinearLayout>
@@ -65,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent=".58" />
+            app:layout_constraintGuide_percent=".50" />
 
         <FrameLayout
             android:id="@+id/tei_main_view"
@@ -78,13 +81,13 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
+            style="@style/DhisTabLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/DhisTabLayout"
-            app:tabTextAppearance="@style/DhisTabText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:tabTextAppearance="@style/DhisTabText" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/tei_pager"
@@ -93,7 +96,27 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+            app:layout_constraintTop_toBottomOf="@id/dotsIndicator" />
+
+        <TextView
+            android:id="@+id/sectionTitle"
+            android:textColor="@color/colorGreyDefault"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout"
+            tools:text="Relationships" />
+
+        <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+            android:id="@+id/dotsIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:dotsColor="?colorPrimary"
+            app:dotsSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toBottomOf="@id/sectionTitle" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

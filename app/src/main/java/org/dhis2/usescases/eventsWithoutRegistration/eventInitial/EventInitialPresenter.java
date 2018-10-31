@@ -459,7 +459,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(date ->
-                                        view.setReportDate(DateUtils.uiDateFormat().format(date)),
+                                        view.setReportDate(date),
                                 Timber::d
                         )
         );

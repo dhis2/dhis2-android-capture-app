@@ -33,7 +33,6 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.CatComboAdapter;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -43,7 +42,6 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.resource.ResourceModel;
 
 import java.text.ParseException;
@@ -271,37 +269,6 @@ public class Bindings {
                             Timber::d);
     }
 
-    @BindingAdapter("randomColor")
-    public static void setRandomColor(ImageView imageView, String textToColor) {
-        String color;
-        if (textToColor != null)
-            color = String.format("#%X", String.valueOf(textToColor).hashCode());
-        else
-            color = "#FFFFFF";
-
-        imageView.setBackgroundColor(Color.parseColor(color));
-    }
-
-
-    @BindingAdapter("tintRandomColor")
-    public static void setTintRandomColor(ImageView imageView, String textToColor) {
-        String color;
-        if (textToColor != null)
-            color = String.format("#%X", textToColor.hashCode());
-        else
-            color = "#FFFFFF";
-
-        Drawable drawable = ContextCompat.getDrawable(imageView.getContext(), R.drawable.ic_program).mutate();
-        if (drawable != null)
-            drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN);
-        imageView.setImageDrawable(drawable);
-    }
-
-    @BindingAdapter("programTypeIcon")
-    public static void setProgramIcon(ImageView view, ProgramType programType) {
-        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_program_default));
-    }
-
     @BindingAdapter("progressColor")
     public static void setProgressColor(ProgressBar progressBar, int color) {
         TypedValue typedValue = new TypedValue();
@@ -429,7 +396,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_eye_red));
                                             } else {
                                                 view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_edit));
@@ -479,7 +446,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_open));
@@ -495,7 +462,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -511,7 +478,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType()!=null?eventProgramStage.periodType():program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_schedule));
@@ -632,8 +599,10 @@ public class Bindings {
                                     .subscribe(
                                             categoryOptionModel -> {
                                                 if (!categoryOptionModel.isDefault()) {
+                                                    textView.setVisibility(View.VISIBLE);
                                                     textView.setText(categoryOptionComboModel.displayName());
                                                 } else {
+                                                    textView.setVisibility(View.GONE);
                                                     textView.setText("");
                                                 }
                                             },

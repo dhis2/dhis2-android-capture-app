@@ -96,9 +96,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     @NonNull
     @Override
     public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
-        String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ?",
-                CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
-        String catComboQuery = "SELECT * FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
+        String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
                 "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
         return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery,programUid)
                 .mapToList(CategoryOptionComboModel::create);

@@ -223,7 +223,7 @@
     <string name="period">Period</string>
     <string name="org_unit_filter">(%d) Org Unit</string>
     <string name="tuto_main_1">Welcome to dhis2</string>
-    <string name="tuto_main_2">Here you can see your programs</string>
+    <string name="tuto_main_2">Here you can see your activities</string>
     <string name="tuto_main_3">You can apply a filter…</string>
     <string name="tuto_main_4">…by changing the period and selecting dates…</string>
     <string name="tuto_main_5">…or filter by Organisation Unit</string>
@@ -243,8 +243,9 @@
     <string name="button_ok">OK</string>
     <string name="qr_id">Identification</string>
     <string name="qr_attributes">Attributes</string>
-    <string name="qr_enrollment">Enrollment</string>
+    <string name="qr_enrollment">Enrollments</string>
     <string name="qr_events">Events</string>
+    <string name="qr_relationships">Relationships</string>
     <string name="read_more_qr">Read next QR to get more info.</string>
     <string name="save_qr">Stop reading and save data</string>
     <string name="qr_no_data">no data</string>
@@ -272,13 +273,15 @@
     <string name="warning_error_on_complete_title">Check this!</string>
     <string name="save">Save</string>
 
+    <string name="downloaded_confirm">Do you want to add more data from QR?</string>
+
     <!--ABOUT-->
     <string name="about_app">App Version: %s</string>
     <string name="about_sdk">SDK Version: %s</string>
     <string name="about_connected">Connected to: %s</string>
     <string name="about_user">Current user: %s</string>
     <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what's not supported</string>
-    <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.org.dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
+    <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
     <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
 
@@ -320,9 +323,50 @@
 
     <string name="burmesse_test">မြန်မာအက္ခရာ</string>
     <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
-    <string name="qr_data_values">data</string>
-    <string name="qr_no_id_error">not found</string>
-    <string name="info">Info</string>
-    
+    <string name="menu_home">Home</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="showHelp">Show help</string>
+    <string name="tuto_settings_1">Synchronize your data…</string>
+    <string name="tuto_settings_2">…your configuration…</string>
+    <string name="tuto_settings_3">…set your local storage capacity…</string>
+    <string name="tuto_settings_4">…or delete everything to start over.</string>
+    <string name="tuto_search_1">Find your entities both in local memory and online server.</string>
+    <string name="tuto_search_2">You can switch to other programs</string>
+    <string name="tuto_search_3">Add new entities</string>
+    <string name="tuto_search_4">Click here to restart</string>
+    <string name="tuto_dashboard_1">This is the entity dashboard</string>
+    <string name="tuto_dashboard_2">See entities profile information…</string>
+    <string name="tuto_dashboard_3">…Share information via QR or SMS…</string>
+    <string name="tuto_dashboard_4">…Or mark the entity for follow-up</string>
+    <string name="tuto_dashboard_5">Click to create or schedule an event or refer to another Org Unit.</string>
+    <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
+    <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
+    <string name="tuto_dashboard_8">Click to see all enrollmets of your entity or create a new one.</string>
+    <string name="tuto_tei_event_1">Click to delete this event. This action cant be undone.</string>
+    <string name="tuto_tei_event_2">Complete the event.</string>
+    <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
+    <string name="tuto_program_event_2">Click to add a new event</string>
+    <string name="tuto_event_initial_new_1">Enter all data to create the event</string>
+    <string name="tuto_event_initial_1">Click to check the event completion status.</string>
+    <string name="tuto_event_summary">Click to complete or re-open an event</string>
+    <string name="tuto_main_7">Read and store information from other devices via QR</string>
+    <string name="tuto_main_8">Synchronize your data with the server</string>
+    <string name="tuto_main_9">Block session with a 4 digit code. Do not forget your code!</string>
+    <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
     <string name="text_plus_colon">%s:</string>
+    <string name="relationships">relationships</string>
+    <string name="qr_data_values">Data values</string>
+    <string name="info">Info</string>
+    <string name="qr_no_id_error">Could not read this Id</string>
+    <string name="delete_local_data">Delete data</string>
+    <string name="dashboard_overview">Overview</string>
+    <string name="dashboard_relationships">Relationships</string>
+    <string name="dashboard_indicators">Indicators</string>
+    <string name="dashboard_notes">Notes</string>
+    <string name="unable_to_complete">Unable to complete</string>
+    <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
+    <string name="unselect_enrollment">Unselect enrollment</string>
+    <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
+
 </resources>

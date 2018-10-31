@@ -3,7 +3,9 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -14,6 +16,8 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.OnDialogClickListener;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -120,44 +124,61 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void back() {
-
-        view.goBack(changedEventStatus);
+        ((FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0)).datesLayout.getRootView().requestFocus();
+        new Handler().postDelayed(() -> view.goBack(changedEventStatus), 1500);
 
     }
 
     @Override
     public void eventStatus(View buttonView, EventModel eventModel, ProgramStageModel stageModel) {
 
-        buttonView.requestFocus();
-
         if (stageModel.accessDataWrite()) {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
+            formFragment.datesLayout.getRootView().requestFocus();
+            new Handler().postDelayed(() -> {
+                if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
+                    view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasErrorOnComple().content());
+                } else if (formFragment.hasError() != null) {
+                    view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasError().content());
+                } else {
+                    List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
+                    boolean mandatoryOk = true;
+                    boolean hasError = false;
+                    for (Fragment dataEntryFragment : sectionFragments) {
+                        mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
+                        hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
+                    }
+                    if (mandatoryOk && !hasError) {
 
-            if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
-                view.showInfoDialog("Error", formFragment.hasErrorOnComple().content());
-            } else {
+                        if (!isEmpty(formFragment.getMessageOnComplete())) {
+                            final AlertDialog dialog = view.showInfoDialog(view.getContext().getString(R.string.warning_error_on_complete_title), formFragment.getMessageOnComplete(), new OnDialogClickListener() {
+                                @Override
+                                public void onPossitiveClick(AlertDialog alertDialog) {
+                                    updateEventStatus(eventModel);
+                                }
 
-                List<Fragment> sectionFragments = formFragment.getChildFragmentManager().getFragments();
-                boolean mandatoryOk = true;
-                boolean hasError = false;
-                for (Fragment dataEntryFragment : sectionFragments) {
-                    mandatoryOk = mandatoryOk && ((DataEntryFragment) dataEntryFragment).checkMandatory();
-                    hasError = ((DataEntryFragment) dataEntryFragment).checkErrors();
+                                @Override
+                                public void onNegativeClick(AlertDialog alertDialog) {
+
+                                }
+                            });
+                            dialog.show();
+                        } else {
+                            updateEventStatus(eventModel);
+                        }
+                    } else if (!mandatoryOk)
+                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
+                    else
+                        view.showInfoDialog(view.getContext().getString(R.string.unable_to_complete), view.getAbstracContext().getString(R.string.field_errors));
                 }
-                if (mandatoryOk && !hasError) {
-
-                    if (!isEmpty(formFragment.getMessageOnComplete()))
-                        view.showInfoDialog("Warning", formFragment.getMessageOnComplete());
-
-                    dataEntryStore.updateEventStatus(eventModel);
-                    changedEventStatus = true;
-                } else if (!mandatoryOk)
-                    view.showInfoDialog("Unable to complete", view.getAbstractActivity().getString(R.string.missing_mandatory_fields));
-                else
-                    view.showInfoDialog("Unable to complete", "Some fields have errors. Please, check them to be able to complete");
-            }
+            }, 1500);
         } else
             view.displayMessage(null);
+    }
+
+    private void updateEventStatus(EventModel eventModel) {
+        dataEntryStore.updateEventStatus(eventModel);
+        changedEventStatus = true;
     }
 
     @Override
@@ -211,12 +232,22 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void setDate() {
 
-        if (eventDetailModel.getProgramStage().periodType()==null || eventDetailModel.getProgramStage().periodType() == PeriodType.Daily)
+        if (eventDetailModel.getProgramStage().periodType() == null || eventDetailModel.getProgramStage().periodType() == PeriodType.Daily)
             openDailySelector();
         else
             openPeriodSelector();
 
 
+    }
+
+    @Override
+    public void selectCatOption() {
+        view.showCatOptionDialog();
+    }
+
+    @Override
+    public void changeCatOption(CategoryOptionComboModel selectedOption) {
+        eventDetailRepository.saveCatOption(selectedOption);
     }
 
     private void openDailySelector() {

@@ -46,7 +46,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
-
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
@@ -206,6 +205,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     public void clearData() {
+        binding.progressLayout.setVisibility(View.VISIBLE);
         endlessRecyclerViewScrollListener.resetState(NetworkUtils.isOnline(this) ? 1 : 0);
         if (fromRelationship)
             searchRelationshipAdapter.clear();
@@ -248,7 +248,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false)&& !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean("TUTO_SEARCH_SHOWN", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_SEARCH_SHOWN", true).apply();
             }
@@ -264,7 +264,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public Consumer<Pair<List<SearchTeiModel>, String>> swapTeiListData() {
         return data -> {
-
+            binding.progressLayout.setVisibility(View.GONE);
             if (!fromRelationship) {
                 if (data.val1().isEmpty()) {
                     binding.messageContainer.setVisibility(View.GONE);
@@ -312,15 +312,14 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
             // Set popupWindow height to 500px
             popupWindow.setHeight(500);
-        }
-        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
             // silently fail...
         }
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
-                    ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos -1);
+                    ProgramModel selectedProgram = (ProgramModel) adapterView.getItemAtPosition(pos - 1);
                     setProgramColor(presenter.getProgramColor(selectedProgram.uid()));
                     presenter.setProgram((ProgramModel) adapterView.getItemAtPosition(pos - 1));
                     binding.enrollmentButton.setVisibility(View.VISIBLE);
@@ -351,7 +350,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         int programColor = ColorUtils.getColorFrom(this, color);
 
 
-
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         if (programTheme != -1) {
@@ -361,15 +359,33 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             binding.appbatlayout.setBackgroundColor(programColor);
         } else {
             prefs.edit().remove(Constants.PROGRAM_THEME).apply();
-            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary)));
-            binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-            binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            int colorPrimary;
+            switch (prefs.getInt(Constants.THEME, R.style.AppTheme)) {
+                case R.style.AppTheme:
+                    colorPrimary = R.color.colorPrimary;
+                    break;
+                case R.style.RedTheme:
+                    colorPrimary = R.color.colorPrimaryRed;
+                    break;
+                case R.style.OrangeTheme:
+                    colorPrimary = R.color.colorPrimaryOrange;
+                    break;
+                case R.style.GreenTheme:
+                    colorPrimary = R.color.colorPrimaryGreen;
+                    break;
+                default:
+                    colorPrimary = R.color.colorPrimary;
+                    break;
+            }
+            binding.enrollmentButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, colorPrimary)));
+            binding.mainToolbar.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
+            binding.appbatlayout.setBackgroundColor(ContextCompat.getColor(this, colorPrimary));
         }
 
         binding.executePendingBindings();
         setTheme(prefs.getInt(Constants.PROGRAM_THEME, prefs.getInt(Constants.THEME, R.style.AppTheme)));
 
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             TypedValue typedValue = new TypedValue();

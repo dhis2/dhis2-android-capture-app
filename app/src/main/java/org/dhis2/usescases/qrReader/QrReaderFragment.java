@@ -45,7 +45,6 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
@@ -191,7 +190,6 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventUid);
         bundle.putString(ORG_UNIT, orgUnit);
-        bundle.putBoolean(NEW_EVENT, false);
         startActivity(EventInitialActivity.class, bundle, false, false, null);
     }
 

@@ -7,8 +7,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.hisp.dhis.android.core.category.CategoryComboModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
+import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 
 import java.util.List;
@@ -67,5 +70,10 @@ interface FormView {
     void hideDates();
 
     void setErrorOnCompletion(RuleActionErrorOnCompletion errorOnCompletion);
+
     void setWarningOnCompletion(RuleActionWarningOnCompletion errorOnCompletion);
+
+    void setShowError(RuleActionShowError showError);
+
+    void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels);
 }

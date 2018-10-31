@@ -1,9 +1,11 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
@@ -17,10 +19,12 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int MOVILE_DASHBOARD_SIZE = 4;
     private String currentProgram;
+    private Context context;
 
 
-    public DashboardPagerAdapter(FragmentManager fm, String program) {
+    public DashboardPagerAdapter(Context context, FragmentManager fm, String program) {
         super(fm);
+        this.context = context;
         this.currentProgram = program;
     }
 
@@ -28,13 +32,13 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return TEIDataFragment.getInstance();
+                return TEIDataFragment.createInstance();
             case 1:
-                return RelationshipFragment.getInstance();
+                return RelationshipFragment.createInstance();
             case 2:
-                return IndicatorsFragment.getInstance();
+                return IndicatorsFragment.createInstance();
             case 3:
-                return NotesFragment.getInstance();
+                return NotesFragment.createInstance();
 
         }
     }
@@ -48,13 +52,13 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             default:
-                return "Overview";
+                return context.getString(R.string.dashboard_overview);
             case 1:
-                return "Relationships";
+                return context.getString(R.string.dashboard_relationships);
             case 2:
-                return "Indicators";
+                return context.getString(R.string.dashboard_indicators);
             case 3:
-                return "Notes";
+                return context.getString(R.string.dashboard_notes);
         }
     }
 }

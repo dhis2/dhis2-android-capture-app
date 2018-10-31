@@ -84,7 +84,7 @@ public class TeiDashboardContracts {
 
         void subscribeToRelationships(RelationshipFragment relationshipFragment);
 
-        void goToAddRelationship();
+        void goToAddRelationship(String teiTypeToAdd);
 
         void addRelationship(String trackEntityInstance_A, String relationshipType);
 
@@ -120,5 +120,7 @@ public class TeiDashboardContracts {
         void generateEvent(String lastModifiedEventUid, Integer integer);
 
         void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
+
+        void subscribeToRelationshipTypes(RelationshipFragment relationshipFragment);
     }
 }

@@ -91,8 +91,8 @@
                 android:indeterminate="true"
                 android:padding="0dp"
                 android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@id/guideline" />
+                app:layout_constraintTop_toBottomOf="@id/guideline"
+                tools:visibility="visible" />
 
         </android.support.constraint.ConstraintLayout>
 

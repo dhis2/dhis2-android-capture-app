@@ -23,6 +23,6 @@ interface HomeRepository {
     Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program);
 
     @NonNull
-    Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId);
+    Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize);
 
 }

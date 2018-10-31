@@ -22,11 +22,13 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -208,6 +210,14 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     @Override
     public void setDate(String result) {
         binding.eventDate.setText(result);
+    }
+
+    @Override
+    public void showCatOptionDialog() {
+        new CategoryComboDialog(getAbstracContext(), eventDetailModel.getCatComboName(), eventDetailModel.getOptionComboList(), 123, selectedOption -> {
+            binding.categoryCombo.setText(selectedOption.displayName());
+            presenter.changeCatOption(selectedOption);
+        }).show();
     }
 
     @Override

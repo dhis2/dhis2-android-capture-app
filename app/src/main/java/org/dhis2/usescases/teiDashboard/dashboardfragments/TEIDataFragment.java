@@ -28,6 +28,7 @@ import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.EventCreationType;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -41,14 +42,10 @@ import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static org.dhis2.utils.Constants.ADDNEW;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
-import static org.dhis2.utils.Constants.NEW_EVENT;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.REFERRAL;
-import static org.dhis2.utils.Constants.SCHEDULENEW;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 /**
@@ -84,9 +81,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         return instance;
     }
 
-  /*  public static TEIDataFragment createInstance() {
+    public static TEIDataFragment createInstance() {
         return instance = new TEIDataFragment();
-    }*/
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -116,17 +113,16 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
             bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
             bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
-            bundle.putBoolean(NEW_EVENT, true);
 
             switch (integer) {
                 case R.id.referral:
-                    bundle.putString(EVENT_CREATION_TYPE, REFERRAL);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.REFERAL.name());
                     break;
                 case R.id.addnew:
-                    bundle.putString(EVENT_CREATION_TYPE, ADDNEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.ADDNEW.name());
                     break;
                 case R.id.schedulenew:
-                    bundle.putString(EVENT_CREATION_TYPE, SCHEDULENEW);
+                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.SCHEDULE.name());
                     break;
                 default:
                     break;
@@ -235,8 +231,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         RC_GENERATE_EVENT,
                         this);
                 dialog.show();
-            } else
-                presenter.areEventsCompleted(this);
+            } else if (programStageModel.remindCompleted())
+                askCompleteProgram();
         };
     }
 
@@ -256,6 +252,18 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             }
 
         };
+    }
+
+    private void askCompleteProgram(){
+        dialog = new CustomDialog(
+                getContext(),
+                getString(R.string.event_completed_title),
+                getString(R.string.event_completed_message),
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                RC_EVENTS_COMPLETED,
+                this);
+        dialog.show();
     }
 
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
@@ -293,12 +301,12 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                     } else {
                         new PeriodDialog()
                                 .setPeriod(programStageFromEvent.periodType())
-                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(),Calendar.getInstance().getTime(),0))
+                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(), Calendar.getInstance().getTime(), 0))
                                 .setPossitiveListener(selectedDate -> {
                                     Calendar chosenDate = Calendar.getInstance();
                                     chosenDate.setTime(selectedDate);
                                     presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
-                                } )
+                                })
                                 .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
                     }
                 }
@@ -310,7 +318,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     @Override
     public void onNegative() {
-        if (dialog.getRequestCode() == RC_GENERATE_EVENT)
-            presenter.areEventsCompleted(this);
+        if (dialog.getRequestCode() == RC_GENERATE_EVENT && programStageFromEvent.remindCompleted())
+            askCompleteProgram();
     }
+
 }

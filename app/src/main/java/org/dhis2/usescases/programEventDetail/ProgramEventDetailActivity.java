@@ -119,6 +119,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     protected void onResume() {
         super.onResume();
+        adapter.clearData();
         presenter.init(this, programId, currentPeriod);
     }
 
@@ -141,6 +142,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
     }
+
 
     @Override
     public void setProgram(ProgramModel program) {
@@ -191,6 +193,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             binding.buttonPeriodText.setText(textToShow);
 
                             presenter.setFilters(selectedDates, currentPeriod, orgUnitFilter.toString());
+                            endlessScrollListener.resetState(0);
                             pageProcessor.onNext(0);
 //                            presenter.getProgramEventsWithDates(selectedDates, currentPeriod, orgUnitFilter.toString());
 
@@ -219,6 +222,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                             binding.buttonPeriodText.setText(text);
 
                             presenter.setFilters(date, currentPeriod, orgUnitFilter.toString());
+                            endlessScrollListener.resetState(0);
                             pageProcessor.onNext(0);
 //                            presenter.getProgramEventsWithDates(date, currentPeriod, orgUnitFilter.toString());
                         }
@@ -235,6 +239,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 day.add(dates[0]);
 
                 presenter.setFilters(day, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(day, currentPeriod, orgUnitFilter.toString());
                 binding.buttonPeriodText.setText(DateUtils.getInstance().formatDate(dates[0]));
@@ -278,6 +283,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         switch (currentPeriod) {
             case NONE:
                 presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 textToShow = getString(R.string.period);
@@ -290,6 +296,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!datesD.isEmpty() && datesD.size() > 1) textToShow += "... ";
 
                 presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -302,6 +309,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateWeek.isEmpty() && chosenDateWeek.size() > 1) textToShow += "... ";
 
                 presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -313,6 +321,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateMonth.isEmpty() && chosenDateMonth.size() > 1) textToShow += "... ";
 
                 presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -322,6 +331,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 if (!chosenDateYear.isEmpty() && chosenDateYear.size() > 1) textToShow += "... ";
 
                 presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -488,6 +498,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
             case NONE:
 
                 presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 break;
@@ -495,21 +506,25 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 ArrayList<Date> datesD = new ArrayList<>();
                 datesD.add(chosenDateDay);
                 presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
                 presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
                 presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
                 presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
+                endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
 //                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
