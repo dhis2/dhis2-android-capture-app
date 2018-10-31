@@ -33,6 +33,7 @@ import java.util.List;
  * Date: 4/29/15.
  */
 public class RapidFloatingActionContentLabelList extends RapidFloatingActionContent implements View.OnClickListener {
+
     public interface OnRapidFloatingActionContentLabelListListener<T> {
         void onRFACItemLabelClick(int position, RFACLabelItem<T> item);
 

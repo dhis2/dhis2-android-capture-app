@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -426,6 +427,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
+        view.setHideSection(null);
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
@@ -447,6 +449,9 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
+            } else if(ruleAction instanceof RuleActionHideSection){
+                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+                view.setHideSection(hideSection.programStageSection());
             }
         }
     }

@@ -75,7 +75,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
             "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -333,7 +333,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, dataValues);
+                            status, eventDate, dueDate, orgUnit, dataValues, programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

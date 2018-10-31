@@ -2,10 +2,11 @@ package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.support.annotation.NonNull;
 
+import com.squareup.sqlbrite2.BriteDatabase;
+
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
-import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,10 +18,12 @@ import dagger.Provides;
 @Module
 public class EventDetailModule {
 
+    private final String teiUid;
     String eventUid;
 
-    EventDetailModule(String eventUid){
+    EventDetailModule(String eventUid, String teiUid) {
         this.eventUid = eventUid;
+        this.teiUid = teiUid;
     }
 
     @Provides
@@ -38,13 +41,13 @@ public class EventDetailModule {
     @Provides
     @PerActivity
     EventDetailRepository eventDetailRepository(BriteDatabase briteDatabase) {
-        return new EventDetailRepositoryImpl(briteDatabase,eventUid);
+        return new EventDetailRepositoryImpl(briteDatabase, eventUid, teiUid);
     }
 
     @Provides
     @PerActivity
     DataEntryStore dataEntryRepository(@NonNull BriteDatabase briteDatabase, UserRepository userRepository) {
-        return new DataValueStore(briteDatabase, userRepository, eventUid);
+        return new DataValueStore(briteDatabase, userRepository, eventUid,teiUid);
 
     }
 }

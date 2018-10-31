@@ -4,6 +4,7 @@ package org.dhis2.data.forms.dataentry;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -19,5 +20,6 @@ interface DataEntryPresenter {
 
     @NonNull
     Observable<List<OrganisationUnitModel>> getOrgUnits();
+
 
 }

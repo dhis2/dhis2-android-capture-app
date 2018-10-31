@@ -1,22 +1,30 @@
 package org.dhis2.data.server;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.JsonObject;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerServer;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +71,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    OkHttpClient okHttpClient(Authenticator authenticator) {
+    OkHttpClient okHttpClient(Authenticator authenticator, BriteDatabase briteDatabase) {
         OkHttpClient.Builder client = new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
                 .readTimeout(2, TimeUnit.MINUTES)
@@ -73,8 +81,29 @@ public class ServerModule {
                 .addInterceptor(chain -> {
                     Request request = chain.request();
                     Response response = chain.proceed(request);
-                    if (response.code() != 200)
-                        Log.d("RESPONSE INTERCEPTOR", response.code() + " - " + response.message());
+                    if (response.code() != 200) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(chain.proceed(request).body().string());
+                            Log.d("RESPONSE INTERCEPTOR", jsonObject.getString("message"));
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put("errorDate", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                            contentValues.put("errorCode", jsonObject.getInt("httpStatusCode"));
+                            contentValues.put("errorMessage", jsonObject.getString("message"));
+                            if (jsonObject.has("response") && jsonObject.getJSONObject("response").has("importSummaries")) {
+                                JSONArray importSummaries = jsonObject.getJSONObject("response").getJSONArray("importSummaries");
+                                StringBuilder description = new StringBuilder();
+                                for (int i = 0; i < importSummaries.length(); i++) {
+                                    description.append(importSummaries.getJSONObject(i).getString("description"));
+                                    if (i < importSummaries.length() - 1)
+                                        description.append("\n");
+                                }
+                                contentValues.put("errorDescription", description.toString());
+                            }
+                            briteDatabase.insert("ErrorMessage", contentValues);
+                        } catch (JSONException e) {
+                           Timber.e(e);
+                        }
+                    }
                     return response;
                 });
 

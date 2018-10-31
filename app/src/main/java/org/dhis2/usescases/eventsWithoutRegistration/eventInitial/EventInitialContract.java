@@ -73,6 +73,8 @@ public class EventInitialContract {
         void showQR();
 
         void showEventWasDeleted();
+
+        void setHideSection(String sectionUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

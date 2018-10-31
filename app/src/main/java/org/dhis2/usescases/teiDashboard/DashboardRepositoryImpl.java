@@ -16,7 +16,6 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -108,13 +107,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                    "THEN %s.%s ELSE %s.%s END, Event.lastUpdated  DESC",
+                    "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
+                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE,/* EventModel.TABLE, EventModel.Columns.EVENT_DATE,*/
             EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
@@ -415,22 +414,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Observable<Pair<String, Integer>> getObjectStyle(Context context, String uid) {
+    public Integer getObjectStyle(Context context, String uid) {
         String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
-        return briteDatabase.createQuery(ObjectStyleModel.TABLE, GET_OBJECT_STYLE, uid)
-                .mapToOneOrDefault(ObjectStyleModel::create, ObjectStyleModel.builder().icon("ic_person").color("#ffffff").build())
-                .map(objectStyleModel -> {
-                    Integer iconRes;
-                    if (objectStyleModel.icon() != null) {
-                        Resources resources = context.getResources();
-                        String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                        iconRes = resources.getIdentifier(iconName, "drawable", context.getPackageName());
-                    } else {
-                        iconRes = R.drawable.ic_person;
-                    }
-
-                    return Pair.create(objectStyleModel.color() != null ? objectStyleModel.color() : "#ffffff", iconRes);
-                });
+        Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid);
+        if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
+            String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
+            Resources resources = context.getResources();
+            iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
+            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
+        } else
+            return R.drawable.ic_person;
     }
 
     @Override
@@ -446,8 +439,19 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         "AS TOTABLE " +
                         "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
                         "WHERE FROMTABLE.trackedEntityType = ?";
-        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
-                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+        String RELATIONSHIP_QUEY_29 =
+                "SELECT RelationshipType.* FROM RelationshipType";
+        return briteDatabase.createQuery("SystemInfo", "SELECT version FROM SystemInfo")
+                .mapToOne(cursor -> cursor.getString(0))
+                .flatMap(version -> {
+                    if (version.equals("2.29"))
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUEY_29)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), teType));
+                    else
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+                });
+
     }
 
     @Override
@@ -561,6 +565,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
         updateStatement.clearBindings();
+
+        updateTeiState();
 
         return updated;
     }

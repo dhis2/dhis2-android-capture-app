@@ -11,6 +11,10 @@ import org.dhis2.data.service.MetadataServiceComponent;
 import org.dhis2.data.service.MetadataServiceModule;
 import org.dhis2.data.service.ServiceComponent;
 import org.dhis2.data.service.ServiceModule;
+import org.dhis2.data.service.SyncDataWorkerComponent;
+import org.dhis2.data.service.SyncDataWorkerModule;
+import org.dhis2.data.service.SyncMetadataWorkerComponent;
+import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
 import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodComponent;
@@ -53,6 +57,8 @@ import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailComponent;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
+
+import javax.annotation.Nonnull;
 
 import dagger.Subcomponent;
 
@@ -136,4 +142,10 @@ public interface UserComponent {
 
     @NonNull
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
+
+    @Nonnull
+    SyncDataWorkerComponent plus(SyncDataWorkerModule syncDataWorkerModule);
+
+    @Nonnull
+    SyncMetadataWorkerComponent plus(SyncMetadataWorkerModule syncDataWorkerModule);
 }

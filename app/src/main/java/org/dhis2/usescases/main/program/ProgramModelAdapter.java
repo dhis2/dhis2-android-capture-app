@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramModelBinding;
@@ -14,7 +12,6 @@ import org.dhis2.utils.Period;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,8 +19,6 @@ import java.util.List;
  */
 
 public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder> {
-    private int lastAnimatedPosition = -1;
-
     private final ProgramContract.Presenter presenter;
     private Period currentPeriod;
     private final List<ProgramViewModel> programList;
@@ -44,8 +39,6 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
 
     @Override
     public void onBindViewHolder(@NonNull ProgramModelHolder holder, int position) {
-
-        animate(holder,position);
 
         holder.bind(presenter, programList.get(holder.getAdapterPosition()), currentPeriod);
     }
@@ -72,13 +65,5 @@ public class ProgramModelAdapter extends RecyclerView.Adapter<ProgramModelHolder
         this.currentPeriod = currentPeriod;
     }
 
-    public void animate(RecyclerView.ViewHolder viewHolder, int pos){
-        if(pos>getItemCount()-1)
-            return;
-        if(pos > lastAnimatedPosition) {
-            lastAnimatedPosition = pos;
-            final Animation animationAnticipateOvershoot = AnimationUtils.loadAnimation(viewHolder.itemView.getContext(), R.anim.anticipateovershoot_interpolator);
-            viewHolder.itemView.setAnimation(animationAnticipateOvershoot);
-        }
-    }
+
 }

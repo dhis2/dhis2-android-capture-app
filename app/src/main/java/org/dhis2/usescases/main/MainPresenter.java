@@ -36,7 +36,6 @@ final class MainPresenter implements MainContracts.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         this.userRepository = userRepository;
         this.jobDispatcher = firebaseJobDispatcher;
-
     }
 
     @Override

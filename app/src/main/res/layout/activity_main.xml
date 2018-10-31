@@ -27,8 +27,7 @@
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="match_parent">
 
         <!--Main Content-->
 
@@ -137,8 +136,7 @@
 
         <include
             android:id="@+id/pin_layout"
-            layout="@layout/layout_pin"
-            />
+            layout="@layout/layout_pin" />
 
         <!--<RelativeLayout
             android:id="@+id/pin_layout"
