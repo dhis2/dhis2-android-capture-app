@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.JsonObject;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerServer;
@@ -100,7 +101,7 @@ public class ServerModule {
                             }
                             briteDatabase.insert("ErrorMessage", contentValues);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                           Timber.e(e);
                         }
                     }
                     return response;

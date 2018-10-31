@@ -133,9 +133,10 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             dashboardProgramModel -> {
-                            this.dashboardProgramModel = dashboardProgramModel;
-                            this.teType = dashboardProgramModel.getTei().trackedEntityType();
-                            view.setData(dashboardProgramModel);},
+                                this.dashboardProgramModel = dashboardProgramModel;
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                                view.setData(dashboardProgramModel);
+                            },
                             throwable -> Log.d("ERROR", throwable.getMessage()))
             );
         }
@@ -398,22 +399,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                             }
                             return finalList;
                         })
-                        /*.filter(relationshipType -> {
-                            if (relationshipType.fromConstraint() != null)
-                                return relationshipType.fromConstraint().trackedEntityType().uid().equals(teType);
-                            else
-                                return true;
-                        })
-                        .flatMap(relationshipType ->
-                                dashboardRepository.getObjectStyle(view.getContext(), relationshipType.toConstraint() != null ? relationshipType.toConstraint().trackedEntityType().uid() : teUid)
-                                        .map(objectStyleModel -> Pair.create(relationshipType, objectStyleModel.val1())).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .toList()*/
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                RelationshipFragment.getInstance().setRelationshipTypes()
-                                , t -> Log.d("RELATIONSHIP TYPE SIZE", "RelationshipType error")
+                                RelationshipFragment.getInstance().setRelationshipTypes(),
+                                Timber::e
                         )
         );
     }

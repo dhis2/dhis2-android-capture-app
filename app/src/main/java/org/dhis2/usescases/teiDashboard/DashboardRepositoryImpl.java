@@ -16,7 +16,6 @@ import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.ValueUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.data.database.DbDateColumnAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -417,13 +416,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     @Override
     public Integer getObjectStyle(Context context, String uid) {
         String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
-        Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE,uid);
-        if(objectStyleCurosr!=null && objectStyleCurosr.moveToNext()){
+        Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid);
+        if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
             String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
             Resources resources = context.getResources();
             iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
             return resources.getIdentifier(iconName, "drawable", context.getPackageName());
-        }else
+        } else
             return R.drawable.ic_person;
     }
 
@@ -440,8 +439,19 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                         "AS TOTABLE " +
                         "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
                         "WHERE FROMTABLE.trackedEntityType = ?";
-        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
-                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+        String RELATIONSHIP_QUEY_29 =
+                "SELECT RelationshipType.* FROM RelationshipType";
+        return briteDatabase.createQuery("SystemInfo", "SELECT version FROM SystemInfo")
+                .mapToOne(cursor -> cursor.getString(0))
+                .flatMap(version -> {
+                    if (version.equals("2.29"))
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUEY_29)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), teType));
+                    else
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+                });
+
     }
 
     @Override
@@ -556,6 +566,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
         updateStatement.clearBindings();
 
+        updateTeiState();
+
         return updated;
     }
 
@@ -593,14 +605,5 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         /*ContentValues program = new ContentValues();TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
-    }
-
-    private void updateTEi(){
-
-        ContentValues tei = new ContentValues();
-        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-        tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
-        // TODO: and if so, keep the TO_POST state
-        briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
     }
 }

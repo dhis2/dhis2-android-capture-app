@@ -12,9 +12,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.zip.Deflater;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.Inflater;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -215,11 +214,45 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void splitPath(){
+    public void splitPath() {
         String testPath = "/level1/level2/level3/level4";
 
         String[] splitted = testPath.split("/");
 
         assertTrue(splitted.length == 5);
+    }
+
+    @Test
+    public void testPermutations() {
+        List<List<String>> initialList = new ArrayList<>();
+        List<String> firstList = new ArrayList<>();
+        firstList.add("A");
+        firstList.add("B");
+        List<String> secondList = new ArrayList<>();
+        secondList.add("1");
+        secondList.add("2");
+        secondList.add("3");
+        initialList.add(firstList);
+        initialList.add(secondList);
+
+        String[] expectedResults = new String[]{"A1", "A2", "A3", "B1", "B2", "B3"};
+
+        List<String> resultList = new ArrayList<>();
+        GeneratePermutations(initialList, resultList, 0, "");
+
+        for (int i = 0; i < resultList.size(); i++)
+            assertEquals(expectedResults[i], resultList.get(i));
+
+
+    }
+
+    private void GeneratePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
+        if (depth == lists.size()) {
+            result.add(current);
+            return;
+        }
+        for (int i = 0; i < lists.get(depth).size(); ++i) {
+            GeneratePermutations(lists, result, depth + 1, current + lists.get(depth).get(i));
+        }
     }
 }
