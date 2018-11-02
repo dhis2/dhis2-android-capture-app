@@ -34,6 +34,8 @@ public class DataSetTableContract {
         void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String sectionUid);
 
         Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map);
+
+        List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOptionModel, CategoryModel>>> listCategories, int num ,List<List<String>> result, List<String> current);
     }
 
 }

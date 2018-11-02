@@ -88,7 +88,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                     view.setDataValue(trio.val0());
                                     view.setDataSet(trio.val1());
 
-                                    dataSetSectionFragment.setData(tableData.val0(), transformCategories(tableData.val1()), trio.val0(), trio.val2());
+                                    dataSetSectionFragment.setData(tableData.val0(), transformCategories(tableData.val1()), trio.val0(), tableData.val1());
                                 },
                                 Timber::e
                         )
@@ -117,6 +117,26 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         return mapTransform;
     }
 
+    @Override
+    public List<List<String>> getCatOptionCombos(List<List<Pair<CategoryOptionModel, CategoryModel>>> listCategories, int num, List<List<String>> result, List<String> current) {
+        if(num == listCategories.size()){
+            List<String> resultHelp = new ArrayList<>();
+            for(String option: current)
+                resultHelp.add(option);
+            result.add(resultHelp);
+            return result;
+        }
+        for(int i = 0; i<listCategories.get(num).size(); i++){
+            if(num == 0)
+                current = new ArrayList<>();
+            if(current.size() == num+1)
+                current.remove(current.size()-1);
+            current.add(listCategories.get(num).get(i).val0().uid());
+            getCatOptionCombos(listCategories, num +1, result, current);
+        }
+
+        return result;
+    }
 
     @Override
     public void onDettach() {

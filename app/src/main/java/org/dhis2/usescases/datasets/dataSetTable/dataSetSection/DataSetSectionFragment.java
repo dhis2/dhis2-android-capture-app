@@ -78,16 +78,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     }
 
     public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
-                        Map<String, List<CategoryOptionComboModel>> catOptionsCombo){
+                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform){
 
         ArrayList<List<String>> cells = new ArrayList<>();
         for (DataElementModel de : dataElements.get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
-            for (CategoryOptionComboModel catOpts : catOptionsCombo.get(sectionUid)) {
+            for (List<String> catOpts : presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null)) {
                 boolean exitsValue = false;
                 for (DataSetTableModel dataValue : dataValues) {
 
-                    if (Objects.equals(dataValue.categoryOptionCombo(), catOpts.uid())
+                    if (dataValue.listCategoryOption().containsAll(catOpts)
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
                         values.add(dataValue.value());
                         exitsValue = true;
@@ -98,6 +98,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             }
             cells.add(values);
         }
+
 
         adapter.setAllItems(
                 catOptions.get(sectionUid).get(catOptions.get(sectionUid).size()-1),
