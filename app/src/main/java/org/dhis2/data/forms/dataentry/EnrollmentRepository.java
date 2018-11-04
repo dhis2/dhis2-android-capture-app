@@ -88,10 +88,10 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list() {
+    public Observable<List<FieldViewModel>> list() {
         return briteDatabase
                 .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment == null ? "" : enrollment)
-                .mapToList(this::transform).toFlowable(BackpressureStrategy.LATEST);
+                .mapToList(this::transform);
     }
 
     @Override

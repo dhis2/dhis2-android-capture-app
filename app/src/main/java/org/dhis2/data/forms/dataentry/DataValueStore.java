@@ -1,12 +1,13 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.dhis2.data.user.UserRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.user.UserRepository;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -16,6 +17,7 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -47,6 +49,10 @@ final class DataValueStore implements DataEntryStore {
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return userCredentials
+                .filter(userCredentialsModel -> {
+                    String currentValue = currentValue(uid);
+                    return !Objects.equals(currentValue,value);
+                })
                 .switchMap((userCredentials) -> {
                     if (value == null)
                         return Flowable.just(delete(uid));
@@ -77,6 +83,16 @@ final class DataValueStore implements DataEntryStore {
         return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                 TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
                         TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+    }
+
+    private String currentValue(@NonNull String uid) {
+        Cursor cursor = briteDatabase.query("SELECT TrackedEntityDataValue.value FROM TrackedEntityDataValue WHERE dataElement = ? AND event = ?", uid, eventUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            String value = cursor.getString(0);
+            cursor.close();
+            return value;
+        } else
+            return "";
     }
 
     private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {

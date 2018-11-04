@@ -119,7 +119,7 @@ android {
 dependencies {
 
     implementation project(":customFab")
-
+    implementation project(":dhis2-rule-engine")
 
     //region SUPPORT LIBRARIES
     implementation "com.android.support:appcompat-v7:${libraries.support}"
@@ -142,7 +142,7 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
@@ -257,6 +257,9 @@ dependencies {
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
+
+    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+
 
 }
 

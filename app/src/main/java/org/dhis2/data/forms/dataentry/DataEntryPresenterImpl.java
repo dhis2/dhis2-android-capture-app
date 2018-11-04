@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -75,13 +76,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-        Flowable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
+        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
                 .subscribeOn(schedulerProvider.computation());
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(
-                fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+                fieldsFlowable.toFlowable(BackpressureStrategy.LATEST), ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())//check if computation does better than io
