@@ -2,6 +2,7 @@ package org.dhis2.usescases.syncManager;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import com.google.gson.Gson;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ErrorDialogBinding;
@@ -30,6 +33,8 @@ public class ErrorDialog extends DialogFragment {
     private List<ErrorMessageModel> data;
     private DividerItemDecoration divider;
     public static String TAG = "FullScreenDialog";
+    private String shareTitle;
+    private String shareMessageTitle;
 
     public static ErrorDialog newInstace() {
         if (instace == null) {
@@ -47,6 +52,8 @@ public class ErrorDialog extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.title = context.getString(R.string.error_dialog_title);
+        this.shareTitle = context.getString(R.string.share_with);
+        this.shareMessageTitle = context.getString(R.string.sync_error_title);
         this.divider = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
     }
 
@@ -86,6 +93,14 @@ public class ErrorDialog extends DialogFragment {
         binding.errorRecycler.setAdapter(new ErrorAdapter(data));
         binding.errorRecycler.addItemDecoration(divider);
         binding.possitive.setOnClickListener(view -> dismiss());
+        binding.shareButton.setOnClickListener(view -> {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, new Gson().toJson(data));
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, shareMessageTitle);
+            sendIntent.setType("text/plain");
+            startActivity((Intent.createChooser(sendIntent, shareTitle)));
+        });
 
         return binding.getRoot();
     }

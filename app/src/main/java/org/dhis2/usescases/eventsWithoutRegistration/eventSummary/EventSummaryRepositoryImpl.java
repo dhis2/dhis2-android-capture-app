@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -330,11 +332,23 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
+                    String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, dataValues, programStage);
+                            status, eventDate, dueDate, orgUnit,orgUnitCode, dataValues, programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Nonnull
+    private String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst() && cursor.getString(0) != null) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+        return ouCode;
     }
 
     @NonNull

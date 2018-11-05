@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -58,17 +60,12 @@ public final class AttributeValueStore implements DataEntryStore {
     @NonNull
     private final SQLiteStatement deleteStatement;
 
- /*   @NonNull
-    private final CurrentDateProvider currentDateProvider;*/
-
     @NonNull
     private final String enrollment;
 
-    public AttributeValueStore(@NonNull BriteDatabase briteDatabase
-            /*@NonNull CurrentDateProvider currentDateProvider*/, @NonNull String enrollment) {
+    public AttributeValueStore(@NonNull BriteDatabase briteDatabase, @NonNull String enrollment) {
         this.enrollment = enrollment;
         this.briteDatabase = briteDatabase;
-//        this.currentDateProvider = currentDateProvider;
 
         updateStatement = briteDatabase.getWritableDatabase()
                 .compileStatement(UPDATE);
@@ -82,8 +79,10 @@ public final class AttributeValueStore implements DataEntryStore {
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable
-                .defer(() -> {
-                    if(value==null)
+                .defer(() -> Flowable.just(currentValue(uid)))
+                .filter(currentValue -> !Objects.equals(currentValue, value))
+                .flatMap(currentValue -> {
+                    if (value == null)
                         return Flowable.just(delete(uid));
 
                     long updated = update(uid, value);
@@ -93,7 +92,7 @@ public final class AttributeValueStore implements DataEntryStore {
 
                     return Flowable.just(insert(uid, value));
                 })
-                .switchMap(status -> updateEnrollment(status));
+                .switchMap(this::updateEnrollment);
     }
 
 
@@ -109,6 +108,18 @@ public final class AttributeValueStore implements DataEntryStore {
         updateStatement.clearBindings();
 
         return updated;
+    }
+
+    private String currentValue(@NonNull String uid) {
+        Cursor cursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue " +
+                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
+                "WHERE TrackedEntityAttributeValue.trackedEntityAttribute = ? AND Enrollment.trackedEntityInstance = ?", uid, enrollment);
+        if (cursor != null && cursor.moveToFirst()) {
+            String value = cursor.getString(0);
+            cursor.close();
+            return value;
+        } else
+            return "";
     }
 
     private long insert(@NonNull String attribute, @NonNull String value) {

@@ -84,7 +84,7 @@ public class ServerModule {
                     if (response.code() != 200) {
                         try {
                             JSONObject jsonObject = new JSONObject(chain.proceed(request).body().string());
-                            Log.d("RESPONSE INTERCEPTOR", jsonObject.getString("message"));
+                            Log.d("RESPONSE INTERCEPTOR", jsonObject.toString());
                             ContentValues contentValues = new ContentValues();
                             contentValues.put("errorDate", DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
                             contentValues.put("errorCode", jsonObject.getInt("httpStatusCode"));

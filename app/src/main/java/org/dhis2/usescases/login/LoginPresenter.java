@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.ObservableField;
-import android.os.Handler;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -190,37 +190,40 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult) {
-        if (syncResult.isSuccess() || syncState != LoginActivity.SyncState.METADATA)
-            switch (syncState) {
-                case METADATA:
-                    view.getSharedPreferences().edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
-                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_META_SYNC_STATUS, true).apply();
-                    syncEvents();
-                    break;
-                case EVENTS:
-                    syncTrackedEntities();
-                    break;
-                case TEI:
-                    view.getSharedPreferences().edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
-                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
+//        if (syncResult.isSuccess() || syncState != LoginActivity.SyncState.METADATA)
+        switch (syncState) {
+            case METADATA:
+                view.getSharedPreferences().edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                view.getSharedPreferences().edit().putBoolean(Constants.LAST_META_SYNC_STATUS, syncResult.isSuccess()).apply();
+                syncEvents();
+                break;
+            case EVENTS:
+                syncTrackedEntities();
+                break;
+            case TEI:
+                view.getSharedPreferences().edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
+                view.getSharedPreferences().edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, syncResult.isSuccess()).apply();
                    /* syncAggregatesData(); TODO: Enable for 1.1.0
                     break;
                 case AGGREGATES:*/
-                    syncReservedValues();
-                    break;
-                case RESERVED_VALUES:
-                    Intent intent = new Intent(view.getContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    view.getContext().startActivity(intent);
-                    view.getAbstractActivity().finish();
-                    break;
-                default:
-                    break;
-            }
-        else {
+                syncReservedValues();
+                break;
+            case RESERVED_VALUES:
+                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constants.EXTRA_FROM_LOGIN, true);
+                intent.putExtras(bundle);
+                view.getContext().startActivity(intent);
+                view.getAbstractActivity().finish();
+                break;
+            default:
+                break;
+        }
+        /*else {
             view.displayMessage(syncResult.message());
             new Handler().postDelayed(this::logOut, 1500);
-        }
+        }*/
     }
 
     @Override

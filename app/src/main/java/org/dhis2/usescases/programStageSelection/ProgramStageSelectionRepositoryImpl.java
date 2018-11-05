@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -133,6 +135,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
+                    String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStage = cursor.getString(6);
                     String eventStatus;
                     if (cursor.getString(2).equals(EventStatus.VISITED.name()))
@@ -153,7 +156,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                     }
 
                     return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, dataValues,programStage);
+                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -186,11 +189,23 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                                             .valueOf(cursor.getString(3));
                                     String orgUnit = cursor.getString(4);
                                     String programName = cursor.getString(5);
-
+                                    String ouCode = getOrgUnitCode(orgUnit);
                                     return RuleEnrollment.create(cursor.getString(0),
-                                            incidentDate, enrollmentDate, status, orgUnit, attributeValues, programName);
+                                            incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
                                 }).toFlowable(BackpressureStrategy.LATEST)
                 );
+    }
+
+    @Nonnull
+    private String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+
+        return ouCode;
     }
 
     @NonNull

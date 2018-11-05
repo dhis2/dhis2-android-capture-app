@@ -13,7 +13,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
@@ -213,15 +212,18 @@ class EnrollmentFormRepository implements FormRepository {
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
-                        (rules, variables) ->
-                                RuleEngineContext.builder(expressionEvaluator)
-                                        .rules(rules)
-                                        .ruleVariables(variables)
-                                        .calculatedValueMap(new HashMap<>())
-                                        .supplementaryData(new HashMap<>())
-                                        .build().toEngineBuilder()
-                                        .build()))
-                .cacheWithInitialCapacity(1);
+                        rulesRepository.enrollmentEvents(enrollmentUid),
+                        (rules, variables, events) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .build().toEngineBuilder();
+                            builder.events(events);
+                            return builder.build();
+                        }))
+                        .cacheWithInitialCapacity(1);
     }
 
     @NonNull
@@ -516,7 +518,7 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Trio<Boolean,CategoryComboModel,List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
         return null;
     }
 
@@ -601,7 +603,7 @@ class EnrollmentFormRepository implements FormRepository {
                                     throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + eventToCreate));
                                 }
                                 return Trio.create(enrollmentUid, data.val2(), eventToCreate.uid());
-                            }else
+                            } else
                                 throw new IllegalArgumentException("Can't create event in enrollment with null organisation unit");
                         }
                     } else { //open Dashboard

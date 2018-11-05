@@ -105,7 +105,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         );
     }
 
-    private void save(String uid, String value) {
+    private void save(String uid, String value, Boolean isAttribute) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
         saveDisposable.add(
                 dataEntryStore.save(uid, value)
@@ -214,12 +214,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
                 if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data());
+                    save(assign.field(), ruleEffect.data(),assign.isAttribute());
                 else {
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data());
+                        save(assign.field(), ruleEffect.data(),assign.isAttribute());
                     }
 
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
 import org.dhis2.usescases.login.LoginActivity;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -13,6 +14,7 @@ import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
 
+import androidx.work.WorkManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
@@ -24,23 +26,23 @@ import static android.text.TextUtils.isEmpty;
 final class MainPresenter implements MainContracts.Presenter {
 
     private final UserRepository userRepository;
-    private final FirebaseJobDispatcher jobDispatcher;
+    private final MetadataRepository metadataRepository;
     private MainContracts.View view;
-    private final CompositeDisposable compositeDisposable;
+    private CompositeDisposable compositeDisposable;
 
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, UserRepository userRepository, FirebaseJobDispatcher firebaseJobDispatcher) {
+    MainPresenter(@NonNull D2 d2, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
-        this.compositeDisposable = new CompositeDisposable();
         this.userRepository = userRepository;
-        this.jobDispatcher = firebaseJobDispatcher;
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
     public void init(MainContracts.View view) {
         this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
 
         ConnectableFlowable<UserModel> userObservable = userRepository.me()
                 .subscribeOn(Schedulers.io())
@@ -60,7 +62,7 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void logOut() {
         try {
-            jobDispatcher.cancelAll();
+            WorkManager.getInstance().cancelAllWork();
             d2.logout().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
@@ -76,7 +78,7 @@ final class MainPresenter implements MainContracts.Presenter {
         if (pin != null) {
             prefs.edit().putString("pin", pin).apply();
         }
-        jobDispatcher.cancelAll();
+        WorkManager.getInstance().cancelAllWork();
         view.startActivity(LoginActivity.class, null, true, true, null);
     }
 
@@ -88,6 +90,19 @@ final class MainPresenter implements MainContracts.Presenter {
     @Override
     public void changeFragment(int id) {
         view.changeFragment(id);
+    }
+
+    @Override
+    public void getErrors() {
+        compositeDisposable.add(
+                metadataRepository.getSyncErrors()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> view.showSyncErrors(data),
+                                Timber::e
+                        )
+        );
     }
 
     @Override

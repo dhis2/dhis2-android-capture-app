@@ -322,8 +322,6 @@
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
     <string name="check_event">Check</string>
 
-    <string name="burmesse_test">မြန်မာအက္ခရာ</string>
-    <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
     <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
@@ -344,7 +342,7 @@
     <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
     <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
     <string name="tuto_dashboard_8">Click to see all enrollmets of your entity or create a new one.</string>
-    <string name="tuto_tei_event_1">Click to delete this event. This action cant be undone.</string>
+    <string name="tuto_tei_event_1">Click to delete this event. This action can not be undone.</string>
     <string name="tuto_tei_event_2">Complete the event.</string>
     <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
     <string name="tuto_program_event_2">Click to add a new event</string>
@@ -371,5 +369,7 @@
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
     <string name="CHECK_SYNC_ERRORS">Check sync errors</string>
     <string name="error_dialog_title">Sync error log</string>
+    <string name="share_with">Share with...</string>
+    <string name="errors_during_sync">Sync has completed with errors. Click here to check them</string>
 
 </resources>

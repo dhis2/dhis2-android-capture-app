@@ -20,22 +20,41 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
-            <TextView
-                android:id="@+id/title_dialog"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/title_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorPrimary"
-                android:gravity="center|start"
+                android:layout_height="?actionBarSize"
+                android:background="@color/colorGreyDefault"
                 android:minHeight="50dp"
-                android:padding="5dp"
                 android:paddingStart="15dp"
-                android:textColor="?colorAccent"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Info" />
+                android:paddingEnd="15dp">
 
+                <TextView
+                    android:id="@+id/title_dialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center|start"
+                    android:padding="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Info" />
+
+                <ImageView
+                    android:id="@+id/shareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/app_name"
+                    android:padding="15dp"
+                    android:tint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_share" />
+            </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/errorRecycler"
@@ -43,7 +62,8 @@
                 android:layout_height="0dp"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@id/possitive"
-                app:layout_constraintTop_toBottomOf="@id/title_dialog" />
+                app:layout_constraintTop_toBottomOf="@id/title_container"
+                tools:listitem="@layout/item_error_dialog" />
 
 
             <TextView
@@ -58,6 +78,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Accept"
                 tools:visibility="visible" />
+
         </android.support.constraint.ConstraintLayout>
     </RelativeLayout>
 </layout>
