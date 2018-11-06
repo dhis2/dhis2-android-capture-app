@@ -625,4 +625,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
                 .mapToOne(cursor -> cursor.getString(0));
     }
+
+    @Override
+    public Observable<Integer> getOrgUnitsForDataElementsCount() {
+        String sqlQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT t.uid, o.organisationUnit " +
+                "FROM TrackedEntityAttribute t, OrganisationUnitProgramLink o, ProgramTrackedEntityAttribute p " +
+                "WHERE t.generated = 1 AND p.trackedEntityAttribute = t.uid AND p.program = o.program)";
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, sqlQuery)
+                .mapToOne(cursor -> {
+                    if (cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    } else
+                        return 0;
+                });
+    }
 }

@@ -145,7 +145,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     private String canonizeUrl(@NonNull String serverUrl) {
         String urlToCanonized = serverUrl.trim();
-        urlToCanonized  = urlToCanonized.replace(" ","");
+        urlToCanonized = urlToCanonized.replace(" ", "");
         return urlToCanonized.endsWith("/") ? urlToCanonized : urlToCanonized + "/";
     }
 
@@ -356,19 +356,22 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void syncReservedValues() {
 
-        disposable.add(Observable.just(true)
-                .map(init -> {
-                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
-                    return true;
-                })
-                .map(response -> SyncResult.success())
-                .onErrorReturn(error -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        update(LoginActivity.SyncState.RESERVED_VALUES),
-                        Timber::d
-                )
+        disposable.add(
+                Observable.just(true)
+                        .flatMap(init -> metadataRepository.getOrgUnitsForDataElementsCount())
+                        .map(number -> {
+                            if (number < 10)
+                                userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
+                            return true;
+                        })
+                        .map(response -> SyncResult.success())
+                        .onErrorReturn(error -> SyncResult.success())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(
+                                update(LoginActivity.SyncState.RESERVED_VALUES),
+                                Timber::d
+                        )
         );
     }
 
