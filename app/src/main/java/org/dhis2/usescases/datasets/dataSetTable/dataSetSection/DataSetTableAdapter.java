@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,75 @@ import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
-import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.Row;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
+import org.dhis2.data.forms.dataentry.tablefields.age.AgeRow;
+import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateRow;
+import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeRow;
+import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextRow;
+import org.dhis2.data.forms.dataentry.tablefields.file.FileRow;
+import org.dhis2.data.forms.dataentry.tablefields.image.ImageRow;
+import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitRow;
+import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
+import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
 class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
+    private static final int EDITTEXT = 0;
+    private static final int BUTTON = 1;
+    private static final int CHECKBOX = 2;
+    private static final int SPINNER = 3;
+    private static final int COORDINATES = 4;
+    private static final int TIME = 5;
+    private static final int DATE = 6;
+    private static final int DATETIME = 7;
+    private static final int AGEVIEW = 8;
+    private static final int YES_NO = 9;
+    private static final int ORG_UNIT = 10;
+    private static final int IMAGE = 11;
+    private static final int UNSUPPORTED = 12;
+    @NonNull
+    private final List<FieldViewModel> viewModels;
+
+    @NonNull
+    private final FlowableProcessor<RowAction> processor;
+    @NonNull
+    private final List<Row> rows;
     public DataSetTableAdapter(Context context) {
         super(context);
+        rows = new ArrayList<>();
+        processor = PublishProcessor.create();
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        viewModels = new ArrayList<>();
+
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), null));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+
     }
 
     /**
@@ -35,9 +94,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public AbstractViewHolder onCreateCellViewHolder(ViewGroup parent, int viewType) {
-        return new DataSetCell(
+        /*return new DataSetCell(
                 DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dataset_cell, parent, false)
-        );
+        );*/
+        return rows.get(viewType).onCreate(parent);
     }
 
     /**
@@ -56,12 +116,18 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
-        ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
+//        ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
+
+
+        rows.get(holder.getItemViewType()).onBind(holder,
+                viewModels.get(holder.getAdapterPosition()));
+
 
 
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         ((DataSetCell) holder).binding.title.requestLayout();
     }
+
 
 
     /**
