@@ -19,7 +19,7 @@ public class LoginContracts {
         ActivityLoginBinding getBinding();
 
         @UiThread
-        void renderError(D2ErrorCode errorCode);
+        void renderError(D2ErrorCode errorCode, String defaultMessage);
 
         @UiThread
         void renderInvalidServerUrlError();

@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:fontFamily="sans-serif"
-                android:text="@{DateUtils.getInstance().getPeriodUIString(stage.periodType(),event.eventDate())}"
                 android:textColor="#444444"
                 android:textSize="14sp"
                 android:textStyle="normal"

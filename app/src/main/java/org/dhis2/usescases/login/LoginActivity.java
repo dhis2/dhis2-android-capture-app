@@ -28,6 +28,7 @@ import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.common.D2ErrorCode;
 
 import java.util.List;
@@ -95,6 +96,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         super.onResume();
         if (!isSyncing)
             presenter.init(this);
+
+        NetworkUtils.isGooglePlayServicesAvailable(this);
     }
 
     @Override
@@ -116,7 +119,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void renderError(D2ErrorCode errorCode) {
+    public void renderError(D2ErrorCode errorCode, String defaultMessage) {
         String message;
         switch (errorCode) {
             case LOGIN_PASSWORD_NULL:
@@ -135,7 +138,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_error_response);
                 break;
             default:
-                message = getString(R.string.login_error_default);
+                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
                 break;
         }
 
@@ -187,7 +190,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.syncLayout.setVisibility(View.VISIBLE);
             if (Build.VERSION.SDK_INT > 21) {
                 binding.lottieView.setVisibility(View.VISIBLE);
-                binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
+                binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
+                binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
                 binding.lottieView.useHardwareAcceleration(true);
                 binding.lottieView.enableMergePathsForKitKatAndAbove(true);
                 binding.lottieView.playAnimation();

@@ -223,7 +223,7 @@ class EnrollmentFormRepository implements FormRepository {
                             builder.events(events);
                             return builder.build();
                         }))
-                        .cacheWithInitialCapacity(1);
+                .cacheWithInitialCapacity(1);
     }
 
     @NonNull
@@ -525,6 +525,13 @@ class EnrollmentFormRepository implements FormRepository {
     @Override
     public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
 
+    }
+
+    @Override
+    public Observable<Boolean> captureCoodinates() {
+        return briteDatabase.createQuery("Program","SELECT Program.captureCoordinates FROM Program " +
+                "JOIN Enrollment ON Enrollment.program = Program.uid WHERE Enrollment.uid = ?", enrollmentUid)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
     }
 
     @NonNull

@@ -269,26 +269,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
         } else if (throwable instanceof D2CallException) {
             D2CallException d2CallException = (D2CallException) throwable;
             switch (d2CallException.errorCode()) {
-                case LOGIN_PASSWORD_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case LOGIN_USERNAME_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case INVALID_DHIS_VERSION:
-                    view.renderError(d2CallException.errorCode());
-                    break;
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));
                     break;
-                case API_UNSUCCESSFUL_RESPONSE:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case API_RESPONSE_PROCESS_ERROR:
-                    view.renderError(d2CallException.errorCode());
-                    break;
                 default:
-                    view.renderError(d2CallException.errorCode());
+                    view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
                     break;
             }
         } else {

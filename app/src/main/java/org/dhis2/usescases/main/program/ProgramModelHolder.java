@@ -40,7 +40,9 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
 
         Drawable iconImage = ContextCompat.getDrawable(binding.programImage.getContext(), icon);
         iconImage.mutate();
-        binding.programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+        //        binding.programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+        binding.programImage.setImageResource(icon);
+        binding.programImage.setColorFilter(ColorUtils.getContrastColor(color));
 
         binding.programImage.setBackgroundColor(color);
 

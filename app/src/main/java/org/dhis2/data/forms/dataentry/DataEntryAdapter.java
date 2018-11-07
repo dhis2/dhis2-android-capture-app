@@ -32,13 +32,11 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
-
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
@@ -67,6 +65,9 @@ public final class DataEntryAdapter extends Adapter {
     private final FlowableProcessor<RowAction> processor;
 
     @NonNull
+    private final FlowableProcessor<Integer> currentPosition;
+
+    @NonNull
     private final FlowableProcessor<String> imageSelector;
 
     @NonNull
@@ -83,6 +84,7 @@ public final class DataEntryAdapter extends Adapter {
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
         imageSelector = PublishProcessor.create();
+        currentPosition = PublishProcessor.create();
 
         this.dataEntryArguments = dataEntryArguments;
 

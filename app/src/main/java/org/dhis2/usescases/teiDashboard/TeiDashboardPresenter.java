@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,11 +16,9 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import org.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -151,6 +148,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void getTEIEvents(TEIDataFragment teiFragment) {
         compositeDisposable.add(
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
+                        .map(eventModels -> {
+                            for (EventModel eventModel : eventModels) {
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
+                                }
+                            }
+                            return eventModels;
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -159,6 +164,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         )
         );
     }
+
 
     @Override
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
@@ -442,40 +448,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onDescriptionClick(String description) {
         view.showDescription(description);
-    }
-
-
-    @Override
-    public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
-        compositeDisposable.add(
-                scheduleFragment.filterProcessor()
-                        .startWith(ScheduleAdapter.Filter.ALL)
-                        .map(filter -> {
-                            if (filter == ScheduleAdapter.Filter.SCHEDULE)
-                                return EventStatus.SCHEDULE.name();
-                            else if (filter == ScheduleAdapter.Filter.OVERDUE)
-                                return EventStatus.SKIPPED.name();
-                            else
-                                return EventStatus.SCHEDULE.name() + "," + EventStatus.SKIPPED.name();
-                        })
-                        .flatMap(filter -> dashboardRepository.getScheduleEvents(programUid, teUid, filter))
-                        .map(eventModels -> {
-                            for (EventModel eventModel : eventModels) {
-                                if (DateUtils.isToday(eventModel.dueDate().getTime())) { //If a event dueDate is Today, mark as Active
-                                    dashboardRepository.updateState(eventModel, EventStatus.ACTIVE);
-                                } else if (eventModel.dueDate().before(Calendar.getInstance().getTime()) && eventModel.status() != EventStatus.SKIPPED) { //If a event dueDate is before today and its status is not skipped, the event is skipped
-                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
-                                }
-                            }
-                            return eventModels;
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                scheduleFragment.swapEvents(),
-                                Timber::d
-                        )
-        );
     }
 
 

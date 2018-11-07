@@ -370,6 +370,6 @@
     <string name="CHECK_SYNC_ERRORS">Check sync errors</string>
     <string name="error_dialog_title">Sync error log</string>
     <string name="share_with">Share with...</string>
-    <string name="errors_during_sync">Sync has completed with errors. Click here to check them</string>
+    <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
 
 </resources>

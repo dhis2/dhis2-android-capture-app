@@ -260,7 +260,7 @@ public class DateUtils {
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
-        if(event.status() == EventStatus.COMPLETED){
+        if (event.status() == EventStatus.COMPLETED) {
             if (completeEventExpiryDays == 0)
                 return false;
         }
@@ -268,7 +268,7 @@ public class DateUtils {
         if (event.completedDate() != null)
             expiredDate.setTime(event.completedDate());
         else {
-            expiredDate.setTime(event.eventDate());
+            expiredDate.setTime(event.eventDate() != null ? event.eventDate() : event.dueDate());
             expiredDate.set(Calendar.HOUR_OF_DAY, 24);
         }
 

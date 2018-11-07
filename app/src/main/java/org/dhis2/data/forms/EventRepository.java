@@ -394,6 +394,13 @@ public class EventRepository implements FormRepository {
         briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
+    @Override
+    public Observable<Boolean> captureCoodinates() {
+        return briteDatabase.createQuery("ProgramStage", "SELECT ProgramStage.captureCoordinates FROM ProgramStage " +
+                "JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?", eventUid)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
+    }
+
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
