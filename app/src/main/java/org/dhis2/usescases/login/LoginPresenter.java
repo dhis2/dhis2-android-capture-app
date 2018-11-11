@@ -203,7 +203,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 case TEI:
                     view.getSharedPreferences().edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
                     view.getSharedPreferences().edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
-                    //syncAggregatesData(); TODO: Enable for 1.1.0
+                    syncAggregatesData(); //TODO: Enable for 1.1.0
                     break;
                 case AGGREGATES:
                     syncReservedValues();

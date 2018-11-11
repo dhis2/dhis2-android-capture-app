@@ -2,12 +2,15 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import android.support.annotation.NonNull;
 
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
@@ -115,6 +120,28 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
         }
         return mapTransform;
+    }
+
+    @Override
+    public List<FieldViewModel> transformToFieldViewModels(List<DataSetTableModel> dataValues) {
+        List<FieldViewModel> listFields = new ArrayList<>();
+        for(DataSetTableModel datavalue: dataValues){
+            FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "");
+
+            /*listFields.add(fieldFactory.create(datavalue.id(), "", datavalue.,
+                    mandatory, optionSetUid, dataValue, section, allowFutureDates,
+                    status == EventStatus.ACTIVE, null, description));*/
+        }
+        return null;
     }
 
     @Override

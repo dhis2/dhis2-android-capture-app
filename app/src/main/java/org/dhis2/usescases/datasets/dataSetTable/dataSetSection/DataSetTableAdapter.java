@@ -12,20 +12,32 @@ import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
+
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeRow;
+import org.dhis2.data.forms.dataentry.tablefields.age.AgeViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateRow;
+import org.dhis2.data.forms.dataentry.tablefields.coordinate.CoordinateViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeRow;
+import org.dhis2.data.forms.dataentry.tablefields.datetime.DateTimeViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.tablefields.file.FileRow;
+import org.dhis2.data.forms.dataentry.tablefields.file.FileViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.image.ImageRow;
+import org.dhis2.data.forms.dataentry.tablefields.image.ImageViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitRow;
+import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
+import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
+import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
+import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -54,7 +66,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
     @NonNull
-    private final List<FieldViewModel> viewModels;
+    private List<FieldViewModel> viewModels;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -78,8 +90,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        /*rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));*/
 
     }
 
@@ -116,18 +128,20 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
-//        ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
+//       ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
 
 
         rows.get(holder.getItemViewType()).onBind(holder,
                 viewModels.get(holder.getAdapterPosition()));
 
 
-
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        ((DataSetCell) holder).binding.title.requestLayout();
+        //((DataSetCell) holder).binding.title.requestLayout();
     }
 
+    public void swap(List<FieldViewModel> viewModels){
+        this.viewModels = viewModels;
+    }
 
 
     /**
@@ -232,10 +246,36 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getCellItemViewType(int columnPosition) {
-        // The unique ID for this type of cell item
-        // If you have different items for Cell View by X (Column) position,
-        // then you should fill this method to be able create different
-        // type of CellViewHolder on "onCreateCellViewHolder"
-        return 0;
+        FieldViewModel viewModel = viewModels.get(columnPosition);
+        if (viewModel instanceof EditTextModel) {
+            return EDITTEXT;
+        } else if (viewModel instanceof RadioButtonViewModel) {
+            return CHECKBOX;
+        } else if (viewModel instanceof SpinnerViewModel) {
+            return SPINNER;
+        } else if (viewModel instanceof CoordinateViewModel) {
+            return COORDINATES;
+
+        } else if (viewModel instanceof DateTimeViewModel) {
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+                return DATE;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+                return TIME;
+            else
+                return DATETIME;
+        } else if (viewModel instanceof AgeViewModel) {
+            return AGEVIEW;
+        } else if (viewModel instanceof FileViewModel) {
+            return BUTTON;
+        /*} else if (viewModel instanceof OrgUnitViewModel) {
+            return ORG_UNIT;*/
+        } else if (viewModel instanceof ImageViewModel) {
+            return IMAGE;
+        } else if (viewModel instanceof UnsupportedViewModel) {
+            return UNSUPPORTED;
+        } else {
+            throw new IllegalStateException("Unsupported view model type: "
+                    + viewModel.getClass());
+        }
     }
 }
