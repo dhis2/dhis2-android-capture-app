@@ -13,7 +13,7 @@
   <string name="no_value">មិនមានតំលៃ</string>
   <string name="sync_now">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
   <string name="sync_text">កំពុងបញ្ជូនទិន្នន័យទៅកាន់ម៉ាស៊ីនមេ</string>
-  <string name="sync_title">បញ្ចូនទិន្នន័យឥឡូវនេះ</string>
+  <string name="sync_title">"បញ្ចូនទិន្នន័យឥឡូវនេះ "</string>
   <string name="sync_metadata">ទិន្នន័យ</string>
   <string name="sync_events">ព្រឹត្តិការណ៏</string>
   <string name="sync_tei">ផ្នែកតាមដាន</string>
@@ -116,7 +116,6 @@
   <string name="deactivate">ធ្វើអោយអសកម្ម</string>
   <string name="program_not_allow_events">កម្មវិធីនេះមិនអនុញ្ញាតអោយមានព្រឹត្តិការណ៏ច្រើនទេ</string>
   <string name="events">ព្រឹត្តិការណ៏</string>
-  <string name="relationships">ទំនាក់ទំនង</string>
   <string name="done_task">ផ្ទាំងដើម</string>
   <string name="app_info">ព័ត៌មានកម្មវិធី</string>
   <string name="log_out">ចាកចេញ</string>
@@ -291,4 +290,9 @@
   <string name="tuto_main_8">កំពុងបញ្ជូនទិន្នន័យរបស់អ្នកទៅកាន់ម៉ាស៊ីនមេ</string>
   <string name="tuto_main_9">បិទកម្មវិធីដោយលេខកូដ ៤ ខ្ទង់។ កុំភ្លេចលេខកូដរបស់អ្នក!</string>
   <string name="tuto_main_10">ចាកចេញដើម្បីប្ដូរឈ្មោះអ្នកប្រើប្រាស់ រឺ ដូរម៉ាស៊ីនមេ។ អ្នកនឹងអាចចូលមកប្រើបម្ដងទៀតទោះបីជាមិនភ្ជាប់អ៊ិនធើណែតក៏ដោយ</string>
+  <string name="relationships">ទំនាក់ទំនង</string>
+  <string name="dashboard_overview">ទិដ្ឋភាពទូទៅ</string>
+  <string name="dashboard_relationships">ទំនាក់ទំនង</string>
+  <string name="dashboard_indicators">ទិន្នន័យសរុប</string>
+  <string name="dashboard_notes">ចំណាំ</string>
 </resources>
