@@ -65,13 +65,16 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private static final int ORG_UNIT = 10;
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
+
     @NonNull
-    private List<FieldViewModel> viewModels;
+    private List<List<FieldViewModel>> viewModels;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     @NonNull
     private final List<Row> rows;
+    private int columnPos = 0;
+    private int rowPos = 0;
     public DataSetTableAdapter(Context context) {
         super(context);
         rows = new ArrayList<>();
@@ -128,18 +131,13 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
-//       ((DataSetCell) holder).bind(mCellItems.get(rowPosition).get(columnPosition));
 
-
-        rows.get(holder.getItemViewType()).onBind(holder,
-                viewModels.get(holder.getAdapterPosition()));
-
+        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
 
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        //((DataSetCell) holder).binding.title.requestLayout();
     }
 
-    public void swap(List<FieldViewModel> viewModels){
+    public void swap(List<List<FieldViewModel>> viewModels){
         this.viewModels = viewModels;
     }
 
@@ -237,6 +235,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getRowHeaderItemViewType(int rowPosition) {
+        columnPos = rowPosition;
         // The unique ID for this type of row header item
         // If you have different items for Row Header View by Y (Row) position,
         // then you should fill this method to be able create different
@@ -246,7 +245,16 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getCellItemViewType(int columnPosition) {
-        FieldViewModel viewModel = viewModels.get(columnPosition);
+        FieldViewModel viewModel;
+        if(rowPos <= viewModels.get(0).size()-1){
+            viewModel = viewModels.get(rowPos).get(columnPosition);
+        }else{
+            viewModel = viewModels.get(viewModels.size()-1).get(columnPosition);
+        }
+
+        if(columnPosition == viewModels.get(0).size()-1){
+            rowPos ++;
+        }
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;
         } else if (viewModel instanceof RadioButtonViewModel) {

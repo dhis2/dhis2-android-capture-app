@@ -82,9 +82,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform){
 
         ArrayList<List<String>> cells = new ArrayList<>();
-        List<FieldViewModel> listFields = new ArrayList<>();
+        List<List<FieldViewModel>> listFields = new ArrayList<>();
         for (DataElementModel de : dataElements.get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
+            ArrayList<FieldViewModel> fields = new ArrayList<>();
             for (List<String> catOpts : presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null)) {
                 boolean exitsValue = false;
                 FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
@@ -103,20 +104,22 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
 
-                        listFields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
+                        fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 false, "", dataValue.value(), sectionUid, true,
                                 true, null, de.description()));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
                 }
-                if (!exitsValue)
-                    listFields.add(fieldFactory.create("", "", de.valueType(),
+                if (!exitsValue) {
+                    fields.add(fieldFactory.create("", "", de.valueType(),
                             false, "", "", sectionUid, true,
                             true, null, de.description()));
 
                     values.add("");
+                }
             }
+            listFields.add(fields);
             cells.add(values);
         }
 
