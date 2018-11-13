@@ -272,7 +272,8 @@
     <string name="add_relationship_error">It\'s not possible to add this relationship</string>
     <string name="warning_error_on_complete_title">Check this!</string>
     <string name="save">Save</string>
-
+    <string name="reserved_value">Reserved Values</string>
+    
     <string name="downloaded_confirm">Do you want to add more data from QR?</string>
 
     <!--ABOUT-->

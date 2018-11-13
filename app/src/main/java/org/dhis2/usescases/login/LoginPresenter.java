@@ -196,10 +196,10 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     syncTrackedEntities();
                     break;
                 case TEI:
-                    syncAggregatesData();
+                    /*syncAggregatesData();
                     break;
                 case AGGREGATES:
-                    syncReservedValues();
+                    syncReservedValues();*/
                     break;
                 case RESERVED_VALUES:
                     Intent intent = new Intent(view.getContext(), MainActivity.class);
