@@ -143,4 +143,6 @@ public interface MetadataRepository {
     Flowable<Boolean> validateCredentials(String serverUrl, String username, String password);
 
     Observable<String> getServerUrl();
+
+    Observable<Integer> getOrgUnitsForDataElementsCount();
 }

@@ -1,6 +1,7 @@
 package org.dhis2;
 
 import org.dhis2.utils.DateUtils;
+import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Test;
 
@@ -250,5 +251,35 @@ public class ExampleUnitTest {
         } catch (IOException ex) {
             // handle
         }
+    }
+
+    @Test
+    public void isEventExpired() throws ParseException {
+        String completedDate = "2018-09-13";
+        int compExpDays = 2;
+        String[] currentDates = new String[]{
+                "2018-09-14",
+                "2018-09-17",
+                "2018-09-15",
+                "2018-09-11"
+        };
+        Boolean[] expectedResults = new Boolean[]{
+                false,
+                true,
+                false,
+                false
+        };
+
+        Date testDate = DateUtils.uiDateFormat().parse(completedDate);
+
+
+        int i = 0;
+        for (String date : currentDates) {
+            Boolean isExpired = DateUtils.getInstance().isEventExpired(
+                    DateUtils.uiDateFormat().parse(date),testDate, compExpDays);
+            assertEquals(expectedResults[i], isExpired);
+            i++;
+        }
+
     }
 }

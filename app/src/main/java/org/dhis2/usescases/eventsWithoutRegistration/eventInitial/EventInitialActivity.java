@@ -57,6 +57,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -448,6 +449,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         });
 
         binding.date.setText(selectedDateString);
+        presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
@@ -456,8 +458,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
 
         if (eventModel != null) {
-            if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType()) ||
-                    eventModel.status() == EventStatus.COMPLETED) {
+            if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays()) ||
+                    eventModel.status() == EventStatus.COMPLETED ||
+                    eventModel.status() == EventStatus.SKIPPED) {
                 binding.date.setEnabled(false);
                 binding.catCombo.setEnabled(false);
                 binding.lat.setEnabled(false);
@@ -816,6 +819,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits) {
+        Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
+        while(iterator.hasNext()){
+            OrganisationUnitModel orgUnit = iterator.next();
+            if (orgUnit.closedDate()!= null && selectedDate.after(orgUnit.closedDate()))
+                iterator.remove();
+        }
         orgUnitDialog = new OrgUnitDialog()
                 .setTitle(getString(R.string.org_unit))
                 .setMultiSelection(false)

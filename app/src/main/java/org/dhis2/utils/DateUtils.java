@@ -257,6 +257,7 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
+    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
@@ -667,7 +668,7 @@ public class DateUtils {
                     calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
                     return calendar.getTime();
                 case Weekly:
-                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                     Date firstDateOfWeek = calendar.getTime();
                     if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfWeek.getTime()) >= expiryDays) {
                         return firstDateOfWeek;
@@ -1019,5 +1020,27 @@ public class DateUtils {
         }
 
         return formattedDate;
+    }
+
+    /**
+     * Check if an event is expired in a date
+     * @param currentDate date or today if null
+     * @param completedDay date that event was completed
+     * @param compExpDays days of expiration of an event
+     * @return true or false
+     */
+    public Boolean isEventExpired(@Nullable Date currentDate, Date completedDay, int compExpDays){
+
+        Calendar calendar = getCalendar();
+
+        if (currentDate != null)
+            calendar.setTime(currentDate);
+
+        Date date = calendar.getTime();
+
+        if(completedDay!=null)
+            return completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+        else
+            return false;
     }
 }
