@@ -5,6 +5,7 @@ import android.content.Context;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.dagger.PerActivity;
+import org.hisp.dhis.android.core.D2;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,8 +24,8 @@ public class ReservedValueModule {
 
     @PerActivity
     @Provides
-    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository){
-        return new ReservedValuePresenter(repository);
+    ReservedValueContracts.Presenter providePresenter(ReservedValueRepository repository, D2 d2){
+        return new ReservedValuePresenter(repository,d2);
     }
 
     @PerActivity

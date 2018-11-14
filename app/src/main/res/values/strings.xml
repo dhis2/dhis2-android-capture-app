@@ -180,7 +180,7 @@
     <string name="SYNC_MANAGER">Settings</string>
     <string name="last_data_sync_date">Last sync on: %s</string>
     <string name="last_metadata_sync_date">Last sync on: %s</string>
-
+    <string name="refill_reserved_values">Refill</string>
     <!-- SEARCH TRACK ENTITY -->
     <string name="enrollmment_date">Enrollment date</string>
 

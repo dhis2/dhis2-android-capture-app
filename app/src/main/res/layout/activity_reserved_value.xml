@@ -6,6 +6,10 @@
         <variable
             name="title"
             type="java.lang.String" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.reservedValue.ReservedValueContracts.Presenter"/>
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -26,6 +30,7 @@
                 android:padding="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
+                android:onClick="@{()->presenter.onBackClick()}"
                 tools:ignore="ContentDescription" />
 
             <TextView

@@ -8,9 +8,17 @@ public class ReservedValueContracts {
 
     interface View extends AbstractActivityContracts.View {
         void setDataElements(List<ReservedValueModel> reservedValueModels);
+
+        void onBackClick();
+
+        void refreshAdapter();
     }
 
     public interface Presenter {
         void init(ReservedValueContracts.View view);
+
+        void onClickRefill(ReservedValueModel reservedValue);
+
+        void onBackClick();
     }
 }

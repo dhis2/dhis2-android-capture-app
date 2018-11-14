@@ -27,7 +27,7 @@ public class ReservedValueAdapter extends RecyclerView.Adapter<ReservedValueView
     public ReservedValueViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         ItemReservedValueBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_reserved_value, viewGroup, false);
-        return new ReservedValueViewHolder(binding);
+        return new ReservedValueViewHolder(binding, presenter);
     }
 
     @Override
