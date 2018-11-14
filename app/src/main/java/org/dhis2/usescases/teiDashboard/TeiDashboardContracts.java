@@ -43,6 +43,8 @@ public class TeiDashboardContracts {
         void showQR();
 
         void goToEnrollmentList(Bundle extras);
+
+        void restoreAdapter(String programUid);
     }
 
     public interface Presenter {

@@ -408,7 +408,7 @@ class EnrollmentFormRepository implements FormRepository {
                 }
 
                 Date eventDate;
-                Calendar cal = Calendar.getInstance();
+                Calendar cal = DateUtils.getInstance().getCalendar();
                 if (generatedByEnrollmentDate) {
 
                     cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
@@ -435,19 +435,24 @@ class EnrollmentFormRepository implements FormRepository {
 
                 if (!eventCursor.moveToFirst()) {
 
-                    EventModel event = EventModel.builder()
+                    EventModel.Builder eventBuilder = EventModel.builder()
                             .uid(codeGenerator.generate())
                             .created(Calendar.getInstance().getTime())
                             .lastUpdated(Calendar.getInstance().getTime())
-                            .eventDate(eventDate)
-                            .dueDate(eventDate)
+//                            .eventDate(eventDate)
+//                            .dueDate(eventDate)
                             .enrollment(enrollmentUid)
                             .program(program)
                             .programStage(programStage)
                             .organisationUnit(orgUnit)
                             .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
-                            .state(State.TO_POST)
-                            .build();
+                            .state(State.TO_POST);
+                    if (eventDate.after(now)) //scheduling
+                        eventBuilder.dueDate(eventDate);
+                    else
+                        eventBuilder.eventDate(eventDate);
+                    
+                    EventModel event = eventBuilder.build();
 
 
                     if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
@@ -529,7 +534,7 @@ class EnrollmentFormRepository implements FormRepository {
 
     @Override
     public Observable<Boolean> captureCoodinates() {
-        return briteDatabase.createQuery("Program","SELECT Program.captureCoordinates FROM Program " +
+        return briteDatabase.createQuery("Program", "SELECT Program.captureCoordinates FROM Program " +
                 "JOIN Enrollment ON Enrollment.program = Program.uid WHERE Enrollment.uid = ?", enrollmentUid)
                 .mapToOne(cursor -> cursor.getInt(0) == 1);
     }

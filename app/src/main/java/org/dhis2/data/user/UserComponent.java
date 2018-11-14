@@ -9,6 +9,8 @@ import org.dhis2.data.service.DataServiceComponent;
 import org.dhis2.data.service.DataServiceModule;
 import org.dhis2.data.service.MetadataServiceComponent;
 import org.dhis2.data.service.MetadataServiceModule;
+import org.dhis2.data.service.ReservedValuesWorkerComponent;
+import org.dhis2.data.service.ReservedValuesWorkerModule;
 import org.dhis2.data.service.ServiceComponent;
 import org.dhis2.data.service.ServiceModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
@@ -148,4 +150,7 @@ public interface UserComponent {
 
     @Nonnull
     SyncMetadataWorkerComponent plus(SyncMetadataWorkerModule syncDataWorkerModule);
+
+    @NonNull
+    ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
 }

@@ -243,4 +243,9 @@ final class SyncPresenterImpl implements SyncPresenter {
     public void syncMetadata(Context context) throws Exception {
         d2.syncMetaData().call();
     }
+
+    @Override
+    public void syncReservedValues() {
+        d2.syncAllTrackedEntityAttributeReservedValues();
+    }
 }

@@ -57,6 +57,16 @@
                 android:layout_centerInParent="true" />
 
             <ImageView
+                android:id="@+id/dhisLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:tint="@color/white"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_dhis_white" />
+
+            <ImageView
                 android:id="@+id/logo_flag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -14,6 +14,8 @@ import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.data.service.ReservedValuesWorker;
+import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncResult;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
@@ -29,6 +31,10 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,6 +45,8 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import timber.log.Timber;
+
+import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_DATA_NOW;
 
 public class LoginPresenter implements LoginContracts.Presenter {
 
@@ -96,6 +104,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
+        view.handleSync();
 
         String serverUrl = view.getBinding().serverUrl.getEditText().getText().toString();
         String username = view.getBinding().userName.getEditText().getText().toString();
@@ -207,8 +216,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     break;
                 case AGGREGATES:*/
                 syncReservedValues();
-                break;
-            case RESERVED_VALUES:
+           /*     break;
+            case RESERVED_VALUES:*/
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Bundle bundle = new Bundle();
@@ -220,10 +229,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
             default:
                 break;
         }
-        /*else {
-            view.displayMessage(syncResult.message());
-            new Handler().postDelayed(this::logOut, 1500);
-        }*/
     }
 
     @Override
@@ -253,7 +258,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
             if (NetworkUtils.isOnline(view.getContext())) {
-                view.handleSync();
+//                view.handleSync();
                 metadataRepository.createErrorTable();
                 sync();
             } else
@@ -264,6 +269,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
+        view.handleSync();
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
         } else if (throwable instanceof D2CallException) {
@@ -352,6 +358,15 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void syncReservedValues() {
 
+        WorkManager.getInstance().cancelAllWorkByTag("TAG_RV");
+        OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(ReservedValuesWorker.class);
+        syncDataBuilder.addTag("TAG_RV");
+        syncDataBuilder.setConstraints(new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build());
+        OneTimeWorkRequest request = syncDataBuilder.build();
+        WorkManager.getInstance().enqueue(request);
+/*
         disposable.add(Observable.just(true)
                 .map(init -> {
                     userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
@@ -365,7 +380,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         update(LoginActivity.SyncState.RESERVED_VALUES),
                         Timber::d
                 )
-        );
+        );*/
     }
 
 

@@ -149,13 +149,13 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
+    public void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel) {
         this.categoryOptionComboModel = categoryOptionComboModel;
 
     }
 
     @Override
-    public void clearCatComboFilters(String orgUnitQuery) {
+    public void clearCatComboFilters() {
         this.categoryOptionComboModel = null;
 
     }

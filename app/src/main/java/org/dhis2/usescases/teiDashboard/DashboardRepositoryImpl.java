@@ -104,8 +104,9 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private final String EVENTS_QUERY = String.format(
             "SELECT Event.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ? " +
+                    "WHERE %s.%s = ? " + //ProgramUid
+                    "AND Event.programStage IN (SELECT ProgramStage.uid FROM ProgramStage WHERE ProgramStage.program = ?) " + //Program.uid
+                    "AND %s.%s = ? " + //TeiUid
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
                     "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
@@ -292,7 +293,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId)
+        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, progId, teiId)
                 .mapToList(EventModel::create);
     }
 
@@ -472,13 +473,21 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public int setFollowUp(String programUid, String enrollmentUid, boolean followUp) {
+    public boolean setFollowUp(String enrollmentUid) {
+
+        String enrollmentFollowUpQuery = "SELECT Enrollment.followup FROM Enrollment WHERE Enrollment.uid = ?";
+        Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid);
+        boolean followUp = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            followUp = cursor.getInt(0) == 1;
+        }
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
 
-        updateProgramTable(Calendar.getInstance().getTime(), programUid);
+        int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
 
-        return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+        return !followUp;
     }
 
     @Override

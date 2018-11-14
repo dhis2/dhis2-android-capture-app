@@ -9,6 +9,14 @@
 
         <import type="android.text.TextUtils" />
 
+        <variable
+            name="sharing"
+            type="android.databinding.ObservableBoolean"/>
+
+        <variable
+            name="shareList"
+            type="android.databinding.ObservableArrayList"/>
+
     </data>
 
     <RelativeLayout
@@ -53,7 +61,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_share" />
+                    android:src="@{sharing?@drawable/ic_clear:@drawable/ic_share,default=@drawable/ic_share}"
+                    />
+                <!--app:srcCompat="@drawable/ic_share"-->
             </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.RecyclerView
@@ -71,12 +81,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:gravity="center"
-                android:text="@string/action_accept"
+                android:text="@{sharing ? @plurals/action_share_items(shareList.size(),shareList.size()) : @string/action_accept}"
                 android:textColor="@color/colorGreyDefault"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:text="Accept"
+                tools:text="Send"
                 tools:visibility="visible" />
 
         </android.support.constraint.ConstraintLayout>

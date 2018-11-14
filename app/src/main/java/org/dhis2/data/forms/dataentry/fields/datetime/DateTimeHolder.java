@@ -15,6 +15,7 @@ import java.util.Date;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -27,14 +28,37 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
+    private final FlowableProcessor<Integer> currentPosition;
     /* @NonNull
      private BehaviorProcessor<DateTimeViewModel> model;*/
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Integer> currentPosition) {
         super(binding);
         this.disposable = new CompositeDisposable();
         this.processor = processor;
+        this.currentPosition = currentPosition;
+
+        /*currentPosition
+                .subscribe(
+                        position -> {
+                            if (position + 1 == getAdapterPosition()){
+                                if (binding instanceof FormTimeTextBinding) {
+                                    ((FormTimeTextBinding) binding).timeView.performClick();
+                                }
+
+                                if (binding instanceof FormDateTextBinding) {
+                                    ((FormDateTextBinding) binding).dateView.performClick();
+                                }
+
+                                if (binding instanceof FormDateTimeTextBinding) {
+                                    ((FormDateTimeTextBinding) binding).dateTimeView.onClick(itemView);
+                                }
+                            }
+                        },
+                        Timber::e
+                );*/
+
 //        model = BehaviorProcessor.create();
 
         if (binding instanceof FormTimeTextBinding) {
@@ -123,6 +147,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         processor.onNext(
                 RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)
         );
+
+        currentPosition.onNext(getAdapterPosition());
+
     }
 
     @Override

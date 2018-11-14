@@ -36,8 +36,11 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         this.renderType = null;
         this.isEditable = new ObservableBoolean(true);
     }
+
     //Data entryconstructor
-    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
+                       @NonNull FlowableProcessor<Integer> currentPosition,
+                       boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

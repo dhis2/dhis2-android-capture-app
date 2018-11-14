@@ -162,6 +162,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         try {
             dispatcher.cancelAll();
             d2.wipeModule().wipeEverything();
+            metadataRepository.deleteErrorLogs();
             // clearing cache data
             deleteDir(view.getAbstracContext().getCacheDir());
 
@@ -177,6 +178,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void deleteLocalData() {
         try {
             d2.wipeModule().wipeData();
+            metadataRepository.deleteErrorLogs();
         } catch (D2CallException e) {
             Timber.e(e);
         }

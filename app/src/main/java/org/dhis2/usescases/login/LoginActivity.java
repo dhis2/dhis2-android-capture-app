@@ -178,23 +178,42 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void handleSync() {
-        isSyncing = true;
-        binding.login.setVisibility(View.GONE);
-        if (binding.logo != null) {
-            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-            if (binding.guideline != null)
-                binding.guideline.setGuidelinePercent(1);
-            params.height = MATCH_PARENT;
-            params.width = MATCH_PARENT;
-            binding.logo.setLayoutParams(params);
-            binding.syncLayout.setVisibility(View.VISIBLE);
-            if (Build.VERSION.SDK_INT > 21) {
-                binding.lottieView.setVisibility(View.VISIBLE);
-                binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
-                binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
-                binding.lottieView.useHardwareAcceleration(true);
-                binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-                binding.lottieView.playAnimation();
+        if (!isSyncing) {
+            isSyncing = true;
+            binding.login.setVisibility(View.GONE);
+            if (binding.logo != null) {
+                ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+                if (binding.guideline != null)
+                    binding.guideline.setGuidelinePercent(1);
+                params.height = MATCH_PARENT;
+                params.width = MATCH_PARENT;
+                binding.logo.setLayoutParams(params);
+                binding.syncLayout.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT > 21) {
+                    binding.lottieView.setVisibility(View.VISIBLE);
+                    binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
+                    binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
+                    binding.lottieView.useHardwareAcceleration(true);
+                    binding.lottieView.enableMergePathsForKitKatAndAbove(true);
+                    binding.lottieView.playAnimation();
+                }
+            }
+        } else {
+            isSyncing = false;
+            binding.login.setVisibility(View.VISIBLE);
+            if (binding.logo != null) {
+                ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+                if (binding.guideline != null)
+                    binding.guideline.setGuidelinePercent(1);
+                params.height = 0;
+                params.width = 0;
+
+                binding.logo.setLayoutParams(params);
+                binding.syncLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT > 21) {
+                    binding.lottieView.setVisibility(View.GONE);
+                    binding.lottieView.cancelAnimation();
+                }
             }
         }
     }

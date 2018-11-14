@@ -150,4 +150,6 @@ public interface MetadataRepository {
     void createErrorTable();
 
     Observable<List<ErrorMessageModel>> getSyncErrors();
+
+    void deleteErrorLogs();
 }

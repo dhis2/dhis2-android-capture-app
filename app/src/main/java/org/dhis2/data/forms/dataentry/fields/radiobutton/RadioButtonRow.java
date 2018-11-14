@@ -33,7 +33,8 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     }
 
-    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                          @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

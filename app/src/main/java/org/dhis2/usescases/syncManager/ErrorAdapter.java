@@ -1,16 +1,21 @@
 package org.dhis2.usescases.syncManager;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.utils.ErrorMessageModel;
 
 import java.util.List;
+
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 25/10/2018.
@@ -19,16 +24,20 @@ import java.util.List;
 public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
 
     private final List<ErrorMessageModel> data;
+    private final ObservableBoolean sharing;
+    private FlowableProcessor<Pair<Boolean, ErrorMessageModel>> processor;
 
-    public ErrorAdapter(List<ErrorMessageModel> data) {
+    public ErrorAdapter(List<ErrorMessageModel> data, ObservableBoolean sharing) {
+        this.processor = PublishProcessor.create();
         this.data = data;
+        this.sharing = sharing;
     }
 
     @NonNull
     @Override
     public ErrorViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         ItemErrorDialogBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.item_error_dialog, viewGroup, false);
-        return new ErrorViewHolder(binding);
+        return new ErrorViewHolder(binding, sharing, processor);
     }
 
     @Override
@@ -39,5 +48,10 @@ public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @NonNull
+    public FlowableProcessor<Pair<Boolean, ErrorMessageModel>> asFlowable() {
+        return processor;
     }
 }

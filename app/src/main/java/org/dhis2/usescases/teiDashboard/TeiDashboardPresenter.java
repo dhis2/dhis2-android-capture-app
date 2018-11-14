@@ -150,7 +150,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
                         .map(eventModels -> {
                             for (EventModel eventModel : eventModels) {
-                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
                                     dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
                                 }
                             }
@@ -261,6 +261,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void setProgram(ProgramModel program) {
         this.programUid = program.uid();
+        view.restoreAdapter(programUid);
         getData();
     }
 
@@ -295,20 +296,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
-                dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
-        if (success > 0) {
+        boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
 
-            boolean followUp = false;
-            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null) {
-                followUp = dashboardProgramModel.getCurrentEnrollment().followUp();
-            }
 
-            view.showToast(!followUp ?
-                    view.getContext().getString(R.string.follow_up_enabled) :
-                    view.getContext().getString(R.string.follow_up_disabled));
-            getData();
-        }
+        view.showToast(followup ?
+                view.getContext().getString(R.string.follow_up_enabled) :
+                view.getContext().getString(R.string.follow_up_disabled));
+
+        TEIDataFragment.getInstance().switchFollowUp(followup);
+
+
     }
 
     @Override

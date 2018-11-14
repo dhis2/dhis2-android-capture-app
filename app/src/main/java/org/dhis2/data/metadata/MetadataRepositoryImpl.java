@@ -662,4 +662,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex("errorDate")))
                 ));
     }
+
+    @Override
+    public void deleteErrorLogs() {
+        try {
+            briteDatabase.delete(ErrorMessageModel.TABLE, null);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
 }

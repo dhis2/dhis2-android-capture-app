@@ -4,18 +4,20 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
 import java.util.Objects;
+
+import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/11/2017.
@@ -48,7 +50,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         for (ProgramStageModel stage : programStageList)
             if (Objects.equals(events.get(position).programStage(), stage.uid()))
                 programStage = stage;
-        holder.bind(presenter, events.get(position), programStage,enrollment);
+        if (programStage != null)
+            holder.bind(presenter, events.get(position), programStage, enrollment);
+        else {
+            Timber.e(new Throwable(),"Program stage %s does not belong to program %s",
+                    events.get(position).programStage(), enrollment.program());
+        }
     }
 
     @Override

@@ -57,6 +57,9 @@
     <string name="YEARLY">Yearly</string>
     <string name="clear_filters">Clear filters</string>
     <string name="action_accept">Accept</string>
+    <string name="action_share_zero_items">Share</string>
+    <string name="action_share_single_item">Share %d item</string>
+    <string name="action_share_multiple_item">Share %d items</string>
 
     <!-- Input hints -->
     <string name="search">Search</string>

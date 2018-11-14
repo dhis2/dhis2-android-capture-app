@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.andrognito.pinlockview.PinLockListener;
 
 import org.dhis2.App;
-import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
 import org.dhis2.usescases.about.AboutFragment;
@@ -95,13 +94,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onResume();
         presenter.init(this);
 
-        if (BuildConfig.DEBUG ||
-                (getIntent().getBooleanExtra(Constants.EXTRA_FROM_LOGIN, false) &&
-                        (!getSharedPreferences().getBoolean(Constants.LAST_DATA_SYNC_STATUS, true) ||
-                                !getSharedPreferences().getBoolean(Constants.LAST_META_SYNC_STATUS, true)
-                        )
-                )
-                ) {
+        if (!getSharedPreferences().getBoolean(Constants.LAST_DATA_SYNC_STATUS, true) ||
+                !getSharedPreferences().getBoolean(Constants.LAST_META_SYNC_STATUS, true)) {
             binding.errorLayout.setVisibility(View.VISIBLE);
         } else
             binding.errorLayout.setVisibility(View.GONE);
@@ -123,7 +117,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         return username -> {
             binding.setUserName(username);
             ((TextView) binding.navView.getHeaderView(0).findViewById(R.id.user_info)).setText(username);
-//            binding.menuJira.setText(String.format(getString(R.string.jira_report) + " (%s)", BuildConfig.VERSION_NAME));
             binding.executePendingBindings();
         };
     }

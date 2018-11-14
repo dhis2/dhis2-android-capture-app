@@ -350,7 +350,8 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-                return RuleVariableCalculatedValue.create(name, dataElement, mimeType);
+                String variable = dataElement != null ? dataElement : attribute;
+                return RuleVariableCalculatedValue.create(name, variable != null ? variable : "", mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -395,7 +396,8 @@ public final class RulesRepository {
             case DATAELEMENT_PREVIOUS_EVENT:
                 return RuleVariablePreviousEvent.create(name, dataElement, mimeType);
             case CALCULATED_VALUE:
-                return RuleVariableCalculatedValue.create(name, dataElement, mimeType);
+                String variable = dataElement != null ? dataElement : attribute;
+                return RuleVariableCalculatedValue.create(name, variable != null ? variable : "", mimeType);
             default:
                 throw new IllegalArgumentException("Unsupported variable " +
                         "source type: " + sourceType);
@@ -441,7 +443,7 @@ public final class RulesRepository {
                 return RuleActionHideSection.create(section);
             case ASSIGN:
                 return RuleActionAssign.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute,!isEmpty(attribute));
+                        isEmpty(attribute) ? dataElement : attribute, !isEmpty(attribute));
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);
