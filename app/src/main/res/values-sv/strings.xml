@@ -116,7 +116,6 @@
   <string name="deactivate">Inaktivera</string>
   <string name="program_not_allow_events">Det här programmet tillåter inte fler händelser</string>
   <string name="events">händelser</string>
-  <string name="relationships">relationer</string>
   <string name="done_task">Hem</string>
   <string name="app_info">App Info</string>
   <string name="log_out">Logga ut</string>
@@ -255,4 +254,5 @@
   <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>
   <string name="check_event">Kontrollera</string>
   <string name="chinesse_test">Ming: Vad är det här? (Wang Ming: Vad är det här?) Li Hong: Det här är en bok.</string>
+  <string name="relationships">relationer</string>
 </resources>
