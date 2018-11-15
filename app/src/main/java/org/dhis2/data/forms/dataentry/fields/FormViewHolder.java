@@ -1,7 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import android.app.Activity;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import org.dhis2.R;
@@ -38,4 +41,9 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
     }
 
     public abstract void dispose();
+
+    public void closeKeyboard(View v){
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
 }

@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
 import org.hisp.dhis.rules.models.RuleActionCreateEvent;
-import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -25,11 +24,13 @@ import org.hisp.dhis.rules.models.RuleActionWarningOnCompletion;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -57,6 +58,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
+    private HashMap<String, FieldViewModel> currentFieldViewModels;
 
     DataEntryPresenterImpl(@NonNull CodeGenerator codeGenerator,
                            @NonNull DataEntryStore dataEntryStore,
@@ -74,13 +76,13 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-        Flowable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
+        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(
-                fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+                fieldsFlowable.toFlowable(BackpressureStrategy.LATEST), ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())//check if computation does better than io
@@ -103,7 +105,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         );
     }
 
-    private void save(String uid, String value) {
+    private void save(String uid, String value, Boolean isAttribute) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
         saveDisposable.add(
                 dataEntryStore.save(uid, value)
@@ -139,6 +141,10 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         applyRuleEffects(fieldViewModels, calcResult);
 
+        if (this.currentFieldViewModels == null)
+            this.currentFieldViewModels = new HashMap<>();
+        this.currentFieldViewModels.putAll(fieldViewModels);
+
         return new ArrayList<>(fieldViewModels.values());
     }
 
@@ -152,6 +158,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     }
 
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
+
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
@@ -177,17 +184,28 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 fieldViewModels.remove(hideField.field());
                 dataEntryStore.save(hideField.field(), null);
             } else if (ruleAction instanceof RuleActionDisplayText) {
-                String uid = codeGenerator.generate();
                 RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
+                String uid = displayText.content();
+
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
-                fieldViewModels.put(uid, textViewModel);
-            } else if (ruleAction instanceof RuleActionDisplayKeyValuePair) {
+
+                if (this.currentFieldViewModels == null ||
+                        !this.currentFieldViewModels.containsKey(uid)) {
+                    fieldViewModels.put(uid, textViewModel);
+                } else if (this.currentFieldViewModels.containsKey(uid) &&
+                        !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
+                    fieldViewModels.put(uid, textViewModel);
+                }else{
+                    
+                }
+
+            /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now
                 String uid = codeGenerator.generate();
                 RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
                         displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
-                fieldViewModels.put(uid, textViewModel);
+                fieldViewModels.put(uid, textViewModel);*/
 
             } else if (ruleAction instanceof RuleActionHideSection) {
                 RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
@@ -196,12 +214,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
                 if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data());
+                    save(assign.field(), ruleEffect.data(),assign.isAttribute());
                 else {
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data());
+                        save(assign.field(), ruleEffect.data(),assign.isAttribute());
                     }
 
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));

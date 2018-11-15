@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:fontFamily="sans-serif"
-                android:text="@{DateUtils.getInstance().getPeriodUIString(stage.periodType(),event.eventDate())}"
                 android:textColor="#444444"
                 android:textSize="14sp"
                 android:textStyle="normal"
@@ -83,12 +82,13 @@
 
                 <ImageView
                     android:id="@+id/event_icon"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:enrollmentStatusIcon="@{enrollment}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusIcon="@{event}"
                     app:srcCompat="@drawable/ic_edit"
+                    android:layout_gravity="end"
                     tools:ignore="ContentDescription" />
 
                 <android.support.v7.widget.AppCompatTextView

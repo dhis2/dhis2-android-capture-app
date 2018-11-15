@@ -76,7 +76,7 @@ public class FormSectionAdapter extends FragmentStatePagerAdapter {
 
         if (sections.size() == models.size()) //If previous sections size = new sections size we check if each section is the same
             for (String section : newSections) {
-                if (!section.equals(sections.get(0)))
+                if (section!=null && !section.equals(sections.get(0)))
                     differentSections = true;
             }
         else

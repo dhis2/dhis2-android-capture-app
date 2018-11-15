@@ -266,7 +266,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
             //TITLE
             final View titleView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_title, null);
             ((TextView) titleView.findViewById(R.id.dialogTitle)).setText(title);
-            int colorPrimary = ColorUtils.getPrimaryColor(getActivity(), ColorUtils.ColorType.PRIMARY);
             alertDialog.setCustomTitle(titleView);
 
             //BODY

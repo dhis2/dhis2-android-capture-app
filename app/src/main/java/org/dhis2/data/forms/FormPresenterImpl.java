@@ -116,6 +116,12 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(view.renderIncidentDate(), Timber::e)
             );
 
+            compositeDisposable.add(formRepository.captureCoodinates()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(view.renderCaptureCoordinates(), Timber::e)
+            );
+
             compositeDisposable.add(formRepository.getAllowDatesInFuture()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
@@ -137,7 +143,7 @@ class FormPresenterImpl implements FormPresenter {
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -304,7 +310,7 @@ class FormPresenterImpl implements FormPresenter {
         else {
             Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
             Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                    .subscribeOn(schedulerProvider.computation());
+                    .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
             // Combining results of two repositories into a single stream.
             Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -323,7 +329,7 @@ class FormPresenterImpl implements FormPresenter {
     public void checkMandatoryFields() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);
@@ -345,7 +351,7 @@ class FormPresenterImpl implements FormPresenter {
     public Observable<Boolean> checkMandatory() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);

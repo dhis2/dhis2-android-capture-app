@@ -309,12 +309,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             incidentDateLayout.setHint(programModelAndDate.val0().incidentDateLabel());
             incidentDateLayout.setVisibility(View.VISIBLE);
             incidentDate.setText(programModelAndDate.val1());
-            if (isEnrollment && programModelAndDate.val0().captureCoordinates()) {
-                coordinatesView.setVisibility(View.VISIBLE);
-            } else {
-                coordinatesView.setVisibility(View.GONE);
-            }
         };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Boolean> renderCaptureCoordinates() {
+        return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
     }
 
     @NonNull

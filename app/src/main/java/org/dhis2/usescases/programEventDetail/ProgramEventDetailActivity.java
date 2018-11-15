@@ -425,17 +425,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position == 0) {
                         isFilteredByCatCombo = false;
-                        presenter.clearCatComboFilters(orgUnitFilter.toString());
+                        presenter.clearCatComboFilters();
+                        endlessScrollListener.resetState();
+                        pageProcessor.onNext(0);
                     } else {
                         isFilteredByCatCombo = true;
-                        presenter.onCatComboSelected(adapter.getItem(position - 1), orgUnitFilter.toString());
+                        presenter.onCatComboSelected(adapter.getItem(position - 1));
+                        endlessScrollListener.resetState();
+                        pageProcessor.onNext(0);
                     }
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                    isFilteredByCatCombo = false;
-                    presenter.clearCatComboFilters(orgUnitFilter.toString());
+                   /* isFilteredByCatCombo = false;
+                    presenter.clearCatComboFilters();*/
                 }
             });
         }

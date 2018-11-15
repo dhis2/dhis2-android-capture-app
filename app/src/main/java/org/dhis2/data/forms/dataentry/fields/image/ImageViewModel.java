@@ -41,5 +41,5 @@ public abstract class ImageViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_ImageViewModel(uid(), label(), mandatory(), data, programStageSection(),
-                allowFutureDate(), editable(), optionSet(), warning(), error(),description());    }
+                allowFutureDate(), false, optionSet(), warning(), error(),description());    }
 }

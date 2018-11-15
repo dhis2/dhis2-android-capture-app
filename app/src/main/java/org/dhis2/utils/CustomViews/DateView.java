@@ -101,6 +101,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     public void initData(String data) {
         if (data != null) {
             Date date = null;
+            data = data.replace("'",""); //TODO: Check why it is happening
             if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.uiDateFormat().parse(data);
@@ -110,12 +111,12 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
             else
                 try {
                     date = DateUtils.databaseDateFormat().parse(data);
+                    data = DateUtils.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
 
 
-            data = DateUtils.uiDateFormat().format(date);
         } else {
             editText.setText("");
         }

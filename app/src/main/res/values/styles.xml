@@ -100,6 +100,13 @@
         <item name="android:background">@drawable/full_width_button_bg</item>
     </style>
 
+    <!--<style name="FulLScreenDialogStyle" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimaryDark">?colorPrimaryDark</item>
+        <item name="colorPrimary">?colorPrimary</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>-->
+
     <style name="HalfWidthButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

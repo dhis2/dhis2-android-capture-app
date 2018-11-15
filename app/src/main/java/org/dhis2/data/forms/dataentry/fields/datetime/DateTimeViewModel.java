@@ -45,5 +45,5 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),data,programStageSection(),
-                allowFutureDate(),editable(),optionSet(),warning(),error(),description(),valueType());    }
+                allowFutureDate(),false,optionSet(),warning(),error(),description(),valueType());    }
 }
