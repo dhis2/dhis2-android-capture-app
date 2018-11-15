@@ -282,7 +282,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void setUpRecycler() {
-
         presenter.init(this);
     }
 
@@ -492,7 +491,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         .dismissListener(new DismissListener() {
                             @Override
                             public void onDismiss(String id) {
-//                            ((MainActivity)getAbstractActivity()).binding.menu.performClick();
                             }
 
                             @Override
@@ -502,33 +500,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                         })
                         .build();
 
-           /* FancyShowCaseView tuto7 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_7))
-                    .focusOn(((MainActivity)getAbstractActivity()).binding.navView.getMenu().getItem(1).getActionView())
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto8 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_8))
-                    .focusOn(((MainActivity)getAbstractActivity()).binding.navView.getMenu().getItem(2).getActionView())
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto9 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_9))
-                    .focusOn(((MainActivity)getAbstractActivity()).binding.navView.getMenu().getItem(4).getActionView())
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .titleGravity(Gravity.TOP)
-                    .closeOnTouch(true)
-                    .build();
-            FancyShowCaseView tuto10 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .title(getString(R.string.tuto_main_10))
-                    .focusOn(((MainActivity)getAbstractActivity()).binding.navView.getMenu().getItem(5).getActionView())
-                    .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                    .titleGravity(Gravity.TOP)
-                    .closeOnTouch(true)
-                    .build();
-*/
                 ArrayList<FancyShowCaseView> steps = new ArrayList<>();
                 steps.add(tuto1);
                 steps.add(tuto2);
@@ -536,10 +507,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 steps.add(tuto4);
                 steps.add(tuto5);
                 steps.add(tuto6);
-           /* steps.add(tuto7);
-            steps.add(tuto8);
-            steps.add(tuto9);
-            steps.add(tuto10);*/
+
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 

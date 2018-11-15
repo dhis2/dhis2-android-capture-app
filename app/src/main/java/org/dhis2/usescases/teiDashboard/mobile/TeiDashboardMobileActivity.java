@@ -26,7 +26,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
@@ -121,7 +120,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         if (getResources().getBoolean(R.bool.is_tablet))
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
+                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
                     .commit();
 
         binding.setDashboardModel(program);
@@ -139,13 +138,19 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         setViewpagerAdapter();
 
 
-        RelationshipFragment.getInstance().setData(program);
+//        RelationshipFragment.getInstance().setData(program);
 //        TEIDataFragment.getInstance().setData(programModel);
 
 //        binding.teiPager.setOffscreenPageLimit(6);
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
             setTutorial();
+    }
+
+    @Override
+    public void restoreAdapter(String programUid) {
+        this.adapter = null;
+        this.programUid = programUid;
     }
 
     @Override
@@ -168,8 +173,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.executePendingBindings();
         this.programModel = program;
 
-        binding.teiPager.setOffscreenPageLimit(6);
+        setViewpagerAdapter();
 
+//        RelationshipFragment.getInstance().setData(program);
     }
 
     @Override

@@ -267,6 +267,15 @@
                 app:switchPadding="15dp" />
 
             <Button
+                android:id="@+id/buttonSyncError"
+                style="@style/FullWidthButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:onClick='@{()->presenter.checkSyncErrors()}'
+                android:text="@string/CHECK_SYNC_ERRORS" />
+
+            <Button
                 android:id="@+id/buttonDeleteLocalData"
                 style="@style/FullWidthButton"
                 android:layout_width="match_parent"

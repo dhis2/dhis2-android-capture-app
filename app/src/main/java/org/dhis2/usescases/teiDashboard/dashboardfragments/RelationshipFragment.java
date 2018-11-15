@@ -71,6 +71,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
+    @Override
+    public void onDestroy() {
+        instance = null;
+        super.onDestroy();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,10 +96,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
 
     public void setData(DashboardProgramModel dashboardProgramModel) {
         this.dashboardProgramModel = dashboardProgramModel;
-        if (dashboardProgramModel.getCurrentProgram().relationshipText() == null)
-            binding.setRelationshipType(getString(R.string.default_relationship_label));
-        else
-            binding.setRelationshipType(dashboardProgramModel.getCurrentProgram().relationshipText());
+
         binding.executePendingBindings();
 
         presenter.subscribeToRelationships(this);

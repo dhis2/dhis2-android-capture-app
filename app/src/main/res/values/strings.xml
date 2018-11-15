@@ -56,6 +56,9 @@
     <string name="YEARLY">Yearly</string>
     <string name="clear_filters">Clear filters</string>
     <string name="action_accept">Accept</string>
+    <string name="action_share_zero_items">Share</string>
+    <string name="action_share_single_item">Share %d item</string>
+    <string name="action_share_multiple_item">Share %d items</string>
 
     <!-- Input hints -->
     <string name="search">Search</string>
@@ -201,8 +204,8 @@
 
     <!--EVENT SUMMARY-->
     <string name="section_list">Section list</string>
-    <string name="event_summary_header">%s questions of %s completed</string>
-    <string name="event_summary_sections_header">%s of %s completed</string>
+    <string name="event_summary_header" formatted="false">%s questions of %s completed</string>
+    <string name="event_summary_sections_header" formatted="false">%s of %s completed</string>
     <string name="complete_and_close">Complete and close</string>
 
     <!--AGE CUSTOM VIEW-->
@@ -280,7 +283,7 @@
     <string name="about_sdk">SDK Version: %s</string>
     <string name="about_connected">Connected to: %s</string>
     <string name="about_user">Current user: %s</string>
-    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what's not supported</string>
+    <string name="about_more">More about this app: read <a href="https://drive.google.com/open?id=1YHRBk6LSp6uROfs19-wCfQGc-rgl2f5iDrhCDasTR8M">here</a> what\'s supported and what\'s not supported</string>
     <string name="about_git">This and previous versions of this application, as well as the source code are available at <a href="https://github.com/dhis2/dhis2-android-capture-app">GitHub</a>. DHIS2 Android Capture is licensed under the terms of the GNU General Public License as published by the Free Software Foundation - see <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>.</string>
     <string name="about_dev">Developed and maintained by the <a href="https://www.dhis2.org/">DHIS2</a> project, part of University of Oslo, <a href="https://www.mn.uio.no/ifi/english/">department of informatics</a>.</string>
     <string name="about_contact">For more information or questions about this application, please write to <a href="mailto:android@dhis2.org">android@dhis2.org</a></string>
@@ -321,8 +324,6 @@
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
     <string name="check_event">Check</string>
 
-    <string name="burmesse_test">မြန်မာအက္ခရာ</string>
-    <string name="chinesse_test">明：这是什么？ (王明：這是什麼？) 李红：这是书。</string>
     <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
@@ -343,7 +344,7 @@
     <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
     <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
     <string name="tuto_dashboard_8">Click to see all enrollmets of your entity or create a new one.</string>
-    <string name="tuto_tei_event_1">Click to delete this event. This action cant be undone.</string>
+    <string name="tuto_tei_event_1">Click to delete this event. This action can not be undone.</string>
     <string name="tuto_tei_event_2">Complete the event.</string>
     <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
     <string name="tuto_program_event_2">Click to add a new event</string>
@@ -370,5 +371,7 @@
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
     <string name="CHECK_SYNC_ERRORS">Check sync errors</string>
     <string name="error_dialog_title">Sync error log</string>
+    <string name="share_with">Share with...</string>
+    <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
 
 </resources>

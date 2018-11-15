@@ -10,7 +10,6 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
-
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import io.reactivex.processors.FlowableProcessor;
@@ -26,7 +25,8 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     private final boolean isBackgroundTransparent;
     private final String renderType;
 
-    public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
+    public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
+                    @NonNull FlowableProcessor<Integer> currentPosition, boolean isBackgroundTransparent, String renderType) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;

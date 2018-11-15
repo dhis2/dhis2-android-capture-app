@@ -28,6 +28,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     private final String renderType;
     private final ObservableBoolean isEditable;
 
+    //Search form constructor
     public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
@@ -36,7 +37,10 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
         this.isEditable = new ObservableBoolean(true);
     }
 
-    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+    //Data entryconstructor
+    public EditTextRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
+                       @NonNull FlowableProcessor<Integer> currentPosition,
+                       boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

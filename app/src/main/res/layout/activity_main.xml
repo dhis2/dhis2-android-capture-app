@@ -27,14 +27,14 @@
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="match_parent">
 
         <!--Main Content-->
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/toolbar"
@@ -114,13 +114,40 @@
 
             </android.support.constraint.ConstraintLayout>
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/errorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->presenter.getErrors()}"
+                android:padding="5dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorGreyDefault"
+                    app:layout_constraintEnd_toStartOf="@id/errorMark"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/errors_during_sync" />
+
+                <ImageView
+                    android:id="@+id/errorMark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/red_060"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_error" />
+            </android.support.constraint.ConstraintLayout>
+
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/toolbar"
                 android:clipToPadding="false" />
-        </RelativeLayout>
+        </LinearLayout>
 
         <!--End of Main Content-->
 
@@ -137,8 +164,7 @@
 
         <include
             android:id="@+id/pin_layout"
-            layout="@layout/layout_pin"
-            />
+            layout="@layout/layout_pin" />
 
         <!--<RelativeLayout
             android:id="@+id/pin_layout"

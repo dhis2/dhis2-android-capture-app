@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -17,11 +16,9 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
-import org.dhis2.usescases.teiDashboard.adapters.ScheduleAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
@@ -74,8 +71,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     private CompositeDisposable compositeDisposable;
     private DashboardProgramModel dashboardProgramModel;
-    private TEIDataFragment teiDataFragment;
-    private String eventUid;
 
     TeiDashboardPresenter(D2 d2, DashboardRepository dashboardRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
@@ -134,7 +129,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            view::setDataWithOutProgram,
+                            dashboardProgramModel -> {
+                                this.dashboardProgramModel = dashboardProgramModel;
+                                this.teType = dashboardProgramModel.getTei().trackedEntityType();
+                                view.setData(dashboardProgramModel);
+                            },
                             throwable -> Log.d("ERROR", throwable.getMessage()))
             );
         }
@@ -149,6 +148,14 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void getTEIEvents(TEIDataFragment teiFragment) {
         compositeDisposable.add(
                 dashboardRepository.getTEIEnrollmentEvents(programUid, teUid)
+                        .map(eventModels -> {
+                            for (EventModel eventModel : eventModels) {
+                                if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate() != null && eventModel.dueDate().before(Calendar.getInstance().getTime())) { //If a schedule event dueDate is before today the event is skipped
+                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
+                                }
+                            }
+                            return eventModels;
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -157,6 +164,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         )
         );
     }
+
 
     @Override
     public void areEventsCompleted(TEIDataFragment teiDataFragment) {
@@ -253,6 +261,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void setProgram(ProgramModel program) {
         this.programUid = program.uid();
+        view.restoreAdapter(programUid);
         getData();
     }
 
@@ -278,6 +287,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             Bundle extras = new Bundle();
             extras.putString("EVENT_UID", uid);
             extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+            extras.putString("TEI_UID", teUid);
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
             teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
@@ -286,20 +296,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
     @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
-        int success = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().program(), dashboardProgramModel.getCurrentEnrollment().uid(),
-                dashboardProgramModel.getCurrentEnrollment().followUp() == null || !dashboardProgramModel.getCurrentEnrollment().followUp());
-        if (success > 0) {
+        boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
 
-            boolean followUp = false;
-            if (dashboardProgramModel.getCurrentEnrollment() != null && dashboardProgramModel.getCurrentEnrollment().followUp() != null) {
-                followUp = dashboardProgramModel.getCurrentEnrollment().followUp();
-            }
 
-            view.showToast(!followUp ?
-                    view.getContext().getString(R.string.follow_up_enabled) :
-                    view.getContext().getString(R.string.follow_up_disabled));
-            getData();
-        }
+        view.showToast(followup ?
+                view.getContext().getString(R.string.follow_up_enabled) :
+                view.getContext().getString(R.string.follow_up_disabled));
+
+        TEIDataFragment.getInstance().switchFollowUp(followup);
+
+
     }
 
     @Override
@@ -391,27 +397,16 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .map(list -> {
                             List<Trio<RelationshipTypeModel, String, Integer>> finalList = new ArrayList<>();
                             for (Pair<RelationshipTypeModel, String> rType : list) {
-                                int iconResId = dashboardRepository.getObjectStyle(view.getContext(),rType.val1());
+                                int iconResId = dashboardRepository.getObjectStyle(view.getAbstracContext(), rType.val1());
                                 finalList.add(Trio.create(rType.val0(), rType.val1(), iconResId));
                             }
                             return finalList;
                         })
-                        /*.filter(relationshipType -> {
-                            if (relationshipType.fromConstraint() != null)
-                                return relationshipType.fromConstraint().trackedEntityType().uid().equals(teType);
-                            else
-                                return true;
-                        })
-                        .flatMap(relationshipType ->
-                                dashboardRepository.getObjectStyle(view.getContext(), relationshipType.toConstraint() != null ? relationshipType.toConstraint().trackedEntityType().uid() : teUid)
-                                        .map(objectStyleModel -> Pair.create(relationshipType, objectStyleModel.val1())).toFlowable(BackpressureStrategy.LATEST)
-                        )
-                        .toList()*/
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                RelationshipFragment.getInstance().setRelationshipTypes()
-                                , t -> Log.d("RELATIONSHIP TYPE SIZE", "RelationshipType error")
+                                RelationshipFragment.getInstance().setRelationshipTypes(),
+                                Timber::e
                         )
         );
     }
@@ -450,40 +445,6 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     @Override
     public void onDescriptionClick(String description) {
         view.showDescription(description);
-    }
-
-
-    @Override
-    public void subscribeToScheduleEvents(ScheduleFragment scheduleFragment) {
-        compositeDisposable.add(
-                scheduleFragment.filterProcessor()
-                        .startWith(ScheduleAdapter.Filter.ALL)
-                        .map(filter -> {
-                            if (filter == ScheduleAdapter.Filter.SCHEDULE)
-                                return EventStatus.SCHEDULE.name();
-                            else if (filter == ScheduleAdapter.Filter.OVERDUE)
-                                return EventStatus.SKIPPED.name();
-                            else
-                                return EventStatus.SCHEDULE.name() + "," + EventStatus.SKIPPED.name();
-                        })
-                        .flatMap(filter -> dashboardRepository.getScheduleEvents(programUid, teUid, filter))
-                        .map(eventModels -> {
-                            for (EventModel eventModel : eventModels) {
-                                if (DateUtils.isToday(eventModel.dueDate().getTime())) { //If a event dueDate is Today, mark as Active
-                                    dashboardRepository.updateState(eventModel, EventStatus.ACTIVE);
-                                } else if (eventModel.dueDate().before(Calendar.getInstance().getTime()) && eventModel.status() != EventStatus.SKIPPED) { //If a event dueDate is before today and its status is not skipped, the event is skipped
-                                    dashboardRepository.updateState(eventModel, EventStatus.SKIPPED);
-                                }
-                            }
-                            return eventModels;
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                scheduleFragment.swapEvents(),
-                                Timber::d
-                        )
-        );
     }
 
 

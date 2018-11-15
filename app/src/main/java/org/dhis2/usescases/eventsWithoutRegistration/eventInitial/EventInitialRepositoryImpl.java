@@ -98,7 +98,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     public Observable<List<CategoryOptionComboModel>> catCombo(String programUid) {
         String catComboQuery = "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo JOIN CategoryCombo ON CategoryCombo.uid= CategoryOptionCombo.categoryCombo " +
                 "JOIN Program ON Program.categoryCombo = CategoryCombo.uid WHERE program.uid = ?";
-        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery,programUid)
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE, catComboQuery, programUid)
                 .mapToList(CategoryOptionComboModel::create);
     }
 
@@ -211,7 +211,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .program(program)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-                .eventDate(cal.getTime())
+//                .eventDate(cal.getTime()) Schedule events should not have an event date
                 .completedDate(null)
                 .dueDate(cal.getTime())
                 .state(State.TO_POST)
@@ -234,6 +234,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
             updateProgramTable(createDate, program);
             return Observable.just(uid);
         }

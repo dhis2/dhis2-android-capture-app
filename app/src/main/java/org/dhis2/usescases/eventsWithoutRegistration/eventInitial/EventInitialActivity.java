@@ -118,6 +118,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private ProgramModel program;
     private String savedLat, savedLon;
     private Boolean canWrite;
+    private ArrayList<String> sectionsToHide;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -377,12 +378,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
                     selectedCatCombo != null && selectedCatOptionCombo != null &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType != EventCreationType.REFERAL && tempCreate != null));
+                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
         else
             return isCompleted(selectedDateString) &&
                     isCompleted(selectedOrgUnit) &&
                     isSelectedDateBetweenOpeningAndClosedDates() &&
-                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType != EventCreationType.REFERAL && tempCreate != null));
+                    ((eventCreationType != EventCreationType.REFERAL) || (eventCreationType == EventCreationType.REFERAL && tempCreate != null));
     }
 
     private boolean isEventOpen() {
@@ -601,9 +602,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         if (periodType == null)
             periodType = programStage.periodType();
 
-        if(eventCreationType == EventCreationType.SCHEDULE)
+        if (eventCreationType == EventCreationType.SCHEDULE)
             binding.dateLayout.setHint(getString(R.string.due_date));
-        else if(programStage.executionDateLabel()!=null)
+        else if (programStage.executionDateLabel() != null)
             binding.dateLayout.setHint(programStage.executionDateLabel());
         else
             binding.dateLayout.setHint(getString(R.string.event_date));
@@ -754,8 +755,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
-        int completedSectionFields = calculateCompletedFields(updates);
-        int totalSectionFields = updates.size();
+
+        List<FieldViewModel> realUpdates = new ArrayList<>();
+        if (sectionsToHide != null && !sectionsToHide.isEmpty()) {
+            for (FieldViewModel fieldViewModel : updates)
+                if (!sectionsToHide.contains(fieldViewModel.programStageSection()))
+                    realUpdates.add(fieldViewModel);
+        }else
+            realUpdates.addAll(updates);
+
+        int completedSectionFields = calculateCompletedFields(realUpdates);
+        int totalSectionFields = realUpdates.size();
         totalFields = totalFields + totalSectionFields;
         totalCompletedFields = totalCompletedFields + completedSectionFields;
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
@@ -767,6 +777,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.progressGains.startAnimation(gainAnim);
         });
 
+    }
+
+    @Override
+    public void setHideSection(String sectionUid) {
+        if (sectionsToHide == null || sectionUid == null)
+            sectionsToHide = new ArrayList<>();
+
+        if (sectionUid != null && !sectionsToHide.contains(sectionUid))
+            sectionsToHide.add(sectionUid);
     }
 
     private int calculateCompletedFields(@NonNull List<FieldViewModel> updates) {

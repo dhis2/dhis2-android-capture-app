@@ -4,17 +4,16 @@ import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -98,7 +97,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         String value = item.getTitle().toString();
         String code = null;
         for (OptionModel optionModel : options)
-            if(value.equals(optionModel.displayName()))
+            if (value.equals(optionModel.displayName()))
                 code = optionModel.code();
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
@@ -108,9 +107,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        closeKeyboard(v);
         PopupMenu menu = new PopupMenu(itemView.getContext(), v);
         menu.setOnMenuItemClickListener(this);
-//        menu.getMenu().add(Menu.NONE, Menu.NONE, 0, viewModel.label()); Don't show label
         for (OptionModel optionModel : options)
             menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
         menu.show();

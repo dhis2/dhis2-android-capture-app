@@ -15,7 +15,7 @@
             type="org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryContract.Presenter" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
@@ -27,7 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="?colorPrimary"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/menu"
@@ -84,7 +85,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/completeLayout"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -168,39 +171,41 @@
                     <LinearLayout
                         android:id="@+id/event_section_rows"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical" />
 
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="4dp"
-                    android:background="@color/gray_f6f" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray_dfe" />
-
-                <Button
-                    android:id="@+id/action_button"
-                    style="@style/ButtonRoundedGrey"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="16dp"
-                    android:onClick="@{()->presenter.onDoAction()}"
-                    android:text="@string/complete_and_close" />
-            </LinearLayout>
         </RelativeLayout>
-    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/completeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@color/gray_f6f" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_dfe" />
+
+            <Button
+                android:id="@+id/action_button"
+                style="@style/ButtonRoundedGrey"
+                android:layout_gravity="end"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="16dp"
+                android:onClick="@{()->presenter.onDoAction()}"
+                android:text="@string/complete_and_close" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 </layout>

@@ -109,7 +109,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> list() {
+    public Observable<List<FieldViewModel>> list() {
 
         Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
         if (cursor != null && cursor.moveToFirst()) {
@@ -134,8 +134,7 @@ final class ProgramStageRepository implements DataEntryRepository {
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
-                .toFlowable(BackpressureStrategy.LATEST);
+                .map(this::checkRenderType);
     }
 
     private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {

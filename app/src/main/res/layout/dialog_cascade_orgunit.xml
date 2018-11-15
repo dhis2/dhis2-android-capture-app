@@ -27,6 +27,7 @@
                 android:background="@color/colorGreyDefault">
 
                 <EditText
+                    android:id="@+id/orgUnitEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
@@ -47,27 +48,32 @@
                     tools:text="This is the title" />
             </android.support.constraint.ConstraintLayout>
 
-            <android.support.design.chip.ChipGroup
+            <HorizontalScrollView
+                android:id="@+id/resultsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="8dp"
                 app:layout_constraintTop_toBottomOf="@id/title">
-                <android.support.design.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Action"
+
+                <android.support.design.chip.ChipGroup
+                    android:id="@+id/results"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:chipBackgroundColor="@color/red_060"
-                    android:text="Hola"/>
-            </android.support.design.chip.ChipGroup>
+                    app:chipSpacing="8dp"
+                    app:singleLine="true" />
+            </HorizontalScrollView>
 
-            <RelativeLayout
-                android:id="@+id/tree_container"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:padding="5dp"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@id/clear_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/data_layout" />
+                app:layout_constraintTop_toBottomOf="@id/resultsContainer"
+                tools:listitem="@layout/form_spinner" />
 
             <Button
                 android:id="@+id/clear_button"

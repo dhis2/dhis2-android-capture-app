@@ -76,4 +76,6 @@ interface FormView {
     void setShowError(RuleActionShowError showError);
 
     void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels);
+
+    Consumer<Boolean> renderCaptureCoordinates();
 }

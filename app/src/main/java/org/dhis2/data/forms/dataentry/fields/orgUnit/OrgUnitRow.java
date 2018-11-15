@@ -45,6 +45,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                      @NonNull FlowableProcessor<Integer> currentPosition,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
