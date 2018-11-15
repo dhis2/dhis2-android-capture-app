@@ -107,15 +107,16 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     private void save(String uid, String value, Boolean isAttribute) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
-        saveDisposable.add(
-                dataEntryStore.save(uid, value)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(Schedulers.io())
-                        .subscribe(
-                                data -> Log.d("SAVED_DATA", "DONE"),
-                                Timber::e,
-                                saveDisposable::clear
-                        ));
+        if (!uid.isEmpty())
+            saveDisposable.add(
+                    dataEntryStore.save(uid, value)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(Schedulers.io())
+                            .subscribe(
+                                    data -> Log.d("SAVED_DATA", "DONE"),
+                                    Timber::e,
+                                    saveDisposable::clear
+                            ));
     }
 
     @Override
@@ -196,8 +197,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 } else if (this.currentFieldViewModels.containsKey(uid) &&
                         !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
                     fieldViewModels.put(uid, textViewModel);
-                }else{
-                    
+                } else {
+
                 }
 
             /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now
@@ -214,12 +215,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
                 if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data(),assign.isAttribute());
+                    save(assign.field(), ruleEffect.data(), assign.isAttribute());
                 else {
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data(),assign.isAttribute());
+                        save(assign.field(), ruleEffect.data(), assign.isAttribute());
                     }
 
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
