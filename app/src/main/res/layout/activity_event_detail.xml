@@ -49,7 +49,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@id/title"
+                android:id="@+id/teiName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -112,8 +112,8 @@
                 android:layout_width="125dp"
                 android:layout_height="34dp"
                 android:layout_gravity="end|bottom"
-                android:layout_marginEnd="22.5dp"
                 android:layout_marginBottom="15dp"
+                android:layout_marginEnd="22.5dp"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"

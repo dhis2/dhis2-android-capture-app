@@ -65,6 +65,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
     private EventModel eventModel;
+    private ArrayList<String> sectionsToHide;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,6 +121,16 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             presenter.getSectionCompletion(formSectionViewModel.sectionUid());
         }
     }
+
+    @Override
+    public void setHideSection(String sectionUid) {
+        if (sectionsToHide == null || sectionUid == null)
+            sectionsToHide = new ArrayList<>();
+
+        if (sectionUid != null && !sectionsToHide.contains(sectionUid))
+            sectionsToHide.add(sectionUid);
+    }
+
 
     @NonNull
     @Override
@@ -205,9 +216,17 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         fieldsWithErrors = hasError;
     }
 
+
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
+
         View sectionView = sections.get(sectionUid);
-        if (sectionView != null) {
+        if (sectionsToHide.contains(sectionUid)) {
+            sectionView.setVisibility(View.GONE);
+            sectionView.setVisibility(View.GONE);
+        } else
+            sectionView.setVisibility(View.VISIBLE);
+
+        if (sectionView.getVisibility() == View.VISIBLE) {
             int completedSectionFields = calculateCompletedFields(updates);
             int totalSectionFields = updates.size();
             totalFields = totalFields + totalSectionFields;
@@ -241,10 +260,10 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     errorString.append(String.format("\n- %s", errorField));
                 }
 
+                String finalMessage = missingString.append("\n").append(errorString.toString()).toString();
+
                 sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
-                        showInfoDialog("Error",
-                                missingString.append("\n").append(errorString.toString()).toString()
-                        )
+                        showInfoDialog("Error", finalMessage)
                 );
             }
 
@@ -302,7 +321,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
             }
 

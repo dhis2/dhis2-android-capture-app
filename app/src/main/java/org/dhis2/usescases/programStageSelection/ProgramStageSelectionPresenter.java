@@ -3,10 +3,8 @@ package org.dhis2.usescases.programStageSelection;
 import android.support.annotation.NonNull;
 
 import org.dhis2.utils.Result;
-
+import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.rules.models.RuleAction;
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -26,12 +24,14 @@ import timber.log.Timber;
 
 public class ProgramStageSelectionPresenter implements ProgramStageSelectionContract.Presenter {
 
+    private final RulesUtilsProvider ruleUtils;
     private ProgramStageSelectionContract.View view;
     private CompositeDisposable compositeDisposable;
     private ProgramStageSelectionRepository programStageSelectionRepository;
 
-    ProgramStageSelectionPresenter(ProgramStageSelectionRepository programStageSelectionRepository) {
+    ProgramStageSelectionPresenter(ProgramStageSelectionRepository programStageSelectionRepository, RulesUtilsProvider ruleUtils) {
         this.programStageSelectionRepository = programStageSelectionRepository;
+        this.ruleUtils = ruleUtils;
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -47,7 +47,8 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
         Flowable<List<ProgramStageModel>> stagesFlowable = programStageSelectionRepository.enrollmentProgramStages(programId, uid);
 
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate().subscribeOn(Schedulers.computation());
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = programStageSelectionRepository.calculate().subscribeOn(Schedulers.computation())
+                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<ProgramStageModel>> stageModelsFlowable = Flowable.zip(stagesFlowable, ruleEffectFlowable, this::applyEffects);
@@ -68,13 +69,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
         Map<String, ProgramStageModel> stageViewModels = toMap(stageModels);
 
-        for (RuleEffect ruleEffect : calcResult.items()) {
-            RuleAction ruleAction = ruleEffect.ruleAction();
-            if (ruleAction instanceof RuleActionHideProgramStage) {
-                RuleActionHideProgramStage hideProgramStage = (RuleActionHideProgramStage) ruleAction;
-                stageViewModels.remove(hideProgramStage.programStage());
-            }
-        }
+        ruleUtils.applyRuleEffects(stageViewModels, calcResult);
 
         return new ArrayList<>(stageViewModels.values());
     }

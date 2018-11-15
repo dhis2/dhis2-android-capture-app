@@ -24,9 +24,11 @@ import com.andrognito.pinlockview.PinLockListener;
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
+import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.common.D2ErrorCode;
 
 import java.util.List;
@@ -94,6 +96,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         super.onResume();
         if (!isSyncing)
             presenter.init(this);
+
+        NetworkUtils.isGooglePlayServicesAvailable(this);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void renderError(D2ErrorCode errorCode) {
+    public void renderError(D2ErrorCode errorCode, String defaultMessage) {
         String message;
         switch (errorCode) {
             case LOGIN_PASSWORD_NULL:
@@ -134,7 +138,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_error_response);
                 break;
             default:
-                message = getString(R.string.login_error_default);
+                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
                 break;
         }
 
@@ -174,19 +178,42 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     public void handleSync() {
-        isSyncing = true;
-        binding.login.setVisibility(View.GONE);
-        if (binding.logo != null) {
-            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-            params.height = MATCH_PARENT;
-            binding.logo.setLayoutParams(params);
-            binding.syncLayout.setVisibility(View.VISIBLE);
-            if(Build.VERSION.SDK_INT > 21) {
-                binding.lottieView.setVisibility(View.VISIBLE);
-                binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
-                binding.lottieView.useHardwareAcceleration(true);
-                binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-                binding.lottieView.playAnimation();
+        if (!isSyncing) {
+            isSyncing = true;
+            binding.login.setVisibility(View.GONE);
+            if (binding.logo != null) {
+                ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+                if (binding.guideline != null)
+                    binding.guideline.setGuidelinePercent(1);
+                params.height = MATCH_PARENT;
+                params.width = MATCH_PARENT;
+                binding.logo.setLayoutParams(params);
+                binding.syncLayout.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT > 21) {
+                    binding.lottieView.setVisibility(View.VISIBLE);
+                    binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
+                    binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
+                    binding.lottieView.useHardwareAcceleration(true);
+                    binding.lottieView.enableMergePathsForKitKatAndAbove(true);
+                    binding.lottieView.playAnimation();
+                }
+            }
+        } else {
+            isSyncing = false;
+            binding.login.setVisibility(View.VISIBLE);
+            if (binding.logo != null) {
+                ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
+                if (binding.guideline != null)
+                    binding.guideline.setGuidelinePercent(1);
+                params.height = 0;
+                params.width = 0;
+
+                binding.logo.setLayoutParams(params);
+                binding.syncLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT > 21) {
+                    binding.lottieView.setVisibility(View.GONE);
+                    binding.lottieView.cancelAnimation();
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.andrognito.pinlockview.PinLockListener;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityMainBinding;
@@ -24,9 +25,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.jira.JiraFragment;
 import org.dhis2.usescases.main.program.ProgramFragment;
 import org.dhis2.usescases.qrReader.QrReaderFragment;
+import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.Period;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -89,6 +94,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         super.onResume();
         presenter.init(this);
 
+        if (!getSharedPreferences().getBoolean(Constants.LAST_DATA_SYNC_STATUS, true) ||
+                !getSharedPreferences().getBoolean(Constants.LAST_META_SYNC_STATUS, true)) {
+            binding.errorLayout.setVisibility(View.VISIBLE);
+        } else
+            binding.errorLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -107,7 +117,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
         return username -> {
             binding.setUserName(username);
             ((TextView) binding.navView.getHeaderView(0).findViewById(R.id.user_info)).setText(username);
-//            binding.menuJira.setText(String.format(getString(R.string.jira_report) + " (%s)", BuildConfig.VERSION_NAME));
             binding.executePendingBindings();
         };
     }
@@ -222,6 +231,11 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             binding.title.setText(tag);
         }
         binding.drawerLayout.closeDrawers();
+    }
+
+    @Override
+    public void showSyncErrors(List<ErrorMessageModel> data) {
+        ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 
     public void setTitle(String title) {

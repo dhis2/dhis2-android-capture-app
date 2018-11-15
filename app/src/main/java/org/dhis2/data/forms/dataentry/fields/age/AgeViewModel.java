@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 
+import javax.annotation.Nonnull;
+
 /**
  * QUADRAM. Created by frodriguez on 20/03/2018.
  */
@@ -39,5 +41,11 @@ public abstract class AgeViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(), description(), mandatory(), value());
+    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_AgeViewModel(uid(), label(), programStageSection(), allowFutureDate(), false, optionSet(), warning(), error(), description(), mandatory(), data);
     }
 }

@@ -6,7 +6,8 @@
     <data>
 
         <import type="android.view.View" />
-        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus"/>
+
+        <import type="org.hisp.dhis.android.core.enrollment.EnrollmentStatus" />
 
         <variable
             name="enrollment"
@@ -28,6 +29,10 @@
             name="program"
             type="org.hisp.dhis.android.core.program.ProgramModel" />
 
+        <variable
+            name="followup"
+            type="android.databinding.ObservableBoolean" />
+
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -38,11 +43,11 @@
             android:id="@+id/tei_data"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/bg_white_f9f"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:background="@color/bg_white_f9f">
+            app:layout_constraintTop_toTopOf="parent">
 
             <include
                 android:id="@+id/card_front"
@@ -51,7 +56,8 @@
                 app:enrollment="@{enrollment}"
                 app:presenter="@{presenter}"
                 app:program="@{program}"
-                app:trackEntity="@{trackEntity}" />
+                app:trackEntity="@{trackEntity}"
+                app:followup="@{followup}"/>
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -59,8 +65,8 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
-            android:paddingBottom="200dp"
             android:paddingTop="10dp"
+            android:paddingBottom="200dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +78,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
+            android:visibility="@{enrollment==null || enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"

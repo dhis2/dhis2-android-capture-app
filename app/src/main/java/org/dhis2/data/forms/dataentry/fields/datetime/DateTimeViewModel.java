@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
+import javax.annotation.Nonnull;
+
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -38,4 +40,10 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),value(),programStageSection(),
                 allowFutureDate(),editable(),optionSet(),warning,error(),description(),valueType());    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),data,programStageSection(),
+                allowFutureDate(),false,optionSet(),warning(),error(),description(),valueType());    }
 }

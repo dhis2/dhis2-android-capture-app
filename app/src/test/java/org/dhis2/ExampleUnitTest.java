@@ -4,11 +4,19 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -56,7 +64,7 @@ public class ExampleUnitTest {
 
     }
 
-    @Test
+    /*@Test
     public void expiryPeriodAndDaysOutOfRange() throws ParseException {
         String testDateOutOfRange = "2018-08-01";
 
@@ -90,7 +98,7 @@ public class ExampleUnitTest {
             i++;
         }
 
-    }
+    }*/
 
     @Test
     public void expiryPeriodAndDaysInRange() throws ParseException {
@@ -142,5 +150,109 @@ public class ExampleUnitTest {
             i++;
         }
 
+    }
+
+    @Test
+    public void sortNullLast() {
+
+        ArrayList<Integer> testList = new ArrayList<>();
+        testList.add(5);
+        testList.add(7);
+        testList.add(null);
+        testList.add(9);
+        testList.add(3);
+
+        ArrayList<Integer> expectedResults = new ArrayList<>();
+        expectedResults.add(3);
+        expectedResults.add(5);
+        expectedResults.add(7);
+        expectedResults.add(9);
+        expectedResults.add(null);
+
+        Collections.sort(testList, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer rule1, Integer rule2) {
+                Integer priority1 = rule1;
+                Integer priority2 = rule2;
+
+                if (priority1 != null && priority2 != null)
+                    return priority1.compareTo(priority2);
+                else if (priority1 != null)
+                    return -1;
+                else if (priority2 != null)
+                    return 1;
+                else
+                    return 0;
+            }
+        });
+
+        int i = 0;
+        for (Integer integer : testList) {
+            assertEquals(expectedResults.get(i), integer);
+            i++;
+        }
+
+    }
+
+    @Test
+    public void compressString() {
+        try {
+            // Encode a String into bytes
+            String inputString = "This is a test";
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(inputString.length());
+            GZIPOutputStream gzip = new GZIPOutputStream(bos);
+            gzip.write(inputString.getBytes());
+            gzip.close();
+            byte[] compressed = bos.toByteArray();
+            bos.close();
+
+            assertTrue(inputString.getBytes().length > compressed.length);
+
+        } catch (IOException ex) {
+            // handle
+        }
+    }
+
+    @Test
+    public void splitPath() {
+        String testPath = "/level1/level2/level3/level4";
+
+        String[] splitted = testPath.split("/");
+
+        assertTrue(splitted.length == 5);
+    }
+
+    @Test
+    public void testPermutations() {
+        List<List<String>> initialList = new ArrayList<>();
+        List<String> firstList = new ArrayList<>();
+        firstList.add("A");
+        firstList.add("B");
+        List<String> secondList = new ArrayList<>();
+        secondList.add("1");
+        secondList.add("2");
+        secondList.add("3");
+        initialList.add(firstList);
+        initialList.add(secondList);
+
+        String[] expectedResults = new String[]{"A1", "A2", "A3", "B1", "B2", "B3"};
+
+        List<String> resultList = new ArrayList<>();
+        GeneratePermutations(initialList, resultList, 0, "");
+
+        for (int i = 0; i < resultList.size(); i++)
+            assertEquals(expectedResults[i], resultList.get(i));
+
+
+    }
+
+    private void GeneratePermutations(List<List<String>> lists, List<String> result, int depth, String current) {
+        if (depth == lists.size()) {
+            result.add(current);
+            return;
+        }
+        for (int i = 0; i < lists.get(depth).size(); ++i) {
+            GeneratePermutations(lists, result, depth + 1, current + lists.get(depth).get(i));
+        }
     }
 }

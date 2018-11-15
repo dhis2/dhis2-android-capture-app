@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
@@ -26,10 +28,11 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSyncManagerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.HelpManager;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -83,8 +86,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 } else {
                     binding.buttonSyncData.setEnabled(true);
                     binding.buttonSyncMeta.setEnabled(true);
-                    setLastDataSyncDate();
-                    setLastMetaDataSyncDate();
+
+                    setLastSyncDate();
+                    presenter.checkData();
                 }
             }
         }
@@ -112,7 +116,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.radioData.setOnCheckedChangeListener((radioGroup, i) -> saveTimeData(i));
         binding.radioMeta.setOnCheckedChangeListener((radioGroup, i) -> saveTimeMeta(i));
 
-
         return binding.getRoot();
     }
 
@@ -122,7 +125,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         presenter.init(this);
         LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
 
-        if(((App) getActivity().getApplication()).isSyncing()){
+        if (((App) getActivity().getApplication()).isSyncing()) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
@@ -146,8 +149,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 ));
 
         binding.limitByOrgUnit.setOnCheckedChangeListener((buttonView, isChecked) -> prefs.edit().putBoolean(Constants.LIMIT_BY_ORG_UNIT, isChecked).apply());
-        setLastDataSyncDate();
-        setLastMetaDataSyncDate();
+
+        setLastSyncDate();
     }
 
     @Override
@@ -157,6 +160,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).unregisterReceiver(syncReceiver);
         presenter.disponse();
     }
+
     @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
@@ -168,18 +172,24 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
-    public void setLastDataSyncDate() {
-        if (prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true))
-            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
-        else
-            binding.dataLastSync.setText(getString(R.string.sync_error_text));
-    }
+    public void setLastSyncDate() {
+        boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
+        boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
-    public void setLastMetaDataSyncDate() {
-        if (prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true))
+        if (dataStatus) {
+            binding.dataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_DATA_SYNC, "-")));
+        } else {
+            binding.dataLastSync.setText(getString(R.string.sync_error_text));
+        }
+        if (metaStatus)
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
         else
             binding.metadataLastSync.setText(getString(R.string.sync_error_text));
+
+      /*  if (!metaStatus || !dataStatus)
+            binding.buttonSyncError.setVisibility(View.VISIBLE);
+        else
+            binding.buttonSyncError.setVisibility(View.GONE);*/
     }
 
     private void initRadioGroups() {
@@ -330,11 +340,16 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false)&& !BuildConfig.DEBUG) {
+            if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
             }
 
         }, 500);
+    }
+
+    @Override
+    public void showSyncErrors(List<ErrorMessageModel> data) {
+        ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
     }
 }

@@ -18,25 +18,25 @@ public abstract class SyncResult {
     public abstract Boolean isSuccess();
 
     @NonNull
-    abstract String message();
+    public abstract String message();
 
     @NonNull
-    static SyncResult idle() {
+    public static SyncResult idle() {
         return new AutoValue_SyncResult(true, false, false, "");
     }
 
     @NonNull
-    static SyncResult progress() {
+    public static SyncResult progress() {
         return new AutoValue_SyncResult(false, true, false, "");
     }
 
     @NonNull
-    static SyncResult success() {
+    public static SyncResult success() {
         return new AutoValue_SyncResult(false, false, true, "");
     }
 
     @NonNull
-    static SyncResult failure(@NonNull String message) {
+    public static SyncResult failure(@NonNull String message) {
         return new AutoValue_SyncResult(false, false, false, message);
     }
 }

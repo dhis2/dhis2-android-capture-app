@@ -28,7 +28,8 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
         this.renderType = null;
     }
 
-    public UnsupportedRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public UnsupportedRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                          @NonNull FlowableProcessor<Integer> currentPosition, boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

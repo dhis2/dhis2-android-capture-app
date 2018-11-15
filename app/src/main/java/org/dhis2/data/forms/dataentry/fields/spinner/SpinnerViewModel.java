@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nonnull;
+
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
@@ -37,5 +39,11 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),value(),programStageSection(),allowFutureDate(),editable(),warning,error(),description(),hint(),optionSet());
+    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),false,warning(),error(),description(),hint(),optionSet());
     }
 }

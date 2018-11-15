@@ -13,7 +13,6 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.DateUtils;
-import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
@@ -34,6 +33,7 @@ import org.hisp.dhis.rules.RuleExpressionEvaluator;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
@@ -212,12 +212,17 @@ class EnrollmentFormRepository implements FormRepository {
                 .switchMap(program -> Flowable.zip(
                         rulesRepository.rulesNew(program),
                         rulesRepository.ruleVariables(program),
-                        (rules, variables) ->
-                                RuleEngineContext.builder(expressionEvaluator)
-                                        .rules(rules)
-                                        .ruleVariables(variables)
-                                        .build().toEngineBuilder()
-                                        .build()))
+                        rulesRepository.enrollmentEvents(enrollmentUid),
+                        (rules, variables, events) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(expressionEvaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .build().toEngineBuilder();
+                            builder.events(events);
+                            return builder.build();
+                        }))
                 .cacheWithInitialCapacity(1);
     }
 
@@ -403,7 +408,7 @@ class EnrollmentFormRepository implements FormRepository {
                 }
 
                 Date eventDate;
-                Calendar cal = Calendar.getInstance();
+                Calendar cal = DateUtils.getInstance().getCalendar();
                 if (generatedByEnrollmentDate) {
 
                     cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
@@ -430,19 +435,24 @@ class EnrollmentFormRepository implements FormRepository {
 
                 if (!eventCursor.moveToFirst()) {
 
-                    EventModel event = EventModel.builder()
+                    EventModel.Builder eventBuilder = EventModel.builder()
                             .uid(codeGenerator.generate())
                             .created(Calendar.getInstance().getTime())
                             .lastUpdated(Calendar.getInstance().getTime())
-                            .eventDate(eventDate)
-                            .dueDate(eventDate)
+//                            .eventDate(eventDate)
+//                            .dueDate(eventDate)
                             .enrollment(enrollmentUid)
                             .program(program)
                             .programStage(programStage)
                             .organisationUnit(orgUnit)
                             .status(eventDate.after(now) ? EventStatus.SCHEDULE : EventStatus.ACTIVE)
-                            .state(State.TO_POST)
-                            .build();
+                            .state(State.TO_POST);
+                    if (eventDate.after(now)) //scheduling
+                        eventBuilder.dueDate(eventDate);
+                    else
+                        eventBuilder.eventDate(eventDate);
+                    
+                    EventModel event = eventBuilder.build();
 
 
                     if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
@@ -513,13 +523,20 @@ class EnrollmentFormRepository implements FormRepository {
     }
 
     @Override
-    public Observable<Trio<Boolean,CategoryComboModel,List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
+    public Observable<Trio<Boolean, CategoryComboModel, List<CategoryOptionComboModel>>> getProgramCategoryCombo() {
         return null;
     }
 
     @Override
     public void saveCategoryOption(CategoryOptionComboModel selectedOption) {
 
+    }
+
+    @Override
+    public Observable<Boolean> captureCoodinates() {
+        return briteDatabase.createQuery("Program", "SELECT Program.captureCoordinates FROM Program " +
+                "JOIN Enrollment ON Enrollment.program = Program.uid WHERE Enrollment.uid = ?", enrollmentUid)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
     }
 
     @NonNull
@@ -598,7 +615,7 @@ class EnrollmentFormRepository implements FormRepository {
                                     throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + eventToCreate));
                                 }
                                 return Trio.create(enrollmentUid, data.val2(), eventToCreate.uid());
-                            }else
+                            } else
                                 throw new IllegalArgumentException("Can't create event in enrollment with null organisation unit");
                         }
                     } else { //open Dashboard

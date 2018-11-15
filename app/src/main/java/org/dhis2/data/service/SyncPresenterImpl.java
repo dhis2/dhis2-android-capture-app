@@ -2,13 +2,11 @@ package org.dhis2.data.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.dhis2.utils.Constants;
-
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
@@ -88,7 +86,8 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribe(
                         data -> {
                             Log.d("SYNC_EVENTS", "Sync up of Events is done");
-                            downloadEvents(); },
+                            downloadEvents();
+                        },
                         Timber::d
                 )
         );
@@ -96,7 +95,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     }
 
-    private void downloadEvents(){
+    private void downloadEvents() {
         Log.d("SYNC_EVENTS", "Sync down of Events is starting");
         disposable.add(events()
                 .subscribeOn(Schedulers.io())
@@ -105,7 +104,7 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .doFinally(()->Log.d("SYNC_EVENTS", "Sync down of events is done"))
+                .doFinally(() -> Log.d("SYNC_EVENTS", "Sync down of events is done"))
                 .subscribe(
                         update(SyncState.EVENTS),
                         Timber::d)
@@ -132,7 +131,7 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     }
 
-    private void downloadTrackedEntities(){
+    private void downloadTrackedEntities() {
         Log.d("SYNC_TEI", "Sync down of TEIs is starting");
         disposable.add(trackerData()
                 .subscribeOn(Schedulers.io())
@@ -143,6 +142,40 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .startWith(SyncResult.progress())
                 .doFinally(() -> Log.d("SYNC_TEI", "Sync down of TEIs are done"))
                 .subscribe(update(SyncState.TEI),
+                        Timber::d
+                ));
+    }
+
+    @Override
+    public void syncAggregateData() {
+        Log.d("SYNC_AGGREGATE", "Sync up of aggregate values");
+        disposable.add(Observable.fromCallable(d2.syncDataValues())
+                .doOnError(throwable -> Log.d("SYNC_AGGREGATE", throwable.getMessage()))
+                .map(webResponse -> SyncResult.success())
+                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                        data -> {
+                            Log.d("SYNC_AGGREGATE", "Sync up of data values is done");
+                            downloadDataValues();
+                        },
+                        Timber::d
+                )
+        );
+    }
+
+    private void downloadDataValues() {
+        Log.d("SYNC_AGGREGATE", "Sync down of data values is starting");
+        disposable.add(trackerData()
+                .subscribeOn(Schedulers.io())
+                .map(response -> SyncResult.success())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
+                .startWith(SyncResult.progress())
+                .doFinally(() -> Log.d("SYNC_AGGREGATE", "Sync down of data values are done"))
+                .subscribe(update(SyncState.AGGREGATE),
                         Timber::d
                 ));
     }
@@ -186,26 +219,33 @@ final class SyncPresenterImpl implements SyncPresenter {
         };
     }
 
-    class PostData extends AsyncTask<Void, Void, Boolean> {
+    @Override
+    public void syncAndDownloadEvents(Context context) throws Exception {
+        d2.syncSingleEvents().call();
+        SharedPreferences prefs = context.getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        d2.downloadSingleEvents(eventLimit, limityByOU).call();
+    }
 
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            try {
-                d2.syncSingleEvents().call();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                d2.syncTrackedEntityInstances().call();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
+    @Override
+    public void syncAndDownloadTeis(Context context) throws Exception {
+        d2.syncTrackedEntityInstances().call();
+        SharedPreferences prefs = context.getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
+        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
+        d2.downloadTrackedEntityInstances(teiLimit, limityByOU).call();
+    }
 
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-        }
+    @Override
+    public void syncMetadata(Context context) throws Exception {
+        d2.syncMetaData().call();
+    }
+
+    @Override
+    public void syncReservedValues() {
+        d2.syncAllTrackedEntityAttributeReservedValues();
     }
 }

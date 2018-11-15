@@ -1,12 +1,15 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
@@ -27,7 +30,7 @@ import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
-import org.hisp.dhis.android.core.relationship.RelationshipModel;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -101,16 +104,17 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private final String EVENTS_QUERY = String.format(
             "SELECT Event.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ? " +
+                    "WHERE %s.%s = ? " + //ProgramUid
+                    "AND Event.programStage IN (SELECT ProgramStage.uid FROM ProgramStage WHERE ProgramStage.program = ?) " + //Program.uid
+                    "AND %s.%s = ? " + //TeiUid
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN %s.%s > %s.%s " +
-                    "THEN %s.%s ELSE %s.%s END DESC",
+                    "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
+                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE,/* EventModel.TABLE, EventModel.Columns.EVENT_DATE,*/
             EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
@@ -137,14 +141,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " +
                     "AND %s.%s = ? " +
-                    "AND %s.%s = 1 " +
                     "ORDER BY %s.%s",
             TrackedEntityAttributeValueModel.TABLE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE,
-            ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER);
     private final String ATTRIBUTE_VALUES_NO_PROGRAM_QUERY = String.format(
             "SELECT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet FROM %s " +
@@ -156,27 +158,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_INSTANCE, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE);
     private static final Set<String> ATTRIBUTE_VALUES_TABLE = new HashSet<>(Arrays.asList(TrackedEntityAttributeValueModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE));
-
-    /*private final String RELATIONSHIP_QUERY = String.format(
-            "SELECT Relationship.* FROM %s " +
-                    "WHERE %s.%s = ? OR %s.%s = ?",
-            RelationshipModel.TABLE,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B,
-            RelationshipModel.TABLE, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A);*/
-
-    /*private final String INSERT_RELATIONSHIP = String.format(
-            "INSERT INTO %s (%s, %s, %s) " +
-                    "VALUES (?, ?, ?);",
-            RelationshipModel.TABLE,
-            RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_A, RelationshipModel.Columns.TRACKED_ENTITY_INSTANCE_B, RelationshipModel.Columns.RELATIONSHIP_TYPE
-    );*/
-
-    private static final String DELETE_WHERE_RELATIONSHIP = String.format(
-            "%s.%s = ",
-            RelationshipModel.TABLE, RelationshipModel.Columns.ID
-    );
-
-    private static final Set<String> RELATIONSHIP_TABLE = new HashSet<>(Arrays.asList(RelationshipModel.TABLE, ProgramModel.TABLE));
 
     private static final String[] ATTRUBUTE_TABLES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> ATTRIBUTE_TABLE_SET = new HashSet<>(Arrays.asList(ATTRUBUTE_TABLES));
@@ -201,7 +182,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     private static final String SELECT_TEI_MAIN_ATTR = "SELECT TrackedEntityAttributeValue.*, ProgramTrackedEntityAttribute.sortOrder FROM TrackedEntityAttributeValue " +
             "JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttributeValue.trackedEntityAttribute " +
             "WHERE TrackedEntityAttributeValue.trackedEntityInstance = ? " +
-            "AND ProgramTrackedEntityAttribute.program = ? ORDER BY ProgramTrackedEntityAttribute.sortOrder";
+            "ORDER BY ProgramTrackedEntityAttribute.sortOrder";
 
     private static final String SELECT_LEGEND = String.format("SELECT %s.%s FROM %s\n" +
                     "JOIN %s ON %s.%s = %s.%s\n" +
@@ -243,7 +224,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
-        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid, programUid)
+        return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
     }
 
@@ -312,7 +293,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId)
+        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, progId, teiId)
                 .mapToList(EventModel::create);
     }
 
@@ -434,6 +415,47 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
+    public Integer getObjectStyle(Context context, String uid) {
+        String GET_OBJECT_STYLE = "SELECT * FROM ObjectStyle WHERE uid = ?";
+        Cursor objectStyleCurosr = briteDatabase.query(GET_OBJECT_STYLE, uid);
+        if (objectStyleCurosr != null && objectStyleCurosr.moveToNext()) {
+            String iconName = objectStyleCurosr.getString(objectStyleCurosr.getColumnIndex("icon"));
+            Resources resources = context.getResources();
+            iconName = iconName.startsWith("ic_") ? iconName : "ic_" + iconName;
+            return resources.getIdentifier(iconName, "drawable", context.getPackageName());
+        } else
+            return R.drawable.ic_person;
+    }
+
+    @Override
+    public Observable<List<Pair<RelationshipTypeModel, String>>> relationshipsForTeiType(String teType) {
+        String RELATIONSHIP_QUERY =
+                "SELECT FROMTABLE.*, TOTABLE.trackedEntityType AS toTeiType FROM " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'FROM') " +
+                        "AS FROMTABLE " +
+                        "JOIN " +
+                        "(SELECT RelationshipType.*,RelationshipConstraint.* FROM RelationshipType " +
+                        "JOIN RelationshipConstraint ON RelationshipConstraint.relationshipType = RelationshipType.uid WHERE constraintType = 'TO') " +
+                        "AS TOTABLE " +
+                        "ON TOTABLE.relationshipType = FROMTABLE.relationshipType " +
+                        "WHERE FROMTABLE.trackedEntityType = ?";
+        String RELATIONSHIP_QUEY_29 =
+                "SELECT RelationshipType.* FROM RelationshipType";
+        return briteDatabase.createQuery("SystemInfo", "SELECT version FROM SystemInfo")
+                .mapToOne(cursor -> cursor.getString(0))
+                .flatMap(version -> {
+                    if (version.equals("2.29"))
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUEY_29)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), teType));
+                    else
+                        return briteDatabase.createQuery(RelationshipTypeModel.TABLE, RELATIONSHIP_QUERY, teType)
+                                .mapToList(cursor -> Pair.create(RelationshipTypeModel.create(cursor), cursor.getString(cursor.getColumnIndex("toTeiType"))));
+                });
+
+    }
+
+    @Override
     public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
         if (programUid != null)
             return briteDatabase.createQuery(ATTRIBUTE_VALUES_TABLE, ATTRIBUTE_VALUES_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
@@ -451,13 +473,21 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public int setFollowUp(String programUid, String enrollmentUid, boolean followUp) {
+    public boolean setFollowUp(String enrollmentUid) {
+
+        String enrollmentFollowUpQuery = "SELECT Enrollment.followup FROM Enrollment WHERE Enrollment.uid = ?";
+        Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid);
+        boolean followUp = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            followUp = cursor.getInt(0) == 1;
+        }
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
 
-        updateProgramTable(Calendar.getInstance().getTime(), programUid);
+        int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
 
-        return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+        return !followUp;
     }
 
     @Override
@@ -544,6 +574,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
         updateStatement.clearBindings();
+
+        updateTeiState();
 
         return updated;
     }

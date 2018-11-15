@@ -2,6 +2,9 @@ package org.dhis2.usescases.syncManager;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.ErrorMessageModel;
+
+import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
@@ -18,6 +21,8 @@ public class SyncManagerContracts {
         void wipeDatabase();
 
         void showTutorial();
+
+        void showSyncErrors(List<ErrorMessageModel> data);
     }
 
     public interface Presenter {
@@ -39,5 +44,11 @@ public class SyncManagerContracts {
         void onWipeData();
 
         void wipeDb();
+
+        void deleteLocalData();
+
+        void checkSyncErrors();
+
+        void checkData();
     }
 }

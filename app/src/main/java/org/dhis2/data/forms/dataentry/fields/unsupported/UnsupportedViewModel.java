@@ -3,7 +3,10 @@ package org.dhis2.data.forms.dataentry.fields.unsupported;
 import android.support.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+
 import com.google.auto.value.AutoValue;
+
+import javax.annotation.Nonnull;
 
 @AutoValue
 public abstract class UnsupportedViewModel extends FieldViewModel {
@@ -26,5 +29,11 @@ public abstract class UnsupportedViewModel extends FieldViewModel {
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_UnsupportedViewModel(uid(), label(), false, value(), programStageSection(), allowFutureDate(), editable(), optionSet(), warning, error(),description());
+    }
+
+    @Nonnull
+    @Override
+    public FieldViewModel withValue(String data) {
+        return new AutoValue_UnsupportedViewModel(uid(), label(), false, data, programStageSection(), allowFutureDate(),false, optionSet(), warning(), error(),description());
     }
 }

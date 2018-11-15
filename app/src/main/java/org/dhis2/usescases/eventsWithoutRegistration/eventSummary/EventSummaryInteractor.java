@@ -14,6 +14,8 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
+import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleActionShowWarning;
@@ -123,7 +125,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation());
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
+                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);
@@ -184,6 +187,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
         //TODO: APPLY RULE EFFECTS TO ALL MODELS
         view.messageOnComplete(null, true);
         view.fieldWithError(false);
+        view.setHideSection(null);
 
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
@@ -216,6 +220,9 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 FieldViewModel model = fieldViewModels.get(mandatoryField.field());
                 if (model != null)
                     fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+            }else if(ruleAction instanceof RuleActionHideSection){
+                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+                view.setHideSection(hideSection.programStageSection());
             }
         }
     }

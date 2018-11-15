@@ -2,12 +2,10 @@ package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 
 import javax.inject.Inject;
 
@@ -66,5 +64,10 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     @Override
     public void goToEnrollmentList(Bundle extras) {
         // unused
+    }
+
+    @Override
+    public void restoreAdapter(String programUid) {
+
     }
 }

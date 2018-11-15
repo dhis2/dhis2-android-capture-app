@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
-
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -54,7 +55,7 @@ public interface DashboardRepository {
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
-    int setFollowUp(String programUid, String enrollmentUid, boolean followUp);
+    boolean setFollowUp(String enrollmentUid);
 
     Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 
@@ -79,4 +80,8 @@ public interface DashboardRepository {
     Observable<String> generateNewEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
 
     void updateTeiState();
+
+    Integer getObjectStyle(Context context, String uid);
+
+    Observable<List<Pair<RelationshipTypeModel,String>>> relationshipsForTeiType(String teType);
 }

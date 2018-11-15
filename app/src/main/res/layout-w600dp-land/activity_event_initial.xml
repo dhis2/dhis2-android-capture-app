@@ -22,10 +22,6 @@
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
         <variable
-            name="isNewEvent"
-            type="boolean" />
-
-        <variable
             name="presenter"
             type="org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialContract.Presenter" />
     </data>
@@ -49,22 +45,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
-                app:layout_constraintStart_toStartOf="parent"
                 android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toStartOf="@+id/percentage"
                 app:layout_constraintStart_toEndOf="@id/menu"
-                tools:text="TITLE\ntest\n234"
-                android:textSize="20sp" />
+                tools:text="TITLE\ntest\n234" />
 
             <RelativeLayout
                 android:id="@+id/percentage"
@@ -93,7 +89,7 @@
                     android:layout_centerInParent="true"
                     android:textColor="@color/yellow_fdd"
                     android:textSize="12sp"
-                    tools:text="100%"/>
+                    tools:text="100%" />
             </RelativeLayout>
 
             <ImageView
@@ -156,10 +152,10 @@
                                 android:id="@+id/programStageIcon"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
-                                android:background="@drawable/photo_temp"
                                 android:contentDescription='@{name}'
                                 android:padding="7dp"
                                 android:tint="?colorPrimaryDark"
+                                app:imageBackground="@{ @drawable/photo_temp }"
                                 app:srcCompat="@drawable/ic_clinical_f_outline" />
 
                             <LinearLayout
@@ -175,6 +171,7 @@
                                     android:text='@{programStage.displayName()}'
                                     android:textColor="?colorPrimary"
                                     android:textSize="14sp"
+                                    android:textStyle="bold"
                                     tools:text="Program Stage Name" />
 
                                 <TextView
@@ -184,32 +181,55 @@
                                     android:textSize="12sp"
                                     android:visibility="@{programStage.description()!=null?View.VISIBLE:View.GONE}" />
 
+                                <LinearLayout
+                                    android:id="@+id/shareContainer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:layout_marginTop="30dp"
+                                    android:onClick="@{(view)->presenter.onShareClick(view)}">
+
+                                    <ImageView
+                                        android:id="@+id/shareIcon"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:srcCompat="@drawable/ic_share" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="2dp"
+                                        android:text="@string/share"
+                                        android:textColor="@color/text_black_4d4d4d"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
 
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:baselineAligned="false"
+                            android:layout_height="match_parent"
                             android:orientation="horizontal">
 
 
                             <android.support.design.widget.TextInputLayout
+                                android:id="@+id/date_layout"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="@{programStage.executionDateLabel()}"
-                                android:textColorHint="@color/colorPrimary"
+                                android:textColorHint="@color/text_black_808"
                                 tools:hint="executionDateLabel">
+                                <!--android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"-->
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
-                                    android:text="@{eventDate}"
                                     android:textSize="15sp" />
                             </android.support.design.widget.TextInputLayout>
 
@@ -218,7 +238,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:hint="@string/org_unit"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/org_unit"
@@ -233,7 +253,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="24dp"
-                                android:layout_weight="1"
+                                android:layout_weight="2"
                                 android:orientation="vertical">
 
                                 <Spinner
@@ -249,16 +269,14 @@
                                     android:textColor="?colorPrimary"
                                     android:textSize="15sp" />
 
-
                                 <View
+                                    android:id="@+id/cat_combo_line"
                                     android:layout_width="match_parent"
                                     android:layout_height="0.8dp"
                                     android:layout_marginEnd="4dp"
                                     android:layout_marginStart="4dp"
                                     android:background="@color/black_de0" />
                             </LinearLayout>
-
-
                         </LinearLayout>
 
                         <LinearLayout
@@ -295,7 +313,7 @@
                                 android:layout_marginStart="12dp"
                                 android:layout_weight="1"
                                 android:hint="@string/latitude"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/lat"
@@ -314,7 +332,7 @@
                                 android:layout_marginStart="12dp"
                                 android:layout_weight="1"
                                 android:hint="@string/longitude"
-                                android:textColorHint="@color/colorPrimary">
+                                android:textColorHint="@color/text_black_808">
 
                                 <android.support.design.widget.TextInputEditText
                                     android:id="@+id/lon"
@@ -357,12 +375,6 @@
                                     android:text="@string/permanent"
                                     app:buttonTint="?colorPrimary" />
                             </RadioGroup>
-
-
-                            <VideoView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1" />
                         </LinearLayout>
 
                         <View
@@ -385,22 +397,6 @@
                     android:text="@string/create"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
-
-                <Button
-                    android:id="@+id/share_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginStart="16dp"
-                    android:background="?attr/selector_button_round_7"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
-                    android:text="@string/share"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="15sp" />
             </RelativeLayout>
 
             <android.support.design.widget.NavigationView

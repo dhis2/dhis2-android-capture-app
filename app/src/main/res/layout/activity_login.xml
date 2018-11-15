@@ -51,12 +51,23 @@
                     android:layout_centerHorizontal="true" />
 
                 <ImageView
+                    android:id="@+id/dhisLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="10dp"
+                    android:tint="@color/white"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_dhis_white" />
+
+                <ImageView
                     android:id="@+id/logo_flag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:alpha="0"
                     android:paddingBottom="80dp"
+                    android:visibility="gone"
                     tools:src="@drawable/sierra_leone" />
 
                 <LinearLayout
@@ -65,8 +76,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_margin="20dp"
-                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="bottom"
                     android:orientation="vertical"
                     android:visibility="gone">
@@ -132,8 +143,8 @@
                         android:inputType="textUri"
                         android:onTextChanged="@{presenter::onTextChanged}"
                         android:padding="5dp"
-                        android:textColor="@color/text_black_333"
                         android:text="https://"
+                        android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -202,22 +213,22 @@
                 android:id="@+id/unlock_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 android:visibility="gone">
 
                 <Button
                     android:id="@+id/logout"
                     style="@style/HalfWidthButton"
-                    android:onClick="onLogoutClick"
                     android:layout_marginEnd="4dp"
+                    android:onClick="onLogoutClick"
                     android:text="@string/log_out" />
 
                 <Button
                     android:id="@+id/unlock"
                     style="@style/HalfWidthButton"
-                    android:onClick="onUnlockClick"
                     android:layout_marginStart="4dp"
+                    android:onClick="onUnlockClick"
                     android:text="@string/unlock_button" />
 
             </LinearLayout>

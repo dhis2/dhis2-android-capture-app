@@ -1,11 +1,12 @@
 package org.dhis2.data.forms.dataentry;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.utils.Result;
-import com.squareup.sqlbrite2.BriteDatabase;
-
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -17,6 +18,8 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -30,7 +33,7 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
             "  Enrollment.organisationUnit,\n" +
             "  Program.displayName\n" +
             "FROM Enrollment\n" +
-            "JOIN Program ON Program.uid = Enrollment.program\n"+
+            "JOIN Program ON Program.uid = Enrollment.program\n" +
             "WHERE Enrollment.uid = ? \n" +
             "LIMIT 1;";
 
@@ -93,9 +96,10 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
                             .valueOf(cursor.getString(3));
                     String orgUnit = cursor.getString(4);
                     String programName = cursor.getString(5);
+                    String ouCode = getOrgUnitCode(orgUnit);
 
                     return RuleEnrollment.create(cursor.getString(0),
-                            incidentDate, enrollmentDate, status, attributeValues);
+                            incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -115,5 +119,17 @@ public final class EnrollmentRuleEngineRepository implements RuleEngineRepositor
         } catch (ParseException parseException) {
             throw new RuntimeException(parseException);
         }
+    }
+
+    @Nonnull
+    private String getOrgUnitCode(String orgUnitUid) {
+        String ouCode = "";
+        Cursor cursor = briteDatabase.query("SELECT code FROM OrganisationUnit WHERE uid = ? LIMIT 1", orgUnitUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            ouCode = cursor.getString(0);
+            cursor.close();
+        }
+
+        return ouCode;
     }
 }

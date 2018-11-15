@@ -17,36 +17,36 @@
     </data>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:background="@drawable/bg_chip"
+        tools:ignore="UseCompoundDrawables"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
 
         <ImageView
             android:id="@+id/program_image"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginStart="5dp"
-            app:tintRandomColor="@{enrollment.program()}"
-            tools:ignore="ContentDescription" />
-
-
-        <TextView
-            android:id="@+id/program_last_update_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="14sp"
-            app:eventLabel="@{enrollment.program()}"
-            tools:text="Last visit: " />
+            android:layout_height="match_parent"
+            app:tint="?colorPrimary"
+            tools:ignore="ContentDescription"
+            app:srcCompat="@drawable/ic_program" />
 
         <TextView
-            android:id="@+id/program_last_update_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="14sp"
-            app:enrollmentLastEventDate="@{enrollment.uid()}"
-            tools:text="2012-12-05" />
+            android:id="@+id/program_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:maxLines="1"
+            android:textSize="10sp"
+            app:programName="@{enrollment.program()}"
+            android:textColor="@color/text_black_333"
+            tools:text="WHO RMNCH Tracker" />
+
     </LinearLayout>
 </layout>
