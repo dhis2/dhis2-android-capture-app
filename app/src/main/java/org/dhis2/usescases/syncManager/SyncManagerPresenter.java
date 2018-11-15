@@ -10,6 +10,7 @@ import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
+import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.D2CallException;
@@ -182,6 +183,11 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         } catch (D2CallException e) {
             Timber.e(e);
         }
+    }
+
+    @Override
+    public void onReservedValues() {
+        view.startActivity(ReservedValueActivity.class, null, false, false, null);
     }
 
     @Override

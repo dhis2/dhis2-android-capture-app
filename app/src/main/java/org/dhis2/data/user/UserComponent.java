@@ -47,6 +47,8 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationCo
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationModule;
 import org.dhis2.usescases.qrReader.QrReaderComponent;
 import org.dhis2.usescases.qrReader.QrReaderModule;
+import org.dhis2.usescases.reservedValue.ReservedValueComponent;
+import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import org.dhis2.usescases.syncManager.SyncManagerComponent;
@@ -144,6 +146,9 @@ public interface UserComponent {
 
     @NonNull
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
+
+    @NonNull
+    ReservedValueComponent plus(ReservedValueModule reservedValueModule);
 
     @Nonnull
     SyncDataWorkerComponent plus(SyncDataWorkerModule syncDataWorkerModule);

@@ -638,6 +638,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<Integer> getOrgUnitsForDataElementsCount() {
+        String sqlQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT t.uid, o.organisationUnit " +
+                "FROM TrackedEntityAttribute t, OrganisationUnitProgramLink o, ProgramTrackedEntityAttribute p " +
+                "WHERE t.generated = 1 AND p.trackedEntityAttribute = t.uid AND p.program = o.program)";
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, sqlQuery)
+                .mapToOne(cursor -> {
+                    if (cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    } else
+                        return 0;
+                });
+    }
+
+    @Override
     public void createErrorTable() {
         String CREATE_ERROR_TABLE = "CREATE TABLE IF NOT EXISTS ErrorMessage(\n" +
                 "errorDate TEXT,\n" +

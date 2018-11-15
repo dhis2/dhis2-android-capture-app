@@ -152,4 +152,6 @@ public interface MetadataRepository {
     Observable<List<ErrorMessageModel>> getSyncErrors();
 
     void deleteErrorLogs();
+
+    Observable<Integer> getOrgUnitsForDataElementsCount();
 }

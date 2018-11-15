@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.dhis2">
@@ -34,8 +35,11 @@
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="play.dhis2.org"
                     android:scheme="https" />
@@ -51,8 +55,9 @@
         <activity android:name=".usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity" />
         <activity android:name=".usescases.teiDashboard.eventDetail.EventDetailActivity" />
         <activity android:name=".usescases.qrScanner.QRActivity" />
-        <activity android:name=".data.forms.FormActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".data.forms.FormActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".data.forms.dataentry.DataEntryActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
         <activity android:name=".usescases.map.MapSelectorActivity" />
@@ -93,7 +98,7 @@
             android:name="io.fabric.ApiKey"
             android:value="a5caa46009119f5e584e4964c30a922095b1075c" />
 
-        <activity android:name=".usescases.dataset.dataSetPeriod.DataSetPeriodActivity"></activity>
+        <activity android:name=".usescases.dataset.dataSetPeriod.DataSetPeriodActivity" />
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
         <activity android:name=".usescases.datasets.dataSetTable.DataSetTableActivity" />
@@ -108,6 +113,7 @@
                 android:resource="@xml/dhis_custom_launcher_info" />
         </receiver>
 
+        <activity android:name=".usescases.reservedValue.ReservedValueActivity"></activity>
     </application>
 
 </manifest>
