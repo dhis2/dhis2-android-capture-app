@@ -185,10 +185,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             binding.metadataLastSync.setText(String.format(getString(R.string.last_data_sync_date), prefs.getString(Constants.LAST_META_SYNC, "-")));
         else
             binding.metadataLastSync.setText(getString(R.string.sync_error_text));
-        if (!metaStatus || !dataStatus)
+
+      /*  if (!metaStatus || !dataStatus)
             binding.buttonSyncError.setVisibility(View.VISIBLE);
         else
-            binding.buttonSyncError.setVisibility(View.GONE);
+            binding.buttonSyncError.setVisibility(View.GONE);*/
     }
 
     private void initRadioGroups() {
