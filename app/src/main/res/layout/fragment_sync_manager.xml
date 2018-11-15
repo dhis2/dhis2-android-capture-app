@@ -251,6 +251,14 @@
                 android:layout_marginTop="15dp"
                 android:onClick="@{()->presenter.onWipeData()}"
                 android:text="@string/wipe_data" />
+            <Button
+                android:id="@+id/reservedValue"
+                style="@style/FullWidthButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:onClick="@{()->presenter.onReservedValues()}"
+                android:text="@string/reserved_value" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

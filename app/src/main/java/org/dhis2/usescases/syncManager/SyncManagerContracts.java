@@ -41,5 +41,7 @@ public class SyncManagerContracts {
         void wipeDb();
 
         void deleteLocalData();
+
+        void onReservedValues();
     }
 }
