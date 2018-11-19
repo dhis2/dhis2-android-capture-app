@@ -24,6 +24,7 @@
             app:srcCompat="@drawable/ic_check_circle" />
 
         <TextView
+            android:id="@+id/sectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

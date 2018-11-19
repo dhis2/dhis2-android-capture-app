@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
@@ -166,7 +167,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+
+        view.startActivity(EventCaptureActivity.class,
+                EventCaptureActivity.getActivityBundle(eventId, programId),
+                false, false, null
+        );
     }
 
     @Override

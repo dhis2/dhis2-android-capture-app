@@ -27,6 +27,8 @@ import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -158,4 +160,7 @@ public interface UserComponent {
 
     @NonNull
     ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
+
+    @NonNull
+    EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
 }
