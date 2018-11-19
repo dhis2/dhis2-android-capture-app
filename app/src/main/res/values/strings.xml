@@ -375,5 +375,11 @@
     <string name="error_dialog_title">Sync error log</string>
     <string name="share_with">Share with...</string>
     <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
+    <string name="sectionSelectorPrev">PREV</string>
+    <string name="sectionSelectorNext">NEXT</string>
+    <string name="event_overview">Overview</string>
+    <string name="event_event">Event</string>
+    <string name="event_indicators">Indicators</string>
+    <string name="event_notes">Notes</string>
 
 </resources>
