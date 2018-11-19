@@ -80,6 +80,7 @@
                 tools:text="Program Stage Name" />
 
             <TextView
+                android:id="@+id/eventSecundaryInfo"
                 style="@style/TextSecondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -96,7 +97,7 @@
             android:id="@+id/eventTabLayout"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="?colorPrimaryDark"
             app:layout_constraintTop_toBottomOf="@id/activityToolbar"
             app:tabTextAppearance="@style/EventTabStyle">
 
