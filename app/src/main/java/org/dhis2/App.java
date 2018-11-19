@@ -14,7 +14,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.security.ProviderInstaller;
 
 import org.dhis2.data.dagger.PerActivity;
@@ -36,6 +35,7 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
+import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
@@ -90,8 +90,7 @@ public class App extends MultiDexApplication implements Components {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (BuildConfig.DEBUG)
-            Timber.plant(new DebugTree());
+        Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
         Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
 

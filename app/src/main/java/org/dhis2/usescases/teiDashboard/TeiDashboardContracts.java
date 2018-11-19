@@ -6,11 +6,9 @@ import android.widget.TextView;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.ScheduleFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -45,6 +43,8 @@ public class TeiDashboardContracts {
         void showQR();
 
         void goToEnrollmentList(Bundle extras);
+
+        void restoreAdapter(String programUid);
     }
 
     public interface Presenter {
@@ -94,9 +94,6 @@ public class TeiDashboardContracts {
         void subscribeToIndicators(IndicatorsFragment indicatorsFragment);
 
         void onDescriptionClick(String description);
-
-        //ScheduleFragment
-        void subscribeToScheduleEvents(ScheduleFragment scheduleFragment);
 
         //NoteFragment
         void setNoteProcessor(Flowable<Pair<String, Boolean>> noteProcessor);

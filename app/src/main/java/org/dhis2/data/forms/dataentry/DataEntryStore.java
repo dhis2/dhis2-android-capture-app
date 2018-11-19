@@ -7,6 +7,10 @@ import io.reactivex.Flowable;
 
 public interface DataEntryStore {
 
+    enum valueType{
+        ATTR, DATA_ELEMENT
+    }
+
     @NonNull
     Flowable<Long> save(@NonNull String uid, @Nullable String value);
 }

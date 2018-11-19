@@ -171,31 +171,6 @@ public class Bindings {
                             Timber::d);
     }
 
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("enrollmentLastEventDate")
-    public static void setEnrollmentLastEventDate(TextView textView, String enrollmentUid) {
-        if (metadataRepository != null)
-            metadataRepository.getEnrollmentLastEvent(enrollmentUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> textView.setText(DateUtils.getInstance().formatDate(data.eventDate())),
-                            Timber::d);
-    }
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("eventLabel")
-    public static void setEventLabel(TextView textView, String programUid) {
-        if (metadataRepository != null)
-            metadataRepository.getProgramWithId(programUid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            data -> textView.setText(data.displayIncidentDate() ? data.incidentDateLabel() : data.enrollmentDateLabel()),
-                            Timber::d);
-    }
-
-
     @BindingAdapter(value = {"initGrid", "spanCount"}, requireAll = false)
     public static void setLayoutManager(RecyclerView recyclerView, boolean horizontal, int spanCount) {
         RecyclerView.LayoutManager recyclerLayout;
@@ -219,54 +194,6 @@ public class Bindings {
                 }
             });
         }
-    }
-
-    @SuppressLint("RxLeakedSubscription")
-    @BindingAdapter("lightColor")
-    public static void setLightColor(View view, ProgramModel programModel) {
-        if (metadataRepository != null)
-            metadataRepository.getObjectStyle(programModel.uid())
-                    .filter(objectStyleModel -> objectStyleModel != null)
-                    .map(objectStyleModel -> {
-                        String color = objectStyleModel.color();
-                        if (color != null && color.length() == 4) {//Color is formatted as #fff
-                            char r = color.charAt(1);
-                            char g = color.charAt(2);
-                            char b = color.charAt(3);
-                            color = "#" + r + r + g + g + b + b; //formatted to #ffff
-                        }
-
-                        int icon = -1;
-                        if (objectStyleModel.icon() != null) {
-                            Resources resources = view.getContext().getResources();
-                            String iconName = objectStyleModel.icon().startsWith("ic_") ? objectStyleModel.icon() : "ic_" + objectStyleModel.icon();
-                            icon = resources.getIdentifier(iconName, "drawable", view.getContext().getPackageName());
-                        }
-                        return Pair.create(Color.parseColor(color), icon);
-
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            colorAndIcon -> {
-                                if (colorAndIcon.val0() != -1)
-                                    view.setBackgroundColor(colorAndIcon.val0());
-
-                                if (view instanceof ImageView) {
-                                    if (colorAndIcon.val1() != -1) {
-                                        ((ImageView) view).setImageResource(colorAndIcon.val1());
-                                    } else {
-                                        TypedValue typedValue = new TypedValue();
-                                        TypedArray a = view.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-                                        int lcolor = a.getColor(0, 0);
-                                        a.recycle();
-                                        view.setBackgroundColor(lcolor);
-                                    }
-                                    setFromResBgColor(view, colorAndIcon.val0());
-                                }
-
-                            },
-                            Timber::d);
     }
 
     @BindingAdapter("progressColor")
@@ -304,11 +231,6 @@ public class Bindings {
                     );
     }
 
-    @BindingAdapter("srcBackGround")
-    public static void setBackGroundCompat(View view, int drawableId) {
-        view.setBackground(ContextCompat.getDrawable(view.getContext(), drawableId));
-    }
-
     @BindingAdapter("enrolmentIcon")
     public static void setEnrolmentIcon(ImageView view, EnrollmentStatus status) {
         Drawable lock;
@@ -331,28 +253,6 @@ public class Bindings {
 
         view.setImageDrawable(lock);
 
-    }
-
-    @BindingAdapter("enrolmentAction")
-    public static void setEnrolmentAction(TextView textView, EnrollmentStatus status) {
-        String action;
-        if (status == null)
-            status = EnrollmentStatus.ACTIVE;
-        switch (status) {
-            case ACTIVE:
-                action = textView.getContext().getString(R.string.complete);
-                break;
-            case COMPLETED:
-                action = textView.getContext().getString(R.string.re_open);
-                break;
-            case CANCELLED:
-                action = textView.getContext().getString(R.string.activate);
-                break;
-            default:
-                action = "";
-                break;
-        }
-        textView.setText(action);
     }
 
     @BindingAdapter("enrolmentText")
@@ -427,7 +327,6 @@ public class Bindings {
     }
 
     @BindingAdapter(value = {"eventStatusText", "enrollmentStatus", "eventProgramStage"})
-//    @BindingAdapter("eventStatusText")
     public static void setEventText(TextView view, EventModel event, EnrollmentModel enrollmentModel, ProgramStageModel eventProgramStage) {
         EventStatus status = event.status();
         EnrollmentStatus enrollmentStatus = enrollmentModel.enrollmentStatus();
@@ -793,111 +692,12 @@ public class Bindings {
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter("eventCompletion")
-    public static void setEventCompletion(TextView textView, EventModel eventModel) {
-        if (metadataRepository != null)
-            metadataRepository.getProgramStageDataElementCount(eventModel.programStage())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            programStageCount -> metadataRepository.getTrackEntityDataValueCount(eventModel.uid()).subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            trackEntityCount -> {
-                                                float perone = (float) trackEntityCount / (float) programStageCount;
-                                                int percent = (int) (perone * 100);
-                                                String completionText = textView.getContext().getString(R.string.completion) + " " + percent + "%";
-                                                textView.setText(completionText);
-                                            },
-                                            Timber::d
-                                    ),
-                            Timber::d
-                    );
-    }
-
-    /*@SuppressLint({"CheckResult", "RxLeakedSubscription"})
-    @BindingAdapter(value = {"optionSet", "label", "initialValue"}, requireAll = false)
-    public static void setOptionSet(Spinner spinner, String optionSet, String label, String initialValue) {
-        if (metadataRepository != null && optionSet != null) {
-            String optionSetLabel = label == null ? spinner.getContext().getString(R.string.select_option) : label;
-            metadataRepository.optionSet(optionSet)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            optionModels -> {
-                                OptionAdapter adapter = new OptionAdapter(spinner.getContext(),
-                                        R.layout.spinner_layout,
-                                        R.id.spinner_text,
-                                        optionModels,
-                                        optionSetLabel);
-                                spinner.setAdapter(adapter);
-                                spinner.setPrompt(optionSetLabel);
-                                if (initialValue != null) {
-                                    for (int i = 0; i < optionModels.size(); i++)
-                                        if (optionModels.get(i).displayName().equals(initialValue))
-                                            spinner.setSelection(i + 1);
-                                }
-                            },
-                            Timber::d);
-        }
-    }*/
-
-
-    @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
         return metadataRepository.optionSet(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")
     public static void setFromResBgColor(View view, int color) {
-        String tintedColor;
-
-        ArrayList<Double> rgb = new ArrayList<>();
-        rgb.add(Color.red(color) / 255.0d);
-        rgb.add(Color.green(color) / 255.0d);
-        rgb.add(Color.blue(color) / 255.0d);
-
-        Double r = null;
-        Double g = null;
-        Double b = null;
-        for (Double c : rgb) {
-            if (c <= 0.03928d)
-                c = c / 12.92d;
-            else
-                c = Math.pow(((c + 0.055d) / 1.055d), 2.4d);
-
-            if (r == null)
-                r = c;
-            else if (g == null)
-                g = c;
-            else
-                b = c;
-        }
-
-        double L = 0.2126d * r + 0.7152d * g + 0.0722d * b;
-
-
-        if (L > 0.179d)
-            tintedColor = "#000000"; // bright colors - black font
-        else
-            tintedColor = "#FFFFFF"; // dark colors - white font
-
-        if (view instanceof TextView) {
-            ((TextView) view).setTextColor(Color.parseColor(tintedColor));
-        }
-        if (view instanceof ImageView) {
-            Drawable drawable = ((ImageView) view).getDrawable();
-            if (drawable != null)
-                drawable.setColorFilter(Color.parseColor(tintedColor), PorterDuff.Mode.SRC_IN);
-            ((ImageView) view).setImageDrawable(drawable);
-        }
-    }
-
-    @BindingAdapter("fromHexBgColor")
-    public static void setFromHexBgColor(View view, String hexColor) {
-
-        int color = Color.parseColor(hexColor);
-
         String tintedColor;
 
         ArrayList<Double> rgb = new ArrayList<>();

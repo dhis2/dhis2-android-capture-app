@@ -346,6 +346,7 @@
     <color name="gray_979">#979797</color>
     <color name="gray_9b9">#9b9b9b</color>
     <color name="gray_b2e">#b2e3e3e3</color>
+    <color name="sectionSelectorBgColor">#fdfdfe</color>
     <!--endregion-->
 
 </resources>

@@ -36,13 +36,14 @@ final class DataValueStore implements DataEntryStore {
 
     @NonNull
     private final String eventUid;
+    private final String teiUid;
 
     DataValueStore(@NonNull BriteDatabase briteDatabase,
                    @NonNull UserRepository userRepository,
-                   @NonNull String eventUid) {
+                   @NonNull String eventUid, String teiUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
-
+        this.teiUid = teiUid;
         // we want to re-use results of the user credentials query
         this.userCredentials = userRepository.credentials()
                 .cacheWithInitialCapacity(1);
@@ -55,6 +56,7 @@ final class DataValueStore implements DataEntryStore {
                 .switchMap((userCredentials) -> {
                     long updated = update(uid, value);
                     if (updated > 0) {
+                        updateTEi();
                         return Flowable.just(updated);
                     }
 
@@ -90,6 +92,7 @@ final class DataValueStore implements DataEntryStore {
 
         if (eventModel != null) {
             briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+            updateTEi();
         }
     }
 
@@ -101,8 +104,10 @@ final class DataValueStore implements DataEntryStore {
         contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
         if (eventDate.before(currentDate))
             contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        if (eventModel != null)
+        if (eventModel != null) {
             briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+            updateTEi();
+        }
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
@@ -162,9 +167,22 @@ final class DataValueStore implements DataEntryStore {
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
                                     "has not been successfully updated", eventUid));
                         }
+
+                        updateTEi();
                     }
 
                     return Flowable.just(status);
                 });
+    }
+
+
+
+    private void updateTEi(){
+
+        ContentValues tei = new ContentValues();
+        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
+        // TODO: and if so, keep the TO_POST state
+        briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
     }
 }

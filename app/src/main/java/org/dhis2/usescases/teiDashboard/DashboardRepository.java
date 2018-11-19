@@ -55,7 +55,7 @@ public interface DashboardRepository {
 
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
-    int setFollowUp(String programUid, String enrollmentUid, boolean followUp);
+    boolean setFollowUp(String enrollmentUid);
 
     Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 
@@ -81,7 +81,7 @@ public interface DashboardRepository {
 
     void updateTeiState();
 
-    Observable<Pair<String, Integer>> getObjectStyle(Context context, String uid);
+    Integer getObjectStyle(Context context, String uid);
 
     Observable<List<Pair<RelationshipTypeModel,String>>> relationshipsForTeiType(String teType);
 }

@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -61,10 +63,15 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
+
+
+
                 if (!isEmpty(editText.getText()) && validate())
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
                 else
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
+
+
             }
         });
 

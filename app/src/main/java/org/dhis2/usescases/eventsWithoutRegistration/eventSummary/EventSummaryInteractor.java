@@ -125,7 +125,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
     public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventUid);
 
-        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation());
+        Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
+                .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(fieldsFlowable, ruleEffectFlowable, this::applyEffects);

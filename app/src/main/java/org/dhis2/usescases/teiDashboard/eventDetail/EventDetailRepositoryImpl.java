@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
@@ -17,6 +18,7 @@ import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,11 +46,13 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
+    private final String teiUid;
 
 
-    EventDetailRepositoryImpl(BriteDatabase briteDatabase, String eventUid) {
+    EventDetailRepositoryImpl(BriteDatabase briteDatabase, String eventUid, String teiUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
+        this.teiUid = teiUid;
     }
 
     @NonNull
@@ -141,8 +145,11 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
                 .state(State.TO_DELETE)
                 .build();
 
-        if (event != null)
+        if (event != null) {
             briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
+            updateTEi();
+        }
+
 
         updateProgramTable(currentDate, eventModel.program());
     }
@@ -211,11 +218,21 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         // TODO: and if so, keep the TO_POST state
 
         briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
+        updateTEi();
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
        /* ContentValues program = new ContentValues();  TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
+    }
+
+    private void updateTEi(){
+
+        ContentValues tei = new ContentValues();
+        tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+        tei.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.name());// TODO: Check if state is TO_POST
+        // TODO: and if so, keep the TO_POST state
+        briteDatabase.update(TrackedEntityInstanceModel.TABLE, tei, "uid = ?", teiUid);
     }
 }

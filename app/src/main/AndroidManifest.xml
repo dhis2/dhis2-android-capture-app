@@ -114,6 +114,7 @@
         </receiver>
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity"></activity>
+        <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity" />
     </application>
 
 </manifest>

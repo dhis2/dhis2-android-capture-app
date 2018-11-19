@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/currentSectionTitle"
+            layout="@layout/item_section_selector"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/itemSectionSelectorHeight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/formRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/sectionSelector"
+            app:layout_constraintTop_toBottomOf="@id/currentSectionTitle"
+            tools:listitem="@layout/custom_text_view" />
+
+        <include
+            android:id="@+id/sectionSelector"
+            layout="@layout/section_selector"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/sectionSelectorHeight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

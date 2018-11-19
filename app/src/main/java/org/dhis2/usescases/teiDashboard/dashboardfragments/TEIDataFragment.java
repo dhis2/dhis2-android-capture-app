@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,13 +67,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     static TEIDataFragment instance;
     TeiDashboardContracts.Presenter presenter;
 
-    private DashboardProgramModel dashboardProgramModel;
     private EventAdapter adapter;
-    private List<EventModel> events = new ArrayList<>();
     private CustomDialog dialog;
     private String lastModifiedEventUid;
     private ProgramStageModel programStageFromEvent;
-    private Context context;
+    private ObservableBoolean followUp = new ObservableBoolean(false);
 
     public static TEIDataFragment getInstance() {
         if (instance == null)
@@ -88,7 +87,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.context = context;
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
@@ -135,25 +133,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setData(dashboardProgramModel);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         presenter = ((TeiDashboardMobileActivity) getActivity()).getPresenter();
+
         binding.setPresenter(presenter);
-        if (dashboardProgramModel != null)
-            setData(dashboardProgramModel);
+
+        setData(presenter.getDashBoardData());
     }
 
     public void setData(DashboardProgramModel nprogram) {
-        this.dashboardProgramModel = nprogram;
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
-            this.events = new ArrayList<>();
+            List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(adapter);
@@ -162,16 +154,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             binding.setProgram(nprogram.getCurrentProgram());
             binding.setDashboardModel(nprogram);
             presenter.getTEIEvents(this);
+            followUp.set(nprogram.getCurrentEnrollment().followUp() != null ? nprogram.getCurrentEnrollment().followUp() : false);
+            binding.setFollowup(followUp);
 
         } else if (nprogram != null) {
             binding.fab.setVisibility(View.GONE);
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
             binding.teiRecycler.setAdapter(new DashboardProgramAdapter(presenter, nprogram));
-            binding.teiRecycler.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+            binding.teiRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
             binding.setTrackEntity(nprogram.getTei());
             binding.setEnrollment(null);
             binding.setProgram(null);
             binding.setDashboardModel(nprogram);
+            binding.setFollowup(followUp);
         }
 
         binding.executePendingBindings();
@@ -254,7 +249,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         };
     }
 
-    private void askCompleteProgram(){
+    private void askCompleteProgram() {
         dialog = new CustomDialog(
                 getContext(),
                 getString(R.string.event_completed_title),
@@ -285,7 +280,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 else {
                     if (programStageFromEvent.periodType() == null || programStageFromEvent.periodType() == PeriodType.Daily) {
                         Calendar calendar = Calendar.getInstance();
-                        DatePickerDialog datePickerDialog = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(getAbstracContext(), (view, year, month, dayOfMonth) -> {
                             Calendar chosenDate = Calendar.getInstance();
                             chosenDate.set(year, month, dayOfMonth);
                             presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
@@ -322,4 +317,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             askCompleteProgram();
     }
 
+    public void switchFollowUp(boolean followUp) {
+        this.followUp.set(followUp);
+    }
 }
