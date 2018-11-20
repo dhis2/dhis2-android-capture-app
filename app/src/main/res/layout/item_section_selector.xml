@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="order"
+            type="Integer" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
+
+        <variable
+            name="isCurrentSection"
+            type="android.databinding.ObservableBoolean" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/itemSectionSelectorHeight"
+        android:background="@{isCurrentSection &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
+        android:onClick="@{()->presenter.onSectionSelectorClick(isCurrentSection.get(),order)}"
         android:paddingStart="8dp"
-        android:background="#fdfdfe"
         android:paddingEnd="8dp">
 
         <ImageView
             android:id="@+id/sectionStateIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@{isCurrentSection? @drawable/ic_check_circle : @drawable/ic_unchecked_circle,default=@drawable/ic_unchecked_circle}"
             android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_check_circle" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/sectionTitle"
@@ -33,6 +47,16 @@
             app:layout_constraintStart_toEndOf="@id/sectionStateIcon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Diagnosis Result Microscopy" />
+
+        <TextView
+            android:id="@+id/sectionValues"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGreyDefault"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="0/10" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

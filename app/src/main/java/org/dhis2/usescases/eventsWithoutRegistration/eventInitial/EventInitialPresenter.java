@@ -387,7 +387,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventId);
-
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
@@ -450,8 +449,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
-            } else if(ruleAction instanceof RuleActionHideSection){
-                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 view.setHideSection(hideSection.programStageSection());
             }
         }
