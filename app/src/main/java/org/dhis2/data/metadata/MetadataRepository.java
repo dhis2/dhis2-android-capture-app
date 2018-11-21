@@ -154,4 +154,6 @@ public interface MetadataRepository {
     void deleteErrorLogs();
 
     Observable<Integer> getOrgUnitsForDataElementsCount();
+
+    Observable<List<String>> searchOptions(String text, String idOptionSet);
 }

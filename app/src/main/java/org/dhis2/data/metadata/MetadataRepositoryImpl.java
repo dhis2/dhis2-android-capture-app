@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
@@ -685,5 +686,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         } catch (Exception e) {
             Timber.e(e);
         }
+    }
+
+    @Override
+    public Observable<List<String>> searchOptions(String text, String idOptionSet) {
+        String optionQuery = "select Option.name from OptionSet JOIN Option ON Option.optionSet = OptionSet.uid where OptionSet.uid = ? and Option.name like '%"+text+"%'";
+
+        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery , idOptionSet)
+                .mapToList(cursor -> {
+                    return cursor.getString(0);
+                });
+
     }
 }

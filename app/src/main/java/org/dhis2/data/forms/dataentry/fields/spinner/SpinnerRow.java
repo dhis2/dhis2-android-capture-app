@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.tuples.Pair;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -21,15 +22,17 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
 
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String,String>> processorOptionSet, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = null;
         this.inflater = layoutInflater;
+        this.processorOptionSet = processorOptionSet;
     }
 
     public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
@@ -38,14 +41,14 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
         this.inflater = layoutInflater;
-
+        this.processorOptionSet = null;
     }
 
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, isBackgroundTransparent ? R.layout.form_spinner : R.layout.form_spinner_accent, parent, false);
-        return new SpinnerHolder(binding, processor, isBackgroundTransparent, renderType);
+        return new SpinnerHolder(binding, processor, processorOptionSet, isBackgroundTransparent, renderType);
     }
 
     @Override
