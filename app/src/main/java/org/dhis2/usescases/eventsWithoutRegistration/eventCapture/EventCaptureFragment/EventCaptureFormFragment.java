@@ -20,9 +20,10 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventSectionModel;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.SectionSelectorAdapter;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
@@ -33,6 +34,8 @@ import org.hisp.dhis.rules.models.RuleActionShowError;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -46,6 +49,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     private String currentSection;
     private ObservableBoolean isFirstPosition = new ObservableBoolean(true);
     private ObservableBoolean isLastPosition = new ObservableBoolean(false);
+    private FlowableProcessor<RowAction> flowableProcessor;
 
     public static EventCaptureFormFragment getInstance() {
         if (instance == null) {
@@ -67,10 +71,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding.setPresenter(activity.getPresenter());
         binding.sectionSelector.setIsFirstPosition(isFirstPosition);
         binding.sectionSelector.setIsLastPosition(isLastPosition);
-        activity.getPresenter().subscribeToSection();
         sectionSelectorAdapter = new SectionSelectorAdapter(activity.getPresenter());
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
-
+        this.flowableProcessor = PublishProcessor.create();
+        activity.getPresenter().subscribeToSection();
         return binding.getRoot();
     }
 
@@ -80,12 +84,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
     }
 
-    public void setSectionTitle(FormSectionViewModel formSectionViewModel) {
+    public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
         this.currentSection = formSectionViewModel.sectionUid();
         binding.currentSectionTitle.sectionTitle.setText(formSectionViewModel.label());
         binding.currentSectionTitle.setIsCurrentSection(new ObservableBoolean(true));
         binding.currentSectionTitle.setOrder(-1);
-        setUpRecyclerView(formSectionViewModel);
+
+        setUpRecyclerView(arguments);
     }
 
     public void setSectionProgress(Integer sectionPosition, Integer sectionTotal) {
@@ -96,27 +101,31 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding.sectionSelector.sectionProgress.getProgressDrawable().setColorFilter(ColorUtils.getPrimaryColor(activity, ColorUtils.ColorType.PRIMARY_LIGHT), PorterDuff.Mode.SRC_IN);
     }
 
-    private void setUpRecyclerView(FormSectionViewModel formSectionViewModel) {
-        DataEntryArguments arguments =
-                DataEntryArguments.forEventSection(formSectionViewModel.uid(),
-                        formSectionViewModel.sectionUid(),
-                        formSectionViewModel.renderType());
+    public void setSingleSection(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
+        this.currentSection = "NO_SECTION";
+        binding.currentSectionTitle.root.setVisibility(View.GONE);
+
+        setUpRecyclerView(arguments);
+    }
+
+    private void setUpRecyclerView(DataEntryArguments arguments) {
 
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
                 getChildFragmentManager(), arguments,
                 activity.getPresenter().getOrgUnits(),
-                new ObservableBoolean(true));
+                new ObservableBoolean(true),
+                flowableProcessor);
+
+        binding.formRecycler.setAdapter(dataEntryAdapter);
 
         RecyclerView.LayoutManager layoutManager;
-        if (formSectionViewModel.renderType() != null && formSectionViewModel.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
+        if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             layoutManager = new GridLayoutManager(getActivity(), 2);
         } else
             layoutManager = new LinearLayoutManager(getActivity(),
                     LinearLayoutManager.VERTICAL, false);
 
-        binding.formRecycler.setAdapter(dataEntryAdapter);
         binding.formRecycler.setLayoutManager(layoutManager);
-
     }
 
     @NonNull
@@ -132,8 +141,12 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         };
     }
 
-    public Consumer<Pair<FormSectionViewModel, List<FieldViewModel>>> setSectionSelector() {
-        return sectionPair -> sectionSelectorAdapter.swapData(currentSection, sectionPair);
+    public Consumer<List<EventSectionModel>> setSectionSelector() {
+        return data -> sectionSelectorAdapter.swapData(currentSection, data);
+    }
+
+    public FlowableProcessor<RowAction> dataEntryFlowable() {
+        return flowableProcessor;
     }
 
 

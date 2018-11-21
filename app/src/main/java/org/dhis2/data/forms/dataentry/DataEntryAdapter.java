@@ -104,6 +104,37 @@ public final class DataEntryAdapter extends Adapter {
 
     }
 
+    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
+                            @NonNull FragmentManager fragmentManager,
+                            @NonNull DataEntryArguments dataEntryArguments,
+                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
+                            ObservableBoolean isEditable,
+                            @NonNull FlowableProcessor<RowAction> processor) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+        setHasStableIds(true);
+        rows = new ArrayList<>();
+        viewModels = new ArrayList<>();
+        this.processor = processor;
+        imageSelector = PublishProcessor.create();
+        currentPosition = PublishProcessor.create();
+
+        this.dataEntryArguments = dataEntryArguments;
+
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -166,7 +197,7 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     @NonNull
-    FlowableProcessor<RowAction> asFlowable() {
+    public FlowableProcessor<RowAction> asFlowable() {
         return processor;
     }
 

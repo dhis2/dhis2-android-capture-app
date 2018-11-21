@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.databinding.ObservableBoolean;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -41,7 +42,7 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends FormViewHolder {
 
     private final TextInputLayout inputLayout;
-    private EditText editText;
+    private TextInputEditText editText;
     private ImageView icon;
     /* @NonNull
      private BehaviorProcessor<EditTextModel> model;*/
@@ -63,7 +64,6 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
-
 
 
                 if (!isEmpty(editText.getText()) && validate())
@@ -153,7 +153,6 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     public void update(@NonNull FieldViewModel model) {
-//        model.onNext((EditTextModel) editTextModel);
         this.editTextModel = (EditTextModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.uid());

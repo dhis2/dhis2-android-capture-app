@@ -42,10 +42,11 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     public ImageHolder onCreate(@NonNull ViewGroup parent, int count, FlowableProcessor<String> imageSelector) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
         Integer height = null;
+        Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
         if (renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
-            height = parent.getMeasuredHeight() / (count > 2 ? 3 : count);
+            height = parentHeight / (count > 2 ? 3 : count);
         } else if (renderType.equals(ProgramStageSectionRenderingType.MATRIX.name())) {
-            height = parent.getMeasuredHeight() / (count > 2 ? 2 : count);
+            height = parentHeight / (count > 2 ? 2 : count);
         }
 
         View rootView = binding.getRoot();

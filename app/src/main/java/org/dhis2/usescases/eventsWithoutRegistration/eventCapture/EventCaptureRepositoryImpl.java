@@ -25,12 +25,14 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
+import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,17 +90,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
-            "        DataElement.displayFormName AS formLabel,\n" +
             "        DataElement.valueType AS type,\n" +
             "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
+            "        DataElement.displayFormName AS formLabel,\n" +
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
             "        ProgramStageDataElement.compulsory AS mandatory,\n" +
             "        ProgramStageSectionDataElementLink.programStageSection AS section,\n" +
             "        ProgramStageDataElement.allowFutureDate AS allowFutureDate,\n" +
             "        DataElement.displayDescription AS displayDescription,\n" +
-            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" +
+            "        ProgramStageSectionDataElementLink.sortOrder AS sectionOrder\n" + //This should override dataElement formOrder
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "        LEFT JOIN ProgramStageSectionDataElementLink ON ProgramStageSectionDataElementLink.dataElement = ProgramStageDataElement.dataElement\n" +
@@ -115,9 +117,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             " WHEN Field.sectionOrder IS NOT NULL THEN Field.sectionOrder" +
             " END ASC;";
 
+    private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
+    private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
+    private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?";
+    private static final String OPTIONS = "SELECT Option.uid, Option.displayName FROM Option WHERE Option.optionSet = ?";
+
     private final BriteDatabase briteDatabase;
     private final String eventUid;
     private final FormRepository formRepository;
+    private ProgramStageSectionRenderingType renderingType;
+    private boolean accessDataWrite;
 
     public EventCaptureRepositoryImpl(Context context, BriteDatabase briteDatabase, FormRepository formRepository, String eventUid) {
         this.briteDatabase = briteDatabase;
@@ -186,11 +195,81 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list(String sectionUid) {
+
+        Cursor cursor = briteDatabase.query(SECTION_RENDERING_TYPE, sectionUid == null ? "" : sectionUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            renderingType = cursor.getString(0) != null ?
+                    ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
+                    ProgramStageSectionRenderingType.LISTING;
+            cursor.close();
+        }
+
+        Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid == null ? "" : eventUid);
+        if (accessCursor != null && accessCursor.moveToFirst()) {
+            accessDataWrite = accessCursor.getInt(0) == 1;
+            accessCursor.close();
+        }
+
+        Cursor programAccessCursor = briteDatabase.query(PROGRAM_ACCESS_QUERY, eventUid == null ? "" : eventUid);
+        if (programAccessCursor != null && programAccessCursor.moveToFirst()) {
+            accessDataWrite = accessDataWrite && programAccessCursor.getInt(0) == 1;
+            programAccessCursor.close();
+        }
+
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(sectionUid, eventUid))
                 .mapToList(this::transform)
+                .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
+
+    private List<FieldViewModel> checkRenderType(List<FieldViewModel> fieldViewModels) {
+
+        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+
+        if (renderingType != ProgramStageSectionRenderingType.LISTING) {
+
+            for (FieldViewModel fieldViewModel : fieldViewModels) {
+                if (!isEmpty(fieldViewModel.optionSet())) {
+                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
+                    if (cursor != null && cursor.moveToFirst()) {
+                        for (int i = 0; i < cursor.getCount(); i++) {
+                            String uid = cursor.getString(0);
+                            String displayName = cursor.getString(1);
+                            renderList.add(fieldFactory.create(
+                                    fieldViewModel.uid() + "." + uid, //fist
+                                    displayName, ValueType.TEXT, false,
+                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description()));
+
+                            cursor.moveToNext();
+                        }
+                        cursor.close();
+                    }
+
+
+                } else
+                    renderList.add(fieldViewModel);
+            }
+
+
+        } else
+            renderList.addAll(fieldViewModels);
+
+        return renderList;
+
+    }
+
+    @NonNull
+    @Override
+    public Flowable<List<FieldViewModel>> list() {
+        return briteDatabase
+                .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
+                .mapToList(this::transform)
+                .map(this::checkRenderType)
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
 
     @NonNull
     @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
@@ -201,6 +280,34 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         } else {
             where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
                     "Field.section = '%s'", eventUid == null ? "" : eventUid, sectionUid == null ? "" : sectionUid);
+        }
+
+        return String.format(Locale.US, QUERY, where);
+    }
+
+    @NonNull
+    @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
+    private String prepareStatement(String eventUid) {
+
+        StringBuilder sectionUids = new StringBuilder();
+
+        Cursor sectionsCursor = briteDatabase.query(SELECT_SECTIONS, eventUid);
+        if (sectionsCursor != null && sectionsCursor.moveToFirst()) {
+            for (int i = 0; i < sectionsCursor.getCount(); i++) {
+                sectionUids.append(String.format("'%s'",sectionsCursor.getString(2)));
+                if (i < sectionsCursor.getCount() - 1)
+                    sectionUids.append(",");
+                sectionsCursor.moveToNext();
+            }
+            sectionsCursor.close();
+        }
+
+        String where;
+        if (isEmpty(sectionUids)) {
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid == null ? "" : eventUid);
+        } else {
+            where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
+                    "Field.section IN (%s)", eventUid == null ? "" : eventUid, sectionUids);
         }
 
         return String.format(Locale.US, QUERY, where);
@@ -261,7 +368,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     String programStage = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit,orgUnitCode, dataValues, programStage);
+                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

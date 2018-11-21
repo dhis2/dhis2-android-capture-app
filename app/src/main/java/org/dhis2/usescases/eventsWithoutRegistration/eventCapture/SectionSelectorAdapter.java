@@ -7,9 +7,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
-import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemSectionSelectorBinding;
 
 import java.util.ArrayList;
@@ -18,14 +15,12 @@ import java.util.List;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
-import static android.text.TextUtils.isEmpty;
-
 /**
  * QUADRAM. Created by ppajuelo on 20/11/2018.
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
     private final EventCaptureContract.Presenter presenter;
-    List<Pair<FormSectionViewModel, List<FieldViewModel>>> items;
+    List<EventSectionModel> items;
     private String currentSection;
     private float percentage;
     private FlowableProcessor<Float> percentageFlowable;
@@ -55,28 +50,29 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
         return items != null ? items.size() : 0;
     }
 
-    public void swapData(String currentSection, Pair<FormSectionViewModel, List<FieldViewModel>> update) {
+    public void swapData(String currentSection, List<EventSectionModel> update) {
 
-        if (!this.items.contains(update)) {
-            this.items.add(update);
-            this.currentSection = currentSection;
-            notifyDataSetChanged();
+        this.items.clear();
+        this.items.addAll(update);
+        this.currentSection = currentSection;
+        notifyDataSetChanged();
 
-            float cont = 0;
-            for (FieldViewModel fieldViewModel : update.val1())
-                if (!isEmpty(fieldViewModel.value()))
-                    cont++;
-            percentage = percentage +(cont) / update.val1().size();
-            percentageFlowable.onNext(percentage);
+        percentageFlowable.onNext(calculateCompletionPercentage());
 
-
-        } else if (!currentSection.equals(this.currentSection)) {
-            this.currentSection = currentSection;
-            notifyDataSetChanged();
-        }
     }
 
     public FlowableProcessor<Float> completionPercentage() {
         return percentageFlowable;
+    }
+
+    private float calculateCompletionPercentage() {
+        float wValues = 0f;
+        float totals = 0f;
+        for (EventSectionModel sectionModel : items) {
+            wValues += (float) sectionModel.numberOfCompletedFields();
+            totals += (float) sectionModel.numberOfTotalFields();
+        }
+        percentage = wValues / totals;
+        return percentage;
     }
 }

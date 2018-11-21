@@ -7,10 +7,15 @@ import android.support.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
+import org.dhis2.utils.DialogClickListener;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -24,7 +29,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private ActivityEventCaptureBinding binding;
     @Inject
     EventCaptureContract.Presenter presenter;
-    private int completionPercentage;
+    private int completionPercentage = 0;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -35,10 +40,12 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getApplicationContext()).userComponent().plus(new EventCaptureModule(
-                getIntent().getStringExtra(Constants.EVENT_UID),
-                getIntent().getStringExtra(Constants.PROGRAM_UID)
-        )).inject(this);
+
+        ((App) getApplicationContext()).userComponent().plus(
+                new EventCaptureModule(
+                        getIntent().getStringExtra(Constants.EVENT_UID),
+                        getIntent().getStringExtra(Constants.PROGRAM_UID)))
+                .inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
 
@@ -65,16 +72,47 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public Consumer<Float> updatePercentage() {
         return percentage -> {
-            this.completionPercentage = (int) (percentage * 100);
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercentage, false,
-                    (lost, interpolatedTime) -> {
-                        int progress = (int) (completionPercentage * interpolatedTime);
-                        String text = String.valueOf(progress) + "%";
+            int newPercentage = (int) (percentage * 100);
+
+            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, completionPercentage, 0, newPercentage, false,
+                    (lost, value) -> {
+                        String text = String.valueOf((int) value) + "%";
                         binding.progress.setText(text);
                     });
             gainAnim.setDuration(1000);
             binding.progressGains.startAnimation(gainAnim);
+
+            this.completionPercentage = (int) (percentage * 100);
+
         };
+    }
+
+    @Override
+    public void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields) {
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.missing_mandatory_fields_title),
+                getAbstracContext().getString(R.string.missing_mandatory_fields_events),
+                getAbstracContext().getString(R.string.button_ok),
+                "Check",
+                Constants.RQ_MANDATORY_EVENTS,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        getActivity().finish();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        presenter.onNextSection();
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void attemptToFinish() {
+        finish();
     }
 
     @Override

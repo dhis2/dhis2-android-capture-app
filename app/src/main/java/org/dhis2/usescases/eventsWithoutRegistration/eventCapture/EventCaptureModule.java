@@ -9,6 +9,9 @@ import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.RulesRepository;
+import org.dhis2.data.forms.dataentry.DataEntryStore;
+import org.dhis2.data.forms.dataentry.DataValueStore;
+import org.dhis2.data.user.UserRepository;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
@@ -35,8 +38,9 @@ public class EventCaptureModule {
     @Provides
     @PerActivity
     EventCaptureContract.Presenter providePresenter(@NonNull EventCaptureContract.EventCaptureRepository eventCaptureRepository,
-                                                    @NonNull RulesUtilsProvider ruleUtils) {
-        return new EventCapturePresenterImpl(eventCaptureRepository, ruleUtils);
+                                                    @NonNull RulesUtilsProvider ruleUtils,
+                                                    @NonNull DataEntryStore dataEntryStore) {
+        return new EventCapturePresenterImpl(eventCaptureRepository, ruleUtils, dataEntryStore);
     }
 
     @Provides
@@ -48,16 +52,24 @@ public class EventCaptureModule {
     }
 
     @Provides
+    @PerActivity
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
         return new RulesRepository(briteDatabase);
     }
 
     @Provides
+    @PerActivity
     FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
                                   @NonNull RuleExpressionEvaluator evaluator,
                                   @NonNull RulesRepository rulesRepository) {
         return new EventRepository(briteDatabase, evaluator, rulesRepository, eventUid);
     }
 
+    @Provides
+    @PerActivity
+    DataEntryStore dataValueStore(@NonNull BriteDatabase briteDatabase,
+                                  @NonNull UserRepository userRepository) {
+        return new DataValueStore(briteDatabase, userRepository, eventUid);
+    }
 
 }

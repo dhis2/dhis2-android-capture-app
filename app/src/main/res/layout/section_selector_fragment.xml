@@ -46,13 +46,15 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/sectionRecycler"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:visibility="gone"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_section_selector" />
+            tools:listitem="@layout/item_section_selector"
+            tools:visibility="visible"
+            android:layout_marginBottom="100dp"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

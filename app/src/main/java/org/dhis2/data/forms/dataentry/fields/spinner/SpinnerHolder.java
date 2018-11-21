@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -99,6 +98,8 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         for (OptionModel optionModel : options)
             if (value.equals(optionModel.displayName()))
                 code = optionModel.code();
+
+        editText.setText(value);
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );

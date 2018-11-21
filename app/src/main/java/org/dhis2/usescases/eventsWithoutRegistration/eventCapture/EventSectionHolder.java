@@ -3,14 +3,8 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 
-import org.dhis2.data.forms.FormSectionViewModel;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemSectionSelectorBinding;
-
-import java.util.List;
 
 /**
  * QUADRAM. Created by ppajuelo on 20/11/2018.
@@ -24,17 +18,13 @@ public class EventSectionHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(String currentSection, Pair<FormSectionViewModel, List<FieldViewModel>> pair, EventCaptureContract.Presenter presenter) {
-        binding.sectionTitle.setText(pair.val0().label());
+    public void bind(String currentSection, EventSectionModel sectionModel, EventCaptureContract.Presenter presenter) {
+        binding.sectionTitle.setText(sectionModel.sectionName());
         binding.setOrder(getAdapterPosition());
         binding.setIsCurrentSection(isCurrentSection);
-        isCurrentSection.set(currentSection.equals(pair.val0().sectionUid()));
+        isCurrentSection.set(currentSection.equals(sectionModel.sectionUid()));
         binding.setPresenter(presenter);
 
-        int completedValues = 0;
-        for (FieldViewModel fieldViewModel : pair.val1())
-            if (!TextUtils.isEmpty(fieldViewModel.value()))
-                completedValues++;
-        binding.sectionValues.setText(String.format("%s/%s", completedValues, pair.val1().size()));
+        binding.sectionValues.setText(String.format("%s/%s", sectionModel.numberOfCompletedFields(), sectionModel.numberOfTotalFields()));
     }
 }
