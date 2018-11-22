@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -60,6 +61,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     public ContentLoadingProgressBar progressBar;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
@@ -96,7 +98,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         if (!BuildConfig.DEBUG)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         SharedPreferences prefs = getSharedPreferences();

@@ -38,7 +38,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName","dhis2-v"+versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
@@ -202,13 +202,13 @@ dependencies {
     // Jake Wharton libraries
     //timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
-        
+
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
-    implementation ("android.arch.work:work-runtime:1.0.0-alpha10"){
+    implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
 
     }
@@ -217,6 +217,9 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
+
+    //FIREBASE
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 
     //Test
 
@@ -264,3 +267,4 @@ dependencies {
 }
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
