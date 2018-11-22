@@ -100,21 +100,14 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        String value = item.getTitle().toString();
-        String code = null;
-        for (OptionModel optionModel : options)
-            if (value.equals(optionModel.displayName()))
-                code = optionModel.code();
-        processor.onNext(
-                RowAction.create(viewModel.uid(), code)
-        );
+        setValueOption(item.getTitle().toString());
         return false;
     }
 
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if(options.size() > 15){
+        if(options.size() > 3){
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog.setProcessor(processorOptionSet).setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
@@ -135,6 +128,11 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public void onSelectOption(String option) {
+        setValueOption(option);
+        OptionSetDialog.newInstance().dismiss();
+    }
+
+    private void setValueOption(String option){
         String code = "";
         for (OptionModel optionModel : options)
             if (option.equals(optionModel.displayName()))
@@ -142,7 +140,5 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );
-
-        OptionSetDialog.newInstance().dismiss();
     }
 }

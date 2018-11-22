@@ -36,12 +36,12 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     }
 
     public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      @NonNull FlowableProcessor<Integer> currentPosition,boolean isBackgroundTransparent, String renderType) {
+                      @NonNull FlowableProcessor<Integer> currentPosition, FlowableProcessor<Pair<String,String>> processorOptionSet,boolean isBackgroundTransparent, String renderType) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
         this.inflater = layoutInflater;
-        this.processorOptionSet = null;
+        this.processorOptionSet = processorOptionSet;
     }
 
     @NonNull
