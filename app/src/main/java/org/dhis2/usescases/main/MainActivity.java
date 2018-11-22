@@ -55,10 +55,6 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
-        if (getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);

@@ -60,10 +60,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         LoginComponent loginComponent = ((App) getApplicationContext()).loginComponent();
         if (loginComponent == null) {

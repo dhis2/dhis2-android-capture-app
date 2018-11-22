@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -44,14 +47,11 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     ActivityDashboardMobileBinding binding;
     public FragmentStatePagerAdapter adapter;
+    private int orientation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -67,7 +67,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     @Override
     protected void onResume() {
         super.onResume();
-
+        orientation = Resources.getSystem().getConfiguration().orientation;
         init(teiUid, programUid);
     }
 
@@ -84,7 +84,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     private void setViewpagerAdapter() {
         if (adapter == null) {
-            if (!getResources().getBoolean(R.bool.is_tablet)) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
                 binding.teiPager.setAdapter(adapter);
                 binding.tabLayout.setVisibility(View.VISIBLE);
@@ -118,7 +118,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     @Override
     public void setData(DashboardProgramModel program) {
 
-        if (getResources().getBoolean(R.bool.is_tablet))
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
                     .commit();
@@ -157,7 +157,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     public void setDataWithOutProgram(DashboardProgramModel program) {
 
 
-        if (getResources().getBoolean(R.bool.is_tablet))
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
                     .commit();

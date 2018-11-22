@@ -82,7 +82,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         binding.setPresenter(presenter);
-        relationshipAdapter = new RelationshipAdapter(presenter);
+
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         return binding.getRoot();
     }
@@ -90,7 +90,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-
+        relationshipAdapter = new RelationshipAdapter(presenter);
         setData(presenter.getDashBoardData());
     }
 

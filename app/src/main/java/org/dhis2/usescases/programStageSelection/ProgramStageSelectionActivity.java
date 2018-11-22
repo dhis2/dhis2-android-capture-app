@@ -1,5 +1,8 @@
 package org.dhis2.usescases.programStageSelection;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,6 +44,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     ProgramStageSelectionAdapter adapter;
     private String enrollmenId;
     private String programId;
+    private int orientation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +55,6 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection);
         binding.setPresenter(presenter);
-        int columnCount = getResources().getBoolean(R.bool.is_tablet) ? 3 : 2;
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
         adapter = new ProgramStageSelectionAdapter(presenter);
         binding.recyclerView.setAdapter(adapter);
     }
@@ -60,8 +62,10 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
     @Override
     protected void onResume() {
         super.onResume();
-
+        orientation = Resources.getSystem().getConfiguration().orientation;
         presenter.getProgramStages(programId, enrollmenId, this); //TODO: enrollment / event path
+        int columnCount = (orientation == Configuration.ORIENTATION_LANDSCAPE) ? 3 : 2;
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, columnCount));
     }
 
     @Override
