@@ -107,7 +107,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if(options.size() > 3){
+        if(options.size() > 15){
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog.setProcessor(processorOptionSet).setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())

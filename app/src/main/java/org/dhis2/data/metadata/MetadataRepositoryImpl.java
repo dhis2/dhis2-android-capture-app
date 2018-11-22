@@ -690,7 +690,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<List<String>> searchOptions(String text, String idOptionSet) {
-        String optionQuery = "select Option.name from OptionSet JOIN Option ON Option.optionSet = OptionSet.uid where OptionSet.uid = ? and Option.name like '%"+text+"%'";
+        String optionQuery = "select Option.name from OptionSet JOIN Option ON Option.optionSet = OptionSet.uid where OptionSet.uid = ? and Option.name like '%"+text+"%' LIMIT 15";
 
         return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery , idOptionSet)
                 .mapToList(cursor -> {

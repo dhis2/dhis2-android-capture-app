@@ -21,6 +21,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
 
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -165,6 +166,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     @Override
     public void setListOptions(List<String> options) {
-
+        OptionSetDialog.newInstance().setOptions(options);
     }
 }
