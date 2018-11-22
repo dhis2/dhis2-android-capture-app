@@ -180,7 +180,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 "SELECT CategoryOption.* FROM CategoryOption " +
                         "JOIN Event ON Event.attributeCategoryOptions = CategoryOption.uid " +
                         "WHERE Event.uid = ? LIMIT 1", eventUid)
-                .mapToOne(cursor -> CategoryOptionModel.create(cursor).displayName())
+                .mapToOneOrDefault(cursor -> CategoryOptionModel.create(cursor).displayName(), "")
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -266,7 +266,6 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return briteDatabase
                 .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement(eventUid))
                 .mapToList(this::transform)
-                .map(this::checkRenderType)
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -294,7 +293,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Cursor sectionsCursor = briteDatabase.query(SELECT_SECTIONS, eventUid);
         if (sectionsCursor != null && sectionsCursor.moveToFirst()) {
             for (int i = 0; i < sectionsCursor.getCount(); i++) {
-                sectionUids.append(String.format("'%s'",sectionsCursor.getString(2)));
+                sectionUids.append(String.format("'%s'", sectionsCursor.getString(2)));
                 if (i < sectionsCursor.getCount() - 1)
                     sectionUids.append(",");
                 sectionsCursor.moveToNext();

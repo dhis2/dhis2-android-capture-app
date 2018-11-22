@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="sectionUid"
+            type="String"/>
+
+        <variable
             name="order"
             type="Integer" />
 
@@ -14,16 +18,17 @@
             type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
 
         <variable
-            name="isCurrentSection"
-            type="android.databinding.ObservableBoolean" />
+            name="currentSection"
+            type="android.databinding.ObservableField&lt;String&gt;"/>
+
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/itemSectionSelectorHeight"
-        android:background="@{isCurrentSection &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
-        android:onClick="@{()->presenter.onSectionSelectorClick(isCurrentSection.get(),order)}"
+        android:background="@{currentSection == sectionUid &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
+        android:onClick="@{()->presenter.onSectionSelectorClick(currentSection == sectionUid,order,sectionUid)}"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
@@ -31,7 +36,7 @@
             android:id="@+id/sectionStateIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@{isCurrentSection? @drawable/ic_check_circle : @drawable/ic_unchecked_circle,default=@drawable/ic_unchecked_circle}"
+            android:src="@{currentSection == sectionUid? @drawable/ic_check_circle : @drawable/ic_unchecked_circle,default=@drawable/ic_unchecked_circle}"
             android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

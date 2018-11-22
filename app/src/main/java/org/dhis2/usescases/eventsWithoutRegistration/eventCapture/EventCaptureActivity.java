@@ -4,16 +4,19 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
+import org.dhis2.utils.Utils;
 
 import java.util.Map;
 
@@ -40,7 +43,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         ((App) getApplicationContext()).userComponent().plus(
                 new EventCaptureModule(
                         getIntent().getStringExtra(Constants.EVENT_UID),
@@ -48,6 +50,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
+        binding.setPresenter(presenter);
 
     }
 
@@ -99,20 +102,41 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        getActivity().finish();
+                        showCompleteActions(false);
                     }
 
                     @Override
                     public void onNegative() {
-                        presenter.onNextSection();
+                        presenter.goToSection(emptyMandatoryFields.get(emptyMandatoryFields.entrySet().iterator().next().getKey()).programStageSection());
                     }
                 })
                 .show();
     }
 
     @Override
+    public void showCompleteActions(boolean canComplete) {
+        Utils.getPopUpMenu(this,
+                EventCaptureFormFragment.getInstance().getSectionSelector(),
+                R.menu.event_form_finish_menu,
+                Gravity.TOP,
+                item -> {
+                    switch (item.getItemId()) {
+                        case R.id.complete:
+
+                            break;
+                        case R.id.completeAndAddNew:
+                            break;
+                        case R.id.completeLater:
+                            break;
+                    }
+                    return false;
+                },
+                true);
+    }
+
+    @Override
     public void attemptToFinish() {
-        finish();
+       showCompleteActions(true);
     }
 
     @Override

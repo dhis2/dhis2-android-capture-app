@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -9,7 +10,6 @@ import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,10 +36,14 @@ public class EventCaptureContract {
         void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
 
         void attemptToFinish();
+
+        void showCompleteActions(boolean canComplete);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(EventCaptureContract.View view);
+
+        void onBackClick();
 
         void subscribeToSection();
 
@@ -49,9 +53,13 @@ public class EventCaptureContract {
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
 
-        void onSectionSelectorClick(boolean isCurrentSection, int position);
+        ObservableField<String> getCurrentSection();
+
+        void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
 
         void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
+
+        void goToSection(String sectionUid);
     }
 
     public interface EventCaptureRepository {
@@ -68,8 +76,10 @@ public class EventCaptureContract {
 
         @NonNull
         Flowable<List<FieldViewModel>> list(String sectionUid);
+
         @NonNull
-        Flowable <List<FieldViewModel>> list();
+        Flowable<List<FieldViewModel>> list();
+
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
     }

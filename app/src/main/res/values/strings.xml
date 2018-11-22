@@ -381,5 +381,7 @@
     <string name="event_event">Event</string>
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>
+    <string name="complete_add_new"><![CDATA[Complete & add new]]></string>
+    <string name="complete_later">Continue later</string>
 
 </resources>

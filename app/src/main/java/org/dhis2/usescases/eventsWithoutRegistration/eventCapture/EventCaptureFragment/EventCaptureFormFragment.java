@@ -27,9 +27,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventSectionMo
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.SectionSelectorAdapter;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
-import org.dhis2.utils.RulesActionCallbacks;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
-import org.hisp.dhis.rules.models.RuleActionShowError;
 
 import java.util.List;
 
@@ -40,7 +38,7 @@ import io.reactivex.processors.PublishProcessor;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
-public class EventCaptureFormFragment extends FragmentGlobalAbstract implements RulesActionCallbacks {
+public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     private static EventCaptureFormFragment instance;
     private EventCaptureActivity activity;
     private SectionSelectorFragmentBinding binding;
@@ -87,8 +85,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
         this.currentSection = formSectionViewModel.sectionUid();
         binding.currentSectionTitle.sectionTitle.setText(formSectionViewModel.label());
-        binding.currentSectionTitle.setIsCurrentSection(new ObservableBoolean(true));
+        binding.currentSectionTitle.setSectionUid(formSectionViewModel.sectionUid());
         binding.currentSectionTitle.setOrder(-1);
+        binding.currentSectionTitle.setCurrentSection(activity.getPresenter().getCurrentSection());
 
         setUpRecyclerView(arguments);
     }
@@ -136,13 +135,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
             for (FieldViewModel fieldViewModel : updates)
                 if (!TextUtils.isEmpty(fieldViewModel.value()))
                     completedValues++;
-
             binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, updates.size()));
         };
     }
 
     public Consumer<List<EventSectionModel>> setSectionSelector() {
-        return data -> sectionSelectorAdapter.swapData(currentSection, data);
+        return data -> {
+            sectionSelectorAdapter.swapData(currentSection, data);
+        };
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {
@@ -155,39 +155,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract implements 
         binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
-    @Override
-    public void setShowError(@NonNull RuleActionShowError showError) {
-
+    public View getSectionSelector() {
+        return binding.sectionSelector.getRoot();
     }
-
-    @Override
-    public void unsupportedRuleAction() {
-
-    }
-
-    @Override
-    public void save(@NonNull String uid, @Nullable String value) {
-
-    }
-
-    @Override
-    public void setDisplayKeyValue(String label, String value) {
-
-    }
-
-    @Override
-    public void sethideSection(String sectionUid) {
-
-    }
-
-    @Override
-    public void setMessageOnComplete(String content, boolean canComplete) {
-
-    }
-
-    @Override
-    public void setHideProgramStage(String programStageUid) {
-
-    }
-
 }

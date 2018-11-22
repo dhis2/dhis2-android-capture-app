@@ -1,17 +1,22 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.utils.Result;
+import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -36,23 +41,29 @@ import static android.text.TextUtils.isEmpty;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
-public class EventCapturePresenterImpl implements EventCaptureContract.Presenter {
+public class EventCapturePresenterImpl implements EventCaptureContract.Presenter, RulesActionCallbacks {
 
     private final EventCaptureContract.EventCaptureRepository eventCaptureRepository;
     private final RulesUtilsProvider rulesUtils;
     private final DataEntryStore dataEntryStore;
+    private final MetadataRepository metadataRepository;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private int currentPosition;
+    private ObservableField<String> currentSection;
     private FlowableProcessor<Integer> currentSectionPosition;
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
+    private List<String> sectionsToHide;
 
-    public EventCapturePresenterImpl(EventCaptureContract.EventCaptureRepository eventCaptureRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
+    public EventCapturePresenterImpl(EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventCaptureRepository = eventCaptureRepository;
+        this.metadataRepository = metadataRepository;
         this.rulesUtils = rulesUtils;
         this.dataEntryStore = dataEntryStore;
         this.currentPosition = 0;
+        this.sectionsToHide = new ArrayList<>();
+        this.currentSection = new ObservableField<>("");
         currentSectionPosition = PublishProcessor.create();
 
     }
@@ -94,12 +105,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
+    public void onBackClick() {
+        view.back();
+    }
+
+    @Override
     public void subscribeToSection() {
         compositeDisposable.add(
                 currentSectionPosition
                         .startWith(0)
                         .flatMap(position -> {
                             FormSectionViewModel formSectionViewModel = sectionList.get(position);
+                            currentSection.set(formSectionViewModel.sectionUid());
                             if (sectionList.size() > 1) {
                                 DataEntryArguments arguments =
                                         DataEntryArguments.forEventSection(formSectionViewModel.uid(),
@@ -111,7 +128,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                         DataEntryArguments.forEvent(formSectionViewModel.uid());
                                 EventCaptureFormFragment.getInstance().setSingleSection(arguments, formSectionViewModel);
                             }
-                            EventCaptureFormFragment.getInstance().setSectionProgress(position, sectionList.size());
+
+                            EventCaptureFormFragment.getInstance().setSectionProgress(
+                                    getFinalSections().indexOf(formSectionViewModel),
+                                    sectionList.size() - sectionsToHide.size());
                             return Flowable.zip(
                                     eventCaptureRepository.list(sectionList.get(position).sectionUid()),
                                     eventCaptureRepository.calculate().subscribeOn(Schedulers.computation())
@@ -163,14 +183,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                             List<EventSectionModel> eventSectionModels = new ArrayList<>();
                             for (FormSectionViewModel sectionModel : sectionList) {
-                                List<FieldViewModel> fieldViewModels = fieldMap.get(sectionModel.sectionUid());
+                                if (!sectionsToHide.contains(sectionModel.sectionUid())) {
+                                    List<FieldViewModel> fieldViewModels = fieldMap.get(sectionModel.sectionUid());
 
-                                int cont = 0;
-                                for (FieldViewModel fieldViewModel : fieldViewModels)
-                                    if (!isEmpty(fieldViewModel.value()))
-                                        cont++;
+                                    int cont = 0;
+                                    for (FieldViewModel fieldViewModel : fieldViewModels)
+                                        if (!isEmpty(fieldViewModel.value()))
+                                            cont++;
 
-                                eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, fieldViewModels.size()));
+                                    eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, fieldViewModels.size()));
+                                }
                             }
 
                             return eventSectionModels;
@@ -187,13 +209,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FieldViewModel> applyEffects(
             @NonNull List<FieldViewModel> viewModels,
             @NonNull Result<RuleEffect> calcResult) {
+
         if (calcResult.error() != null) {
             calcResult.error().printStackTrace();
             return viewModels;
         }
 
+        //Reset effects
+        sectionsToHide.clear();
+
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
-        rulesUtils.applyRuleEffects(fieldViewModels, calcResult, EventCaptureFormFragment.getInstance());
+        rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
         return new ArrayList<>(fieldViewModels.values());
     }
@@ -209,13 +235,15 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onNextSection() {
-        if (currentPosition < sectionList.size() - 1) {
-            currentPosition++;
+        List<FormSectionViewModel> finalSections = getFinalSections();
+
+        if (finalSections.indexOf(sectionList.get(currentPosition)) < sectionList.size() - sectionsToHide.size() - 1) {
+            currentPosition = sectionList.indexOf(finalSections.get(finalSections.indexOf(sectionList.get(currentPosition)) + 1));
             currentSectionPosition.onNext(currentPosition);
         } else {
             if (!emptyMandatoryFields.isEmpty()) {
                 view.setMandatoryWarning(emptyMandatoryFields);
-            }else {
+            } else {
                 //TODO: Check error | warnings
                 //TODO: Check errorOnComplete | warningOnComplete
                 //TODO: FINISH DATA ENTRY
@@ -238,26 +266,52 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onPreviousSection() {
+        List<FormSectionViewModel> finalSections = getFinalSections();
+
         if (currentPosition != 0) {
-            currentPosition--;
+            currentPosition = sectionList.indexOf(finalSections.get(finalSections.indexOf(sectionList.get(currentPosition)) - 1));
             currentSectionPosition.onNext(currentPosition);
         }
     }
 
-    @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
-        return null;
+    private List<FormSectionViewModel> getFinalSections() {
+        List<FormSectionViewModel> finalSections = new ArrayList<>();
+        for (FormSectionViewModel section : sectionList)
+            if (!sectionsToHide.contains(section.sectionUid()))
+                finalSections.add(section);
+        return finalSections;
     }
 
     @Override
-    public void onSectionSelectorClick(boolean isCurrentSection, int position) {
+    public Observable<List<OrganisationUnitModel>> getOrgUnits() {
+        return metadataRepository.getOrganisationUnits();
+    }
+
+    @Override
+    public ObservableField<String> getCurrentSection() {
+        return currentSection;
+    }
+
+    @Override
+    public void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid) {
 
         EventCaptureFormFragment.getInstance().showSectionSelector();
-        if (isCurrentSection && position != -1) {
-            currentPosition = position;
-            currentSectionPosition.onNext(position);
+        if (!currentSection.get().equals(sectionUid) && position != -1) {
+            /*for (FormSectionViewModel sectionModel : sectionList)
+                if (sectionModel.sectionUid().equals(sectionUid))
+                    currentPosition = sectionList.indexOf(sectionModel);
+            currentSectionPosition.onNext(currentPosition);*/
+            goToSection(sectionUid);
         }
+    }
 
+
+    @Override
+    public void goToSection(String sectionUid) {
+        for (FormSectionViewModel sectionModel : sectionList)
+            if (sectionModel.sectionUid().equals(sectionUid))
+                currentPosition = sectionList.indexOf(sectionModel);
+        currentSectionPosition.onNext(currentPosition);
     }
 
     @Override
@@ -273,6 +327,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
     }
 
+
     @Override
     public void onDettach() {
         this.compositeDisposable.clear();
@@ -283,4 +338,43 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         view.displayMessage(message);
     }
 
+    //region ruleActions
+
+    @Override
+    public void setShowError(@NonNull RuleActionShowError showError) {
+
+    }
+
+    @Override
+    public void unsupportedRuleAction() {
+        view.displayMessage("There is one program rule which is not supported. Please check the documentation");
+    }
+
+    @Override
+    public void save(@NonNull String uid, @Nullable String value) {
+        EventCaptureFormFragment.getInstance().dataEntryFlowable().onNext(RowAction.create(uid, value));
+    }
+
+    @Override
+    public void setDisplayKeyValue(String label, String value) {
+        //TODO: Implement Indicator tabs to show this field
+    }
+
+    @Override
+    public void sethideSection(String sectionUid) {
+        if (!sectionsToHide.contains(sectionUid))
+            sectionsToHide.add(sectionUid);
+    }
+
+    @Override
+    public void setMessageOnComplete(String content, boolean canComplete) {
+
+    }
+
+    @Override
+    public void setHideProgramStage(String programStageUid) {
+        //do not apply
+    }
+
+    //endregion
 }
