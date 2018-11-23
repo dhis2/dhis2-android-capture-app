@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
@@ -185,6 +187,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
     }
 
+    public Flowable<Pair<String, String>> optionSetActions(){
+        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
+    }
+
     @Override
     public Flowable<Integer> onlinePage() {
         if (program != null)
@@ -311,6 +317,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             // silently fail...
         }
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
@@ -394,5 +401,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public String fromRelationshipTEI() {
         return fromRelationshipTeiUid;
+    }
+
+    @Override
+    public void setListOptions(List<String> options) {
+        OptionSetDialog.newInstance().setOptions(options);
     }
 }

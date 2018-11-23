@@ -32,6 +32,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -74,6 +75,8 @@ public final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
     private final DataEntryArguments dataEntryArguments;
 
+    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
                             @NonNull DataEntryArguments dataEntryArguments,
@@ -85,13 +88,13 @@ public final class DataEntryAdapter extends Adapter {
         processor = PublishProcessor.create();
         imageSelector = PublishProcessor.create();
         currentPosition = PublishProcessor.create();
-
+        this.processorOptionSet = PublishProcessor.create();
         this.dataEntryArguments = dataEntryArguments;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
@@ -170,6 +173,9 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
+    public FlowableProcessor<Pair<String,String>> asFlowableOption(){
+        return processorOptionSet;
+    }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
