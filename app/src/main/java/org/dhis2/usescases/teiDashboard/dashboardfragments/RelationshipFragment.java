@@ -82,7 +82,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_relationships, container, false);
         binding.setPresenter(presenter);
-
+        relationshipAdapter = new RelationshipAdapter(presenter);
         binding.relationshipRecycler.setAdapter(relationshipAdapter);
         return binding.getRoot();
     }
@@ -105,7 +105,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
-        return relationships -> relationshipAdapter.addItems(relationships);
+        return relationships -> {
+            if(relationshipAdapter != null)
+                relationshipAdapter.addItems(relationships);
+            else{
+                relationshipAdapter = new RelationshipAdapter(presenter);
+                relationshipAdapter.addItems(relationships);
+            }
+        };
     }
 
     public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {
