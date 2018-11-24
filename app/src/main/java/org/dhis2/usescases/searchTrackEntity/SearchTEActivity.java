@@ -107,11 +107,6 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
         super.onCreate(savedInstanceState);
 
-        if (!getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
