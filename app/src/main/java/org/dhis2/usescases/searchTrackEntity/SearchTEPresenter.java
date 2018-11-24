@@ -198,10 +198,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .flatMap(page -> {
                                 this.currentPage = page;
                                 List<String> filterList = new ArrayList<>();
+                                String queryList ="";
                                 if (queryData != null) {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
-                                            filterList.add("programStartDate=" + queryData.get(key));
+                                            queryList = "programStartDate=" + queryData.get(key);
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             filterList.add(key + ":LIKE:" + queryData.get(key));
                                     }

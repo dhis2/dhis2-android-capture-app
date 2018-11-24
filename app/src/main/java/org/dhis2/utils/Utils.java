@@ -1,7 +1,6 @@
 package org.dhis2.utils;
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
 
@@ -36,5 +35,4 @@ public class Utils {
 
         return popupMenu;
     }
-
 }

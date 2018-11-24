@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -202,7 +203,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
                     ProgramStageSectionRenderingType.LISTING;
             cursor.close();
-        }
+        }else
+            renderingType = ProgramStageSectionRenderingType.LISTING;
 
         Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid == null ? "" : eventUid);
         if (accessCursor != null && accessCursor.moveToFirst()) {
@@ -293,7 +295,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         Cursor sectionsCursor = briteDatabase.query(SELECT_SECTIONS, eventUid);
         if (sectionsCursor != null && sectionsCursor.moveToFirst()) {
             for (int i = 0; i < sectionsCursor.getCount(); i++) {
-                sectionUids.append(String.format("'%s'", sectionsCursor.getString(2)));
+                if (sectionsCursor.getString(2) != null)
+                    sectionUids.append(String.format("'%s'", sectionsCursor.getString(2)));
                 if (i < sectionsCursor.getCount() - 1)
                     sectionUids.append(",");
                 sectionsCursor.moveToNext();
@@ -341,6 +344,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         .onErrorReturn(error -> Result.failure(new Exception(error)))
                                 )
                 );
+    }
+
+    @Override
+    public Observable<Boolean> completeEvent() {
+        return null;
     }
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +

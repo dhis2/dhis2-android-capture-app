@@ -15,6 +15,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -38,6 +39,10 @@ public class EventCaptureContract {
         void attemptToFinish();
 
         void showCompleteActions(boolean canComplete);
+
+        void restartDataEntry();
+
+        void finishDataEntry();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -60,6 +65,8 @@ public class EventCaptureContract {
         void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
 
         void goToSection(String sectionUid);
+
+        void completeEvent(boolean addNew);
     }
 
     public interface EventCaptureRepository {
@@ -82,6 +89,8 @@ public class EventCaptureContract {
 
         @NonNull
         Flowable<Result<RuleEffect>> calculate();
+
+        Observable<Boolean> completeEvent();
     }
 
 }

@@ -117,21 +117,33 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showCompleteActions(boolean canComplete) {
         Utils.getPopUpMenu(this,
                 EventCaptureFormFragment.getInstance().getSectionSelector(),
-                R.menu.event_form_finish_menu,
                 Gravity.TOP,
+                R.menu.event_form_complete_menu,
                 item -> {
                     switch (item.getItemId()) {
                         case R.id.complete:
-
+                            presenter.completeEvent(false);
                             break;
                         case R.id.completeAndAddNew:
+                            presenter.completeEvent(true);
                             break;
                         case R.id.completeLater:
+                           finishDataEntry();
                             break;
                     }
                     return false;
                 },
-                true);
+                true).show();
+    }
+
+    @Override
+    public void restartDataEntry() {
+
+    }
+
+    @Override
+    public void finishDataEntry() {
+        finish();
     }
 
     @Override

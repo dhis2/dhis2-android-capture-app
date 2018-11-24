@@ -31,6 +31,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -55,6 +56,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
     private List<String> sectionsToHide;
+    private boolean canComplete;
+    private String completeMessage;
 
     public EventCapturePresenterImpl(EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventCaptureRepository = eventCaptureRepository;
@@ -183,7 +186,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                             List<EventSectionModel> eventSectionModels = new ArrayList<>();
                             for (FormSectionViewModel sectionModel : sectionList) {
-                                if (!sectionsToHide.contains(sectionModel.sectionUid())) {
+                                if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
                                     List<FieldViewModel> fieldViewModels = fieldMap.get(sectionModel.sectionUid());
 
                                     int cont = 0;
@@ -192,6 +195,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             cont++;
 
                                     eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, fieldViewModels.size()));
+                                } else {
+                                    int cont = 0;
+                                    for (FieldViewModel fieldViewModel : fields)
+                                        if (!isEmpty(fieldViewModel.value()))
+                                            cont++;
+                                    eventSectionModels.add(EventSectionModel.create("NO_SECTION", "no_section", cont, fields.size()));
                                 }
                             }
 
@@ -252,8 +261,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         Observable.concat(
                                 Observable.just(1, 2, 3, 4, 5),
                                 Observable.just("a", "b", "c"))
-                                .observeOn(Schedulers.io())
-                                .subscribeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         data -> cont.getAndIncrement(),
                                         Timber::e,
@@ -315,6 +324,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
+    public void completeEvent(boolean addNew) {
+        Disposable completeEventDisposable =
+                eventCaptureRepository.completeEvent()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                success -> {
+                                    if(addNew)
+                                        view.restartDataEntry();
+                                    else
+                                        view.finishDataEntry();
+                                },
+                                Timber::e,
+                                () -> compositeDisposable.dispose()
+                        );
+    }
+
+    @Override
     public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
@@ -367,8 +394,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void setMessageOnComplete(String content, boolean canComplete) {
-
+    public void setMessageOnComplete(String message, boolean canComplete) {
+        this.canComplete = canComplete;
+        this.completeMessage = message;
     }
 
     @Override

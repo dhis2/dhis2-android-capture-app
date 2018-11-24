@@ -130,19 +130,21 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     @NonNull
     public Consumer<List<FieldViewModel>> showFields() {
         return updates -> {
-            dataEntryAdapter.swap(updates);
-            int completedValues = 0;
-            for (FieldViewModel fieldViewModel : updates)
-                if (!TextUtils.isEmpty(fieldViewModel.value()))
-                    completedValues++;
-            binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, updates.size()));
+            if (currentSection.equals("NO_SECTION") ||
+                    updates.get(0).programStageSection().equals(currentSection)) {
+                dataEntryAdapter.swap(updates);
+                int completedValues = 0;
+                for (FieldViewModel fieldViewModel : updates)
+                    if (!TextUtils.isEmpty(fieldViewModel.value()))
+                        completedValues++;
+                binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, updates.size()));
+            }
         };
+
     }
 
     public Consumer<List<EventSectionModel>> setSectionSelector() {
-        return data -> {
-            sectionSelectorAdapter.swapData(currentSection, data);
-        };
+        return data -> sectionSelectorAdapter.swapData(currentSection, data);
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {
