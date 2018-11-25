@@ -7,6 +7,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -15,7 +16,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -36,13 +36,21 @@ public class EventCaptureContract {
 
         void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
 
-        void attemptToFinish();
+        void attemptToFinish(boolean canComplete);
 
         void showCompleteActions(boolean canComplete);
 
         void restartDataEntry();
 
         void finishDataEntry();
+
+        void setShowError(Map<String, String> errors);
+
+        void showMessageOnComplete(boolean canComplete, String completeMessage);
+
+        void attempToReopen();
+
+        void showSnackBar(int messageId);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -67,6 +75,8 @@ public class EventCaptureContract {
         void goToSection(String sectionUid);
 
         void completeEvent(boolean addNew);
+
+        void reopenEvent();
     }
 
     public interface EventCaptureRepository {
@@ -91,6 +101,10 @@ public class EventCaptureContract {
         Flowable<Result<RuleEffect>> calculate();
 
         Observable<Boolean> completeEvent();
+
+        Flowable<EventStatus> eventStatus();
+
+        boolean reopenEvent();
     }
 
 }

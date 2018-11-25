@@ -6,6 +6,7 @@
     <color name="colorPrimaryLight">#BACFFF</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentAlpha">#7fffffff</color>
+    <color name="ic_launcher_background">#1D5086</color>
 
     <!--RED THEME-->
     <color name="colorPrimaryRed">#8c2121</color>

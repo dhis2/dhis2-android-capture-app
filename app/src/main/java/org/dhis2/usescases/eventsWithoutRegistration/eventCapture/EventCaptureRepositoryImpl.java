@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -203,7 +204,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     ProgramStageSectionRenderingType.valueOf(cursor.getString(0)) :
                     ProgramStageSectionRenderingType.LISTING;
             cursor.close();
-        }else
+        } else
             renderingType = ProgramStageSectionRenderingType.LISTING;
 
         Cursor accessCursor = briteDatabase.query(ACCESS_QUERY, eventUid == null ? "" : eventUid);
@@ -348,7 +349,25 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> completeEvent() {
-        return null;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
+        String completeDate = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
+        contentValues.put(EventModel.Columns.COMPLETE_DATE, completeDate);
+        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
+    }
+
+    @Override
+    public boolean reopenEvent() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
+        return briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid)>0;
+    }
+
+    @Override
+    public Flowable<EventStatus> eventStatus() {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT Event.status FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0)))
+                .toFlowable(BackpressureStrategy.LATEST);
     }
 
     private static final String QUERY_EVENT = "SELECT Event.uid,\n" +

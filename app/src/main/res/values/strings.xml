@@ -275,6 +275,8 @@
     <string name="wipe_data">Reset app</string>
     <string name="add_relationship_error">It\'s not possible to add this relationship</string>
     <string name="warning_error_on_complete_title">Check this!</string>
+    <string name="warning_on_complete_title">Warning</string>
+    <string name="error_on_complete_title">Error</string>
     <string name="save">Save</string>
     <string name="reserved_value">Reserved Values</string>
     
@@ -382,6 +384,11 @@
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>
     <string name="complete_add_new"><![CDATA[Complete & add new]]></string>
-    <string name="complete_later">Continue later</string>
+    <string name="complete_later">Complete later</string>
+    <string name="finish_add_new"><![CDATA[Finish & add new]]></string>
+    <string name="finish">Finish</string>
+    <string name="error_fields_title">Fields with errors</string>
+    <string name="error_fields_events">Some fields has errors. They have not been saved. Please, check them.</string>
+    <string name="event_reopened">This event can now be edited</string>
 
 </resources>

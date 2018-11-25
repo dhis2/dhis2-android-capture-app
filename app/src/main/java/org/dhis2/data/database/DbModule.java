@@ -48,7 +48,7 @@ public class DbModule {
     BriteDatabase briteDatabase(DbOpenHelper dbOpenHelper,
                                 SqlBrite sqlBrite, SchedulerProvider schedulerProvider) {
         BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
-        briteDatabase.setLoggingEnabled(true);
+//        briteDatabase.setLoggingEnabled(true);
         return briteDatabase;
     }
 

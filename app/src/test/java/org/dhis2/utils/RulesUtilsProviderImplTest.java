@@ -37,7 +37,7 @@ public class RulesUtilsProviderImplTest {
 
     RulesActionCallbacks actionCallbacks = new RulesActionCallbacks() {
         @Override
-        public void setShowError(@NonNull RuleActionShowError showError) {
+        public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
 
         }
 

@@ -8,8 +8,6 @@ import android.view.Gravity;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
 import org.dhis2.usescases.login.LoginActivity;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;

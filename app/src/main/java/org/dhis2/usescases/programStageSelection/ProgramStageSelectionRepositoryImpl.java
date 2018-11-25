@@ -23,6 +23,7 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,15 +116,17 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        (rules, variables, ruleEvents) ->
-                                RuleEngineContext.builder(evaluator)
-                                        .rules(rules)
-                                        .ruleVariables(variables)
-                                        .calculatedValueMap(new HashMap<>())
-                                        .supplementaryData(new HashMap<>())
-                                        .build().toEngineBuilder()
-                                        .events(ruleEvents)
-                                        .build())
+                        (rules, variables, ruleEvents) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .build().toEngineBuilder();
+                            return builder.events(ruleEvents)
+                                    .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
+                                    .build();
+                        })
                         .cacheWithInitialCapacity(1);
     }
 

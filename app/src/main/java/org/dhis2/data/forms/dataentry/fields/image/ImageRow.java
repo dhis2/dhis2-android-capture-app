@@ -1,6 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +23,14 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final boolean isBackgroundTransparent;
     private final String renderType;
+    private final LayoutInflater inflater;
 
     public ImageRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
-                    @NonNull FlowableProcessor<Integer> currentPosition, boolean isBackgroundTransparent, String renderType) {
+                    FlowableProcessor<Integer> currentPosition,
+                    String renderType) {
+        this.inflater = layoutInflater;
         this.processor = processor;
-        this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
     }
 
@@ -36,11 +38,13 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     @Override
     public ImageHolder onCreate(@NonNull ViewGroup parent) {
         FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
-        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, null, null);
+        return new ImageHolder(binding, processor, null);
     }
 
-    public ImageHolder onCreate(@NonNull ViewGroup parent, int count, FlowableProcessor<String> imageSelector) {
-        FormImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.form_image, parent, false);
+    public ImageHolder onCreate(@NonNull ViewGroup parent, int count, ObservableField<String> imageSelector) {
+
+        FormImageBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_image, parent, false);
+
         Integer height = null;
         Integer parentHeight = parent.getMeasuredHeight() != 0 ? parent.getMeasuredHeight() : parent.getHeight();
         if (renderType.equals(ProgramStageSectionRenderingType.SEQUENTIAL.name())) {
@@ -56,7 +60,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
             rootView.setLayoutParams(layoutParams);
         }
 
-        return new ImageHolder(binding, processor, isBackgroundTransparent, renderType, rootView, imageSelector);
+        return new ImageHolder(binding, processor, imageSelector);
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -220,6 +221,7 @@ class EnrollmentFormRepository implements FormRepository {
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
                             return builder.build();
                         }))

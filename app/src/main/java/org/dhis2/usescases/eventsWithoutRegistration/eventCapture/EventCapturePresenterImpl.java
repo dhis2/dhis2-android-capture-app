@@ -4,6 +4,7 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.DataEntryStore;
@@ -15,6 +16,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFr
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -25,13 +27,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -55,9 +55,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private FlowableProcessor<Integer> currentSectionPosition;
     private List<FormSectionViewModel> sectionList;
     private Map<String, FieldViewModel> emptyMandatoryFields;
+    //Rules data
     private List<String> sectionsToHide;
     private boolean canComplete;
     private String completeMessage;
+    private Map<String, String> errors;
+    private EventStatus eventStatus;
 
     public EventCapturePresenterImpl(EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
         this.eventCaptureRepository = eventCaptureRepository;
@@ -67,6 +70,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.currentPosition = 0;
         this.sectionsToHide = new ArrayList<>();
         this.currentSection = new ObservableField<>("");
+        this.errors = new HashMap<>();
+        this.canComplete = true;
         currentSectionPosition = PublishProcessor.create();
 
     }
@@ -91,6 +96,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 Timber::e
                         )
 
+        );
+
+        compositeDisposable.add(
+                eventCaptureRepository.eventStatus()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                data -> this.eventStatus = data,
+                                Timber::e
+                        )
         );
 
         compositeDisposable.add(
@@ -195,7 +210,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                             cont++;
 
                                     eventSectionModels.add(EventSectionModel.create(sectionModel.label(), sectionModel.sectionUid(), cont, fieldViewModels.size()));
-                                } else {
+                                } else if (sectionList.size() == 1) {
                                     int cont = 0;
                                     for (FieldViewModel fieldViewModel : fields)
                                         if (!isEmpty(fieldViewModel.value()))
@@ -250,23 +265,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             currentPosition = sectionList.indexOf(finalSections.get(finalSections.indexOf(sectionList.get(currentPosition)) + 1));
             currentSectionPosition.onNext(currentPosition);
         } else {
-            if (!emptyMandatoryFields.isEmpty()) {
+            if (eventStatus != EventStatus.ACTIVE) {
+                view.attempToReopen();
+            } else if (!emptyMandatoryFields.isEmpty()) {
                 view.setMandatoryWarning(emptyMandatoryFields);
+            } else if (!this.errors.isEmpty()) {
+                view.setShowError(errors);
             } else {
-                //TODO: Check error | warnings
-                //TODO: Check errorOnComplete | warningOnComplete
-                //TODO: FINISH DATA ENTRY
-                AtomicInteger cont = new AtomicInteger();
                 compositeDisposable.add(
-                        Observable.concat(
-                                Observable.just(1, 2, 3, 4, 5),
-                                Observable.just("a", "b", "c"))
+                        Observable.just(completeMessage != null ? completeMessage : "")
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
+                                .filter(completeMessage -> !isEmpty(completeMessage))
                                 .subscribe(
-                                        data -> cont.getAndIncrement(),
+                                        data -> view.showMessageOnComplete(canComplete, completeMessage),
                                         Timber::e,
-                                        () -> view.attemptToFinish()
+                                        () -> view.attemptToFinish(canComplete)
                                 )
                 );
             }
@@ -306,10 +320,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         EventCaptureFormFragment.getInstance().showSectionSelector();
         if (!currentSection.get().equals(sectionUid) && position != -1) {
-            /*for (FormSectionViewModel sectionModel : sectionList)
-                if (sectionModel.sectionUid().equals(sectionUid))
-                    currentPosition = sectionList.indexOf(sectionModel);
-            currentSectionPosition.onNext(currentPosition);*/
+
             goToSection(sectionUid);
         }
     }
@@ -325,20 +336,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void completeEvent(boolean addNew) {
-        Disposable completeEventDisposable =
+        compositeDisposable.add(
                 eventCaptureRepository.completeEvent()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 success -> {
-                                    if(addNew)
+                                    if (addNew)
                                         view.restartDataEntry();
                                     else
                                         view.finishDataEntry();
                                 },
-                                Timber::e,
-                                () -> compositeDisposable.dispose()
-                        );
+                                Timber::e
+                        ));
+    }
+
+    @Override
+    public void reopenEvent() {
+        if(eventCaptureRepository.reopenEvent()) {
+            currentSectionPosition.onNext(0);
+            view.showSnackBar(R.string.event_reopened);
+        }
     }
 
     @Override
@@ -368,8 +386,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     //region ruleActions
 
     @Override
-    public void setShowError(@NonNull RuleActionShowError showError) {
-
+    public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
+        this.errors.put(model.programStageSection(), showError.content());
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.Gravity;
 
 import org.dhis2.App;
@@ -11,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CustomDialog;
@@ -23,6 +25,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+
+import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -118,7 +122,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Utils.getPopUpMenu(this,
                 EventCaptureFormFragment.getInstance().getSectionSelector(),
                 Gravity.TOP,
-                R.menu.event_form_complete_menu,
+                canComplete ? R.menu.event_form_complete_menu : R.menu.event_form_cant_complete_menu,
                 item -> {
                     switch (item.getItemId()) {
                         case R.id.complete:
@@ -127,8 +131,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                         case R.id.completeAndAddNew:
                             presenter.completeEvent(true);
                             break;
+                        case R.id.finishAndAddNew:
+                            restartDataEntry();
+                            break;
                         case R.id.completeLater:
-                           finishDataEntry();
+                        case R.id.finish:
+                            finishDataEntry();
+                            break;
+                    }
+                    return false;
+                },
+                true).show();
+    }
+    @Override
+    public void attempToReopen() {
+        Utils.getPopUpMenu(this,
+                EventCaptureFormFragment.getInstance().getSectionSelector(),
+                Gravity.TOP,
+                R.menu.event_form_reopen_menu,
+                item -> {
+                    switch (item.getItemId()) {
+                        case R.id.reopen:
+                            presenter.reopenEvent();
+                            break;
+                        case R.id.finish:
+                            finishDataEntry();
                             break;
                     }
                     return false;
@@ -137,8 +164,17 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void restartDataEntry() {
+    public void showSnackBar(int messageId) {
+        Snackbar mySnackbar = Snackbar.make(binding.root, messageId, Snackbar.LENGTH_SHORT);
+        mySnackbar.show();
+    }
 
+
+    @Override
+    public void restartDataEntry() {
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
+        startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 
     @Override
@@ -147,9 +183,42 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void attemptToFinish() {
-       showCompleteActions(true);
+    public void setShowError(Map<String, String> errors) {
+        new CustomDialog(
+                getAbstracContext(),
+                getAbstracContext().getString(R.string.error_fields_title),
+                getAbstracContext().getString(R.string.error_fields_events),
+                getAbstracContext().getString(R.string.button_ok),
+                "Check",
+                Constants.RQ_MANDATORY_EVENTS,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        showCompleteActions(false);
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        presenter.goToSection(errors.entrySet().iterator().next().getKey());
+                    }
+                })
+                .show();
     }
+
+    @Override
+    public void showMessageOnComplete(boolean canComplete, String completeMessage) {
+        String title = canComplete ?
+                getString(R.string.warning_on_complete_title) :
+                getString(R.string.error_on_complete_title);
+        showInfoDialog(title, completeMessage);
+    }
+
+    @Override
+    public void attemptToFinish(boolean canComplete) {
+        showCompleteActions(canComplete);
+    }
+
+
 
     @Override
     public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
