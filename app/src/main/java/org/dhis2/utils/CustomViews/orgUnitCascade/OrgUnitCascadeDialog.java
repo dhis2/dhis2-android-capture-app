@@ -1,6 +1,7 @@
 package org.dhis2.utils.CustomViews.orgUnitCascade;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -77,6 +78,12 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             }
         }
         return this;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        callbacks.onDialogCancelled();
     }
 
     @NonNull
