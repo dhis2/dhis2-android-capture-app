@@ -4,6 +4,7 @@ import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -11,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.CustomViews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -29,13 +31,10 @@ public class OrgUnitHolder extends FormViewHolder {
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
-    private final ImageView description;
     private List<OrganisationUnitModel> orgUnits;
-    private OrgUnitDialog orgUnitDialog;
+    private OrgUnitCascadeDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
-  /*  @NonNull
-    private BehaviorProcessor<OrgUnitViewModel> model;*/
 
     OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);
@@ -47,20 +46,24 @@ public class OrgUnitHolder extends FormViewHolder {
 
         this.editText.setOnClickListener(view -> {
             editText.setEnabled(false);
-            orgUnitDialog = new OrgUnitDialog()
+            orgUnitDialog = new OrgUnitCascadeDialog()
                     .setTitle(model.label())
-                    .setMultiSelection(false)
                     .setOrgUnits(this.orgUnits)
-                    .setPossitiveListener(data -> {
-                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit()));
-                        this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
-                        orgUnitDialog.dismiss();
-                        editText.setEnabled(true);
-                    })
-                    .setNegativeListener(data -> {
-                        orgUnitDialog.dismiss();
-                        editText.setEnabled(true);
+                    .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
+                        @Override
+                        public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                            processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
+                            editText.setText(selectedOrgUnitName);
+                            orgUnitDialog.dismiss();
+                            editText.setEnabled(true);
+                        }
+
+                        @Override
+                        public void onDialogCancelled() {
+                            editText.setEnabled(true);
+                        }
                     });
+
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(fm, model.label());
         });

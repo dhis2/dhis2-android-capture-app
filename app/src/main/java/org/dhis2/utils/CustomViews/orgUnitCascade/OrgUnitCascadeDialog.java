@@ -1,14 +1,13 @@
 package org.dhis2.utils.CustomViews.orgUnitCascade;
 
 import android.app.Dialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -42,12 +40,6 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private CascadeOrgUnitCallbacks callbacks;
     private CompositeDisposable disposable;
     private List<Quintet<String, String, String, Integer, Boolean>> orgUnits;
-    private ArrayList<Quintet<String, String, String, Integer, Boolean>> chipResults;
-
-
-    public OrgUnitCascadeDialog() {
-
-    }
 
     public OrgUnitCascadeDialog setTitle(String title) {
         this.title = title;
@@ -89,16 +81,19 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        callbacks.onDialogCancelled();
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
         return dialog;
     }
 
@@ -108,11 +103,24 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cascade_orgunit, container, false);
 
         binding.orgUnitEditText.setHint(title);
-        binding.acceptButton.setOnClickListener(view->{
-            String selectedOrgUnit = ((OrgUnitCascadeAdapter)binding.recycler.getAdapter()).getSelectedOrgUnit();
+        binding.acceptButton.setOnClickListener(view -> {
+            if (binding.recycler.getAdapter() != null) {
+                String selectedOrgUnitUid = ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).getSelectedOrgUnit();
+                for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
+                    if (orgUnit.val0().equals(selectedOrgUnitUid)) {
+                        callbacks.textChangedConsumer(orgUnit.val0(), orgUnit.val1());
+                    }
+                }
+            }
         });
-        binding.cancelButton.setOnClickListener(view->dismiss());
-        binding.clearButton.setOnClickListener(view -> binding.orgUnitEditText.getText().clear());
+        binding.cancelButton.setOnClickListener(view -> {
+            callbacks.onDialogCancelled();
+            dismiss();
+        });
+        binding.clearButton.setOnClickListener(view -> {
+            binding.orgUnitEditText.getText().clear();
+            showChips(new ArrayList<>());
+        });
 
         disposable = new CompositeDisposable();
 
@@ -130,7 +138,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> showChips(data),
+                        this::showChips,
                         Timber::e
                 ));
 
@@ -141,19 +149,23 @@ public class OrgUnitCascadeDialog extends DialogFragment {
 
     private void showChips(ArrayList<Quintet<String, String, String, Integer, Boolean>> data) {
         binding.results.removeAllViews();
-        this.chipResults = data;
         for (Quintet<String, String, String, Integer, Boolean> trio : data) {
-            if (trio.val4()) { //Only shows selectable orgUnits
+            if (trio.val4() && getContext() != null) { //Only shows selectable orgUnits
                 Chip chip = new Chip(getContext());
                 chip.setText(trio.val1());
-                chip.setOnClickListener(view -> ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).setOrgUnit(trio));
+                chip.setOnClickListener(view -> {
+                    callbacks.textChangedConsumer(trio.val0(), trio.val1());
+                    dismiss();
+                });
                 binding.results.addView(chip);
             }
         }
     }
 
     public interface CascadeOrgUnitCallbacks {
-        Consumer<CharSequence> textChangedConsumer();
+        void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName);
+
+        void onDialogCancelled();
     }
 
     @Override
