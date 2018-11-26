@@ -504,11 +504,12 @@ public final class RulesRepository {
                                         .mapToList(cursor -> {
                                             List<RuleDataValue> dataValues = new ArrayList<>();
                                             String eventUid = cursor.getString(0);
+                                            String programStageUid = cursor.getString(1);
                                             Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
                                             Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                                             String orgUnit = cursor.getString(5);
                                             String orgUnitCode = getOrgUnitCode(orgUnit);
-                                            String programStage = cursor.getString(6);
+                                            String programStageName = cursor.getString(6);
                                             RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                                             Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
@@ -523,8 +524,18 @@ public final class RulesRepository {
                                                 dataValueCursor.close();
                                             }
 
-                                            return RuleEvent.create(eventUid, cursor.getString(1),
-                                                    status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+                                            return RuleEvent.builder()
+                                                    .event(eventUid)
+                                                    .programStage(programStageUid)
+                                                    .programStageName(programStageName)
+                                                    .status(status)
+                                                    .eventDate(eventDate)
+                                                    .dueDate(dueDate)
+                                                    .organisationUnit(orgUnit)
+                                                    .organisationUnitCode(orgUnitCode)
+                                                    .dataValues(dataValues)
+                                                    .build();
+
                                         }))).toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -534,11 +545,12 @@ public final class RulesRepository {
                 .mapToList(cursor -> {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
+                    String programStageUid = cursor.getString(1);
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStage = cursor.getString(6);
+                    String programStageName = cursor.getString(6);
                     RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                     Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
@@ -553,8 +565,18 @@ public final class RulesRepository {
                         dataValueCursor.close();
                     }
 
-                    return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+                    return RuleEvent.builder()
+                            .event(eventUid)
+                            .programStage(programStageUid)
+                            .programStageName(programStageName)
+                            .status(status)
+                            .eventDate(eventDate)
+                            .dueDate(dueDate)
+                            .organisationUnit(orgUnit)
+                            .organisationUnitCode(orgUnitCode)
+                            .dataValues(dataValues)
+                            .build();
+
                 }).toFlowable(BackpressureStrategy.LATEST);
 
     }

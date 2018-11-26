@@ -14,6 +14,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
@@ -21,8 +22,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.Calendar;
 import java.util.List;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -160,9 +159,16 @@ final class EnrollmentRepository implements DataEntryRepository {
             }
         }
 
+        ValueTypeDeviceRenderingModel fieldRendering = null;
+        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
+        if(rendering!=null && rendering.moveToFirst()){
+            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            rendering.close();
+        }
+
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
 
     }
 

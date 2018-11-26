@@ -44,7 +44,6 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private List<Quintet<String, String, String, Integer, Boolean>> orgUnits;
     private ArrayList<Quintet<String, String, String, Integer, Boolean>> chipResults;
 
-
     public OrgUnitCascadeDialog() {
 
     }

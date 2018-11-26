@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.PopupMenu;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -20,6 +22,8 @@ import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.Utils;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -229,5 +233,60 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public EventCaptureContract.Presenter getPresenter() {
         return presenter;
+    }
+
+    @Override
+    public void showMoreOptions(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.BOTTOM);
+        try {
+            Field[] fields = popupMenu.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popupMenu);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceIcons.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        popupMenu.getMenuInflater().inflate(R.menu.event_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.showHelp:
+                    showTutorial(false);
+                    break;
+                case R.id.menu_delete:
+                    confirmDeleteEvent();
+                    break;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    private void confirmDeleteEvent() {
+        new CustomDialog(
+                this,
+                getString(R.string.delete_event),
+                getString(R.string.confirm_delete_event),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                0,
+                new DialogClickListener() {
+                    @Override
+                    public void onPositive() {
+                        presenter.deleteEvent();
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        // dismiss
+                    }
+                }
+        ).show();
     }
 }

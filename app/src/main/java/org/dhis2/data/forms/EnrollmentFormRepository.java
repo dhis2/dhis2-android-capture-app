@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -558,6 +559,13 @@ class EnrollmentFormRepository implements FormRepository {
             dataValue = optionCodeName;
         }
 
+        ValueTypeDeviceRenderingModel fieldRendering = null;
+        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
+        if(rendering!=null && rendering.moveToFirst()){
+            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            rendering.close();
+        }
+
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
                 "",
@@ -570,7 +578,7 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
     }
 
     @NonNull

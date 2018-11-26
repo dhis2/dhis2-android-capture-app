@@ -135,11 +135,12 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .mapToList(cursor -> {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
+                    String programStageUid = cursor.getString(1);
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStage = cursor.getString(6);
+                    String programStageName = cursor.getString(6);
                     String eventStatus;
                     if (cursor.getString(2).equals(EventStatus.VISITED.name()))
                         eventStatus = EventStatus.ACTIVE.name();
@@ -156,10 +157,21 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
                                     dataValueCursor.getString(2), value));
                         }
+                        dataValueCursor.close();
                     }
 
-                    return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+                    return RuleEvent.builder()
+                            .event(eventUid)
+                            .programStage(programStageUid)
+                            .programStageName(programStageName)
+                            .status(status)
+                            .eventDate(eventDate)
+                            .dueDate(dueDate)
+                            .organisationUnit(orgUnit)
+                            .organisationUnitCode(orgUnitCode)
+                            .dataValues(dataValues)
+                            .build();
+
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

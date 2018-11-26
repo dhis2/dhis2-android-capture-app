@@ -81,15 +81,27 @@ public final class EventsRuleEngineRepository implements RuleEngineRepository {
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
+                    String eventUid = cursor.getString(0);
+                    String programStageUid = cursor.getString(1);
+                    RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
                     Date eventDate = parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStage = cursor.getString(6);
-                    RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
+                    String programStageName = cursor.getString(6);
 
-                    return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+                    return RuleEvent.builder()
+                            .event(eventUid)
+                            .programStage(programStageUid)
+                            .programStageName(programStageName)
+                            .status(status)
+                            .eventDate(eventDate)
+                            .dueDate(dueDate)
+                            .organisationUnit(orgUnit)
+                            .organisationUnitCode(orgUnitCode)
+                            .dataValues(dataValues)
+                            .build();
+
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

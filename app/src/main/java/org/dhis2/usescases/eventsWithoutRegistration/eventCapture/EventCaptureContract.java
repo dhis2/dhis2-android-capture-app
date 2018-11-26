@@ -16,6 +16,7 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -77,6 +78,8 @@ public class EventCaptureContract {
         void completeEvent(boolean addNew);
 
         void reopenEvent();
+
+        void deleteEvent();
     }
 
     public interface EventCaptureRepository {
@@ -105,6 +108,8 @@ public class EventCaptureContract {
         Flowable<EventStatus> eventStatus();
 
         boolean reopenEvent();
+
+        Observable<Boolean> deleteEvent();
     }
 
 }

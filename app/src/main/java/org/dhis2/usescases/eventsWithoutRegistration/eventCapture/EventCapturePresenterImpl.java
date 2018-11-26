@@ -353,10 +353,23 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void reopenEvent() {
-        if(eventCaptureRepository.reopenEvent()) {
+        if (eventCaptureRepository.reopenEvent()) {
             currentSectionPosition.onNext(0);
             view.showSnackBar(R.string.event_reopened);
         }
+    }
+
+    @Override
+    public void deleteEvent() {
+        compositeDisposable.add(eventCaptureRepository.deleteEvent()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> view.showSnackBar(R.string.event_was_deleted),
+                        Timber::e,
+                        () -> view.finishDataEntry()
+                )
+        );
     }
 
     @Override

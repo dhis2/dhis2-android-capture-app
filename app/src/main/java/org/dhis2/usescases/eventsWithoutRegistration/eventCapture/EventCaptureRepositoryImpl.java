@@ -20,6 +20,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -39,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
 
 import javax.annotation.Nonnull;
 
@@ -46,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -239,11 +242,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         for (int i = 0; i < cursor.getCount(); i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
+
+                            ValueTypeDeviceRenderingModel fieldRendering = null;
+                            Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                                    " WHERE ProgramStageDataElement.uid = ?", uid);                            if (rendering != null && rendering.moveToFirst()) {
+                                fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+                                rendering.close();
+                            }
+
                             renderList.add(fieldFactory.create(
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description()));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering));
 
                             cursor.moveToNext();
                         }
@@ -318,6 +330,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
+        String uid = cursor.getString(0);
         String dataValue = cursor.getString(5);
         String optionCodeName = cursor.getString(6);
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
@@ -327,10 +340,24 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             dataValue = optionCodeName;
         }
 
-        return fieldFactory.create(cursor.getString(0), formName == null ? cursor.getString(1) : formName,
+        ValueTypeDeviceRenderingModel fieldRendering = null;
+        try {
+            Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                    " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                    " WHERE ProgramStageDataElement.dataElement = ?", uid);
+            if (rendering != null && rendering.moveToFirst()) {
+                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                rendering.close();
+            }
+        }catch (Exception e){
+            Timber.e(e);
+        }
+
+
+        return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description);
+                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering);
     }
 
     @NonNull
@@ -360,7 +387,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     public boolean reopenEvent() {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        return briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid)>0;
+        return briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0;
+    }
+
+    @Override
+    public Observable<Boolean> deleteEvent() {
+        return Observable.just(briteDatabase.delete(EventModel.TABLE, "uid = ?", eventUid) > 0);
     }
 
     @Override
@@ -391,10 +423,21 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStage = cursor.getString(6);
+                    String programStageName = cursor.getString(6);
                     RuleEvent.Status status = RuleEvent.Status.valueOf(cursor.getString(2));
-                    return RuleEvent.create(cursor.getString(0), cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+
+                    return RuleEvent.builder()
+                            .event(cursor.getString(0))
+                            .programStage(cursor.getString(1))
+                            .programStageName(programStageName)
+                            .status(status)
+                            .eventDate(eventDate)
+                            .dueDate(dueDate)
+                            .organisationUnit(orgUnit)
+                            .organisationUnitCode(orgUnitCode)
+                            .dataValues(dataValues)
+                            .build();
+
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
