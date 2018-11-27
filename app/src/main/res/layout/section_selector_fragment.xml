@@ -20,12 +20,15 @@
             android:layout_height="@dimen/itemSectionSelectorHeight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:presenter="@{presenter}" />
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/formRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/sectionSelector"
             app:layout_constraintTop_toBottomOf="@id/currentSectionTitle"
             tools:listitem="@layout/custom_text_view" />
@@ -39,6 +42,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:presenter="@{presenter}" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/sectionRecycler"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_section_selector"
+            tools:visibility="visible"
+            android:layout_marginBottom="100dp"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

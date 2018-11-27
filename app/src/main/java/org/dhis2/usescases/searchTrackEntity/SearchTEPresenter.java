@@ -155,6 +155,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         Timber::d)
         );
 
+        compositeDisposable.add(
+                view.optionSetActions()
+                        .flatMap(
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1()).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setListOptions,
+                                Timber::e
+                        ));
+
     }
 
     @Override
@@ -198,10 +210,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .flatMap(page -> {
                                 this.currentPage = page;
                                 List<String> filterList = new ArrayList<>();
+                                String queryList ="";
                                 if (queryData != null) {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
-                                            filterList.add("programStartDate=" + queryData.get(key));
+                                            queryList = "programStartDate=" + queryData.get(key);
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             filterList.add(key + ":LIKE:" + queryData.get(key));
                                     }

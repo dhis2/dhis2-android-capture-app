@@ -90,7 +90,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-
+        relationshipAdapter = new RelationshipAdapter(presenter);
         setData(presenter.getDashBoardData());
     }
 
@@ -105,7 +105,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
-        return relationships -> relationshipAdapter.addItems(relationships);
+        return relationships -> {
+            if(relationshipAdapter != null)
+                relationshipAdapter.addItems(relationships);
+            else{
+                relationshipAdapter = new RelationshipAdapter(presenter);
+                relationshipAdapter.addItems(relationships);
+            }
+        };
     }
 
     public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {

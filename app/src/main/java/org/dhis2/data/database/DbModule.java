@@ -3,10 +3,10 @@ package org.dhis2.data.database;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import org.dhis2.data.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;
 
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 
@@ -47,7 +47,9 @@ public class DbModule {
     @Singleton
     BriteDatabase briteDatabase(DbOpenHelper dbOpenHelper,
                                 SqlBrite sqlBrite, SchedulerProvider schedulerProvider) {
-        return sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
+        BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.io());
+//        briteDatabase.setLoggingEnabled(true);
+        return briteDatabase;
     }
 
     @Provides

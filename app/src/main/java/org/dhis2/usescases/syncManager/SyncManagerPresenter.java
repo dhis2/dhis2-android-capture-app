@@ -3,12 +3,9 @@ package org.dhis2.usescases.syncManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncMetadataWorker;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
@@ -23,7 +20,6 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -43,14 +39,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     private final D2 d2;
 
     private MetadataRepository metadataRepository;
-    private FirebaseJobDispatcher dispatcher;
     private CompositeDisposable compositeDisposable;
     private SyncManagerContracts.View view;
     private FlowableProcessor<Boolean> checkData;
 
-    SyncManagerPresenter(MetadataRepository metadataRepository, FirebaseJobDispatcher dispatcher, D2 d2) {
+    SyncManagerPresenter(MetadataRepository metadataRepository, D2 d2) {
         this.metadataRepository = metadataRepository;
-        this.dispatcher = dispatcher;
         this.d2 = d2;
         checkData = PublishProcessor.create();
     }
@@ -123,6 +117,12 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         WorkManager.getInstance().enqueue(request);
     }
 
+
+    @Override
+    public void cancelPendingWork(String tag) {
+        WorkManager.getInstance().cancelAllWorkByTag(tag);
+    }
+
     @Override
     public void disponse() {
         compositeDisposable.clear();
@@ -140,14 +140,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
 
         editor.apply();
 
-        compositeDisposable.add(
-                Observable.just(Pair.create(Constants.EVENT_MAX_DEFAULT, Constants.TEI_MAX_DEFAULT))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view.setSyncData(),
-                                Timber::d
-                        )
-        );
+        checkData.onNext(true);
 
     }
 
@@ -161,7 +154,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void wipeDb() {
         try {
-            dispatcher.cancelAll();
+            WorkManager.getInstance().cancelAllWork();
             d2.wipeModule().wipeEverything();
             metadataRepository.deleteErrorLogs();
             // clearing cache data
@@ -208,6 +201,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     public void checkData() {
         checkData.onNext(true);
     }
+
 
     private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {

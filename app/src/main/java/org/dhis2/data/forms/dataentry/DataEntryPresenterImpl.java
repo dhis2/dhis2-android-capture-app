@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -56,6 +58,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
+    private final MetadataRepository metadataRepository;
+    @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
     private HashMap<String, FieldViewModel> currentFieldViewModels;
@@ -64,13 +68,15 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                            @NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
-                           @NonNull SchedulerProvider schedulerProvider) {
+                           @NonNull SchedulerProvider schedulerProvider,
+                           @NonNull MetadataRepository metadataRepository) {
         this.codeGenerator = codeGenerator;
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
@@ -103,9 +109,21 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 ).subscribe(result -> Timber.d(result.toString()),
                         Timber::d)
         );
+
+        disposable.add(
+                dataEntryView.optionSetActions()
+                        .flatMap(
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1()).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                dataEntryView::setListOptions,
+                                Timber::e
+                        ));
     }
 
-    private void save(String uid, String value, Boolean isAttribute) {
+    private void save(String uid, String value) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
         if (!uid.isEmpty())
             saveDisposable.add(
@@ -189,7 +207,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = displayText.content();
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
 
                 if (this.currentFieldViewModels == null ||
                         !this.currentFieldViewModels.containsKey(uid)) {
@@ -215,12 +233,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
                 if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data(), assign.isAttribute());
-                else {
+                    save(assign.field(), ruleEffect.data());
+                else{
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data(), assign.isAttribute());
+                        save(assign.field(), ruleEffect.data());
                     }
 
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));

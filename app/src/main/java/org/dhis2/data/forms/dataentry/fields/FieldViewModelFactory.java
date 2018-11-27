@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 public interface FieldViewModelFactory {
@@ -19,5 +20,6 @@ public interface FieldViewModelFactory {
                           @Nullable Boolean AllowFutureDate,
                           @NonNull Boolean editable,
                           @Nullable ProgramStageSectionRenderingType renderingType,
-                          @Nullable String description);
+                          @Nullable String description,
+                          @Nullable ValueTypeDeviceRenderingModel fieldRendering);
 }

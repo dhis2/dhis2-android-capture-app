@@ -37,7 +37,7 @@ public class RulesUtilsProviderImplTest {
 
     RulesActionCallbacks actionCallbacks = new RulesActionCallbacks() {
         @Override
-        public void setShowError(@NonNull RuleActionShowError showError) {
+        public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
 
         }
 
@@ -78,7 +78,7 @@ public class RulesUtilsProviderImplTest {
         HashMap<String, FieldViewModel> testFieldViewModels = new HashMap<>();
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
                 ValueType.TEXT, false, null, "test", null,
-                null, true, null, null));
+                null, true, null, null, null));
         testRuleEffects.add(RuleEffect.create(
                 RuleActionShowWarning.create("content", "action_data", testUid),
                 "data")

@@ -11,7 +11,6 @@ import dagger.Subcomponent;
 @PerForm
 @Subcomponent(modules = FormModule.class)
 public interface FormComponent {
-
     @NonNull
     DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule,
                             @NonNull DataEntryStoreModule dataEntryStoreModule);

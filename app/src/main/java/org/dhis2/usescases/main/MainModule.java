@@ -3,8 +3,6 @@ package org.dhis2.usescases.main;
 
 import android.support.annotation.NonNull;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;

@@ -3,12 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter"/>
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/root">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/activityToolbar"
@@ -21,6 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.onBackClick()}"
                 android:layout_marginBottom="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:onClick="showMoreOptions"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_more" />
@@ -98,8 +103,10 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="?colorPrimaryDark"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/activityToolbar"
-            app:tabTextAppearance="@style/EventTabStyle">
+            app:tabTextAppearance="@style/EventTabStyle"
+            tools:visibility="visible">
 
             <android.support.design.widget.TabItem
                 android:layout_width="wrap_content"

@@ -3,6 +3,16 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="isFirstPosition"
+            type="android.databinding.ObservableBoolean" />
+
+        <variable
+            name="isLastPosition"
+            type="android.databinding.ObservableBoolean" />
+
         <variable
             name="presenter"
             type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
@@ -21,8 +31,10 @@
             android:layout_height="wrap_content"
             android:onClick="@{()->presenter.onPreviousSection()}"
             android:tint="@color/colorGreyDefault"
+            android:visibility="@{isFirstPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_keyboard_arrow_left" />
 
@@ -32,6 +44,7 @@
             android:text="@string/sectionSelectorPrev"
             android:textColor="@color/colorGreyDefault"
             android:textSize="14sp"
+            android:visibility="@{isFirstPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/buttonBack"
             app:layout_constraintTop_toTopOf="parent" />
@@ -53,11 +66,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{()->presenter.onNextSection()}"
+            android:src="@{isLastPosition ? @drawable/ic_save_alt : @drawable/ic_keyboard_arrow_right,default=@drawable/ic_keyboard_arrow_right}"
             android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_keyboard_arrow_right" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,6 +78,7 @@
             android:text="@string/sectionSelectorNext"
             android:textColor="@color/colorGreyDefault"
             android:textSize="14sp"
+            android:visibility="@{isLastPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/buttonNext"
             app:layout_constraintTop_toTopOf="parent" />

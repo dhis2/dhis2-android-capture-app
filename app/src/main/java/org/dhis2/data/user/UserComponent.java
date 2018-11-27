@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
+import org.dhis2.data.forms.dataentry.DataEntryStoreModule;
 import org.dhis2.data.service.DataServiceComponent;
 import org.dhis2.data.service.DataServiceModule;
 import org.dhis2.data.service.MetadataServiceComponent;

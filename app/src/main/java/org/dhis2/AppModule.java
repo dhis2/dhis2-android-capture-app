@@ -8,16 +8,11 @@ import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.ConfigurationRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.CodeGeneratorImpl;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.squareup.duktape.Duktape;
-
 import org.dhis2.utils.ExpressionEvaluatorImpl;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
-import org.hisp.dhis.rules.android.DuktapeEvaluator;
 
 import javax.inject.Singleton;
 
@@ -41,12 +36,6 @@ final class AppModule {
     Context context() {
         return application;
     }
-
-   /* @Provides
-    @Singleton
-    Duktape duktape() {
-        return Duktape.create();
-    }*/
 
     @Provides
     @Singleton
@@ -72,28 +61,11 @@ final class AppModule {
         return new CodeGeneratorImpl();
     }
 
-    /*@Provides
-    @Singleton
-    RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull Duktape duktape) {
-        return new DuktapeEvaluator(duktape);
-    }*/
-
     @Provides
     @Singleton
     RuleExpressionEvaluator ruleExpressionEvaluator(@NonNull JexlEngine jexlEngine) {
         return new ExpressionEvaluatorImpl(jexlEngine);
     }
 
-    @Provides
-    @Singleton
-    FirebaseJobDispatcher jobDispatcher(GooglePlayDriver playDriver) {
-        return new FirebaseJobDispatcher(playDriver);
-    }
-
-    @Provides
-    @Singleton
-    GooglePlayDriver googlePlayDriver() {
-        return new GooglePlayDriver(application);
-    }
 
 }

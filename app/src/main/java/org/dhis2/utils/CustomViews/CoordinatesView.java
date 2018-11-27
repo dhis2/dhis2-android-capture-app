@@ -13,15 +13,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import org.dhis2.R;
-import org.dhis2.databinding.FormCoordinatesAccentBinding;
-import org.dhis2.databinding.FormCoordinatesBinding;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
+import org.dhis2.R;
+import org.dhis2.databinding.FormCoordinatesAccentBinding;
+import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.Locale;
 
@@ -103,7 +104,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void setInitialValue(String initialValue) {
-        this.latLong.setText(initialValue.replace("[", "").replace("]", ""));
+        String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
+        this.latLong.setText(String.format(Locale.getDefault(), "%.5f, %.5f", Double.valueOf(latLongValue[0]), Double.valueOf(latLongValue[1])));
     }
 
     public void setWargingOrError(String msg) {

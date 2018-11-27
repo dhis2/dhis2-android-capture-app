@@ -1,13 +1,24 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.databinding.ObservableField;
+import android.support.annotation.NonNull;
+
 import org.dhis2.data.forms.FormSectionViewModel;
+import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
+import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -19,10 +30,34 @@ public class EventCaptureContract {
         void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption);
 
         EventCaptureContract.Presenter getPresenter();
+
+        void setUp();
+
+        Consumer<Float> updatePercentage();
+
+        void setMandatoryWarning(Map<String, FieldViewModel> emptyMandatoryFields);
+
+        void attemptToFinish(boolean canComplete);
+
+        void showCompleteActions(boolean canComplete);
+
+        void restartDataEntry();
+
+        void finishDataEntry();
+
+        void setShowError(Map<String, String> errors);
+
+        void showMessageOnComplete(boolean canComplete, String completeMessage);
+
+        void attempToReopen();
+
+        void showSnackBar(int messageId);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(EventCaptureContract.View view);
+
+        void onBackClick();
 
         void subscribeToSection();
 
@@ -31,6 +66,20 @@ public class EventCaptureContract {
         void onPreviousSection();
 
         Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+        ObservableField<String> getCurrentSection();
+
+        void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
+
+        void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
+
+        void goToSection(String sectionUid);
+
+        void completeEvent(boolean addNew);
+
+        void reopenEvent();
+
+        void deleteEvent();
     }
 
     public interface EventCaptureRepository {
@@ -44,6 +93,23 @@ public class EventCaptureContract {
         Flowable<String> catOption();
 
         Flowable<List<FormSectionViewModel>> eventSections();
+
+        @NonNull
+        Flowable<List<FieldViewModel>> list(String sectionUid);
+
+        @NonNull
+        Flowable<List<FieldViewModel>> list();
+
+        @NonNull
+        Flowable<Result<RuleEffect>> calculate();
+
+        Observable<Boolean> completeEvent();
+
+        Flowable<EventStatus> eventStatus();
+
+        boolean reopenEvent();
+
+        Observable<Boolean> deleteEvent();
     }
 
 }

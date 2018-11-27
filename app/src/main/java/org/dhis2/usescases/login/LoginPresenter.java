@@ -8,14 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.service.ReservedValuesWorker;
-import org.dhis2.data.service.SyncDataWorker;
 import org.dhis2.data.service.SyncResult;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
@@ -46,8 +43,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_DATA_NOW;
-
 public class LoginPresenter implements LoginContracts.Presenter {
 
     private final ConfigurationRepository configurationRepository;
@@ -61,7 +56,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository, FirebaseJobDispatcher jobDispatcher) {
+    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
     }
