@@ -107,7 +107,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             if (binding.recycler.getAdapter() != null) {
                 String selectedOrgUnitUid = ((OrgUnitCascadeAdapter) binding.recycler.getAdapter()).getSelectedOrgUnit();
                 for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
-                    if (orgUnit.val0().equals(selectedOrgUnitUid)) {
+                    if (orgUnit.val0().equals(selectedOrgUnitUid) && orgUnit.val4()) {
                         callbacks.textChangedConsumer(orgUnit.val0(), orgUnit.val1());
                     }
                 }
@@ -142,7 +142,13 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                         Timber::e
                 ));
 
-        binding.recycler.setAdapter(new OrgUnitCascadeAdapter(orgUnits));
+        binding.recycler.setAdapter(new OrgUnitCascadeAdapter(orgUnits, canBeSelected -> {
+            if (canBeSelected) {
+                binding.acceptButton.setVisibility(View.VISIBLE);
+            } else {
+                binding.acceptButton.setVisibility(View.INVISIBLE);
+            }
+        }));
 
         return binding.getRoot();
     }
