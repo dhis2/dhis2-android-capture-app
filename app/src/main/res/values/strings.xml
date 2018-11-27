@@ -188,7 +188,8 @@
     <!-- SEARCH TRACK ENTITY -->
     <string name="enrollmment_date">Enrollment date</string>
 
-
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">Introduce your search</string>
     <!--FORM FRAGMENT-->
     <string name="report_date">Report date</string>
     <string name="add_file">Add file</string>

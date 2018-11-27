@@ -35,6 +35,8 @@ public class SearchTEContractsModule {
 
         Flowable<RowAction> rowActionss();
 
+        Flowable<Pair<String, String>> optionSetActions();
+
         Flowable<Integer> onlinePage();
 
         Flowable<Integer> offlinePage();
@@ -46,6 +48,8 @@ public class SearchTEContractsModule {
         void setProgramColor(String data);
 
         String fromRelationshipTEI();
+
+        void setListOptions(List<String> options);
     }
 
     public interface Presenter {
