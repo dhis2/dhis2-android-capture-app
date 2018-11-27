@@ -6,6 +6,7 @@
     <color name="colorPrimaryLight">#BACFFF</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentAlpha">#7fffffff</color>
+    <color name="ic_launcher_background">#1D5086</color>
 
     <!--RED THEME-->
     <color name="colorPrimaryRed">#8c2121</color>
@@ -347,6 +348,8 @@
     <color name="gray_9b9">#9b9b9b</color>
     <color name="gray_b2e">#b2e3e3e3</color>
     <color name="sectionSelectorBgColor">#fdfdfe</color>
+    <color name="color_item_selected_c3">#c3c3c3</color>
+    <color name="item_unselected_fdf">#fdfdfe</color>
     <!--endregion-->
 
 </resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="data_sync_periods">
+        <item>@string/fifteen_minute</item>
+        <item>@string/a_hour</item>
+        <item>@string/a_day</item>
+        <item>@string/Manual</item>
+    </string-array>
+
+    <string-array name="metadata_sync_periods">
+        <item>@string/a_day</item>
+        <item>@string/a_week</item>
+        <item>@string/Manual</item>
+    </string-array>
+
+</resources>

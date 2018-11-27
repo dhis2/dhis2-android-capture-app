@@ -23,6 +23,7 @@ import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEnrollment;
 import org.hisp.dhis.rules.models.RuleEvent;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,15 +116,17 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                         rulesRepository.rulesNew(programUid),
                         rulesRepository.ruleVariablesProgramStages(programUid),
                         ruleEvents(enrollmentUid),
-                        (rules, variables, ruleEvents) ->
-                                RuleEngineContext.builder(evaluator)
-                                        .rules(rules)
-                                        .ruleVariables(variables)
-                                        .calculatedValueMap(new HashMap<>())
-                                        .supplementaryData(new HashMap<>())
-                                        .build().toEngineBuilder()
-                                        .events(ruleEvents)
-                                        .build())
+                        (rules, variables, ruleEvents) -> {
+                            RuleEngine.Builder builder = RuleEngineContext.builder(evaluator)
+                                    .rules(rules)
+                                    .ruleVariables(variables)
+                                    .calculatedValueMap(new HashMap<>())
+                                    .supplementaryData(new HashMap<>())
+                                    .build().toEngineBuilder();
+                            return builder.events(ruleEvents)
+                                    .triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT)
+                                    .build();
+                        })
                         .cacheWithInitialCapacity(1);
     }
 
@@ -132,11 +135,12 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                 .mapToList(cursor -> {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
+                    String programStageUid = cursor.getString(1);
                     Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
-                    String programStage = cursor.getString(6);
+                    String programStageName = cursor.getString(6);
                     String eventStatus;
                     if (cursor.getString(2).equals(EventStatus.VISITED.name()))
                         eventStatus = EventStatus.ACTIVE.name();
@@ -153,10 +157,21 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
                                     dataValueCursor.getString(2), value));
                         }
+                        dataValueCursor.close();
                     }
 
-                    return RuleEvent.create(eventUid, cursor.getString(1),
-                            status, eventDate, dueDate, orgUnit, orgUnitCode, dataValues, programStage);
+                    return RuleEvent.builder()
+                            .event(eventUid)
+                            .programStage(programStageUid)
+                            .programStageName(programStageName)
+                            .status(status)
+                            .eventDate(eventDate)
+                            .dueDate(dueDate)
+                            .organisationUnit(orgUnit)
+                            .organisationUnitCode(orgUnitCode)
+                            .dataValues(dataValues)
+                            .build();
+
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 

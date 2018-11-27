@@ -123,7 +123,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                         ));
     }
 
-    private void save(String uid, String value, Boolean isAttribute) {
+    private void save(String uid, String value) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
         if (!uid.isEmpty())
             saveDisposable.add(
@@ -207,7 +207,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = displayText.content();
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
 
                 if (this.currentFieldViewModels == null ||
                         !this.currentFieldViewModels.containsKey(uid)) {
@@ -233,12 +233,12 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 RuleActionAssign assign = (RuleActionAssign) ruleAction;
 
                 if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data(), assign.isAttribute());
-                else {
+                    save(assign.field(), ruleEffect.data());
+                else{
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data(), assign.isAttribute());
+                        save(assign.field(), ruleEffect.data());
                     }
 
                     fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));

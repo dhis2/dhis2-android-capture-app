@@ -52,5 +52,7 @@ public class SyncManagerContracts {
         void checkSyncErrors();
 
         void checkData();
+
+        void cancelPendingWork(String meta);
     }
 }

@@ -31,6 +31,9 @@ import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.utils.UtilsModule;
@@ -202,7 +205,6 @@ public class App extends MultiDexApplication implements Components {
         loginComponent = null;
     }
 
-
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////
@@ -285,5 +287,6 @@ public class App extends MultiDexApplication implements Components {
     public void seDataSync(boolean isSyncing) {
         this.dataSync.set(isSyncing);
     }
+
 
 }

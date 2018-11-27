@@ -52,7 +52,7 @@ public class DateUtils {
      CURRENT PEDIOD REGION*/
 
     public Date getToday() {
-        return Calendar.getInstance().getTime();
+        return getCalendar().getTime();
     }
 
 

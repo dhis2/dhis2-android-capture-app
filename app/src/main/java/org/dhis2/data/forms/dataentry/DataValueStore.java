@@ -29,7 +29,7 @@ import io.reactivex.Flowable;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
-final class DataValueStore implements DataEntryStore {
+public final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
             " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
 
@@ -41,9 +41,9 @@ final class DataValueStore implements DataEntryStore {
     @NonNull
     private final String eventUid;
 
-    DataValueStore(@NonNull BriteDatabase briteDatabase,
-                   @NonNull UserRepository userRepository,
-                   @NonNull String eventUid) {
+    public DataValueStore(@NonNull BriteDatabase briteDatabase,
+                          @NonNull UserRepository userRepository,
+                          @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 

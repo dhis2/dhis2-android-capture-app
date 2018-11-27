@@ -29,6 +29,7 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventInitialBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
@@ -586,9 +587,15 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     private void startFormActivity(String eventUid) {
+
+        startActivity(EventCaptureActivity.class,
+                EventCaptureActivity.getActivityBundle(eventUid, programUid),
+                true, false, null
+        );
+/*
         FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
         startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
-        finish();
+        finish();*/
     }
 
     @Override

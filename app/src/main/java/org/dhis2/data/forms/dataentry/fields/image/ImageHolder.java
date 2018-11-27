@@ -1,12 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.databinding.ObservableField;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;
-import org.dhis2.data.forms.dataentry.fields.FieldViewHolder;
-import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
@@ -26,45 +25,45 @@ import timber.log.Timber;
 public class ImageHolder extends FormViewHolder {
 
     private final CompositeDisposable disposable;
-    private final FlowableProcessor<RowAction> processor;
     private final FormImageBinding binding;
+    private final ObservableField<String> currentSelector;
     private boolean isEditable;
     private String valuePendingUpdate;
 
     ImageViewModel model;
 
-    public ImageHolder(FormImageBinding mBinding, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType, View rootView, FlowableProcessor<String> imageSelector) {
+    public ImageHolder(FormImageBinding mBinding, FlowableProcessor<RowAction> processor, ObservableField<String> imageSelector) {
         super(mBinding);
-        this.processor = processor;
         this.binding = mBinding;
+        this.currentSelector = imageSelector;
         this.disposable = new CompositeDisposable();
-
+/*
         if (imageSelector != null)
             disposable.add(imageSelector
                     .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
+                    .map(selectedValue -> selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(selectedValue -> {
-                        if (selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
-                            binding.frame.setVisibility(View.VISIBLE);
-                        else
-                            binding.frame.setVisibility(View.GONE);
-                    }, Timber::d));
+                    .subscribe(isSelected -> binding.selectionBadge.setImageDrawable(
+                            ContextCompat.getDrawable(binding.selectionBadge.getContext(),
+                                    isSelected ? R.drawable.ic_check_circle : R.drawable.ic_unchecked_circle)
+                    ), Timber::d));*/
 
         itemView.setOnClickListener(v -> {
 
             if (isEditable) {
-                String value = null;
+                String value;
                 String[] uids = model.uid().split("\\.");
-                value = model.label();
-                valuePendingUpdate = value;
-                binding.frame.setVisibility(binding.frame.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-                if(binding.frame.getVisibility()==View.VISIBLE) {
-                    if (imageSelector != null)
-                        imageSelector.onNext(value);
-                    processor.onNext(RowAction.create(uids[0], value));
-                }else
-                    processor.onNext(RowAction.create(uids[0], null));
+
+                if(imageSelector.get().equals(model.label())) {
+                    value = null;
+                    imageSelector.set("");
+                }else {
+                    value = model.label();
+                    imageSelector.set(value);
+                }
+
+                processor.onNext(RowAction.create(uids[0], value));
             }
         });
 
@@ -79,12 +78,13 @@ public class ImageHolder extends FormViewHolder {
         if (viewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
+        binding.setCurrentSelection(currentSelector);
+
         String[] uids = viewModel.uid().split("\\.");
         Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-        if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
-            binding.frame.setVisibility(View.VISIBLE);
-        else
-            binding.frame.setVisibility(View.GONE);
+
+        if(viewModel.value()!=null && !viewModel.value().equals(currentSelector.get()))
+            currentSelector.set(viewModel.value());
 
         if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);

@@ -97,7 +97,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     @Nullable
     public String getSelectedOrgUnit() {
         String selectedUid = null;
-        for (int i = 1; i < selectedParent.size(); i++) {
+        for (int i = 1; i <= selectedParent.size(); i++) {
             if (!selectedParent.get(i).isEmpty())
                 selectedUid = selectedParent.get(i);
         }
