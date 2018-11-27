@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
+import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -14,6 +15,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.CustomViews.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.OptionModel;
@@ -107,7 +109,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if(options.size() > 15){
+        if(options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS,Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD,15)){
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog.setProcessor(processorOptionSet).setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
@@ -133,7 +135,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     private void setValueOption(String option){
-        String code = "";
+        String code = null;
         for (OptionModel optionModel : options)
             if (option.equals(optionModel.displayName()))
                 code = optionModel.code();

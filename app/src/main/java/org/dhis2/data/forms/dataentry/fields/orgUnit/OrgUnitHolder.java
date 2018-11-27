@@ -12,6 +12,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
 import org.dhis2.utils.CustomViews.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -28,7 +29,7 @@ import timber.log.Timber;
  */
 
 public class OrgUnitHolder extends FormViewHolder {
-    private final TextInputEditText editText;
+    private final TextInputAutoCompleteTextView editText;
     private final TextInputLayout inputLayout;
     private final Observable<List<OrganisationUnitModel>> orgUnitsObservable;
     private List<OrganisationUnitModel> orgUnits;
