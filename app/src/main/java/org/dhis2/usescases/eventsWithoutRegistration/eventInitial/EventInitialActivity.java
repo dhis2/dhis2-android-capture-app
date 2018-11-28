@@ -297,16 +297,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.oneTime.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     tempCreate = ONE_TIME;
-                } else {
-                    tempCreate = null;
                 }
                 checkActionButtonVisibility();
             });
             binding.permanent.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     tempCreate = PERMANENT;
-                } else {
-                    tempCreate = null;
                 }
                 checkActionButtonVisibility();
             });
