@@ -12,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
+
 import org.dhis2.R;
 import org.dhis2.databinding.DialogOrgunitBinding;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.OrgUnitUtils;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
 public class OrgUnitDialog extends DialogFragment {
     DialogOrgunitBinding binding;
     AndroidTreeView treeView;
-    static boolean isMultiSelection = false;
+    boolean isMultiSelection = false;
     static OrgUnitDialog instace;
     private View.OnClickListener possitiveListener;
     private View.OnClickListener negativeListener;
@@ -38,16 +38,14 @@ public class OrgUnitDialog extends DialogFragment {
     private List<OrganisationUnitModel> myOrgs;
     private Context context;
 
-
-    public static OrgUnitDialog newInstace(boolean multiSelection) {
-        if (instace == null || instace.isMultiSelection() != multiSelection) {
+    public static OrgUnitDialog getInstace() {
+        if (instace == null) {
             instace = new OrgUnitDialog();
-            isMultiSelection = multiSelection;
         }
         return instace;
     }
 
-    public OrgUnitDialog(){
+    public OrgUnitDialog() {
         instace = null;
         isMultiSelection = false;
         possitiveListener = null;
@@ -143,5 +141,11 @@ public class OrgUnitDialog extends DialogFragment {
 
     public OrganisationUnitModel getSelectedOrgUnitModel() {
         return ((OrganisationUnitModel) treeView.getSelected().get(0).getValue());
+    }
+
+    @Override
+    public void dismiss() {
+        instace = null;
+        super.dismiss();
     }
 }

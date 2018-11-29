@@ -436,7 +436,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)

@@ -131,7 +131,7 @@ final class EnrollmentRepository implements DataEntryRepository {
                 }
 
                 if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid); //TODO: Only pass orgUnit if pattern has OU
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)

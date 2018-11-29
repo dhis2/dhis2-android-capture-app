@@ -38,7 +38,6 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
 
     @Override
     public void onClickRefill(ReservedValueModel reservedValue) {
-
         disposable.add(Completable.complete()
                 .subscribeOn(Schedulers.io())
                 .subscribe(

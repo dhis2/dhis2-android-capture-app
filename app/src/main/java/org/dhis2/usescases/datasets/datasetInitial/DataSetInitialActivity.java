@@ -93,7 +93,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnitModel> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setOrgUnits(data);
         orgUnitDialog.setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
