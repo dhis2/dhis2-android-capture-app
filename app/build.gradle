@@ -137,10 +137,10 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
+   /* implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
         exclude group: "org.hisp.dhis", module: "core-rules"
-    }
+    }*/
 
 //    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion

@@ -19,9 +19,9 @@ import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.Unit;
 import org.hisp.dhis.android.core.event.Event;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
@@ -267,8 +267,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
         view.handleSync();
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
-        } else if (throwable instanceof D2CallException) {
-            D2CallException d2CallException = (D2CallException) throwable;
+        } else if (throwable instanceof D2Error) {
+            D2Error d2CallException = (D2Error) throwable;
             switch (d2CallException.errorCode()) {
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));
@@ -361,21 +361,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
                 .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().enqueue(request);
-/*
-        disposable.add(Observable.just(true)
-                .map(init -> {
-                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
-                    return true;
-                })
-                .map(response -> SyncResult.success())
-                .onErrorReturn(error -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        update(LoginActivity.SyncState.RESERVED_VALUES),
-                        Timber::d
-                )
-        );*/
     }
 
 

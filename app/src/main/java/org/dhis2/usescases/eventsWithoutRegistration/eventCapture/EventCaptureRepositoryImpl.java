@@ -16,6 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
@@ -181,11 +182,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> catOption() {
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE,
-                "SELECT CategoryOption.* FROM CategoryOption " +
-                        "JOIN Event ON Event.attributeCategoryOptions = CategoryOption.uid " +
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE,
+                "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo " +
+                        "JOIN Event ON Event.attributeOptionCombo = CategoryOptionCombo.uid " +
                         "WHERE Event.uid = ? LIMIT 1", eventUid)
-                .mapToOneOrDefault(cursor -> CategoryOptionModel.create(cursor).displayName(), "")
+                .mapToOneOrDefault(cursor -> CategoryOptionComboModel.create(cursor).displayName(), "")
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 

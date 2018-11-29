@@ -29,6 +29,7 @@ import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.lang.reflect.Type;
@@ -73,7 +74,9 @@ final class EditTextCustomHolder extends FormViewHolder {
 
 
                 if (!isEmpty(editText.getText()) && validate()) {
-                    if (!autoCompleteValues.contains(editText.getText().toString()))
+                    if (editTextModel.fieldRendering() != null &&
+                            editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
+                            !autoCompleteValues.contains(editText.getText().toString()))
                         autoCompleteValues.add(editText.getText().toString());
                     saveListToPreference(editTextModel.uid(), autoCompleteValues);
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
@@ -199,10 +202,11 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     private void setRenderingType(ValueTypeDeviceRenderingModel renderingType) {
-        //TODO: Check rendering type and apply
-        autoCompleteValues = getListFromPreference(editTextModel.uid());
-        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(editText.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
-        editText.setAdapter(autoCompleteAdapter);
+        if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
+            autoCompleteValues = getListFromPreference(editTextModel.uid());
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(editText.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
+            editText.setAdapter(autoCompleteAdapter);
+        }
     }
 
     public void saveListToPreference(String key, List<String> list) {

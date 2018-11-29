@@ -10,7 +10,7 @@ import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.reservedValue.ReservedValueActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.D2CallException;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -173,7 +173,7 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         try {
             d2.wipeModule().wipeData();
             metadataRepository.deleteErrorLogs();
-        } catch (D2CallException e) {
+        } catch (D2Error e) {
             Timber.e(e);
         }
     }

@@ -520,8 +520,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(event.getString("eventDate")));
                     if (event.has("status"))
                         eventModelBuilder.status(EventStatus.valueOf(event.getString("status")));
-                    if (event.has("attributeCategoryOptions"))
-                        eventModelBuilder.attributeCategoryOptions(event.getString("attributeCategoryOptions"));
                     if (event.has("attributeOptionCombo"))
                         eventModelBuilder.attributeOptionCombo(event.getString("attributeOptionCombo"));
                     if (event.has("trackedEntityInstance"))
@@ -672,9 +670,6 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 }
                 if (eventWORegistrationJson.has("dueDate")) {
                     eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString("dueDate")));
-                }
-                if (eventWORegistrationJson.has("attributeCategoryOptions")) {
-                    eventModelBuilder.attributeCategoryOptions(eventWORegistrationJson.getString("attributeCategoryOptions"));
                 }
                 if (eventWORegistrationJson.has("attributeOptionCombo")) {
                     eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString("attributeOptionCombo"));
