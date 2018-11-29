@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -98,15 +99,21 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 ));
 
         disposable.add(dataEntryView.rowActions().debounce(500, TimeUnit.MILLISECONDS) //TODO: Check debounce time
-                .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .switchMap(action ->
-                        {
-                            Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
-                                    action.id(), action.value());
-                            return dataEntryStore.save(action.id(), action.value());
-                        }
-                ).subscribe(result -> Timber.d(result.toString()),
+                        dataEntryStore.save(action.id(), action.value()).
+                                map(result -> {
+                                    if (result == 5)
+                                        dataEntryStore.save(action.id(), null);
+                                    return result;
+                                })
+                ).subscribe(result -> {
+                            if (result == -5)
+                                dataEntryView.showMessage(R.string.unique_warning);
+                            else
+                                Timber.d(result.toString());
+                        },
                         Timber::d)
         );
 
@@ -234,7 +241,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
                 if (fieldViewModels.get(assign.field()) == null)
                     save(assign.field(), ruleEffect.data());
-                else{
+                else {
                     String value = fieldViewModels.get(assign.field()).value();
 
                     if (value == null || !value.equals(ruleEffect.data())) {

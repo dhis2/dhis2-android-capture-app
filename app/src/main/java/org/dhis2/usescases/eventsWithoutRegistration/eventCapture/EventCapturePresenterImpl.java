@@ -165,14 +165,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
                 .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
+//                .filter(action -> dataEntryStore.checkUnique(action.id(), action.value()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .switchMap(action ->
-                        {
-                            Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
-                                    action.id(), action.value());
-                            return dataEntryStore.save(action.id(), action.value());
-                        }
+                        dataEntryStore.save(action.id(), action.value())
                 ).subscribe(result -> Timber.d(result.toString()),
                         Timber::d)
         );

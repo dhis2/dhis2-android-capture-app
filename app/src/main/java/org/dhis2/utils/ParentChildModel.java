@@ -24,11 +24,19 @@ public abstract class ParentChildModel<T> {
     public abstract boolean isSelectable();
 
     @NonNull
+    public abstract Integer numberOfChilds();
+
+    @NonNull
     public static <T> ParentChildModel<T> create(@NonNull T parent, @Nullable List<ParentChildModel<T>> childs, boolean isSelectable) {
-        return new AutoValue_ParentChildModel<>(parent, childs != null ? childs : new ArrayList<>(), isSelectable);
+        int count = 0;
+        for (ParentChildModel<T> child : childs)
+            count += child.numberOfChilds();
+
+        return new AutoValue_ParentChildModel<>(parent, childs != null ? childs : new ArrayList<>(), isSelectable, count + childs.size());
     }
 
     public void addItem(ParentChildModel<T> item) {
         childs().add(item);
     }
+
 }

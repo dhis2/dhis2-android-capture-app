@@ -75,6 +75,12 @@ public final class DataValueStore implements DataEntryStore {
                 .switchMap(this::updateEvent);
     }
 
+    /*@Override
+    public boolean checkUnique(String id, String value) {
+//        briteDatabase.query("SELECT ")
+        return false;
+    }*/
+
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
         ContentValues dataValue = new ContentValues();
         if (valueType == DATA_ELEMENT) {

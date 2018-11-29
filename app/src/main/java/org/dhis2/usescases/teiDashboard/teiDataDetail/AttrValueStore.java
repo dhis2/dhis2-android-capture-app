@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -69,14 +70,23 @@ public final class AttrValueStore implements AttrEntryStore {
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
         return Flowable
                 .defer(() -> {
-                    long updated = update(uid, value);
-                    if (updated > 0) {
-                        return Flowable.just(updated);
-                    }
+                    if (checkUnique(uid, value)) {
 
-                    return Flowable.just(insert(uid, value));
+                        long updated = update(uid, value);
+                        if (updated > 0) {
+                            return Flowable.just(updated);
+                        }
+
+                        return Flowable.just(insert(uid, value));
+                    } else
+                        return Flowable.just((long) -5);
                 })
-                .switchMap(status -> updateEnrollment(status));
+                .switchMap(status -> {
+                    if (status != -5)
+                        return updateEnrollment(status);
+                    else
+                        return Flowable.just(status);
+                });
     }
 
 
@@ -109,6 +119,19 @@ public final class AttrValueStore implements AttrEntryStore {
         insertStatement.clearBindings();
 
         return inserted;
+    }
+
+    private boolean checkUnique(String attribute, String value) {
+        Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
+                " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.attribute" +
+                " WHERE TrackedEntityAttribute.uid = ? AND" +
+                " TrackedEntityAttribute.uniqueProperty = ?" +
+                " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
+
+        if (uniqueCursor == null || uniqueCursor.getCount() == 0)
+            return true;
+        else
+            return false;
     }
 
     @NonNull

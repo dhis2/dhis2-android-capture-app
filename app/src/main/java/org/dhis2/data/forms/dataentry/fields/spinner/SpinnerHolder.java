@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -36,7 +37,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+    private final FlowableProcessor<Pair<String, String>> processorOptionSet;
     private final ImageView iconView;
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
@@ -47,7 +48,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     List<OptionModel> options;
     private OptionSetDialog dialog;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor,FlowableProcessor<Pair<String,String>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, String>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
         super(mBinding);
         binding = mBinding;
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
@@ -109,17 +110,18 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if(options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS,Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD,15)){
+        if (options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog.setProcessor(processorOptionSet).setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
-                    .setClearListener(view -> {processor.onNext(
-                            RowAction.create(viewModel.uid(), ""));
-                            dialog.dismiss();
-                    }
-                    ).show(((FragmentActivity)binding.getRoot().getContext()).getSupportFragmentManager(), null);
+                    .setClearListener(view -> {
+                                processor.onNext(
+                                        RowAction.create(viewModel.uid(), ""));
+                                dialog.dismiss();
+                            }
+                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
             dialog.setOptionSetUid(viewModel);
-        }else {
+        } else {
             PopupMenu menu = new PopupMenu(itemView.getContext(), v);
             menu.setOnMenuItemClickListener(this);
             for (OptionModel optionModel : options)
@@ -134,11 +136,15 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         OptionSetDialog.newInstance().dismiss();
     }
 
-    private void setValueOption(String option){
+    private void setValueOption(String option) {
         String code = null;
+        String displayName = null;
         for (OptionModel optionModel : options)
-            if (option.equals(optionModel.displayName()))
+            if (option.equals(optionModel.displayName())) {
                 code = optionModel.code();
+                displayName = optionModel.displayName();
+            }
+        editText.setText(displayName);
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );
