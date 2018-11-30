@@ -246,6 +246,6 @@ final class SyncPresenterImpl implements SyncPresenter {
 
     @Override
     public void syncReservedValues() {
-//        d2.syncTrackedEntityAttributeReservedValues();
+        d2.syncTrackedEntityAttributeReservedValues(null, null, 100);
     }
 }

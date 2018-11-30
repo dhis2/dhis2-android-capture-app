@@ -11,13 +11,6 @@ import io.reactivex.Observable;
 
 public class ReservedValueRepositoryImpl implements ReservedValueRepository {
 
-    /*private String SELECT_DATA_ELEMENTS = "SELECT te.uid, te.displayName,ou.uid, ou.displayName, count(rv.ownerUid) reservedValue " +
-                    "FROM TrackedEntityAttribute te " +
-                    "JOIN TrackedEntityAttributeReservedValue rv ON rv.ownerUid = te.uid " +
-                    "JOIN organisationUnit ou ON ou.uid = rv.organisationUnit " +
-                    "GROUP BY rv.organisationUnit, te.uid " +
-                    "ORDER BY te.displayName";*/
-
     private String SELECT_DATA_ELEMENTS = "SELECT TEA.uid, TEA.displayName, TEA.pattern, count(rv.ownerUid)reservedValue, ou.uid, ou.displayName " +
             "FROM TrackedEntityAttribute AS TEA " +
             "LEFT JOIN TrackedEntityAttributeReservedValue AS rv ON rv.ownerUid = TEA.uid " +

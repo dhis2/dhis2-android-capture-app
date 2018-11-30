@@ -41,13 +41,15 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
-            "  Field.displayDescription\n" +
+            "  Field.displayDescription,\n" +
+            "  Field.pattern\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
             "        TrackedEntityAttribute.displayName AS label,\n" +
             "        TrackedEntityAttribute.valueType AS type,\n" +
+            "        TrackedEntityAttribute.pattern AS pattern,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
@@ -115,6 +117,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
+        String pattern = cursor.getString(12);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -131,12 +134,12 @@ final class EnrollmentRepository implements DataEntryRepository {
                 }
 
                 if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid); //TODO: Only pass orgUnit if pattern has OU
+                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
