@@ -341,9 +341,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int) (completionPercent * interpolatedTime);
-        String text = String.valueOf(progress) + "%";
+    public void onUpdate(boolean lost, float value) {
+        String text = String.valueOf((int) value) + "%";
         binding.progress.setText(text);
     }
 
@@ -584,16 +583,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid) {
 
-        if (enrollmentUid == null)
+//        if (enrollmentUid == null)
             startActivity(EventCaptureActivity.class,
                     EventCaptureActivity.getActivityBundle(eventUid, programUid),
                     true, false, null
             );
-        else {
+       /* else {
             FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
             startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
             finish();
-        }
+        }*/
     }
 
     @Override

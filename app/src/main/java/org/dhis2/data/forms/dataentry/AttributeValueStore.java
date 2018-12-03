@@ -244,22 +244,22 @@ public final class AttributeValueStore implements DataEntryStore {
     }
 
     private boolean checkUnique(String attribute, String value) {
-        Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
-                " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
-                " JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
-                " JOIN Program ON Program.uid = Enrollment.program" +
-                " WHERE TrackedEntityAttribute.uid = ? AND" +
-                " TrackedEntityAttribute.uniqueProperty = ? AND" +
-                " TrackedEntityAttributeValue.value = ? AND" +
-                " Enrollment.uid = ?", attribute, "1", value,enrollment);
+        if(attribute!=null && value!=null) {
+            Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
+                    " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute" +
+                    " WHERE TrackedEntityAttribute.uid = ? AND" +
+                    " TrackedEntityAttribute.uniqueProperty = ? AND" +
+                    " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
 
-        if (uniqueCursor == null)
+            if (uniqueCursor == null)
+                return true;
+            else {
+                boolean hasValue = uniqueCursor.getCount() > 0;
+                uniqueCursor.close();
+                return !hasValue;
+            }
+        }else
             return true;
-        else {
-            boolean hasValue = uniqueCursor.getCount() > 0;
-            uniqueCursor.close();
-            return !hasValue;
-        }
     }
 
     @NonNull

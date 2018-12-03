@@ -15,6 +15,7 @@ import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
@@ -283,14 +284,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
+           /* Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
             Bundle extras = new Bundle();
             extras.putString("EVENT_UID", uid);
             extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
             extras.putString("TEI_UID", teUid);
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());*/
+
+            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
+            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
+            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);
         }
     }
 

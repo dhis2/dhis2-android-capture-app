@@ -288,5 +288,11 @@ public class App extends MultiDexApplication implements Components {
         this.dataSync.set(isSyncing);
     }
 
+    /**
+     * Visible only for testing purposes.
+     */
+    public void setTestComponent(AppComponent testingComponent) {
+        appComponent = testingComponent;
+    }
 
 }

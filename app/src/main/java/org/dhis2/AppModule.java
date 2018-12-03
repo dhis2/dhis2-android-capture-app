@@ -23,11 +23,11 @@ import dagger.Provides;
  * QUADRAM. Created by ppajuelo on 10/10/2017.
  */
 @Module
-final class AppModule {
+public final class AppModule {
 
     private final App application;
 
-    AppModule(@NonNull App application) {
+    public AppModule(@NonNull App application) {
         this.application = application;
     }
 

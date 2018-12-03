@@ -42,6 +42,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final ViewDataBinding binding;
+    private final View descriptionLabel;
     /* @NonNull
      private BehaviorProcessor<SpinnerViewModel> model;*/
     private SpinnerViewModel viewModel;
@@ -54,6 +55,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
+        this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
 
@@ -95,6 +97,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         }
 
         descriptionText = viewModel.description();
+
+        descriptionLabel.setVisibility(label.length() > 16 || descriptionText != null ? View.VISIBLE : View.GONE);
+
     }
 
     public void dispose() {
@@ -112,7 +117,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         closeKeyboard(v);
         if (options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
-            dialog.setProcessor(processorOptionSet).setOnClick(this)
+            dialog.setProcessor(processorOptionSet)
+                    .setOptionsFromModel(options)
+                    .setOptionSetUid(viewModel)
+                    .setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
                     .setClearListener(view -> {
                                 processor.onNext(
@@ -120,7 +128,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
-            dialog.setOptionSetUid(viewModel);
         } else {
             PopupMenu menu = new PopupMenu(itemView.getContext(), v);
             menu.setOnMenuItemClickListener(this);

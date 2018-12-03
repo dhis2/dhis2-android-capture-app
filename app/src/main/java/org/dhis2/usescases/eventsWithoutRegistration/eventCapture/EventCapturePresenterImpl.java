@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -71,6 +72,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionsToHide = new ArrayList<>();
         this.currentSection = new ObservableField<>("");
         this.errors = new HashMap<>();
+        this.emptyMandatoryFields = new HashMap<>();
         this.canComplete = true;
         currentSectionPosition = PublishProcessor.create();
 
@@ -165,7 +167,6 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
                 .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
-//                .filter(action -> dataEntryStore.checkUnique(action.id(), action.value()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .switchMap(action ->
@@ -397,7 +398,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
-        this.errors.put(model.programStageSection(), showError.content());
+
+        Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
+                .setAction(view.getAbstracContext().getString(R.string.button_ok), v1 -> {
+
+                })
+                .show();
+
+        save(model.uid(),null);
     }
 
     @Override

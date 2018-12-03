@@ -125,7 +125,7 @@ public final class AttrValueStore implements AttrEntryStore {
         Cursor uniqueCursor = briteDatabase.query("SELECT TrackedEntityAttributeValue.value FROM TrackedEntityAttributeValue" +
                 " JOIN TrackedEntityAttribute ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.attribute" +
                 " WHERE TrackedEntityAttribute.uid = ? AND" +
-                " TrackedEntityAttribute.uniqueProperty = ?" +
+                " TrackedEntityAttribute.uniqueProperty = ? AND" +
                 " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
 
         if (uniqueCursor == null || uniqueCursor.getCount() == 0)
