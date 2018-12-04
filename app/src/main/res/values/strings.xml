@@ -280,7 +280,7 @@
     <string name="error_on_complete_title">Error</string>
     <string name="save">Save</string>
     <string name="reserved_value">Reserved Values</string>
-    
+
     <string name="downloaded_confirm">Do you want to add more data from QR?</string>
 
     <!--ABOUT-->
@@ -372,7 +372,7 @@
     <string name="dashboard_notes">Notes</string>
     <string name="unable_to_complete">Unable to complete</string>
     <string name="field_errors">Some fields have errors. Please, check them to be able to complete</string>
-    <string name="unselect_enrollment">Unselect enrollment</string>
+    <string name="all_enrollments">All enrollments</string>
     <string name="unselect_enrollment_description">Show dashboard with all active programs</string>
     <string name="CHECK_SYNC_ERRORS">Check sync errors</string>
     <string name="error_dialog_title">Sync error log</string>
