@@ -443,7 +443,7 @@ public final class RulesRepository {
                 return RuleActionHideSection.create(section);
             case ASSIGN:
                 return RuleActionAssign.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute, !isEmpty(attribute));
+                        isEmpty(attribute) ? dataElement : attribute);
             case SHOWWARNING:
                 return RuleActionShowWarning.create(content, data,
                         isEmpty(attribute) ? dataElement : attribute);

@@ -80,7 +80,7 @@ final class ProgramStageRepository implements DataEntryRepository {
     private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
     private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?";
-    private static final String OPTIONS = "SELECT Option.uid, Option.displayName FROM Option WHERE Option.optionSet = ?";
+    private static final String OPTIONS = "SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -150,9 +150,10 @@ final class ProgramStageRepository implements DataEntryRepository {
                         for (int i = 0; i < cursor.getCount(); i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
+                            String code = cursor.getString(2);
                             renderList.add(fieldFactory.create(
                                     fieldViewModel.uid() + "." + uid, //fist
-                                    displayName, ValueType.TEXT, false,
+                                    displayName+"-"+code, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
                                     fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description()));
 

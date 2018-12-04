@@ -54,9 +54,13 @@ public class ImageHolder extends FormViewHolder {
         itemView.setOnClickListener(v -> {
 
             if (isEditable) {
-                String value = null;
+                String value;
                 String[] uids = model.uid().split("\\.");
-                value = model.label();
+                String[] labelAndCode = model.label().split("-");
+                String label = labelAndCode[0];
+                String code = labelAndCode[1];
+
+                value =code;
                 valuePendingUpdate = value;
                 binding.frame.setVisibility(binding.frame.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
                 if(binding.frame.getVisibility()==View.VISIBLE) {
@@ -75,13 +79,16 @@ public class ImageHolder extends FormViewHolder {
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();
-        label = new StringBuilder(viewModel.label());
+        String[] labelAndCode = model.label().split("-");
+        String labelName = labelAndCode[0];
+        String code = labelAndCode[1];
+        label = new StringBuilder(labelName);
         if (viewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
         String[] uids = viewModel.uid().split("\\.");
         Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-        if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
+        if (viewModel.value() != null && viewModel.value().equals(code))
             binding.frame.setVisibility(View.VISIBLE);
         else
             binding.frame.setVisibility(View.GONE);
