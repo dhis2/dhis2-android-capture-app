@@ -14,6 +14,16 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="-200dp"
+            android:layout_marginBottom="-200dp"
+            android:alpha=".1"
+            app:srcCompat="@drawable/ic_dhis" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

@@ -78,7 +78,6 @@
                 android:id="@+id/descriptionLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                 app:srcCompat="@drawable/ic_info_outline"
                 app:tint="?colorPrimary" />
         </LinearLayout>

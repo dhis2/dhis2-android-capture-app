@@ -15,6 +15,7 @@ import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
@@ -25,10 +26,10 @@ import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipHelper;
@@ -51,7 +52,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.core.common.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
+import static org.hisp.dhis.android.core.maintenance.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -283,14 +284,18 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void onEventSelected(String uid, View sharedView) {
         Fragment teiFragment = TEIDataFragment.getInstance();
         if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
-            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
+           /* Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
             Bundle extras = new Bundle();
             extras.putString("EVENT_UID", uid);
             extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
             extras.putString("TEI_UID", teUid);
             intent.putExtras(extras);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
-            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());*/
+
+            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
+            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
+            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);
         }
     }
 
@@ -342,7 +347,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             Relationship relationship = RelationshipHelper.teiToTeiRelationship(teUid, trackEntityInstance_A, relationshipType);
             d2.relationshipModule().relationships.add(relationship);
 //            dashboardRepository.updateTeiState(); SDK now updating TEI state
-        } catch (D2CallException e) {
+        } catch (D2Error e) {
             if (e.errorCode() == CANT_CREATE_EXISTING_OBJECT)
                 view.displayMessage(e.errorDescription());
             else
@@ -355,7 +360,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void deleteRelationship(Relationship relationship) {
         try {
             d2.relationshipModule().relationships.uid(relationship.uid()).delete();
-        } catch (D2CallException e) {
+        } catch (D2Error e) {
             Timber.d(e);
         } finally {
             subscribeToRelationships(RelationshipFragment.getInstance());
@@ -374,7 +379,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .filter(relationship -> relationship.from().trackedEntityInstance().trackedEntityInstance().equals(teUid))
                         .map(relationship -> {
                             RelationshipType relationshipType = null;
-                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.getSet())
+                            for (RelationshipType type : d2.relationshipModule().relationshipTypes.get())
                                 if (type.uid().equals(relationship.relationshipType()))
                                     relationshipType = type;
                             return Pair.create(relationship, relationshipType);

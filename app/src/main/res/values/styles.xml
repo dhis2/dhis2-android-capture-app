@@ -42,7 +42,7 @@
 
     <style name="DhisTabLayout" parent="Base.Widget.Design.TabLayout">
         <item name="tabIndicatorColor">?attr/colorAccent</item>
-        <item name="tabIndicatorHeight">8dp</item>
+        <item name="tabIndicatorHeight">2dp</item>
         <item name="tabTextAppearance">@style/DhisTabText</item>
         <item name="tabSelectedTextColor">?colorAccent</item>
         <item name="tabBackground">?colorPrimary</item>

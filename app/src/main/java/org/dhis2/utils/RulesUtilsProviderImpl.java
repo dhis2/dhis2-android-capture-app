@@ -61,7 +61,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
             else if (ruleAction instanceof RuleActionDisplayKeyValuePair)
                 displayKeyValuePair((RuleActionDisplayKeyValuePair) ruleAction, ruleEffect, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideSection)
-                hideSection((RuleActionHideSection) ruleAction, rulesActionCallbacks);
+                hideSection((RuleActionHideSection) ruleAction, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionAssign)
                 assign((RuleActionAssign) ruleAction, ruleEffect, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionCreateEvent)
@@ -150,8 +150,12 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
     }
 
     private void hideSection(RuleActionHideSection hideSection,
-                             RulesActionCallbacks rulesActionCallbacks) {
+                             Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         rulesActionCallbacks.sethideSection(hideSection.programStageSection());
+        for (FieldViewModel field : fieldViewModels.values()) {
+            if (Objects.equals(field.programStageSection(), hideSection.programStageSection()) && field.value() != null)
+                rulesActionCallbacks.save(field.uid(), null);
+        }
     }
 
     private void assign(RuleActionAssign assign, RuleEffect ruleEffect,

@@ -12,10 +12,10 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
-import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
@@ -41,13 +41,15 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
-            "  Field.displayDescription\n" +
+            "  Field.displayDescription,\n" +
+            "  Field.pattern\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        TrackedEntityAttribute.uid AS id,\n" +
             "        TrackedEntityAttribute.displayName AS label,\n" +
             "        TrackedEntityAttribute.valueType AS type,\n" +
+            "        TrackedEntityAttribute.pattern AS pattern,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory,\n" +
@@ -115,6 +117,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         EnrollmentStatus enrollmentStatus = EnrollmentStatus.valueOf(cursor.getString(10));
         String description = cursor.getString(11);
+        String pattern = cursor.getString(12);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
@@ -131,12 +134,12 @@ final class EnrollmentRepository implements DataEntryRepository {
                 }
 
                 if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid, orgUnitUid);
+                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +
@@ -154,14 +157,14 @@ final class EnrollmentRepository implements DataEntryRepository {
                             TrackedEntityAttributeValueModel.TABLE, updateStatement);
                     updateStatement.clearBindings();
                 }
-            } catch (D2CallException e) {
+            } catch (D2Error e) {
                 Timber.e(e);
             }
         }
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
         }

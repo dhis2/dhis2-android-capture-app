@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
-import org.dhis2.data.forms.dataentry.DataEntryStoreModule;
 import org.dhis2.data.service.DataServiceComponent;
 import org.dhis2.data.service.DataServiceModule;
 import org.dhis2.data.service.MetadataServiceComponent;
@@ -20,8 +19,6 @@ import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
-import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodComponent;
-import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodModule;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableComponent;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
@@ -137,9 +134,6 @@ public interface UserComponent {
 
     @NonNull
     AboutComponent plus(AboutModule aboutModule);
-
-    @NonNull
-    DataSetPeriodComponent plus(DataSetPeriodModule dataSetPeriodModule);
 
     @NonNull
     DataSetDetailComponent plus(DataSetDetailModule dataSetDetailModel);

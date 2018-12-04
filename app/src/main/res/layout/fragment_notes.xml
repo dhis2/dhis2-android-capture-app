@@ -22,7 +22,6 @@
                 android:layout_height="100dp"
                 android:layout_marginEnd="9dp"
                 android:layout_marginStart="9dp"
-                android:layout_marginTop="30dp"
                 android:background="@drawable/gray_border_box"
                 android:fadeScrollbars="true"
                 android:gravity="start"

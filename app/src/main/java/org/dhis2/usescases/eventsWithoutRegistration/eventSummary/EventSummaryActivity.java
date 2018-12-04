@@ -104,9 +104,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int) (completionPercent * interpolatedTime);
-        String text = String.valueOf(progress) + "%";
+    public void onUpdate(boolean lost, float value) {
+        String text = String.valueOf((int) value) + "%";
         binding.progress.setText(text);
     }
 

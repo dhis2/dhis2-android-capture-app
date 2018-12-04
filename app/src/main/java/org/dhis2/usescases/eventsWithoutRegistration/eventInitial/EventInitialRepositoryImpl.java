@@ -161,7 +161,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .completedDate(null)
                 .dueDate(null)
                 .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)//TODO: For now categoryOptionsUid is always null. Should check SELECT_CAT_OPTION_FROM_OPTION_COMBO
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 
@@ -211,11 +210,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .program(program)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-//                .eventDate(cal.getTime()) Schedule events should not have an event date
                 .completedDate(null)
                 .dueDate(cal.getTime())
                 .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 
@@ -320,7 +317,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         contentValues.put(EventModel.Columns.LATITUDE, latitude);
         contentValues.put(EventModel.Columns.LONGITUDE, longitude);
         contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
         contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
 
         long row = -1;

@@ -10,10 +10,14 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -214,14 +218,29 @@ final class ProgramStageRepository implements DataEntryRepository {
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                 " WHERE ProgramStageDataElement.uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
         }
 
+        Cursor eventCursor = briteDatabase.query("SELECT * FROM Event WHERE uid = ?", eventUid);
+        eventCursor.moveToFirst();
+        EventModel eventModel = EventModel.create(eventCursor);
+        eventCursor.close();
+        Cursor programStageCursor = briteDatabase.query("SELECT * FROM ProgramStage WHERE uid = ?", eventModel.programStage());
+        programStageCursor.moveToFirst();
+        ProgramStageModel programStageModel = ProgramStageModel.create(programStageCursor);
+        programStageCursor.close();
+        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
+        programCursor.moveToFirst();
+        ProgramModel programModel = ProgramModel.create(programCursor);
+        programCursor.close();
+
+        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
+
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType, description, fieldRendering);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering);
     }
 
     @NonNull
