@@ -45,12 +45,12 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     public void init(String teUid, String programUid) {
-
+        // nothing
     }
 
     @Override
     public void setData(DashboardProgramModel program) {
-
+        // nothing
     }
 
     @Override
@@ -80,6 +80,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     public void restoreAdapter(String programUid) {
-
+        // nothing
     }
 }

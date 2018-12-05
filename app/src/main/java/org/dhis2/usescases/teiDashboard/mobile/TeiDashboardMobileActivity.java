@@ -61,14 +61,23 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
+        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        orientation = Resources.getSystem().getConfiguration().orientation;
-        init(teiUid, programUid);
+        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+        if (prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)){
+            finish();
+        }
+        else{
+            orientation = Resources.getSystem().getConfiguration().orientation;
+            init(teiUid, programUid);
+        }
     }
 
     @Override
@@ -93,7 +102,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
                 binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int i, float v, int i1) {
-
+                        // nothing
                     }
 
                     @Override
@@ -103,7 +112,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
                     @Override
                     public void onPageScrollStateChanged(int i) {
-
+                        // nothing
                     }
                 });
                 binding.sectionTitle.setText(adapter.getPageTitle(0));
@@ -117,7 +126,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setData(DashboardProgramModel program) {
-
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
@@ -137,14 +145,11 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         setViewpagerAdapter();
 
-
-//        RelationshipFragment.getInstance().setData(program);
         TEIDataFragment.getInstance().setData(programModel);
 
-//        binding.teiPager.setOffscreenPageLimit(6);
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName())) {
             setTutorial();
+        }
     }
 
     @Override
@@ -155,8 +160,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
-
-
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
@@ -174,8 +177,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         this.programModel = program;
 
         setViewpagerAdapter();
-
-//        RelationshipFragment.getInstance().setData(program);
     }
 
     @Override

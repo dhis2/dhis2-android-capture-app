@@ -43,6 +43,7 @@ public class Constants {
 
 
     //EVENT_CREATION
+    public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
     public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
     public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
     public static final String SCREEN_NAME = "SCREEN_NAME";
