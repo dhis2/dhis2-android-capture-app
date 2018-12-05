@@ -1,4 +1,4 @@
-package testUtils;
+package org.dhis2;
 
 import android.app.Application;
 import android.support.annotation.NonNull;
