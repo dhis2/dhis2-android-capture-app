@@ -196,6 +196,9 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     app:srcCompat="@drawable/ic_refresh"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()->presenter.resetSyncParameters()}"
                     android:tint="?colorPrimary" />
             </LinearLayout>
 
