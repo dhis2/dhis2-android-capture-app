@@ -55,6 +55,8 @@ public class EventCaptureContract {
         void showSnackBar(int messageId);
 
         android.view.View getSnackbarAnchor();
+
+        void clearFocus();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

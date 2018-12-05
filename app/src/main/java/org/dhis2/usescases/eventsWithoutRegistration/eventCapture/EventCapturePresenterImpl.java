@@ -1,6 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.databinding.ObservableField;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -257,6 +258,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onNextSection() {
+
+        view.clearFocus();
+
+        new Handler().postDelayed(
+                () -> changeSection(),
+                1000);
+
+    }
+
+    private void changeSection(){
         List<FormSectionViewModel> finalSections = getFinalSections();
 
         if (finalSections.indexOf(sectionList.get(currentPosition)) < sectionList.size() - sectionsToHide.size() - 1) {
@@ -314,7 +325,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid) {
+    public void onSectionSelectorClick(boolean isCurrentSection, int position, String
+            sectionUid) {
 
         EventCaptureFormFragment.getInstance().showSectionSelector();
         if (!currentSection.get().equals(sectionUid) && position != -1) {
@@ -327,7 +339,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void goToSection(String sectionUid) {
         for (FormSectionViewModel sectionModel : sectionList)
-            if (sectionModel.sectionUid().equals(sectionUid))
+            if (sectionModel.sectionUid()!=null && sectionModel.sectionUid().equals(sectionUid))
                 currentPosition = sectionList.indexOf(sectionModel);
         currentSectionPosition.onNext(currentPosition);
     }
@@ -405,7 +417,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 })
                 .show();
 
-        save(model.uid(),null);
+        save(model.uid(), null);
     }
 
     @Override
