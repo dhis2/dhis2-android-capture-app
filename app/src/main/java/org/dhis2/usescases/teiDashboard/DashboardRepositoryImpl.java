@@ -57,8 +57,8 @@ import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String INSERT_NOTE = "INSERT INTO Note ( " +
-            "enrollment, value, storedBy, storedDate" +
-            ") VALUES (?, ?, ?, ?);";
+            "uid, enrollment, value, storedBy, storedDate" +
+            ") VALUES (?, ?, ?, ?, ?);";
     private static final String SELECT_NOTES = "SELECT " +
             "Note.* FROM Note\n" +
             "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
@@ -534,10 +534,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                         .compileStatement(INSERT_NOTE);
 
-                sqLiteBind(insetNoteStatement, 1, enrollmentUid == null ? "" : enrollmentUid); //enrollment
-                sqLiteBind(insetNoteStatement, 2, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
-                sqLiteBind(insetNoteStatement, 3, userName == null ? "" : userName); //storeBy
-                sqLiteBind(insetNoteStatement, 4, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+                sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+                sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+                sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
 
                 briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 

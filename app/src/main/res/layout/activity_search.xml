@@ -30,7 +30,7 @@
                 android:layout_alignParentStart="true"
                 android:background="@android:color/transparent"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="10dp"
+                android:padding="@dimen/default_start_margin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />

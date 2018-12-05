@@ -61,7 +61,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
 
                 <RadioGroup
                     android:id="@+id/radiogroup"
@@ -91,21 +92,27 @@
                         android:text="@string/no"
                         android:textColor="@color/white" />
 
-                    <RadioButton
+                    <!--<RadioButton
                         android:id="@+id/no_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:buttonTint="@color/white"
                         android:checked="false"
                         android:text="@string/no_value"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white" />-->
                 </RadioGroup>
+
+                <ImageView
+                    android:id="@+id/clearSelection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/ic_clear" />
 
                 <ImageView
                     android:id="@+id/descriptionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
                     android:visibility="@{(label.length()>16 || description!=null)?View.VISIBLE : View.GONE}"
                     app:srcCompat="@drawable/ic_info_outline"
                     app:tint="?colorAccent" />

@@ -338,7 +338,7 @@ public final class RulesRepository {
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
-                return RuleVariableAttribute.create(name, attribute, mimeType);
+                return RuleVariableAttribute.create(name, attribute==null?"":attribute, mimeType);
             case DATAELEMENT_CURRENT_EVENT:
                 return RuleVariableCurrentEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:

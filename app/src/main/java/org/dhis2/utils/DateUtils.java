@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -1024,12 +1027,13 @@ public class DateUtils {
 
     /**
      * Check if an event is expired in a date
-     * @param currentDate date or today if null
+     *
+     * @param currentDate  date or today if null
      * @param completedDay date that event was completed
-     * @param compExpDays days of expiration of an event
+     * @param compExpDays  days of expiration of an event
      * @return true or false
      */
-    public Boolean isEventExpired(@Nullable Date currentDate, Date completedDay, int compExpDays){
+    public Boolean isEventExpired(@Nullable Date currentDate, Date completedDay, int compExpDays) {
 
         Calendar calendar = getCalendar();
 
@@ -1038,9 +1042,56 @@ public class DateUtils {
 
         Date date = calendar.getTime();
 
-        if(completedDay!=null)
+        if (completedDay != null)
             return completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
         else
             return false;
     }
+
+    /**
+     * Check if event is expired. It checks if the event date (depends on the status) is inside the
+     * program opening and closing dates and if it has expired (depends on status).
+     */
+    public Boolean isEventExpired(@NonNull EventModel event, @NonNull ProgramModel program,
+                                  @NonNull OrganisationUnitModel orgUnit) {
+
+        Date eventDate;
+        switch (Objects.requireNonNull(event.status())) {
+            case ACTIVE:
+                eventDate = event.eventDate();
+                break;
+            case COMPLETED:
+                eventDate = event.completedDate();
+                break;
+            default:
+                eventDate = event.dueDate();
+        }
+
+        boolean orgUnitIsOpen = isOrgUnitOpened(eventDate, orgUnit);
+        boolean isExpired =
+                event.status() != EventStatus.COMPLETED ?
+                        expDate(null, program.expiryDays(), program.expiryPeriodType()).before(eventDate)
+                        :
+                        isEventExpired(getToday(), eventDate, program.completeEventsExpiryDays() != null ? program.completeEventsExpiryDays() : 0);
+
+
+        return orgUnitIsOpen && !isExpired;
+    }
+
+    private boolean isOrgUnitOpened(Date eventDate, OrganisationUnitModel orgUnit) {
+
+        boolean isAfterOpening = true;
+        boolean isBeforeClosing = true;
+
+        if (orgUnit.openingDate() != null && orgUnit.openingDate().before(eventDate)) {
+            isAfterOpening = false;
+        }
+
+        if (orgUnit.closedDate() != null && orgUnit.closedDate().after(eventDate)) {
+            isAfterOpening = false;
+        }
+
+        return isAfterOpening && isBeforeClosing;
+    }
+
 }

@@ -1,18 +1,10 @@
 package org.dhis2.usescases.reservedValue;
 
-import android.annotation.SuppressLint;
-
 import org.hisp.dhis.android.core.D2;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.operators.completable.CompletableEmpty;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -46,11 +38,11 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
 
     @Override
     public void onClickRefill(ReservedValueModel reservedValue) {
-
         disposable.add(Completable.complete()
                 .subscribeOn(Schedulers.io())
                 .subscribe(
-                        () -> {d2.syncTrackedEntityAttributeReservedValue(reservedValue.uid(), reservedValue.orgUnitUid());
+                        () -> {
+                            d2.syncTrackedEntityAttributeReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100 - reservedValue.reservedValues());
                             disposable.add(repository.getDataElements()
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -61,12 +53,11 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
                         },
                         Timber::e));
 
-
     }
 
     @Override
     public void onBackClick() {
-        if(view != null)
+        if (view != null)
             view.onBackClick();
     }
 }

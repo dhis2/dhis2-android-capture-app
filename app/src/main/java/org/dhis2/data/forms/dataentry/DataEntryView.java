@@ -26,4 +26,6 @@ interface DataEntryView {
     Flowable<Pair<String, String>> optionSetActions();
 
     void setListOptions(List<String> options);
+
+    void showMessage(int messageId);
 }

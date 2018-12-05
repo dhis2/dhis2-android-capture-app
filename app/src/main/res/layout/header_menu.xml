@@ -23,8 +23,9 @@
         android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:src="@drawable/dhis2"
+        android:padding="10dp"
         app:layout_constraintBottom_toTopOf="@id/user_info"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_dhis_white"
         tools:ignore="ContentDescription" />
 </android.support.constraint.ConstraintLayout>

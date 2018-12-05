@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
+import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 /**
@@ -173,6 +174,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         mySnackbar.show();
     }
 
+    @Override
+    public View getSnackbarAnchor() {
+        return binding.getRoot();
+    }
+
 
     @Override
     public void restartDataEntry() {
@@ -262,10 +268,20 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 case R.id.menu_delete:
                     confirmDeleteEvent();
                     break;
+                case R.id.menu_overview:
+                    goToInitialScreen();
+                    break;
             }
             return false;
         });
         popupMenu.show();
+    }
+
+    private void goToInitialScreen() {
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID,   getIntent().getStringExtra(Constants.PROGRAM_UID));
+        bundle.putString(Constants.EVENT_UID,  getIntent().getStringExtra(Constants.EVENT_UID));
+        startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 
     private void confirmDeleteEvent() {

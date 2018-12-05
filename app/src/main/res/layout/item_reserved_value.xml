@@ -5,9 +5,11 @@
 
     <data>
 
+        <import type="java.lang.String" />
+
         <variable
             name="presenter"
-            type="org.dhis2.usescases.reservedValue.ReservedValueContracts.Presenter"/>
+            type="org.dhis2.usescases.reservedValue.ReservedValueContracts.Presenter" />
 
         <variable
             name="dataElement"
@@ -24,10 +26,10 @@
             android:id="@+id/displayName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{ dataElement.displayName() }"
             android:textColor="@color/black_de0"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:text="@{ dataElement.displayName() }"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Display Name" />
@@ -36,9 +38,9 @@
             android:id="@+id/orgUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{ dataElement.orgUnitName() }"
             android:textColor="@color/black_de0"
             android:textSize="18sp"
-            android:text="@{ dataElement.orgUnitName() }"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/displayName"
             tools:text="Org Unit" />
@@ -47,24 +49,24 @@
             android:id="@+id/reservedValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{ dataElement.reservedValue() }"
+            android:text="@{ String.valueOf(dataElement.reservedValues()) }"
             android:textColor="@color/black_de0"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/orgUnit"
-            tools:text="Reserved Values" />
+            tools:text="100" />
 
         <Button
             android:id="@+id/refill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selector_button_round_7"
             android:onClick="@{() -> presenter.onClickRefill(dataElement) }"
             android:text="@string/refill_reserved_values"
-            android:background="?attr/selector_button_round_7"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

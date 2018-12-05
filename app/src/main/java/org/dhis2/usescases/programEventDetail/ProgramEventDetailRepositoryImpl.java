@@ -34,36 +34,6 @@ import io.reactivex.Observable;
 
 public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepository {
 
-   /* private final String EVENT_DATA_VALUES = "SELECT " +
-            "DE.uid, " +
-            "DE.displayName, " +
-            "DE.valueType, " +
-            "DE.optionSet, " +
-            "TrackedEntityDataValue.value " +
-            "FROM TrackedEntityDataValue " +
-            "JOIN (" +
-            "SELECT DataElement.uid AS uid, " +
-            "DataElement.displayName AS displayName, " +
-            "DataElement.valueType AS valueType, " +
-            "DataElement.optionSet AS optionSet " +
-            "FROM ProgramStageDataElement " +
-            "JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
-            "WHERE ProgramStageDataElement.displayInReports = 1 GROUP BY DataElement.uid) AS DE ON DE.uid = TrackedEntityDataValue.dataElement " +
-            "WHERE TrackedEntityDataValue.event = ?";*/
-
-    /*private final String EVENT_DATA_VALUES = "SELECT \n" +
-            " DataElement.uid,\n" +
-            " DataElement.displayName,\n" +
-            " DataElement.valueType, \n" +
-            " DataElement.optionSet, ProgramStageDataElement.displayInReports, \n" +
-            "TrackedEntityDataValue.value \n" +
-            " FROM TrackedEntityDataValue \n" +
-            " JOIN DataElement ON DataElement.uid = TrackedEntityDataValue.dataElement\n" +
-            " JOIN Event ON Event.uid = TrackedEntityDataValue.event\n" +
-            " JOIN ProgramStageDataElement ON ProgramStageDataElement.programStage = Event.programStage\n" +
-            " WHERE ProgramStageDataElement.displayInReports = 1\n" +
-            " AND Event.uid = ?\n" +
-            " ORDER BY ProgramStageDataElement.sortOrder ASC LIMIT 3";*/
     private final String EVENT_DATA_VALUES = "SELECT \n" +
             " DataElement.uid, \n" +
             " DataElement.displayName, \n" +
@@ -136,41 +106,6 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
     }
-
-    /*@NonNull
-    @Override
-    public Observable<List<EventModel>> filteredProgramEvents(String programUid, String fromDate, String toDate, CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
-        if (categoryOptionComboModel == null) {
-            return programEvents(programUid, fromDate, toDate);
-        }
-        String SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO = "SELECT * FROM " + EventModel.TABLE + " WHERE " + EventModel.Columns.PROGRAM + "='%s' AND " + EventModel.Columns.EVENT_DATE + " BETWEEN '%s' and '%s'"
-                + " AND " + EventModel.Columns.ATTRIBUTE_OPTION_COMBO + "='%s'"
-                + " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
-        if (orgUnitQuery != null && !orgUnitQuery.isEmpty())
-            SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO += " AND " + EventModel.TABLE + "." + EventModel.Columns.ORGANISATION_UNIT + " IN (" + orgUnitQuery + ")";
-
-        String id = categoryOptionComboModel == null || categoryOptionComboModel.uid() == null ? "" : categoryOptionComboModel.uid();
-        return briteDatabase.createQuery(EventModel.TABLE, String.format(SELECT_EVENT_WITH_PROGRAM_UID_AND_DATES_AND_CAT_COMBO,
-                programUid == null ? "" : programUid,
-                fromDate == null ? "" : fromDate,
-                toDate == null ? "" : toDate,
-                id))
-                .mapToList(cursor -> {
-                    EventModel eventModel = EventModel.create(cursor);
-
-                    Cursor program = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", programUid);
-                    if (program != null && program.moveToFirst()) {
-                        ProgramModel programModel = ProgramModel.create(program);
-                        if (DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programModel.expiryPeriodType())) {
-                            ContentValues contentValues = eventModel.toContentValues();
-                            contentValues.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.toString());
-                            briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventModel.uid());
-                        }
-                        program.close();
-                    }
-                    return eventModel;
-                });
-    }*/
 
     @NonNull
     @Override

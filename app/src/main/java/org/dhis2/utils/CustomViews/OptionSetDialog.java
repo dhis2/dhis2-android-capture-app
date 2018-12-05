@@ -1,14 +1,11 @@
 package org.dhis2.utils.CustomViews;
 
 import android.app.Dialog;
-import android.arch.lifecycle.ViewModel;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +16,10 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.DialogOptionSetBinding;
+import org.hisp.dhis.android.core.option.OptionModel;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,13 +36,15 @@ public class OptionSetDialog extends DialogFragment {
     private DialogOptionSetBinding binding;
     private CompositeDisposable disposable;
     //1º param is text to search, 2º param is uid of optionSet
-    private FlowableProcessor<Pair<String,String>> processor;
+    private FlowableProcessor<Pair<String, String>> processor;
     private OptionSetAdapter adapter;
     private SpinnerViewModel optionSet;
 
     private OptionSetOnClickListener listener;
     private View.OnClickListener cancelListener;
     private View.OnClickListener clearListener;
+    private List<String> options;
+
     public static OptionSetDialog newInstance() {
         if (instace == null) {
             instace = new OptionSetDialog();
@@ -66,11 +65,12 @@ public class OptionSetDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false);
         adapter = new OptionSetAdapter(listener);
+        adapter.setOptions(options);
         binding.recycler.setAdapter(adapter);
         binding.title.setText(optionSet.description());
         disposable = new CompositeDisposable();
 
-        processor.onNext( Pair.create("", optionSet.optionSet()));
+        processor.onNext(Pair.create("", optionSet.optionSet()));
 
         binding.clearButton.setOnClickListener(clearListener);
         binding.cancelButton.setOnClickListener(cancelListener);
@@ -79,7 +79,7 @@ public class OptionSetDialog extends DialogFragment {
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> startProcessor( Pair.create(data.toString(), optionSet.optionSet())),
+                .subscribe(data -> startProcessor(Pair.create(data.toString(), optionSet.optionSet())),
                         Timber::e
                 ));
 
@@ -87,31 +87,40 @@ public class OptionSetDialog extends DialogFragment {
 
     }
 
-    public OptionSetDialog setOnClick(OptionSetOnClickListener listener){
+    public OptionSetDialog setOnClick(OptionSetOnClickListener listener) {
         this.listener = listener;
         return this;
     }
 
-    private OptionSetDialog startProcessor(Pair<String,String> text){
-        if(processor != null)
+    private OptionSetDialog startProcessor(Pair<String, String> text) {
+        if (processor != null)
             processor.onNext(text);
         return this;
     }
 
-    public FlowableProcessor<Pair<String,String>> getProcessor() {
-        if(processor == null)
+    public FlowableProcessor<Pair<String, String>> getProcessor() {
+        if (processor == null)
             processor = PublishProcessor.create();
 
         return processor;
     }
 
-    public OptionSetDialog setOptions(List<String> options){
+    public OptionSetDialog setOptions(List<String> options) {
         adapter.setOptions(options);
         return this;
     }
 
-    public void setOptionSetUid(SpinnerViewModel view){
+    public OptionSetDialog setOptionsFromModel(List<OptionModel> optionList) {
+        List<String> options = new ArrayList<>();
+        for (OptionModel optionModel : optionList)
+            options.add(optionModel.displayName());
+        this.options = options;
+        return this;
+    }
+
+    public OptionSetDialog setOptionSetUid(SpinnerViewModel view) {
         this.optionSet = view;
+        return this;
     }
 
     public OptionSetDialog setProcessor(FlowableProcessor<Pair<String, String>> processor) {

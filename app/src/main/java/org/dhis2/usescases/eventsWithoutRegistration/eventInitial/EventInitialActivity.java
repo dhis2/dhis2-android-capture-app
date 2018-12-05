@@ -341,9 +341,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public void onUpdate(boolean lost, float interpolatedTime) {
-        int progress = (int) (completionPercent * interpolatedTime);
-        String text = String.valueOf(progress) + "%";
+    public void onUpdate(boolean lost, float value) {
+        String text = String.valueOf((int) value) + "%";
         binding.progress.setText(text);
     }
 
@@ -584,14 +583,16 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid) {
 
-        startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventUid, programUid),
-                true, false, null
-        );
-/*
-        FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
-        startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
-        finish();*/
+//        if (enrollmentUid == null)
+            startActivity(EventCaptureActivity.class,
+                    EventCaptureActivity.getActivityBundle(eventUid, programUid),
+                    true, false, null
+            );
+       /* else {
+            FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
+            startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
+            finish();
+        }*/
     }
 
     @Override
@@ -767,7 +768,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             for (FieldViewModel fieldViewModel : updates)
                 if (!sectionsToHide.contains(fieldViewModel.programStageSection()))
                     realUpdates.add(fieldViewModel);
-        }else
+        } else
             realUpdates.addAll(updates);
 
         int completedSectionFields = calculateCompletedFields(realUpdates);
@@ -849,9 +850,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void showOrgUnitSelector(List<OrganisationUnitModel> orgUnits) {
         Iterator<OrganisationUnitModel> iterator = orgUnits.iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             OrganisationUnitModel orgUnit = iterator.next();
-            if (orgUnit.closedDate()!= null && selectedDate.after(orgUnit.closedDate()))
+            if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
                 iterator.remove();
         }
         orgUnitDialog = new OrgUnitDialog()

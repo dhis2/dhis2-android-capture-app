@@ -111,11 +111,13 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     public Flowable<RowAction> rowActions() {
         return dataEntryAdapter.asFlowable();
     }
+
     @NonNull
     @Override
-    public Flowable<Pair<String, String>> optionSetActions(){
+    public Flowable<Pair<String, String>> optionSetActions() {
         return dataEntryAdapter.asFlowableOption();
     }
+
     @NonNull
     @Override
     public Consumer<List<FieldViewModel>> showFields() {
@@ -165,5 +167,10 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void setListOptions(List<String> options) {
         OptionSetDialog.newInstance().setOptions(options);
+    }
+
+    @Override
+    public void showMessage(int messageId) {
+        showInfoDialog(getString(R.string.error), getString(R.string.unique_warning));
     }
 }
