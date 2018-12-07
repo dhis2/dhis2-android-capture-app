@@ -7,6 +7,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public class ReservedValueRepositoryImpl implements ReservedValueRepository {
@@ -26,7 +28,7 @@ public class ReservedValueRepositoryImpl implements ReservedValueRepository {
     }
 
     @Override
-    public Observable<List<ReservedValueModel>> getDataElements() {
+    public Flowable<List<ReservedValueModel>> getDataElements() {
         return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_DATA_ELEMENTS)
                 .mapToList(cursor -> {
                     String uid = cursor.getString(0);
@@ -35,6 +37,6 @@ public class ReservedValueRepositoryImpl implements ReservedValueRepository {
                     boolean patternCointainsOU = pattern.contains("OU");
                     int reservedValues = cursor.getInt(3);
                     return ReservedValueModel.create(uid, displayName, patternCointainsOU, cursor.getString(4), cursor.getString(5), reservedValues);
-                });
+                }).toFlowable(BackpressureStrategy.LATEST);
     }
 }

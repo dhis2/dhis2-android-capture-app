@@ -15,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -177,6 +179,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
+                EventCaptureFormFragment.getInstance().optionSetActions()
+                        .flatMap(
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                options -> OptionSetDialog.newInstance().setOptions(options),
+                                Timber::e
+                        ));
+
+        compositeDisposable.add(
                 Flowable.zip(
                         eventCaptureRepository.list(),
                         eventCaptureRepository.calculate().subscribeOn(Schedulers.computation()),
@@ -267,7 +281,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     }
 
-    private void changeSection(){
+    private void changeSection() {
         List<FormSectionViewModel> finalSections = getFinalSections();
 
         if (finalSections.indexOf(sectionList.get(currentPosition)) < sectionList.size() - sectionsToHide.size() - 1) {
@@ -339,7 +353,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void goToSection(String sectionUid) {
         for (FormSectionViewModel sectionModel : sectionList)
-            if (sectionModel.sectionUid()!=null && sectionModel.sectionUid().equals(sectionUid))
+            if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
                 currentPosition = sectionList.indexOf(sectionModel);
         currentSectionPosition.onNext(currentPosition);
     }

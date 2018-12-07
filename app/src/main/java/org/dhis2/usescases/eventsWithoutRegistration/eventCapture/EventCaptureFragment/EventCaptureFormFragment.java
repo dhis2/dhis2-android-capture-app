@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,8 @@ import org.dhis2.data.forms.dataentry.DataEntryAdapter;
 import org.dhis2.data.forms.dataentry.DataEntryArguments;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.SectionSelectorFragmentBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventSectionModel;
@@ -29,11 +30,15 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.ColorUtils;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
@@ -134,10 +139,16 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                     updates.get(0).programStageSection().equals(currentSection)) {
                 dataEntryAdapter.swap(updates);
                 int completedValues = 0;
-                for (FieldViewModel fieldViewModel : updates)
-                    if (!TextUtils.isEmpty(fieldViewModel.value()))
+                HashMap<String, Boolean> fields = new HashMap<>();
+                for (FieldViewModel fieldViewModel : updates) {
+                    fields.put(fieldViewModel.optionSet()==null?fieldViewModel.uid():fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                  /*  if (!isEmpty(fieldViewModel.value()))
+                        completedValues++;*/
+                }
+                for (String key : fields.keySet())
+                    if (fields.get(key))
                         completedValues++;
-                binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, updates.size()));
+                binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
             }
         };
 
@@ -159,5 +170,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     public View getSectionSelector() {
         return binding.sectionSelector.getRoot();
+    }
+
+    public Flowable<Trio<String, String, Integer>> optionSetActions() {
+        return dataEntryAdapter.asFlowableOption();
     }
 }

@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
@@ -17,8 +16,8 @@ public class OptionSetAdapter extends RecyclerView.Adapter<OptionSetViewHolder> 
 
     private List<String> options;
     private OptionSetOnClickListener listener;
-    public OptionSetAdapter(OptionSetOnClickListener listener)
-    {
+
+    public OptionSetAdapter(OptionSetOnClickListener listener) {
         this.options = new ArrayList<>();
         this.listener = listener;
     }
@@ -41,8 +40,13 @@ public class OptionSetAdapter extends RecyclerView.Adapter<OptionSetViewHolder> 
         return options.size();
     }
 
-    public void setOptions(List<String> options){
-        this.options = options;
-        this.notifyDataSetChanged();
+    public void setOptions(List<String> options, int currentPage) {
+        if (currentPage == 0) {
+            this.options = options;
+            notifyDataSetChanged();
+        } else {
+            this.options.addAll(options);
+            notifyItemRangeInserted(this.options.size()-options.size(),options.size());
+        }
     }
 }
