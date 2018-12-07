@@ -8,11 +8,11 @@ import dagger.Provides;
 
 @Module
 @PerActivity
-public class SynchronizationModule {
+public class SyncModule {
 
     @Provides
     @PerActivity
     SyncContracts.Presenter providePresenter(MetadataRepository metadataRepository) {
-        return new SynchronizationPresenter(metadataRepository);
+        return new SyncPresenter(metadataRepository);
     }
 }

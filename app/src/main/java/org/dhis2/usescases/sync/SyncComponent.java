@@ -6,7 +6,7 @@ import org.dhis2.data.dagger.PerActivity;
 import dagger.Subcomponent;
 
 @PerActivity
-@Subcomponent(modules = SynchronizationModule.class)
-public interface SynchronizationComponent {
+@Subcomponent(modules = SyncModule.class)
+public interface SyncComponent {
     void inject(SyncActivity syncActivity);
 }

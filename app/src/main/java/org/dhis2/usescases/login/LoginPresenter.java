@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.ObservableField;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -12,31 +11,18 @@ import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.data.service.ReservedValuesWorker;
-import org.dhis2.data.service.SyncResult;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
-import org.dhis2.usescases.synchronization.SynchronizationActivity;
+import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.common.D2CallException;
-import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
 
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -221,10 +207,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
             if (NetworkUtils.isOnline(view.getContext())) {
-//                view.handleSync();
                 metadataRepository.createErrorTable();
-                //sync();
-                view.startActivity(SynchronizationActivity.class, null, true, true, null);
+                view.startActivity(SyncActivity.class, null, true, true, null);
             } else
                 view.startActivity(MainActivity.class, null, true, true, null);
         }
@@ -233,7 +217,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void handleError(@NonNull Throwable throwable) {
         Timber.e(throwable);
-        //view.handleSync();
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
         } else if (throwable instanceof D2CallException) {

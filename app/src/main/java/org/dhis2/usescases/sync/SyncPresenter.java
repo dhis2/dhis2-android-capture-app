@@ -17,7 +17,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class SynchronizationPresenter implements SyncContracts.Presenter {
+public class SyncPresenter implements SyncContracts.Presenter {
 
     private final MetadataRepository metadataRepository;
     private SyncContracts.View view;
@@ -25,7 +25,7 @@ public class SynchronizationPresenter implements SyncContracts.Presenter {
     private CompositeDisposable disposable;
 
 
-    SynchronizationPresenter(MetadataRepository metadataRepository) {
+    SyncPresenter(MetadataRepository metadataRepository) {
         this.metadataRepository = metadataRepository;
     }
 

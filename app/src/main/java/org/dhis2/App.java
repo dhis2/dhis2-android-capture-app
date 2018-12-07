@@ -2,7 +2,6 @@ package org.dhis2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.ObservableBoolean;
 import android.os.Build;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -31,13 +30,10 @@ import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
-import org.dhis2.usescases.synchronization.SynchronizationComponent;
-import org.dhis2.usescases.synchronization.SynchronizationModule;
+import org.dhis2.usescases.sync.SyncComponent;
+import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
@@ -91,7 +87,7 @@ public class App extends MultiDexApplication implements Components {
 
     @Nullable
     @PerActivity
-    SynchronizationComponent synchronizationComponent;
+    SyncComponent syncComponent;
 
     @Override
     public void onCreate() {
@@ -210,19 +206,19 @@ public class App extends MultiDexApplication implements Components {
 
     @NonNull
     @Override
-    public SynchronizationComponent createSyncComponent() {
-        return (synchronizationComponent = appComponent.plus(new SynchronizationModule()));
+    public SyncComponent createSyncComponent() {
+        return (syncComponent = appComponent.plus(new SyncModule()));
     }
 
     @Nullable
     @Override
-    public SynchronizationComponent syncComponent() {
-        return synchronizationComponent;
+    public SyncComponent syncComponent() {
+        return syncComponent;
     }
 
     @Override
     public void releaseSyncComponent() {
-        synchronizationComponent = null;
+        syncComponent = null;
     }
 
     ////////////////////////////////////////////////////////////////////////

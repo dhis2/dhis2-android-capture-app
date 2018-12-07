@@ -114,7 +114,6 @@
 
         <activity android:name=".usescases.reservedValue.ReservedValueActivity"></activity>
         <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity" />
-        <activity android:name=".usescases.synchronization.SynchronizationActivity"></activity>
         <activity android:name=".usescases.sync.SyncActivity" />
     </application>
 

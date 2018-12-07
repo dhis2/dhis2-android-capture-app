@@ -12,7 +12,7 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
-import org.dhis2.usescases.synchronization.SynchronizationActivity;
+import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.SyncUtils;
 
@@ -68,7 +68,7 @@ public class SplashPresenter implements SplashContracts.Presenter {
 
         if (SyncUtils.isSyncRunning()){
 
-            view.startActivity(SynchronizationActivity.class, null, true, true, null);
+            view.startActivity(SyncActivity.class, null, true, true, null);
 
         }else {
 

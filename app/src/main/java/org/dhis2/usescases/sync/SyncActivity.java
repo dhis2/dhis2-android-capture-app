@@ -30,11 +30,11 @@ import javax.inject.Inject;
 
 
 
-public class SynchronizationActivity extends ActivityGlobalAbstract implements SynchronizationContracts.View{
+public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View{
 
     ActivitySynchronizationBinding binding;
 
-    @Inject SynchronizationContracts.Presenter presenter;
+    @Inject SyncContracts.Presenter presenter;
 
     enum SyncState {
         METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
@@ -56,7 +56,7 @@ public class SynchronizationActivity extends ActivityGlobalAbstract implements S
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SynchronizationComponent syncComponent = ((App) getApplicationContext()).syncComponent();
+        SyncComponent syncComponent = ((App) getApplicationContext()).syncComponent();
         if (syncComponent == null) {
             // in case if we don't have cached presenter
             syncComponent = ((App) getApplicationContext()).createSyncComponent();
