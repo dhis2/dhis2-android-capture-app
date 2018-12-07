@@ -70,11 +70,6 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
                 if (intent.getExtras() != null) {
-                    /*boolean isMetaSync = intent.getExtras().getBoolean("metaSyncInProgress");
-                    boolean isDataSync = intent.getExtras().getBoolean("dataSyncInProgress");
-                    ((App) getApplication()).setMetaSync(isMetaSync);
-                    ((App) getApplication()).seDataSync(isDataSync);*/
-
                     if (progressBar != null)
                         if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
                             progressBar.setVisibility(View.VISIBLE);

@@ -20,12 +20,6 @@
         android:layout_height="match_parent"
         android:background="?colorPrimary">
 
-        <!--<include
-            android:id="@+id/logo_layout"
-            layout="@layout/logo_dhis"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />-->
 
         <ImageView
             android:id="@+id/dhisLogo"
