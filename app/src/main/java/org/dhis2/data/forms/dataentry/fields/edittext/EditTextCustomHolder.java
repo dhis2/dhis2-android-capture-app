@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -34,9 +35,11 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -67,18 +70,30 @@ final class EditTextCustomHolder extends FormViewHolder {
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
-        // show and hide hint
+        /*RxTextView.textChanges(editText)
+                .skipInitialValue()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .filter(data -> editTextModel.editable())
+                .filter(data -> validate())
+                .map(charTxt -> {
+                    checkAutocompleteRendering();
+                    return charTxt.toString();
+                })
+                .subscribe(
+                        text -> {
+                            if (!isEmpty(text))
+                                processor.onNext(RowAction.create(editTextModel.uid(), text));
+                            else
+                                processor.onNext(RowAction.create(editTextModel.uid(), null));
+                        },
+                        Timber::d
+                );*/
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
 
-
                 if (!isEmpty(editText.getText()) && validate()) {
-                    if (editTextModel.fieldRendering() != null &&
-                            editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
-                            !autoCompleteValues.contains(editText.getText().toString()))
-                        autoCompleteValues.add(editText.getText().toString());
-                    saveListToPreference(editTextModel.uid(), autoCompleteValues);
+                    checkAutocompleteRendering();
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
 
                 } else
@@ -88,6 +103,15 @@ final class EditTextCustomHolder extends FormViewHolder {
             }
         });
 
+    }
+
+    private void checkAutocompleteRendering() {
+        if (editTextModel.fieldRendering() != null &&
+                editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
+                !autoCompleteValues.contains(editText.getText().toString())) {
+            autoCompleteValues.add(editText.getText().toString());
+            saveListToPreference(editTextModel.uid(), autoCompleteValues);
+        }
     }
 
     private void setInputType(ValueType valueType) {

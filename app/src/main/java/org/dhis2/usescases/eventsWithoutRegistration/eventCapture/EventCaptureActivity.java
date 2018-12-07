@@ -179,6 +179,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         return binding.getRoot();
     }
 
+    @Override
+    public void clearFocus() {
+        binding.root.requestFocus();
+    }
+
 
     @Override
     public void restartDataEntry() {

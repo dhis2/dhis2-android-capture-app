@@ -59,7 +59,7 @@ public class ProgramAdapter extends ArrayAdapter<ProgramModel> {
         if (position != 0)
             binding.setProgram(options.get(position - 1));
 
-        binding.setProgramTitle(trackedEntityName);
+        binding.setProgramTitle(String.format(getContext().getString(R.string.all_tei_type), trackedEntityName));
         return binding.getRoot();
     }
 

@@ -34,6 +34,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -76,7 +77,7 @@ public final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
     private final DataEntryArguments dataEntryArguments;
 
-    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -205,7 +206,7 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Pair<String,String>> asFlowableOption(){
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
         return processorOptionSet;
     }
 

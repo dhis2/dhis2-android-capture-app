@@ -5,6 +5,8 @@ import org.hisp.dhis.android.core.D2;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -14,10 +16,12 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
     private CompositeDisposable disposable;
     private ReservedValueRepository repository;
     private D2 d2;
+    private FlowableProcessor<Boolean> updateProcessor;
 
     public ReservedValuePresenter(ReservedValueRepository repository, D2 d2) {
         this.repository = repository;
         this.d2 = d2;
+        this.updateProcessor = PublishProcessor.create();
     }
 
     @Override
@@ -26,7 +30,9 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
         disposable = new CompositeDisposable();
 
         disposable.add(
-                repository.getDataElements()
+                updateProcessor
+                        .startWith(true)
+                        .flatMap(update -> repository.getDataElements())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -34,25 +40,18 @@ public class ReservedValuePresenter implements ReservedValueContracts.Presenter 
                                 Timber::e
                         )
         );
+
     }
 
     @Override
     public void onClickRefill(ReservedValueModel reservedValue) {
-        disposable.add(Completable.complete()
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        () -> {
-                            d2.syncTrackedEntityAttributeReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100 - reservedValue.reservedValues());
-                            disposable.add(repository.getDataElements()
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            view::setDataElements,
-                                            Timber::e
-                                    ));
-                        },
-                        Timber::e));
-
+        disposable.add(
+                Completable.fromAction(() ->
+                        d2.syncTrackedEntityAttributeReservedValues(reservedValue.uid(), reservedValue.orgUnitUid(), 100)
+                ).subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe(() -> updateProcessor.onNext(true), Timber::d)
+        );
     }
 
     @Override

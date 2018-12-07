@@ -43,12 +43,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 
 /**
@@ -689,13 +692,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<List<String>> searchOptions(String text, String idOptionSet) {
-        String optionQuery = "select Option.displayName from OptionSet JOIN Option ON Option.optionSet = OptionSet.uid where OptionSet.uid = ? and Option.displayName like '%"+text+"%' LIMIT 15";
+    public Observable<List<String>> searchOptions(String text, String idOptionSet, int page) {
+        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
 
-        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery , idOptionSet)
-                .mapToList(cursor -> {
-                    return cursor.getString(0);
-                });
+        String optionQuery = !isEmpty(text) ?
+                "select Option.displayName from OptionSet " +
+                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " + pageQuery :
+                "select Option.displayName from OptionSet " +
+                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                        "where OptionSet.uid = ? " + pageQuery;
+
+        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
+                .mapToList(cursor -> cursor.getString(0));
 
     }
+
+
 }
