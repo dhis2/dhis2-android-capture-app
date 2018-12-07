@@ -170,6 +170,7 @@
   <string name="date_dialog_clear">Limpiar</string>
   <string name="period">Periodo</string>
   <string name="org_unit_filter">(%d) Unidad Org.</string>
+  <string name="org_unit_select_level">Nivel %d</string>
   <string name="tuto_main_1">Bienvenido a dhis2</string>
   <string name="tuto_main_2">Aquí aparecerán tus actividades</string>
   <string name="tuto_main_3">Puedes aplicar un filtro…</string>

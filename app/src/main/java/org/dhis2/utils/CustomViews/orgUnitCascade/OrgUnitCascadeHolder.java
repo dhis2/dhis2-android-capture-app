@@ -1,5 +1,6 @@
 package org.dhis2.utils.CustomViews.orgUnitCascade;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -7,6 +8,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import org.dhis2.R;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Quintet;
 import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
@@ -24,23 +26,28 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
     private List<Quartet<String, String, String, Boolean>> levelOrgUnit;
     private String selectedUid;
     private PopupMenu menu;
+    private Context context;
 
-    public OrgUnitCascadeHolder(@NonNull OrgUnitCascadeLevelItemBinding binding) {
+    public OrgUnitCascadeHolder(@NonNull OrgUnitCascadeLevelItemBinding binding, @NonNull Context context) {
         super(binding.getRoot());
         this.binding = binding;
+        this.context = context;
     }
 
     public void bind(List<Quartet<String, String, String, Boolean>> organisationUnitModels, String parent, Quintet<String, String, String, Integer, Boolean> selectedOrgUnit, OrgUnitCascadeAdapter adapter) {
         this.levelOrgUnit = organisationUnitModels;
+        if (selectedOrgUnit != null) {
+            this.selectedUid = selectedOrgUnit.val0();
+        }
         Collections.sort(levelOrgUnit,
                 (Quartet<String, String, String, Boolean> ou1, Quartet<String, String, String, Boolean> ou2) ->
                         ou1.val1().compareTo(ou2.val1()));
 
         ArrayList<String> data = new ArrayList<>();
-        data.add(String.format("Select %s", getAdapterPosition() + 1));
+        data.add(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
 
         if (binding.levelText.getText() == null || binding.levelText.getText().toString().isEmpty())
-            binding.levelText.setText(String.format("Select %s", getAdapterPosition() + 1));
+            binding.levelText.setText(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
 
         for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
             if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
@@ -61,12 +68,12 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(label), label);
 
         menu.setOnMenuItemClickListener(item -> {
-                selectedUid = item.getOrder() <= 0 ? "" : levelOrgUnit.get(item.getOrder() - 1).val0();
-                binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
-                adapter.setSelectedLevel(getAdapterPosition() + 1,
-                        selectedUid,
-                        item.getOrder() <= 0 ? levelOrgUnit.get(0).val3() : levelOrgUnit.get(item.getOrder() - 1).val3());
-                return false;
+            selectedUid = item.getOrder() <= 0 ? "" : levelOrgUnit.get(item.getOrder() - 1).val0();
+            binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
+            adapter.setSelectedLevel(getAdapterPosition() + 1,
+                    selectedUid,
+                    item.getOrder() <= 0 ? levelOrgUnit.get(0).val3() : levelOrgUnit.get(item.getOrder() - 1).val3());
+            return false;
         });
     }
 }
