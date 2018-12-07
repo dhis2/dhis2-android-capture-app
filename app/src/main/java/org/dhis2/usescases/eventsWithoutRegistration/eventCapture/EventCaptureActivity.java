@@ -149,7 +149,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 true).show();
     }
     @Override
-    public void attempToReopen() {
+    public void attemptToReopen() {
         Utils.getPopUpMenu(this,
                 EventCaptureFormFragment.getInstance().getSectionSelector(),
                 Gravity.TOP,
@@ -158,6 +158,46 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     switch (item.getItemId()) {
                         case R.id.reopen:
                             presenter.reopenEvent();
+                            break;
+                        case R.id.finish:
+                            finishDataEntry();
+                            break;
+                    }
+                    return false;
+                },
+                true).show();
+    }
+
+    @Override
+    public void attemptToSkip() {
+        Utils.getPopUpMenu(this,
+                EventCaptureFormFragment.getInstance().getSectionSelector(),
+                Gravity.TOP,
+                R.menu.event_form_overdue_menu,
+                item -> {
+                    switch (item.getItemId()) {
+                        case R.id.skip:
+                            presenter.skipEvent();
+                            break;
+                        case R.id.finish:
+                            finishDataEntry();
+                            break;
+                    }
+                    return false;
+                },
+                true).show();
+    }
+
+    @Override
+    public void attemptToReschedule() {
+        Utils.getPopUpMenu(this,
+                EventCaptureFormFragment.getInstance().getSectionSelector(),
+                Gravity.TOP,
+                R.menu.event_form_skip_menu,
+                item -> {
+                    switch (item.getItemId()) {
+                        case R.id.reschedule:
+                            //TODO: OPEN DATE SELECTOR
                             break;
                         case R.id.finish:
                             finishDataEntry();

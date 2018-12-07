@@ -157,4 +157,5 @@ public interface MetadataRepository {
 
     Observable<List<String>> searchOptions(String text, String idOptionSet, int page);
 
+    int optionSetSize(String optionSet);
 }

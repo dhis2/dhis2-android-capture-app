@@ -71,12 +71,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
-    @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,7 +84,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-        relationshipAdapter = new RelationshipAdapter(presenter);
         setData(presenter.getDashBoardData());
     }
 
@@ -105,14 +98,7 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     }
 
     public Consumer<List<Pair<Relationship, RelationshipType>>> setRelationships() {
-        return relationships -> {
-            if(relationshipAdapter != null)
-                relationshipAdapter.addItems(relationships);
-            else{
-                relationshipAdapter = new RelationshipAdapter(presenter);
-                relationshipAdapter.addItems(relationships);
-            }
-        };
+        return relationships -> relationshipAdapter.addItems(relationships);
     }
 
     public Consumer<List<Trio<RelationshipTypeModel, String, Integer>>> setRelationshipTypes() {

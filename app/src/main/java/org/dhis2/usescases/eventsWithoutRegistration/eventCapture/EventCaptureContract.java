@@ -2,7 +2,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -17,7 +16,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -50,13 +48,17 @@ public class EventCaptureContract {
 
         void showMessageOnComplete(boolean canComplete, String completeMessage);
 
-        void attempToReopen();
+        void attemptToReopen();
 
         void showSnackBar(int messageId);
 
         android.view.View getSnackbarAnchor();
 
         void clearFocus();
+
+        void attemptToSkip();
+
+        void attemptToReschedule();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -85,6 +87,10 @@ public class EventCaptureContract {
         void reopenEvent();
 
         void deleteEvent();
+
+        void skipEvent();
+
+        void rescheduleEvent();
     }
 
     public interface EventCaptureRepository {
@@ -115,6 +121,8 @@ public class EventCaptureContract {
         boolean reopenEvent();
 
         Observable<Boolean> deleteEvent();
+
+        Observable<Boolean> updateEventStatus(EventStatus skipped);
     }
 
 }

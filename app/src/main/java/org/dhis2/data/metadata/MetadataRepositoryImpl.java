@@ -467,6 +467,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public int optionSetSize(String optionSetUid) {
+        String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
+        int numberOfOptions = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            numberOfOptions = cursor.getInt(0);
+            cursor.close();
+        }
+        return numberOfOptions;
+    }
+
+    @Override
     public Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments) {
         String query = "";
         for (Enrollment enrollment : enrollments) {
