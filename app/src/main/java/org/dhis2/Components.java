@@ -9,8 +9,9 @@ import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
-import org.dhis2.usescases.login.LoginComponent;
 
+import org.dhis2.usescases.login.LoginComponent;
+import org.dhis2.usescases.synchronization.SynchronizationComponent;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
 public interface Components {
@@ -30,6 +31,21 @@ public interface Components {
     LoginComponent loginComponent();
 
     void releaseLoginComponent();
+
+
+    ///////////////////////////////////////////////////////////////////
+    // Synchronization component
+    ///////////////////////////////////////////////////////////////////
+
+
+    @NonNull
+    SynchronizationComponent createSyncComponent();
+
+    @Nullable
+    SynchronizationComponent syncComponent();
+
+    void releaseSyncComponent();
+
 
     ////////////////////////////////////////////////////////////////////
     // Server component

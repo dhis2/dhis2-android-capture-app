@@ -112,8 +112,9 @@
                 android:resource="@xml/dhis_custom_launcher_info" />
         </receiver>
 
-        <activity android:name=".usescases.reservedValue.ReservedValueActivity"></activity>
+        <activity android:name=".usescases.reservedValue.ReservedValueActivity" />
         <activity android:name=".usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity" />
+        <activity android:name=".usescases.synchronization.SynchronizationActivity"></activity>
     </application>
 
 </manifest>

@@ -36,6 +36,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFr
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
+import org.dhis2.usescases.synchronization.SynchronizationComponent;
+import org.dhis2.usescases.synchronization.SynchronizationModule;
 import org.dhis2.utils.UtilsModule;
 import org.dhis2.utils.timber.DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
@@ -60,8 +62,8 @@ public class App extends MultiDexApplication implements Components {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    private ObservableBoolean metaSync = new ObservableBoolean(false);
-    private ObservableBoolean dataSync = new ObservableBoolean(false);
+//    private ObservableBoolean metaSync = new ObservableBoolean(false);
+//    private ObservableBoolean dataSync = new ObservableBoolean(false);
 
     private static final String DATABASE_NAME = "dhis.db";
 
@@ -89,6 +91,10 @@ public class App extends MultiDexApplication implements Components {
     @Nullable
     @PerActivity
     LoginComponent loginComponent;
+
+    @Nullable
+    @PerActivity
+    SynchronizationComponent synchronizationComponent;
 
     @Override
     public void onCreate() {
@@ -205,6 +211,23 @@ public class App extends MultiDexApplication implements Components {
         loginComponent = null;
     }
 
+    @NonNull
+    @Override
+    public SynchronizationComponent createSyncComponent() {
+        return (synchronizationComponent = appComponent.plus(new SynchronizationModule()));
+    }
+
+    @Nullable
+    @Override
+    public SynchronizationComponent syncComponent() {
+        return synchronizationComponent;
+    }
+
+    @Override
+    public void releaseSyncComponent() {
+        synchronizationComponent = null;
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////
@@ -276,7 +299,7 @@ public class App extends MultiDexApplication implements Components {
         return instance;
     }
 
-    public boolean isSyncing() {
+    /*public boolean isSyncing() {
         return metaSync.get() || dataSync.get();
     }
 
@@ -286,7 +309,7 @@ public class App extends MultiDexApplication implements Components {
 
     public void seDataSync(boolean isSyncing) {
         this.dataSync.set(isSyncing);
-    }
+    }*/
 
 
 }

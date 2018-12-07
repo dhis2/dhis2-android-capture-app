@@ -12,6 +12,8 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
+import org.dhis2.usescases.synchronization.SynchronizationComponent;
+import org.dhis2.usescases.synchronization.SynchronizationModule;
 import org.dhis2.utils.UtilsModule;
 
 import javax.inject.Singleton;
@@ -53,5 +55,7 @@ public interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
+
+    SynchronizationComponent plus(SynchronizationModule synchronizationModule);
 
 }

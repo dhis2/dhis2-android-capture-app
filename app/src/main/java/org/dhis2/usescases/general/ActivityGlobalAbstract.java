@@ -44,6 +44,7 @@ import org.dhis2.utils.CustomViews.CoordinatesView;
 import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.SyncUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -69,15 +70,15 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
                 if (intent.getExtras() != null) {
-                    boolean isMetaSync = intent.getExtras().getBoolean("metaSyncInProgress");
+                    /*boolean isMetaSync = intent.getExtras().getBoolean("metaSyncInProgress");
                     boolean isDataSync = intent.getExtras().getBoolean("dataSyncInProgress");
                     ((App) getApplication()).setMetaSync(isMetaSync);
-                    ((App) getApplication()).seDataSync(isDataSync);
+                    ((App) getApplication()).seDataSync(isDataSync);*/
 
                     if (progressBar != null)
-                        if (((App) getApplication()).isSyncing() && progressBar.getVisibility() == View.GONE)
+                        if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
                             progressBar.setVisibility(View.VISIBLE);
-                        else if (!(((App) getApplication()).isSyncing()))
+                        else if (!SyncUtils.isSyncRunning())
                             progressBar.setVisibility(View.GONE);
                 }
 
@@ -361,7 +362,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {
             this.progressBar = progressBar;
-            if (((App) getApplication()).isSyncing())
+            if (SyncUtils.isSyncRunning())
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }

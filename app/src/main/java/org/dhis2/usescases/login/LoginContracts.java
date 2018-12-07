@@ -40,9 +40,6 @@ public class LoginContracts {
         void renderServerError();
 
         @UiThread
-        void handleSync();
-
-        @UiThread
         void onUnlockClick(android.view.View android);
 
         @UiThread
@@ -54,12 +51,12 @@ public class LoginContracts {
         @UiThread
         void saveUsersData();
 
-        @NonNull
+       /* @NonNull
         Consumer<SyncResult> update(LoginActivity.SyncState syncState);
+*/
+        /*void saveTheme(Integer themeId);
 
-        void saveTheme(Integer themeId);
-
-        void saveFlag(String s);
+        void saveFlag(String s);*/
 
         void handleLogout();
 
@@ -87,7 +84,7 @@ public class LoginContracts {
 
         void onDestroy();
 
-        void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
+//        void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
 
         void logOut();
 
@@ -95,7 +92,7 @@ public class LoginContracts {
 
         void handleError(@NonNull Throwable throwable);
 
-        void sync();
+       /* void sync();
 
         void syncEvents();
 
@@ -103,7 +100,7 @@ public class LoginContracts {
 
         void syncReservedValues();
 
-        void syncAggregatesData();
+        void syncAggregatesData();*/
 
     }
 
