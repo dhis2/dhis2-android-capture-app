@@ -26,7 +26,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     TeiDataDetailContracts.Presenter presenter;
 
     private DashboardProgramModel dashboardProgramModel;
-    private ObservableBoolean isEditable = new ObservableBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

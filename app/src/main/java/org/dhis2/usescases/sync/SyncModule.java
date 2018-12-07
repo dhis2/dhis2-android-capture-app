@@ -1,4 +1,4 @@
-package org.dhis2.usescases.synchronization;
+package org.dhis2.usescases.sync;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -12,7 +12,7 @@ public class SynchronizationModule {
 
     @Provides
     @PerActivity
-    SynchronizationContracts.Presenter providePresenter(MetadataRepository metadataRepository) {
+    SyncContracts.Presenter providePresenter(MetadataRepository metadataRepository) {
         return new SynchronizationPresenter(metadataRepository);
     }
 }

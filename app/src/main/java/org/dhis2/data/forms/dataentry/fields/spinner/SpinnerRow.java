@@ -10,6 +10,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -22,12 +23,12 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
 
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String,String>> processorOptionSet, boolean isBackgroundTransparent) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = null;
@@ -36,7 +37,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     }
 
     public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                      @NonNull FlowableProcessor<Integer> currentPosition, FlowableProcessor<Pair<String,String>> processorOptionSet,boolean isBackgroundTransparent, String renderType) {
+                      @NonNull FlowableProcessor<Integer> currentPosition, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet,boolean isBackgroundTransparent, String renderType) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;

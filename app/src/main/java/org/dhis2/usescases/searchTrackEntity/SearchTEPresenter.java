@@ -21,8 +21,8 @@ import org.dhis2.utils.CustomViews.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.D2CallException;
 import org.hisp.dhis.android.core.data.api.OuMode;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
@@ -158,7 +158,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 view.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -210,11 +210,11 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .flatMap(page -> {
                                 this.currentPage = page;
                                 List<String> filterList = new ArrayList<>();
-                                String queryList ="";
+                                Date enrollementDate = null;
                                 if (queryData != null) {
                                     for (String key : queryData.keySet()) {
                                         if (key.equals(Constants.ENROLLMENT_DATE_UID))
-                                            queryList = "programStartDate=" + queryData.get(key);
+                                            enrollementDate = DateUtils.uiDateFormat().parse(queryData.get(key));
                                         else if (!key.equals(Constants.INCIDENT_DATE_UID)) //TODO: HOW TO INCLUDE INCIDENT DATE IN ONLINE SEARCH
                                             filterList.add(key + ":LIKE:" + queryData.get(key));
                                     }
@@ -229,6 +229,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .pageSize(20)
                                         .paging(true)
                                         .filter(filterList)
+                                        .programStartDate(enrollementDate)
                                         .orgUnits(orgUnitsUids)
                                         .orgUnitMode(OuMode.ACCESSIBLE)
                                         .build();
@@ -258,10 +259,10 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 return teiList;
                             })
                             .flatMap(list -> searchRepository.transformIntoModel(list, selectedProgram))
-                            .map(list->{
+                            .map(list -> {
                                 List<SearchTeiModel> searchTeiModels = new ArrayList<>();
-                                for(SearchTeiModel searchTeiModel : list)
-                                    if(!searchTeiModel.getEnrollments().isEmpty())
+                                for (SearchTeiModel searchTeiModel : list)
+                                    if (!searchTeiModel.getEnrollments().isEmpty())
                                         searchTeiModels.add(searchTeiModel);
                                 return searchTeiModels;
                             })
@@ -331,8 +332,8 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     private void handleError(Throwable throwable) {
-        if (throwable instanceof D2CallException) {
-            D2CallException exception = (D2CallException) throwable;
+        if (throwable instanceof D2Error) {
+            D2Error exception = (D2Error) throwable;
             switch (exception.errorCode()) {
                 case UNEXPECTED:
                     view.displayMessage(view.getContext().getString(R.string.online_search_unexpected));
@@ -435,7 +436,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     public void enroll(String programUid, String uid) {
         selectedEnrollmentDate = Calendar.getInstance().getTime();
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)

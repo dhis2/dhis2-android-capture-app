@@ -10,11 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.CustomViews.OptionSetOnClickListener;
@@ -36,23 +38,25 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ImageView iconView;
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final ViewDataBinding binding;
+    private final View descriptionLabel;
     /* @NonNull
      private BehaviorProcessor<SpinnerViewModel> model;*/
     private SpinnerViewModel viewModel;
     List<OptionModel> options;
     private OptionSetDialog dialog;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor,FlowableProcessor<Pair<String,String>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
         super(mBinding);
         binding = mBinding;
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
+        this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
 
@@ -94,6 +98,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         }
 
         descriptionText = viewModel.description();
+
+        descriptionLabel.setVisibility(label.length() > 16 || descriptionText != null ? View.VISIBLE : View.GONE);
+
     }
 
     public void dispose() {
@@ -109,17 +116,21 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if(options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS,Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD,15)){
+        if (options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
-            dialog.setProcessor(processorOptionSet).setOnClick(this)
+            dialog
+                    .setProcessor(processorOptionSet)
+//                    .setOptionsFromModel(options)
+                    .setOptionSetUid(viewModel)
+                    .setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
-                    .setClearListener(view -> {processor.onNext(
-                            RowAction.create(viewModel.uid(), ""));
-                            dialog.dismiss();
-                    }
-                    ).show(((FragmentActivity)binding.getRoot().getContext()).getSupportFragmentManager(), null);
-            dialog.setOptionSetUid(viewModel);
-        }else {
+                    .setClearListener(view -> {
+                                processor.onNext(
+                                        RowAction.create(viewModel.uid(), ""));
+                                dialog.dismiss();
+                            }
+                    ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
+        } else {
             PopupMenu menu = new PopupMenu(itemView.getContext(), v);
             menu.setOnMenuItemClickListener(this);
             for (OptionModel optionModel : options)
@@ -134,11 +145,15 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         OptionSetDialog.newInstance().dismiss();
     }
 
-    private void setValueOption(String option){
+    private void setValueOption(String option) {
         String code = null;
+        String displayName = null;
         for (OptionModel optionModel : options)
-            if (option.equals(optionModel.displayName()))
+            if (option.equals(optionModel.displayName())) {
                 code = optionModel.code();
+                displayName = optionModel.displayName();
+            }
+        editText.setText(displayName);
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );

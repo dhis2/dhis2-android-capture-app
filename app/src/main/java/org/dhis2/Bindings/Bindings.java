@@ -13,7 +13,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -387,8 +386,6 @@ public class Bindings {
                                         Timber::d
                                 );
                     break;
-                case VISITED:
-                    break;
                 case SKIPPED:
                     view.setText(view.getContext().getString(R.string.event_skipped));
                     break;
@@ -420,14 +417,28 @@ public class Bindings {
                                 } else {
                                     switch (event.status()) {
                                         case ACTIVE:
-                                            eventColor = R.color.event_yellow;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_yellow;
+                                            }
                                             break;
                                         case COMPLETED:
-                                            eventColor = R.color.event_gray;
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_gray;
+                                            }
                                             break;
                                         case SCHEDULE:
-                                            eventColor = R.color.event_green;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_green;
+                                            }
                                             break;
+                                        case VISITED:
+                                        case SKIPPED:
                                         default:
                                             eventColor = R.color.event_red;
                                             break;

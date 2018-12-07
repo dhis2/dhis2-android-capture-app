@@ -36,6 +36,7 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
@@ -187,7 +188,8 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
     }
 
-    public Flowable<Pair<String, String>> optionSetActions(){
+    @Override
+    public Flowable<Trio<String, String, Integer>> optionSetActions(){
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
     }
 

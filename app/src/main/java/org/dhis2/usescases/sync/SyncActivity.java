@@ -1,4 +1,4 @@
-package org.dhis2.usescases.synchronization;
+package org.dhis2.usescases.sync;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;

@@ -1,22 +1,15 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
 import android.databinding.ObservableField;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;
-import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
 
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by ppajuelo on 31/05/2018.
@@ -28,7 +21,6 @@ public class ImageHolder extends FormViewHolder {
     private final FormImageBinding binding;
     private final ObservableField<String> currentSelector;
     private boolean isEditable;
-    private String valuePendingUpdate;
 
     ImageViewModel model;
 
@@ -37,30 +29,22 @@ public class ImageHolder extends FormViewHolder {
         this.binding = mBinding;
         this.currentSelector = imageSelector;
         this.disposable = new CompositeDisposable();
-/*
-        if (imageSelector != null)
-            disposable.add(imageSelector
-                    .debounce(1000, TimeUnit.MILLISECONDS, Schedulers.io())
-                    .map(selectedValue -> selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(isSelected -> binding.selectionBadge.setImageDrawable(
-                            ContextCompat.getDrawable(binding.selectionBadge.getContext(),
-                                    isSelected ? R.drawable.ic_check_circle : R.drawable.ic_unchecked_circle)
-                    ), Timber::d));*/
 
         itemView.setOnClickListener(v -> {
 
             if (isEditable) {
                 String value;
                 String[] uids = model.uid().split("\\.");
+                String[] labelAndCode = model.label().split("-");
+                String label = labelAndCode[0];
+                String code = labelAndCode[1];
 
-                if(imageSelector.get().equals(model.label())) {
+                if (imageSelector.get().equals(label)) {
                     value = null;
                     imageSelector.set("");
-                }else {
-                    value = model.label();
-                    imageSelector.set(value);
+                } else {
+                    value = code;
+                    imageSelector.set(code);
                 }
 
                 processor.onNext(RowAction.create(uids[0], value));
@@ -74,7 +58,12 @@ public class ImageHolder extends FormViewHolder {
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();
-        label = new StringBuilder(viewModel.label());
+
+        String[] labelAndCode = viewModel.label().split("-");
+        String labelName = labelAndCode[0];
+        String code = labelAndCode[1];
+
+        label = new StringBuilder(labelName);
         if (viewModel.mandatory())
             label.append("*");
         binding.setLabel(label.toString());
@@ -83,7 +72,7 @@ public class ImageHolder extends FormViewHolder {
         String[] uids = viewModel.uid().split("\\.");
         Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
 
-        if(viewModel.value()!=null && !viewModel.value().equals(currentSelector.get()))
+        if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());
 
         if (viewModel.warning() != null) {

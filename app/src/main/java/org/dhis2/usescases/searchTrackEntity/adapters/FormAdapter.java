@@ -30,6 +30,7 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -69,7 +70,7 @@ public class FormAdapter extends RecyclerView.Adapter {
     private ProgramModel programModel;
     @NonNull
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Pair<String,String>> processorOptionSet;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     @NonNull
     private final List<Row> rows;
@@ -231,7 +232,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 2 : 1;
+            programData = programModel.displayIncidentDate() ? 1 : 1;
         } else {
             programData = 0;
             List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
@@ -253,7 +254,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Pair<String,String>> asFlowableOption(){
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
         return processorOptionSet;
     }
 }

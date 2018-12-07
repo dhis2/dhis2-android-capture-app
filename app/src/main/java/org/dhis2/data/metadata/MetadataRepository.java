@@ -155,5 +155,6 @@ public interface MetadataRepository {
 
     Observable<Integer> getOrgUnitsForDataElementsCount();
 
-    Observable<List<String>> searchOptions(String text, String idOptionSet);
+    Observable<List<String>> searchOptions(String text, String idOptionSet, int page);
+
 }

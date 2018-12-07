@@ -296,5 +296,11 @@ public class App extends MultiDexApplication implements Components {
         return instance;
     }
 
+    /**
+     * Visible only for testing purposes.
+     */
+    public void setTestComponent(AppComponent testingComponent) {
+        appComponent = testingComponent;
+    }
 
 }

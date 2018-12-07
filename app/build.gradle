@@ -137,10 +137,10 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
+   /* implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
         exclude group: "com.google.code.findbugs", module: "jsr305"
         exclude group: "org.hisp.dhis", module: "core-rules"
-    }
+    }*/
 
 //    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
@@ -233,6 +233,10 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation "org.robolectric:robolectric:3.3.2"
+    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
+    androidTestImplementation 'com.google.dagger:dagger:2.14.1'
+    androidTestImplementation 'com.google.dagger:dagger-compiler:2.14.1'
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'

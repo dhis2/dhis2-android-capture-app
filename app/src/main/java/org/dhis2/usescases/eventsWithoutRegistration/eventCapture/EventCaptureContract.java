@@ -2,6 +2,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -52,6 +53,10 @@ public class EventCaptureContract {
         void attempToReopen();
 
         void showSnackBar(int messageId);
+
+        android.view.View getSnackbarAnchor();
+
+        void clearFocus();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

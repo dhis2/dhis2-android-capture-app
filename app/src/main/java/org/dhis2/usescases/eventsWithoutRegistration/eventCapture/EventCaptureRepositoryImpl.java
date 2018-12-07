@@ -16,7 +16,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Result;
-import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
 
 import javax.annotation.Nonnull;
 
@@ -125,7 +124,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private static final String SECTION_RENDERING_TYPE = "SELECT ProgramStageSection.mobileRenderType FROM ProgramStageSection WHERE ProgramStageSection.uid = ?";
     private static final String ACCESS_QUERY = "SELECT ProgramStage.accessDataWrite FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
     private static final String PROGRAM_ACCESS_QUERY = "SELECT Program.accessDataWrite FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ?";
-    private static final String OPTIONS = "SELECT Option.uid, Option.displayName FROM Option WHERE Option.optionSet = ?";
+    private static final String OPTIONS = "SELECT Option.uid, Option.displayName, Option.code FROM Option WHERE Option.optionSet = ?";
 
     private final BriteDatabase briteDatabase;
     private final String eventUid;
@@ -181,11 +180,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Flowable<String> catOption() {
-        return briteDatabase.createQuery(CategoryOptionModel.TABLE,
-                "SELECT CategoryOption.* FROM CategoryOption " +
-                        "JOIN Event ON Event.attributeCategoryOptions = CategoryOption.uid " +
+        return briteDatabase.createQuery(CategoryOptionComboModel.TABLE,
+                "SELECT CategoryOptionCombo.* FROM CategoryOptionCombo " +
+                        "JOIN Event ON Event.attributeOptionCombo = CategoryOptionCombo.uid " +
                         "WHERE Event.uid = ? LIMIT 1", eventUid)
-                .mapToOneOrDefault(cursor -> CategoryOptionModel.create(cursor).displayName(), "")
+                .mapToOneOrDefault(cursor -> CategoryOptionComboModel.create(cursor).displayName(), "")
                 .toFlowable(BackpressureStrategy.LATEST);
     }
 
@@ -242,18 +241,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                         for (int i = 0; i < cursor.getCount(); i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
+                            String optionCode = cursor.getString(2);
 
                             ValueTypeDeviceRenderingModel fieldRendering = null;
                             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
-                                    " WHERE ProgramStageDataElement.uid = ?", uid);                            if (rendering != null && rendering.moveToFirst()) {
+                                    " WHERE ProgramStageDataElement.uid = ?", uid);
+                            if (rendering != null && rendering.moveToFirst()) {
                                 fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
                                 rendering.close();
                             }
 
                             renderList.add(fieldFactory.create(
                                     fieldViewModel.uid() + "." + uid, //fist
-                                    displayName, ValueType.TEXT, false,
+                                    displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
                                     fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering));
 
@@ -349,7 +350,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
                 rendering.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
         }
 

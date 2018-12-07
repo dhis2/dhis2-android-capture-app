@@ -1,4 +1,4 @@
-package org.dhis2.usescases.synchronization;
+package org.dhis2.usescases.sync;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.service.ReservedValuesWorker;
@@ -17,10 +17,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class SynchronizationPresenter implements SynchronizationContracts.Presenter {
+public class SynchronizationPresenter implements SyncContracts.Presenter {
 
     private final MetadataRepository metadataRepository;
-    private SynchronizationContracts.View view;
+    private SyncContracts.View view;
 
     private CompositeDisposable disposable;
 
@@ -30,7 +30,7 @@ public class SynchronizationPresenter implements SynchronizationContracts.Presen
     }
 
     @Override
-    public void init(SynchronizationContracts.View view) {
+    public void init(SyncContracts.View view) {
         this.view = view;
         this.disposable = new CompositeDisposable();
     }
@@ -81,7 +81,7 @@ public class SynchronizationPresenter implements SynchronizationContracts.Presen
                 .onErrorReturn(throwable -> SyncResult.failure(
                         throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(update(SynchronizationActivity.SyncState.AGGREGATES),
+                .subscribe(update(SyncActivity.SyncState.AGGREGATES),
                         throwable -> view.displayMessage(throwable.getMessage())
                 ));
     }*/

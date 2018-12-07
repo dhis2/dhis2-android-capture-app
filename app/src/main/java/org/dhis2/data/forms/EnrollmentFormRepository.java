@@ -398,17 +398,25 @@ class EnrollmentFormRepository implements FormRepository {
                 String orgUnit = cursor.getString(2);
                 int minDaysFromStart = cursor.getInt(3);
                 Boolean generatedByEnrollmentDate = cursor.getInt(4) == 1;
+                String incidentDateString = cursor.getString(5);
+                String reportDateString = cursor.getString(6);
                 Date incidentDate = null;
                 Date enrollmentDate = null;
                 PeriodType periodType = cursor.getString(7) != null ? PeriodType.valueOf(cursor.getString(7)) : null;
 
-                try {
-                    incidentDate = DateUtils.databaseDateFormat().parse(cursor.getString(5));
-                    enrollmentDate = DateUtils.databaseDateFormat().parse(cursor.getString(6));
+                if (incidentDateString != null)
+                    try {
+                        incidentDate = DateUtils.databaseDateFormat().parse(incidentDateString);
+                    } catch (Exception e) {
+                        Timber.e(e);
+                    }
 
-                } catch (Exception e) {
-                    Timber.e(e);
-                }
+                if (reportDateString != null)
+                    try {
+                        enrollmentDate = DateUtils.databaseDateFormat().parse(reportDateString);
+                    } catch (Exception e) {
+                        Timber.e(e);
+                    }
 
                 Date eventDate;
                 Calendar cal = DateUtils.getInstance().getCalendar();
@@ -454,7 +462,7 @@ class EnrollmentFormRepository implements FormRepository {
                         eventBuilder.dueDate(eventDate);
                     else
                         eventBuilder.eventDate(eventDate);
-                    
+
                     EventModel event = eventBuilder.build();
 
 
@@ -561,7 +569,7 @@ class EnrollmentFormRepository implements FormRepository {
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
         }

@@ -1,8 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.databinding.ObservableField;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -13,6 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -71,6 +75,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         this.sectionsToHide = new ArrayList<>();
         this.currentSection = new ObservableField<>("");
         this.errors = new HashMap<>();
+        this.emptyMandatoryFields = new HashMap<>();
         this.canComplete = true;
         currentSectionPosition = PublishProcessor.create();
 
@@ -168,14 +173,22 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .switchMap(action ->
-                        {
-                            Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
-                                    action.id(), action.value());
-                            return dataEntryStore.save(action.id(), action.value());
-                        }
+                        dataEntryStore.save(action.id(), action.value())
                 ).subscribe(result -> Timber.d(result.toString()),
                         Timber::d)
         );
+
+        compositeDisposable.add(
+                EventCaptureFormFragment.getInstance().optionSetActions()
+                        .flatMap(
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                options -> OptionSetDialog.newInstance().setOptions(options),
+                                Timber::e
+                        ));
 
         compositeDisposable.add(
                 Flowable.zip(
@@ -259,6 +272,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onNextSection() {
+
+        view.clearFocus();
+
+        new Handler().postDelayed(
+                () -> changeSection(),
+                1000);
+
+    }
+
+    private void changeSection() {
         List<FormSectionViewModel> finalSections = getFinalSections();
 
         if (finalSections.indexOf(sectionList.get(currentPosition)) < sectionList.size() - sectionsToHide.size() - 1) {
@@ -316,7 +339,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid) {
+    public void onSectionSelectorClick(boolean isCurrentSection, int position, String
+            sectionUid) {
 
         EventCaptureFormFragment.getInstance().showSectionSelector();
         if (!currentSection.get().equals(sectionUid) && position != -1) {
@@ -329,7 +353,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void goToSection(String sectionUid) {
         for (FormSectionViewModel sectionModel : sectionList)
-            if (sectionModel.sectionUid().equals(sectionUid))
+            if (sectionModel.sectionUid() != null && sectionModel.sectionUid().equals(sectionUid))
                 currentPosition = sectionList.indexOf(sectionModel);
         currentSectionPosition.onNext(currentPosition);
     }
@@ -400,7 +424,14 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
-        this.errors.put(model.programStageSection(), showError.content());
+
+        Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
+                .setAction(view.getAbstracContext().getString(R.string.button_ok), v1 -> {
+
+                })
+                .show();
+
+        save(model.uid(), null);
     }
 
     @Override

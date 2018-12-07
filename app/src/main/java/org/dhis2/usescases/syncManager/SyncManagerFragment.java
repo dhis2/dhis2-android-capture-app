@@ -1,16 +1,20 @@
 package org.dhis2.usescases.syncManager;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -182,6 +186,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
+    public void onStop() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(123456);
+        super.onStop();
+    }
+
+    @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
             binding.eventMaxData.setText(String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)));
@@ -296,9 +307,31 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> presenter.wipeDb())
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    showDeleteProgress();
+                })
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    private void showDeleteProgress() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel("wipe_notification", "Restart", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(context, "wipe_notification")
+                        .setSmallIcon(R.drawable.ic_dhis)
+                        .setContentTitle(getString(R.string.wipe_data))
+                        .setContentText(getString(R.string.please_wait))
+                        .setOngoing(true)
+                        .setAutoCancel(false)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        notificationManager.notify(123456, notificationBuilder.build());
+        presenter.wipeDb();
+
     }
 
     @Override
