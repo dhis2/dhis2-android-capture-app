@@ -393,5 +393,8 @@
     <string name="event_reopened">This event can now be edited</string>
     <string name="unique_warning">The value should be unique, a coincidence has been found. It has not been saved. Please check it.</string>
     <string name="please_wait">Please wait</string>
+    <string name="skip">Skip</string>
+    <string name="reschedule">Reschedule</string>
+    <string name="event_was_skipped">The event was marked as skipped</string>
 
 </resources>
