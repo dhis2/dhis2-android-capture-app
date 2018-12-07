@@ -16,6 +16,7 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.CustomViews.OptionSetOnClickListener;
@@ -37,7 +38,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    private final FlowableProcessor<Pair<String, String>> processorOptionSet;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ImageView iconView;
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
@@ -49,7 +50,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     List<OptionModel> options;
     private OptionSetDialog dialog;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Pair<String, String>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
         super(mBinding);
         binding = mBinding;
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
@@ -117,8 +118,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         closeKeyboard(v);
         if (options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
-            dialog.setProcessor(processorOptionSet)
-                    .setOptionsFromModel(options)
+            dialog
+                    .setProcessor(processorOptionSet)
+//                    .setOptionsFromModel(options)
                     .setOptionSetUid(viewModel)
                     .setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())

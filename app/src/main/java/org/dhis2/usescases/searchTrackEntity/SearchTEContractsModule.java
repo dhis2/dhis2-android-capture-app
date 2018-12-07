@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -35,7 +36,7 @@ public class SearchTEContractsModule {
 
         Flowable<RowAction> rowActionss();
 
-        Flowable<Pair<String, String>> optionSetActions();
+        Flowable<Trio<String, String, Integer>> optionSetActions();
 
         Flowable<Integer> onlinePage();
 
