@@ -25,7 +25,7 @@ public interface FormRepository {
     Flowable<String> title();
 
     @NonNull
-    Flowable<String> reportDate();
+    Flowable<Pair<ProgramModel, String>> reportDate();
 
     Flowable<Pair<ProgramModel, String>> incidentDate();
 

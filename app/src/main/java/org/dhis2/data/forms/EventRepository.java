@@ -208,16 +208,11 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<String> reportDate() {
-        return briteDatabase
-                .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> {
-                    PeriodType periodType = null;
-                    String eventDate = cursor.getString(0) == null ? "" : cursor.getString(0);
-                    if (cursor.getString(1) != null)
-                        periodType = PeriodType.valueOf(PeriodType.class, cursor.getString(1));
-                    return eventDate;
-                }).toFlowable(BackpressureStrategy.LATEST)
+    public Flowable<Pair<ProgramModel, String>> reportDate() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
+                .mapToOne(ProgramModel::create)
+                .map(programModel -> Pair.create(programModel, ""))
+                .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
