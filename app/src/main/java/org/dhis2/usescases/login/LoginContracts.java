@@ -7,7 +7,7 @@ import android.support.annotation.UiThread;
 
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.common.D2ErrorCode;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
 import retrofit2.Response;
 
