@@ -32,13 +32,13 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return TEIDataFragment.createInstance();
+                return TEIDataFragment.getInstance();
             case 1:
-                return RelationshipFragment.createInstance();
+                return RelationshipFragment.getInstance();
             case 2:
-                return IndicatorsFragment.createInstance();
+                return IndicatorsFragment.getInstance();
             case 3:
-                return NotesFragment.createInstance();
+                return NotesFragment.getInstance();
 
         }
     }

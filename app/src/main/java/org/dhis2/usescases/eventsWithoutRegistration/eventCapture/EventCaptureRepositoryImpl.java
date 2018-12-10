@@ -36,6 +36,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -394,6 +395,15 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     public Observable<Boolean> deleteEvent() {
         return Observable.just(briteDatabase.delete(EventModel.TABLE, "uid = ?", eventUid) > 0);
+    }
+
+    @Override
+    public Observable<Boolean> updateEventStatus(EventStatus status) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.STATUS, status.name());
+        String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
+        contentValues.put(EventModel.Columns.LAST_UPDATED, updateDate);
+        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
     }
 
     @Override

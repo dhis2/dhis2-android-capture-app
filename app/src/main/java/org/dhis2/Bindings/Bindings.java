@@ -51,6 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -706,6 +708,10 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
         return metadataRepository.optionSet(optionSet);
+    }
+
+    public static int optionSetItemSize(@Nonnull String optionSet){
+        return metadataRepository.optionSetSize(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")

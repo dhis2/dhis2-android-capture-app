@@ -21,7 +21,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-import org.dhis2.usescases.teiDashboard.eventDetail.EventDetailActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
@@ -51,8 +50,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static org.hisp.dhis.android.core.maintenance.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
 
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
@@ -348,10 +345,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             d2.relationshipModule().relationships.add(relationship);
 //            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2Error e) {
-            if (e.errorCode() == CANT_CREATE_EXISTING_OBJECT)
-                view.displayMessage(e.errorDescription());
-            else
-                Timber.d(e);
+            view.displayMessage(e.errorDescription());
         }
     }
 
@@ -388,7 +382,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                RelationshipFragment.getInstance().setRelationships(),
+                                relationshipFragment.setRelationships(),
                                 Timber::d
                         )
         );

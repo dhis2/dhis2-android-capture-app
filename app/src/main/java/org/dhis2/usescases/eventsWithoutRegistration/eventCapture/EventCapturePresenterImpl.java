@@ -181,7 +181,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 EventCaptureFormFragment.getInstance().optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -289,7 +289,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             currentSectionPosition.onNext(currentPosition);
         } else {
             if (eventStatus != EventStatus.ACTIVE) {
-                view.attempToReopen();
+                setUpActionByStatus(eventStatus);
             } else if (!emptyMandatoryFields.isEmpty()) {
                 view.setMandatoryWarning(emptyMandatoryFields);
             } else if (!this.errors.isEmpty()) {
@@ -307,6 +307,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 )
                 );
             }
+        }
+    }
+
+    private void setUpActionByStatus(EventStatus eventStatus) {
+        switch (eventStatus) {
+            case COMPLETED:
+                view.attemptToReopen();
+                break;
+            case OVERDUE:
+                view.attemptToSkip();
+                break;
+            case SKIPPED:
+                view.attemptToReschedule();
+                break;
+            case SCHEDULE:
+                break;
+            default:
+                break;
         }
     }
 
@@ -394,6 +412,24 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         () -> view.finishDataEntry()
                 )
         );
+    }
+
+    @Override
+    public void skipEvent() {
+        compositeDisposable.add(eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> view.showSnackBar(R.string.event_was_skipped),
+                        Timber::e,
+                        () -> view.finishDataEntry()
+                )
+        );
+    }
+
+    @Override
+    public void rescheduleEvent() {
+
     }
 
     @Override

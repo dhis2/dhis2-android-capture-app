@@ -15,7 +15,6 @@ import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.OptionSetDialog;
@@ -42,17 +41,14 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final ImageView iconView;
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
-    private final ViewDataBinding binding;
     private final View descriptionLabel;
-    /* @NonNull
-     private BehaviorProcessor<SpinnerViewModel> model;*/
+
     private SpinnerViewModel viewModel;
-    List<OptionModel> options;
-    private OptionSetDialog dialog;
+    private int numberOfOptions = 0;
+    private List<OptionModel> options;
 
     SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
         super(mBinding);
-        binding = mBinding;
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
         this.inputLayout = mBinding.getRoot().findViewById(R.id.input_layout);
@@ -72,7 +68,8 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     public void update(SpinnerViewModel viewModel) {
 
         this.viewModel = viewModel;
-        options = Bindings.setOptionSet(viewModel.optionSet());
+        if ((numberOfOptions = Bindings.optionSetItemSize(viewModel.optionSet())) <= 15)
+            options = Bindings.setOptionSet(viewModel.optionSet());
 
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
         editText.setEnabled(viewModel.editable());
@@ -116,11 +113,10 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     @Override
     public void onClick(View v) {
         closeKeyboard(v);
-        if (options.size() > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
+        if (numberOfOptions > itemView.getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE).getInt(Constants.OPTION_SET_DIALOG_THRESHOLD, 15)) {
             OptionSetDialog dialog = OptionSetDialog.newInstance();
             dialog
                     .setProcessor(processorOptionSet)
-//                    .setOptionsFromModel(options)
                     .setOptionSetUid(viewModel)
                     .setOnClick(this)
                     .setCancelListener(view -> dialog.dismiss())
