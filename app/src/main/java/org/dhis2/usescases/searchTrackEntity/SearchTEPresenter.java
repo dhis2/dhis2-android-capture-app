@@ -158,7 +158,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         compositeDisposable.add(
                 view.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -262,7 +262,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             .map(list -> {
                                 List<SearchTeiModel> searchTeiModels = new ArrayList<>();
                                 for (SearchTeiModel searchTeiModel : list)
-                                    if (!searchTeiModel.getEnrollments().isEmpty())
+                                    if (searchTeiModel.isOnline() || !searchTeiModel.getEnrollments().isEmpty())
                                         searchTeiModels.add(searchTeiModel);
                                 return searchTeiModels;
                             })

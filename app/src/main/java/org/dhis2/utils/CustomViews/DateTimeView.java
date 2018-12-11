@@ -36,6 +36,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     private boolean isBgTransparent;
     private OnDateSelected listener;
     private boolean allowFutureDates;
+    private Date date;
     DatePickerDialog dateDialog;
 
     public DateTimeView(Context context) {
@@ -62,6 +63,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         binding.setLabel(label);
         binding.executePendingBindings();
     }
+
     public void setDescription(String description) {
         binding.setDescription(description);
         binding.executePendingBindings();
@@ -69,7 +71,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
 
     public void initData(String data) {
         if (data != null) {
-            Date date = null;
+            date = null;
             try {
                 date = DateUtils.databaseDateFormat().parse(data);
             } catch (ParseException e) {
@@ -127,6 +129,8 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
+        if (date != null)
+            c.setTime(date);
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);

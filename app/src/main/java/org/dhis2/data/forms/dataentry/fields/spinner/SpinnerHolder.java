@@ -66,10 +66,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void update(SpinnerViewModel viewModel) {
-
         this.viewModel = viewModel;
-        if ((numberOfOptions = Bindings.optionSetItemSize(viewModel.optionSet())) <= 15)
-            options = Bindings.setOptionSet(viewModel.optionSet());
+
+        options = Bindings.setOptionSet(viewModel.optionSet());
 
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
         editText.setEnabled(viewModel.editable());

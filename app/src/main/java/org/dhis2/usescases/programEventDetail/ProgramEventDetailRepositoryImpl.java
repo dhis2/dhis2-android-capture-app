@@ -173,7 +173,9 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     @Override
     public Observable<List<OrganisationUnitModel>> orgUnits() {
-        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE;
+        String SELECT_ORG_UNITS = "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
+                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
+                "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS)
                 .mapToList(OrganisationUnitModel::create);
     }
@@ -193,14 +195,14 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     public Observable<List<String>> eventDataValuesNew(EventModel eventModel) {
         List<String> values = new ArrayList<>();
         String id = eventModel == null || eventModel.uid() == null ? "" : eventModel.uid();
-        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id,id);
+        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, id, id);
         if (cursor != null && cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 String value = cursor.getString(cursor.getColumnIndex("value"));
-                if(cursor.getString(cursor.getColumnIndex("optionSet"))!=null)
-                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase,cursor.getString(cursor.getColumnIndex("optionSet")),value);
-                else if(cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
-                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase,value);
+                if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
+                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
+                else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
 
                 values.add(value);
                 cursor.moveToNext();

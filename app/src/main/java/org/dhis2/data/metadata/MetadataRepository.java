@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -116,6 +117,7 @@ public interface MetadataRepository {
     Observable<Integer> getTrackEntityDataValueCount(String programStageId);
 
     Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
+    Observable<Boolean> isCompletedEventExpired(String eventUid);
 
 
     /*OPTION SET*/

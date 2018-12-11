@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:background="?colorPrimary">
 
-                <com.airbnb.lottie.LottieAnimationView
+                <!--<com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottieView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -40,7 +40,7 @@
                     android:visibility="gone"
                     app:lottie_autoPlay="false"
                     app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/world_lottie" />
+                    app:lottie_rawRes="@raw/world_lottie" />-->
 
                 <ImageView
                     android:id="@+id/dhisLogo"
