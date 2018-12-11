@@ -10,7 +10,6 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -119,5 +118,7 @@ public class TeiDashboardContracts {
         void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
 
         void subscribeToRelationshipTypes(RelationshipFragment relationshipFragment);
+
+        void onScheduleSelected(String uid, android.view.View sharedView);
     }
 }

@@ -103,15 +103,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(tEType)).inject(this);
 
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
-        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);

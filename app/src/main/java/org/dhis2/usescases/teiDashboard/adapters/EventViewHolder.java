@@ -8,6 +8,7 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 /**
@@ -31,6 +32,11 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         String date = DateUtils.getInstance().getPeriodUIString(programStage.periodType(), eventModel.eventDate() != null ? eventModel.eventDate() : eventModel.dueDate());
         binding.eventDate.setText(date);
 
-        itemView.setOnClickListener(view -> presenter.onEventSelected(eventModel.uid(), binding.sharedView));
+        itemView.setOnClickListener(view -> {
+            if (eventModel.status() == EventStatus.SCHEDULE || eventModel.eventDate() == null) {
+                presenter.onScheduleSelected(eventModel.uid(),binding.sharedView);
+            } else
+                presenter.onEventSelected(eventModel.uid(), binding.sharedView);
+        });
     }
 }
