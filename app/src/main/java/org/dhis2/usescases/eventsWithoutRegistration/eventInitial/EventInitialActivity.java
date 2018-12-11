@@ -855,17 +855,22 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
                 iterator.remove();
         }
-        orgUnitDialog = new OrgUnitDialog()
-                .setTitle(getString(R.string.org_unit))
-                .setMultiSelection(false)
-                .setOrgUnits(orgUnits)
-                .setPossitiveListener(data -> {
-                    setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
-                    orgUnitDialog.dismiss();
-                })
-                .setNegativeListener(data -> orgUnitDialog.dismiss());
-        if (!orgUnitDialog.isAdded())
-            orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
+        if(orgUnits != null && !orgUnits.isEmpty()) {
+            orgUnitDialog = new OrgUnitDialog()
+                    .setTitle(getString(R.string.org_unit))
+                    .setMultiSelection(false)
+                    .setOrgUnits(orgUnits)
+                    .setPossitiveListener(data -> {
+                        setOrgUnit(orgUnitDialog.getSelectedOrgUnit(), orgUnitDialog.getSelectedOrgUnitName());
+                        orgUnitDialog.dismiss();
+                    })
+                    .setNegativeListener(data -> orgUnitDialog.dismiss());
+            if (!orgUnitDialog.isAdded())
+                orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
+        }
+        else{
+            showNoOrgUnits();
+        }
     }
 
     @Override
