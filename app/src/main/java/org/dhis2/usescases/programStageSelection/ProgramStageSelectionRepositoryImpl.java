@@ -156,6 +156,7 @@ public class ProgramStageSelectionRepositoryImpl implements ProgramStageSelectio
                             String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
                             dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
                                     dataValueCursor.getString(2), value));
+                            dataValueCursor.moveToNext();
                         }
                         dataValueCursor.close();
                     }

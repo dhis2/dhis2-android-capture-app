@@ -27,6 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="allowBackup">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
         <activity android:name=".usescases.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
