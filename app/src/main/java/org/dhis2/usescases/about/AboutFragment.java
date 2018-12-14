@@ -50,7 +50,6 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         aboutBinding.aboutGit.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutDev.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutContact.setMovementMethod(LinkMovementMethod.getInstance());
-        aboutBinding.dpWidth.setText("Width (dp) = " + String.valueOf(getResources().getInteger(R.integer.dimen)));
         setAppVersion();
         setSDKVersion();
 

@@ -62,14 +62,15 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         this.orgUnits = new ArrayList<>();
         List<String> orgUnitsUid = new ArrayList<>();
 
-        for (OrganisationUnitModel orgUnit : orgUnits) { //Users OrgUnits
-            this.orgUnits.add(Quintet.create(orgUnit.uid(),
-                    orgUnit.displayName(),
-                    orgUnit.parent() != null ? orgUnit.parent() : "",
-                    orgUnit.level(),
-                    true));//OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
-            orgUnitsUid.add(orgUnit.uid());
-        }
+        if (orgUnits != null)
+            for (OrganisationUnitModel orgUnit : orgUnits) { //Users OrgUnits
+                this.orgUnits.add(Quintet.create(orgUnit.uid(),
+                        orgUnit.displayName(),
+                        orgUnit.parent() != null ? orgUnit.parent() : "",
+                        orgUnit.level(),
+                        true));//OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
+                orgUnitsUid.add(orgUnit.uid());
+            }
 
         for (OrganisationUnitModel orgUnit : orgUnits) { //Path OrgUnits
             String[] uidPath = orgUnit.path().split("/");

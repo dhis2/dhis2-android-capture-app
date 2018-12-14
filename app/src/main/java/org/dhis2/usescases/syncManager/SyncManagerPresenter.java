@@ -98,9 +98,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         WorkManager.getInstance().cancelAllWorkByTag(TAG_DATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
         syncDataBuilder.addTag(TAG_DATA_NOW);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
+        /*syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+                .build());*/
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().enqueue(request);
     }
@@ -110,9 +110,9 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
         WorkManager.getInstance().cancelAllWorkByTag(TAG_META_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
         syncDataBuilder.addTag(TAG_META_NOW);
-        syncDataBuilder.setConstraints(new Constraints.Builder()
+       /* syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());
+                .build());*/
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().enqueue(request);
     }

@@ -467,6 +467,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public int optionSetSize(String optionSetUid) {
+        String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
+        int numberOfOptions = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            numberOfOptions = cursor.getInt(0);
+            cursor.close();
+        }
+        return numberOfOptions;
+    }
+
+    @Override
     public Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments) {
         String query = "";
         for (Enrollment enrollment : enrollments) {
@@ -586,6 +598,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(ProgramModel.TABLE, EXPIRY_DATE_PERIOD_QUERY, eventUid == null ? "" : eventUid)
                 .mapToOne(ProgramModel::create);
+    }
+
+    @Override
+    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
+        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE,"SELECT * FROM Event WHERE uid = ?",eventUid)
+                .mapToOne(EventModel::create),
+                getExpiryDateFromEvent(eventUid),
+                ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
     }
 
     @NonNull

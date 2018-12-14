@@ -142,8 +142,6 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                 HashMap<String, Boolean> fields = new HashMap<>();
                 for (FieldViewModel fieldViewModel : updates) {
                     fields.put(fieldViewModel.optionSet()==null?fieldViewModel.uid():fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
-                  /*  if (!isEmpty(fieldViewModel.value()))
-                        completedValues++;*/
                 }
                 for (String key : fields.keySet())
                     if (fields.get(key))

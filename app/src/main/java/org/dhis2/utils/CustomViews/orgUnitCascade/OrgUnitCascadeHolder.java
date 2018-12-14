@@ -68,11 +68,15 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
             menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(label), label);
 
         menu.setOnMenuItemClickListener(item -> {
-            selectedUid = item.getOrder() <= 0 ? "" : levelOrgUnit.get(item.getOrder() - 1).val0();
-            binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
-            adapter.setSelectedLevel(getAdapterPosition() + 1,
-                    selectedUid,
-                    item.getOrder() <= 0 ? levelOrgUnit.get(0).val3() : levelOrgUnit.get(item.getOrder() - 1).val3());
+            for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
+                if (trio.val1().equals(item.getTitle())) {
+                    selectedUid = item.getOrder() <= 0 ? "" : trio.val0();
+                    binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
+                    adapter.setSelectedLevel(
+                            getAdapterPosition() + 1,
+                            selectedUid,
+                            item.getOrder() <= 0 ? false : trio.val3());
+                }
             return false;
         });
     }

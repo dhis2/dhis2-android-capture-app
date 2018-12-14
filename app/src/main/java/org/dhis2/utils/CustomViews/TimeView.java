@@ -39,6 +39,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
 
     private String label;
     private String description;
+    private Date date;
 
     public TimeView(Context context) {
         super(context);
@@ -89,12 +90,13 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
 
     public void initData(String data) {
         if (data != null) {
-            Date date = null;
+            date = null;
             try {
                 date = DateUtils.timeFormat().parse(data);
             } catch (ParseException e) {
                 Timber.e(e);
             }
+
 
             data = DateUtils.timeFormat().format(date);
         }
@@ -117,12 +119,14 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         final Calendar c = Calendar.getInstance();
+        if(date!=null)
+            c.setTime(date);
+
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         boolean is24HourFormat = DateFormat.is24HourFormat(getContext());
         SimpleDateFormat twentyFourHourFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         SimpleDateFormat twelveHourFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-
         TimePickerDialog dialog = new TimePickerDialog(getContext(), (timePicker, hourOfDay, minutes) -> {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);

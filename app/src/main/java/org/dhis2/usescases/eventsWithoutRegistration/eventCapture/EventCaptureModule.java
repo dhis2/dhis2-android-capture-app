@@ -42,7 +42,7 @@ public class EventCaptureModule {
                                                     @NonNull MetadataRepository metadataRepository,
                                                     @NonNull RulesUtilsProvider ruleUtils,
                                                     @NonNull DataEntryStore dataEntryStore) {
-        return new EventCapturePresenterImpl(eventCaptureRepository, metadataRepository, ruleUtils, dataEntryStore);
+        return new EventCapturePresenterImpl(eventUid,eventCaptureRepository, metadataRepository, ruleUtils, dataEntryStore);
     }
 
     @Provides

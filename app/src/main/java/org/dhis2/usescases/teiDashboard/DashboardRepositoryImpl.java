@@ -210,19 +210,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter) {
-        String[] filters = filter.split(",");
-        StringBuilder filterQuery = new StringBuilder("");
-        for (String currentFilter : filters) {
-            filterQuery.append("'").append(currentFilter).append("'");
-            if (!currentFilter.equals(filters[filters.length - 1]))
-                filterQuery.append(",");
-        }
-        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS.replace("%s", filterQuery), programUid, teUid)
-                .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
         return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
@@ -248,30 +235,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .build();
 
         updateProgramTable(currentDate, eventModel.program());
+        updateTeiState();
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
         return event;
-    }
-
-    @Override
-    public Observable<ProgramModel> getProgramData(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(ProgramModel::create);
-    }
-
-    @Override
-    public Observable<List<TrackedEntityAttributeModel>> getAttributes(String programId) {
-        String id = programId == null ? "" : programId;
-        return briteDatabase.createQuery(ATTRIBUTE_TABLE_SET, ATTRIBUTES_QUERY + "'" + id + "'")
-                .mapToList(TrackedEntityAttributeModel::create);
-    }
-
-    @Override
-    public Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId) {
-        String id = orgUnitId == null ? "" : orgUnitId;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(OrganisationUnitModel::create);
     }
 
     @Override
@@ -294,7 +261,13 @@ public class DashboardRepositoryImpl implements DashboardRepository {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
         return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, progId, teiId)
-                .mapToList(EventModel::create);
+                .mapToList(cursor -> {
+                    EventModel eventModel = EventModel.create(cursor);
+                    if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
+                        eventModel = updateState(eventModel, EventStatus.OVERDUE);
+
+                    return eventModel;
+                });
     }
 
     @Override
@@ -547,8 +520,42 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             }
         };
+
     }
 
+    @Override
+    public Observable<Boolean> handleNote(Pair<String, Boolean> stringBooleanPair) {
+        if (stringBooleanPair.val1()) {
+
+            Cursor cursor = briteDatabase.query(SELECT_USERNAME);
+            cursor.moveToFirst();
+            String userName = cursor.getString(0);
+            cursor.close();
+
+            Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
+            cursor1.moveToFirst();
+            String enrollmentUid = cursor1.getString(0);
+
+            SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                    .compileStatement(INSERT_NOTE);
+
+
+            sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+            sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+            sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+            sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+            sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+            long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+            insetNoteStatement.clearBindings();
+
+            return Observable.just(success == 1).flatMap(value->updateEnrollment(success).toObservable())
+                    .map(value-> value == 1);
+
+        } else
+            return Observable.just(false);
+    }
 
     @Override
     public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {

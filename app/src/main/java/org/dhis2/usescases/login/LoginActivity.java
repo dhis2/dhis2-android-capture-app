@@ -185,14 +185,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 params.width = MATCH_PARENT;
                 binding.logo.setLayoutParams(params);
                 binding.syncLayout.setVisibility(View.VISIBLE);
-                if (Build.VERSION.SDK_INT > 21) {
+                /*if (Build.VERSION.SDK_INT > 21) {
                     binding.lottieView.setVisibility(View.VISIBLE);
                     binding.lottieView.setRepeatCount(LottieDrawable.INFINITE);
                     binding.lottieView.setRepeatMode(LottieDrawable.RESTART);
                     binding.lottieView.useHardwareAcceleration(true);
                     binding.lottieView.enableMergePathsForKitKatAndAbove(true);
                     binding.lottieView.playAnimation();
-                }
+                }*/
             }
         } else {
             isSyncing = false;
@@ -206,10 +206,10 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
                 binding.logo.setLayoutParams(params);
                 binding.syncLayout.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT > 21) {
+                /*if (Build.VERSION.SDK_INT > 21) {
                     binding.lottieView.setVisibility(View.GONE);
                     binding.lottieView.cancelAnimation();
-                }
+                }*/
             }
         }
     }

@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -29,6 +30,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.rules.models.RuleDataValue;
 import org.hisp.dhis.rules.models.RuleEffect;
 import org.hisp.dhis.rules.models.RuleEvent;
@@ -36,6 +38,7 @@ import org.hisp.dhis.rules.models.RuleEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -177,6 +180,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .mapToOne(cursor -> OrganisationUnitModel.create(cursor).displayName())
                 .toFlowable(BackpressureStrategy.LATEST);
     }
+
 
     @Override
     public Flowable<String> catOption() {
@@ -393,7 +397,70 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public Observable<Boolean> deleteEvent() {
-        return Observable.just(briteDatabase.delete(EventModel.TABLE, "uid = ?", eventUid) > 0);
+        Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventUid);
+        long status = -1;
+        if (eventCursor != null && eventCursor.moveToNext()) {
+            EventModel eventModel = EventModel.create(eventCursor);
+            if (eventModel.state() == State.TO_POST) {
+                String DELETE_WHERE = String.format(
+                        "%s.%s = ?",
+                        EventModel.TABLE, EventModel.Columns.UID
+                );
+                status = briteDatabase.delete(EventModel.TABLE, DELETE_WHERE, eventUid);
+            } else {
+                ContentValues contentValues = eventModel.toContentValues();
+                contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
+                status = briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventUid);
+            }
+            if (status == 1 && eventModel.enrollment() != null)
+                updateEnrollment(eventModel.enrollment());
+        }
+        return Observable.just(status == 1);
+    }
+
+    private void updateEnrollment(String enrollmentUid) {
+        String SELECT_ENROLLMENT = "SELECT *\n" +
+                "FROM Enrollment\n" +
+                "WHERE uid = ? LIMIT 1;";
+        Cursor enrollmentCursor = briteDatabase.query(SELECT_ENROLLMENT, enrollmentUid);
+        if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
+            EnrollmentModel enrollmentModel = EnrollmentModel.create(enrollmentCursor);
+
+            if (enrollmentModel.state() != State.TO_POST) {
+                ContentValues cv = enrollmentModel.toContentValues();
+                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+                cv.put(EnrollmentModel.Columns.STATE, State.TO_DELETE.name());
+                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+            } else
+                briteDatabase.delete(EnrollmentModel.TABLE, "uid = ?", enrollmentUid);
+            enrollmentCursor.close();
+
+            updateTei(enrollmentModel.trackedEntityInstance());
+        }
+
+    }
+
+    private void updateTei(String teiUid) {
+        String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
+        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
+        if (teiCursor != null && teiCursor.moveToFirst()) {
+            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
+            ContentValues cv = teiModel.toContentValues();
+            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(TrackedEntityInstanceModel.Columns.STATE,
+                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+            teiCursor.close();
+        }
+    }
+
+    @Override
+    public Observable<Boolean> updateEventStatus(EventStatus status) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.STATUS, status.name());
+        String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
+        contentValues.put(EventModel.Columns.LAST_UPDATED, updateDate);
+        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
     }
 
     @Override

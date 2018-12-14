@@ -52,8 +52,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.core.maintenance.D2ErrorCode.CANT_CREATE_EXISTING_OBJECT;
-
 /**
  * QUADRAM. Created by ppajuelo on 30/11/2017.
  */
@@ -300,6 +298,25 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     }
 
     @Override
+    public void onScheduleSelected(String uid, View sharedView) {
+        Fragment teiFragment = TEIDataFragment.getInstance();
+        if (teiFragment != null && teiFragment.getContext() != null && teiFragment.isAdded()) {
+            Intent intent = new Intent(teiFragment.getContext(), EventDetailActivity.class);
+            Bundle extras = new Bundle();
+            extras.putString("EVENT_UID", uid);
+            extras.putString("TOOLBAR_TITLE", view.getToolbarTitle());
+            extras.putString("TEI_UID", teUid);
+            intent.putExtras(extras);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(view.getAbstractActivity(), sharedView, "shared_view");
+            teiFragment.startActivityForResult(intent, TEIDataFragment.getEventRequestCode(), options.toBundle());
+/*
+            Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
+            intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
+            teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);*/
+        }
+    }
+
+    @Override
     public void onFollowUp(DashboardProgramModel dashboardProgramModel) {
         boolean followup = dashboardRepository.setFollowUp(dashboardProgramModel.getCurrentEnrollment().uid());
 
@@ -348,10 +365,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
             d2.relationshipModule().relationships.add(relationship);
 //            dashboardRepository.updateTeiState(); SDK now updating TEI state
         } catch (D2Error e) {
-            if (e.errorCode() == CANT_CREATE_EXISTING_OBJECT)
-                view.displayMessage(e.errorDescription());
-            else
-                Timber.d(e);
+            view.displayMessage(e.errorDescription());
         }
     }
 
@@ -388,7 +402,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                RelationshipFragment.getInstance().setRelationships(),
+                                relationshipFragment.setRelationships(),
                                 Timber::d
                         )
         );

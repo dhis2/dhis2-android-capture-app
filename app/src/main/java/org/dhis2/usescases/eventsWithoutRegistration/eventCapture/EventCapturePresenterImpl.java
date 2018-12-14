@@ -52,6 +52,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private final RulesUtilsProvider rulesUtils;
     private final DataEntryStore dataEntryStore;
     private final MetadataRepository metadataRepository;
+    private final String eventUid;
     private CompositeDisposable compositeDisposable;
     private EventCaptureContract.View view;
     private int currentPosition;
@@ -65,8 +66,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     private String completeMessage;
     private Map<String, String> errors;
     private EventStatus eventStatus;
+    private boolean hasExpired;
 
-    public EventCapturePresenterImpl(EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
+    public EventCapturePresenterImpl(String eventUid, EventCaptureContract.EventCaptureRepository eventCaptureRepository, MetadataRepository metadataRepository, RulesUtilsProvider rulesUtils, DataEntryStore dataEntryStore) {
+        this.eventUid = eventUid;
         this.eventCaptureRepository = eventCaptureRepository;
         this.metadataRepository = metadataRepository;
         this.rulesUtils = rulesUtils;
@@ -108,7 +111,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> this.eventStatus = data,
+                                data -> {
+                                    this.eventStatus = data;
+                                    if (eventStatus == EventStatus.COMPLETED)
+                                        checkExpiration();
+                                },
                                 Timber::e
                         )
         );
@@ -122,6 +129,20 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                     this.sectionList = data;
                                     view.setUp();
                                 },
+                                Timber::e
+                        )
+        );
+
+
+    }
+
+    private void checkExpiration() {
+        compositeDisposable.add(
+                metadataRepository.isCompletedEventExpired(eventUid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                hasExpired -> this.hasExpired = hasExpired,
                                 Timber::e
                         )
         );
@@ -181,7 +202,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         compositeDisposable.add(
                 EventCaptureFormFragment.getInstance().optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -289,7 +310,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
             currentSectionPosition.onNext(currentPosition);
         } else {
             if (eventStatus != EventStatus.ACTIVE) {
-                view.attempToReopen();
+                setUpActionByStatus(eventStatus);
             } else if (!emptyMandatoryFields.isEmpty()) {
                 view.setMandatoryWarning(emptyMandatoryFields);
             } else if (!this.errors.isEmpty()) {
@@ -307,6 +328,27 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 )
                 );
             }
+        }
+    }
+
+    private void setUpActionByStatus(EventStatus eventStatus) {
+        switch (eventStatus) {
+            case COMPLETED:
+                if (!hasExpired)
+                    view.attemptToReopen();
+                else
+                    view.finishDataEntry();
+                break;
+            case OVERDUE:
+                view.attemptToSkip();
+                break;
+            case SKIPPED:
+                view.attemptToReschedule();
+                break;
+            case SCHEDULE:
+                break;
+            default:
+                break;
         }
     }
 
@@ -389,7 +431,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> view.showSnackBar(R.string.event_was_deleted),
+                        result -> {
+                            if (result)
+                                view.showSnackBar(R.string.event_was_deleted);
+                        },
                         Timber::e,
                         () -> view.finishDataEntry()
                 )
@@ -397,11 +442,29 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
+    public void skipEvent() {
+        compositeDisposable.add(eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> view.showSnackBar(R.string.event_was_skipped),
+                        Timber::e,
+                        () -> view.finishDataEntry()
+                )
+        );
+    }
+
+    @Override
+    public void rescheduleEvent() {
+
+    }
+
+    @Override
     public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
-                        .observeOn(Schedulers.io())
-                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
                         .subscribe(
                                 view.updatePercentage(),
                                 Timber::e
