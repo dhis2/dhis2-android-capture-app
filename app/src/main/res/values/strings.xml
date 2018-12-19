@@ -37,7 +37,6 @@
 
     <!-- Login -->
     <string name="url_hint">Server url</string>
-
     <string name="user_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="log_in_button">Log In</string>
