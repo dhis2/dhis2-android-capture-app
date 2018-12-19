@@ -38,7 +38,6 @@ public class ImageHolder extends FormViewHolder {
                 String[] labelAndCode = model.label().split("-");
                 String label = labelAndCode[0];
                 String code = labelAndCode[1];
-
                 if (imageSelector.get().equals(label)) {
                     value = null;
                     imageSelector.set("");
@@ -58,11 +57,9 @@ public class ImageHolder extends FormViewHolder {
 
         this.isEditable = viewModel.editable();
         descriptionText = viewModel.description();
-
         String[] labelAndCode = viewModel.label().split("-");
         String labelName = labelAndCode[0];
         String code = labelAndCode[1];
-
         label = new StringBuilder(labelName);
         if (viewModel.mandatory())
             label.append("*");
@@ -71,10 +68,8 @@ public class ImageHolder extends FormViewHolder {
 
         String[] uids = viewModel.uid().split("\\.");
         Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-
         if (viewModel.value() != null && !viewModel.value().equals(currentSelector.get()))
             currentSelector.set(viewModel.value());
-
         if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);
             binding.errorMessage.setText(viewModel.warning());
