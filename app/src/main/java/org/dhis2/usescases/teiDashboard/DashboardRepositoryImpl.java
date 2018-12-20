@@ -108,7 +108,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND Event.programStage IN (SELECT ProgramStage.uid FROM ProgramStage WHERE ProgramStage.program = ?) " + //Program.uid
                     "AND %s.%s = ? " + //TeiUid
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
+                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND Event.state = 'SCHEDULE') " +
                     "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,

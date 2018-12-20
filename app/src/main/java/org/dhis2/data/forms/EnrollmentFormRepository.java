@@ -421,7 +421,6 @@ class EnrollmentFormRepository implements FormRepository {
                 Date eventDate;
                 Calendar cal = DateUtils.getInstance().getCalendar();
                 if (generatedByEnrollmentDate) {
-
                     cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
                     cal.set(Calendar.HOUR_OF_DAY, 0);
                     cal.set(Calendar.MINUTE, 0);

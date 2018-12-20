@@ -153,7 +153,7 @@ public class ServerModule {
             errorJson = chain.proceed(request).body().string();
 
             JSONObject jsonObject = new JSONObject(errorJson);
-            contentValues.put("errorCode", jsonObject.getInt("httpStatusCode"));
+            contentValues.put("errorCode", jsonObject.has("httpStatusCode")?jsonObject.getInt("httpStatusCode"):0);
             contentValues.put("errorMessage", jsonObject.getString("message"));
             if (jsonObject.has("response") && jsonObject.getJSONObject("response").has("importSummaries")) {
                 JSONArray importSummaries = jsonObject.getJSONObject("response").getJSONArray("importSummaries");
