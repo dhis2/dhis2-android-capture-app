@@ -148,7 +148,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 "JOIN ProgramTrackedEntityAttribute " +
                 "ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute " +
                 "JOIN Program ON Program.uid = ProgramTrackedEntityAttribute.program " +
-                "WHERE Program.trackedEntityType = ? AND TrackedEntityAttribute.displayInListNoProgram = 1";
+                "WHERE Program.trackedEntityType = ? AND ProgramTrackedEntityAttribute.searchable = 1";
         return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_ATTRIBUTES, teiType)
                 .mapToList(TrackedEntityAttributeModel::create);
     }

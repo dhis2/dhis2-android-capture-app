@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="sectionUid"
             type="String"/>
@@ -36,7 +38,19 @@
             android:id="@+id/sectionStateIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@{currentSection == sectionUid? @drawable/ic_check_circle : @drawable/ic_unchecked_circle,default=@drawable/ic_unchecked_circle}"
+            app:srcCompat = "@drawable/ic_check_circle"
+            android:visibility="@{currentSection == sectionUid? View.VISIBLE : View.GONE}"
+            android:tint="@color/colorGreyDefault"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/sectionStateIconUnchecked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat = "@drawable/ic_unchecked_circle"
+            android:visibility="@{currentSection == sectionUid? View.GONE : View.VISIBLE}"
             android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

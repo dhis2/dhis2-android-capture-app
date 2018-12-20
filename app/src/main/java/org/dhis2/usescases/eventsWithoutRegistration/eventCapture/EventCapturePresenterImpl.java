@@ -150,7 +150,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void onBackClick() {
-        view.back();
+        view.clearFocus();
+
+        new Handler().postDelayed(
+                () -> view.back(),
+                1000);
     }
 
     @Override
