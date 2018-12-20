@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupMenu;
 
@@ -29,14 +31,19 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
-public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View {
+public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, View.OnTouchListener, GestureDetector.OnGestureListener {
+
+    private static final int SWIPE_THRESHOLD = 100;
+    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+    private GestureDetector gestureScanner;
 
     private ActivityEventCaptureBinding binding;
     @Inject
@@ -60,6 +67,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_event_capture);
         binding.setPresenter(presenter);
+        gestureScanner = new GestureDetector(this, this);
 
     }
 
@@ -148,6 +156,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 },
                 true).show();
     }
+
     @Override
     public void attemptToReopen() {
         Utils.getPopUpMenu(this,
@@ -274,7 +283,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
 
-
     @Override
     public void renderInitialInfo(String stageName, String eventDate, String orgUnit, String catOption) {
         binding.programStageName.setText(stageName);
@@ -324,8 +332,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     private void goToInitialScreen() {
         Bundle bundle = new Bundle();
-        bundle.putString(PROGRAM_UID,   getIntent().getStringExtra(Constants.PROGRAM_UID));
-        bundle.putString(Constants.EVENT_UID,  getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
+        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 
@@ -349,5 +357,71 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     }
                 }
         ).show();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        super.dispatchTouchEvent(ev);
+        return gestureScanner.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent me) {
+        return gestureScanner.onTouchEvent(me);
+    }
+
+    public boolean onDown(MotionEvent e) {
+        return true;
+    }
+
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float
+            velocityX, float velocityY) {
+        boolean result = false;
+        try {
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        onSwipeRight();
+                    } else {
+                        onSwipeLeft();
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            Timber.e(exception);
+        }
+        return result;
+    }
+
+    public void onLongPress(MotionEvent e) {
+        // nothing
+    }
+
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float
+            distanceX, float distanceY) {
+        return true;
+    }
+
+    public void onShowPress(MotionEvent e) {
+        // nothing
+    }
+
+    public boolean onSingleTapUp(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return gestureScanner.onTouchEvent(event);
+    }
+
+    public void onSwipeRight() {
+        presenter.onPreviousSection();
+    }
+
+    public void onSwipeLeft() {
+        presenter.onNextSection();
     }
 }
