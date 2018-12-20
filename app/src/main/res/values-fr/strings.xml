@@ -6,9 +6,9 @@
   <string name="error">Erreur</string>
   <string name="error_wrong_server_url">URL incorrecte</string>
   <string name="error_wrong_credentials">références incorrectes</string>
-  <string name="error_unexpected_error">Erreur inattendue</string>
-  <string name="error_internal_server_error">Erreur interne</string>
-  <string name="yes">oui</string>
+  <string name="error_unexpected_error">"Erreur inattendue "</string>
+  <string name="error_internal_server_error">"Erreur interne "</string>
+  <string name="yes">"oui "</string>
   <string name="no">no</string>
   <string name="no_value">pas de valeur</string>
   <string name="sync_now">Synchronisez_maintenat</string>
@@ -16,7 +16,7 @@
   <string name="sync_title">synchronisant</string>
   <string name="sync_metadata">Méta-données</string>
   <string name="sync_events">Événements</string>
-  <string name="sync_tei">Entités suiviées</string>
+  <string name="sync_tei">"Entités suiviées "</string>
   <string name="sync_complete_title">Fini</string>
   <string name="sync_complete_text">Synchronisation complète</string>
   <string name="sync_error_title">Problème de synchronisation</string>
@@ -91,6 +91,8 @@
   <string name="event_updated">événement mis à jour</string>
   <string name="one_time">Une fois</string>
   <string name="permanent">Définitif</string>
+  <string name="report_period">Période de rapport</string>
+  <string name="cat_option">Option de catégorie</string>
   <string name="event_date">Datee d´événement</string>
   <string name="due_date">Date limite</string>
   <string name="cat_combo">Cat combo</string>
@@ -116,7 +118,6 @@
   <string name="deactivate">Désactiver</string>
   <string name="program_not_allow_events">Ce programme ne permet pas plus d\'événements</string>
   <string name="events">événements</string>
-  <string name="relationships">Relation</string>
   <string name="done_task">Accueil</string>
   <string name="app_info">Information de l´Appli</string>
   <string name="log_out">Déconnecter</string>
@@ -170,6 +171,7 @@
   <string name="date_dialog_clear">Effacer</string>
   <string name="period">Période</string>
   <string name="org_unit_filter">(%d) L´unité d´Organisation</string>
+  <string name="org_unit_select_level">Niveau %d</string>
   <string name="tuto_main_1">Bienvenue à dhis2</string>
   <string name="tuto_main_2">Ici vous pouvez voir vos activités</string>
   <string name="tuto_main_3">Vous pouvez appliquer un filtre...</string>
@@ -201,6 +203,7 @@
   <string name="about">À propos</string>
   <string name="programs_to_enroll">Programmes disponibles pour l´admission</string>
   <string name="select_all">Tout sélectionner</string>
+  <string name="clear_all">Dégager sélection</string>
   <string name="empty_program_list">Il n\'y a pas d\'information pour les critères choisis. Veuillez les changer</string>
   <string name="share">Partager</string>
   <string name="share_qr">Partager le QR</string>
@@ -262,7 +265,7 @@
   <string name="chinesse_test">" "</string>
   <string name="menu_home">Page d´accueil</string>
   <string name="appwidget_text">Exemple</string>
-  <string name="add_widget">Ajouter un widget</string>
+  <string name="add_widget">"Ajouter un widget "</string>
   <string name="showHelp">Montrer l´aide</string>
   <string name="tuto_settings_1">Synchronisation des données</string>
   <string name="tuto_settings_2">Synchroniser votre configuration</string>
@@ -291,4 +294,20 @@
   <string name="tuto_main_8">Synchroniser avec le serveur</string>
   <string name="tuto_main_9">Bloquer la session avec un code à 4 chiffres. N\'oubliez pas votre code!</string>
   <string name="tuto_main_10">Déconnectez-vous pour changer d\'utilisateur ou de serveur. Vous pourrez vous reconnecter même s\'il n\'y a pas de connexion internet</string>
+  <string name="text_plus_colon">%s:</string>
+  <string name="relationships">Relation</string>
+  <string name="qr_data_values">Valeur de donnée</string>
+  <string name="info">Info</string>
+  <string name="qr_no_id_error">Impossible de lire cet Id</string>
+  <string name="delete_local_data">Suprimmer les données</string>
+  <string name="dashboard_overview">Général</string>
+  <string name="dashboard_relationships">Relations</string>
+  <string name="dashboard_indicators">Indicateurs</string>
+  <string name="dashboard_notes">Notes</string>
+  <string name="unable_to_complete">Impossible de terminer</string>
+  <string name="field_errors">Certains champs comportent des erreurs. Merci de les vérifier pour compléter.</string>
+  <string name="unselect_enrollment">Désélectionner l\'inscription</string>
+  <string name="unselect_enrollment_description">Montrer le tableau de bord avec tous les programmes actifs</string>
+  <string name="CHECK_SYNC_ERRORS">Vérifier les erreurs de synchronisation</string>
+  <string name="error_dialog_title">Registre d\'erreur de synchronisation</string>
 </resources>

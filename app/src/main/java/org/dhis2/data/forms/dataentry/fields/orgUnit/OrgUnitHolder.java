@@ -36,6 +36,7 @@ public class OrgUnitHolder extends FormViewHolder {
     private OrgUnitCascadeDialog orgUnitDialog;
     private CompositeDisposable compositeDisposable;
     private OrgUnitViewModel model;
+    private String selectedOrgUnit;
 
     OrgUnitHolder(FragmentManager fm, ViewDataBinding binding, FlowableProcessor<RowAction> processor, Observable<List<OrganisationUnitModel>> orgUnits) {
         super(binding);
@@ -50,9 +51,11 @@ public class OrgUnitHolder extends FormViewHolder {
             orgUnitDialog = new OrgUnitCascadeDialog()
                     .setTitle(model.label())
                     .setOrgUnits(this.orgUnits)
+                    .setSelectedOrgUnit(selectedOrgUnit)
                     .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
                         @Override
                         public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {
+                            selectedOrgUnit = selectedOrgUnitUid;
                             processor.onNext(RowAction.create(model.uid(), selectedOrgUnitUid));
                             editText.setText(selectedOrgUnitName);
                             orgUnitDialog.dismiss();
