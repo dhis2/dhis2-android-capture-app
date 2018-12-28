@@ -88,8 +88,10 @@ public class RadioButtonHolder extends FormViewHolder {
         });
 
         clearButton.setOnClickListener(view -> {
-            radioGroup.clearCheck();
-            processor.onNext(RowAction.create(checkBoxViewModel.uid(), null));
+            if(checkBoxViewModel.editable().booleanValue()) {
+                radioGroup.clearCheck();
+                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null));
+            }
         });
 
 
