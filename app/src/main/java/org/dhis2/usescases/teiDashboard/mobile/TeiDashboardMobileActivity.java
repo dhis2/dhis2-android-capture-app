@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard.mobile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
@@ -12,7 +11,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -71,10 +69,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         super.onResume();
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-        if (prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)){
+        if (prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
-        }
-        else{
+        } else {
             orientation = Resources.getSystem().getConfiguration().orientation;
             init(teiUid, programUid);
         }

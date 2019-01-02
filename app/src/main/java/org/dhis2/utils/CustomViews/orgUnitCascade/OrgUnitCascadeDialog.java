@@ -40,6 +40,8 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private CascadeOrgUnitCallbacks callbacks;
     private CompositeDisposable disposable;
     private List<Quintet<String, String, String, Integer, Boolean>> orgUnits;
+    private OrgUnitCascadeAdapter adapter;
+    private String selectedOrgUnit;
 
     public OrgUnitCascadeDialog setTitle(String title) {
         this.title = title;
@@ -51,18 +53,24 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         return this;
     }
 
+    public OrgUnitCascadeDialog setSelectedOrgUnit(String orgUnitUid){
+        this.selectedOrgUnit = orgUnitUid;
+        return this;
+    }
+
     public OrgUnitCascadeDialog setOrgUnits(List<OrganisationUnitModel> orgUnits) {
         this.orgUnits = new ArrayList<>();
         List<String> orgUnitsUid = new ArrayList<>();
 
-        for (OrganisationUnitModel orgUnit : orgUnits) { //Users OrgUnits
-            this.orgUnits.add(Quintet.create(orgUnit.uid(),
-                    orgUnit.displayName(),
-                    orgUnit.parent() != null ? orgUnit.parent() : "",
-                    orgUnit.level(),
-                    true));//OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
-            orgUnitsUid.add(orgUnit.uid());
-        }
+        if (orgUnits != null)
+            for (OrganisationUnitModel orgUnit : orgUnits) { //Users OrgUnits
+                this.orgUnits.add(Quintet.create(orgUnit.uid(),
+                        orgUnit.displayName(),
+                        orgUnit.parent() != null ? orgUnit.parent() : "",
+                        orgUnit.level(),
+                        true));//OrgUnit Uid, OrgUnit Name, Parent Uid, Level, CanBeSelected
+                orgUnitsUid.add(orgUnit.uid());
+            }
 
         for (OrganisationUnitModel orgUnit : orgUnits) { //Path OrgUnits
             String[] uidPath = orgUnit.path().split("/");
@@ -120,6 +128,15 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         binding.clearButton.setOnClickListener(view -> {
             binding.orgUnitEditText.getText().clear();
             showChips(new ArrayList<>());
+            adapter = new OrgUnitCascadeAdapter(orgUnits, canBeSelected -> {
+                if (canBeSelected) {
+                    binding.acceptButton.setVisibility(View.VISIBLE);
+                } else {
+                    binding.acceptButton.setVisibility(View.INVISIBLE);
+                }
+            });
+            binding.recycler.setAdapter(adapter);
+            binding.acceptButton.setVisibility(View.INVISIBLE);
         });
 
         disposable = new CompositeDisposable();
@@ -142,13 +159,24 @@ public class OrgUnitCascadeDialog extends DialogFragment {
                         Timber::e
                 ));
 
-        binding.recycler.setAdapter(new OrgUnitCascadeAdapter(orgUnits, canBeSelected -> {
+        adapter = new OrgUnitCascadeAdapter(orgUnits, canBeSelected -> {
             if (canBeSelected) {
                 binding.acceptButton.setVisibility(View.VISIBLE);
             } else {
                 binding.acceptButton.setVisibility(View.INVISIBLE);
             }
-        }));
+        });
+
+        if (selectedOrgUnit != null){
+            for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits){
+                if (orgUnit.val0().equals(selectedOrgUnit)){
+                    adapter.setOrgUnit(orgUnit);
+                    adapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
+        binding.recycler.setAdapter(adapter);
 
         return binding.getRoot();
     }

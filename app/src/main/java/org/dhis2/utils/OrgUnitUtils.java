@@ -72,13 +72,15 @@ public class OrgUnitUtils {
         SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
 
         try {
-            for (int level = keys.last(); level > 1; level--) {
-                for (TreeNode treeNode : subLists.get(level - 1)) {
-                    for (TreeNode childTreeNode : subLists.get(level)) {
-                        if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                            treeNode.addChild(childTreeNode);
-                    }
+            if(!keys.isEmpty()) {
+                for (int level = keys.last(); level > 1; level--) {
+                    for (TreeNode treeNode : subLists.get(level - 1)) {
+                        for (TreeNode childTreeNode : subLists.get(level)) {
+                            if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                                treeNode.addChild(childTreeNode);
+                        }
 
+                    }
                 }
             }
         } catch (NoSuchElementException e) { //It seems keys.last() can result in a null

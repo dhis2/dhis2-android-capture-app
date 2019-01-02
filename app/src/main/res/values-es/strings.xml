@@ -91,6 +91,8 @@
   <string name="event_updated">Evento actualizado</string>
   <string name="one_time">Una vez</string>
   <string name="permanent">Permanente</string>
+  <string name="report_period">Periodo de reporte</string>
+  <string name="cat_option">Opción de categoría</string>
   <string name="event_date">Fecha de evento</string>
   <string name="due_date">Fecha de vencimiento</string>
   <string name="cat_combo">Cat Combo</string>
@@ -116,7 +118,6 @@
   <string name="deactivate">Desactivar</string>
   <string name="program_not_allow_events">Este programa no admite más eventos</string>
   <string name="events">Eventos</string>
-  <string name="relationships">relaciones</string>
   <string name="done_task">Inicio</string>
   <string name="app_info">Información de la App</string>
   <string name="log_out">Cerrar Sesion</string>
@@ -170,6 +171,7 @@
   <string name="date_dialog_clear">Limpiar</string>
   <string name="period">Periodo</string>
   <string name="org_unit_filter">(%d) Unidad Org.</string>
+  <string name="org_unit_select_level">Nivel %d</string>
   <string name="tuto_main_1">Bienvenido a dhis2</string>
   <string name="tuto_main_2">Aquí aparecerán tus actividades</string>
   <string name="tuto_main_3">Puedes aplicar un filtro…</string>
@@ -201,6 +203,7 @@
   <string name="about">Acerca de</string>
   <string name="programs_to_enroll">Programas disponibles para inscripcion</string>
   <string name="select_all">Selecionar todo</string>
+  <string name="clear_all">Borrar selección</string>
   <string name="empty_program_list">No hay información para los filtros seleccionados. Prueba modificándolos.</string>
   <string name="share">Compartir</string>
   <string name="share_qr">Compartir QR</string>
@@ -256,8 +259,8 @@
   <string name="dialog_generate_new_event">Generar nuevo evento</string>
   <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
   <string name="event_completed_title">Eventos Completados</string>
-  <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quieres completar el programa también?</string>
-  <string name="check_event">Verificar</string>
+  <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
+  <string name="check_event">Vérifier</string>
   <string name="burmesse_test">" "</string>
   <string name="chinesse_test">" "</string>
   <string name="menu_home">Inicio</string>
@@ -291,4 +294,20 @@
   <string name="tuto_main_8">Sincroniza tus datos con el servidor</string>
   <string name="tuto_main_9">"Bloquea la session con un digito de 4 cifras. ¡No olvides tu codigo! "</string>
   <string name="tuto_main_10">Cierra sesión para cambiar de usuario o de servidor. Podrás volver a entrar con el mismo usuario si no hay internet.</string>
+  <string name="text_plus_colon">%s:</string>
+  <string name="relationships">relaciones</string>
+  <string name="qr_data_values">Valores de los datos</string>
+  <string name="info">Información</string>
+  <string name="qr_no_id_error">No se ha podido leer este Id</string>
+  <string name="delete_local_data">Borrar datos</string>
+  <string name="dashboard_overview">General</string>
+  <string name="dashboard_relationships">Relaciones</string>
+  <string name="dashboard_indicators">Indicadores</string>
+  <string name="dashboard_notes">Notas</string>
+  <string name="unable_to_complete">No se puede completar</string>
+  <string name="field_errors">Algunos campos contienen errores. Por favor, revíselos para poder completar.</string>
+  <string name="unselect_enrollment">Deseleccionar inscripción</string>
+  <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
+  <string name="CHECK_SYNC_ERRORS">Comprobar errores de sincronización</string>
+  <string name="error_dialog_title">Lista de errores de sincronización</string>
 </resources>

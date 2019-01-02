@@ -20,6 +20,12 @@ import dagger.Provides;
 @Module
 public class SearchTEModule {
 
+    private final String teiType;
+
+    public SearchTEModule(String tEType) {
+        this.teiType = tEType;
+    }
+
     @Provides
     @PerActivity
     SearchTEContractsModule.View provideView(SearchTEActivity searchTEActivity) {
@@ -36,6 +42,6 @@ public class SearchTEModule {
     @PerActivity
     SearchRepository searchRepository(@NonNull CodeGenerator codeGenerator,
                                       @NonNull BriteDatabase briteDatabase) {
-        return new SearchRepositoryImpl(codeGenerator, briteDatabase);
+        return new SearchRepositoryImpl(codeGenerator, briteDatabase, teiType);
     }
 }

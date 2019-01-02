@@ -37,7 +37,6 @@
 
     <!-- Login -->
     <string name="url_hint">Server url</string>
-
     <string name="user_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="log_in_button">Log In</string>
@@ -227,6 +226,7 @@
     <string name="date_dialog_clear">Clear</string>
     <string name="period">Period</string>
     <string name="org_unit_filter">(%d) Org Unit</string>
+    <string name="org_unit_select_level">Level %d</string>
     <string name="tuto_main_1">Welcome to dhis2</string>
     <string name="tuto_main_2">Here you can see your activities</string>
     <string name="tuto_main_3">You can apply a filter…</string>

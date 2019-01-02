@@ -119,7 +119,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.dataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (dataInitializationCheck++ > 1)
+                if (dataInitializationCheck++ >= 1)
                     saveTimeData(i);
             }
 
@@ -130,7 +130,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (metaInitializationCheck++ > 1)
+                if (metaInitializationCheck++ >= 1)
                     saveTimeMeta(i);
             }
 
@@ -229,6 +229,9 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
             case TIME_HOURLY:
                 binding.dataPeriods.setSelection(1);
+                break;
+            case TIME_MANUAL:
+                binding.dataPeriods.setSelection(3);
                 break;
             case TIME_DAILY:
             default:

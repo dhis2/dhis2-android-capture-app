@@ -20,11 +20,14 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormCoordinatesAccentBinding;
 import org.dhis2.databinding.FormCoordinatesBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.Locale;
+
+import io.reactivex.processors.FlowableProcessor;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
@@ -43,6 +46,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     private OnCurrentLocationClick listener2;
     private boolean isBgTransparent;
     private LayoutInflater inflater;
+    private FlowableProcessor<RowAction> processor;
+    private String uid;
 
 
     public CoordinatesView(Context context) {
@@ -156,6 +161,11 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         findViewById(R.id.location2).setEnabled(editable);
     }
 
+    public void setProcessor(String uid, FlowableProcessor<RowAction> processor) {
+        this.processor = processor;
+        this.uid = uid;
+    }
+
 
     public interface OnMapPositionClick {
         void onMapPositionClick(CoordinatesView coordinatesView);
@@ -166,6 +176,11 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void updateLocation(double latitude, double longitude) {
+        processor.onNext(
+                RowAction.create(uid,
+                        String.format(Locale.US,
+                                "[%.5f,%.5f]", latitude, longitude))
+        );
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);
         this.latLong.setText(String.format("%s, %s", lat, lon));

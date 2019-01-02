@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkMo
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
+import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,9 @@ class HomeRepositoryImpl implements HomeRepository {
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
     private final static String SELECT_ORG_UNITS =
-            "SELECT * FROM " + OrganisationUnitModel.TABLE;
+            "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
+                    "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
+                    "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
 
     private final BriteDatabase briteDatabase;
 

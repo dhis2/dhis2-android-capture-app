@@ -600,6 +600,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(ProgramModel::create);
     }
 
+    @Override
+    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
+        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE,"SELECT * FROM Event WHERE uid = ?",eventUid)
+                .mapToOne(EventModel::create),
+                getExpiryDateFromEvent(eventUid),
+                ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
+    }
+
     @NonNull
     @Override
     public Observable<List<ResourceModel>> syncState(ProgramModel program) {

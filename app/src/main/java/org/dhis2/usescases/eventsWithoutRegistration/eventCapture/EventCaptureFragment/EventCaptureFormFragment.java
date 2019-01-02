@@ -78,13 +78,13 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
         this.flowableProcessor = PublishProcessor.create();
         activity.getPresenter().subscribeToSection();
+        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {

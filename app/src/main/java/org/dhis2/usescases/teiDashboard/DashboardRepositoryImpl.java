@@ -108,7 +108,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND Event.programStage IN (SELECT ProgramStage.uid FROM ProgramStage WHERE ProgramStage.program = ?) " + //Program.uid
                     "AND %s.%s = ? " + //TeiUid
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
+                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND Event.state = 'SCHEDULE') " +
                     "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
@@ -520,8 +520,42 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             }
         };
+
     }
 
+    @Override
+    public Observable<Boolean> handleNote(Pair<String, Boolean> stringBooleanPair) {
+        if (stringBooleanPair.val1()) {
+
+            Cursor cursor = briteDatabase.query(SELECT_USERNAME);
+            cursor.moveToFirst();
+            String userName = cursor.getString(0);
+            cursor.close();
+
+            Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
+            cursor1.moveToFirst();
+            String enrollmentUid = cursor1.getString(0);
+
+            SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                    .compileStatement(INSERT_NOTE);
+
+
+            sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+            sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+            sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+            sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+            sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+            long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+            insetNoteStatement.clearBindings();
+
+            return Observable.just(success == 1).flatMap(value->updateEnrollment(success).toObservable())
+                    .map(value-> value == 1);
+
+        } else
+            return Observable.just(false);
+    }
 
     @Override
     public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {
