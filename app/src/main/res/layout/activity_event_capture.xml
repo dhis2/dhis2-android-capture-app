@@ -70,6 +70,7 @@
                     android:layout_centerInParent="true"
                     android:textColor="@color/yellow_fdd"
                     android:textSize="12sp"
+                    android:text="eee"
                     tools:text="100%" />
             </RelativeLayout>
 

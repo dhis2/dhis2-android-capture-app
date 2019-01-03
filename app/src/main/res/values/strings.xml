@@ -396,5 +396,6 @@
     <string name="skip">Skip</string>
     <string name="reschedule">Reschedule</string>
     <string name="event_was_skipped">The event was marked as skipped</string>
+    <string name="no_intructions">There is no information for this screen</string>
 
 </resources>

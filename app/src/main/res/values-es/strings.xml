@@ -310,4 +310,5 @@
   <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
   <string name="CHECK_SYNC_ERRORS">Comprobar errores de sincronización</string>
   <string name="error_dialog_title">Lista de errores de sincronización</string>
+    <string name="no_intructions">No hay información sobre esta pantalla</string>
 </resources>

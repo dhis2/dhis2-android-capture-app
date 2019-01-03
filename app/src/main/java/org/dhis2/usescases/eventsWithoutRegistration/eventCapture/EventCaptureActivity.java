@@ -330,6 +330,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         popupMenu.show();
     }
 
+    @Override
+    public void showTutorial(boolean shaked) {
+        showToast(getString(R.string.no_intructions));
+    }
+
     private void goToInitialScreen() {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
