@@ -6,12 +6,12 @@ import org.dhis2.data.qr.QRModule;
 import org.dhis2.data.schedulers.SchedulerModule;
 import org.dhis2.data.server.ServerComponent;
 import org.dhis2.data.server.ServerModule;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
+import org.dhis2.usescases.sync.SyncComponent;
+import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.utils.UtilsModule;
 
 import javax.inject.Singleton;
@@ -53,5 +53,7 @@ public interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
+
+    SyncComponent plus(SyncModule syncModule);
 
 }

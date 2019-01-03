@@ -1,20 +1,29 @@
 package org.dhis2.usescases.sync;
 
+import org.dhis2.databinding.ActivitySynchronizationBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-
-import androidx.work.State;
 
 public class SyncContracts {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface View extends AbstractActivityContracts.View{
 
-        void updateView(String data, State state);
+        ActivitySynchronizationBinding getBinding();
+
+        void saveTheme(Integer themeId);
+
+        void saveFlag(String s);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
+    public interface Presenter{
+
         void init(View view);
-        void initMetaSync();
-        void initDataSync();
-        void initRVSync();
+
+        void syncMeta(int seconds, String scheduleTag);
+
+        void syncReservedValues();
+
+        void syncData(int seconds, String scheduleTag);
+
+        void getTheme();
     }
 }

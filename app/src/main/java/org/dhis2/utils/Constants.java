@@ -83,6 +83,10 @@ public class Constants {
     public static final String ENROLLMENT_DATE_UID = "ENROLLMENT_DATE_UID";
     public static final String INCIDENT_DATE_UID = "INCIDENT_DATE_UID";
 
+    public static final String META = "METADATA";
+    public static final String DATA = "DATA";
+    public static final String TIME_META = "timeMeta";
+    public static final String TIME_DATA = "timeData";
 
     private Constants() {
         // hide public constructor

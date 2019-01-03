@@ -35,6 +35,7 @@ import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.SyncUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +63,8 @@ import static org.dhis2.utils.Constants.TIME_WEEKLY;
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
-
     private int metaInitializationCheck = 0;
     private int dataInitializationCheck = 0;
-    public final static String TAG_DATA = "DATA";
-    public final static String TAG_META_NOW = "META_NOW";
-    public final static String TAG_META = "DATA_NOW";
-    public final static String TAG_DATA_NOW = "DATA_NOW";
 
     @Inject
     SyncManagerContracts.Presenter presenter;
@@ -87,8 +83,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (((App) getActivity().getApplication()).isSyncing() &&
-                        getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
+                if (SyncUtils.isSyncRunning() && getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
                     binding.buttonSyncData.setEnabled(false);
                     binding.buttonSyncMeta.setEnabled(false);
                 } else {
@@ -154,7 +149,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         presenter.init(this);
         LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
 
-        if (((App) getActivity().getApplication()).isSyncing()) {
+        if (SyncUtils.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
@@ -278,11 +273,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 time = TIME_MANUAL;
                 break;
         }
-        prefs.edit().putInt("timeData", time).apply();
+        prefs.edit().putInt(Constants.TIME_DATA, time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncData(time, "Data");
+            presenter.syncData(time, Constants.DATA);
         else
-            presenter.cancelPendingWork("Data");
+            presenter.cancelPendingWork(Constants.DATA);
     }
 
     private void saveTimeMeta(int i) {
@@ -303,11 +298,11 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 break;
         }
 
-        prefs.edit().putInt("timeMeta", time).apply();
+        prefs.edit().putInt(Constants.TIME_META, time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncMeta(time, "Meta");
+            presenter.syncMeta(time, Constants.META);
         else
-            presenter.cancelPendingWork("Meta");
+            presenter.cancelPendingWork(Constants.META);
     }
 
     @Override
