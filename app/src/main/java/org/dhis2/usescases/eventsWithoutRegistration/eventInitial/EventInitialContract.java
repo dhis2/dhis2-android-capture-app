@@ -86,7 +86,7 @@ public class EventInitialContract {
 
         void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                          String catOption, String catOptionCombo,
-                         String latitude, String longitude);
+                         String latitude, String longitude, String trackedEntityInstance);
 
         void createEventPermanent(String enrollmentUid, String trackedEntityInstanceUid, String programStageModel,
                                   Date date, String orgUnitUid,
@@ -97,7 +97,7 @@ public class EventInitialContract {
                            String catOption, String catOptionCombo,
                            String latitude, String longitude);
 
-        void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid,
+        void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
                        String catOption, String catOptionCombo,
                        String latitude, String longitude);
 
@@ -127,7 +127,7 @@ public class EventInitialContract {
 
         void onShareClick(android.view.View mView);
 
-        void deleteEvent();
+        void deleteEvent(String trackedEntityInstance);
     }
 
 }
