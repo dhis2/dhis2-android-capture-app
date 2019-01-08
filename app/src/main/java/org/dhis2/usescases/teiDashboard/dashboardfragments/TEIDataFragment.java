@@ -249,18 +249,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         };
     }
 
-    private void askCompleteProgram() {
-        dialog = new CustomDialog(
-                getContext(),
-                getString(R.string.event_completed_title),
-                getString(R.string.event_completed_message),
-                getString(R.string.button_ok),
-                getString(R.string.cancel),
-                RC_EVENTS_COMPLETED,
-                this);
-        dialog.show();
-    }
-
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
         return enrollmentStatus -> {
             if (enrollmentStatus == EnrollmentStatus.COMPLETED)
