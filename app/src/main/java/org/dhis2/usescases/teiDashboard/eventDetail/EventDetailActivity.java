@@ -80,6 +80,12 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
         if(eventDetailModel.getEventModel().eventDate()!=null){
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
