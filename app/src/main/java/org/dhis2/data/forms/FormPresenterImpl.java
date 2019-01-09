@@ -97,16 +97,7 @@ class FormPresenterImpl implements FormPresenter {
             compositeDisposable.add(formRepository.reportDate()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .filter(date -> !isEmpty(date))
-                    .map(date -> {
-                        try {
-                            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
-                        } catch (ParseException e) {
-                            Timber.e(e, "DashboardRepository: Unable to parse date. Expected format: " +
-                                    DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
-                            return date;
-                        }
-                    })
+                    .filter(programModelAndDate -> !isEmpty(programModelAndDate.val1()))
                     .subscribe(view.renderReportDate(), Timber::e));
 
             compositeDisposable.add(formRepository.incidentDate()

@@ -14,6 +14,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andrognito.pinlockview.PinLockListener;
 
@@ -257,5 +258,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        if(fragId == R.id.menu_home || fragId == R.id.sync_manager)
+            super.showTutorial(shaked);
+        else
+            showToast(getString(R.string.no_intructions));
+
     }
 }

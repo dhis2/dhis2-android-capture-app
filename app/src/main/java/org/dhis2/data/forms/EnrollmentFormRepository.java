@@ -69,7 +69,7 @@ class EnrollmentFormRepository implements FormRepository {
             "WHERE Enrollment.uid = ? " +
             "LIMIT 1";
 
-    private static final String SELECT_ENROLLMENT_DATE = "SELECT Enrollment.enrollmentDate\n" +
+    private static final String SELECT_ENROLLMENT_DATE = "SELECT Enrollment.*\n" +
             "FROM Enrollment\n" +
             "WHERE Enrollment.uid = ? " +
             "LIMIT 1";
@@ -246,10 +246,13 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<String> reportDate() {
-        return briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0))
+    public Flowable<Pair<ProgramModel, String>> reportDate() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_ENROLLMENT_PROGRAM, enrollmentUid == null ? "" : enrollmentUid)
+                .mapToOne(ProgramModel::create)
+                .flatMap(programModel -> briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid == null ? "" : enrollmentUid)
+                        .mapToOne(EnrollmentModel::create)
+                        .map(enrollmentModel -> Pair.create(programModel, enrollmentModel.enrollmentDate() != null ?
+                                DateUtils.uiDateFormat().format(enrollmentModel.enrollmentDate()) : "")))
                 .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }

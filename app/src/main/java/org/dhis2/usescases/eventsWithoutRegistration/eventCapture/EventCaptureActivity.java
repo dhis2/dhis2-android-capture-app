@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -243,6 +244,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void finishDataEntry() {
+        Intent intent = new Intent();
+        intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -330,10 +334,16 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         popupMenu.show();
     }
 
+    @Override
+    public void showTutorial(boolean shaked) {
+        showToast(getString(R.string.no_intructions));
+    }
+
     private void goToInitialScreen() {
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE));
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 

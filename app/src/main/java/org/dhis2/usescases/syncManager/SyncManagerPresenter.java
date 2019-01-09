@@ -27,9 +27,6 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_DATA_NOW;
-import static org.dhis2.usescases.syncManager.SyncManagerFragment.TAG_META_NOW;
-
 /**
  * QUADRAM. Created by lmartin on 21/03/2018.
  */
@@ -95,24 +92,22 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     @Override
     public void syncData() {
 
-        WorkManager.getInstance().cancelAllWorkByTag(TAG_DATA_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncDataWorker.class);
-        syncDataBuilder.addTag(TAG_DATA_NOW);
-        /*syncDataBuilder.setConstraints(new Constraints.Builder()
+        syncDataBuilder.addTag(Constants.DATA);
+        syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());*/
+                .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().enqueue(request);
     }
 
     @Override
     public void syncMeta() {
-        WorkManager.getInstance().cancelAllWorkByTag(TAG_META_NOW);
         OneTimeWorkRequest.Builder syncDataBuilder = new OneTimeWorkRequest.Builder(SyncMetadataWorker.class);
-        syncDataBuilder.addTag(TAG_META_NOW);
-       /* syncDataBuilder.setConstraints(new Constraints.Builder()
+        syncDataBuilder.addTag(Constants.META);
+        syncDataBuilder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build());*/
+                .build());
         OneTimeWorkRequest request = syncDataBuilder.build();
         WorkManager.getInstance().enqueue(request);
     }

@@ -293,6 +293,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
 
             Intent intent2 = new Intent(teiFragment.getContext(), EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(uid, programUid));
+            intent2.putExtra(Constants.TRACKED_ENTITY_INSTANCE, teUid);
             teiFragment.startActivityForResult(intent2, TEIDataFragment.getEventRequestCode(), null);
         }
     }

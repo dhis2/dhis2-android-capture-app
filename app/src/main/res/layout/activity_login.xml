@@ -31,71 +31,12 @@
                 android:layout_height="wrap_content"
                 android:background="?colorPrimary">
 
-                <!--<com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottieView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/sync_layout"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone"
-                    app:lottie_autoPlay="false"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/world_lottie" />-->
-
-                <ImageView
-                    android:id="@+id/dhisLogo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:layout_centerInParent="true"
-                    android:layout_margin="10dp"
-                    android:tint="@color/white"
-                    app:srcCompat="@drawable/ic_dhis_white" />
-
-                <ImageView
-                    android:id="@+id/logo_flag"
+                <include
+                    android:id="@+id/logo_layout"
+                    layout="@layout/logo_dhis"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:alpha="0"
-                    android:paddingBottom="80dp"
-                    android:visibility="gone"
-                    tools:src="@drawable/sierra_leone" />
-
-                <LinearLayout
-                    android:id="@+id/sync_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_margin="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:gravity="bottom"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/metadataText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/syncing_configuration"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="11sp"
-                        app:drawableEnd="@{@drawable/animator_sync}" />
-
-                    <TextView
-                        android:id="@+id/eventsText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
-                        android:alpha=".3"
-                        android:gravity="center_vertical"
-                        android:text="@string/syncing_data_shortly"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="11sp" />
-
-                </LinearLayout>
+                    android:layout_centerHorizontal="true" />
 
             </RelativeLayout>
 

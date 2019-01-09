@@ -37,7 +37,7 @@ interface FormView {
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
     @NonNull
-    Consumer<String> renderReportDate();
+    Consumer<Pair<ProgramModel, String>> renderReportDate();
 
     @NonNull
     Consumer<String> renderTitle();
