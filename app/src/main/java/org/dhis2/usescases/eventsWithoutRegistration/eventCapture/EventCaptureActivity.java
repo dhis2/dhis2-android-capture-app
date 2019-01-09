@@ -343,6 +343,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE));
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 
