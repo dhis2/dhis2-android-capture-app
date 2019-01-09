@@ -253,7 +253,9 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedOrgUnit,
                                 null,
                                 catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
+                                selectedLat,
+                                selectedLon,
+                                getTrackedEntityInstance);
                     }
                 } else {
                     presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
