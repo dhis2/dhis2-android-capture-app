@@ -234,7 +234,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
@@ -243,8 +243,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ?
-                                        null : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else {
                         presenter.createEvent(
@@ -253,9 +252,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon,
-                                getTrackedEntityInstance);
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
+                                selectedLat, selectedLon);
                     }
                 } else {
                     presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
@@ -818,7 +816,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
                 iterator.remove();
         }
-        if(orgUnits != null && !orgUnits.isEmpty()) {
+        if (orgUnits != null && !orgUnits.isEmpty()) {
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)
@@ -830,8 +828,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     .setNegativeListener(data -> orgUnitDialog.dismiss());
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
-        }
-        else{
+        } else {
             showNoOrgUnits();
         }
     }
