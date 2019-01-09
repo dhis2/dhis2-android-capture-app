@@ -139,7 +139,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String uid = codeGenerator.generate();
 
         if (categoryOptionComboUid != null) {
-            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid == null ? "" : categoryOptionComboUid);
+            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
             if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
                 categoryOptionsUid = cursorCatOpt.getString(0);
                 cursorCatOpt.close();
