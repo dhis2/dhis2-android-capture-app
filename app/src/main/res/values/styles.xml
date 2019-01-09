@@ -21,21 +21,25 @@
     </style>
 
     <style name="TimePickerTheme" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeRed" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeGreen" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
 
     <style name="TimePickerThemeOrange" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorGreyDefault</item>
         <item name="colorAccent">@color/colorGreyDefault</item>
         <item name="android:colorAccent">@color/colorGreyDefault</item>
     </style>
