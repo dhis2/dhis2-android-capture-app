@@ -320,4 +320,14 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
         periodDialog.show(view.getAbstractActivity().getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
     }
+
+    @Override
+    public void onDettach() {
+        disposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }

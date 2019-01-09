@@ -176,11 +176,12 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void updateLocation(double latitude, double longitude) {
-        processor.onNext(
-                RowAction.create(uid,
-                        String.format(Locale.US,
-                                "[%.5f,%.5f]", latitude, longitude))
-        );
+        if (uid != null)
+            processor.onNext(
+                    RowAction.create(uid,
+                            String.format(Locale.US,
+                                    "[%.5f,%.5f]", latitude, longitude))
+            );
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);
         this.latLong.setText(String.format("%s, %s", lat, lon));
