@@ -50,7 +50,7 @@ public class EventDetailContracts {
         void showCatOptionDialog();
     }
 
-    public interface Presenter {
+    public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(EventDetailContracts.View view);
 
         void getEventData(String eventUid);

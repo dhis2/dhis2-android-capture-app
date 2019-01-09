@@ -256,7 +256,7 @@
     <string name="dialog_generate_new_event">Generar nuevo evento</string>
     <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
     <string name="event_completed_title">Eventos Completados</string>
-    <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
+    <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quieres completar el programa también?</string>
     <string name="missing_mandatory_fields_events">Faltan algunos campos obligatorios. Puedes cerrar la edición, pero este evento no podrá ser completado.</string>
     <string name="no_intructions">No hay información sobre esta pantalla</string>
 
