@@ -29,12 +29,12 @@ import org.dhis2.utils.SyncUtils;
 import javax.inject.Inject;
 
 
-
-public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View{
+public class SyncActivity extends ActivityGlobalAbstract implements SyncContracts.View {
 
     ActivitySynchronizationBinding binding;
 
-    @Inject SyncContracts.Presenter presenter;
+    @Inject
+    SyncContracts.Presenter presenter;
 
     enum SyncState {
         METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
@@ -44,7 +44,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (SyncUtils.isSyncRunning()){
+                if (SyncUtils.isSyncRunning()) {
                     handleSync(intent);
                 } else {
                     handleEndSync(intent);
@@ -95,7 +95,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         handleSyncStatus();
     }
 
-    public void handleSyncStatus(){
+    public void handleSyncStatus() {
         if (SyncUtils.isSyncRunning(Constants.DATA)) {
 
             binding.metadataText.setText(getString(R.string.configuration_ready));
@@ -105,8 +105,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
             Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
             binding.eventsText.setAlpha(1.0f);
 
-        }
-        else if (!SyncUtils.isSyncRunning(Constants.META)){
+        } else if (!SyncUtils.isSyncRunning(Constants.META)) {
             presenter.syncMeta(getSharedPreferences().getInt(Constants.TIME_META, Constants.TIME_DAILY), Constants.META);
         }
     }
@@ -119,12 +118,13 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         }
         super.onStop();
     }
-    public void handleSync(Intent intent){
-        if(intent.getBooleanExtra("metaSyncInProgress", false)){
+
+    public void handleSync(Intent intent) {
+        if (intent.getBooleanExtra("metaSyncInProgress", false)) {
 
             binding.metadataText.setText(getString(R.string.syncing_configuration));
 
-        }else if(intent.getBooleanExtra("dataSyncInProgress", false)){
+        } else if (intent.getBooleanExtra("dataSyncInProgress", false)) {
 
             binding.eventsText.setText(getString(R.string.syncing_data));
             Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
@@ -132,15 +132,15 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         }
     }
 
-    public void handleEndSync(Intent intent){
-        if(!intent.getBooleanExtra("metaSyncInProgress", true)){
+    public void handleEndSync(Intent intent) {
+        if (!intent.getBooleanExtra("metaSyncInProgress", true)) {
 
             binding.metadataText.setText(getString(R.string.configuration_ready));
             Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
             presenter.getTheme();
             presenter.syncData(getSharedPreferences().getInt(Constants.TIME_DATA, Constants.TIME_DAILY), Constants.DATA);
 
-        }else if(!intent.getBooleanExtra("dataSyncInProgress", true)){
+        } else if (!intent.getBooleanExtra("dataSyncInProgress", true)) {
 
             binding.eventsText.setText(getString(R.string.data_ready));
             Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
@@ -156,7 +156,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         prefs.edit().putInt(Constants.THEME, themeId).apply();
         setTheme(themeId);
 
-        int startColor = ColorUtils.getPrimaryColor(this,ColorUtils.ColorType.PRIMARY);
+        int startColor = ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY);
         TypedValue typedValue = new TypedValue();
         TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
         int endColor = a.getColor(0, 0);
@@ -180,14 +180,15 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         alphaAnimator.setDuration(2000);
         alphaAnimator.addUpdateListener(animation -> {
             binding.logoFlag.setAlpha((float) animation.getAnimatedValue());
-            binding.dhisLogo.setAlpha((float)0);
+            binding.dhisLogo.setAlpha((float) 0);
         });
         alphaAnimator.start();
 
     }
 
 
-    public void startMain(){
+    public void startMain() {
+        presenter.onDettach();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

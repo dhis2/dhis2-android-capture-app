@@ -234,7 +234,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
@@ -243,7 +243,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else {
                         presenter.createEvent(
@@ -252,7 +252,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
                                 selectedLat,
                                 selectedLon,
                                 getTrackedEntityInstance);
