@@ -109,12 +109,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s = ? " + //TeiUid
                     "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
                     "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND Event.state = 'SCHEDULE') " +
-                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  ASC",//Before the change was in DESC, now ASC, is it ok? ANDROAPP-1712
+                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
             EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE,/* EventModel.TABLE, EventModel.Columns.EVENT_DATE,*/
+            EventModel.TABLE, EventModel.Columns.DUE_DATE,
             EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
