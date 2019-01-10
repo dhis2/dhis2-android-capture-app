@@ -102,20 +102,26 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
-            "SELECT Event.* FROM %s JOIN %s " +
+            "SELECT DISTINCT %s.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
+                    "JOIN %s ON %s.%s " +
+                    "IN (SELECT %s FROM %s WHERE %s = ?)" +
                     "WHERE %s.%s = ? " + //ProgramUid
-                    "AND Event.programStage IN (SELECT ProgramStage.uid FROM ProgramStage WHERE ProgramStage.program = ?) " + //Program.uid
                     "AND %s.%s = ? " + //TeiUid
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND Event.state = 'SCHEDULE') " +
-                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  ASC",//Before the change was in DESC, now ASC, is it ok? ANDROAPP-1712
-            EventModel.TABLE, EnrollmentModel.TABLE,
+                    "AND %s.%s != '%s' " +
+                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND %s.%s = 'SCHEDULE') " +
+                    "THEN %s.%s " +
+                    "ELSE %s.%s END ASC, %s.%s DESC",
+            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
+            ProgramStageModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            ProgramStageModel.Columns.UID, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE,/* EventModel.TABLE, EventModel.Columns.EVENT_DATE,*/
-            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
+            EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.STATE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE,
+            EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
             "SELECT Event.* FROM %s " +
