@@ -82,6 +82,8 @@ public class Constants {
     public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
     public static final String ENROLLMENT_DATE_UID = "ENROLLMENT_DATE_UID";
     public static final String INCIDENT_DATE_UID = "INCIDENT_DATE_UID";
+    public static final String ENROLLMENT_DATE = "enrollmentDate";
+    public static final String INCIDENT_DATE = "incidentDate";
 
     public static final String META = "METADATA";
     public static final String DATA = "DATA";
