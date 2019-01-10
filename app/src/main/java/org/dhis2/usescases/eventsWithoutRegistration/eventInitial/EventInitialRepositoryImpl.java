@@ -139,7 +139,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String uid = codeGenerator.generate();
 
         if (categoryOptionComboUid != null) {
-            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid == null ? "" : categoryOptionComboUid);
+            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
             if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
                 categoryOptionsUid = cursorCatOpt.getString(0);
                 cursorCatOpt.close();
@@ -179,6 +179,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if(trackedEntityInstanceUid != null)
+                updateTei(trackedEntityInstanceUid);
             updateProgramTable(createDate, programUid);
             return Observable.just(uid);
         }
@@ -231,6 +233,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if(trackedEntityInstanceUid != null)
+                updateTei(trackedEntityInstanceUid);
             updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
             updateProgramTable(createDate, program);
             return Observable.just(uid);
@@ -294,7 +298,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
+    public Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
 
         Date currentDate = Calendar.getInstance().getTime();
         Date dueDate = null;
@@ -333,7 +337,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             String message = String.format(Locale.US, "Failed to update event for uid=[%s]", id);
             return Observable.error(new SQLiteConstraintException(message));
         }
-
+        if(trackedEntityInstance != null)
+            updateTei(trackedEntityInstance);
         return event(id).map(eventModel1 -> {
 //            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
             return eventModel1;
@@ -379,7 +384,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public void deleteEvent(String eventId) {
+    public void deleteEvent(String eventId, String trackedEntityInstance) {
         Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId);
         if (eventCursor != null && eventCursor.moveToNext()) {
             EventModel eventModel = EventModel.create(eventCursor);
@@ -394,6 +399,23 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
                 briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
             }
+
+            if(trackedEntityInstance != null)
+                updateTei(trackedEntityInstance);
+        }
+    }
+
+    private void updateTei(String teiUid) {
+        String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
+        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
+        if (teiCursor != null && teiCursor.moveToFirst()) {
+            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
+            ContentValues cv = teiModel.toContentValues();
+            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(TrackedEntityInstanceModel.Columns.STATE,
+                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+            teiCursor.close();
         }
     }
 }

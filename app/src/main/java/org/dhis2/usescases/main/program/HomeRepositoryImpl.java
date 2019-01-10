@@ -74,9 +74,10 @@ class HomeRepositoryImpl implements HomeRepository {
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
 
     private final static String SELECT_ORG_UNITS =
-            "SELECT * FROM " + OrganisationUnitModel.TABLE + " " +
-                    "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
-                    "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE')";
+            "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
+                    "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
+                    " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
+                    "' ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
 
     private final BriteDatabase briteDatabase;
 
@@ -106,13 +107,13 @@ class HomeRepositoryImpl implements HomeRepository {
     public Flowable<List<ProgramViewModel>> programModels(List<Date> dates, Period period, String orgUnitsId, int orgUnitsSize) {
 
         int orgUnits = orgUnitsId != null ? orgUnitsId.split(",").length : 0;
-        boolean filteringOrgs = orgUnitsId!=null && orgUnitsSize != orgUnits;
+        boolean filteringOrgs = orgUnitsId != null && orgUnitsSize != orgUnits;
         //QUERYING Program - orgUnit filter
         String orgQuery = "";
         if (orgUnitsId != null)
             orgQuery = String.format("WHERE OrganisationUnitProgramLink.organisationUnit IN (%s)", orgUnitsId);
 
-        String programQuery = PROGRAM_MODELS.replace("%s",orgQuery);
+        String programQuery = PROGRAM_MODELS.replace("%s", orgQuery);
 
         return briteDatabase.createQuery(TABLE_SET, programQuery)
                 .mapToList(cursor -> {
@@ -137,8 +138,6 @@ class HomeRepositoryImpl implements HomeRepository {
                                     dateQuery.append("OR ");
                             }
                         }
-
-
 
 
                         String filter = "";

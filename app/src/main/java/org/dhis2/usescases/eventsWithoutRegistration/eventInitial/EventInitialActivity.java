@@ -118,7 +118,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLat;
     private String savedLon;
     private ArrayList<String> sectionsToHide;
-
+    private String getTrackedEntityInstance;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setScreenName(this.getLocalClassName());
@@ -129,7 +129,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         eventCreationType = getIntent().getStringExtra(EVENT_CREATION_TYPE) != null ?
                 EventCreationType.valueOf(getIntent().getStringExtra(EVENT_CREATION_TYPE)) :
                 EventCreationType.DEFAULT;
-        String getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
+        getTrackedEntityInstance = getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE);
         enrollmentUid = getIntent().getStringExtra(ENROLLMENT_UID);
         selectedOrgUnit = getIntent().getStringExtra(ORG_UNIT);
         periodType = (PeriodType) getIntent().getSerializableExtra(EVENT_PERIOD_TYPE);
@@ -234,7 +234,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else if (eventCreationType == EventCreationType.SCHEDULE) {
                         presenter.scheduleEvent(
@@ -243,8 +243,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ?
-                                        null : selectedCatOptionCombo.uid(),
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
                                 selectedLat, selectedLon);
                     } else {
                         presenter.createEvent(
@@ -253,10 +252,14 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                                 selectedDate,
                                 selectedOrgUnit,
                                 null,
-                                catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(),
-                                selectedLat, selectedLon);
+                                catComboIsDefaultOrNull() ? CategoryComboModel.DEFAULT_UID : selectedCatOptionCombo.uid(),
+                                selectedLat,
+                                selectedLon,
+                                getTrackedEntityInstance);
                     }
                 } else {
+                    presenter.editEvent(getTrackedEntityInstance, programStageModel.uid(), eventUid, DateUtils.databaseDateFormat().format(selectedDate), selectedOrgUnit, null,
+                            catComboIsDefaultOrNull() ? null : selectedCatOptionCombo.uid(), selectedLat, selectedLon);
                     //TODO: WHERE TO UPDATE CHANGES IN DATE, ORGUNIT, CATCOMBO, COORDINATES
                     startFormActivity(eventUid);
                 }
@@ -815,7 +818,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             if (orgUnit.closedDate() != null && selectedDate.after(orgUnit.closedDate()))
                 iterator.remove();
         }
-        if(orgUnits != null && !orgUnits.isEmpty()) {
+        if (orgUnits != null && !orgUnits.isEmpty()) {
             orgUnitDialog = new OrgUnitDialog()
                     .setTitle(getString(R.string.org_unit))
                     .setMultiSelection(false)
@@ -827,8 +830,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                     .setNegativeListener(data -> orgUnitDialog.dismiss());
             if (!orgUnitDialog.isAdded())
                 orgUnitDialog.show(getSupportFragmentManager(), "ORG_UNIT_DIALOG");
-        }
-        else{
+        } else {
             showNoOrgUnits();
         }
     }
@@ -933,7 +935,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                 new DialogClickListener() {
                     @Override
                     public void onPositive() {
-                        presenter.deleteEvent();
+                        presenter.deleteEvent(getTrackedEntityInstance);
                     }
 
                     @Override

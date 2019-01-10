@@ -296,4 +296,13 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
 
     }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        if(binding.tabLayout.getSelectedTabPosition()==0)
+            super.showTutorial(shaked);
+        else
+            showToast(getString(R.string.no_intructions));
+
+    }
 }

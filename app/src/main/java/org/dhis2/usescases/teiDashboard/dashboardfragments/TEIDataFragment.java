@@ -227,7 +227,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         this);
                 dialog.show();
             } else if (programStageModel.remindCompleted())
-                askCompleteProgram();
+                presenter.areEventsCompleted(this);
         };
     }
 
@@ -247,18 +247,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
             }
 
         };
-    }
-
-    private void askCompleteProgram() {
-        dialog = new CustomDialog(
-                getContext(),
-                getString(R.string.event_completed_title),
-                getString(R.string.event_completed_message),
-                getString(R.string.button_ok),
-                getString(R.string.cancel),
-                RC_EVENTS_COMPLETED,
-                this);
-        dialog.show();
     }
 
     public Consumer<EnrollmentStatus> enrollmentCompleted() {
@@ -314,7 +302,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onNegative() {
         if (dialog.getRequestCode() == RC_GENERATE_EVENT && programStageFromEvent.remindCompleted())
-            askCompleteProgram();
+            presenter.areEventsCompleted(this);
     }
 
     public void switchFollowUp(boolean followUp) {

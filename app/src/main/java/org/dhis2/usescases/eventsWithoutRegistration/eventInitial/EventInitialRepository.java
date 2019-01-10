@@ -60,12 +60,12 @@ public interface EventInitialRepository {
     Observable<ProgramStageModel> programStageWithId(String programStageUid);
 
     @NonNull
-    Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
+    Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude);
 
     @NonNull
     Observable<List<EventModel>> getEventsFromProgramStage(String programUid, String enrollmentUid, String programStageUid);
 
     Observable<Boolean> accessDataWrite(String programId);
 
-    void deleteEvent(String eventId);
+    void deleteEvent(String eventId, String trackedEntityInstance);
 }

@@ -1,10 +1,12 @@
 package org.dhis2.utils.CustomViews;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.location.Location;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
@@ -18,6 +20,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -175,13 +178,15 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         void onCurrentLocationClick(double latitude, double longitude);
     }
 
+    @SuppressLint("MissingPermission")
     public void updateLocation(double latitude, double longitude) {
-        if (uid != null)
+        if(uid!=null) {
             processor.onNext(
                     RowAction.create(uid,
                             String.format(Locale.US,
                                     "[%.5f,%.5f]", latitude, longitude))
             );
+        }
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);
         this.latLong.setText(String.format("%s, %s", lat, lon));
