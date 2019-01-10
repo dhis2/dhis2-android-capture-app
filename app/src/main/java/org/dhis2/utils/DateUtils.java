@@ -57,7 +57,7 @@ public class DateUtils {
     /**********************
      SELECTED PEDIOD REGION*/
 
-    public Date getDate(Date date) {
+    private Date getDate(Date date) {
         Calendar calendar = getCalendar();
 
         calendar.setTime(date);
@@ -463,7 +463,7 @@ public class DateUtils {
     }
 
     public Date moveWeeklyWednesday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY)
+        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
         else {
             date.add(Calendar.WEEK_OF_YEAR, 1);
@@ -472,8 +472,8 @@ public class DateUtils {
         return date.getTime();
     }
 
-    private Date moveWeeklyThursday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) < Calendar.THURSDAY)
+    public Date moveWeeklyThursday(Calendar date) {
+        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.THURSDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
         else {
             date.add(Calendar.WEEK_OF_YEAR, 1);
@@ -482,8 +482,8 @@ public class DateUtils {
         return date.getTime();
     }
 
-    private Date moveWeeklySaturday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) < Calendar.SATURDAY)
+    public Date moveWeeklySaturday(Calendar date) {
+        if (date.get(Calendar.DAY_OF_WEEK) > 1 && date.get(Calendar.DAY_OF_WEEK) < Calendar.SATURDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
         else {
             date.add(Calendar.WEEK_OF_YEAR, 1);
@@ -492,8 +492,8 @@ public class DateUtils {
         return date.getTime();
     }
 
-    private Date moveWeeklySunday(Calendar date) {
-        if (date.get(Calendar.DAY_OF_WEEK) < Calendar.SUNDAY)
+    public Date moveWeeklySunday(Calendar date) {
+        if (date.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         else {
             date.add(Calendar.WEEK_OF_YEAR, 1);
@@ -502,48 +502,48 @@ public class DateUtils {
         return date.getTime();
     }
 
-    private Date moveBiWeekly(Calendar date) {
+    public Date moveBiWeekly(Calendar date) {
         date.add(Calendar.WEEK_OF_YEAR, 2);
         date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek());
         return date.getTime();
     }
 
-    private Date moveWeekly(Calendar date) {
+    public Date moveWeekly(Calendar date) {
         date.add(Calendar.WEEK_OF_YEAR, 1); //Set to next week
         date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek()); //Set to first day of next week
         date.add(Calendar.DAY_OF_YEAR, -1); //Set to last day of this week
         return date.getTime();
     }
 
-    private Date moveMonthly(Calendar date) {
+    public Date moveMonthly(Calendar date) {
         date.add(Calendar.MONTH, 1);
         date.set(Calendar.DAY_OF_MONTH, 1);
         date.add(Calendar.DAY_OF_MONTH, -1);
         return date.getTime();
     }
 
-    private Date moveBiMonthly(Calendar date) {
+    public Date moveBiMonthly(Calendar date) {
         date.add(Calendar.MONTH, 2);
         date.set(Calendar.DAY_OF_MONTH, 1);
         date.add(Calendar.DAY_OF_MONTH, -1);
         return date.getTime();
     }
 
-    private Date moveQuarterly(Calendar date) {
+    public Date moveQuarterly(Calendar date) {
         date.add(Calendar.MONTH, 4);
         date.set(Calendar.DAY_OF_MONTH, 1);
         date.add(Calendar.DAY_OF_MONTH, -1);
         return date.getTime();
     }
 
-    private Date moveSixMonthly(Calendar date) {
+    public Date moveSixMonthly(Calendar date) {
         date.add(Calendar.MONTH, 6);
         date.set(Calendar.DAY_OF_MONTH, 1);
         date.add(Calendar.DAY_OF_MONTH, -1);
         return date.getTime();
     }
 
-    private Date moveSixMonthlyApril(Calendar date) {
+    public Date moveSixMonthlyApril(Calendar date) {
         if (date.get(Calendar.MONTH) > Calendar.SEPTEMBER && date.get(Calendar.MONTH) <= Calendar.DECEMBER) {
             date.add(Calendar.MONTH, 6);
             date.set(Calendar.MONTH, Calendar.APRIL);
@@ -553,32 +553,32 @@ public class DateUtils {
             date.set(Calendar.DAY_OF_MONTH, 1);
         } else {
             date.set(Calendar.DAY_OF_MONTH, Calendar.APRIL);
-            date.add(Calendar.DAY_OF_MONTH, -1);
+            date.set(Calendar.DAY_OF_MONTH, 1);
         }
         return date.getTime();
     }
 
-    private Date moveYearly(Calendar date) {
+    public Date moveYearly(Calendar date) {
         date.add(Calendar.YEAR, 1);
         date.set(Calendar.DAY_OF_YEAR, 1);
         return date.getTime();
     }
 
-    private Date moveFinancialApril(Calendar date) {
+    public Date moveFinancialApril(Calendar date) {
         date.add(Calendar.YEAR, 1);
         date.set(Calendar.MONTH, Calendar.APRIL);
         date.set(Calendar.DAY_OF_MONTH, 1);
         return date.getTime();
     }
 
-    private Date moveFinancialJuly(Calendar date) {
+    public Date moveFinancialJuly(Calendar date) {
         date.add(Calendar.YEAR, 1);
         date.set(Calendar.MONTH, Calendar.JULY);
         date.set(Calendar.DAY_OF_MONTH, 1);
         return date.getTime();
     }
 
-    private Date moveFinancialOct(Calendar date) {
+    public Date moveFinancialOct(Calendar date) {
         date.add(Calendar.YEAR, 1);
         date.set(Calendar.MONTH, Calendar.OCTOBER);
         date.set(Calendar.DAY_OF_MONTH, 1);
