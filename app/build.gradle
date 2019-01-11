@@ -43,6 +43,10 @@ android {
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     configurations.all*.exclude module: 'jsr305'
 
 
