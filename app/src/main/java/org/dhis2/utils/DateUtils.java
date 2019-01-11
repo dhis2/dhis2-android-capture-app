@@ -5,9 +5,7 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
-import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +13,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -870,7 +867,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public String getPeriodUIString(PeriodType periodType, Date date) {
+    public String getPeriodUIString(PeriodType periodType, Date date, Locale locale) {
 
         String formattedDate;
         Date initDate = getNextPeriod(periodType, date, 0);
@@ -883,78 +880,76 @@ public class DateUtils {
         if (periodType == null)
             periodType = PeriodType.Daily;
         switch (periodType) {
-            case Daily:
-                formattedDate = uiDateFormat().format(initDate);
-                break;
             case Weekly:
-                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("w yyyy", locale).format(initDate);
                 break;
             case WeeklyWednesday:
-                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("w yyyy", locale).format(initDate);
                 break;
             case WeeklyThursday:
-                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("w yyyy", locale).format(initDate);
                 break;
             case WeeklySaturday:
-                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("w yyyy", locale).format(initDate);
                 break;
             case WeeklySunday:
-                formattedDate = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("w yyyy", locale).format(initDate);
                 break;
             case BiWeekly:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("w yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("w yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("w yyyy", locale).format(initDate),
+                        new SimpleDateFormat("w yyyy", locale).format(endDate)
                 );
                 break;
             case Monthly:
-                formattedDate = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("MMM yyyy", locale).format(initDate);
                 break;
             case BiMonthly:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case Quarterly:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case SixMonthly:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case SixMonthlyApril:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case Yearly:
-                formattedDate = new SimpleDateFormat("yyyy", Locale.getDefault()).format(initDate);
+                formattedDate = new SimpleDateFormat("yyyy", locale).format(initDate);
                 break;
             case FinancialApril:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case FinancialJuly:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
             case FinancialOct:
                 formattedDate = String.format(periodString,
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(initDate),
-                        new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(endDate)
+                        new SimpleDateFormat("MMM yyyy", locale).format(initDate),
+                        new SimpleDateFormat("MMM yyyy", locale).format(endDate)
                 );
                 break;
+            case Daily:
             default:
                 formattedDate = uiDateFormat().format(initDate);
                 break;
@@ -982,51 +977,5 @@ public class DateUtils {
 
         return completedDay != null &&
                 completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
-    }
-
-    /**
-     * Check if event is expired. It checks if the event date (depends on the status) is inside the
-     * program opening and closing dates and if it has expired (depends on status).
-     */
-    public Boolean isEventExpired(@NonNull EventModel event, @NonNull ProgramModel program,
-                                  @NonNull OrganisationUnitModel orgUnit) {
-
-        Date eventDate;
-        switch (Objects.requireNonNull(event.status())) {
-            case ACTIVE:
-                eventDate = event.eventDate();
-                break;
-            case COMPLETED:
-                eventDate = event.completedDate();
-                break;
-            default:
-                eventDate = event.dueDate();
-        }
-
-        boolean orgUnitIsOpen = isOrgUnitOpened(eventDate, orgUnit);
-        boolean isExpired =
-                event.status() != EventStatus.COMPLETED ?
-                        expDate(null, program.expiryDays(), program.expiryPeriodType()).before(eventDate)
-                        :
-                        isEventExpired(getToday(), eventDate, program.completeEventsExpiryDays() != null ? program.completeEventsExpiryDays() : 0);
-
-
-        return orgUnitIsOpen && !isExpired;
-    }
-
-    private boolean isOrgUnitOpened(Date eventDate, OrganisationUnitModel orgUnit) {
-
-        boolean isAfterOpening = true;
-        boolean isBeforeClosing = true;
-
-        if (orgUnit.openingDate() != null && orgUnit.openingDate().before(eventDate)) {
-            isAfterOpening = false;
-        }
-
-        if (orgUnit.closedDate() != null && orgUnit.closedDate().after(eventDate)) {
-            isAfterOpening = false;
-        }
-
-        return isAfterOpening && isBeforeClosing;
     }
 }
