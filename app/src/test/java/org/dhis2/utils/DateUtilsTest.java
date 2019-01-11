@@ -1,10 +1,10 @@
-package org.dhis2;
+package org.dhis2.utils;
 
-import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.Period;
+import org.dhis2.R;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -265,7 +265,7 @@ public class DateUtilsTest {
 
     @Test
     public void testPeriodNames() {
-        assertEquals(R.string.period, Period.NONE.getNameResouce());
+        Assert.assertEquals(R.string.period, Period.NONE.getNameResouce());
         assertEquals(R.string.DAILY, Period.DAILY.getNameResouce());
         assertEquals(R.string.WEEKLY, Period.WEEKLY.getNameResouce());
         assertEquals(R.string.MONTHLY, Period.MONTHLY.getNameResouce());
