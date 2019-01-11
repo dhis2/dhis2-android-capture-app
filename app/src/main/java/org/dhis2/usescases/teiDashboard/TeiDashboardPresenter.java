@@ -26,11 +26,13 @@ import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.teiDataDetail.TeiDataDetailActivity;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipHelper;
 import org.hisp.dhis.android.core.relationship.RelationshipItem;
@@ -568,4 +570,23 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
     public void showDescription(String description) {
         view.showDescription(description);
     }
+
+    public void getCatComboOptions(EventModel event){
+        compositeDisposable.add(metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(categoryOptionComboModels -> {
+                        for(ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
+                            if (event.programStage().equals(programStage.uid()))
+                                view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
+                        }
+                        },
+                        Timber::e));
+    }
+
+    @Override
+    public void changeCatOption(String eventUid, CategoryOptionComboModel selectedOption) {
+        metadataRepository.saveCatOption(eventUid, selectedOption);
+    }
+
 }

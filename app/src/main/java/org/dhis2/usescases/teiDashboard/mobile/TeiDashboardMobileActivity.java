@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.mobile;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -8,6 +9,7 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -30,9 +32,12 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -153,6 +158,15 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     public void restoreAdapter(String programUid) {
         this.adapter = null;
         this.programUid = programUid;
+    }
+
+    @Override
+    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
+        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), programStage, catComboOptions, 123,
+                selectedOption -> presenter.changeCatOption(eventId, selectedOption));
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     @Override

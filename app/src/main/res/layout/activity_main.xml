@@ -50,6 +50,8 @@
                     android:layout_height="match_parent"
                     android:onClick="@{()->presenter.onMenuClick()}"
                     android:padding="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp"
                     app:srcCompat="@drawable/ic_menu"
                     tools:ignore="ContentDescription" />
 

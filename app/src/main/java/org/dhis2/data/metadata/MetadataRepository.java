@@ -59,9 +59,16 @@ public interface MetadataRepository {
 
     Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId);
 
+    Observable<String> getDefaultCategoryOptionId();
+
+
     /*CATEGORY OPTION COMBO*/
 
     Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
+
+    Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId);
+
+    void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption);
 
     /*CATEGORY COMBO*/
 
