@@ -12,6 +12,7 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.CodeGenerator;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -86,7 +87,7 @@ class EnrollmentFormRepository implements FormRepository {
             "Program.uid, " +
             "Enrollment.organisationUnit, " +
             "ProgramStage.minDaysFromStart, " +
-            "ProgramStage.generatedByEnrollmentDate, " +
+            "ProgramStage.reportDateToUse, " +
             "Enrollment.incidentDate, " +
             "Enrollment.enrollmentDate, " +
             "ProgramStage.periodType \n" +
@@ -400,7 +401,7 @@ class EnrollmentFormRepository implements FormRepository {
                 String program = cursor.getString(1);
                 String orgUnit = cursor.getString(2);
                 int minDaysFromStart = cursor.getInt(3);
-                Boolean generatedByEnrollmentDate = cursor.getInt(4) == 1;
+                String reportDateToUse = cursor.getString(4);
                 String incidentDateString = cursor.getString(5);
                 String reportDateString = cursor.getString(6);
                 Date incidentDate = null;
@@ -423,23 +424,23 @@ class EnrollmentFormRepository implements FormRepository {
 
                 Date eventDate;
                 Calendar cal = DateUtils.getInstance().getCalendar();
-                if (generatedByEnrollmentDate) {
-                    cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    cal.add(Calendar.DATE, minDaysFromStart);
-                    eventDate = cal.getTime();
-                } else {
-                    cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    cal.add(Calendar.DATE, minDaysFromStart);
-                    eventDate = cal.getTime();
+                switch (reportDateToUse) {
+                    case Constants.ENROLLMENT_DATE:
+                        cal.setTime(enrollmentDate != null ? enrollmentDate : Calendar.getInstance().getTime());
+                        break;
+                    case Constants.INCIDENT_DATE:
+                        cal.setTime(incidentDate != null ? incidentDate : Calendar.getInstance().getTime());
+                        break;
+                    default:
+                        cal.setTime(Calendar.getInstance().getTime());
+                        break;
                 }
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                cal.add(Calendar.DATE, minDaysFromStart);
+                eventDate = cal.getTime();
 
                 if (periodType != null)
                     eventDate = DateUtils.getInstance().getNextPeriod(periodType, eventDate, 0); //Sets eventDate to current Period date

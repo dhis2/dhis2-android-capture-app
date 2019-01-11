@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="15dp"
+                android:layout_marginStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -47,6 +47,7 @@
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
+                android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE" />
