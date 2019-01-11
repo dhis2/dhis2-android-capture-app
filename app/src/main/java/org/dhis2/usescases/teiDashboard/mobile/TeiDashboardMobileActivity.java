@@ -51,6 +51,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     ActivityDashboardMobileBinding binding;
     public FragmentStatePagerAdapter adapter;
     private int orientation;
+    private boolean changingProgram;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         super.onResume();
         String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
                 .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
-        if (prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
+        if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
             orientation = Resources.getSystem().getConfiguration().orientation;
@@ -224,11 +225,13 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
                 FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
                 startActivity(FormActivity.create(this, formViewArguments, true));
+                finish();
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
                 programUid = data.getStringExtra("CHANGE_PROGRAM");
                 adapter = null;
+                changingProgram = true;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

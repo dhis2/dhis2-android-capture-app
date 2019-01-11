@@ -100,4 +100,13 @@ public class SyncPresenter implements SyncContracts.Presenter {
 
     }
 
+    @Override
+    public void onDettach() {
+        disposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
+    }
 }
