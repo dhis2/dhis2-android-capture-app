@@ -55,6 +55,7 @@ public class Constants {
     public static final String PERIOD_TYPE = "PERIOD_TYPE";
     public static final String PERIOD_TYPE_DATE = "PERIOD_TYPE_DATE";
     public static final String CAT_COMB = "CAT_COMB";
+    public static final String DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB";
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
     public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";

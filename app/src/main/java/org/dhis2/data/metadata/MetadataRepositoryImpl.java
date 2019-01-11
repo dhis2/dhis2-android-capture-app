@@ -1,5 +1,6 @@
 package org.dhis2.data.metadata;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -205,8 +206,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
+    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+
+
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
+
+    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
+            CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.CODE);
 
 
     private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
@@ -251,6 +259,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(CategoryComboModel::create);
     }
 
+    @Override
+    public Observable<String> getDefaultCategoryOptionId() {
+        return briteDatabase
+                .createQuery(CategoryComboModel.TABLE, SELECT_DEFAULT_CAT_COMBO)
+                .mapToOne(cursor -> cursor.getString(0));
+    }
+
     public Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid) {
         String id = teiUid == null ? "" : teiUid;
         return briteDatabase
@@ -287,6 +302,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + id + "' LIMIT 1")
                 .mapToOne(CategoryOptionComboModel::create);
+    }
+
+
+    @Override
+    public Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId) {
+        String id = categoryComboId == null ? "" : categoryComboId;
+        return briteDatabase
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTIONS_COMBO + "'" + id + "'")
+                .mapToList(CategoryOptionComboModel::create);
+    }
+
+    @Override
+    public void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption) {
+        ContentValues event = new ContentValues();
+        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
+        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     @Override
