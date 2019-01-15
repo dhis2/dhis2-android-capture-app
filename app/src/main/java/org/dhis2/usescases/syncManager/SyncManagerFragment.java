@@ -325,7 +325,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, "wipe_notification")
-                        .setSmallIcon(R.drawable.ic_dhis)
+                        .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(getString(R.string.wipe_data))
                         .setContentText(getString(R.string.please_wait))
                         .setOngoing(true)
