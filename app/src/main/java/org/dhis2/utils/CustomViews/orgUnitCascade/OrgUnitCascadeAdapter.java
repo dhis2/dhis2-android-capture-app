@@ -28,9 +28,15 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
     private ObservableInt level = new ObservableInt(1);
     private HashMap<Integer, String> selectedParent = new HashMap<>();
     private Quintet<String, String, String, Integer, Boolean> selectedOrgUnit;
+    private OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface;
 
-    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits) {
+    public interface OrgUnitCascadeAdapterInterface {
+        void onNewLevelSelected(boolean canBeSelected);
+    }
+
+    OrgUnitCascadeAdapter(List<Quintet<String, String, String, Integer, Boolean>> orgUnits, OrgUnitCascadeAdapterInterface orgUnitCascadeAdapterInterface) {
         items = new HashMap<>();
+        this.orgUnitCascadeAdapterInterface = orgUnitCascadeAdapterInterface;
 
         for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits) {
             if (items.get(orgUnit.val3()) == null)
@@ -41,22 +47,21 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
 
         for (int i = 1; i < items.size(); i++)
             selectedParent.put(i, "");
-
     }
 
     @NonNull
     @Override
     public OrgUnitCascadeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         OrgUnitCascadeLevelItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.org_unit_cascade_level_item, viewGroup, false);
-        return new OrgUnitCascadeHolder(binding);
+        return new OrgUnitCascadeHolder(binding, viewGroup.getContext());
     }
 
     @Override
     public void onBindViewHolder(@NonNull OrgUnitCascadeHolder orgUnitCascadeHolder, int position) {
-
         orgUnitCascadeHolder.bind(items.get(position + 1),
                 position != 0 ? selectedParent.get(position) : "",
                 selectedOrgUnit,
+                selectedParent.get(position + 1),
                 this);
     }
 
@@ -81,23 +86,27 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         selectedParent.put(level, selectedUid);//Set selected orgUnit for level
         reorderSelectedParent(level);
         this.level.set(level);
+        if (orgUnitCascadeAdapterInterface != null)
+            orgUnitCascadeAdapterInterface.onNewLevelSelected(canBeSelected);
         notifyDataSetChanged();
-
     }
 
-    private void reorderSelectedParent(int fromLevel) {
+    public void reorderSelectedParent(int fromLevel) {
         for (int i = fromLevel + 1; i <= items.size(); i++)
-            selectedParent.put(i, ""); //Removed selected parents for levels higher than the selected one
+            selectedParent.put(i, ""); //Remove selected parents for levels higher than the selected one
     }
 
-    public void setOrgUnit(Quintet<String, String, String, Integer, Boolean> orgUnit) {
+    public void setOrgUnit(Quintet<String, String, String, Integer, Boolean> orgUnit, String path) {
+        String[] parentUids = path.replaceFirst("/", "").split("/");
+        for (int i = 1; i <= parentUids.length; i++)
+            setSelectedLevel(i, parentUids[i - 1], parentUids[i - 1].equals(orgUnit.val0()) ? orgUnit.val4() : false);
         this.selectedOrgUnit = orgUnit;
     }
 
     @Nullable
     public String getSelectedOrgUnit() {
         String selectedUid = null;
-        for (int i = 1; i < selectedParent.size(); i++) {
+        for (int i = 1; i <= selectedParent.size(); i++) {
             if (!selectedParent.get(i).isEmpty())
                 selectedUid = selectedParent.get(i);
         }

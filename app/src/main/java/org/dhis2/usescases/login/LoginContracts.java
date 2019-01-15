@@ -5,12 +5,10 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.hisp.dhis.android.core.common.D2ErrorCode;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
-import io.reactivex.functions.Consumer;
 import retrofit2.Response;
 
 public class LoginContracts {
@@ -19,7 +17,7 @@ public class LoginContracts {
         ActivityLoginBinding getBinding();
 
         @UiThread
-        void renderError(D2ErrorCode errorCode);
+        void renderError(D2ErrorCode errorCode, String defaultMessage);
 
         @UiThread
         void renderInvalidServerUrlError();
@@ -40,9 +38,6 @@ public class LoginContracts {
         void renderServerError();
 
         @UiThread
-        void handleSync();
-
-        @UiThread
         void onUnlockClick(android.view.View android);
 
         @UiThread
@@ -53,13 +48,6 @@ public class LoginContracts {
 
         @UiThread
         void saveUsersData();
-
-        @NonNull
-        Consumer<SyncResult> update(LoginActivity.SyncState syncState);
-
-        void saveTheme(Integer themeId);
-
-        void saveFlag(String s);
 
         void handleLogout();
 
@@ -87,28 +75,12 @@ public class LoginContracts {
 
         void onDestroy();
 
-        void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult);
 
         void logOut();
 
         void handleResponse(@NonNull Response userResponse);
 
         void handleError(@NonNull Throwable throwable);
-
-        void sync();
-
-        void syncEvents();
-
-        void syncTrackedEntities();
-
-        void syncReservedValues();
-
-        void syncAggregatesData();
-
-    }
-
-    public interface Interactor {
-
 
     }
 

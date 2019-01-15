@@ -51,6 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -361,7 +363,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -385,8 +387,6 @@ public class Bindings {
                                         },
                                         Timber::d
                                 );
-                    break;
-                case VISITED:
                     break;
                 case SKIPPED:
                     view.setText(view.getContext().getString(R.string.event_skipped));
@@ -414,19 +414,33 @@ public class Bindings {
                     .subscribe(
                             program -> {
                                 int eventColor;
-                                if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                     eventColor = R.color.event_red;
                                 } else {
                                     switch (event.status()) {
                                         case ACTIVE:
-                                            eventColor = R.color.event_yellow;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_yellow;
+                                            }
                                             break;
                                         case COMPLETED:
-                                            eventColor = R.color.event_gray;
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_gray;
+                                            }
                                             break;
                                         case SCHEDULE:
-                                            eventColor = R.color.event_green;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                            } else {
+                                                eventColor = R.color.event_green;
+                                            }
                                             break;
+                                        case VISITED:
+                                        case SKIPPED:
                                         default:
                                             eventColor = R.color.event_red;
                                             break;
@@ -537,7 +551,7 @@ public class Bindings {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                    if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                         textView.setText(textView.getContext().getString(R.string.event_editing_expired));
                                         textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                                     } else {
@@ -586,7 +600,7 @@ public class Bindings {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                             imageView.setImageResource(R.drawable.ic_eye_red);
                                         } else {
                                             imageView.setImageResource(R.drawable.ic_eye_grey);
@@ -694,6 +708,10 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
         return metadataRepository.optionSet(optionSet);
+    }
+
+    public static int optionSetItemSize(@Nonnull String optionSet){
+        return metadataRepository.optionSetSize(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")

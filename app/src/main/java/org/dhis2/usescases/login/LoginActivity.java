@@ -1,42 +1,26 @@
 package org.dhis2.usescases.login;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.common.D2ErrorCode;
+import org.dhis2.utils.NetworkUtils;
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.functions.Consumer;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
@@ -49,7 +33,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     List<String> users;
     List<String> urls;
-    private boolean isSyncing;
 
     private boolean isPinScreenVisible = false;
 
@@ -59,10 +42,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         LoginComponent loginComponent = ((App) getApplicationContext()).loginComponent();
         if (loginComponent == null) {
@@ -93,14 +72,14 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isSyncing)
-            presenter.init(this);
+        presenter.init(this);
+
+        NetworkUtils.isGooglePlayServicesAvailable(this);
     }
 
     @Override
     protected void onPause() {
-        if (!isSyncing)
-            presenter.onDestroy();
+        presenter.onDestroy();
         super.onPause();
     }
 
@@ -116,7 +95,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void renderError(D2ErrorCode errorCode) {
+    public void renderError(D2ErrorCode errorCode, String defaultMessage) {
         String message;
         switch (errorCode) {
             case LOGIN_PASSWORD_NULL:
@@ -135,7 +114,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                 message = getString(R.string.login_error_error_response);
                 break;
             default:
-                message = getString(R.string.login_error_default);
+                message = String.format("%s\n%s", getString(R.string.login_error_default), defaultMessage);
                 break;
         }
 
@@ -173,27 +152,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         displayMessage(getResources().getString(R.string.error_internal_server_error));
     }
 
-    @Override
-    public void handleSync() {
-        isSyncing = true;
-        binding.login.setVisibility(View.GONE);
-        if (binding.logo != null) {
-            ViewGroup.LayoutParams params = binding.logo.getLayoutParams();
-            if (binding.guideline != null)
-                binding.guideline.setGuidelinePercent(1);
-            params.height = MATCH_PARENT;
-            params.width = MATCH_PARENT;
-            binding.logo.setLayoutParams(params);
-            binding.syncLayout.setVisibility(View.VISIBLE);
-            if (Build.VERSION.SDK_INT > 21) {
-                binding.lottieView.setVisibility(View.VISIBLE);
-                binding.lottieView.setRepeatMode(LottieDrawable.INFINITE);
-                binding.lottieView.useHardwareAcceleration(true);
-                binding.lottieView.enableMergePathsForKitKatAndAbove(true);
-                binding.lottieView.playAnimation();
-            }
-        }
-    }
 
     @Override
     public void handleLogout() {
@@ -256,80 +214,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             users.add(binding.userNameEdit.getText().toString());
             saveListToPreference(Constants.PREFS_USERS, users);
         }
-    }
-
-    @NonNull
-    @Override
-    public Consumer<SyncResult> update(SyncState syncState) {
-        return result -> {
-            if (result.inProgress()) {
-                if (syncState == SyncState.METADATA)
-                    binding.metadataText.setText(getString(R.string.syncing_configuration));
-                else {
-                    binding.eventsText.setText(getString(R.string.syncing_data));
-                    Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_sync));
-                    binding.eventsText.setAlpha(1.0f);
-                }
-            } else if (result.isSuccess()) {
-                if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText(getString(R.string.configuration_ready));
-                    Bindings.setDrawableEnd(binding.metadataText, ContextCompat.getDrawable(this, R.drawable.animator_done));
-                } else if (syncState == SyncState.TEI) {
-                    binding.eventsText.setText(getString(R.string.data_ready));
-                    Bindings.setDrawableEnd(binding.eventsText, ContextCompat.getDrawable(this, R.drawable.animator_done));
-                }
-                presenter.syncNext(syncState, result);
-            } else if (!result.isSuccess()) {
-                if (syncState == SyncState.METADATA) {
-                    binding.metadataText.setText(getString(R.string.configuration_sync_failed));
-                    binding.metadataText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
-                } else if (syncState == SyncState.TEI) {
-                    binding.eventsText.setText(getString(R.string.data_sync_failed));
-                    binding.eventsText.setCompoundDrawables(null, null, ContextCompat.getDrawable(this, R.drawable.ic_sync_error_black), null);
-                }
-
-                presenter.syncNext(syncState, result);
-
-            } else {
-                throw new IllegalStateException();
-            }
-        };
-    }
-
-    @Override
-    public void saveTheme(Integer themeId) {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putInt(Constants.THEME, themeId).apply();
-        setTheme(themeId);
-
-        int startColor = ContextCompat.getColor(this, R.color.colorPrimary);
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        int endColor = a.getColor(0, 0);
-        a.recycle();
-
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, endColor);
-        colorAnimation.setDuration(2000); // milliseconds
-        colorAnimation.addUpdateListener(animator -> binding.logo.setBackgroundColor((int) animator.getAnimatedValue()));
-        colorAnimation.start();
-
-    }
-
-    @Override
-    public void saveFlag(String s) {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString("FLAG", s).apply();
-
-        binding.logoFlag.setImageResource(getResources().getIdentifier(s, "drawable", getPackageName()));
-        ValueAnimator alphaAnimator = ValueAnimator.ofFloat(0f, 1f);
-        alphaAnimator.setDuration(2000);
-        alphaAnimator.addUpdateListener(animation -> {
-            binding.logoFlag.setAlpha((float) animation.getAnimatedValue());
-        });
-        alphaAnimator.start();
-
     }
 
 

@@ -44,6 +44,6 @@ public abstract class SpinnerViewModel extends FieldViewModel {
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),warning(),error(),description(),hint(),optionSet());
+        return new AutoValue_SpinnerViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),false,warning(),error(),description(),hint(),optionSet());
     }
 }

@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import org.dhis2.data.forms.dataentry.ProgramAdapter;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ActivitySearchBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.searchTrackEntity.adapters.FormAdapter;
@@ -43,6 +45,7 @@ import org.dhis2.usescases.searchTrackEntity.adapters.SearchTEAdapter;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.NetworkUtils;
@@ -100,20 +103,15 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
-        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule()).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new SearchTEModule(tEType)).inject(this);
 
         super.onCreate(savedInstanceState);
-
-        if (!getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setPresenter(presenter);
         initialProgram = getIntent().getStringExtra("PROGRAM_UID");
-        tEType = getIntent().getStringExtra("TRACKED_ENTITY_UID");
 
         try {
             fromRelationship = getIntent().getBooleanExtra("FROM_RELATIONSHIP", false);
@@ -188,6 +186,11 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @NonNull
     public Flowable<RowAction> rowActionss() {
         return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableRA();
+    }
+
+    @Override
+    public Flowable<Trio<String, String, Integer>> optionSetActions(){
+        return ((FormAdapter) binding.formRecycler.getAdapter()).asFlowableOption();
     }
 
     @Override
@@ -316,6 +319,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
             // silently fail...
         }
         binding.programSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 if (pos > 0) {
@@ -347,7 +351,7 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public void setProgramColor(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(this, color);
+        int programColor = ColorUtils.getColorFrom(color, ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
 
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
@@ -399,5 +403,10 @@ public class SearchTEActivity extends ActivityGlobalAbstract implements SearchTE
     @Override
     public String fromRelationshipTEI() {
         return fromRelationshipTeiUid;
+    }
+
+    @Override
+    public void setListOptions(List<String> options) {
+        OptionSetDialog.newInstance().setOptions(options);
     }
 }

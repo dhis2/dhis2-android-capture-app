@@ -1,10 +1,12 @@
 package org.dhis2.utils.CustomViews;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.location.Location;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
@@ -13,17 +15,22 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import org.dhis2.R;
-import org.dhis2.databinding.FormCoordinatesAccentBinding;
-import org.dhis2.databinding.FormCoordinatesBinding;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.databinding.FormCoordinatesAccentBinding;
+import org.dhis2.databinding.FormCoordinatesBinding;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.Locale;
+
+import io.reactivex.processors.FlowableProcessor;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
@@ -42,6 +49,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     private OnCurrentLocationClick listener2;
     private boolean isBgTransparent;
     private LayoutInflater inflater;
+    private FlowableProcessor<RowAction> processor;
+    private String uid;
 
 
     public CoordinatesView(Context context) {
@@ -103,7 +112,8 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     }
 
     public void setInitialValue(String initialValue) {
-        this.latLong.setText(initialValue.replace("[", "").replace("]", ""));
+        String[] latLongValue = initialValue.replace("[", "").replace("]", "").replace(" ", "").split(",");
+        this.latLong.setText(String.format(Locale.getDefault(), "%.5f, %.5f", Double.valueOf(latLongValue[0]), Double.valueOf(latLongValue[1])));
     }
 
     public void setWargingOrError(String msg) {
@@ -154,6 +164,11 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         findViewById(R.id.location2).setEnabled(editable);
     }
 
+    public void setProcessor(String uid, FlowableProcessor<RowAction> processor) {
+        this.processor = processor;
+        this.uid = uid;
+    }
+
 
     public interface OnMapPositionClick {
         void onMapPositionClick(CoordinatesView coordinatesView);
@@ -163,7 +178,15 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         void onCurrentLocationClick(double latitude, double longitude);
     }
 
+    @SuppressLint("MissingPermission")
     public void updateLocation(double latitude, double longitude) {
+        if(uid!=null) {
+            processor.onNext(
+                    RowAction.create(uid,
+                            String.format(Locale.US,
+                                    "[%.5f,%.5f]", latitude, longitude))
+            );
+        }
         String lat = String.format(Locale.getDefault(), "%.5f", latitude);
         String lon = String.format(Locale.getDefault(), "%.5f", longitude);
         this.latLong.setText(String.format("%s, %s", lat, lon));

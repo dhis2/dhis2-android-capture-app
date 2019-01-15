@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.period.PeriodType;
+import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,18 +24,14 @@ import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
 
-    public static final int NEXT = 1;
-    public static final int PREVIOUS = -1;
-    public static final int NOW = 0;
-
     public static DateUtils getInstance() {
         return new DateUtils();
     }
 
     public static final String DATABASE_FORMAT_EXPRESSION = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final String DATABASE_FORMAT_EXPRESSION_NO_MILLIS = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
-    private static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
+    public static final String DATE_TIME_FORMAT_EXPRESSION = "yyyy-MM-dd HH:mm";
+    public static final String DATE_FORMAT_EXPRESSION = "yyyy-MM-dd";
 
     public Date[] getDateFromDateAndPeriod(Date date, Period period) {
         switch (period) {
@@ -52,55 +51,7 @@ public class DateUtils {
      CURRENT PEDIOD REGION*/
 
     public Date getToday() {
-        return Calendar.getInstance().getTime();
-    }
-
-
-    private Date getFirstDayOfCurrentWeek(Calendar calendar) {
-
-        if (calendar == null)
-            calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-
-        return calendar.getTime();
-    }
-
-    public Date getLastDayOfCurrentWeek() {
-
-        Calendar calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        calendar.add(Calendar.WEEK_OF_YEAR, 1); //Move to next week
-        calendar.add(Calendar.DAY_OF_MONTH, -1);//Substract one day to get last day of current week
-
-        return calendar.getTime();
-    }
-
-    public Date getFirstDayOfurrentMonth() {
-        Calendar calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
-
-    public Date getLastDayOfurrentMonth() {
-        Calendar calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.add(Calendar.MONTH, 1);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        return calendar.getTime();
-    }
-
-    public Date getFirstDayOfCurrentYear() {
-        Calendar calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_YEAR, 1);
-        return calendar.getTime();
-    }
-
-    public Date getLastDayOfCurrentYear() {
-        Calendar calendar = getCalendar();
-        calendar.set(Calendar.DAY_OF_YEAR, 1);
-        calendar.add(Calendar.YEAR, 1);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        return calendar.getTime();
+        return getCalendar().getTime();
     }
 
     /**********************
@@ -118,7 +69,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public Date getNextDate(Date date) {
+    private Date getNextDate(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -131,22 +82,19 @@ public class DateUtils {
     }
 
 
-    public Date getFirstDayOfWeek(Date date) {
-
+    private Date getFirstDayOfWeek(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
         return calendar.getTime();
     }
 
-    public Date getLastDayOfWeek(Date date) {
-
+    private Date getLastDayOfWeek(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -161,7 +109,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public Date getFirstDayOfMonth(Date date) {
+    private Date getFirstDayOfMonth(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -173,7 +121,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public Date getLastDayOfMonth(Date date) {
+    private Date getLastDayOfMonth(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -187,7 +135,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public Date getFirstDayOfYear(Date date) {
+    private Date getFirstDayOfYear(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -199,7 +147,7 @@ public class DateUtils {
         return calendar.getTime();
     }
 
-    public Date getLastDayOfYear(Date date) {
+    private Date getLastDayOfYear(Date date) {
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -257,24 +205,25 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
+    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 
-        if(event.status() == EventStatus.COMPLETED){
-            if (completeEventExpiryDays == 0)
-                return false;
+        if (event.status() == EventStatus.COMPLETED && completeEventExpiryDays == 0) {
+            return false;
         }
 
-        if (event.completedDate() != null)
+        if (event.completedDate() != null) {
             expiredDate.setTime(event.completedDate());
-        else {
-            expiredDate.setTime(event.eventDate());
-            expiredDate.set(Calendar.HOUR_OF_DAY, 24);
+        } else {
+            expiredDate.setTime(event.eventDate() != null ? event.eventDate() : event.dueDate());
+            expiredDate.set(Calendar.HOUR_OF_DAY, 23);
         }
 
         if (expiryPeriodType == null) {
-            if (completeEventExpiryDays > 0)
+            if (completeEventExpiryDays > 0) {
                 expiredDate.add(Calendar.DAY_OF_YEAR, completeEventExpiryDays);
+            }
             return expiredDate.getTime().before(getNextPeriod(expiryPeriodType, expiredDate.getTime(), 0));
         } else {
             switch (expiryPeriodType) {
@@ -353,13 +302,12 @@ public class DateUtils {
                 expiredDate.add(Calendar.DAY_OF_YEAR, expiryDays);
             return expiredDate.getTime().before(getToday());
         }
+
     }
 
     public static int[] getDifference(Date startDate, Date endDate) {
-
         org.joda.time.Period interval = new org.joda.time.Period(startDate.getTime(), endDate.getTime(), org.joda.time.PeriodType.yearMonthDayTime());
         return new int[]{interval.getYears(), interval.getMonths(), interval.getDays()};
-
     }
 
     public Date getNewDate(List<EventModel> events, PeriodType periodType) {
@@ -379,13 +327,6 @@ public class DateUtils {
 
         while (needNewDate) {
             switch (periodType) {
-                case Daily:
-                    if (!eventDates.contains(now.getTime())) {
-                        newDate = now.getTime();
-                        needNewDate = false;
-                    }
-                    now.add(Calendar.DAY_OF_YEAR, 1); //jump one day
-                    break;
                 case Weekly:
                     now.setTime(moveWeekly(now));
                     if (!eventDates.contains(now.getTime())) {
@@ -506,12 +447,13 @@ public class DateUtils {
                     }
                     now.add(Calendar.DAY_OF_YEAR, 1);
                     break;
+                case Daily:
                 default:
                     if (!eventDates.contains(now.getTime())) {
                         newDate = now.getTime();
                         needNewDate = false;
                     }
-                    now.add(Calendar.DAY_OF_YEAR, 1);
+                    now.add(Calendar.DAY_OF_YEAR, 1); //jump one day
                     break;
             }
             now.setTime(getNextPeriod(periodType, now.getTime(), 1));
@@ -520,7 +462,7 @@ public class DateUtils {
         return newDate;
     }
 
-    private Date moveWeeklyWednesday(Calendar date) {
+    public Date moveWeeklyWednesday(Calendar date) {
         if (date.get(Calendar.DAY_OF_WEEK) < Calendar.WEDNESDAY)
             date.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
         else {
@@ -667,7 +609,7 @@ public class DateUtils {
                     calendar.add(Calendar.DAY_OF_YEAR, -expiryDays);
                     return calendar.getTime();
                 case Weekly:
-                    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                     Date firstDateOfWeek = calendar.getTime();
                     if (TimeUnit.MILLISECONDS.toDays(date.getTime() - firstDateOfWeek.getTime()) >= expiryDays) {
                         return firstDateOfWeek;
@@ -1019,5 +961,72 @@ public class DateUtils {
         }
 
         return formattedDate;
+    }
+
+    /**
+     * Check if an event is expired in a date
+     *
+     * @param currentDate  date or today if null
+     * @param completedDay date that event was completed
+     * @param compExpDays  days of expiration of an event
+     * @return true or false
+     */
+    public Boolean isEventExpired(@Nullable Date currentDate, Date completedDay, int compExpDays) {
+
+        Calendar calendar = getCalendar();
+
+        if (currentDate != null)
+            calendar.setTime(currentDate);
+
+        Date date = calendar.getTime();
+
+        return completedDay != null &&
+                completedDay.getTime() + TimeUnit.DAYS.toMillis(compExpDays) < date.getTime();
+    }
+
+    /**
+     * Check if event is expired. It checks if the event date (depends on the status) is inside the
+     * program opening and closing dates and if it has expired (depends on status).
+     */
+    public Boolean isEventExpired(@NonNull EventModel event, @NonNull ProgramModel program,
+                                  @NonNull OrganisationUnitModel orgUnit) {
+
+        Date eventDate;
+        switch (Objects.requireNonNull(event.status())) {
+            case ACTIVE:
+                eventDate = event.eventDate();
+                break;
+            case COMPLETED:
+                eventDate = event.completedDate();
+                break;
+            default:
+                eventDate = event.dueDate();
+        }
+
+        boolean orgUnitIsOpen = isOrgUnitOpened(eventDate, orgUnit);
+        boolean isExpired =
+                event.status() != EventStatus.COMPLETED ?
+                        expDate(null, program.expiryDays(), program.expiryPeriodType()).before(eventDate)
+                        :
+                        isEventExpired(getToday(), eventDate, program.completeEventsExpiryDays() != null ? program.completeEventsExpiryDays() : 0);
+
+
+        return orgUnitIsOpen && !isExpired;
+    }
+
+    private boolean isOrgUnitOpened(Date eventDate, OrganisationUnitModel orgUnit) {
+
+        boolean isAfterOpening = true;
+        boolean isBeforeClosing = true;
+
+        if (orgUnit.openingDate() != null && orgUnit.openingDate().before(eventDate)) {
+            isAfterOpening = false;
+        }
+
+        if (orgUnit.closedDate() != null && orgUnit.closedDate().after(eventDate)) {
+            isAfterOpening = false;
+        }
+
+        return isAfterOpening && isBeforeClosing;
     }
 }

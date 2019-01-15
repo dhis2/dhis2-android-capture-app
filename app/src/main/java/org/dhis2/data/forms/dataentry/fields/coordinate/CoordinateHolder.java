@@ -16,12 +16,14 @@ import static android.text.TextUtils.isEmpty;
 
 public class CoordinateHolder extends FormViewHolder {
 
+    private final FlowableProcessor<RowAction> processor;
     CustomFormCoordinateBinding binding;
     CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
+        this.processor = processor;
         this.binding = binding;
         binding.formCoordinates.setCurrentLocationListener((latitude, longitude) ->
                 processor.onNext(
@@ -36,6 +38,8 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
+        binding.formCoordinates.setProcessor(coordinateViewModel.uid(),processor);
+
         model = coordinateViewModel;
 
         descriptionText = coordinateViewModel.description();

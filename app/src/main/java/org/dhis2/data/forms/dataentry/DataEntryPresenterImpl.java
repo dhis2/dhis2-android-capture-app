@@ -3,8 +3,10 @@ package org.dhis2.data.forms.dataentry;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import org.dhis2.utils.Result;
@@ -30,8 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -55,6 +59,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
+    private final MetadataRepository metadataRepository;
+    @NonNull
     private final CompositeDisposable disposable;
     private DataEntryView dataEntryView;
     private HashMap<String, FieldViewModel> currentFieldViewModels;
@@ -63,25 +69,27 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                            @NonNull DataEntryStore dataEntryStore,
                            @NonNull DataEntryRepository dataEntryRepository,
                            @NonNull RuleEngineRepository ruleEngineRepository,
-                           @NonNull SchedulerProvider schedulerProvider) {
+                           @NonNull SchedulerProvider schedulerProvider,
+                           @NonNull MetadataRepository metadataRepository) {
         this.codeGenerator = codeGenerator;
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
         this.ruleEngineRepository = ruleEngineRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
+        this.metadataRepository = metadataRepository;
     }
 
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
         this.dataEntryView = dataEntryView;
-        Flowable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
+        Observable<List<FieldViewModel>> fieldsFlowable = dataEntryRepository.list();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FieldViewModel>> viewModelsFlowable = Flowable.zip(
-                fieldsFlowable, ruleEffectFlowable, this::applyEffects);
+                fieldsFlowable.toFlowable(BackpressureStrategy.LATEST), ruleEffectFlowable, this::applyEffects);
 
         disposable.add(viewModelsFlowable
                 .subscribeOn(schedulerProvider.io())//check if computation does better than io
@@ -91,30 +99,49 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 ));
 
         disposable.add(dataEntryView.rowActions().debounce(500, TimeUnit.MILLISECONDS) //TODO: Check debounce time
-                .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.io())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
                 .switchMap(action ->
-                        {
-                            Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
-                                    action.id(), action.value());
-                            return dataEntryStore.save(action.id(), action.value());
-                        }
-                ).subscribe(result -> Timber.d(result.toString()),
+                        dataEntryStore.save(action.id(), action.value()).
+                                map(result -> {
+                                    if (result == 5)
+                                        dataEntryStore.save(action.id(), null);
+                                    return result;
+                                })
+                ).subscribe(result -> {
+                            if (result == -5)
+                                dataEntryView.showMessage(R.string.unique_warning);
+                            else
+                                Timber.d(result.toString());
+                        },
                         Timber::d)
         );
+
+        disposable.add(
+                dataEntryView.optionSetActions()
+                        .flatMap(
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                dataEntryView::setListOptions,
+                                Timber::e
+                        ));
     }
 
     private void save(String uid, String value) {
         CompositeDisposable saveDisposable = new CompositeDisposable();
-        saveDisposable.add(
-                dataEntryStore.save(uid, value)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(Schedulers.io())
-                        .subscribe(
-                                data -> Log.d("SAVED_DATA", "DONE"),
-                                Timber::e,
-                                saveDisposable::clear
-                        ));
+        if (!uid.isEmpty())
+            saveDisposable.add(
+                    dataEntryStore.save(uid, value)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(Schedulers.io())
+                            .subscribe(
+                                    data -> Log.d("SAVED_DATA", "DONE"),
+                                    Timber::e,
+                                    saveDisposable::clear
+                            ));
     }
 
     @Override
@@ -187,7 +214,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 String uid = displayText.content();
 
                 EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
+                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
 
                 if (this.currentFieldViewModels == null ||
                         !this.currentFieldViewModels.containsKey(uid)) {
@@ -195,8 +222,8 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
                 } else if (this.currentFieldViewModels.containsKey(uid) &&
                         !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
                     fieldViewModels.put(uid, textViewModel);
-                }else{
-                    
+                } else {
+
                 }
 
             /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now

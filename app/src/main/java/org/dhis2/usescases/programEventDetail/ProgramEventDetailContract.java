@@ -64,9 +64,9 @@ public class ProgramEventDetailContract {
 
         void setProgram(ProgramModel program);
 
-        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery);
+        void onCatComboSelected(CategoryOptionComboModel categoryOptionComboModel/*, String orgUnitQuery*/);
 
-        void clearCatComboFilters(String orgUnitQuery);
+        void clearCatComboFilters(/*String orgUnitQuery*/);
 
         void onEventClick(String eventId, String orgUnit);
 

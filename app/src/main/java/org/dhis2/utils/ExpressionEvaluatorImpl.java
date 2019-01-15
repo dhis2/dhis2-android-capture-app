@@ -2,8 +2,6 @@ package org.dhis2.utils;
 
 import android.support.annotation.NonNull;
 
-import com.squareup.duktape.DuktapeException;
-
 import org.apache.commons.jexl2.JexlEngine;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 

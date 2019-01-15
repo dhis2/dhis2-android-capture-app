@@ -101,7 +101,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY = String.format(
             "SELECT DISTINCT %s.*, TrackedEntityAttribute.valueType, TrackedEntityAttribute.optionSet, ProgramTrackedEntityAttribute.displayInList FROM %s " +
                     "JOIN %s ON %s.%s = %s.%s " +
-                    "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid "+
+                    "LEFT JOIN ProgramTrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute.uid " +
                     "WHERE %s.%s = ? AND %s.%s = 1 ORDER BY %s.%s ASC",
             TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.TABLE,
             TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID, TrackedEntityAttributeValueModel.TABLE, TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE,
@@ -124,11 +124,13 @@ public class SearchRepositoryImpl implements SearchRepository {
             EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE};
     private static final Set<String> TEI_TABLE_SET = new HashSet<>(Arrays.asList(TEI_TABLE_NAMES));
     private final CodeGenerator codeGenerator;
+    private final String teiType;
 
 
-    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+    SearchRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String teiType) {
         this.codeGenerator = codeGenerator;
         this.briteDatabase = briteDatabase;
+        this.teiType = teiType;
     }
 
 
@@ -142,7 +144,12 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Observable<List<TrackedEntityAttributeModel>> programAttributes() {
-        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_ATTRIBUTES)
+        String SELECT_ATTRIBUTES = "SELECT DISTINCT TrackedEntityAttribute.* FROM TrackedEntityAttribute " +
+                "JOIN ProgramTrackedEntityAttribute " +
+                "ON ProgramTrackedEntityAttribute.trackedEntityAttribute = TrackedEntityAttribute " +
+                "JOIN Program ON Program.uid = ProgramTrackedEntityAttribute.program " +
+                "WHERE Program.trackedEntityType = ? AND ProgramTrackedEntityAttribute.searchable = 1";
+        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_ATTRIBUTES, teiType)
                 .mapToList(TrackedEntityAttributeModel::create);
     }
 

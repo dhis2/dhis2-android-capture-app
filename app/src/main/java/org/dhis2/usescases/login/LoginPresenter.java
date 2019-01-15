@@ -4,35 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.ObservableField;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.View;
-
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 
 import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.data.service.SyncResult;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
+import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
-import org.hisp.dhis.android.core.common.D2CallException;
-import org.hisp.dhis.android.core.common.Unit;
-import org.hisp.dhis.android.core.event.Event;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -53,7 +43,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository, FirebaseJobDispatcher jobDispatcher) {
+    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.configurationRepository = configurationRepository;
         this.metadataRepository = metadataRepository;
     }
@@ -96,6 +86,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
+        //view.handleSync();
 
         String serverUrl = view.getBinding().serverUrl.getEditText().getText().toString();
         String username = view.getBinding().userName.getEditText().getText().toString();
@@ -188,40 +179,6 @@ public class LoginPresenter implements LoginContracts.Presenter {
         disposable.clear();
     }
 
-    @Override
-    public void syncNext(LoginActivity.SyncState syncState, SyncResult syncResult) {
-        if (syncResult.isSuccess() || syncState != LoginActivity.SyncState.METADATA)
-            switch (syncState) {
-                case METADATA:
-                    view.getSharedPreferences().edit().putString(Constants.LAST_META_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
-                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_META_SYNC_STATUS, true).apply();
-                    syncEvents();
-                    break;
-                case EVENTS:
-                    syncTrackedEntities();
-                    break;
-                case TEI:
-                    view.getSharedPreferences().edit().putString(Constants.LAST_DATA_SYNC, DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime())).apply();
-                    view.getSharedPreferences().edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, true).apply();
-                    syncAggregatesData(); //TODO: Enable for 1.1.0
-                    break;
-                case AGGREGATES:
-                    syncReservedValues();
-                    break;
-                case RESERVED_VALUES:
-                    Intent intent = new Intent(view.getContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    view.getContext().startActivity(intent);
-                    view.getAbstractActivity().finish();
-                    break;
-                default:
-                    break;
-            }
-        else {
-            view.displayMessage(syncResult.message());
-            new Handler().postDelayed(this::logOut, 1500);
-        }
-    }
 
     @Override
     public void logOut() {
@@ -250,9 +207,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
             if (NetworkUtils.isOnline(view.getContext())) {
-                view.handleSync();
                 metadataRepository.createErrorTable();
-                sync();
+                view.startActivity(SyncActivity.class, null, true, true, null);
             } else
                 view.startActivity(MainActivity.class, null, true, true, null);
         }
@@ -263,29 +219,14 @@ public class LoginPresenter implements LoginContracts.Presenter {
         Timber.e(throwable);
         if (throwable instanceof IOException) {
             view.renderInvalidServerUrlError();
-        } else if (throwable instanceof D2CallException) {
-            D2CallException d2CallException = (D2CallException) throwable;
+        } else if (throwable instanceof D2Error) {
+            D2Error d2CallException = (D2Error) throwable;
             switch (d2CallException.errorCode()) {
-                case LOGIN_PASSWORD_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case LOGIN_USERNAME_NULL:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case INVALID_DHIS_VERSION:
-                    view.renderError(d2CallException.errorCode());
-                    break;
                 case ALREADY_AUTHENTICATED:
                     handleResponse(Response.success(null));
                     break;
-                case API_UNSUCCESSFUL_RESPONSE:
-                    view.renderError(d2CallException.errorCode());
-                    break;
-                case API_RESPONSE_PROCESS_ERROR:
-                    view.renderError(d2CallException.errorCode());
-                    break;
                 default:
-                    view.renderError(d2CallException.errorCode());
+                    view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
                     break;
             }
         } else {
@@ -293,130 +234,5 @@ public class LoginPresenter implements LoginContracts.Presenter {
         }
     }
 
-    @Override
-    public void sync() {
-        disposable.add(metadata()
-                .map(response -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(syncReult -> view.update(LoginActivity.SyncState.METADATA).accept(syncReult),
-                        Timber::d)
-        );
-    }
-
-    @Override
-    public void syncEvents() {
-        disposable.add(
-                metadataRepository.getTheme()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(flagTheme -> {
-                                    view.saveFlag(flagTheme.val0());
-                                    view.saveTheme(flagTheme.val1());
-                                },
-                                Timber::e
-                        ));
-
-        disposable.add(events()
-                .subscribeOn(Schedulers.io())
-                .map(response -> SyncResult.success())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.EVENTS),
-                        throwable -> view.displayMessage(throwable.getMessage())
-                ));
-    }
-
-    @Override
-    public void syncTrackedEntities() {
-        disposable.add(trackerData()
-                .map(response -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.TEI),
-                        throwable -> view.displayMessage(throwable.getMessage())
-                ));
-    }
-
-
-    @Override
-    public void syncAggregatesData() {
-        disposable.add(aggregatesData()
-                .map(response -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> SyncResult.failure(
-                        throwable.getMessage() == null ? "" : throwable.getMessage()))
-                .startWith(SyncResult.progress())
-                .subscribe(update(LoginActivity.SyncState.AGGREGATES),
-                        throwable -> view.displayMessage(throwable.getMessage())
-                ));
-    }
-
-    @Override
-    public void syncReservedValues() {
-
-        disposable.add(Observable.just(true)
-                .map(init -> {
-                    userManager.getD2().syncAllTrackedEntityAttributeReservedValues();
-                    return true;
-                })
-                .map(response -> SyncResult.success())
-                .onErrorReturn(error -> SyncResult.success())
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        update(LoginActivity.SyncState.RESERVED_VALUES),
-                        Timber::d
-                )
-        );
-    }
-
-
-    @NonNull
-    private Consumer<SyncResult> update(LoginActivity.SyncState syncState) {
-        return result -> {
-            if (view != null) {
-                view.update(syncState).accept(result);
-            }
-        };
-    }
-
-    @NonNull
-    private Observable<Unit> metadata() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncMetaData()));
-    }
-
-    @NonNull
-    private Observable<List<TrackedEntityInstance>> trackerData() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
-        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadTrackedEntityInstances(teiLimit, limityByOU)));
-    }
-
-    @NonNull
-    private Observable<List<Event>> events() {
-        SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
-        boolean limityByOU = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false);
-
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().downloadSingleEvents(eventLimit, limityByOU)));
-    }
-
-    @NonNull
-    private Observable<Unit> aggregatesData() {
-        return Observable.defer(() -> Observable.fromCallable(userManager.getD2().syncAggregatedData()));
-    }
 
 }

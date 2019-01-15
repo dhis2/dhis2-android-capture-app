@@ -47,8 +47,12 @@ public class SyncManagerContracts {
 
         void deleteLocalData();
 
+        void onReservedValues();
+
         void checkSyncErrors();
 
         void checkData();
+
+        void cancelPendingWork(String meta);
     }
 }

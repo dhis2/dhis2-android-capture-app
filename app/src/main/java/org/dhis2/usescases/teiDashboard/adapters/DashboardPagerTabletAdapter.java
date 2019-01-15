@@ -31,11 +31,11 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return RelationshipFragment.createInstance();
+                return RelationshipFragment.getInstance();
             case 1:
-                return IndicatorsFragment.createInstance();
+                return IndicatorsFragment.getInstance();
             case 2:
-                return NotesFragment.createInstance();
+                return NotesFragment.getInstance();
         }
     }
 

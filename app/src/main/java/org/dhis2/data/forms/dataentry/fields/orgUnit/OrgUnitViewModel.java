@@ -37,6 +37,6 @@ public abstract class OrgUnitViewModel extends FieldViewModel {
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_OrgUnitViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),editable(),optionSet(),warning(),error(),description());
+        return new AutoValue_OrgUnitViewModel(uid(),label(),mandatory(),data,programStageSection(),allowFutureDate(),false,optionSet(),warning(),error(),description());
     }
 }

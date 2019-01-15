@@ -41,6 +41,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     private String label;
     private boolean allowFutureDates;
     private String description;
+    private Date date;
 
     public DateView(Context context) {
         super(context);
@@ -100,7 +101,8 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
 
     public void initData(String data) {
         if (data != null) {
-            Date date = null;
+            date = null;
+            data = data.replace("'",""); //TODO: Check why it is happening
             if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.uiDateFormat().parse(data);
@@ -110,12 +112,12 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
             else
                 try {
                     date = DateUtils.databaseDateFormat().parse(data);
+                    data = DateUtils.uiDateFormat().format(date);
                 } catch (ParseException e) {
                     Timber.e(e);
                 }
 
 
-            data = DateUtils.uiDateFormat().format(date);
         } else {
             editText.setText("");
         }
@@ -138,6 +140,8 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
+        if(date!=null)
+            c.setTime(date);
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);

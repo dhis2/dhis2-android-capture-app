@@ -13,7 +13,6 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -25,17 +24,15 @@ import static android.text.TextUtils.isEmpty;
 
 public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
-    private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
-    /* @NonNull
-     private BehaviorProcessor<DateTimeViewModel> model;*/
+    private final FlowableProcessor<Integer> currentPosition;
+
     private DateTimeViewModel dateTimeViewModel;
 
-    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor) {
+    DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Integer> currentPosition) {
         super(binding);
-        this.disposable = new CompositeDisposable();
         this.processor = processor;
-//        model = BehaviorProcessor.create();
+        this.currentPosition = currentPosition;
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -54,7 +51,6 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     public void update(DateTimeViewModel viewModel) {
         this.dateTimeViewModel = viewModel;
-//        model.onNext(viewModel);
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
@@ -112,7 +108,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     @Override
     public void onDateSelected(Date date) {
         String dateFormatted = "";
-        if (date != null)
+        if (date != null) {
             if (dateTimeViewModel.valueType() == ValueType.DATE)
                 dateFormatted = DateUtils.uiDateFormat().format(date);
             else if (dateTimeViewModel.valueType() == ValueType.TIME)
@@ -120,13 +116,17 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             else {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
-        processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)
-        );
+        }
+        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null);
+        processor.onNext(rowAction);
+
+        if (currentPosition != null)
+            currentPosition.onNext(getAdapterPosition());
+
     }
 
     @Override
     public void dispose() {
-        disposable.clear();
+
     }
 }

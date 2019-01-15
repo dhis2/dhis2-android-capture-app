@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.google.android.flexbox.FlexboxLayout;
 
+import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding;
 import org.dhis2.databinding.TrackEntityProgramsBinding;
@@ -71,7 +72,7 @@ public class SearchTEViewHolder extends RecyclerView.ViewHolder {
                 );
 
                 programsBinding.setEnrollment(enrollment);
-
+                Bindings.setObjectStyle(programsBinding.programImage,programsBinding.programImage,enrollment.program());
                 programsBinding.executePendingBindings();
                 FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 binding.linearLayout.addView(programsBinding.getRoot(), params);

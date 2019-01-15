@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 
 import io.reactivex.processors.FlowableProcessor;
 
@@ -21,30 +23,33 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
 
-    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
+    public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = null;
         this.inflater = layoutInflater;
+        this.processorOptionSet = processorOptionSet;
     }
 
-    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
+    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                      @NonNull FlowableProcessor<Integer> currentPosition, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet,boolean isBackgroundTransparent, String renderType) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
         this.inflater = layoutInflater;
-
+        this.processorOptionSet = processorOptionSet;
     }
 
     @NonNull
     @Override
     public SpinnerHolder onCreate(@NonNull ViewGroup parent) {
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, isBackgroundTransparent ? R.layout.form_spinner : R.layout.form_spinner_accent, parent, false);
-        return new SpinnerHolder(binding, processor, isBackgroundTransparent, renderType);
+        return new SpinnerHolder(binding, processor, processorOptionSet, isBackgroundTransparent, renderType);
     }
 
     @Override

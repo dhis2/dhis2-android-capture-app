@@ -1,5 +1,6 @@
 package org.dhis2.data.metadata;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.option.OptionModel;
+import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
@@ -42,12 +44,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 
 /**
@@ -201,8 +206,15 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_OPTION_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.UID);
 
+    private final String SELECT_CATEGORY_OPTIONS_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
+            CategoryOptionComboModel.TABLE, CategoryOptionComboModel.TABLE, CategoryOptionComboModel.Columns.CATEGORY_COMBO);
+
+
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
+
+    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
+            CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.CODE);
 
 
     private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
@@ -247,6 +259,13 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(CategoryComboModel::create);
     }
 
+    @Override
+    public Observable<String> getDefaultCategoryOptionId() {
+        return briteDatabase
+                .createQuery(CategoryComboModel.TABLE, SELECT_DEFAULT_CAT_COMBO)
+                .mapToOne(cursor -> cursor.getString(0));
+    }
+
     public Observable<TrackedEntityInstanceModel> getTrackedEntityInstance(String teiUid) {
         String id = teiUid == null ? "" : teiUid;
         return briteDatabase
@@ -283,6 +302,22 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase
                 .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION_COMBO + "'" + id + "' LIMIT 1")
                 .mapToOne(CategoryOptionComboModel::create);
+    }
+
+
+    @Override
+    public Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId) {
+        String id = categoryComboId == null ? "" : categoryComboId;
+        return briteDatabase
+                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTIONS_COMBO + "'" + id + "'")
+                .mapToList(CategoryOptionComboModel::create);
+    }
+
+    @Override
+    public void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption) {
+        ContentValues event = new ContentValues();
+        event.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, selectedOption.uid());
+        briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
     @Override
@@ -463,6 +498,18 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public int optionSetSize(String optionSetUid) {
+        String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+        Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
+        int numberOfOptions = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            numberOfOptions = cursor.getInt(0);
+            cursor.close();
+        }
+        return numberOfOptions;
+    }
+
+    @Override
     public Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments) {
         String query = "";
         for (Enrollment enrollment : enrollments) {
@@ -584,6 +631,14 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(ProgramModel::create);
     }
 
+    @Override
+    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
+        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE,"SELECT * FROM Event WHERE uid = ?",eventUid)
+                .mapToOne(EventModel::create),
+                getExpiryDateFromEvent(eventUid),
+                ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
+    }
+
     @NonNull
     @Override
     public Observable<List<ResourceModel>> syncState(ProgramModel program) {
@@ -638,6 +693,21 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
+    public Observable<Integer> getOrgUnitsForDataElementsCount() {
+        String sqlQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT t.uid, o.organisationUnit " +
+                "FROM TrackedEntityAttribute t, OrganisationUnitProgramLink o, ProgramTrackedEntityAttribute p " +
+                "WHERE t.generated = 1 AND p.trackedEntityAttribute = t.uid AND p.program = o.program)";
+        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, sqlQuery)
+                .mapToOne(cursor -> {
+                    if (cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+                        return cursor.getInt(0);
+                    } else
+                        return 0;
+                });
+    }
+
+    @Override
     public void createErrorTable() {
         String CREATE_ERROR_TABLE = "CREATE TABLE IF NOT EXISTS ErrorMessage(\n" +
                 "errorDate TEXT,\n" +
@@ -662,4 +732,32 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                         DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex("errorDate")))
                 ));
     }
+
+    @Override
+    public void deleteErrorLogs() {
+        try {
+            briteDatabase.delete(ErrorMessageModel.TABLE, null);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
+
+    @Override
+    public Observable<List<String>> searchOptions(String text, String idOptionSet, int page) {
+        String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
+
+        String optionQuery = !isEmpty(text) ?
+                "select Option.displayName from OptionSet " +
+                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                        "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " + pageQuery :
+                "select Option.displayName from OptionSet " +
+                        "JOIN Option ON Option.optionSet = OptionSet.uid " +
+                        "where OptionSet.uid = ? " + pageQuery;
+
+        return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
+                .mapToList(cursor -> cursor.getString(0));
+
+    }
+
+
 }

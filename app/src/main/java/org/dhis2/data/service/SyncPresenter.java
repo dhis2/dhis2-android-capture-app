@@ -27,4 +27,5 @@ interface SyncPresenter {
 
     void syncMetadata(Context context) throws Exception;
 
+    void syncReservedValues();
 }

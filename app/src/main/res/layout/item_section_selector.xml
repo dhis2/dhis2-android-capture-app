@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="sectionUid"
+            type="String"/>
+
+        <variable
+            name="order"
+            type="Integer" />
+
+        <variable
+            name="presenter"
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
+
+        <variable
+            name="currentSection"
+            type="android.databinding.ObservableField&lt;String&gt;"/>
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/itemSectionSelectorHeight"
+        android:background="@{currentSection == sectionUid &amp;&amp; order!=-1  ?@color/color_item_selected_c3:@color/item_unselected_fdf}"
+        android:onClick="@{()->presenter.onSectionSelectorClick(currentSection == sectionUid,order,sectionUid)}"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/sectionStateIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat = "@drawable/ic_check_circle"
+            android:visibility="@{currentSection == sectionUid? View.VISIBLE : View.GONE}"
+            android:tint="@color/colorGreyDefault"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/sectionStateIconUnchecked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat = "@drawable/ic_unchecked_circle"
+            android:visibility="@{currentSection == sectionUid? View.GONE : View.VISIBLE}"
+            android:tint="@color/colorGreyDefault"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/sectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/colorGreyDefault"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/sectionStateIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Diagnosis Result Microscopy" />
+
+        <TextView
+            android:id="@+id/sectionValues"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGreyDefault"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="0/10" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

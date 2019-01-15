@@ -39,7 +39,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.airbnb.lottie.LottieAnimationView
+          <!--  <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -47,14 +47,23 @@
                 android:visibility="gone"
                 app:lottie_autoPlay="false"
                 app:lottie_loop="true"
-                app:lottie_rawRes="@raw/world_lottie" />
+                app:lottie_rawRes="@raw/world_lottie" />-->
 
-            <include
-                android:id="@+id/logo_layout"
-                layout="@layout/logo_dhis"
+            <!-- <include
+                 android:id="@+id/logo_layout"
+                 layout="@layout/logo_dhis"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_centerInParent="true" />-->
+
+            <ImageView
+                android:id="@+id/dhisLogo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_dhis_white" />
 
             <ImageView
                 android:id="@+id/logo_flag"
@@ -68,10 +77,10 @@
                 android:id="@+id/sync_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/logo_layout"
+                android:layout_below="@id/dhisLogo"
                 android:layout_margin="20dp"
-                android:layout_marginBottom="20dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">

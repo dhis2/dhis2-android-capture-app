@@ -18,10 +18,12 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.CustomViews.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
-
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
@@ -64,10 +66,9 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         this.section = args.section();
 
         ((App) context.getApplicationContext())
-            .formComponent()
-            .plus(new DataEntryModule(context, args),
-                    new DataEntryStoreModule(args))
-            .inject(this);
+                .formComponent()
+                .plus(new DataEntryModule(context, args), new DataEntryStoreModule(args))
+                .inject(this);
     }
 
     public String getSection() {
@@ -84,7 +85,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
-        if(dataEntryPresenter == null)
+        if (dataEntryPresenter == null)
             dataEntryPresenter.onAttach(this);
         setUpRecyclerView();
     }
@@ -110,6 +111,12 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public Flowable<RowAction> rowActions() {
         return dataEntryAdapter.asFlowable();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Trio<String, String, Integer>> optionSetActions() {
+        return dataEntryAdapter.asFlowableOption();
     }
 
     @NonNull
@@ -156,5 +163,15 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     public boolean checkErrors() {
         return dataEntryAdapter.hasError();
+    }
+
+    @Override
+    public void setListOptions(List<String> options) {
+        OptionSetDialog.newInstance().setOptions(options);
+    }
+
+    @Override
+    public void showMessage(int messageId) {
+        showInfoDialog(getString(R.string.error), getString(R.string.unique_warning));
     }
 }

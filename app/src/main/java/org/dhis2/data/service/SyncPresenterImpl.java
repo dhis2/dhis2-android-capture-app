@@ -192,7 +192,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @NonNull
-    private Observable<List<TrackedEntityInstance>> trackerData() {
+    private Observable<Unit> trackerData() {
         SharedPreferences prefs = syncView.getContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int teiLimit = prefs.getInt(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT);
@@ -201,7 +201,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @NonNull
-    private Observable<List<Event>> events() {
+    private Observable<Unit> events() {
         SharedPreferences prefs = syncView.getContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         int eventLimit = prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT);
@@ -242,5 +242,10 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void syncMetadata(Context context) throws Exception {
         d2.syncMetaData().call();
+    }
+
+    @Override
+    public void syncReservedValues() {
+        d2.syncTrackedEntityAttributeReservedValues(null, null, 100);
     }
 }

@@ -7,6 +7,8 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.hisp.dhis.android.core.D2;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 

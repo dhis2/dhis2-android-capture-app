@@ -5,6 +5,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="currentSelection"
+            type="android.databinding.ObservableField&lt;String&gt;" />
+
         <variable
             name="label"
             type="java.lang.String" />
@@ -13,49 +19,68 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:background="@color/colorPrimaryLightRed">
+        tools:background="@color/colorPrimaryLightRed"
+        tools:layout_height="200dp">
 
         <ImageView
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="3dp"
-            android:src="?attr/image_selector_bg"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:id="@+id/selectionBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{label.equals(currentSelection) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_check_circle" />
+
+        <ImageView
+            android:id="@+id/selectionBadgeUnchecked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{label.equals(currentSelection) ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_unchecked_circle" />
+
 
         <TextView
             android:id="@+id/label"
-            android:layout_width="match_parent"
+            style="@style/ImageFieldLabel"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:gravity="center"
             android:text="@{label}"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="THIS IS THE TITLE" />
+            app:layout_constraintBottom_toBottomOf="@id/icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintTop_toTopOf="@id/icon"
+            tools:text="Microscope" />
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
             android:layout_height="0dp"
-            android:layout_margin="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/label"
-            tools:src="@drawable/sierra_leone" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_microscope_positive" />
 
         <TextView
             android:id="@+id/errorMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="This is an error or warning message\nWith two lines"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/red_060"
+            android:layout_marginBottom="25dp"
             android:background="@color/white"
+            android:gravity="center"
+            android:textColor="@color/red_060"
+            android:textSize="18sp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="25dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="This is an error or warning message\nWith two lines" />
 
     </android.support.constraint.ConstraintLayout>
 

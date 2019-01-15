@@ -20,7 +20,9 @@ import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.CustomViews.CustomDialog;
@@ -78,42 +80,55 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
     }
 
     @Override
+    protected void onPause() {
+        presenter.onDettach();
+        super.onPause();
+    }
+
+    @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
-        this.eventDetailModel = eventDetailModel;
-        presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
-        binding.setEvent(eventDetailModel.getEventModel());
-        binding.setStage(eventDetailModel.getProgramStage());
-        setDataEditable();
-        binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
+        if(eventDetailModel.getEventModel().eventDate()!=null){
+            Intent intent2 = new Intent(this, EventCaptureActivity.class);
+            intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEventModel().uid(), eventDetailModel.getEventModel().program()));
+            startActivity(intent2, null);
+            finish();
+        }else {
+            this.eventDetailModel = eventDetailModel;
+            presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
+            binding.setEvent(eventDetailModel.getEventModel());
+            binding.setStage(eventDetailModel.getProgramStage());
+            setDataEditable();
+            binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 
-        if (eventDetailModel.getOptionComboList().isEmpty()) {
-            binding.categoryComboLayout.setVisibility(View.GONE);
-        } else {
-            binding.categoryComboLayout.setVisibility(View.VISIBLE);
-            binding.categoryComboLayout.setHint(eventDetailModel.getCatComboName());
-            binding.categoryCombo.setText(eventDetailModel.getEventCatComboOptionName());
-        }
+            if (eventDetailModel.getOptionComboList().isEmpty()) {
+                binding.categoryComboLayout.setVisibility(View.GONE);
+            } else {
+                binding.categoryComboLayout.setVisibility(View.VISIBLE);
+                binding.categoryComboLayout.setHint(eventDetailModel.getCatComboName());
+                binding.categoryCombo.setText(eventDetailModel.getEventCatComboOptionName());
+            }
 
-        binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty()
-                ? View.GONE : View.VISIBLE);
-        updateActionButton(eventDetailModel.getEventModel().status());
-        binding.executePendingBindings();
+            binding.categoryComboLayout.setVisibility(eventDetailModel.getOptionComboList().isEmpty()
+                    ? View.GONE : View.VISIBLE);
+            updateActionButton(eventDetailModel.getEventModel().status());
+            binding.executePendingBindings();
 
-        supportStartPostponedEnterTransition();
+            supportStartPostponedEnterTransition();
 
-        if (getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY") != null)
+            if (getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY") != null)
+                getSupportFragmentManager().beginTransaction()
+                        .remove(getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY"))
+                        .commit();
+
             getSupportFragmentManager().beginTransaction()
-                    .remove(getSupportFragmentManager().findFragmentByTag("EVENT_DATA_ENTRY"))
+                    .replace(R.id.dataFragment, FormFragment.newInstance(
+                            FormViewArguments.createForEvent(eventUid), false,
+                            false, true), "EVENT_DATA_ENTRY")
                     .commit();
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.dataFragment, FormFragment.newInstance(
-                        FormViewArguments.createForEvent(eventUid), false,
-                        false, true), "EVENT_DATA_ENTRY")
-                .commit();
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
-            setTutorial();
+            if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+                setTutorial();
+        }
     }
 
     @Override
