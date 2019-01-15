@@ -84,9 +84,4 @@ public class LoginContracts {
 
     }
 
-    public interface Interactor {
-
-
-    }
-
 }

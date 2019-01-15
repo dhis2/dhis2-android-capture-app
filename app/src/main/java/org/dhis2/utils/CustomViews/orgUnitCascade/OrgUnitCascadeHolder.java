@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 22/10/2018.
  */
@@ -34,7 +36,12 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         this.context = context;
     }
 
-    public void bind(List<Quartet<String, String, String, Boolean>> organisationUnitModels, String parent, Quintet<String, String, String, Integer, Boolean> selectedOrgUnit, OrgUnitCascadeAdapter adapter) {
+    public void bind(List<Quartet<String, String, String, Boolean>> organisationUnitModels,
+                     String parent,
+                     Quintet<String, String, String, Integer, Boolean> selectedOrgUnit,
+                     String currentUid,
+                     OrgUnitCascadeAdapter adapter) {
+
         this.levelOrgUnit = organisationUnitModels;
         if (selectedOrgUnit != null) {
             this.selectedUid = selectedOrgUnit.val0();
@@ -46,14 +53,20 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         ArrayList<String> data = new ArrayList<>();
         data.add(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
 
-        if (binding.levelText.getText() == null || binding.levelText.getText().toString().isEmpty())
-            binding.levelText.setText(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
+        String selectedOrgUnitName = null;
+        if(!isEmpty(currentUid))
+            for(Quartet<String, String, String, Boolean> orgUnit : levelOrgUnit)
+                if(orgUnit.val0().equals(currentUid))
+                    selectedOrgUnitName = orgUnit.val1();
+
+        if (binding.levelText.getText() == null || binding.levelText.getText().toString().isEmpty() || isEmpty(currentUid))
+            binding.levelText.setText(isEmpty(selectedOrgUnitName) ? String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1) : selectedOrgUnitName);
 
         for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
             if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
                 data.add(trio.val1());
 
-        if (data.size() > 1 && selectedUid == null) {
+        if (data.size() > 1/* && selectedUid == null*/) {
             itemView.setVisibility(View.VISIBLE);
             setMenu(data, adapter);
             binding.levelText.setOnClickListener(view -> menu.show());

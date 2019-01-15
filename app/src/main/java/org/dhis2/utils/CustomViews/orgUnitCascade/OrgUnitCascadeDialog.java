@@ -21,6 +21,7 @@ import org.dhis2.databinding.DialogCascadeOrgunitBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +43,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
     private List<Quintet<String, String, String, Integer, Boolean>> orgUnits;
     private OrgUnitCascadeAdapter adapter;
     private String selectedOrgUnit;
+    private HashMap<String, String> paths;
 
     public OrgUnitCascadeDialog setTitle(String title) {
         this.title = title;
@@ -60,6 +62,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
 
     public OrgUnitCascadeDialog setOrgUnits(List<OrganisationUnitModel> orgUnits) {
         this.orgUnits = new ArrayList<>();
+        this.paths = new HashMap<>();
         List<String> orgUnitsUid = new ArrayList<>();
 
         if (orgUnits != null)
@@ -73,6 +76,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
             }
 
         for (OrganisationUnitModel orgUnit : orgUnits) { //Path OrgUnits
+            paths.put(orgUnit.uid(),orgUnit.path());
             String[] uidPath = orgUnit.path().split("/");
             String[] namePath = orgUnit.displayNamePath().split("/");
             for (int i = 1; i < uidPath.length; i++) {
@@ -170,7 +174,7 @@ public class OrgUnitCascadeDialog extends DialogFragment {
         if (selectedOrgUnit != null){
             for (Quintet<String, String, String, Integer, Boolean> orgUnit : orgUnits){
                 if (orgUnit.val0().equals(selectedOrgUnit)){
-                    adapter.setOrgUnit(orgUnit);
+                    adapter.setOrgUnit(orgUnit,paths.get(orgUnit.val0()));
                     adapter.notifyDataSetChanged();
                     break;
                 }

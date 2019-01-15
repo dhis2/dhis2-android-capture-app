@@ -56,7 +56,7 @@
             app:layout_constraintTop_toBottomOf="@+id/logo_flag"
             app:lottie_autoPlay="false"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/world_lottie" />
+            app:lottie_rawRes="@raw/lottie_world" />
 
         <LinearLayout
             android:id="@+id/sync_layout"

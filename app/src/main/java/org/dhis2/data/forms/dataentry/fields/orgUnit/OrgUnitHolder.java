@@ -51,7 +51,7 @@ public class OrgUnitHolder extends FormViewHolder {
             orgUnitDialog = new OrgUnitCascadeDialog()
                     .setTitle(model.label())
                     .setOrgUnits(this.orgUnits)
-                    .setSelectedOrgUnit(selectedOrgUnit)
+                    .setSelectedOrgUnit(model.value())
                     .setCallbacks(new OrgUnitCascadeDialog.CascadeOrgUnitCallbacks() {
                         @Override
                         public void textChangedConsumer(String selectedOrgUnitUid, String selectedOrgUnitName) {

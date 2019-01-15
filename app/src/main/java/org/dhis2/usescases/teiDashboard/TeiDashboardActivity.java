@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -81,5 +84,10 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     @Override
     public void restoreAdapter(String programUid) {
         // nothing
+    }
+
+    @Override
+    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
+
     }
 }

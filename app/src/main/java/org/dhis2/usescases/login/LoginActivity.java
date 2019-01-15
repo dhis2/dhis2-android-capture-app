@@ -1,30 +1,16 @@
 package org.dhis2.usescases.login;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.airbnb.lottie.LottieDrawable;
 import com.andrognito.pinlockview.PinLockListener;
 
 import org.dhis2.App;
-import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
-import org.dhis2.data.service.SyncResult;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -35,9 +21,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.functions.Consumer;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
@@ -168,7 +151,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     public void renderServerError() {
         displayMessage(getResources().getString(R.string.error_internal_server_error));
     }
-
 
 
     @Override
