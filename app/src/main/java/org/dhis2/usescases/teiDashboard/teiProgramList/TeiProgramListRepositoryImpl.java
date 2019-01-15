@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 
@@ -41,6 +42,14 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
     }
+
+    public final String PROGRAM_COLOR_QUERY = String.format(
+            "SELECT %s FROM %S " +
+                    "WHERE %s = 'Program' AND %s = ?",
+            ObjectStyleModel.Columns.COLOR, ObjectStyleModel.TABLE,
+            ObjectStyleModel.Columns.OBJECT_TABLE,
+            ObjectStyleModel.Columns.UID
+    );
 
     @NonNull
     @Override
@@ -184,6 +193,15 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
     public Observable<List<OrganisationUnitModel>> getOrgUnits() {
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM " + OrganisationUnitModel.TABLE)
                 .mapToList(OrganisationUnitModel::create);
+    }
+
+    @Override
+    public String getProgramColor(@NonNull String programUid) {
+        Cursor cursor = briteDatabase.query(PROGRAM_COLOR_QUERY, programUid);
+        if (cursor.moveToFirst()) {
+            return cursor.getString(0);
+        }
+        return null;
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {
