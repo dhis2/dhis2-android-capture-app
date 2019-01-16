@@ -32,8 +32,8 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.ArrayList;
