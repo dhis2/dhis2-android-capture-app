@@ -1,6 +1,6 @@
 package org.dhis2.utils.custom_views;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Predicate;

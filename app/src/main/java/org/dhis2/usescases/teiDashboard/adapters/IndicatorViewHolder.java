@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.R;

@@ -4,8 +4,8 @@ package org.dhis2.usescases.splash;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.metadata.MetadataRepository;

@@ -1,9 +1,9 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;

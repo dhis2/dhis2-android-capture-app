@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentManager;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.FragmentManager;
 import android.view.View;
 
 import org.dhis2.R;

@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
 
 import org.dhis2.App;

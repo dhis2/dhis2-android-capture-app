@@ -1,10 +1,10 @@
 package org.dhis2;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DaggerActivityTestRule<T extends AppCompatActivity> extends ActivityTestRule<T> {
 

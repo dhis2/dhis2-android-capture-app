@@ -2,9 +2,9 @@ package org.dhis2.utils.custom_views;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputEditText;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;

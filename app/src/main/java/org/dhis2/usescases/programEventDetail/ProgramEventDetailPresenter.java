@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;

@@ -1,6 +1,6 @@
 package org.dhis2.utils.custom_views;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemDateBinding;
 

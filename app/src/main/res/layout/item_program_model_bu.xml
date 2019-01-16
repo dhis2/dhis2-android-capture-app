@@ -20,13 +20,13 @@
             type="org.dhis2.utils.Period" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/imageLayout"
             android:layout_width="130dp"
             android:layout_height="100dp"
@@ -40,7 +40,7 @@
                 tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_with_registration" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <TextView
@@ -112,5 +112,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
             app:tint="?colorPrimary" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

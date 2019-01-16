@@ -14,17 +14,17 @@
 
         <variable
             name="isEditable"
-            type="android.databinding.ObservableBoolean" />
+            type="androidx.databinding.ObservableBoolean" />
     </data>
 
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/dataInputText"
         app:dataElementHint="@{dataValue.dataElement()}">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/form_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,6 +32,6 @@
             android:imeOptions="actionNext"
             android:inputType="text"
             android:textSize="16sp" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </layout>

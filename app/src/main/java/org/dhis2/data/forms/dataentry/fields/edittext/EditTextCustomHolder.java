@@ -1,10 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.annotation.SuppressLint;
-import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
+import com.google.android.material.textfield.TextInputLayout;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;

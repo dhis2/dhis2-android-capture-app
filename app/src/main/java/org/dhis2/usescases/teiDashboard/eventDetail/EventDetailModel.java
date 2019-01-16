@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
@@ -13,9 +13,7 @@ import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**

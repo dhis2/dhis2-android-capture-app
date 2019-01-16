@@ -40,7 +40,7 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
@@ -144,16 +144,17 @@ dependencies {
 
     implementation project(":customFab")
     implementation project(":dhis2-rule-engine")
+    implementation project(":viewpagerdotsindicator")
 
     //region SUPPORT LIBRARIES
-    implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:support-annotations:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"
-    implementation "com.android.support:support-v4:${libraries.support}"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.annotation:annotation:1.0.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation "com.android.support:multidex:${libraries.multidex}"
-    implementation "com.android.support.constraint:constraint-layout:${libraries.constraintlayout}"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     //endregion
 
     //region DHIS2 LIBRARIES
@@ -193,7 +194,7 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
@@ -249,7 +250,7 @@ dependencies {
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs'
 
@@ -280,12 +281,11 @@ dependencies {
     implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
     //Lottie animations
-    implementation 'com.airbnb.android:lottie:2.5.4'
+    implementation 'com.airbnb.android:lottie:2.8.0'
 
     //Glide load images
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    kapt 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation "com.tbuonomo.andrui:viewpagerdotsindicator:${libraries.indicatordots}"
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    kapt 'com.github.bumptech.glide:compiler:4.8.0'
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"

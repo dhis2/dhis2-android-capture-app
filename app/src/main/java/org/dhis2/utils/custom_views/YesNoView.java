@@ -1,8 +1,8 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;

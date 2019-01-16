@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
-import android.databinding.BaseObservable;
+import androidx.databinding.BaseObservable;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;

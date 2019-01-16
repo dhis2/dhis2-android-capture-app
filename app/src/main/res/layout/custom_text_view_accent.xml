@@ -13,7 +13,7 @@
 
         <variable
             name="isEditable"
-            type="android.databinding.ObservableBoolean" />
+            type="androidx.databinding.ObservableBoolean" />
     </data>
 
     <RelativeLayout
@@ -39,7 +39,7 @@
             android:layout_below="@id/renderImage"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                     android:textSize="15sp"
                     tools:text="hello" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <ImageView
