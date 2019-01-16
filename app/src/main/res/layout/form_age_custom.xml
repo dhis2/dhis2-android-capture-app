@@ -13,7 +13,7 @@
 
     </data>
 
-    <org.dhis2.utils.CustomViews.AgeView
+    <org.dhis2.utils.custom_views.AgeView
         android:id="@+id/custom_ageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

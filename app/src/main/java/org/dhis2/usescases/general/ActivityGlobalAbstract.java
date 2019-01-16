@@ -31,7 +31,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
@@ -40,8 +39,8 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CoordinatesView;
-import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.SyncUtils;

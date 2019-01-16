@@ -141,7 +141,7 @@
 
             </LinearLayout>
 
-            <org.dhis2.utils.CustomViews.CoordinatesView
+            <org.dhis2.utils.custom_views.CoordinatesView
                 android:id="@+id/coordinates_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

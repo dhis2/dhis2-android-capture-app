@@ -67,7 +67,7 @@
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText">
 
-                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/server_url_edit"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -91,7 +91,7 @@
                     android:textColorHint="@color/text_black_808"
                     android:theme="@style/loginInputText">
 
-                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/user_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

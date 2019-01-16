@@ -18,11 +18,10 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.CustomViews.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 

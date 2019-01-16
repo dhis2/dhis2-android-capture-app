@@ -20,8 +20,8 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFr
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.ProgressBarAnimation;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.Utils;
 
