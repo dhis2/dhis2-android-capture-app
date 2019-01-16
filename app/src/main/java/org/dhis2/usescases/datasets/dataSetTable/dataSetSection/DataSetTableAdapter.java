@@ -12,7 +12,6 @@ import com.evrencoskun.tableview.adapter.AbstractTableAdapter;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
-
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -26,15 +25,12 @@ import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextModel;
 import org.dhis2.data.forms.dataentry.tablefields.edittext.EditTextRow;
 import org.dhis2.data.forms.dataentry.tablefields.file.FileRow;
 import org.dhis2.data.forms.dataentry.tablefields.file.FileViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.image.ImageRow;
 import org.dhis2.data.forms.dataentry.tablefields.image.ImageViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitRow;
 import org.dhis2.data.forms.dataentry.tablefields.orgUnit.OrgUnitViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -75,6 +71,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private final List<Row> rows;
     private int columnPos = 0;
     private int rowPos = 0;
+
     public DataSetTableAdapter(Context context) {
         super(context);
         rows = new ArrayList<>();
@@ -112,7 +109,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         /*return new DataSetCell(
                 DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dataset_cell, parent, false)
         );*/
-        return rows.get(viewType).onCreate(parent);
+        return rows.get(getCellViewType(rowPos)).onCreate(parent);
     }
 
     /**
@@ -132,12 +129,15 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
 
-        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
+        rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
 
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
+
+        rowPos = rowPosition +1;
     }
 
-    public void swap(List<List<FieldViewModel>> viewModels){
+    public void swap(List<List<FieldViewModel>> viewModels) {
         this.viewModels = viewModels;
     }
 
@@ -224,6 +224,45 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
     }
 
+    private int getCellViewType(int rowPosition){
+        columnPos = rowPosition;
+
+        FieldViewModel viewModel;
+
+        viewModel = viewModels.get(rowPosition).get(0);
+
+        if (viewModel instanceof EditTextModel) {
+            return EDITTEXT;
+        } else if (viewModel instanceof RadioButtonViewModel) {
+            return CHECKBOX;
+        } else if (viewModel instanceof SpinnerViewModel) {
+            return SPINNER;
+        } else if (viewModel instanceof CoordinateViewModel) {
+            return COORDINATES;
+
+        } else if (viewModel instanceof DateTimeViewModel) {
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+                return DATE;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+                return TIME;
+            else
+                return DATETIME;
+        } else if (viewModel instanceof AgeViewModel) {
+            return AGEVIEW;
+        } else if (viewModel instanceof FileViewModel) {
+            return BUTTON;
+        } else if (viewModel instanceof OrgUnitViewModel) {
+            return ORG_UNIT;
+        } else if (viewModel instanceof ImageViewModel) {
+            return IMAGE;
+        } else if (viewModel instanceof UnsupportedViewModel) {
+            return UNSUPPORTED;
+        } else {
+            throw new IllegalStateException("Unsupported view model type: "
+                    + viewModel.getClass());
+        }
+    }
+
     @Override
     public int getColumnHeaderItemViewType(int columnPosition) {
         // The unique ID for this type of column header item
@@ -235,18 +274,15 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getRowHeaderItemViewType(int rowPosition) {
-        columnPos = rowPosition;
-        // The unique ID for this type of row header item
-        // If you have different items for Row Header View by Y (Row) position,
-        // then you should fill this method to be able create different
-        // type of RowHeaderViewHolder on "onCreateRowHeaderViewHolder"
         return 0;
     }
 
     @Override
     public int getCellItemViewType(int columnPosition) {
-        FieldViewModel viewModel;
-        if(rowPos <= viewModels.get(0).size()-1){
+
+      /*
+      FieldViewModel viewModel;
+        if(rowPos <= viewModels.size()-1){
             viewModel = viewModels.get(rowPos).get(columnPosition);
         }else{
             viewModel = viewModels.get(viewModels.size()-1).get(columnPosition);
@@ -275,8 +311,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
             return AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {
             return BUTTON;
-        /*} else if (viewModel instanceof OrgUnitViewModel) {
-            return ORG_UNIT;*/
+        *//*} else if (viewModel instanceof OrgUnitViewModel) {
+            return ORG_UNIT;*//*
         } else if (viewModel instanceof ImageViewModel) {
             return IMAGE;
         } else if (viewModel instanceof UnsupportedViewModel) {
@@ -284,6 +320,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
-        }
+        }*/
+
+        return 0;
     }
 }

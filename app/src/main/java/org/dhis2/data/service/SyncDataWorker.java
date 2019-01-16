@@ -55,7 +55,7 @@ public class SyncDataWorker extends Worker {
 
         boolean isEventOk = true;
         boolean isTeiOk = true;
-
+        boolean isDataValue = true;
         try {
             presenter.syncAndDownloadEvents(getApplicationContext());
         } catch (Exception e) {
@@ -69,11 +69,18 @@ public class SyncDataWorker extends Worker {
             isTeiOk = false;
         }
 
+        try {
+            presenter.syncAndDownloadDataValues();
+        } catch (Exception e) {
+            Timber.e(e);
+            isDataValue = false;
+        }
+
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
+        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue).apply();
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
 

@@ -41,10 +41,10 @@ public class ImageHolder extends FormViewHolder {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(selectedValue -> {
-                        if (selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
+                        /*if (selectedValue.equals(model.value()) || selectedValue.equals(valuePendingUpdate))
                             binding.frame.setVisibility(View.VISIBLE);
                         else
-                            binding.frame.setVisibility(View.GONE);
+                            binding.frame.setVisibility(View.GONE);*/
                     }, Timber::d));
 
         itemView.setOnClickListener(v -> {
@@ -54,13 +54,13 @@ public class ImageHolder extends FormViewHolder {
                 String[] uids = model.uid().split("\\.");
                 value = model.label();
                 valuePendingUpdate = value;
-                binding.frame.setVisibility(binding.frame.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-                if(binding.frame.getVisibility()==View.VISIBLE) {
+               /* binding.frame.setVisibility(binding.frame.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+                if(binding.frame.getVisibility()==View.VISIBLE) {*/
                     if (imageSelector != null)
                         imageSelector.onNext(value);
                     processor.onNext(RowAction.create(uids[0], value));
-                }else
-                    processor.onNext(RowAction.create(uids[0], null));
+                /*}else
+                    processor.onNext(RowAction.create(uids[0], null));*/
             }
         });
 
@@ -77,10 +77,10 @@ public class ImageHolder extends FormViewHolder {
         binding.setLabel(label.toString());
         String[] uids = viewModel.uid().split("\\.");
         Bindings.setObjectStyle(binding.icon, itemView, uids[1]);
-        if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
+        /*if (viewModel.value() != null && viewModel.value().equals(viewModel.label()))
             binding.frame.setVisibility(View.VISIBLE);
         else
-            binding.frame.setVisibility(View.GONE);
+            binding.frame.setVisibility(View.GONE);*/
 
         if (viewModel.warning() != null) {
             binding.errorMessage.setVisibility(View.VISIBLE);

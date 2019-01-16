@@ -240,6 +240,12 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
+    public void syncAndDownloadDataValues() throws Exception {
+        d2.syncDataValues().call();
+        d2.syncAggregatedData().call();
+    }
+
+    @Override
     public void syncMetadata(Context context) throws Exception {
         d2.syncMetaData().call();
     }

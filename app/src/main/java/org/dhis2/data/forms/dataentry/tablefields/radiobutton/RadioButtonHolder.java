@@ -51,8 +51,8 @@ public class RadioButtonHolder extends FormViewHolder {
             binding.customYesNo.getRadioGroup().check(R.id.yes);
         else if (checkBoxViewModel.value() != null)
             binding.customYesNo.getRadioGroup().check(R.id.no);
-        else
-            binding.customYesNo.getRadioGroup().check(R.id.no_value);
+        /*else
+            binding.customYesNo.getRadioGroup().check(R.id.no_value);*/
 
         if (checkBoxViewModel.warning() != null) {
             binding.warningError.setVisibility(View.VISIBLE);
