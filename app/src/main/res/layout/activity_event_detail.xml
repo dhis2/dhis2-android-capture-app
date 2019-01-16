@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.back()}"
-                android:padding="10dp"
+                android:layout_marginStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -55,6 +55,7 @@
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
+                android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
@@ -65,6 +66,7 @@
                 android:layout_height="match_parent"
                 android:onClick="showMoreOptions"
                 android:padding="10dp"
+                android:layout_marginEnd="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
@@ -93,6 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:background="@android:color/white">
 
             <!--SCROLLING VIEW-->

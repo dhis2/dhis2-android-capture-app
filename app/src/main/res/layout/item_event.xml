@@ -34,8 +34,8 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="false"
             android:paddingBottom="8dp"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
             android:paddingTop="8dp"
             android:transitionName="shared_view">
 

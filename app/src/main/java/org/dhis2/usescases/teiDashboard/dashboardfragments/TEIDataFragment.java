@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.os.Bundle;
@@ -72,6 +73,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private String lastModifiedEventUid;
     private ProgramStageModel programStageFromEvent;
     private ObservableBoolean followUp = new ObservableBoolean(false);
+
+    private boolean hasCatComb;
+    private ArrayList<EventModel> catComboShowed = new ArrayList<>();
+
 
     public static TEIDataFragment getInstance() {
         if (instance == null)
@@ -145,6 +150,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public void setData(DashboardProgramModel nprogram) {
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
+            SharedPreferences prefs = getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+            hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment());
             binding.teiRecycler.setLayoutManager(new LinearLayoutManager(getAbstracContext()));
@@ -208,6 +215,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 if (event.eventDate() != null) {
                     if (event.eventDate().after(DateUtils.getInstance().getToday()))
                         binding.teiRecycler.scrollToPosition(events.indexOf(event));
+                }
+                if(hasCatComb && event.attributeOptionCombo()==null && !catComboShowed.contains(event)){
+                    presenter.getCatComboOptions(event);
+                    catComboShowed.add(event);
                 }
             }
         };

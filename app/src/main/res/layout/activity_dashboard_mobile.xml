@@ -72,6 +72,7 @@
                 android:layout_height="match_parent"
                 android:onClick="showMoreOptions"
                 android:padding="10dp"
+                android:layout_marginEnd="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
@@ -103,6 +104,8 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             app:elevation="8dp"
+            app:tabPaddingStart="16dp"
+            app:tabPaddingEnd="16dp"
             app:tabTextAppearance="@style/DhisTabText" />
 
         <android.support.v4.view.ViewPager

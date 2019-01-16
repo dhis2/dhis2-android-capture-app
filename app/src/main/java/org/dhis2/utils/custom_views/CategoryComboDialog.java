@@ -54,7 +54,7 @@ public class CategoryComboDialog extends AlertDialog {
         this.requestCode = requestCode;
         this.listener = listener;
 
-        setCancelable(true);
+        setCancelable(false);
     }
 
 
@@ -63,7 +63,7 @@ public class CategoryComboDialog extends AlertDialog {
         Builder builder = new Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         CatComboDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.cat_combo_dialog, null, false);
-
+        builder.setCancelable(false);
         builder.setView(binding.getRoot());
 
         dialog = builder.create();

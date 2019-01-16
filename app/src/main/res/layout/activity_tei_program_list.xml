@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="15dp"
+                android:layout_marginStart="16dp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -37,6 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
+                android:layout_marginStart="12dp"
                 android:text="@string/enrollment_list"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
