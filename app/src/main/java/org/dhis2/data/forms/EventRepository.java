@@ -17,6 +17,7 @@ import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -28,6 +29,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.RuleEngine;
 import org.hisp.dhis.rules.RuleEngineContext;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
+import org.hisp.dhis.rules.models.TriggerEnvironment;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -180,6 +182,7 @@ public class EventRepository implements FormRepository {
                                     .calculatedValueMap(new HashMap<>())
                                     .supplementaryData(new HashMap<>())
                                     .build().toEngineBuilder();
+                            builder.triggerEnvironment(TriggerEnvironment.ANDROIDCLIENT);
                             builder.events(events);
                             if (!isEmpty(enrollment.enrollment()))
                                 builder.enrollment(enrollment);
@@ -205,16 +208,11 @@ public class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<String> reportDate() {
-        return briteDatabase
-                .createQuery(EventModel.TABLE, SELECT_EVENT_DATE, eventUid == null ? "" : eventUid)
-                .mapToOne(cursor -> {
-                    PeriodType periodType = null;
-                    String eventDate = cursor.getString(0) == null ? "" : cursor.getString(0);
-                    if (cursor.getString(1) != null)
-                        periodType = PeriodType.valueOf(PeriodType.class, cursor.getString(1));
-                    return eventDate;
-                }).toFlowable(BackpressureStrategy.LATEST)
+    public Flowable<Pair<ProgramModel, String>> reportDate() {
+        return briteDatabase.createQuery(ProgramModel.TABLE, SELECT_PROGRAM, eventUid == null ? "" : eventUid)
+                .mapToOne(ProgramModel::create)
+                .map(programModel -> Pair.create(programModel, ""))
+                .toFlowable(BackpressureStrategy.LATEST)
                 .distinctUntilChanged();
     }
 
@@ -394,6 +392,13 @@ public class EventRepository implements FormRepository {
         briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid);
     }
 
+    @Override
+    public Observable<Boolean> captureCoodinates() {
+        return briteDatabase.createQuery("ProgramStage", "SELECT ProgramStage.captureCoordinates FROM ProgramStage " +
+                "JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ?", eventUid)
+                .mapToOne(cursor -> cursor.getInt(0) == 1);
+    }
+
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
         String uid = cursor.getString(0);
@@ -412,6 +417,13 @@ public class EventRepository implements FormRepository {
             dataValue = optionCodeName;
         }
 
+        ValueTypeDeviceRenderingModel fieldRendering = null;
+        Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
+        if(rendering!=null && rendering.moveToFirst()){
+            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            rendering.close();
+        }
+
         FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                 "",
                 "",
@@ -425,7 +437,7 @@ public class EventRepository implements FormRepository {
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType,
                 mandatory, optionSetUid, dataValue, section, allowFutureDates,
-                status == EventStatus.ACTIVE, null, description);
+                status == EventStatus.ACTIVE, null, description, fieldRendering);
     }
 
     @NonNull

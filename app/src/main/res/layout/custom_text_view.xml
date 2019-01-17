@@ -48,7 +48,7 @@
                 android:textColorHint="@color/text_black_808"
                 tools:hint="hint">
 
-                <android.support.design.widget.TextInputEditText
+                <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

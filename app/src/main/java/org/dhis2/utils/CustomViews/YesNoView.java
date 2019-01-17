@@ -6,6 +6,7 @@ import android.databinding.ViewDataBinding;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -27,10 +28,11 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
-    private RadioButton no_value;
+//    private RadioButton no_value;
     private TextView labelView;
     private boolean isBgTransparent;
     private LayoutInflater inflater;
+    private View clearButton;
 
     public YesNoView(Context context) {
         super(context);
@@ -87,9 +89,10 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
             binding = DataBindingUtil.inflate(inflater, R.layout.yes_no_view, this, true);
 
         radioGroup = findViewById(R.id.radiogroup);
+        clearButton = findViewById(R.id.clearSelection);
         yes = findViewById(R.id.yes);
         no = findViewById(R.id.no);
-        no_value = findViewById(R.id.no_value);
+//        no_value = findViewById(R.id.no_value);
         labelView = findViewById(R.id.label);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -104,5 +107,9 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
 
     public RadioGroup getRadioGroup() {
         return radioGroup;
+    }
+
+    public View getClearButton() {
+        return clearButton;
     }
 }

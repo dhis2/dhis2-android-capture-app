@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="action_share_items">
+        <item quantity="zero">@string/action_share_zero_items</item>
+        <item quantity="other">@string/action_share_zero_items</item>
+        <item quantity="one">@string/action_share_single_item</item>
+        <item quantity="many">@string/action_share_multiple_item</item>
+    </plurals>
+</resources>

@@ -43,6 +43,7 @@ public class Constants {
 
 
     //EVENT_CREATION
+    public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
     public static final String DEFAULT_CAT_OPTION = "as6ygGvUGNg";
     public static final String DEFAULT_CAT_OPTION_COMBO = "bRowv6yZOF2";
     public static final String SCREEN_NAME = "SCREEN_NAME";
@@ -54,8 +55,12 @@ public class Constants {
     public static final String PERIOD_TYPE = "PERIOD_TYPE";
     public static final String PERIOD_TYPE_DATE = "PERIOD_TYPE_DATE";
     public static final String CAT_COMB = "CAT_COMB";
+    public static final String DEFAULT_CAT_COMBO = "DEFAULT_CAT_COMB";
     public static final String DATA_SET_SECTION = "DATA_SET_SECTION";
     public static final String PROGRAM_STAGE_UID = "PROGRAM_STAGE_UID";
+    public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
+    public static final int RQ_MANDATORY_EVENTS = 2001;
+    public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
@@ -78,7 +83,13 @@ public class Constants {
     public static final String EVENT_PERIOD_TYPE = "EVENT_PERIOD_TYPE";
     public static final String ENROLLMENT_DATE_UID = "ENROLLMENT_DATE_UID";
     public static final String INCIDENT_DATE_UID = "INCIDENT_DATE_UID";
+    public static final String ENROLLMENT_DATE = "enrollmentDate";
+    public static final String INCIDENT_DATE = "incidentDate";
 
+    public static final String META = "METADATA";
+    public static final String DATA = "DATA";
+    public static final String TIME_META = "timeMeta";
+    public static final String TIME_DATA = "timeData";
 
     private Constants() {
         // hide public constructor

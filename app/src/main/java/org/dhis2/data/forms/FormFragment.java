@@ -81,6 +81,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private PublishSubject<String> onReportDateChanged;
     private PublishSubject<String> onIncidentDateChanged;
     private PublishSubject<LatLng> onCoordinatesChanged;
+    private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
     PublishSubject<ReportStatus> undoObservable;
     private CoordinatorLayout coordinatorLayout;
@@ -148,6 +149,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         View appBarLayout = view.findViewById(R.id.appbarlayout_data_entry);
         datesLayout = view.findViewById(R.id.data_entry_dates);
         reportDate = view.findViewById(R.id.report_date);
+        reportDateLayout = view.findViewById(R.id.report_date_layout);
         incidentDateLayout = view.findViewById(R.id.incident_date_layout);
         incidentDate = view.findViewById(R.id.incident_date_text);
         coordinatorLayout = view.findViewById(R.id.coordinatorlayout_form);
@@ -298,8 +300,11 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @NonNull
     @Override
-    public Consumer<String> renderReportDate() {
-        return date -> reportDate.setText(date);
+    public Consumer<Pair<ProgramModel, String>> renderReportDate() {
+        return programModelAndDate -> {
+            reportDate.setText(programModelAndDate.val1());
+            reportDateLayout.setHint(programModelAndDate.val0().enrollmentDateLabel());
+        };
     }
 
     @NonNull
@@ -309,12 +314,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             incidentDateLayout.setHint(programModelAndDate.val0().incidentDateLabel());
             incidentDateLayout.setVisibility(View.VISIBLE);
             incidentDate.setText(programModelAndDate.val1());
-            if (isEnrollment && programModelAndDate.val0().captureCoordinates()) {
-                coordinatesView.setVisibility(View.VISIBLE);
-            } else {
-                coordinatesView.setVisibility(View.GONE);
-            }
         };
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Boolean> renderCaptureCoordinates() {
+        return captureCoordinates -> coordinatesView.setVisibility(captureCoordinates ? View.VISIBLE : View.GONE);
     }
 
     @NonNull

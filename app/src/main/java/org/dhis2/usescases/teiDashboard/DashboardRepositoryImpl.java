@@ -57,8 +57,8 @@ import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 public class DashboardRepositoryImpl implements DashboardRepository {
 
     private static final String INSERT_NOTE = "INSERT INTO Note ( " +
-            "enrollment, value, storedBy, storedDate" +
-            ") VALUES (?, ?, ?, ?);";
+            "uid, enrollment, value, storedBy, storedDate" +
+            ") VALUES (?, ?, ?, ?, ?);";
     private static final String SELECT_NOTES = "SELECT " +
             "Note.* FROM Note\n" +
             "JOIN Enrollment ON Enrollment.uid = Note.enrollment\n" +
@@ -102,19 +102,26 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
-            "SELECT Event.* FROM %s JOIN %s " +
+            "SELECT DISTINCT %s.* FROM %s JOIN %s " +
                     "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? " +
-                    "AND %s.%s = ? " +
-                    "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' " +
-                    "ORDER BY CASE WHEN %s.%s IS NOT NULL " +
-                    "THEN %s.%s ELSE %s.%s END DESC, Event.lastUpdated  DESC",
-            EventModel.TABLE, EnrollmentModel.TABLE,
+                    "JOIN %s ON %s.%s " +
+                    "IN (SELECT %s FROM %s WHERE %s = ?)" +
+                    "WHERE %s.%s = ? " + //ProgramUid
+                    "AND %s.%s = ? " + //TeiUid
+                    "AND %s.%s != '%s' " +
+                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND %s.%s = 'SCHEDULE') " +
+                    "THEN %s.%s " +
+                    "ELSE %s.%s END ASC, %s.%s DESC",
+            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
+            ProgramStageModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
+            ProgramStageModel.Columns.UID, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE,/* EventModel.TABLE, EventModel.Columns.EVENT_DATE,*/
-            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.EVENT_DATE);
+            EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.STATE,
+            EventModel.TABLE, EventModel.Columns.DUE_DATE,
+            EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
     private final String EVENTS_DISPLAY_BOX = String.format(
             "SELECT Event.* FROM %s " +
@@ -209,19 +216,6 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter) {
-        String[] filters = filter.split(",");
-        StringBuilder filterQuery = new StringBuilder("");
-        for (String currentFilter : filters) {
-            filterQuery.append("'").append(currentFilter).append("'");
-            if (!currentFilter.equals(filters[filters.length - 1]))
-                filterQuery.append(",");
-        }
-        return briteDatabase.createQuery(EventModel.TABLE, SCHEDULE_EVENTS.replace("%s", filterQuery), programUid, teUid)
-                .mapToList(EventModel::create).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @Override
     public Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid) {
         return briteDatabase.createQuery(TrackedEntityAttributeValueModel.TABLE, SELECT_TEI_MAIN_ATTR, teiUid)
                 .mapToList(TrackedEntityAttributeValueModel::create);
@@ -247,30 +241,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 .build();
 
         updateProgramTable(currentDate, eventModel.program());
+        updateTeiState();
 
         briteDatabase.update(EventModel.TABLE, event.toContentValues(), EventModel.Columns.UID + " = ?", event.uid());
         return event;
-    }
-
-    @Override
-    public Observable<ProgramModel> getProgramData(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        return briteDatabase.createQuery(ProgramModel.TABLE, PROGRAM_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(ProgramModel::create);
-    }
-
-    @Override
-    public Observable<List<TrackedEntityAttributeModel>> getAttributes(String programId) {
-        String id = programId == null ? "" : programId;
-        return briteDatabase.createQuery(ATTRIBUTE_TABLE_SET, ATTRIBUTES_QUERY + "'" + id + "'")
-                .mapToList(TrackedEntityAttributeModel::create);
-    }
-
-    @Override
-    public Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId) {
-        String id = orgUnitId == null ? "" : orgUnitId;
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(OrganisationUnitModel::create);
     }
 
     @Override
@@ -292,8 +266,14 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId)
-                .mapToList(EventModel::create);
+        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, progId, teiId)
+                .mapToList(cursor -> {
+                    EventModel eventModel = EventModel.create(cursor);
+                    if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
+                        eventModel = updateState(eventModel, EventStatus.OVERDUE);
+
+                    return eventModel;
+                });
     }
 
     @Override
@@ -472,13 +452,21 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     }
 
     @Override
-    public int setFollowUp(String programUid, String enrollmentUid, boolean followUp) {
+    public boolean setFollowUp(String enrollmentUid) {
+
+        String enrollmentFollowUpQuery = "SELECT Enrollment.followup FROM Enrollment WHERE Enrollment.uid = ?";
+        Cursor cursor = briteDatabase.query(enrollmentFollowUpQuery, enrollmentUid);
+        boolean followUp = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            followUp = cursor.getInt(0) == 1;
+        }
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "1" : "0");
+        contentValues.put(EnrollmentModel.Columns.FOLLOW_UP, followUp ? "0" : "1");
 
-        updateProgramTable(Calendar.getInstance().getTime(), programUid);
+        int update = briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
 
-        return briteDatabase.update(EnrollmentModel.TABLE, contentValues, EnrollmentModel.Columns.UID + " = ?", enrollmentUid == null ? "" : enrollmentUid);
+        return !followUp;
     }
 
     @Override
@@ -525,10 +513,12 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                 SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
                         .compileStatement(INSERT_NOTE);
 
-                sqLiteBind(insetNoteStatement, 1, enrollmentUid == null ? "" : enrollmentUid); //enrollment
-                sqLiteBind(insetNoteStatement, 2, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
-                sqLiteBind(insetNoteStatement, 3, userName == null ? "" : userName); //storeBy
-                sqLiteBind(insetNoteStatement, 4, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+                sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+                sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+                sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+                sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+                sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
 
                 briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
 
@@ -536,8 +526,42 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             }
         };
+
     }
 
+    @Override
+    public Observable<Boolean> handleNote(Pair<String, Boolean> stringBooleanPair) {
+        if (stringBooleanPair.val1()) {
+
+            Cursor cursor = briteDatabase.query(SELECT_USERNAME);
+            cursor.moveToFirst();
+            String userName = cursor.getString(0);
+            cursor.close();
+
+            Cursor cursor1 = briteDatabase.query(SELECT_ENROLLMENT, programUid == null ? "" : programUid, EnrollmentStatus.ACTIVE.name(), teiUid == null ? "" : teiUid);
+            cursor1.moveToFirst();
+            String enrollmentUid = cursor1.getString(0);
+
+            SQLiteStatement insetNoteStatement = briteDatabase.getWritableDatabase()
+                    .compileStatement(INSERT_NOTE);
+
+
+            sqLiteBind(insetNoteStatement, 1, codeGenerator.generate()); //enrollment
+            sqLiteBind(insetNoteStatement, 2, enrollmentUid == null ? "" : enrollmentUid); //enrollment
+            sqLiteBind(insetNoteStatement, 3, stringBooleanPair.val0() == null ? "" : stringBooleanPair.val0()); //value
+            sqLiteBind(insetNoteStatement, 4, userName == null ? "" : userName); //storeBy
+            sqLiteBind(insetNoteStatement, 5, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime())); //storeDate
+
+            long success = briteDatabase.executeInsert(NoteModel.TABLE, insetNoteStatement);
+
+            insetNoteStatement.clearBindings();
+
+            return Observable.just(success == 1).flatMap(value->updateEnrollment(success).toObservable())
+                    .map(value-> value == 1);
+
+        } else
+            return Observable.just(false);
+    }
 
     @Override
     public Flowable<Long> updateEnrollmentStatus(@NonNull String uid, @NonNull EnrollmentStatus value) {

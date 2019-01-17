@@ -97,16 +97,7 @@ class FormPresenterImpl implements FormPresenter {
             compositeDisposable.add(formRepository.reportDate()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .filter(date -> !isEmpty(date))
-                    .map(date -> {
-                        try {
-                            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
-                        } catch (ParseException e) {
-                            Timber.e(e, "DashboardRepository: Unable to parse date. Expected format: " +
-                                    DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
-                            return date;
-                        }
-                    })
+                    .filter(programModelAndDate -> !isEmpty(programModelAndDate.val1()))
                     .subscribe(view.renderReportDate(), Timber::e));
 
             compositeDisposable.add(formRepository.incidentDate()
@@ -114,6 +105,12 @@ class FormPresenterImpl implements FormPresenter {
                     .observeOn(schedulerProvider.ui())
                     .filter(programModelAndDate -> programModelAndDate.val0().displayIncidentDate())
                     .subscribe(view.renderIncidentDate(), Timber::e)
+            );
+
+            compositeDisposable.add(formRepository.captureCoodinates()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(view.renderCaptureCoordinates(), Timber::e)
             );
 
             compositeDisposable.add(formRepository.getAllowDatesInFuture()
@@ -137,7 +134,7 @@ class FormPresenterImpl implements FormPresenter {
         //region SECTIONS
         Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
         Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         // Combining results of two repositories into a single stream.
         Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -304,7 +301,7 @@ class FormPresenterImpl implements FormPresenter {
         else {
             Flowable<List<FormSectionViewModel>> sectionsFlowable = formRepository.sections();
             Flowable<Result<RuleEffect>> ruleEffectFlowable = ruleEngineRepository.calculate()
-                    .subscribeOn(schedulerProvider.computation());
+                    .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
             // Combining results of two repositories into a single stream.
             Flowable<List<FormSectionViewModel>> sectionModelsFlowable = Flowable.zip(
@@ -323,7 +320,7 @@ class FormPresenterImpl implements FormPresenter {
     public void checkMandatoryFields() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);
@@ -345,7 +342,7 @@ class FormPresenterImpl implements FormPresenter {
     public Observable<Boolean> checkMandatory() {
         Observable<List<FieldViewModel>> values = formRepository.fieldValues();
         Observable<Result<RuleEffect>> ruleEffect = ruleEngineRepository.calculate().toObservable()
-                .subscribeOn(schedulerProvider.computation());
+                .subscribeOn(schedulerProvider.computation()).onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
         Observable<List<FieldViewModel>> fieldValues = Observable.zip(
                 values, ruleEffect, this::applyFieldViewEffects);

@@ -33,7 +33,8 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
         this.renderType = null;
     }
 
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                   @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;

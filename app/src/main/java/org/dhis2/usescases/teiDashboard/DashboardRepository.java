@@ -31,12 +31,6 @@ import io.reactivex.functions.Consumer;
 
 public interface DashboardRepository {
 
-    Observable<ProgramModel> getProgramData(String programUid);
-
-    Observable<List<TrackedEntityAttributeModel>> getAttributes(String programId);
-
-    Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId);
-
     Observable<List<ProgramStageModel>> getProgramStages(String programStages);
 
     Observable<EnrollmentModel> getEnrollment(String programUid, String teiUid);
@@ -47,23 +41,17 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
-    /*Observable<List<RelationshipModel>> getRelationships(String teiUid);
-
-    void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
-
-    void deleteRelationship(RelationshipModel relationshipId);*/
-
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
-    int setFollowUp(String programUid, String enrollmentUid, boolean followUp);
+    boolean setFollowUp(String enrollmentUid);
 
     Flowable<List<NoteModel>> getNotes(String programUid, String teUid);
 
     Consumer<Pair<String, Boolean>> handleNote();
 
-    void setDashboardDetails(String teiUid, String programUid);
+    Observable<Boolean> handleNote(Pair<String,Boolean> pair);
 
-    Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter);
+    void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
 

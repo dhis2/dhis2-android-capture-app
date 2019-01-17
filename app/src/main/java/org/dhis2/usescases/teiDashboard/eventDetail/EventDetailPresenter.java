@@ -206,7 +206,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void onOrgUnitClick() {
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Event Org Unit")
                 .setPossitiveListener(v -> {
                     view.setSelectedOrgUnit(orgUnitDialog.getSelectedOrgUnitModel());
@@ -279,8 +279,12 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
-        if (eventDetailModel.orgUnitOpeningDate() != null) {
-            dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
+        if (eventDetailModel.getProgram().expiryPeriodType() != null){// eventDetailModel.orgUnitOpeningDate() != null) {
+            Date minDate = DateUtils.getInstance().expDate(null,
+                    eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
+                    eventDetailModel.getProgram().expiryPeriodType());
+            dateDialog.getDatePicker().setMinDate(minDate.getTime());
+            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)
@@ -315,5 +319,15 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             periodDialog.setMaxDate(eventDetailModel.orgUnitClosingDate());
 
         periodDialog.show(view.getAbstractActivity().getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onDettach() {
+        disposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
     }
 }

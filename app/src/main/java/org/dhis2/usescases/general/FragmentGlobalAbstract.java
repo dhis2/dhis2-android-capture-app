@@ -1,8 +1,6 @@
 package org.dhis2.usescases.general;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,15 +27,8 @@ import static android.content.Context.MODE_PRIVATE;
  */
 
 public abstract class FragmentGlobalAbstract extends android.support.v4.app.Fragment implements AbstractActivityContracts.View {
-    public ViewDataBinding binding;
-    public int containerId;
 
     //region lifecycle
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
     @Nullable
     @Override
@@ -46,35 +37,11 @@ public abstract class FragmentGlobalAbstract extends android.support.v4.app.Frag
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
     //endregion
 
     @Override
     public void startActivity(@NonNull Class<?> destination, @Nullable Bundle bundle, boolean finishCurrent, boolean finishAll, @Nullable ActivityOptionsCompat transition) {
         getAbstracContext().startActivity(destination, bundle, finishCurrent, finishAll, transition);
-    }
-
-    public int getContainerId() {
-        return containerId;
     }
 
     @Override

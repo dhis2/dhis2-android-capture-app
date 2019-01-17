@@ -1,12 +1,15 @@
 package org.dhis2.usescases.teiDashboard.mobile;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -26,13 +29,15 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.HelpManager;
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -45,14 +50,12 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     ActivityDashboardMobileBinding binding;
     public FragmentStatePagerAdapter adapter;
+    private int orientation;
+    private boolean changingProgram;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
         binding.setPresenter(presenter);
@@ -62,14 +65,22 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         binding.toolbarTitle.setLines(1);
         binding.toolbarTitle.setEllipsize(TextUtils.TruncateAt.END);
 
+        getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .edit().putString(Constants.PREVIOUS_DASHBOARD_PROGRAM, programUid).apply();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        init(teiUid, programUid);
+        String prevDashboardProgram = getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE)
+                .getString(Constants.PREVIOUS_DASHBOARD_PROGRAM, null);
+        if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
+            finish();
+        } else {
+            orientation = Resources.getSystem().getConfiguration().orientation;
+            init(teiUid, programUid);
+        }
     }
 
     @Override
@@ -85,7 +96,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     private void setViewpagerAdapter() {
         if (adapter == null) {
-            if (!getResources().getBoolean(R.bool.is_tablet)) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 adapter = new DashboardPagerAdapter(this, getSupportFragmentManager(), programUid);
                 binding.teiPager.setAdapter(adapter);
                 binding.tabLayout.setVisibility(View.VISIBLE);
@@ -94,7 +105,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
                 binding.teiPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int i, float v, int i1) {
-
+                        // nothing
                     }
 
                     @Override
@@ -104,7 +115,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
                     @Override
                     public void onPageScrollStateChanged(int i) {
-
+                        // nothing
                     }
                 });
                 binding.sectionTitle.setText(adapter.getPageTitle(0));
@@ -118,10 +129,9 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void setData(DashboardProgramModel program) {
-
-        if (getResources().getBoolean(R.bool.is_tablet))
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
+                    .replace(R.id.tei_main_view, TEIDataFragment.getInstance())
                     .commit();
 
         binding.setDashboardModel(program);
@@ -138,21 +148,31 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         setViewpagerAdapter();
 
+        TEIDataFragment.getInstance().setData(programModel);
 
-//        RelationshipFragment.getInstance().setData(program);
-//        TEIDataFragment.getInstance().setData(programModel);
-
-//        binding.teiPager.setOffscreenPageLimit(6);
-
-        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
+        if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName())) {
             setTutorial();
+        }
+    }
+
+    @Override
+    public void restoreAdapter(String programUid) {
+        this.adapter = null;
+        this.programUid = programUid;
+    }
+
+    @Override
+    public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
+        CategoryComboDialog dialog = new CategoryComboDialog(getAbstracContext(), programStage, catComboOptions, 123,
+                selectedOption -> presenter.changeCatOption(eventId, selectedOption));
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     @Override
     public void setDataWithOutProgram(DashboardProgramModel program) {
-
-
-        if (getResources().getBoolean(R.bool.is_tablet))
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.tei_main_view, TEIDataFragment.createInstance())
                     .commit();
@@ -169,8 +189,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         this.programModel = program;
 
         setViewpagerAdapter();
-
-//        RelationshipFragment.getInstance().setData(program);
     }
 
     @Override
@@ -207,11 +225,13 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
             if (data.hasExtra("GO_TO_ENROLLMENT")) {
                 FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(data.getStringExtra("GO_TO_ENROLLMENT"));
                 startActivity(FormActivity.create(this, formViewArguments, true));
+                finish();
             }
 
             if (data.hasExtra("CHANGE_PROGRAM")) {
                 programUid = data.getStringExtra("CHANGE_PROGRAM");
                 adapter = null;
+                changingProgram = true;
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -291,6 +311,15 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
         }, 500);
 
+
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        if(binding.tabLayout.getSelectedTabPosition()==0)
+            super.showTutorial(shaked);
+        else
+            showToast(getString(R.string.no_intructions));
 
     }
 }

@@ -26,31 +26,38 @@
         android:background="@android:color/white"
         android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}">
 
-        <ImageView
-            android:id="@+id/program_image"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/imageLayout"
             android:layout_width="130dp"
             android:layout_height="100dp"
-            android:background="?attr/colorPrimaryLight"
-            android:padding="8dp"
-            tools:background="?attr/colorPrimaryLight"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_with_registration" />
+            android:background="?attr/colorPrimaryLight">
+
+            <ImageView
+                android:id="@+id/program_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_with_registration" />
+
+        </android.support.constraint.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="10dp"
             android:layout_marginStart="5dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:padding="5dp"
+            android:text="@{program.count().toString()}"
             android:textColor="@color/text_black_333"
             android:textSize="18sp"
-            android:text="@{program.count().toString()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/program_image"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageLayout"
             tools:text="155" />
 
         <TextView
@@ -59,12 +66,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="10dp"
+            android:fontFamily="@font/rubik_light"
             android:gravity="center"
             android:padding="5dp"
+            android:text="@{program.typeName()}"
             android:textColor="@color/text_black_333"
             android:textSize="18sp"
-            android:fontFamily="@font/rubik_light"
-            android:text="@{program.typeName()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/count"
             tools:text="Events" />
@@ -72,19 +79,22 @@
         <TextView
             android:id="@+id/program_name"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:lines="2"
-            android:padding="5dp"
+            android:paddingStart="5dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:text="@{program.title()}"
             android:textColor="@color/text_black_333"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/sync_status"
-            app:layout_constraintStart_toEndOf="@id/program_image"
+            app:layout_constraintStart_toEndOf="@id/imageLayout"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/events_number"
             tools:text="Child Program" />
 
         <ImageView

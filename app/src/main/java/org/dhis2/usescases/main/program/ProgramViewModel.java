@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 
 @AutoValue
@@ -57,7 +55,7 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
     @ColumnName(Columns.TRACKED_ENTITY_TYPE_NAME)
     public abstract String typeName();
 
-    @NotNull
+    @NonNull
     @ColumnName(Columns.PROGRAM_TYPE)
     public abstract String programType();
 
@@ -77,7 +75,7 @@ public abstract class ProgramViewModel extends BaseObservable implements Seriali
     @NonNull
     public static ProgramViewModel create(@NonNull String uid, @NonNull String displayName, @Nullable String color,
                                           @Nullable String icon, @NonNull Integer count, @Nullable String type,
-                                          @NonNull String typeName, @NonNull String programType, @Nullable String description, @NonNull Boolean onlyEnrollOnce, @NonNull Boolean accessDataWrite) {
+                                          @NonNull String typeName, String programType, @Nullable String description, @NonNull Boolean onlyEnrollOnce, @NonNull Boolean accessDataWrite) {
         return new AutoValue_ProgramViewModel(uid, displayName, color, icon, count, type, typeName, programType, description, onlyEnrollOnce, accessDataWrite);
     }
 

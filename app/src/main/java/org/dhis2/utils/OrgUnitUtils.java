@@ -3,9 +3,9 @@ package org.dhis2.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.dhis2.usescases.main.program.OrgUnitHolder;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.ArrayList;
@@ -72,13 +72,15 @@ public class OrgUnitUtils {
         SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
 
         try {
-            for (int level = keys.last(); level > 1; level--) {
-                for (TreeNode treeNode : subLists.get(level - 1)) {
-                    for (TreeNode childTreeNode : subLists.get(level)) {
-                        if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
-                            treeNode.addChild(childTreeNode);
-                    }
+            if(!keys.isEmpty()) {
+                for (int level = keys.last(); level > 1; level--) {
+                    for (TreeNode treeNode : subLists.get(level - 1)) {
+                        for (TreeNode childTreeNode : subLists.get(level)) {
+                            if (((OrganisationUnitModel) childTreeNode.getValue()).parent().equals(((OrganisationUnitModel) treeNode.getValue()).uid()))
+                                treeNode.addChild(childTreeNode);
+                        }
 
+                    }
                 }
             }
         } catch (NoSuchElementException e) { //It seems keys.last() can result in a null
@@ -89,6 +91,59 @@ public class OrgUnitUtils {
         root.addChildren(subLists.get(1));
 
         return root;
+    }
+
+    public static List<ParentChildModel<OrganisationUnitModel>> renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
+
+        HashMap<Integer, ArrayList<OrganisationUnitModel>> orgUnitsByLevel = new HashMap<>();
+
+        List<ParentChildModel<OrganisationUnitModel>> allOrgs = new ArrayList<>();
+        ArrayList<String> myOrgUnitUids = new ArrayList<>();
+
+        int minLevel = -1;
+        for (OrganisationUnitModel myorg : myOrgs) {
+            myOrgUnitUids.add(myorg.uid());
+            String[] pathName = myorg.displayNamePath().split("/");
+            String[] pathUid = myorg.path().split("/");
+            for (int i = myorg.level(); i > 0; i--) {
+
+                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
+                        .uid(pathUid[i])
+                        .level(i)
+                        .parent(pathUid[i - 1])
+                        .name(pathName[i])
+                        .displayName(pathName[i])
+                        .displayShortName(pathName[i])
+                        .build();
+
+                ParentChildModel<OrganisationUnitModel> orgUnitParent =
+                        ParentChildModel.create(orgToAdd, new ArrayList<>(), myOrgUnitUids.contains(orgToAdd.uid()));
+
+                if (!allOrgs.contains(orgUnitParent)) {
+                    allOrgs.add(orgUnitParent);
+                }
+
+                if (orgUnitsByLevel.get(i) == null)
+                    orgUnitsByLevel.put(i, new ArrayList<>());
+                orgUnitsByLevel.get(i).add(myorg);
+
+                if (minLevel == -1 || i < minLevel)
+                    minLevel = i;
+            }
+        }
+
+        List<ParentChildModel<OrganisationUnitModel>> minLevelList = new ArrayList<>();
+
+        for (ParentChildModel<OrganisationUnitModel> parentModel : allOrgs) {
+            for (ParentChildModel<OrganisationUnitModel> childModel : allOrgs)
+                if (childModel.parent().parent().equals(parentModel.parent().uid()))
+                    parentModel.addItem(childModel);
+            if (parentModel.parent().level() == minLevel)
+                minLevelList.add(parentModel);
+        }
+
+        return minLevelList;
+
     }
 
 }

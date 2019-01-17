@@ -21,6 +21,12 @@ repositories {
 
 android {
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -38,7 +44,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        setProperty("archivesBaseName","dhis2-v"+versionName)
+        setProperty("archivesBaseName", "dhis2-v" + versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
     }
@@ -119,7 +125,7 @@ android {
 dependencies {
 
     implementation project(":customFab")
-
+    implementation project(":dhis2-rule-engine")
 
     //region SUPPORT LIBRARIES
     implementation "com.android.support:appcompat-v7:${libraries.support}"
@@ -137,12 +143,12 @@ dependencies {
         exclude group: "org.hisp.dhis", module: "core-rules"
     }
 
-    implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
-        exclude group: "com.google.code.findbugs", module: "jsr305"
-        exclude group: "org.hisp.dhis", module: "core-rules"
-    }
+    /* implementation("org.hisp.dhis:android-rules:${libraries.dhis2sdk}") {
+         exclude group: "com.google.code.findbugs", module: "jsr305"
+         exclude group: "org.hisp.dhis", module: "core-rules"
+     }*/
 
-    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
@@ -169,18 +175,19 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
     //region GOOGLE AUTO VALUE
     // Google's auto-value. Annotations are used only during compilation time, as well as
     // annotation processor which hoops up into compilation process
-    compileOnly "com.google.auto.value:auto-value:${libraries.autovalue}"
+    api "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
 
     // Extension which generates mappers for work with cursors
-    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
-    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
+    kapt "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
+    kapt "com.ryanharter.auto.value:auto-value-parcel:${libraries.autovalueparcel}"
     //endregion
 
     //region BRITEDATABASE
@@ -202,13 +209,13 @@ dependencies {
     // Jake Wharton libraries
     //timber
     implementation "com.jakewharton.timber:timber:${libraries.timber}"
-        
+
     //GSON
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
-    implementation ("android.arch.work:work-runtime:1.0.0-alpha10"){
+    implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
 
     }
@@ -217,6 +224,9 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
+
+    //FIREBASE
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 
     //Test
 
@@ -229,6 +239,11 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
+    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
+    /* androidTestImplementation 'com.google.dagger:dagger:2.14.1'
+     androidTestImplementation 'com.google.dagger:dagger-compiler:2.14.1'*/
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
@@ -252,12 +267,19 @@ dependencies {
 
     //Glide load images
     implementation 'com.github.bumptech.glide:glide:4.7.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    kapt 'com.github.bumptech.glide:compiler:4.7.1'
     implementation "com.tbuonomo.andrui:viewpagerdotsindicator:${libraries.indicatordots}"
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
 
+    implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+
+    implementation 'cat.ereza:customactivityoncrash:2.2.0'
+
+
 }
 
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'

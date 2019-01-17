@@ -37,7 +37,7 @@ interface FormView {
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
     @NonNull
-    Consumer<String> renderReportDate();
+    Consumer<Pair<ProgramModel, String>> renderReportDate();
 
     @NonNull
     Consumer<String> renderTitle();
@@ -76,4 +76,6 @@ interface FormView {
     void setShowError(RuleActionShowError showError);
 
     void showCatComboDialog(CategoryComboModel categoryComboModel, List<CategoryOptionComboModel> categoryOptionComboModels);
+
+    Consumer<Boolean> renderCaptureCoordinates();
 }

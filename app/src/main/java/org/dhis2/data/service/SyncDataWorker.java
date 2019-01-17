@@ -1,13 +1,15 @@
 package org.dhis2.data.service;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -15,6 +17,7 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.DateUtils;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -43,16 +46,16 @@ public class SyncDataWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        ((App) getApplicationContext()).userComponent().plus(new SyncDataWorkerModule()).inject(this);
+        Objects.requireNonNull(((App) getApplicationContext()).userComponent()).plus(new SyncDataWorkerModule()).inject(this);
 
-        triggerNotification(SYNC_DATA_ID,
+        triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_data));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", true));
 
         boolean isEventOk = true;
         boolean isTeiOk = true;
-
+        boolean isDataValue = true;
         try {
             presenter.syncAndDownloadEvents(getApplicationContext());
         } catch (Exception e) {
@@ -66,14 +69,18 @@ public class SyncDataWorker extends Worker {
             isTeiOk = false;
         }
 
+        try {
+            presenter.syncAndDownloadDataValues();
+        } catch (Exception e) {
+            Timber.e(e);
+            isDataValue = false;
+        }
+
         String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
 
         SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(Constants.LAST_DATA_SYNC, lastDataSyncDate).apply();
-        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk).apply();
-
-        Log.d(this.getClass().getSimpleName(),"Last data sync at: "+lastDataSyncDate);
-        Log.d(this.getClass().getSimpleName(),"Last data sync saved: "+prefs.getString(Constants.LAST_DATA_SYNC,"Not saved"));
+        prefs.edit().putBoolean(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue).apply();
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent("action_sync").putExtra("dataSyncInProgress", false));
 
@@ -82,7 +89,14 @@ public class SyncDataWorker extends Worker {
         return Result.SUCCESS;
     }
 
-    private void triggerNotification(int id, String title, String content) {
+    private void triggerNotification(String title, String content) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(data_channel, "DataSync", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), data_channel)
                         .setSmallIcon(R.drawable.ic_sync)
@@ -91,10 +105,7 @@ public class SyncDataWorker extends Worker {
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(getApplicationContext());
-
-        notificationManager.notify(id, notificationBuilder.build());
+        notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notificationBuilder.build());
     }
 
     private void cancelNotification() {

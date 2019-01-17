@@ -116,7 +116,6 @@
   <string name="deactivate">ຢຸດນໍາໃຊ້</string>
   <string name="program_not_allow_events">ໂປຣແກຣມນີ້ບໍ່ອະນຸຍາດຕື່ມກໍລະນີເຂົ້າອີກ</string>
   <string name="events">ກໍລະນີ</string>
-  <string name="relationships">ສາຍພົວພັນ</string>
   <string name="done_task">ໜ້າຫຼັກ</string>
   <string name="app_info">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມ</string>
   <string name="log_out">ອອກຈາກລະບົບ</string>
@@ -289,4 +288,5 @@
   <string name="tuto_main_8">ສົ່ງຂໍ້ມູນຂອງທ່ານໄປຫາຄອມພີມເຕີໜ່ວຍແມ່</string>
   <string name="tuto_main_9">ປິດໄລຍະການນໍາໃຊ້ດ້ວຍລະຫັດ4ໂຕ. ຢ່າລືມລະຫັດດັ່ງກ່າວ</string>
   <string name="tuto_main_10">Lອອກຈາກໂປຣແກຣມເພື່ອປ່ຽນຜູ້ໃຊ້ຫຼືທີ່ຢູ່ຂອງຄອມພີວເຕີໜ່ວຍແມ່. ທ່ານຈະສາມາດເຂົ້າໂປຣແກຣມຄືນໄດ້ເຖີງແມ່ນວ່າບໍ່ມີການເຊື່ອມຕໍ່ອີນເຕີແນັດກໍ່ຕາມ.</string>
+  <string name="relationships">ສາຍພົວພັນ</string>
 </resources>

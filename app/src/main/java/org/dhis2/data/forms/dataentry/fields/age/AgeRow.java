@@ -30,7 +30,8 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
         this.renderType = null;
     }
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
+                  @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;
         this.processor = processor;

@@ -71,12 +71,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
-    @Override
-    public void onDestroy() {
-        instance = null;
-        super.onDestroy();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,7 +84,6 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
     @Override
     public void onResume() {
         super.onResume();
-
         setData(presenter.getDashBoardData());
     }
 
@@ -131,16 +124,14 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
         rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
             @Override
             public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-                rfaHelper.toggleContent();
-                relationshipType = (RelationshipTypeModel) item.getWrapper();
-                presenter.goToAddRelationship(relationshipType.uid());
+                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+                goToRelationShip(pair.val0(),pair.val1());
             }
 
             @Override
             public void onRFACItemIconClick(int position, RFACLabelItem item) {
-                rfaHelper.toggleContent();
-                relationshipType = ((Pair<RelationshipTypeModel, String>) item.getWrapper()).val0();
-                presenter.goToAddRelationship(((Pair<RelationshipTypeModel, String>) item.getWrapper()).val1());
+                Pair<RelationshipTypeModel, String> pair = (Pair<RelationshipTypeModel, String>) item.getWrapper();
+                goToRelationShip(pair.val0(),pair.val1());
             }
         });
         List<RFACLabelItem> items = new ArrayList<>();
@@ -167,5 +158,12 @@ public class RelationshipFragment extends FragmentGlobalAbstract {
 
             rfaHelper = new RapidFloatingActionHelper(getAbstracContext(), binding.rfabLayout, binding.rfab, rfaContent).build();
         }
+    }
+
+    private void goToRelationShip(@NonNull RelationshipTypeModel relationshipTypeModel,
+                                  @NonNull String teiTypeUid) {
+        rfaHelper.toggleContent();
+        relationshipType = relationshipTypeModel;
+        presenter.goToAddRelationship(teiTypeUid);
     }
 }

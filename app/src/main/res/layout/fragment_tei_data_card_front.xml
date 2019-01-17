@@ -26,6 +26,10 @@
         <variable
             name="program"
             type="org.hisp.dhis.android.core.program.ProgramModel" />
+
+        <variable
+            name="followup"
+            type="android.databinding.ObservableBoolean" />
     </data>
 
 
@@ -43,8 +47,8 @@
         <ImageView
             android:id="@+id/divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:src="@color/gray_e7e"
+            android:layout_height="0dp"
+            android:src="@color/zxing_transparent"
             app:layout_constraintTop_toBottomOf="@id/data_layout" />
 
         <android.support.constraint.Guideline
@@ -92,10 +96,10 @@
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:layout_gravity="center_vertical"
-            android:background='@{enrollment.followUp() ? @drawable/ic_circle_red : null}'
+            android:background='@{followup ? @drawable/ic_circle_red : null}'
             android:onClick='@{() -> presenter.onFollowUp(dashboardModel)}'
             android:padding="6dp"
-            android:tint="@{enrollment.followUp() ? @color/white : @color/text_black_333}"
+            android:tint="@{followup ? @color/white : @color/text_black_333}"
             android:visibility="@{program!=null?View.VISIBLE:View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
