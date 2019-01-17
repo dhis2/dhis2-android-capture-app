@@ -2,14 +2,10 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.Context;
 import android.content.Intent;
-
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.util.TypedValue;
 import android.view.Window;
 import android.view.WindowManager;
@@ -25,6 +21,10 @@ import org.dhis2.utils.Constants;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -97,7 +97,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
     @Override
     public void changeCurrentProgram(String program) {
-        if( program != null)
+        if (program != null)
             SetProgramTheme(presenter.getProgramColor(program));
         Intent data = new Intent();
         data.putExtra("CHANGE_PROGRAM", program);
@@ -108,8 +108,8 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
 
     private void SetProgramTheme(String color) {
         int programTheme = ColorUtils.getThemeFromColor(color);
-        int programColor = ColorUtils.getColorFrom(this, color);
-
+        int programColor = ColorUtils.getColorFrom(color,
+                ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY));
 
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);

@@ -38,7 +38,7 @@ ext {
             zxingbarcode     : "1.9.8",
             zxingandroid     : "3.2.0@aar",
             fancyshowcase    : "1.0.0",
-            lottie           : "2.7.0",
+            lottie           : "2.8.0",
             glide            : "4.7.1",
             indicatordots    : "2.1.2",
 

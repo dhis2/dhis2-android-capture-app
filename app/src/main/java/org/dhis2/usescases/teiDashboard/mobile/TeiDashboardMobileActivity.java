@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.annotation.Nullable;
+
+import com.google.android.material.ripple.RippleUtils;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;

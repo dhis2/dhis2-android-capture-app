@@ -193,8 +193,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
-                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
+        compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
+//                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .switchMap(action ->

@@ -1,7 +1,5 @@
 package org.dhis2.utils;
 
-import androidx.annotation.NonNull;
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 /**
