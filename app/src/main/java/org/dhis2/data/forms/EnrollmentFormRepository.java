@@ -401,7 +401,7 @@ class EnrollmentFormRepository implements FormRepository {
                 String program = cursor.getString(1);
                 String orgUnit = cursor.getString(2);
                 int minDaysFromStart = cursor.getInt(3);
-                String reportDateToUse = cursor.getString(4);
+                String reportDateToUse = cursor.getString(4) != null ? cursor.getString(4) : "";
                 String incidentDateString = cursor.getString(5);
                 String reportDateString = cursor.getString(6);
                 Date incidentDate = null;

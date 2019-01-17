@@ -61,6 +61,7 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
         orgUnitCascadeHolder.bind(items.get(position + 1),
                 position != 0 ? selectedParent.get(position) : "",
                 selectedOrgUnit,
+                selectedParent.get(position + 1),
                 this);
     }
 
@@ -95,7 +96,10 @@ public class OrgUnitCascadeAdapter extends RecyclerView.Adapter<OrgUnitCascadeHo
             selectedParent.put(i, ""); //Remove selected parents for levels higher than the selected one
     }
 
-    public void setOrgUnit(Quintet<String, String, String, Integer, Boolean> orgUnit) {
+    public void setOrgUnit(Quintet<String, String, String, Integer, Boolean> orgUnit, String path) {
+        String[] parentUids = path.replaceFirst("/", "").split("/");
+        for (int i = 1; i <= parentUids.length; i++)
+            setSelectedLevel(i, parentUids[i - 1], parentUids[i - 1].equals(orgUnit.val0()) ? orgUnit.val4() : false);
         this.selectedOrgUnit = orgUnit;
     }
 

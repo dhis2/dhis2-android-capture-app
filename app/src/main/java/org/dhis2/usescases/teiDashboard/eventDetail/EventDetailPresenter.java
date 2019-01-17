@@ -328,6 +328,6 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void displayMessage(String message) {
-
+        view.displayMessage(message);
     }
 }

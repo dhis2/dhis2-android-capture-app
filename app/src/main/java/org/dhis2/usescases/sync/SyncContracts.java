@@ -14,7 +14,7 @@ public class SyncContracts {
         void saveFlag(String s);
     }
 
-    public interface Presenter{
+    public interface Presenter extends AbstractActivityContracts.Presenter {
 
         void init(View view);
 
