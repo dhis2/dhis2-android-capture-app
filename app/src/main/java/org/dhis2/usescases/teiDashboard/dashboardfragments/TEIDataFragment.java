@@ -116,7 +116,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                     createEvent(EventCreationType.REFERAL, 0);
                     break;
                 case R.id.addnew:
-                    createEvent(EventCreationType.ADDNEW,0);
+                    createEvent(EventCreationType.ADDNEW, 0);
                     break;
                 case R.id.schedulenew:
                     createEvent(EventCreationType.SCHEDULE, 0);
@@ -265,7 +265,8 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 presenter.completeEnrollment(this);
                 break;
             case RC_GENERATE_EVENT:
-                if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0) {
+                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
+                /*if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0) {
 //                    presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
                     createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval());
                 } else {
@@ -295,7 +296,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                                 })
                                 .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
                     }
-                }
+                }*/
                 break;
             default:
                 break;

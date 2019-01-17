@@ -648,20 +648,21 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         // ONLY FUTURE DATES
-        if (eventCreationType == EventCreationType.SCHEDULE) {
+       /* if (eventCreationType == EventCreationType.SCHEDULE) {
 //            if (getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0) > 0)
             calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 1));
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-        }
+        }*/
         // ONLY PAST DATES AND TODAY
-        else {
-            //If expiryPeriodType is not null set a minumn date
-            if (program.expiryPeriodType() != null) {
-                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-                datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
-            }
-            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+//        else {
+        //If expiryPeriodType is not null set a minumn date
+        if (program.expiryPeriodType() != null) {
+            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
+        if (eventCreationType != EventCreationType.SCHEDULE)
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+//        }
         datePickerDialog.show();
     }
 
