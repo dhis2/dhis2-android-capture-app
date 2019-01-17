@@ -1,11 +1,11 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.support.annotation.NonNull;
-
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2017.
