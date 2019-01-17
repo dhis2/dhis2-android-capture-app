@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.shape.CutCornerTreatment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
