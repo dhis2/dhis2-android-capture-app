@@ -33,4 +33,6 @@ public interface TeiProgramListRepository {
     Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid);
 
     Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+    String getProgramColor(@NonNull String programUid);
 }

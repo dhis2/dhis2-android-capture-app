@@ -259,6 +259,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
     testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
     /* androidTestImplementation 'com.google.dagger:dagger:2.14.1'
      androidTestImplementation 'com.google.dagger:dagger-compiler:2.14.1'*/

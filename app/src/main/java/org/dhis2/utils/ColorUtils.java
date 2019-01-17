@@ -23,7 +23,7 @@ public class ColorUtils {
         PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
     }
 
-    public static int getColorFrom(Context context, @Nullable String hexColor) {
+    public static int getColorFrom(@Nullable String hexColor, int defaultPrimaryColor) {
 
         int colorToReturn = Color.BLACK;
 
@@ -37,10 +37,7 @@ public class ColorUtils {
             colorToReturn = Color.parseColor(hexColor);
         }
         if (hexColor == null || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
-            TypedValue typedValue = new TypedValue();
-            TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimaryLight});
-            colorToReturn = a.getColor(0, 0);
-            a.recycle();
+            colorToReturn = defaultPrimaryColor;
         }
 
         return colorToReturn;

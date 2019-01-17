@@ -54,6 +54,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -77,6 +78,8 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
+            if(changingProgram)
+                recreate();
             orientation = Resources.getSystem().getConfiguration().orientation;
             init(teiUid, programUid);
         }
@@ -86,6 +89,22 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     protected void onPause() {
         super.onPause();
         presenter.onDettach();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        orientation = Resources.getSystem().getConfiguration().orientation;
+        teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
+        programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.clear();
+        outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
+        outState.putString(Constants.PROGRAM_UID, programUid);
     }
 
     @Override
