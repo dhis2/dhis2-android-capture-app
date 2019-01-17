@@ -1,5 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
+import android.support.annotation.NonNull;
+
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
@@ -18,7 +20,7 @@ public class TeiProgramListContract {
 
         void setPrograms(List<ProgramViewModel> programs);
 
-        void goToEnrollmentScreen(String enrollmentUid);
+        void goToEnrollmentScreen(String enrollmentUid, String programUid);
 
         void changeCurrentProgram(String program);
     }
@@ -33,11 +35,15 @@ public class TeiProgramListContract {
         void onActiveEnrollClick(EnrollmentViewModel enrollmentModel);
 
         void onUnselectEnrollment();
+
+        String getProgramColor(String uid);
     }
 
     public interface Interactor extends AbstractActivityContracts.Interactor {
         void init(TeiProgramListContract.View mview, String trackedEntityId);
 
         void enroll(String programUid, String uid);
+
+        String getProgramColor(@NonNull String programUid);
     }
 }
