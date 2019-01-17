@@ -21,11 +21,11 @@
 
         <variable
             name="currentSection"
-            type="android.databinding.ObservableField&lt;String&gt;"/>
+            type="androidx.databinding.ObservableField&lt;String&gt;"/>
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="@dimen/itemSectionSelectorHeight"
@@ -78,5 +78,5 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="0/10" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

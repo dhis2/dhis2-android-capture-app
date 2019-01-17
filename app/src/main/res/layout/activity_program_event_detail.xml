@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -79,14 +79,14 @@
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -96,9 +96,9 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
                 tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.v4.widget.DrawerLayout
+        <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -204,11 +204,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/item_program_event" />
 
                         <ProgressBar
@@ -222,7 +222,7 @@
 
                 </LinearLayout>
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/addEventButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -236,7 +236,7 @@
 
             </RelativeLayout>
 
-            <android.support.design.widget.NavigationView
+            <com.google.android.material.navigation.NavigationView
                 android:id="@+id/org_unit_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -245,7 +245,7 @@
                 android:background="@color/white_faf"
                 app:itemTextColor="?colorPrimary">
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
@@ -290,8 +290,8 @@
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
                         app:layout_constraintTop_toBottomOf="@+id/org_unit_all" />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.design.widget.NavigationView>
-        </android.support.v4.widget.DrawerLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.navigation.NavigationView>
+        </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
 </layout>

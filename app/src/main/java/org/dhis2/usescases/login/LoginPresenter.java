@@ -3,8 +3,8 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import org.dhis2.App;

@@ -65,7 +65,7 @@
         <item name="colorControlActivated">@color/text_black_333</item>
     </style>
 
-    <style name="loginInputTextAccent" parent="TextAppearance.AppCompat">
+    <style name="loginInputTextAccent" parent="Base.Widget.MaterialComponents.TextInputLayout">
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorAccent</item>

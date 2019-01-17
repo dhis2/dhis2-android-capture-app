@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -111,7 +111,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "AND %s.%s != '%s' " +
                     "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND %s.%s = 'SCHEDULE') " +
                     "THEN %s.%s " +
-                    "ELSE %s.%s END ASC, %s.%s DESC",
+                    "ELSE %s.%s END DESC, %s.%s ASC",
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             ProgramStageModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,

@@ -2,14 +2,14 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.Context;
 import android.content.Intent;
+
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.Nullable;
 import android.util.TypedValue;
 import android.view.Window;
 import android.view.WindowManager;

@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;

@@ -1,11 +1,11 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
 import android.content.SharedPreferences;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,8 +18,8 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.ProgressBarAnimation;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.hisp.dhis.android.core.event.EventModel;

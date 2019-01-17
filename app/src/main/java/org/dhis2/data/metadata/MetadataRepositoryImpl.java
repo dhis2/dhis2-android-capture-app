@@ -2,8 +2,8 @@ package org.dhis2.data.metadata;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Base64;
 
 import com.squareup.sqlbrite2.BriteDatabase;

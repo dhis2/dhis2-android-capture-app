@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 

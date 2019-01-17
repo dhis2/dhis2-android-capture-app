@@ -1,8 +1,8 @@
 package org.dhis2.usescases.syncManager;
 
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import org.dhis2.data.tuples.Pair;

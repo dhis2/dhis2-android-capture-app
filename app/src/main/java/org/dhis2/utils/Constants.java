@@ -70,6 +70,7 @@ public class Constants {
     public static final String EVENT_UID = "EVENT_UID";
 
     public static final String EVENT_CREATION_TYPE = "EVENT_CREATION_TYPE";
+    public static final String EVENT_SCHEDULE_INTERVAL = "EVENT_SCHEDULE_INTERVAL";
     public static final String TRACKED_ENTITY_INSTANCE = "TRACKED_ENTITY_INSTANCE";
     public static final String REFERRAL = "REFERRAL";
     public static final String ADDNEW = "ADDNEW";

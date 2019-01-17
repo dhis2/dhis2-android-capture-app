@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 

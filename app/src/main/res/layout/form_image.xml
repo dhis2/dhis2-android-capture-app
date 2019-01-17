@@ -9,14 +9,14 @@
 
         <variable
             name="currentSelection"
-            type="android.databinding.ObservableField&lt;String&gt;" />
+            type="androidx.databinding.ObservableField&lt;String&gt;" />
 
         <variable
             name="label"
             type="java.lang.String" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:background="@color/colorPrimaryLightRed"
@@ -82,6 +82,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:text="This is an error or warning message\nWith two lines" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

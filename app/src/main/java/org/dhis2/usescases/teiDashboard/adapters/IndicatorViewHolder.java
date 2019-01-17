@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -10,7 +10,7 @@ import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.ItemIndicatorBinding;
 
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
 
 /**
