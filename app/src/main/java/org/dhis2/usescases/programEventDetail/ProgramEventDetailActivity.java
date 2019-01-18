@@ -360,8 +360,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
             for (TreeNode node : treeView.getSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                ((OrgUnitHolder) node.getViewHolder()).update();
             }
             treeView.deselectAll();
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
 
         });
         treeView = new AndroidTreeView(getContext(), treeNode);
@@ -383,6 +385,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        apply();
     }
 
     @Override

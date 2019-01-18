@@ -339,6 +339,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
             for (TreeNode node : treeView.getSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                ((OrgUnitHolder) node.getViewHolder()).update();
             }
             treeView.deselectAll();
 
