@@ -128,7 +128,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
             idTag = "PROGRAM_UID";
 
         bundle.putString(idTag, programModel.id());
-        bundle.putString("ACCESS_DATA", programModel.accessDataWrite().toString());
+        bundle.putString(Constants.ACCESS_DATA, programModel.accessDataWrite().toString());
         switch (currentPeriod) {
             case NONE:
                 bundle.putInt("CURRENT_PERIOD", R.string.period);

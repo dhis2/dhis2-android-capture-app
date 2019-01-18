@@ -25,6 +25,8 @@ public class DataSetTableContract {
         void setDataSet(DataSetModel data);
 
         void setDataValue(List<DataSetTableModel> data);
+
+        Boolean accessDataWrite();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {

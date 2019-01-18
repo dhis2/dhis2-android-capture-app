@@ -29,7 +29,7 @@ public class AgeHolder extends FormViewHolder {
     }
 
 
-    public void update(AgeViewModel ageViewModel) {
+    public void update(AgeViewModel ageViewModel, boolean accessDataWrite) {
 //        model.onNext(viewModel);
         this.ageViewModel = ageViewModel;
 
@@ -49,7 +49,7 @@ public class AgeHolder extends FormViewHolder {
         else
             binding.customAgeview.setWarningOrError(null);
 
-        binding.customAgeview.setEditable(ageViewModel.editable());
+        binding.customAgeview.setEditable(accessDataWrite);
 
         binding.executePendingBindings();
 

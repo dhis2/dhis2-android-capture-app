@@ -24,6 +24,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     private final LayoutInflater inflater;
     private final boolean isBgTransparent;
     private final String renderType;
+    private boolean accessDataWrite;
 
     public CoordinateRow(@NonNull LayoutInflater layoutInflater,
                          @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
@@ -33,11 +34,12 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
         this.renderType = null;
     }
 
-    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public CoordinateRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType= renderType;
+        this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
@@ -51,7 +53,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
 
     @Override
     public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override

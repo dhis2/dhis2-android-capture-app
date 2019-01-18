@@ -56,13 +56,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     }
 
-    public void update(SpinnerViewModel viewModel) {
+    public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
 
         this.viewModel = viewModel;
         options = Bindings.setOptionSet(viewModel.optionSet());
 
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
-        editText.setEnabled(viewModel.editable());
+        editText.setEnabled(accessDataWrite);
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
 

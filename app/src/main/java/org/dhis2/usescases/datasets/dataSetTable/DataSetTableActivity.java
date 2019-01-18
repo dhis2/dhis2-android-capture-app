@@ -30,7 +30,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodTypeName;
     String periodInitialDate;
     String catCombo;
-
+    boolean accessDataWrite;
     @Inject
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
@@ -59,6 +59,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
         String dataSetUid = getIntent().getStringExtra(Constants.DATA_SET_UID);
+        accessDataWrite = getIntent().getBooleanExtra(Constants.ACCESS_DATA, true);
         ((App) getApplicationContext()).userComponent().plus(new DataSetTableModule(dataSetUid)).inject(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dataset_table);
@@ -79,7 +80,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> catOptions) {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager());
+        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
         viewPagerAdapter.swapData(dataElements);
@@ -96,5 +97,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     public DataSetTableContract.Presenter getPresenter() {
         return presenter;
+    }
+
+
+    @Override
+    public Boolean accessDataWrite() {
+        return accessDataWrite;
     }
 }

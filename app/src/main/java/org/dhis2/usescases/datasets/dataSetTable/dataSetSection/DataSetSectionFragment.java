@@ -40,12 +40,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private DataSetTableActivity activity;
     private DataSetTableAdapter adapter;
     private String sectionUid;
-
+    private boolean accessDataWrite;
     @NonNull
-    public static DataSetSectionFragment create(@NonNull String sectionUid) {
+    public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_SECTION, sectionUid);
-
+        bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite);
         DataSetSectionFragment dataSetSectionFragment = new DataSetSectionFragment();
         dataSetSectionFragment.setArguments(bundle);
 
@@ -70,11 +70,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     public void onResume() {
         super.onResume();
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
-
+        accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenter.getData(this, sectionUid);
 
-        adapter = new DataSetTableAdapter(getAbstracContext());
+        adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
         binding.tableView.setAdapter(adapter);
+        binding.tableView.setEnabled(false);
 
     }
 

@@ -22,6 +22,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     private final boolean isBgTransparent;
     private final FlowableProcessor<RowAction> processor;
     private final String renderType;
+    private boolean accessDataWrite;
 
     public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
@@ -30,11 +31,12 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
         this.renderType = null;
     }
 
-    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public AgeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
         this.inflater = layoutInflater;
         this.isBgTransparent = isBgTransparent;
         this.processor = processor;
         this.renderType = renderType;
+        this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
@@ -48,7 +50,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
 
     @Override
     public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override

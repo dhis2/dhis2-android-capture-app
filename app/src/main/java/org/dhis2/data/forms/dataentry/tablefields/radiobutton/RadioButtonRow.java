@@ -24,7 +24,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     @NonNull
     private final FlowableProcessor<RowAction> processor;
     private final String renderType;
-
+    private boolean accessDataWrite;
     public RadioButtonRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBgTransparent) {
         this.inflater = layoutInflater;
         this.processor = processor;
@@ -33,11 +33,12 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     }
 
-    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType) {
+    public RadioButtonRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
+        this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
@@ -51,7 +52,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
 
     @Override
     public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override

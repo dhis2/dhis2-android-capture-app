@@ -44,6 +44,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     /* @NonNull
      private BehaviorProcessor<EditTextModel> model;*/
     EditTextModel editTextModel;
+    private boolean accessDataWrite;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
@@ -52,13 +53,14 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
-
+        accessDataWrite = isEditable.get();
         inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
         // show and hide hint
-
+        /*if(!isEditable.get())
+            editText.setEnabled(false);*/
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
                 if (!isEmpty(editText.getText()) && validate())
@@ -73,7 +75,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     private void setInputType(ValueType valueType) {
 
         editText.setFocusable(editTextModel.editable());
-        editText.setEnabled(editTextModel.editable());
+        editText.setEnabled(accessDataWrite);
 
         editText.setFilters(new InputFilter[]{});
 
@@ -150,7 +152,7 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-        editText.setEnabled(editTextModel.editable());
+        //editText.setEnabled(false);
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
 

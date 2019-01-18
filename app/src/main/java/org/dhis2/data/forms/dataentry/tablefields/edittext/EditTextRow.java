@@ -54,6 +54,7 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
                 false
         );
         binding.setVariable(BR.renderType, renderType);
+
         binding.executePendingBindings();
         return new EditTextCustomHolder(viewGroup, binding
                 , processor, isBgTransparent, renderType, isEditable);

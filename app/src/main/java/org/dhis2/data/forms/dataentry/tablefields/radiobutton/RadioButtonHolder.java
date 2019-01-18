@@ -33,7 +33,7 @@ public class RadioButtonHolder extends FormViewHolder {
     }
 
 
-    public void update(RadioButtonViewModel checkBoxViewModel) {
+    public void update(RadioButtonViewModel checkBoxViewModel, boolean accessDataWrite) {
 
 
         this.viewModel = checkBoxViewModel;
@@ -66,7 +66,7 @@ public class RadioButtonHolder extends FormViewHolder {
         }
 
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
+            radioGroup.getChildAt(i).setEnabled(accessDataWrite);
         }
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {

@@ -53,7 +53,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     }
 
 
-    public void update(DateTimeViewModel viewModel) {
+    public void update(DateTimeViewModel viewModel, boolean accessDataWrite) {
         this.dateTimeViewModel = viewModel;
 //        model.onNext(viewModel);
         descriptionText = viewModel.description();
@@ -101,11 +101,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
 
         if (binding instanceof FormTimeTextBinding)
-            ((FormTimeTextBinding) binding).timeView.setEditable(dateTimeViewModel.editable());
+            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite);
         if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setEditable(dateTimeViewModel.editable());
+            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite);
         if (binding instanceof FormDateTimeTextBinding)
-            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(dateTimeViewModel.editable());
+            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite);
 
         binding.executePendingBindings();
     }

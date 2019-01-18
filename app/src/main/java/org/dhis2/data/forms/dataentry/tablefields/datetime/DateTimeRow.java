@@ -28,7 +28,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     private final FlowableProcessor<RowAction> processor;
     private final boolean isBgTransparent;
     private final String renderType;
-
+    private boolean accessDataWrite;
     private int viewType;
 
     public DateTimeRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent) {
@@ -39,12 +39,13 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
         this.renderType = null;
     }
 
-    public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent, String renderType) {
+    public DateTimeRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, int viewType, boolean isBgTransparent, String renderType, boolean accessDataWrite) {
         this.processor = processor;
         this.inflater = layoutInflater;
         this.viewType = viewType;
         this.isBgTransparent = isBgTransparent;
         this.renderType = renderType;
+        this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
@@ -76,7 +77,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     @Override
     public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override
