@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.material.shape.CutCornerTreatment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
@@ -50,7 +49,6 @@ import javax.annotation.Nonnull;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -309,6 +307,7 @@ public class Bindings {
                                         Timber::d
                                 );
                     break;
+                case OVERDUE:
                 case COMPLETED:
                 case SKIPPED:
                     view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
@@ -393,6 +392,9 @@ public class Bindings {
                 case SKIPPED:
                     view.setText(view.getContext().getString(R.string.event_skipped));
                     break;
+                case OVERDUE:
+                    view.setText(R.string.event_overdue);
+                    break;
                 default:
                     view.setText(view.getContext().getString(R.string.read_only));
                     break;
@@ -460,7 +462,7 @@ public class Bindings {
                                     }
                                 }
 
-                                view.setBackground(ContextCompat.getDrawable(view.getContext(),bgColor));
+                                view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
 //                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
 
                             },
