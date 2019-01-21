@@ -65,7 +65,7 @@
         <item name="colorControlActivated">@color/text_black_333</item>
     </style>
 
-    <style name="loginInputTextAccent" parent="TextAppearance.AppCompat">
+    <style name="loginInputTextAccent" parent="Base.Widget.MaterialComponents.TextInputLayout">
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorAccent</item>
@@ -161,5 +161,16 @@
         <item name="android:textAlignment">textStart</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="BottomDialogItem" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/default_top_margin</item>
+        <item name="android:background">@drawable/item_white_ripple</item>
+        <item name="android:textColor">@color/text_black_333</item>
+        <item name="drawableStartCompat">@drawable/ic_unchecked_circle</item>
+        <item name="android:drawablePadding">20dp</item>
+    </style>
+
 
 </resources>

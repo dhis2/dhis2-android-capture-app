@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;

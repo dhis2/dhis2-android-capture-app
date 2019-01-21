@@ -1,7 +1,7 @@
 package org.dhis2.usescases.qrCodes;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.qr.QRInterface;
 

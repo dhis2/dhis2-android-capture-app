@@ -58,7 +58,7 @@
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
-        <android.support.v4.widget.DrawerLayout
+        <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -162,11 +162,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:listitem="@layout/item_program_event" />
 
                         <ProgressBar
@@ -180,7 +180,7 @@
 
                 </LinearLayout>
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/addDatasetButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -194,7 +194,7 @@
 
             </RelativeLayout>
 
-            <android.support.design.widget.NavigationView
+            <com.google.android.material.navigation.NavigationView
                 android:id="@+id/org_unit_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -223,7 +223,7 @@
                         android:layout_gravity="bottom"
                         android:text="@string/button_ok" />
                 </LinearLayout>
-            </android.support.design.widget.NavigationView>
-        </android.support.v4.widget.DrawerLayout>
+            </com.google.android.material.navigation.NavigationView>
+        </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
 </layout>

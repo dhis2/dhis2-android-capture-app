@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;

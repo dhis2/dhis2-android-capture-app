@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -33,14 +30,14 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity;
 import org.dhis2.utils.CatComboAdapter2;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
-import org.dhis2.utils.CustomViews.PeriodDialog;
-import org.dhis2.utils.CustomViews.ProgressBarAnimation;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.PeriodDialog;
+import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -62,6 +59,10 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -119,6 +120,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLon;
     private ArrayList<String> sectionsToHide;
     private String getTrackedEntityInstance;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setScreenName(this.getLocalClassName());
@@ -439,10 +441,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void openDrawer() {
-        if (!binding.drawerLayout.isDrawerOpen(Gravity.END))
-            binding.drawerLayout.openDrawer(Gravity.END);
+        if (!binding.drawerLayout.isDrawerOpen(GravityCompat.END))
+            binding.drawerLayout.openDrawer(GravityCompat.END);
         else
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
     }
 
     @Override
@@ -643,22 +645,28 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
+
+        if(eventCreationType == EventCreationType.SCHEDULE)
+            calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         // ONLY FUTURE DATES
-        if (eventCreationType == EventCreationType.SCHEDULE) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
+       /* if (eventCreationType == EventCreationType.SCHEDULE) {
+//            if (getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0) > 0)
+            calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 1));
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-        }
+        }*/
         // ONLY PAST DATES AND TODAY
-        else {
-            //If expiryPeriodType is not null set a minumn date
-            if (program.expiryPeriodType() != null) {
-                Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
-                datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
-            }
-            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+//        else {
+        //If expiryPeriodType is not null set a minumn date
+        if (program.expiryPeriodType() != null) {
+            Date minDate = DateUtils.getInstance().expDate(null, program.expiryDays() == null ? 0 : program.expiryDays(), program.expiryPeriodType());
+            datePickerDialog.getDatePicker().setMinDate(minDate.getTime());
         }
+        if (eventCreationType != EventCreationType.SCHEDULE)
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
+//        }
         datePickerDialog.show();
     }
 

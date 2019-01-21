@@ -1,6 +1,6 @@
 package org.dhis2.data.user;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;

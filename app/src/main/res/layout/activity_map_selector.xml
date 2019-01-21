@@ -10,7 +10,7 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
@@ -36,14 +36,14 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/toolbar_guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_end="10dp" />
 
-        <android.support.v4.widget.ContentLoadingProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/toolbarProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
@@ -53,7 +53,7 @@
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
             tools:visibility="visible" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -66,7 +66,7 @@
             android:layout_height="match_parent"
             tools:context="org.dhis2.usescases.map.MapSelectorActivity" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

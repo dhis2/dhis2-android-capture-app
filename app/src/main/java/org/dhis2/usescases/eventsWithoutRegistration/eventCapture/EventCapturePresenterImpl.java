@@ -1,10 +1,10 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
@@ -15,7 +15,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.utils.CustomViews.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
@@ -193,8 +193,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         )
         );
 
-        compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable()
-                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
+        compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
+//                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .switchMap(action ->
@@ -491,7 +491,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
-
+        canComplete = false;
         Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
                 .setAction(view.getAbstracContext().getString(R.string.button_ok), v1 -> {
 

@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

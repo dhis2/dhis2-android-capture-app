@@ -5,13 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +20,11 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardProgramAdapter;
 import org.dhis2.usescases.teiDashboard.adapters.EventAdapter;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -40,12 +34,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static org.dhis2.utils.Constants.ENROLLMENT_UID;
 import static org.dhis2.utils.Constants.EVENT_CREATION_TYPE;
+import static org.dhis2.utils.Constants.EVENT_SCHEDULE_INTERVAL;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
@@ -110,29 +111,19 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         binding.fab.setOptionsClick(integer -> {
             if (integer == null)
                 return;
-
-            Bundle bundle = new Bundle();
-            bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
-            bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
-            bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
-            bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
-
             switch (integer) {
                 case R.id.referral:
-                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.REFERAL.name());
+                    createEvent(EventCreationType.REFERAL, 0);
                     break;
                 case R.id.addnew:
-                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.ADDNEW.name());
+                    createEvent(EventCreationType.ADDNEW, 0);
                     break;
                 case R.id.schedulenew:
-                    bundle.putString(EVENT_CREATION_TYPE, EventCreationType.SCHEDULE.name());
+                    createEvent(EventCreationType.SCHEDULE, 0);
                     break;
                 default:
                     break;
             }
-
-            startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
-
         });
         return binding.getRoot();
     }
@@ -216,7 +207,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                     if (event.eventDate().after(DateUtils.getInstance().getToday()))
                         binding.teiRecycler.scrollToPosition(events.indexOf(event));
                 }
-                if(hasCatComb && event.attributeOptionCombo()==null && !catComboShowed.contains(event)){
+                if (hasCatComb && event.attributeOptionCombo() == null && !catComboShowed.contains(event)) {
                     presenter.getCatComboOptions(event);
                     catComboShowed.add(event);
                 }
@@ -274,9 +265,11 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 presenter.completeEnrollment(this);
                 break;
             case RC_GENERATE_EVENT:
-                if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0)
-                    presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
-                else {
+                createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
+                /*if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0) {
+//                    presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
+                    createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval());
+                } else {
                     if (programStageFromEvent.periodType() == null || programStageFromEvent.periodType() == PeriodType.Daily) {
                         Calendar calendar = Calendar.getInstance();
                         DatePickerDialog datePickerDialog = new DatePickerDialog(getAbstracContext(), (view, year, month, dayOfMonth) -> {
@@ -303,11 +296,23 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                                 })
                                 .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
                     }
-                }
+                }*/
                 break;
             default:
                 break;
         }
+    }
+
+    private void createEvent(EventCreationType eventCreationType, Integer scheduleIntervalDays) {
+        Bundle bundle = new Bundle();
+        bundle.putString(PROGRAM_UID, presenter.getDashBoardData().getCurrentEnrollment().program());
+        bundle.putString(TRACKED_ENTITY_INSTANCE, presenter.getTeUid());
+        bundle.putString(ORG_UNIT, presenter.getDashBoardData().getTei().organisationUnit()); //We take the OU of the TEI for the events
+        bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
+        bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
+        bundle.putInt(EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays);
+
+        startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
     }
 
     @Override

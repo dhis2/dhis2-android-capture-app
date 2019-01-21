@@ -44,6 +44,11 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     }
 
     @Override
+    public String getProgramColor(String programUid) {
+        return interactor.getProgramColor(programUid);
+    }
+
+    @Override
     public void onUnselectEnrollment() {
         view.changeCurrentProgram(null);
     }

@@ -1,19 +1,15 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.FragmentManager;
 import android.view.View;
-import android.widget.ImageView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
-import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
-import org.dhis2.utils.CustomViews.orgUnitCascade.OrgUnitCascadeDialog;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
+import org.dhis2.utils.custom_views.orgUnitCascade.OrgUnitCascadeDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;

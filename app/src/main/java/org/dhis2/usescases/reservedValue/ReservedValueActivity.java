@@ -1,15 +1,14 @@
 package org.dhis2.usescases.reservedValue;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 
-import com.android.databinding.library.baseAdapters.BR;
+import org.dhis2.BR;
 
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.databinding.ActivityReservedValueBinding;
-import org.dhis2.utils.Constants;
 
 import java.util.List;
 

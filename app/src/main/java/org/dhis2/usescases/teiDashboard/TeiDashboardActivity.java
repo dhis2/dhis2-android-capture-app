@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
