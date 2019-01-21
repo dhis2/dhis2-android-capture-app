@@ -109,7 +109,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
                     "WHERE %s.%s = ? " + //ProgramUid
                     "AND %s.%s = ? " + //TeiUid
                     "AND %s.%s != '%s' " +
-                    "ORDER BY CASE WHEN ( %s.%s IS NOT NULL AND %s.%s = 'SCHEDULE') " +
+                    "ORDER BY CASE WHEN ( Event.status IN ('SCHEDULE','SKIPPED','OVERDUE')) " + /*AND %s.%s = 'SCHEDULE'*/
                     "THEN %s.%s " +
                     "ELSE %s.%s END DESC, %s.%s ASC",
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE,
@@ -119,7 +119,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
             EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE,
-            EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.STATUS,
+            /*EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.STATUS,*/
             EventModel.TABLE, EventModel.Columns.DUE_DATE,
             EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
