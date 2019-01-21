@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -46,6 +45,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -461,6 +461,14 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put(EventModel.Columns.LAST_UPDATED, updateDate);
         return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
+    }
+
+    @Override
+    public Observable<Boolean> rescheduleEvent(Date newDate) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
+        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid))
+                .flatMap(result -> updateEventStatus(EventStatus.SCHEDULE));
     }
 
     @Override

@@ -54,16 +54,18 @@
                 layout="@layout/fragment_tei_data_card_front"
                 app:dashboardModel="@{dashboardModel}"
                 app:enrollment="@{enrollment}"
+                app:followup="@{followup}"
                 app:presenter="@{presenter}"
                 app:program="@{program}"
-                app:trackEntity="@{trackEntity}"
-                app:followup="@{followup}"/>
+                app:trackEntity="@{trackEntity}" />
         </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="@dimen/default_start_margin"
+            android:layout_marginEnd="@dimen/default_start_margin"
             android:clipToPadding="false"
             android:paddingTop="10dp"
             android:paddingBottom="200dp"

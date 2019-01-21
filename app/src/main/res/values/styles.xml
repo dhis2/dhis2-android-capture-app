@@ -172,5 +172,12 @@
         <item name="android:drawablePadding">20dp</item>
     </style>
 
+    <style name="ActionIcon" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+    </style>
 
 </resources>

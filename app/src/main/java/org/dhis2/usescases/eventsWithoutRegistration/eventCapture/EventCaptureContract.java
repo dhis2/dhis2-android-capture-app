@@ -11,9 +11,11 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -90,7 +92,7 @@ public class EventCaptureContract {
 
         void skipEvent();
 
-        void rescheduleEvent();
+        void rescheduleEvent(Date time);
     }
 
     public interface EventCaptureRepository {
@@ -123,6 +125,8 @@ public class EventCaptureContract {
         Observable<Boolean> deleteEvent();
 
         Observable<Boolean> updateEventStatus(EventStatus skipped);
+
+        Observable<Boolean> rescheduleEvent(Date time);
     }
 
 }

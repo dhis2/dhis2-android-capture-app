@@ -34,8 +34,8 @@
                 android:id="@+id/menu"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:onClick="@{()->presenter.onBackClick()}"
                 android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.onBackClick()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -43,11 +43,11 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="2"
-                android:layout_marginStart="12dp"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
@@ -57,11 +57,11 @@
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
@@ -103,9 +103,9 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="8dp"
                         android:paddingStart="8dp"
-                        android:paddingTop="8dp">
+                        android:paddingTop="8dp"
+                        android:paddingEnd="8dp">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="wrap_content"
@@ -139,8 +139,8 @@
                             android:id="@+id/progressLayout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
                             android:layout_marginStart="8dp"
+                            android:layout_marginBottom="8dp"
                             app:layout_constraintEnd_toEndOf="parent">
 
                             <ProgressBar
@@ -202,9 +202,9 @@
                 android:id="@+id/action_button"
                 style="@style/ButtonRoundedGrey"
                 android:layout_gravity="end"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="10dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:onClick="@{()->presenter.onDoAction()}"
                 android:text="@string/complete_and_close" />
         </LinearLayout>

@@ -1,11 +1,13 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -17,6 +19,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
@@ -24,6 +27,7 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -183,13 +187,24 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 presenter.skipEvent();
                 break;
             case RESCHEDULE:
-                //TODO: Open date selector
+                reschedule();
                 break;
             case COMPLETE_LATER:
             case FINISH:
                 finishDataEntry();
                 break;
         }
+    }
+
+    private void reschedule() {
+        Calendar calendar = DateUtils.getInstance().getCalendar();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            Calendar chosenDate = Calendar.getInstance();
+            chosenDate.set(year, month, dayOfMonth);
+            presenter.rescheduleEvent(chosenDate.getTime());
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.show();
     }
 
     @Override
