@@ -126,7 +126,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             layoutManager = new GridLayoutManager(getActivity(), 2);
         } else
             layoutManager = new LinearLayoutManager(getActivity(),
-                    LinearLayoutManager.VERTICAL, false);
+                    RecyclerView.VERTICAL, false);
 
         binding.formRecycler.setLayoutManager(layoutManager);
     }

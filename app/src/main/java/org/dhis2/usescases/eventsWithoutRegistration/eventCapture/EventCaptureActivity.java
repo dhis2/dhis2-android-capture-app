@@ -1,29 +1,26 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.Utils;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.FormBottomDialog;
+import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,6 +28,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -133,89 +133,63 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete) {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                canComplete ? R.menu.event_form_complete_menu : R.menu.event_form_cant_complete_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.complete:
-                            presenter.completeEvent(false);
-                            break;
-                        case R.id.completeAndAddNew:
-                            presenter.completeEvent(true);
-                            break;
-                        case R.id.finishAndAddNew:
-                            restartDataEntry();
-                            break;
-                        case R.id.completeLater:
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+
+        FormBottomDialog.getInstance()
+                .setCanComplete(canComplete)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToReopen() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_reopen_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.reopen:
-                            presenter.reopenEvent();
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+        FormBottomDialog.getInstance()
+                .setReopen(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToSkip() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_overdue_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.skip:
-                            presenter.skipEvent();
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+
+        FormBottomDialog.getInstance()
+                .setSkip(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToReschedule() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_skip_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.reschedule:
-                            //TODO: OPEN DATE SELECTOR
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+        FormBottomDialog.getInstance()
+                .setReschedule(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+    }
+
+    private void setAction(FormBottomDialog.ActionType actionType) {
+        switch (actionType) {
+            case COMPLETE:
+                presenter.completeEvent(false);
+                break;
+            case COMPLETE_ADD_NEW:
+                presenter.completeEvent(true);
+                break;
+            case FINISH_ADD_NEW:
+                restartDataEntry();
+                break;
+            case REOPEN:
+                presenter.reopenEvent();
+                break;
+            case SKIP:
+                presenter.skipEvent();
+                break;
+            case RESCHEDULE:
+                //TODO: Open date selector
+                break;
+            case COMPLETE_LATER:
+            case FINISH:
+                finishDataEntry();
+                break;
+        }
     }
 
     @Override

@@ -491,7 +491,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
-
+        canComplete = false;
         Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
                 .setAction(view.getAbstracContext().getString(R.string.button_ok), v1 -> {
 
