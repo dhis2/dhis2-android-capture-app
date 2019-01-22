@@ -40,7 +40,7 @@ public interface SearchRepository {
 
     Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType,
                                                                                 @Nullable ProgramModel selectedProgram,
-                                                                                @Nullable HashMap<String, String> queryData);
+                                                                                @Nullable HashMap<String, String> queryData, int listSize);
 
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);

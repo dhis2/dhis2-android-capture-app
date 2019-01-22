@@ -268,7 +268,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             })
                             .flatMap(list -> {
                                 if (currentPage == 1)
-                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData)
+                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData, list.size())
                                             .map(trackedEntityInstanceModels -> {
                                                 List<SearchTeiModel> helperList = new ArrayList<>();
 
