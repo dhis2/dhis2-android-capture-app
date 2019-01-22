@@ -27,6 +27,7 @@
 
         <ImageView
             android:id="@+id/buttonBack"
+            style="@style/ActionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{()->presenter.onPreviousSection()}"
@@ -34,17 +35,16 @@
             android:visibility="@{isFirstPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_keyboard_arrow_left" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->presenter.onPreviousSection()}"
             android:text="@string/sectionSelectorPrev"
             android:textColor="@color/colorGreyDefault"
             android:textSize="14sp"
-            android:onClick="@{()->presenter.onPreviousSection()}"
             android:visibility="@{isFirstPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/buttonBack"
@@ -64,35 +64,37 @@
 
         <ImageView
             android:id="@+id/buttonNext"
+            style="@style/ActionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{()->presenter.onNextSection()}"
             android:tint="@color/colorGreyDefault"
-            app:srcCompat = "@drawable/ic_keyboard_arrow_right"
             android:visibility="@{isLastPosition ? View.GONE :View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right" />
 
         <ImageView
             android:id="@+id/buttonEnd"
+            style="@style/ActionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{()->presenter.onNextSection()}"
-            app:srcCompat = "@drawable/ic_save_alt"
-            android:visibility="@{isLastPosition ? View.VISIBLE :View.GONE}"
             android:tint="@color/colorGreyDefault"
+            android:visibility="@{isLastPosition ? View.VISIBLE :View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_save_alt" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->presenter.onNextSection()}"
             android:text="@string/sectionSelectorNext"
             android:textColor="@color/colorGreyDefault"
             android:textSize="14sp"
-            android:onClick="@{()->presenter.onNextSection()}"
             android:visibility="@{isLastPosition ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/buttonNext"

@@ -42,8 +42,8 @@
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:onClick="@{()->presenter.back()}"
                 android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.back()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -52,22 +52,21 @@
                 android:id="@+id/teiName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
-                android:layout_marginEnd="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
@@ -116,8 +115,8 @@
                 android:layout_width="125dp"
                 android:layout_height="34dp"
                 android:layout_gravity="end|bottom"
-                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="22.5dp"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"

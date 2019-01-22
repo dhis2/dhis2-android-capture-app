@@ -46,12 +46,10 @@
 
                 <ImageView
                     android:id="@+id/menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    style="@style/ActionIcon"
                     android:onClick="@{()->presenter.onMenuClick()}"
-                    android:padding="8dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_menu"
                     tools:ignore="ContentDescription" />
 
@@ -70,12 +68,8 @@
 
                 <ImageView
                     android:id="@+id/filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="6dp"
+                    style="@style/ActionIcon"
                     android:onClick="@{()->presenter.showFilter()}"
-                    android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/moreOptions"
                     app:layout_constraintTop_toTopOf="parent"
@@ -84,12 +78,9 @@
 
                 <ImageView
                     android:id="@+id/moreOptions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    style="@style/ActionIcon"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="6dp"
                     android:onClick="showMoreOptions"
-                    android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -128,10 +119,10 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:text="@string/errors_during_sync"
                     android:textColor="@color/colorGreyDefault"
                     app:layout_constraintEnd_toStartOf="@id/errorMark"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:text="@string/errors_during_sync" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
                     android:id="@+id/errorMark"
@@ -167,7 +158,7 @@
         <include
             android:id="@+id/pin_layout"
             layout="@layout/layout_pin"
-            tools:visibility="gone"/>
+            tools:visibility="gone" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
