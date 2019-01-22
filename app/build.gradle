@@ -95,23 +95,23 @@ android {
         }
     }
 
-   /* flavorDimensions "default"
-    productFlavors {
-        dhis{
-            applicationId "com.dhis2"
-            archivesBaseName = "dhis"
-            dimension "default"
-            versionCode versions.vCode
-            versionName versions.vName
-        }
-        PSI {
-            applicationId "org.psi.dhis2"
-            archivesBaseName = "PSI"
-            dimension "default"
-            versionCode 1
-            versionName "1.0.3"
-        }
-    }*/
+    /* flavorDimensions "default"
+     productFlavors {
+         dhis{
+             applicationId "com.dhis2"
+             archivesBaseName = "dhis"
+             dimension "default"
+             versionCode versions.vCode
+             versionName versions.vName
+         }
+         PSI {
+             applicationId "org.psi.dhis2"
+             archivesBaseName = "PSI"
+             dimension "default"
+             versionCode 1
+             versionName "1.0.3"
+         }
+     }*/
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -295,6 +295,7 @@ dependencies {
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 
+    implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
 
 }
 
