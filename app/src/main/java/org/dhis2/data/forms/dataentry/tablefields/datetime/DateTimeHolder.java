@@ -1,8 +1,10 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
 import android.databinding.ViewDataBinding;
+import android.support.v4.content.ContextCompat;
 
 import org.dhis2.BR;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -100,12 +102,28 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
         }
 
+        if (!viewModel.editable()) {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.getEditText().setBackgroundColor(ContextCompat.getColor(((FormTimeTextBinding) binding).timeView.getContext(), R.color.bg_black_e6e));
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.getEditText().setBackgroundColor(ContextCompat.getColor(((FormDateTextBinding) binding).dateView.getContext(), R.color.bg_black_e6e));
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.getEditText().setBackgroundColor(ContextCompat.getColor(((FormDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.bg_black_e6e));
+        } else {
+            if (binding instanceof FormTimeTextBinding)
+                ((FormTimeTextBinding) binding).timeView.setBackgroundColor(ContextCompat.getColor(((FormTimeTextBinding) binding).timeView.getContext(), R.color.white));
+            if (binding instanceof FormDateTextBinding)
+                ((FormDateTextBinding) binding).dateView.setBackgroundColor(ContextCompat.getColor(((FormDateTextBinding) binding).dateView.getContext(), R.color.white));
+            if (binding instanceof FormDateTimeTextBinding)
+                ((FormDateTimeTextBinding) binding).dateTimeView.setBackgroundColor(ContextCompat.getColor(((FormDateTimeTextBinding) binding).dateTimeView.getContext(), R.color.white));
+        }
+
         if (binding instanceof FormTimeTextBinding)
-            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite);
+            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
         if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite);
+            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
         if (binding instanceof FormDateTimeTextBinding)
-            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite);
+            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
 
         binding.executePendingBindings();
     }

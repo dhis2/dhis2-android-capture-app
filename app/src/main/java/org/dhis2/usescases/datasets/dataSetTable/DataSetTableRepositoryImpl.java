@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
+import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -75,6 +76,16 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
+    private final String SECTION_GREYED_FIELDS = "select Section.name as section, DataElement.uid as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
+            "from SectionGreyedFieldsLink " +
+            "join DataElementOperand on SectionGreyedFieldsLink.dataElementOperand = DataElementOperand.uid " +
+            "join DataElement on DataElement.uid = DataElementOperand.dataElement " +
+            "join CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
+            "join CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            "join Section on Section.uid = SectionGreyedFieldsLink.section " +
+            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
+            "GROUP BY section, dataElement, categoryOption";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -225,5 +236,38 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     return dataValue;
 
                 }).map(data->listData).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo) {
+
+        Map<String, Map<String, List<String>>> mapData = new HashMap<>();
+
+        String query = SECTION_GREYED_FIELDS.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
+        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
+                .mapToList(cursor -> {
+                    if(mapData.containsKey(cursor.getString(cursor.getColumnIndex("section")))) {
+                        if(mapData.get(cursor.getString(cursor.getColumnIndex("section"))).containsKey(cursor.getString(cursor.getColumnIndex("dataElement")))){
+                            mapData.get(cursor.getString(cursor.getColumnIndex("section")))
+                                    .get(cursor.getString(cursor.getColumnIndex("dataElement")))
+                                    .add(cursor.getString(cursor.getColumnIndex("categoryOption")));
+                        }else{
+                            List<String> listCatOptions =  new ArrayList<>();
+                            listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
+
+                            mapData.get(cursor.getString(cursor.getColumnIndex("section")))
+                                    .put(cursor.getString(cursor.getColumnIndex("dataElement")), listCatOptions);
+                        }
+                    }
+                    else{
+                        List<String> listCatOptions = new ArrayList<>();
+                        listCatOptions.add(cursor.getString(cursor.getColumnIndex("categoryOption")));
+                        Map<String, List<String>> mapDataElement = new HashMap<>();
+                        mapDataElement.put(cursor.getString(cursor.getColumnIndex("dataElement")),listCatOptions);
+
+                        mapData.put(cursor.getString(cursor.getColumnIndex("section")), mapDataElement);
+                    }
+                    return mapData;
+                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 }

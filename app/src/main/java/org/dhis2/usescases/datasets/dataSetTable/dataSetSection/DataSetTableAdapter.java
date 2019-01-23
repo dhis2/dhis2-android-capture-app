@@ -229,8 +229,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         columnPos = rowPosition;
 
         FieldViewModel viewModel;
-
-        viewModel = viewModels.get(rowPosition).get(0);
+        if(viewModels.size() <= rowPosition)
+            viewModel = viewModels.get(rowPosition-1).get(0);
+        else
+            viewModel = viewModels.get(rowPosition).get(0);
 
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;

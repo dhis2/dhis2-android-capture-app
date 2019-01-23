@@ -1,5 +1,8 @@
 package org.dhis2.data.forms.dataentry.tablefields.age;
 
+import android.support.v4.content.ContextCompat;
+
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormAgeCustomBinding;
@@ -48,6 +51,14 @@ public class AgeHolder extends FormViewHolder {
             binding.customAgeview.setWarningOrError(ageViewModel.error());
         else
             binding.customAgeview.setWarningOrError(null);
+
+        if (!ageViewModel.editable()) {
+            binding.customAgeview.setEnabled(false);
+            binding.customAgeview.setBackgroundColor(ContextCompat.getColor(binding.customAgeview.getContext(), R.color.bg_black_e6e));
+        } else {
+            binding.customAgeview.setEnabled(true);
+            binding.customAgeview.setBackgroundColor(ContextCompat.getColor(binding.customAgeview.getContext(), R.color.white));
+        }
 
         binding.customAgeview.setEditable(accessDataWrite);
 
