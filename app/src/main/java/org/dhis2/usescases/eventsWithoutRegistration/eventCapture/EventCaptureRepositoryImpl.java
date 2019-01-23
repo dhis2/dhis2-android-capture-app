@@ -426,13 +426,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
             EnrollmentModel enrollmentModel = EnrollmentModel.create(enrollmentCursor);
 
-            if (enrollmentModel.state() != State.TO_POST) {
-                ContentValues cv = enrollmentModel.toContentValues();
-                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(EnrollmentModel.Columns.STATE, State.TO_DELETE.name());
-                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-            } else
-                briteDatabase.delete(EnrollmentModel.TABLE, "uid = ?", enrollmentUid);
+            ContentValues cv = enrollmentModel.toContentValues();
+            cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(EnrollmentModel.Columns.STATE, enrollmentModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+
             enrollmentCursor.close();
 
             updateTei(enrollmentModel.trackedEntityInstance());
@@ -469,6 +467,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
         return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid))
                 .flatMap(result -> updateEventStatus(EventStatus.SCHEDULE));
+    }
+
+    @Override
+    public Observable<String> programStage() {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .map(EventModel::programStage);
     }
 
     @Override

@@ -151,7 +151,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textUri"
                         android:maxLines="1"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onServerChanged}"
                         android:padding="5dp"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
@@ -175,7 +175,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textPersonName"
                         android:maxLines="1"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onUserChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
@@ -193,13 +193,14 @@
                     android:theme="@style/loginInputText">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_pass_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:imeActionLabel="@string/log_in_button"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onPassChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 

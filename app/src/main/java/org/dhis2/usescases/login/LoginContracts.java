@@ -40,12 +40,22 @@ public class LoginContracts {
         void handleLogout();
 
         void setLoginVisibility(boolean isVisible);
+
+        void setTestingCredentials();
+
+        void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass);
+
+        void showLoginProgress(boolean showLogin);
     }
 
     public interface Presenter {
         void init(View view);
 
-        void onTextChanged(CharSequence s, int start, int before, int count);
+        void onServerChanged(CharSequence s, int start, int before, int count);
+
+        void onUserChanged(CharSequence s, int start, int before, int count);
+
+        void onPassChanged(CharSequence s, int start, int before, int count);
 
         void onButtonClick();
 

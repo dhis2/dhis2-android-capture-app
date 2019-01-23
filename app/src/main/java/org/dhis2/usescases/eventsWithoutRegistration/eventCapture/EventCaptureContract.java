@@ -61,6 +61,8 @@ public class EventCaptureContract {
         void attemptToSkip();
 
         void attemptToReschedule();
+
+        void setProgramStage(String programStageUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -127,6 +129,8 @@ public class EventCaptureContract {
         Observable<Boolean> updateEventStatus(EventStatus skipped);
 
         Observable<Boolean> rescheduleEvent(Date time);
+
+        Observable<String> programStage();
     }
 
 }

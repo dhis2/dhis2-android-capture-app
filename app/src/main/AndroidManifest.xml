@@ -9,9 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-feature
-        android:name="android.hardware.fingerprint"
-        android:required="false" />
+    <!--<uses-permission android:name="android.permission.USE_BIOMETRIC" />-->
+
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="false" />

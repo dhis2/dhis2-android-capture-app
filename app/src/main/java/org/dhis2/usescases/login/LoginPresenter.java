@@ -3,8 +3,6 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
 import android.view.View;
 
 import org.dhis2.App;
@@ -20,6 +18,8 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableField;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,9 +39,10 @@ public class LoginPresenter implements LoginContracts.Presenter {
     private UserManager userManager;
     private CompositeDisposable disposable;
 
-    public ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
-    public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
-    public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
+    private boolean testingSet;
 
     LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.configurationRepository = configurationRepository;
@@ -71,21 +72,54 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         }
 
                     }, Timber::e));
+
+            disposable.add(
+                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    systemInfo -> view.getBinding().serverUrlEdit.setText(systemInfo.contextPath()),
+                                    Timber::e));
         }
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onServerChanged(CharSequence s, int start, int before, int count) {
+        testingSet = false;
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
-        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
-        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
+        view.resetCredentials(false, true, true);
 
+        if (isServerUrlSet.get() && !testingSet &&
+                (view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_229) ||
+                        view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_230))) {
+            view.setTestingCredentials();
+        }
+
+        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
+
+
+    }
+
+    @Override
+    public void onUserChanged(CharSequence s, int start, int before, int count) {
+        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
+        view.resetCredentials(false, false, true);
+
+        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
+
+    }
+
+    @Override
+    public void onPassChanged(CharSequence s, int start, int before, int count) {
+        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
         view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
     }
 
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
+        view.showLoginProgress(true);
+
         //view.handleSync();
 
         String serverUrl = view.getBinding().serverUrl.getEditText().getText().toString();
@@ -124,15 +158,15 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void onTestingEnvironmentClick(int dhisVersion) {
         switch (dhisVersion) {
             case 29:
-                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-previous1");
+                view.getBinding().serverUrl.getEditText().setText(Constants.URL_TEST_229);
                 break;
             case 30:
-                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
+                view.getBinding().serverUrl.getEditText().setText(Constants.URL_TEST_230);
                 break;
         }
 
-        view.getBinding().userName.getEditText().setText("android");
-        view.getBinding().userPass.getEditText().setText("Android123");
+        view.getBinding().userName.getEditText().setText(Constants.USER_TEST_ANDROID);
+        view.getBinding().userPass.getEditText().setText(Constants.USER_TEST_ANDROID_PASS);
 
         onButtonClick();
     }
@@ -203,6 +237,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void handleResponse(@NonNull Response userResponse) {
         Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
         Timber.d("Authentication response code: %s", userResponse.code());
+        view.showLoginProgress(false);
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
@@ -212,6 +247,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
             } else
                 view.startActivity(MainActivity.class, null, true, true, null);
         }
+
     }
 
     @Override
@@ -232,6 +268,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
         } else {
             view.renderUnexpectedError();
         }
+
+        view.showLoginProgress(false);
     }
 
 
