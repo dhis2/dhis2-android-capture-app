@@ -172,5 +172,8 @@
         <item name="android:drawablePadding">20dp</item>
     </style>
 
+    <style name="NoFullScreenEditText" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:imeOptions">actionNext|flagNoFullscreen</item>
+    </style>
 
 </resources>
