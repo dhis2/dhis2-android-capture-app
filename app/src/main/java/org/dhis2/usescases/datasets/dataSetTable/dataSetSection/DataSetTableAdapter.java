@@ -2,6 +2,7 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -72,26 +74,26 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private int columnPos = 0;
     private int rowPos = 0;
 
-    public DataSetTableAdapter(Context context) {
+    public DataSetTableAdapter(Context context, boolean accessDataWrite) {
         super(context);
         rows = new ArrayList<>();
         processor = PublishProcessor.create();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         viewModels = new ArrayList<>();
 
-        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), null));
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), new ObservableBoolean(accessDataWrite)));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
         //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
-        /*rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));*/
+        //rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
+        //rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
 
     }
 
@@ -130,10 +132,9 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
 
         rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
-
+        holder.itemView.setEnabled(false);
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
-
         rowPos = rowPosition +1;
     }
 
@@ -228,8 +229,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         columnPos = rowPosition;
 
         FieldViewModel viewModel;
-
-        viewModel = viewModels.get(rowPosition).get(0);
+        if(viewModels.size() <= rowPosition)
+            viewModel = viewModels.get(rowPosition-1).get(0);
+        else
+            viewModel = viewModels.get(rowPosition).get(0);
 
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;

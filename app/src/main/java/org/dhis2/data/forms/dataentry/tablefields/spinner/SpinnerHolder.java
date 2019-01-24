@@ -3,6 +3,7 @@ package org.dhis2.data.forms.dataentry.tablefields.spinner;
 import android.databinding.ViewDataBinding;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,13 +57,22 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     }
 
-    public void update(SpinnerViewModel viewModel) {
+    public void update(SpinnerViewModel viewModel, boolean accessDataWrite) {
 
         this.viewModel = viewModel;
         options = Bindings.setOptionSet(viewModel.optionSet());
 
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
-        editText.setEnabled(viewModel.editable());
+
+        if (!viewModel.editable()) {
+            editText.setEnabled(false);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+        } else if(accessDataWrite) {
+            editText.setEnabled(true);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
+        }else{
+            editText.setEnabled(false);
+        }
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
 

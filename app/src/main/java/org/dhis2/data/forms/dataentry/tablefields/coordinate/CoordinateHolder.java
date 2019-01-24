@@ -35,7 +35,7 @@ public class CoordinateHolder extends FormViewHolder {
 
     }
 
-    void update(CoordinateViewModel coordinateViewModel) {
+    void update(CoordinateViewModel coordinateViewModel, boolean accessDataWrite) {
         model = coordinateViewModel;
 
         descriptionText = coordinateViewModel.description();
@@ -55,7 +55,7 @@ public class CoordinateHolder extends FormViewHolder {
         else
             binding.formCoordinates.setWargingOrError(null);
 
-        binding.formCoordinates.setEditable(coordinateViewModel.editable());
+        binding.formCoordinates.setEditable(accessDataWrite);
 
         binding.executePendingBindings();
     }

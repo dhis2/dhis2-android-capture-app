@@ -22,6 +22,7 @@ import org.dhis2.databinding.ActivityDatasetDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
 import org.dhis2.utils.CatComboAdapter;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.CustomViews.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
@@ -81,7 +82,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         chosenDateYear.add(new Date());
 
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
-        accessWriteData = Boolean.valueOf(getIntent().getStringExtra("ACCESS_DATA"));
+        accessWriteData = Boolean.valueOf(getIntent().getStringExtra(Constants.ACCESS_DATA));
         binding.setPresenter(presenter);
 
         adapter = new DataSetDetailAdapter(presenter);
@@ -394,6 +395,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void setWritePermission(Boolean canWrite) {
         binding.addDatasetButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);

@@ -2,17 +2,16 @@ package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
 import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.dhis2.Bindings.Bindings;
@@ -20,12 +19,11 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.Preconditions;
+import org.dhis2.databinding.CustomTextViewBinding;
+import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
-import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -39,25 +37,23 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends FormViewHolder {
 
     private final TextInputLayout inputLayout;
-    private EditText editText;
+    private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    /* @NonNull
-     private BehaviorProcessor<EditTextModel> model;*/
-    EditTextModel editTextModel;
+    private EditTextModel editTextModel;
+    private boolean accessDataWrite;
 
     @SuppressLint("RxLeakedSubscription")
-    EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
-                         boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
+    EditTextCustomHolder(CustomTextViewBinding binding, FlowableProcessor<RowAction> processor,
+                         String renderType, ObservableBoolean isEditable) {
         super(binding);
+        editText = binding.inputEditText;
+        icon = binding.renderImage;
+        inputLayout = binding.inputLayout;
 
-        editText = binding.getRoot().findViewById(R.id.input_editText);
-        icon = binding.getRoot().findViewById(R.id.renderImage);
+        accessDataWrite = isEditable.get();
 
-        inputLayout = binding.getRoot().findViewById(R.id.input_layout);
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
-
-        // show and hide hint
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
@@ -70,12 +66,56 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     }
 
+
+    public void update(@NonNull FieldViewModel model) {
+        if (!model.editable()) {
+            editText.setEnabled(false);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
+        } else if(accessDataWrite) {
+            editText.setEnabled(true);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
+        }else{
+            editText.setEnabled(false);
+        }
+
+        this.editTextModel = (EditTextModel) model;
+
+        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
+
+        editText.setText(editTextModel.value() == null ?
+                null : valueOf(editTextModel.value()));
+
+        if (!isEmpty(editTextModel.warning())) {
+            inputLayout.setError(editTextModel.warning());
+        } else if (!isEmpty(editTextModel.error())) {
+            inputLayout.setError(editTextModel.error());
+        } else
+            inputLayout.setError(null);
+
+        editText.setSelection(editText.getText() == null ?
+                0 : editText.getText().length());
+        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
+            label = new StringBuilder(editTextModel.label());
+            if (editTextModel.mandatory())
+                label.append("*");
+            inputLayout.setHint(label);
+
+            if (label.length() > 16 || model.description() != null)
+                description.setVisibility(View.VISIBLE);
+            else
+                description.setVisibility(View.GONE);
+
+        }
+
+        descriptionText = editTextModel.description();
+        binding.executePendingBindings();
+        setInputType(editTextModel.valueType());
+    }
+
     private void setInputType(ValueType valueType) {
 
-        editText.setFocusable(editTextModel.editable());
-        editText.setEnabled(editTextModel.editable());
-
         editText.setFilters(new InputFilter[]{});
+
 
         if (editTextModel.editable())
             switch (valueType) {
@@ -134,52 +174,6 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
     }
 
-    @NonNull
-    private Predicate<Pair<Boolean, Boolean>> valueHasChangedPredicate() {
-        return state -> valueHasChanged();
-    }
-
-    @NonNull
-    private Boolean valueHasChanged() {
-        return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
-                editTextModel.value() == null ? "" : valueOf(editTextModel.value()));
-    }
-
-    public void update(@NonNull FieldViewModel model) {
-//        model.onNext((EditTextModel) editTextModel);
-        this.editTextModel = (EditTextModel) model;
-
-        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-        editText.setEnabled(editTextModel.editable());
-        editText.setText(editTextModel.value() == null ?
-                null : valueOf(editTextModel.value()));
-
-        if (!isEmpty(editTextModel.warning())) {
-            inputLayout.setError(editTextModel.warning());
-        } else if (!isEmpty(editTextModel.error())) {
-            inputLayout.setError(editTextModel.error());
-        } else
-            inputLayout.setError(null);
-
-
-        editText.setSelection(editText.getText() == null ?
-                0 : editText.getText().length());
-        if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
-            label = new StringBuilder(editTextModel.label());
-            if (editTextModel.mandatory())
-                label.append("*");
-            inputLayout.setHint(label);
-
-            if (label.length() > 16 || model.description() != null)
-                description.setVisibility(View.VISIBLE);
-            else
-                description.setVisibility(View.GONE);
-
-        }
-
-        descriptionText = editTextModel.description();
-        setInputType(editTextModel.valueType());
-    }
 
     private boolean validate() {
         switch (editTextModel.valueType()) {
@@ -237,8 +231,8 @@ final class EditTextCustomHolder extends FormViewHolder {
         }
     }
 
-
+    @Override
     public void dispose() {
-//        disposable.dispose();
+
     }
 }

@@ -24,7 +24,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
     private final boolean isBackgroundTransparent;
     private final String renderType;
     private final LayoutInflater inflater;
-
+    private boolean accessDataWrite;
     public SpinnerRow(LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
@@ -32,12 +32,12 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
         this.inflater = layoutInflater;
     }
 
-    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType) {
+    public SpinnerRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor, boolean isBackgroundTransparent, String renderType, boolean accessDataWrite) {
         this.processor = processor;
         this.isBackgroundTransparent = isBackgroundTransparent;
         this.renderType = renderType;
         this.inflater = layoutInflater;
-
+        this.accessDataWrite = accessDataWrite;
     }
 
     @NonNull
@@ -49,7 +49,7 @@ public class SpinnerRow implements Row<SpinnerHolder, SpinnerViewModel> {
 
     @Override
     public void onBind(@NonNull SpinnerHolder viewHolder, @NonNull SpinnerViewModel viewModel) {
-        viewHolder.update(viewModel);
+        viewHolder.update(viewModel, accessDataWrite);
     }
 
     @Override

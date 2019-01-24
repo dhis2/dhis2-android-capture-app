@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -33,7 +34,7 @@ public class RadioButtonHolder extends FormViewHolder {
     }
 
 
-    public void update(RadioButtonViewModel checkBoxViewModel) {
+    public void update(RadioButtonViewModel checkBoxViewModel, boolean accessDataWrite) {
 
 
         this.viewModel = checkBoxViewModel;
@@ -66,7 +67,14 @@ public class RadioButtonHolder extends FormViewHolder {
         }
 
         for (int i = 0; i < radioGroup.getChildCount(); i++) {
-            radioGroup.getChildAt(i).setEnabled(checkBoxViewModel.editable());
+            if (!checkBoxViewModel.editable()) {
+                radioGroup.getChildAt(i).setEnabled(false);
+                radioGroup.getChildAt(i).setBackgroundColor(ContextCompat.getColor(radioGroup.getChildAt(i).getContext(), R.color.bg_black_e6e));
+            } else if(accessDataWrite){
+                radioGroup.getChildAt(i).setEnabled(true);
+                radioGroup.getChildAt(i).setBackgroundColor(ContextCompat.getColor(radioGroup.getChildAt(i).getContext(), R.color.white));
+            }else
+                radioGroup.getChildAt(i).setEnabled(accessDataWrite);
         }
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {

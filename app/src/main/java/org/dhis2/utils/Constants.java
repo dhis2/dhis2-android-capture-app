@@ -61,6 +61,7 @@ public class Constants {
     public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
+    public static final String ACCESS_DATA = "acces_data";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";

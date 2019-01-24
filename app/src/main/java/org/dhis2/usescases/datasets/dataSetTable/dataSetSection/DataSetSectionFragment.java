@@ -40,12 +40,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private DataSetTableActivity activity;
     private DataSetTableAdapter adapter;
     private String sectionUid;
-
+    private boolean accessDataWrite;
     @NonNull
-    public static DataSetSectionFragment create(@NonNull String sectionUid) {
+    public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_SECTION, sectionUid);
-
+        bundle.putBoolean(Constants.ACCESS_DATA, accessDataWrite);
         DataSetSectionFragment dataSetSectionFragment = new DataSetSectionFragment();
         dataSetSectionFragment.setArguments(bundle);
 
@@ -70,16 +70,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     public void onResume() {
         super.onResume();
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
-
+        accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenter.getData(this, sectionUid);
 
-        adapter = new DataSetTableAdapter(getAbstracContext());
+        adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
         binding.tableView.setAdapter(adapter);
+        binding.tableView.setEnabled(false);
 
     }
 
     public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
-                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform){
+                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled){
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -88,6 +89,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             ArrayList<FieldViewModel> fields = new ArrayList<>();
             for (List<String> catOpts : presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null)) {
                 boolean exitsValue = false;
+                boolean editable = true;
                 FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                         "",
                         "",
@@ -98,23 +100,30 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                         "",
                         "",
                         "");
+
+                if(dataElementDisabled.containsKey(sectionUid) && dataElementDisabled.get(sectionUid).containsKey(de.uid())
+                        && dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts) )
+                    editable = false;
+                else
+                    editable = true;
+
                 for (DataSetTableModel dataValue : dataValues) {
 
                     if (dataValue.listCategoryOption().containsAll(catOpts)
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
-
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 false, "", dataValue.value(), sectionUid, true,
-                                true, null, de.description()));
+                                editable, null, de.description()));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
                 }
+
                 if (!exitsValue) {
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             false, "", "", sectionUid, true,
-                            true, null, de.description()));
+                            editable, null, de.description()));
 
                     values.add("");
                 }

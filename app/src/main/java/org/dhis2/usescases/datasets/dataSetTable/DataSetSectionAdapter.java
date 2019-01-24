@@ -19,15 +19,16 @@ import java.util.Map;
 public final class DataSetSectionAdapter extends FragmentStatePagerAdapter {
 
     private ArrayList<String> sectionArrays;
-
-    DataSetSectionAdapter(FragmentManager fm) {
+    private boolean accessDataWrite;
+    DataSetSectionAdapter(FragmentManager fm, boolean accessDataWrite) {
         super(fm);
         sectionArrays = new ArrayList<>();
+        this.accessDataWrite = accessDataWrite;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return DataSetSectionFragment.create(sectionArrays.get(position));
+        return DataSetSectionFragment.create(sectionArrays.get(position), accessDataWrite);
     }
 
     void swapData(Map<String, List<DataElementModel>> dataElements) {
