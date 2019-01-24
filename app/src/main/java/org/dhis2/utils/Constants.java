@@ -38,8 +38,8 @@ public class Constants {
     public static final int TIME_MANUAL = 0;
 
     // DATA SYNC TIME RANGES
-    public static final int TIME_15M = 15*60;
-    public static final int TIME_HOURLY = 60*60;
+    public static final int TIME_15M = 15 * 60;
+    public static final int TIME_HOURLY = 60 * 60;
 
 
     //EVENT_CREATION
@@ -61,6 +61,14 @@ public class Constants {
     public static final String EXTRA_FROM_LOGIN = "EXTRA_FROM_LOGIN";
     public static final int RQ_MANDATORY_EVENTS = 2001;
     public static final String OPTION_SET_DIALOG_THRESHOLD = "optionSetDialogThredshold";
+    public static final String URL_TEST_229 = "https://play.dhis2.org/android-previous1";
+    public static final String URL_TEST_230 = "https://play.dhis2.org/android-current";
+    public static final String USER_TEST_ANDROID = "android";
+    public static final String USER_TEST_ANDROID_PASS = "Android123";
+    public static final String SECURE_SERVER_URL = "SEURE_SERVER_URL";
+    public static final String SECURE_USER_NAME = "SECURE_USER_NAME";
+    public static final String SECURE_PASS = "SECURE_PASS";
+    public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
 
     public static String LAST_DATA_SYNC = "last_data_sync";
     public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";

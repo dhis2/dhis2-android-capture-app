@@ -28,8 +28,8 @@ import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -246,7 +246,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void showSyncErrors(List<ErrorMessageModel> data) {
+    public void showSyncErrors(List<D2Error> data) {
         ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 

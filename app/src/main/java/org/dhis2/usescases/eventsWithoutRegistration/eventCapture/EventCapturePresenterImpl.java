@@ -108,6 +108,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
+                eventCaptureRepository.programStage()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                programStageUid ->view.setProgramStage(programStageUid),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
                 eventCaptureRepository.eventStatus()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

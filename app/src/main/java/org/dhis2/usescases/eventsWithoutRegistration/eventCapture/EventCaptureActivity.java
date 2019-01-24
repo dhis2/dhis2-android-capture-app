@@ -7,7 +7,6 @@ import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.PopupMenu;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -54,6 +53,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventCaptureContract.Presenter presenter;
     private int completionPercentage = 0;
+    private String programStageUid;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -167,6 +167,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setReschedule(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+    }
+
+    @Override
+    public void setProgramStage(String programStageUid) {
+        this.programStageUid = programStageUid;
     }
 
     private void setAction(FormBottomDialog.ActionType actionType) {
@@ -332,7 +337,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE));
+        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 

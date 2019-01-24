@@ -1,15 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableBoolean;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +25,13 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
@@ -52,6 +52,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     private ObservableBoolean isFirstPosition = new ObservableBoolean(true);
     private ObservableBoolean isLastPosition = new ObservableBoolean(false);
     private FlowableProcessor<RowAction> flowableProcessor;
+    private FlowableProcessor<Trio<String, String, Integer>> flowableOptions;
 
     public static EventCaptureFormFragment getInstance() {
         if (instance == null) {
@@ -76,8 +77,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         sectionSelectorAdapter = new SectionSelectorAdapter(activity.getPresenter());
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
         this.flowableProcessor = PublishProcessor.create();
-        activity.getPresenter().subscribeToSection();
+        this.flowableOptions = PublishProcessor.create();
         activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
+        activity.getPresenter().subscribeToSection();
+
         return binding.getRoot();
     }
 
@@ -117,7 +120,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                 getChildFragmentManager(), arguments,
                 activity.getPresenter().getOrgUnits(),
                 new ObservableBoolean(true),
-                flowableProcessor);
+                flowableProcessor,
+                flowableOptions);
 
         binding.formRecycler.setAdapter(dataEntryAdapter);
 
@@ -129,6 +133,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                     RecyclerView.VERTICAL, false);
 
         binding.formRecycler.setLayoutManager(layoutManager);
+
     }
 
     @NonNull
@@ -140,7 +145,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                 int completedValues = 0;
                 HashMap<String, Boolean> fields = new HashMap<>();
                 for (FieldViewModel fieldViewModel : updates) {
-                    fields.put(fieldViewModel.optionSet()==null?fieldViewModel.uid():fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+                    fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
                 }
                 for (String key : fields.keySet())
                     if (fields.get(key))
