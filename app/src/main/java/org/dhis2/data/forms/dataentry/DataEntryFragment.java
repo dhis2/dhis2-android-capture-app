@@ -1,14 +1,7 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
-import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +14,21 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.ObservableBoolean;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
@@ -38,9 +38,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Inject
     DataEntryPresenter dataEntryPresenter;
 
-    DataEntryAdapter dataEntryAdapter;
-
-    RecyclerView recyclerView;
+    private DataEntryAdapter dataEntryAdapter;
+    private RecyclerView recyclerView;
     private Fragment formFragment;
     private String section;
 
@@ -84,8 +83,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
-        if (dataEntryPresenter == null)
-            dataEntryPresenter.onAttach(this);
         setUpRecyclerView();
     }
 
@@ -146,18 +143,16 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 getChildFragmentManager(), arguments,
                 dataEntryPresenter.getOrgUnits(),
                 new ObservableBoolean(true));
-//        dataEntryAdapter.setHasStableIds(true);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             layoutManager = new GridLayoutManager(getActivity(), 2);
         } else
             layoutManager = new LinearLayoutManager(getActivity(),
-                    LinearLayoutManager.VERTICAL, false);
+                    RecyclerView.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
-        /*recyclerView.addItemDecoration(new DividerItemDecoration(
-                recyclerView.getContext(), DividerItemDecoration.VERTICAL));*/
+
     }
 
     public boolean checkErrors() {

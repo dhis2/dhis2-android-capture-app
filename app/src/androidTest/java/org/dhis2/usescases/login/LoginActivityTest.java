@@ -1,10 +1,6 @@
 package org.dhis2.usescases.login;
 
 
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -13,9 +9,12 @@ import org.dhis2.R;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
@@ -33,8 +32,6 @@ public class LoginActivityTest {
     private static final String TEST_USERNAME = "android";
     private static final String TEST_PASS = "Android123";
 
-    @Rule
-    public ActivityTestRule<LoginActivity> mActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
     @Test
     public void loginButtonAppearsOnlyWhenUrlUsernamePassAreProvided() {
