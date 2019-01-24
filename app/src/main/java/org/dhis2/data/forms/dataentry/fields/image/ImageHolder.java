@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.image;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.view.View;
 
 import org.dhis2.Bindings.Bindings;

@@ -1,7 +1,7 @@
 package org.dhis2.data.forms;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 

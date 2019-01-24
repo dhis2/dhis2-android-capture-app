@@ -10,7 +10,7 @@
             type="org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract.Presenter" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -46,7 +46,7 @@
 
         </LinearLayout>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             style="@style/DhisTabLayout"
             android:layout_width="match_parent"
@@ -56,7 +56,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:tabTextAppearance="@style/DhisTabText" />
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -64,5 +64,5 @@
             app:layout_constraintTop_toBottomOf="@id/tab_layout"
             tools:background="@color/red_060" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

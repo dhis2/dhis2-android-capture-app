@@ -6,7 +6,7 @@ import android.annotation.SuppressLint;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
-import org.dhis2.utils.CustomViews.CoordinatesView;
+import org.dhis2.utils.custom_views.CoordinatesView;
 
 import java.util.Locale;
 

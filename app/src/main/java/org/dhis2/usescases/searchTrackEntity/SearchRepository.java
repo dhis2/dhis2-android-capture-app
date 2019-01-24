@@ -1,7 +1,7 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 
@@ -40,7 +40,7 @@ public interface SearchRepository {
 
     Observable<List<TrackedEntityInstanceModel>> trackedEntityInstancesToUpdate(@NonNull String teType,
                                                                                 @Nullable ProgramModel selectedProgram,
-                                                                                @Nullable HashMap<String, String> queryData);
+                                                                                @Nullable HashMap<String, String> queryData, int listSize);
 
     @NonNull
     Observable<String> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam,Date enrollmentDate);

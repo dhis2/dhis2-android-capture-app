@@ -30,7 +30,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -42,8 +42,8 @@
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:onClick="@{()->presenter.back()}"
                 android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.back()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -52,34 +52,33 @@
                 android:id="@+id/teiName"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:gravity="center_vertical"
                 android:textColor="?colorAccent"
                 android:textSize="20sp"
-                android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
                 app:layout_constraintStart_toEndOf="@id/back"
                 tools:text="TEI NAME" />
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
-                android:layout_marginEnd="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -89,9 +88,9 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
                 tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
@@ -116,8 +115,8 @@
                 android:layout_width="125dp"
                 android:layout_height="34dp"
                 android:layout_gravity="end|bottom"
-                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="22.5dp"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/button_delete_selector"
                 android:minHeight="0dp"
                 android:onClick="@{view->presenter.eventStatus(view,event,stage)}"
@@ -128,7 +127,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">-->
 
-            <android.support.design.widget.AppBarLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,12 +135,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.design.widget.CollapsingToolbarLayout
+                <com.google.android.material.appbar.CollapsingToolbarLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -184,14 +183,14 @@
                                 app:flexWrap="wrap">
 
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@{stage.executionDateLabel()!=null?stage.executionDateLabel():@string/event_date}"
                                     android:theme="@style/loginInputText"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/event_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -202,9 +201,9 @@
                                         android:onClick="@{ () -> presenter.setDate()}"
                                         app:date="@{event.eventDate()}"
                                         tools:text="2018-01-01" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/due_date"
@@ -212,7 +211,7 @@
                                     android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/due_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -222,9 +221,9 @@
                                         android:inputType="date"
                                         app:date="@{event.dueDate()}"
                                         tools:text="2018-01-01" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:id="@+id/category_combo_layout"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -232,7 +231,7 @@
                                     android:theme="@style/loginInputText"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/category_combo"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -242,10 +241,10 @@
                                         android:inputType="date"
                                         android:onClick="@{ () -> presenter.selectCatOption()}"
                                         tools:ignore="LabelFor" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/org_unit"
@@ -263,9 +262,9 @@
                                         android:onClick="@{()->presenter.onOrgUnitClick()}"
                                         tools:ignore="LabelFor"
                                         tools:text="Sierre Leone" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <org.dhis2.utils.CustomViews.CoordinatesView
+                                <org.dhis2.utils.custom_views.CoordinatesView
                                     android:id="@+id/captureCoordinates"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -276,15 +275,15 @@
 
                         </LinearLayout>
 
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.design.widget.CollapsingToolbarLayout>
-            </android.support.design.widget.AppBarLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
 
             <!--</android.support.constraint.ConstraintLayout>-->
 
 
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </RelativeLayout>
 </layout>

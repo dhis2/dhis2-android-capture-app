@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
-import android.support.v7.widget.RecyclerView;
-
 import org.dhis2.BR;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.usescases.teiDashboard.TeiDashboardContracts;
@@ -10,6 +8,8 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by ppajuelo on 29/11/2017.
@@ -33,8 +33,8 @@ class EventViewHolder extends RecyclerView.ViewHolder {
         binding.eventDate.setText(date);
 
         itemView.setOnClickListener(view -> {
-            if (eventModel.status() == EventStatus.SCHEDULE || eventModel.eventDate() == null) {
-                presenter.onScheduleSelected(eventModel.uid(),binding.sharedView);
+            if (eventModel.status() == EventStatus.SCHEDULE) {
+                presenter.onScheduleSelected(eventModel.uid(), binding.sharedView);
             } else
                 presenter.onEventSelected(eventModel.uid(), binding.sharedView);
         });

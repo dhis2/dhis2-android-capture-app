@@ -1,7 +1,7 @@
 package org.dhis2.utils;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.OrgUnitMenuSelectorItemBinding;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;

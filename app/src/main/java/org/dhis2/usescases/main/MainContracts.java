@@ -1,8 +1,8 @@
 package org.dhis2.usescases.main;
 
 
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.ErrorMessageModel;

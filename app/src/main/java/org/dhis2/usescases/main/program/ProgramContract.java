@@ -1,6 +1,6 @@
 package org.dhis2.usescases.main.program;
 
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;

@@ -16,7 +16,7 @@
             type="java.lang.String" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -39,5 +39,5 @@
             android:background="@color/colorGreyDefault"
             android:visibility="@{option==null?View.VISIBLE:View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

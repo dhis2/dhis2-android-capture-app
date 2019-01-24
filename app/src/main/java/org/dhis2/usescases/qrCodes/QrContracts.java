@@ -1,6 +1,6 @@
 package org.dhis2.usescases.qrCodes;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

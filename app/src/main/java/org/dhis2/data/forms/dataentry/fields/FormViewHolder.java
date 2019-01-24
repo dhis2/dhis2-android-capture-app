@@ -1,15 +1,15 @@
 package org.dhis2.data.forms.dataentry.fields;
 
 import android.app.Activity;
-import android.databinding.ViewDataBinding;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.custom_views.CustomDialog;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.

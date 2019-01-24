@@ -1,10 +1,10 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.res.Resources;
-import android.databinding.ViewDataBinding;
+import androidx.databinding.ViewDataBinding;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -46,7 +46,8 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
                 iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
             }
 
-            int color = enrollment != null ? ColorUtils.getColorFrom(itemView.getContext(), enrollment.color()) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
+            int color = enrollment != null ? ColorUtils.getColorFrom(enrollment.color(),
+                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY)) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
             int icon;
             if (enrollment != null && enrollment.icon() != null) {
                 Resources resources = itemView.getContext().getResources();
@@ -76,7 +77,8 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
 
             }
 
-            int color = programModel != null ? ColorUtils.getColorFrom(itemView.getContext(), programModel.color()) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
+            int color = programModel != null ? ColorUtils.getColorFrom(programModel.color(),
+                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY)) : ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY_LIGHT);
             int icon;
             if (programModel != null && programModel.icon() != null) {
                 Resources resources = itemView.getContext().getResources();

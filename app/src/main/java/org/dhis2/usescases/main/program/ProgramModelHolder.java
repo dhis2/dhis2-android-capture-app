@@ -2,8 +2,8 @@ package org.dhis2.usescases.main.program;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemProgramModelBinding;
@@ -30,7 +30,7 @@ public class ProgramModelHolder extends RecyclerView.ViewHolder {
         binding.setPresenter(presenter);
         binding.setCurrentPeriod(currentPeriod);
 
-        int color = ColorUtils.getColorFrom(binding.programImage.getContext(), programViewModel.color());
+        int color = ColorUtils.getColorFrom(programViewModel.color(), ColorUtils.getPrimaryColor(binding.programImage.getContext(), ColorUtils.ColorType.PRIMARY));
         int icon;
         if (programViewModel.icon() != null) {
             Resources resources = binding.programImage.getResources();

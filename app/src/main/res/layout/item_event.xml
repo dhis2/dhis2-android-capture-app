@@ -28,7 +28,7 @@
         app:eventProgramStage="@{stage}"
         tools:background="@color/event_green">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/shared_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -91,7 +91,7 @@
                     android:layout_gravity="end"
                     tools:ignore="ContentDescription" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/status_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -103,6 +103,6 @@
                     app:eventStatusText='@{event}'
                     tools:text="Read only" />
             </LinearLayout>
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </layout>

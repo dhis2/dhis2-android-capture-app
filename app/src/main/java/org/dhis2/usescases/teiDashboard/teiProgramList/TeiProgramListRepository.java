@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 
@@ -33,4 +33,6 @@ public interface TeiProgramListRepository {
     Observable<String> saveToEnroll(@NonNull String orgUnit, @NonNull String programUid, @NonNull String teiUid);
 
     Observable<List<OrganisationUnitModel>> getOrgUnits();
+
+    String getProgramColor(@NonNull String programUid);
 }

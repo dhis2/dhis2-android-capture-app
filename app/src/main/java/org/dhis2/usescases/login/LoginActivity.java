@@ -1,7 +1,7 @@
 package org.dhis2.usescases.login;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
@@ -36,9 +36,6 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
     private boolean isPinScreenVisible = false;
 
-    enum SyncState {
-        METADATA, EVENTS, TEI, RESERVED_VALUES, AGGREGATES
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +52,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.setPresenter(presenter);
 
         binding.testingEnvironment.login229.setOnClickListener(
-                view -> {
-                    presenter.onTestingEnvironmentClick(29);
-                }
+                view -> presenter.onTestingEnvironmentClick(29)
         );
 
         binding.testingEnvironment.login230.setOnClickListener(
-                view -> {
-                    presenter.onTestingEnvironmentClick(30);
-                }
+                view -> presenter.onTestingEnvironmentClick(30)
         );
 
         setAutocompleteAdapters();
@@ -128,30 +121,9 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
-    public void renderInvalidCredentialsError() {
-        displayMessage(getResources().getString(R.string.error_wrong_credentials));
-    }
-
-    @Override
     public void renderUnexpectedError() {
         displayMessage(getResources().getString(R.string.error_unexpected_error));
     }
-
-    @Override
-    public void renderEmptyUsername() {
-        binding.userName.setError(getString(R.string.error_wrong_credentials));
-    }
-
-    @Override
-    public void renderEmptyPassword() {
-        binding.userPass.setError(getString(R.string.error_wrong_credentials));
-    }
-
-    @Override
-    public void renderServerError() {
-        displayMessage(getResources().getString(R.string.error_internal_server_error));
-    }
-
 
     @Override
     public void handleLogout() {

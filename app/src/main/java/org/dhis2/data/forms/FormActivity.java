@@ -1,10 +1,11 @@
 package org.dhis2.data.forms;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import android.view.MenuItem;
 
 import org.dhis2.App;
@@ -19,13 +20,13 @@ public class FormActivity extends ActivityGlobalAbstract {
     private Fragment fragment;
 
     @NonNull
-    public static Intent create(@NonNull Activity activity,
+    public static Intent create(@NonNull Context context,
                                 @NonNull FormViewArguments formViewArguments,
                                 boolean isEnrollment) {
-        isNull(activity, "activity must not be null");
+        isNull(context, "context must not be null");
         isNull(formViewArguments, "formViewArguments must not be null");
 
-        Intent intent = new Intent(activity, FormActivity.class);
+        Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(ARGUMENTS, formViewArguments);
         intent.putExtra(IS_ENROLLMENT, isEnrollment);
         return intent;

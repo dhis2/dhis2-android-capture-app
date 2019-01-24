@@ -1,1 +1,1 @@
-include ':app', ':customFab', ':dhis2-rule-engine'
+include ':app', ':customFab', ':dhis2-rule-engine', ':viewpagerdotsindicator'

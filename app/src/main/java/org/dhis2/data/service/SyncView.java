@@ -1,7 +1,7 @@
 package org.dhis2.data.service;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import io.reactivex.functions.Consumer;
 
