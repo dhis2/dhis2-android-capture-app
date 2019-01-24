@@ -551,11 +551,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid) {
 
-//        if (enrollmentUid == null)
-        startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventUid, programUid),
-                true, false, null
-        );
+//        if (enrollmentUid == null)+
+        Intent intent = new Intent(this, EventCaptureActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
+        startActivity(intent);
+        finish();
        /* else {
             FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
             startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
