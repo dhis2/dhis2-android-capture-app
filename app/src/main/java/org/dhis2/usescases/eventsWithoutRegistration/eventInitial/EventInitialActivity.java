@@ -385,8 +385,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (eventCreationType != EventCreationType.SCHEDULE)
                 selectedDate = now.getTime();
-            else
+            else {
+                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
                 selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+            }
 
             selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
 
