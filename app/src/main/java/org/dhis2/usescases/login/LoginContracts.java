@@ -1,14 +1,13 @@
 package org.dhis2.usescases.login;
 
 
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.databinding.ObservableField;
 import retrofit2.Response;
 
 public class LoginContracts {
@@ -46,6 +45,14 @@ public class LoginContracts {
         void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass);
 
         void showLoginProgress(boolean showLogin);
+
+        void showBiometricButton();
+
+        void checkSecuredCredentials();
+
+        void goToNextScreen();
+
+        void switchPasswordVisibility();
     }
 
     public interface Presenter {
@@ -59,9 +66,11 @@ public class LoginContracts {
 
         void onButtonClick();
 
-        void onTestingEnvironmentClick(int dhisVersion);
+        void logIn(String serverUrl, String userName, String pass);
 
         void onQRClick(android.view.View v);
+
+        void onVisibilityClick(android.view.View v);
 
         ObservableField<Boolean> isServerUrlSet();
 
@@ -79,6 +88,10 @@ public class LoginContracts {
         void handleResponse(@NonNull Response userResponse);
 
         void handleError(@NonNull Throwable throwable);
+
+        void onFingerprintClick();
+
+        Boolean canHandleBiometrics();
 
     }
 

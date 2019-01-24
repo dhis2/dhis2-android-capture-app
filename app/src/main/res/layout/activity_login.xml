@@ -39,7 +39,7 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/credentialLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -50,22 +50,39 @@
 
                 <ImageButton
                     android:id="@+id/qr_button"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/full_width_button_bg"
+                    style="@style/ActionIcon"
                     android:onClick="@{presenter::onQRClick}"
+                    android:tint="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/server_url"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/server_url"
                     app:srcCompat="@drawable/ic_qr"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@+id/visibility_button"
+                    style="@style/ActionIcon"
+                    android:layout_toEndOf="@id/user_pass"
+                    android:onClick="@{presenter::onVisibilityClick}"
+                    android:tint="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_pass"
+                    app:srcCompat="@drawable/ic_visibility_off"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/server_url"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/qr_button"
                     android:hint="@string/url_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/user_name"
+                    app:layout_constraintEnd_toStartOf="@id/qr_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed">
 
                     <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/server_url_edit"
@@ -85,11 +102,13 @@
                     android:id="@+id/user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/server_url"
                     android:layout_centerInParent="true"
                     android:hint="@string/user_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/user_pass"
+                    app:layout_constraintTop_toBottomOf="@+id/server_url"
+                    app:layout_constraintVertical_chainStyle="spread">
 
                     <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/user_name_edit"
@@ -106,13 +125,17 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_pass"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/user_name"
                     android:layout_centerInParent="true"
                     android:hint="@string/password_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/biometricButton"
+                    app:layout_constraintEnd_toStartOf="@id/visibility_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/user_name"
+                    app:layout_constraintVertical_chainStyle="spread">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/user_pass_edit"
@@ -126,15 +149,24 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <include
-                    android:id="@+id/testingEnvironment"
-                    layout="@layout/testing_env"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/user_pass"
-                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/biometricButton"
+                    style="@style/ActionIcon"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{()->presenter.onFingerprintClick()}"
+                    android:tint="?colorPrimary"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/user_pass"
+                    app:layout_constraintVertical_chainStyle="spread"
+                    app:srcCompat="@drawable/ic_fingerprint"
+                    tools:visibility="visible" />
 
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:id="@+id/progressLayout"
