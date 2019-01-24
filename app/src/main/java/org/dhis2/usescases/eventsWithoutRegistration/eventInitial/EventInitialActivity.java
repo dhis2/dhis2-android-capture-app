@@ -385,8 +385,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (eventCreationType != EventCreationType.SCHEDULE)
                 selectedDate = now.getTime();
-            else
+            else {
+                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
                 selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+            }
 
             selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
 
@@ -551,11 +553,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid) {
 
-//        if (enrollmentUid == null)
-        startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventUid, programUid),
-                true, false, null
-        );
+//        if (enrollmentUid == null)+
+        Intent intent = new Intent(this, EventCaptureActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
+        startActivity(intent);
+        finish();
        /* else {
             FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
             startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
