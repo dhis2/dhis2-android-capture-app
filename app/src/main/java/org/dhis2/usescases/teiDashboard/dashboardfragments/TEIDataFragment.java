@@ -311,8 +311,9 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
         bundle.putString(ENROLLMENT_UID, presenter.getDashBoardData().getCurrentEnrollment().uid());
         bundle.putString(EVENT_CREATION_TYPE, eventCreationType.name());
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, scheduleIntervalDays);
-
-        startActivity(ProgramStageSelectionActivity.class, bundle, false, false, null);
+        Intent intent = new Intent(getContext(), ProgramStageSelectionActivity.class);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, REQ_EVENT);
     }
 
     @Override

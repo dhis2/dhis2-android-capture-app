@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.ErrorMessageModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public final class MainContracts {
 
         void changeFragment(int id);
 
-        void showSyncErrors(List<ErrorMessageModel> data);
+        void showSyncErrors(List<D2Error> data);
     }
 
     public interface Presenter {

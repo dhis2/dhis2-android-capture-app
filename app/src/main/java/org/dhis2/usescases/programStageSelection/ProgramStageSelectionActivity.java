@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programStageSelection;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -89,6 +90,7 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
 
     @Override
     public void setResult(String programStageUid, boolean repeatable, @Nullable PeriodType periodType) {
+        Intent intent = new Intent(this, EventInitialActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(PROGRAM_UID));
         bundle.putString(TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(TRACKED_ENTITY_INSTANCE));
@@ -99,7 +101,9 @@ public class ProgramStageSelectionActivity extends ActivityGlobalAbstract implem
         bundle.putSerializable(EVENT_PERIOD_TYPE, periodType);
         bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
         bundle.putInt(EVENT_SCHEDULE_INTERVAL, getIntent().getIntExtra(EVENT_SCHEDULE_INTERVAL, 0));
-
-        startActivity(EventInitialActivity.class, bundle, true, false, null);
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.putExtras(bundle);
+        startActivity(intent, bundle);
+        finish();
     }
 }

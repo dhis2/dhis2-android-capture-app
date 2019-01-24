@@ -113,14 +113,15 @@ public final class DataEntryAdapter extends Adapter {
                             @NonNull DataEntryArguments dataEntryArguments,
                             @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
                             ObservableBoolean isEditable,
-                            @NonNull FlowableProcessor<RowAction> processor) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+                            @NonNull FlowableProcessor<RowAction> processor,
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) { //TODO: Add isEditable to all fields and test if can be changed on the fly
         setHasStableIds(true);
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         this.processor = processor;
         imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
-        this.processorOptionSet = PublishProcessor.create();
+        this.processorOptionSet = processorOptSet;
         this.dataEntryArguments = dataEntryArguments;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
