@@ -17,7 +17,10 @@ public class DataSetRowHeader extends AbstractViewHolder {
         this.binding = binding;
     }
 
-    public void bind(String rowHeaderTitle) {
+    public void bind(String rowHeaderTitle, Boolean compulsory) {
+        if(compulsory)
+            rowHeaderTitle += "*";
+
         binding.title.setText(rowHeaderTitle);
     }
 }

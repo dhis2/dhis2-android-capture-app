@@ -34,6 +34,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -49,7 +50,7 @@ import io.reactivex.processors.PublishProcessor;
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, DataElementModel, String> {
+class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Pair<DataElementModel, Boolean>, String> {
     private static final int EDITTEXT = 0;
     private static final int BUTTON = 1;
     private static final int CHECKBOX = 2;
@@ -215,7 +216,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).displayFormName());
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).val0().displayName(),
+                mRowHeaderItems.get(position).val1());
     }
 
 

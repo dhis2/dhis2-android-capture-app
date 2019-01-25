@@ -87,6 +87,11 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
             "GROUP BY section, dataElement, categoryOption";
 
+    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement " +
+            "from DataSetCompulsoryDataElementOperandsLink " +
+            "JOIN DataElementOperand ON DataElementOperand.uid = DataSetCompulsoryDataElementOperandsLink.dataElementOperand " +
+            "WHERE DataSetCompulsoryDataElementOperandsLink.dataSet = ? ";
+
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
 
@@ -269,5 +274,11 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
                     }
                     return mapData;
                 }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<List<String>> getMandatoryDataElement() {
+        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, GET_COMPULSORY_DATA_ELEMENT, dataSetUid)
+                .mapToList(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);
     }
 }

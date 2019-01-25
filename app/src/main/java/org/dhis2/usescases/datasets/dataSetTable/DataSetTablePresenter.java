@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.hisp.dhis.android.core.category.CategoryModel;
@@ -76,6 +77,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public void getData(@NonNull DataSetSectionFragment dataSetSectionFragment, @Nullable String sectionUid) {
+
         compositeDisposable.add(
                 tableRepository.getCatOptionCombo()
                         .flatMap(data ->
@@ -83,15 +85,18 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                                 tableRepository.getDataValues(orgUnitUid, periodTypeName, periodInitialDate, catCombo),
                                                 tableRepository.getDataSet(),
                                                 tableRepository.getGreyedFields(getUidCatOptionsCombo(data)),
-                                                Trio::create
+                                                tableRepository.getMandatoryDataElement(),
+                                                Quartet::create
                                         ))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                trio -> {
-                                    view.setDataValue(trio.val0());
-                                    view.setDataSet(trio.val1());
-                                    dataSetSectionFragment.setData(tableData.val0(), transformCategories(tableData.val1()), trio.val0(), tableData.val1(), trio.val2());
+                                quartet -> {
+                                    view.setDataValue(quartet.val0());
+                                    view.setDataSet(quartet.val1());
+                                    dataSetSectionFragment.setData(tableData.val0(),
+                                            transformCategories(tableData.val1()), quartet.val0(),
+                                            tableData.val1(), quartet.val2(), quartet.val3());
                                 },
                                 Timber::e
                         )

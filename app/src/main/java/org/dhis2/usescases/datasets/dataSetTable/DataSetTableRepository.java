@@ -25,4 +25,6 @@ public interface DataSetTableRepository {
     Flowable<List<DataSetTableModel>> getDataValues(String orgUnitUid, String periodType, String initPeriodType, String catOptionComb);
 
     Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo);
+
+    Flowable<List<String>> getMandatoryDataElement();
 }
