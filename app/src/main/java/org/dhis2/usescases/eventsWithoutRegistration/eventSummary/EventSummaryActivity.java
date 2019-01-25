@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -319,7 +320,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false)) {
+            if (!prefs.getBoolean("TUTO_EVENT_SUMMARY", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_EVENT_SUMMARY", true).apply();
             }

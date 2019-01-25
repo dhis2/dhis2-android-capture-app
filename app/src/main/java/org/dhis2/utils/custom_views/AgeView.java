@@ -161,19 +161,30 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
     }
 
     public void setInitialValue(String initialValue) {
+        Date initialDate = null;
         try {
-            Date initialDate = DateUtils.databaseDateFormat().parse(initialValue);
-            String result = dateFormat.format(initialDate);
+            initialDate = DateUtils.databaseDateFormat().parse(initialValue);
 
-            int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
-            day.setText(String.valueOf(dateDifference[2]));
-            month.setText(String.valueOf(dateDifference[1]));
-            year.setText(String.valueOf(dateDifference[0]));
-
-            date.setText(result);
         } catch (Exception e) {
             Timber.e(e);
         }
+
+        if(initialDate == null)
+            try {
+                initialDate = DateUtils.uiDateFormat().parse(initialValue);
+
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
+        String result = dateFormat.format(initialDate);
+
+        int[] dateDifference = DateUtils.getDifference(initialDate, Calendar.getInstance().getTime());
+        day.setText(String.valueOf(dateDifference[2]));
+        month.setText(String.valueOf(dateDifference[1]));
+        year.setText(String.valueOf(dateDifference[0]));
+
+        date.setText(result);
     }
 
 
