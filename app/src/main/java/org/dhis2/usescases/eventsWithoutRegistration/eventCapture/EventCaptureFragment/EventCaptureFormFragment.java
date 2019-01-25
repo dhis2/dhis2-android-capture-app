@@ -36,6 +36,7 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -65,6 +66,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.activity = (EventCaptureActivity) context;
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -78,15 +80,14 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
         this.flowableProcessor = PublishProcessor.create();
         this.flowableOptions = PublishProcessor.create();
-        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
-        activity.getPresenter().subscribeToSection();
-
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        activity.getPresenter().initCompletionPercentage(sectionSelectorAdapter.completionPercentage());
+        activity.getPresenter().subscribeToSection();
     }
 
     public void setSectionTitle(DataEntryArguments arguments, FormSectionViewModel formSectionViewModel) {
@@ -116,8 +117,8 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
     private void setUpRecyclerView(DataEntryArguments arguments) {
 
-        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
-                getChildFragmentManager(), arguments,
+        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(activity),
+                activity.getSupportFragmentManager(), arguments,
                 activity.getPresenter().getOrgUnits(),
                 new ObservableBoolean(true),
                 flowableProcessor,
@@ -127,9 +128,9 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
-            layoutManager = new GridLayoutManager(getActivity(), 2);
+            layoutManager = new GridLayoutManager(activity, 2);
         } else
-            layoutManager = new LinearLayoutManager(getActivity(),
+            layoutManager = new LinearLayoutManager(activity,
                     RecyclerView.VERTICAL, false);
 
         binding.formRecycler.setLayoutManager(layoutManager);
