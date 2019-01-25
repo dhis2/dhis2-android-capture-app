@@ -1,6 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -21,6 +23,7 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
@@ -171,6 +174,19 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
 
     @Override
     public void showMessage(int messageId) {
-        showInfoDialog(getString(R.string.error), getString(R.string.unique_warning));
+        AlertDialog dialog = showInfoDialog(getString(R.string.error), getString(R.string.unique_warning), new OnDialogClickListener() {
+
+            @Override
+            public void onPossitiveClick(androidx.appcompat.app.AlertDialog alertDialog) {
+                //nothing
+            }
+
+            @Override
+            public void onNegativeClick(androidx.appcompat.app.AlertDialog alertDialog) {
+                //nothing
+            }
+        });
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
     }
 }
