@@ -87,10 +87,12 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
             "GROUP BY section, dataElement, categoryOption";
 
-    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement " +
+    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement, distinct(CategoryOptionComboCategoryOptionLink.categoryOption) " +
             "from DataSetCompulsoryDataElementOperandsLink " +
             "JOIN DataElementOperand ON DataElementOperand.uid = DataSetCompulsoryDataElementOperandsLink.dataElementOperand " +
-            "WHERE DataSetCompulsoryDataElementOperandsLink.dataSet = ? ";
+            "JOIN CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
+            "JOIN CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) ";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -277,8 +279,22 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
     }
 
     @Override
-    public Flowable<List<String>> getMandatoryDataElement() {
-        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, GET_COMPULSORY_DATA_ELEMENT, dataSetUid)
-                .mapToList(cursor -> cursor.getString(0)).toFlowable(BackpressureStrategy.LATEST);
+    public Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo) {
+        Map<String, List<String>> mapData = new HashMap<>();
+
+        String query = GET_COMPULSORY_DATA_ELEMENT.replace("?", categoryOptionCombo.toString().substring(1, categoryOptionCombo.toString().length()-1));
+        return briteDatabase.createQuery(SectionGreyedFieldsLinkModel.TABLE, query)
+                .mapToList(cursor -> {
+                    if(mapData.containsKey(cursor.getString(0))){
+                        mapData.get(cursor.getString(0)).add(cursor.getString(1));
+                    }
+                    else{
+                        List<String> listCatOp = new ArrayList<>();
+                        listCatOp.add(cursor.getString(1));
+                        mapData.put(cursor.getString(0), listCatOp);
+                    }
+
+                    return mapData ;
+                }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
     }
 }

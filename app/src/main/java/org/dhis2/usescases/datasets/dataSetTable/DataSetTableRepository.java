@@ -26,5 +26,5 @@ public interface DataSetTableRepository {
 
     Flowable<Map<String, Map<String, List<String>>>> getGreyedFields(List<String> categoryOptionCombo);
 
-    Flowable<List<String>> getMandatoryDataElement();
+    Flowable<Map<String, List<String>>> getMandatoryDataElement(List<String> categoryOptionCombo);
 }

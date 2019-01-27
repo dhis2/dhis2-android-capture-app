@@ -81,7 +81,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
     public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
                         Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled,
-                        List<String> compulsoryDataElement){
+                        Map<String, List<String>> compulsoryDataElement){
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -104,14 +104,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                         "",
                         "");
 
-                if(dataElementDisabled.containsKey(sectionUid) && dataElementDisabled.get(sectionUid).containsKey(de.uid())
-                        && dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts) )
-                    editable = false;
-                else
-                    editable = true;
+                editable = !dataElementDisabled.containsKey(sectionUid) || !dataElementDisabled.get(sectionUid).containsKey(de.uid())
+                        || !dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts);
 
-                if(compulsoryDataElement.contains(de.uid()))
-                    compulsory = true;
+                compulsory = !compulsoryDataElement.containsKey(sectionUid) || !compulsoryDataElement.get(sectionUid).containsAll(catOpts);
 
                 for (DataSetTableModel dataValue : dataValues) {
 
@@ -119,7 +115,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
-                                false, "", dataValue.value(), sectionUid, true,
+                                compulsory, "", dataValue.value(), sectionUid, true,
                                 editable, null, de.description()));
                         values.add(dataValue.value());
                         exitsValue = true;
@@ -134,7 +130,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                     values.add("");
                 }
             }
-            listDataElement.add(Pair.create(de, compulsoryDataElement.contains(de.uid())));
+            //listDataElement.add(Pair.create(de, compulsoryDataElement.contains(de.uid())));
             listFields.add(fields);
             cells.add(values);
         }
@@ -142,7 +138,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         adapter.swap(listFields);
         adapter.setAllItems(
                 catOptions.get(sectionUid).get(catOptions.get(sectionUid).size()-1),
-                listDataElement,
+                dataElements.get(sectionUid),
                 cells);
     }
 }

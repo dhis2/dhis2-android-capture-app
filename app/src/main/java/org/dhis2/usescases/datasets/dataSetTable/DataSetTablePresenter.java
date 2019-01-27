@@ -85,7 +85,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                                 tableRepository.getDataValues(orgUnitUid, periodTypeName, periodInitialDate, catCombo),
                                                 tableRepository.getDataSet(),
                                                 tableRepository.getGreyedFields(getUidCatOptionsCombo(data)),
-                                                tableRepository.getMandatoryDataElement(),
+                                                tableRepository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
                                                 Quartet::create
                                         ))
                         .subscribeOn(Schedulers.io())
