@@ -47,8 +47,6 @@ public interface SearchRepository {
 
     Observable<List<OrganisationUnitModel>> getOrgUnits(@Nullable String selectedProgramUid);
 
-    Observable<List<TrackedEntityInstance>> isOnLocalStorage(List<TrackedEntityInstance> tei);
-
     Flowable<List<SearchTeiModel>> transformIntoModel(List<SearchTeiModel> teiList, @Nullable ProgramModel selectedProgram);
 
     String getProgramColor(@NonNull String programUid);

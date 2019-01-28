@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
+import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -10,20 +11,24 @@ import java.util.List;
 public class SearchTeiModel {
 
 
-    private TrackedEntityInstanceModel tei;
+    private TrackedEntityInstanceModel tei; //7
+    private boolean hasOverdue; //6
+    private boolean isOnline;//8
+
+    private List<TrackedEntityAttributeValueModel> attributeValues; //3,4
     private List<EnrollmentModel> enrollments;
-    private boolean hasOverdue;
-    private boolean isOnline;
-    private List<TrackedEntityAttributeValueModel> attributeValues;
+    private List<Trio<String, String, String>> enrollmentsInfo;//2
+
 
     public SearchTeiModel(TrackedEntityInstanceModel tei, List<TrackedEntityAttributeValueModel> attributeValues) {
         this.tei = tei;
         this.enrollments = new ArrayList<>();
+        this.enrollmentsInfo = new ArrayList<>();
+
         this.attributeValues = new ArrayList<>();
         this.attributeValues.addAll(attributeValues);
         this.isOnline = true;
     }
-
 
     public TrackedEntityInstanceModel getTei() {
         return tei;
@@ -39,6 +44,10 @@ public class SearchTeiModel {
 
     public void addEnrollment(EnrollmentModel enrollmentModel) {
         this.enrollments.add(enrollmentModel);
+    }
+
+    public void addEnrollmentInfo(Trio<String, String, String> enrollmentInfo) {
+        enrollmentsInfo.add(enrollmentInfo);
     }
 
     public boolean isHasOverdue() {
@@ -68,5 +77,10 @@ public class SearchTeiModel {
 
     public void resetEnrollments() {
         this.enrollments.clear();
+        this.enrollmentsInfo.clear();
+    }
+
+    public List<Trio<String, String, String>> getEnrollmentInfo() {
+        return enrollmentsInfo;
     }
 }
