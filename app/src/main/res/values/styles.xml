@@ -96,6 +96,10 @@
         <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
     </style>
 
+    <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/colorPrimary_00b</item>
+        <item name="android:textColorSecondary">@color/colorGreyDefault</item> <!-- for check state -->
+    </style>
 
     <style name="FullWidthButton">
         <item name="android:layout_width">match_parent</item>

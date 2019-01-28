@@ -53,6 +53,7 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:textAlignment="textStart"
+                    android:textColor="?colorAccent"
                     android:textSize="15sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
