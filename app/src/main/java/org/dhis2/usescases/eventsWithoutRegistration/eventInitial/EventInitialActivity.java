@@ -20,6 +20,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -385,8 +386,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
             if (eventCreationType != EventCreationType.SCHEDULE)
                 selectedDate = now.getTime();
-            else
+            else {
+                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
                 selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+            }
 
             selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
 
@@ -551,11 +554,12 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     private void startFormActivity(String eventUid) {
 
-//        if (enrollmentUid == null)
-        startActivity(EventCaptureActivity.class,
-                EventCaptureActivity.getActivityBundle(eventUid, programUid),
-                true, false, null
-        );
+//        if (enrollmentUid == null)+
+        Intent intent = new Intent(this, EventCaptureActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.putExtras(EventCaptureActivity.getActivityBundle(eventUid, programUid));
+        startActivity(intent);
+        finish();
        /* else {
             FormViewArguments formViewArguments = FormViewArguments.createForEvent(eventUid);
             startActivity(FormActivity.create(getAbstractActivity(), formViewArguments, false));
@@ -874,7 +878,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
                 }
@@ -889,7 +893,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
                 }

@@ -4,8 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -31,8 +29,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by Cristian on 22/03/2018.
@@ -179,7 +181,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
-            if(trackedEntityInstanceUid != null)
+            if (trackedEntityInstanceUid != null)
                 updateTei(trackedEntityInstanceUid);
             updateProgramTable(createDate, programUid);
             return Observable.just(uid);
@@ -233,7 +235,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
-            if(trackedEntityInstanceUid != null)
+            if (trackedEntityInstanceUid != null)
                 updateTei(trackedEntityInstanceUid);
             updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
             updateProgramTable(createDate, program);
@@ -337,7 +339,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             String message = String.format(Locale.US, "Failed to update event for uid=[%s]", id);
             return Observable.error(new SQLiteConstraintException(message));
         }
-        if(trackedEntityInstance != null)
+        if (trackedEntityInstance != null)
             updateTei(trackedEntityInstance);
         return event(id).map(eventModel1 -> {
 //            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
@@ -400,8 +402,27 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
             }
 
-            if(trackedEntityInstance != null)
+            if (!isEmpty(eventModel.enrollment()))
+                updateEnrollment(eventModel.enrollment());
+
+            if (trackedEntityInstance != null)
                 updateTei(trackedEntityInstance);
+
+            eventCursor.close();
+        }
+    }
+
+    private void updateEnrollment(String enrollmentUid) {
+        String selectEnrollment = "SELECT * FROM Enrollment WHERE uid = ?";
+        Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid);
+        if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
+            EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+            ContentValues cv = enrollment.toContentValues();
+            cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(EnrollmentModel.Columns.STATE,
+                    enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+            enrollmentCursor.close();
         }
     }
 

@@ -43,7 +43,7 @@
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.FINISH_ADD_NEW)}"
                 android:text="@string/finish_add_new"
-                android:visibility="@{canComplete?View.GONE:View.VISIBLE}" />
+                android:visibility="@{canComplete || reschedule || skip || reschedule ? View.GONE:View.VISIBLE}" />
 
             <TextView
                 android:id="@+id/skip"

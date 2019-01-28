@@ -96,6 +96,10 @@
         <item name="android:textColorSecondary">?colorPrimary</item> <!-- for check state -->
     </style>
 
+    <style name="checkBoxErrorLog" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/colorPrimary_00b</item>
+        <item name="android:textColorSecondary">@color/colorGreyDefault</item> <!-- for check state -->
+    </style>
 
     <style name="FullWidthButton">
         <item name="android:layout_width">match_parent</item>
@@ -174,6 +178,13 @@
 
     <style name="NoFullScreenEditText" parent="Widget.AppCompat.AutoCompleteTextView">
         <item name="android:imeOptions">actionNext|flagNoFullscreen</item>
+
+    <style name="ActionIcon" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_12</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
     </style>
 
 </resources>

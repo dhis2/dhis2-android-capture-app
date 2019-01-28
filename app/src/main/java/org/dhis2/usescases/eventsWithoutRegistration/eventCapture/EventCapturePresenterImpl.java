@@ -1,9 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import androidx.databinding.ObservableField;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dhis2.R;
@@ -15,22 +13,25 @@ import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.tuples.Quartet;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
-import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.ObservableField;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -107,6 +108,16 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         );
 
         compositeDisposable.add(
+                eventCaptureRepository.programStage()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                programStageUid ->view.setProgramStage(programStageUid),
+                                Timber::e
+                        )
+        );
+
+        compositeDisposable.add(
                 eventCaptureRepository.eventStatus()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -163,6 +174,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 currentSectionPosition
                         .startWith(0)
                         .flatMap(position -> {
+                            if(sectionList == null){
+                                return eventCaptureRepository.eventSections()
+                                        .map(list -> {
+                                            sectionList = list;
+                                            return position;
+                                        });
+                            } else {
+                                return Flowable.just(position);
+                            }
+                        })
+                        .flatMap(position -> {
                             FormSectionViewModel formSectionViewModel = sectionList.get(position);
                             currentSection.set(formSectionViewModel.sectionUid());
                             if (sectionList.size() > 1) {
@@ -195,11 +217,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         compositeDisposable.add(EventCaptureFormFragment.getInstance().dataEntryFlowable().onBackpressureBuffer()
 //                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .switchMap(action ->
-                        dataEntryStore.save(action.id(), action.value())
-                ).subscribe(result -> Timber.d(result.toString()),
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .switchMap(action ->
+                                dataEntryStore.save(action.id(), action.value())
+                        ).subscribe(result -> Timber.d(result.toString()),
                         Timber::d)
         );
 
@@ -459,12 +481,20 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void rescheduleEvent() {
-
+    public void rescheduleEvent(Date time) {
+        compositeDisposable.add(
+                eventCaptureRepository.rescheduleEvent(time)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> view.finishDataEntry(),
+                                Timber::e
+                        )
+        );
     }
 
     @Override
-    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
+    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) { ;
         compositeDisposable.add(
                 completionPercentage
                         .observeOn(AndroidSchedulers.mainThread())

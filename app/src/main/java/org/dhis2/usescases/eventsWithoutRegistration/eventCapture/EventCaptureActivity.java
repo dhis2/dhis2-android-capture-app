@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -17,6 +18,7 @@ import org.dhis2.databinding.ActivityEventCaptureBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.FormBottomDialog;
@@ -24,6 +26,7 @@ import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -50,6 +53,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventCaptureContract.Presenter presenter;
     private int completionPercentage = 0;
+    private String programStageUid;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -165,6 +169,11 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
+    @Override
+    public void setProgramStage(String programStageUid) {
+        this.programStageUid = programStageUid;
+    }
+
     private void setAction(FormBottomDialog.ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
@@ -183,13 +192,24 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 presenter.skipEvent();
                 break;
             case RESCHEDULE:
-                //TODO: Open date selector
+                reschedule();
                 break;
             case COMPLETE_LATER:
             case FINISH:
                 finishDataEntry();
                 break;
         }
+    }
+
+    private void reschedule() {
+        Calendar calendar = DateUtils.getInstance().getCalendar();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            Calendar chosenDate = Calendar.getInstance();
+            chosenDate.set(year, month, dayOfMonth);
+            presenter.rescheduleEvent(chosenDate.getTime());
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.show();
     }
 
     @Override
@@ -317,7 +337,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE));
+        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 

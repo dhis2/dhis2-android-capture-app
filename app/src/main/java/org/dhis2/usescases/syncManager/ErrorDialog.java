@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
-import org.dhis2.utils.ErrorMessageModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -39,14 +39,14 @@ public class ErrorDialog extends DialogFragment {
 
     private static ErrorDialog instace;
     private String title;
-    private List<ErrorMessageModel> data;
+    private List<D2Error> data;
     private DividerItemDecoration divider;
     public static String TAG = "FullScreenDialog";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
-    private ObservableArrayList<ErrorMessageModel> shareData;
+    private ObservableArrayList<D2Error> shareData;
 
     public static ErrorDialog newInstace() {
         if (instace == null) {
@@ -55,7 +55,7 @@ public class ErrorDialog extends DialogFragment {
         return instace;
     }
 
-    public ErrorDialog setData(List<ErrorMessageModel> data) {
+    public ErrorDialog setData(List<D2Error> data) {
         this.data = data;
         return this;
     }
@@ -124,7 +124,7 @@ public class ErrorDialog extends DialogFragment {
         return binding.getRoot();
     }
 
-    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, ErrorMessageModel>> pairFlowableProcessor) {
+    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, D2Error>> pairFlowableProcessor) {
         if (disposable == null)
             disposable = new CompositeDisposable();
         disposable.add(pairFlowableProcessor

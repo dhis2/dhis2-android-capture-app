@@ -24,6 +24,7 @@
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
     <color name="colorGreyDefault">#4d4d4d</color>
+    <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
     <!--BACKEND 64 COLOR THEMES-->

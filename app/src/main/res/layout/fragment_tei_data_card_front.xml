@@ -38,10 +38,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
-        android:paddingBottom="7dp"
-        android:paddingEnd="12dp"
         android:paddingStart="12dp"
         android:paddingTop="7dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="7dp"
         android:transitionName="user_info">
 
         <ImageView
@@ -64,8 +64,8 @@
             style="@style/ButtonRoundedGrey"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
             android:layout_marginStart="2.5dp"
+            android:layout_marginEnd="5dp"
             android:gravity="center"
             android:onClick="@{(view)->presenter.onShareClick(view)}"
             android:padding="5dp"
@@ -153,8 +153,8 @@
             style="@style/ButtonRoundedGrey"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginEnd="2.5dp"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="2.5dp"
             android:gravity="center"
             android:onClick="@{() -> presenter.seeDetails(cardData, dashboardModel)}"
             android:visibility="@{program == null ? View.INVISIBLE : View.VISIBLE}"
@@ -258,7 +258,7 @@
                     android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
-                    android:visibility="@{dashboardModel.currentEnrollment.incidentDate()==null?View.GONE:View.VISIBLE}"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null || program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -292,6 +292,7 @@
                     android:gravity="end"
                     android:textColor="@color/gray_444"
                     android:textSize="14sp"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null || program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/incident_date_label"

@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
-//apply from: rootProject.file("plugins/android-paperwork.gradle")
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -99,23 +98,23 @@ android {
         }
     }
 
-   /* flavorDimensions "default"
-    productFlavors {
-        dhis{
-            applicationId "com.dhis2"
-            archivesBaseName = "dhis"
-            dimension "default"
-            versionCode versions.vCode
-            versionName versions.vName
-        }
-        PSI {
-            applicationId "org.psi.dhis2"
-            archivesBaseName = "PSI"
-            dimension "default"
-            versionCode 1
-            versionName "1.0.3"
-        }
-    }*/
+    /* flavorDimensions "default"
+     productFlavors {
+         dhis{
+             applicationId "com.dhis2"
+             archivesBaseName = "dhis"
+             dimension "default"
+             versionCode versions.vCode
+             versionName versions.vName
+         }
+         PSI {
+             applicationId "org.psi.dhis2"
+             archivesBaseName = "PSI"
+             dimension "default"
+             versionCode 1
+             versionName "1.0.3"
+         }
+     }*/
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -144,10 +143,16 @@ android {
     }
 }
 
+sonarqube {
+    properties {
+        property "sonar.language", "java"
+    }
+}
+
 dependencies {
 
     implementation project(":customFab")
-    implementation project(":dhis2-rule-engine")
+//    implementation project(":dhis2-rule-engine")
     implementation project(":viewpagerdotsindicator")
 
     //region SUPPORT LIBRARIES
@@ -171,7 +176,7 @@ dependencies {
          exclude group: "org.hisp.dhis", module: "core-rules"
      }*/
 
-//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
@@ -298,6 +303,12 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '24.1-jre'
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
+
+    implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
+
+    implementation 'com.github.pwittchen:rxbiometric:0.0.1'
+
+    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 }
 
 apply plugin: 'kotlin-kapt'

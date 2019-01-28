@@ -1,10 +1,11 @@
 package org.dhis2.usescases.login;
 
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.text.InputType;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 
 import com.andrognito.pinlockview.PinLockListener;
@@ -13,13 +14,23 @@ import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.sync.SyncActivity;
+import org.dhis2.utils.BiometricStorage;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import de.adorsys.android.securestoragelibrary.SecurePreferences;
 
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
@@ -51,22 +62,15 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.setPresenter(presenter);
 
-        binding.testingEnvironment.login229.setOnClickListener(
-                view -> presenter.onTestingEnvironmentClick(29)
-        );
-
-        binding.testingEnvironment.login230.setOnClickListener(
-                view -> presenter.onTestingEnvironmentClick(30)
-        );
-
         setAutocompleteAdapters();
+
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.init(this);
-
         NetworkUtils.isGooglePlayServicesAvailable(this);
     }
 
@@ -81,6 +85,52 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         ((App) getApplicationContext()).releaseLoginComponent();
         super.onDestroy();
     }
+
+    @Override
+    public void showBiometricButton() {
+        binding.biometricButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void checkSecuredCredentials() {
+        if (SecurePreferences.contains(Constants.SECURE_SERVER_URL) &&
+                SecurePreferences.contains(Constants.SECURE_USER_NAME) &&
+                SecurePreferences.contains(Constants.SECURE_PASS)) {
+            binding.serverUrlEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_SERVER_URL, null));
+            binding.userNameEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_USER_NAME, null));
+            binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
+            showLoginProgress(true);
+        } else
+            showInfoDialog("Empty Credentials", "To be able to log in using the fingerprint scanner you first need to use the default way");
+    }
+
+    @Override
+    public void goToNextScreen() {
+        if (NetworkUtils.isOnline(this)) {
+            startActivity(SyncActivity.class, null, true, true, null);
+        } else
+            startActivity(MainActivity.class, null, true, true, null);
+    }
+
+    @Override
+    public void switchPasswordVisibility() {
+        if (binding.userPassEdit.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+            binding.visibilityButton.setImageDrawable(
+                    ColorUtils.tintDrawableWithColor(
+                            ContextCompat.getDrawable(this, R.drawable.ic_visibility),
+                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)));
+            binding.userPassEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        } else {
+            binding.visibilityButton.setImageDrawable(
+                    ColorUtils.tintDrawableWithColor(
+                            ContextCompat.getDrawable(this, R.drawable.ic_visibility_off),
+                            ColorUtils.getPrimaryColor(this, ColorUtils.ColorType.PRIMARY)));
+            binding.userPassEdit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+
+        binding.userPassEdit.setSelection(binding.userPassEdit.getText().length());
+    }
+
 
     @Override
     public ActivityLoginBinding getBinding() {
@@ -136,6 +186,42 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
     }
 
     @Override
+    public void setTestingCredentials() {
+        binding.userNameEdit.setText(Constants.USER_TEST_ANDROID);
+        binding.userPassEdit.setText(Constants.USER_TEST_ANDROID_PASS);
+    }
+
+    @Override
+    public void resetCredentials(boolean resetServer, boolean resetUser, boolean resetPass) {
+        if (resetServer)
+            binding.serverUrlEdit.setText(null);
+        if (resetUser)
+            binding.userNameEdit.setText(null);
+        if (resetPass)
+            binding.userPassEdit.setText(null);
+    }
+
+    @Override
+    public void showLoginProgress(boolean showLogin) {
+        if (showLogin) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            binding.credentialLayout.setVisibility(View.GONE);
+            binding.progressLayout.setVisibility(View.VISIBLE);
+
+            presenter.logIn(
+                    binding.serverUrl.getEditText().getText().toString(),
+                    binding.userName.getEditText().getText().toString(),
+                    binding.userPass.getEditText().getText().toString()
+            );
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            binding.credentialLayout.setVisibility(View.VISIBLE);
+            binding.progressLayout.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onUnlockClick(View android) {
         binding.pinLayout.pinLockView.attachIndicatorDots(binding.pinLayout.indicatorDots);
         binding.pinLayout.pinLockView.setPinLockListener(new PinLockListener() {
@@ -169,6 +255,16 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         urls = getListFromPreference(Constants.PREFS_URLS);
         users = getListFromPreference(Constants.PREFS_USERS);
 
+        if (!urls.contains(Constants.URL_TEST_229))
+            urls.add(Constants.URL_TEST_229);
+        if (!urls.contains(Constants.URL_TEST_230))
+            urls.add(Constants.URL_TEST_230);
+        if (!users.contains(Constants.USER_TEST_ANDROID))
+            users.add(Constants.USER_TEST_ANDROID);
+
+        saveListToPreference(Constants.PREFS_URLS, urls);
+        saveListToPreference(Constants.PREFS_USERS, users);
+
         ArrayAdapter<String> urlAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, urls);
         ArrayAdapter<String> userAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, users);
 
@@ -186,6 +282,35 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             users.add(binding.userNameEdit.getText().toString());
             saveListToPreference(Constants.PREFS_USERS, users);
         }
+
+        goToNextScreen();
+
+       /* if (presenter.canHandleBiometrics() &&
+                (!BiometricStorage.areCredentialsSet() &&
+                        !BiometricStorage.areSameCredentials(
+                                binding.serverUrlEdit.getText().toString(),
+                                binding.userNameEdit.getText().toString(),
+                                binding.userPassEdit.getText().toString()))) {
+            showInfoDialog("Biometric Security",
+                    "Use your fingerprint to log in with this user?",
+                    new OnDialogClickListener() {
+                        @Override
+                        public void onPossitiveClick(AlertDialog alertDialog) {
+                            BiometricStorage.saveUserCredentials(
+                                    binding.serverUrlEdit.getText().toString(),
+                                    binding.userNameEdit.getText().toString(),
+                                    binding.userPassEdit.getText().toString());
+                            goToNextScreen();
+                        }
+
+                        @Override
+                        public void onNegativeClick(AlertDialog alertDialog) {
+                            goToNextScreen();
+                        }
+                    }).show();
+        } else
+            goToNextScreen();*/
+
     }
 
 

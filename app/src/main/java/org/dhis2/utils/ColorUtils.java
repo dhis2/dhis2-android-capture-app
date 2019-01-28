@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 12/06/2018.
  */
@@ -39,7 +41,7 @@ public class ColorUtils {
 
         int colorToReturn = Color.BLACK;
 
-        if (hexColor != null) {
+        if (!isEmpty(hexColor)) {
             if (hexColor.length() == 4) {//Color is formatted as #fff
                 char r = hexColor.charAt(1);
                 char g = hexColor.charAt(2);
@@ -48,7 +50,7 @@ public class ColorUtils {
             }
             colorToReturn = Color.parseColor(hexColor);
         }
-        if (hexColor == null || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
+        if (isEmpty(hexColor) || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
             colorToReturn = defaultPrimaryColor;
         }
 
