@@ -197,6 +197,7 @@
                                         android:id="@+id/shareIcon"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:tint="@color/text_black_333"
                                         app:srcCompat="@drawable/ic_share" />
 
                                     <TextView
@@ -367,7 +368,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/one_time"
-                                app:buttonTint="?colorPrimary" />
+                                app:buttonTint="@color/text_black_333" />
 
                             <androidx.appcompat.widget.AppCompatRadioButton
                                 android:id="@+id/permanent"
@@ -375,7 +376,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="@string/permanent"
-                                app:buttonTint="?colorPrimary" />
+                                app:buttonTint="@color/text_black_333" />
 
                         </RadioGroup>
 

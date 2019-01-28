@@ -174,6 +174,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 currentSectionPosition
                         .startWith(0)
                         .flatMap(position -> {
+                            if(sectionList == null){
+                                return eventCaptureRepository.eventSections()
+                                        .map(list -> {
+                                            sectionList = list;
+                                            return position;
+                                        });
+                            } else {
+                                return Flowable.just(position);
+                            }
+                        })
+                        .flatMap(position -> {
                             FormSectionViewModel formSectionViewModel = sectionList.get(position);
                             currentSection.set(formSectionViewModel.sectionUid());
                             if (sectionList.size() > 1) {
@@ -483,7 +494,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
+    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) { ;
         compositeDisposable.add(
                 completionPercentage
                         .observeOn(AndroidSchedulers.mainThread())

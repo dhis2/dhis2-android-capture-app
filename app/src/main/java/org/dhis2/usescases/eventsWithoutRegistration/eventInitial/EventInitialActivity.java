@@ -20,6 +20,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -395,7 +396,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else {
             now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
             selectedDate = now.getTime();
-            selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
+            selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         }
 
         binding.date.setOnClickListener(view -> {
@@ -406,7 +407,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .setPeriod(periodType)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
-                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
+                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
@@ -681,7 +682,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } catch (ParseException e) {
             Timber.e(e);
         }
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
+        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.date.clearFocus();
         if (!fixedOrgUnit)
@@ -781,7 +782,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setReportDate(Date date) {
         selectedDate = date;
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, date);
+        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, date, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.executePendingBindings();
         checkActionButtonVisibility();
@@ -877,7 +878,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
                 }
@@ -892,7 +893,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
                 }

@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
-//apply from: rootProject.file("plugins/android-paperwork.gradle")
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -48,6 +47,10 @@ android {
         setProperty("archivesBaseName", "dhis2-v" + versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -141,6 +144,12 @@ android {
     }
 }
 
+sonarqube {
+    properties {
+        property "sonar.language", "java"
+    }
+}
+
 dependencies {
 
     implementation project(":customFab")
@@ -168,7 +177,7 @@ dependencies {
          exclude group: "org.hisp.dhis", module: "core-rules"
      }*/
 
-    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
@@ -301,9 +310,6 @@ dependencies {
     implementation 'com.github.pwittchen:rxbiometric:0.0.1'
 
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-
-
-
 }
 
 apply plugin: 'kotlin-kapt'
