@@ -118,7 +118,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 compulsory, "", dataValue.value(), sectionUid, true,
-                                editable, null, de.description()));
+                                editable, null, null));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
@@ -127,7 +127,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 if (!exitsValue) {
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             compulsory, "", "", sectionUid, true,
-                            editable, null, de.description()));
+                            editable, null, null));
 
                     values.add("");
                 }

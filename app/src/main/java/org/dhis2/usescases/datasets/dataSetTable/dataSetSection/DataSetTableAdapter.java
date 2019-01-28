@@ -216,7 +216,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).displayName());
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position));
     }
 
 
