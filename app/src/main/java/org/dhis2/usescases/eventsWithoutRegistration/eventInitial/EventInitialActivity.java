@@ -20,6 +20,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
@@ -877,7 +878,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL_NEW", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL_NEW", true).apply();
                 }
@@ -892,7 +893,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
                 HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false)) {
+                if (!prefs.getBoolean("TUTO_EVENT_INITIAL", false) && !BuildConfig.DEBUG) {
                     HelpManager.getInstance().showHelp();
                     prefs.edit().putBoolean("TUTO_EVENT_INITIAL", true).apply();
                 }

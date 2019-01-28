@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
@@ -267,7 +268,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_TEI_EVENT", false)) {
+            if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
             }
