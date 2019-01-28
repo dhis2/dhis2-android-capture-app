@@ -31,9 +31,9 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return RelationshipFragment.getInstance();
-            case 1:
                 return IndicatorsFragment.getInstance();
+            case 1:
+                return RelationshipFragment.getInstance();
             case 2:
                 return NotesFragment.getInstance();
         }
@@ -48,9 +48,9 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             default:
-                return context.getString(R.string.dashboard_relationships);
-            case 1:
                 return context.getString(R.string.dashboard_indicators);
+            case 1:
+                return context.getString(R.string.dashboard_relationships);
             case 2:
                 return context.getString(R.string.dashboard_notes);
         }
