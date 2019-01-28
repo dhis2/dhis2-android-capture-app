@@ -86,7 +86,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_save_alt" />
+            app:srcCompat="@drawable/ic_complete" />
 
         <TextView
             android:layout_width="wrap_content"
