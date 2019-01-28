@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * QUADRAM. Created by ppajuelo on 21/05/2018.
@@ -102,7 +103,7 @@ public class PeriodDialog extends DialogFragment {
         else
             currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 0);
 
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate, Locale.getDefault()));
 
         binding.periodBefore.setOnClickListener(view -> {
             previousPeriod();
@@ -122,12 +123,12 @@ public class PeriodDialog extends DialogFragment {
 
     public void nextPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, 1);
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
     public void previousPeriod() {
         currentDate = DateUtils.getInstance().getNextPeriod(period, currentDate, -1);
-        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period,currentDate));
+        binding.selectedPeriod.setText(DateUtils.getInstance().getPeriodUIString(period, currentDate, Locale.getDefault()));
     }
 
     private void checkConstraintDates() {

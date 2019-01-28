@@ -38,5 +38,4 @@ public abstract class ParentChildModel<T> {
     public void addItem(ParentChildModel<T> item) {
         childs().add(item);
     }
-
 }

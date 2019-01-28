@@ -25,9 +25,8 @@ import java.util.List;
  */
 public class RulesUtilsProviderImplTest {
 
-    String testUid = "XXXXXX";
-    RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
-    FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+    private RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
+    private FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
             "",
             "",
             "",
@@ -37,11 +36,13 @@ public class RulesUtilsProviderImplTest {
             "",
             "",
             "");
-    List<RuleEffect> testRuleEffects = new ArrayList<>();
+
+    private List<RuleEffect> testRuleEffects = new ArrayList<>();
 
     HashMap<String, FieldViewModel> testFieldViewModels = new HashMap<>();
 
     RulesActionCallbacks actionCallbacks = new RulesActionCallbacks() {
+
         @Override
         public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
 
@@ -87,7 +88,14 @@ public class RulesUtilsProviderImplTest {
     @Test
     public void showWarningRuleActionTest() {
 
+        HashMap<String, FieldViewModel> testFieldViewModels = new HashMap<>();
+        String testUid = "XXXXXX";
+        testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
+                ValueType.TEXT, false, "", "test", null,
+                null, true, null, null, null));
+      
         putFieldViewModel();
+
         testRuleEffects.add(RuleEffect.create(
                 RuleActionShowWarning.create("content", "action_data", testUid),
                 "data")
@@ -98,6 +106,7 @@ public class RulesUtilsProviderImplTest {
 
         Assert.assertNotNull(testFieldViewModels.get(testUid).warning());
     }
+}
 
     @Test
     public void showErrorRuleActionTest() {

@@ -396,7 +396,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } else {
             now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
             selectedDate = now.getTime();
-            selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
+            selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         }
 
         binding.date.setOnClickListener(view -> {
@@ -407,7 +407,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .setPeriod(periodType)
                         .setPossitiveListener(selectedDate -> {
                             this.selectedDate = selectedDate;
-                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
+                            binding.date.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                             binding.date.clearFocus();
                             if (!fixedOrgUnit)
                                 binding.orgUnit.setText("");
@@ -682,7 +682,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         } catch (ParseException e) {
             Timber.e(e);
         }
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate);
+        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.date.clearFocus();
         if (!fixedOrgUnit)
@@ -782,7 +782,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setReportDate(Date date) {
         selectedDate = date;
-        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, date);
+        selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, date, Locale.getDefault());
         binding.date.setText(selectedDateString);
         binding.executePendingBindings();
         checkActionButtonVisibility();
