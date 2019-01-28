@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -18,6 +19,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 
 /**
@@ -80,7 +83,7 @@ public class RulesUtilsProviderImplTest {
 
     private  void putFieldViewModel(){
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
-                ValueType.TEXT, false, "optionSet", "test", null,
+                ValueType.TEXT, false, "optionSet", "test", "section",
                 null, true, null, null, null));
     }
 
@@ -105,7 +108,7 @@ public class RulesUtilsProviderImplTest {
         putFieldViewModel();
 
         testRuleEffects.add(RuleEffect.create(
-                RuleActionShowWarning.create("content", "action_data", testUid),
+                RuleActionShowError.create("content", "action_data", testUid),
                 "data")
         );
         Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
@@ -128,7 +131,7 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-        //assertThat(testFieldViewModels).doesNotContainKey(testUid);
+        assertThat(testFieldViewModels).doesNotContainKey(testUid);
     }
 
     @Test
@@ -144,10 +147,10 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-        //assertThat(testFieldViewModels).containsKey("content");
+        assertThat(testFieldViewModels).containsKey("content");
     }
 
-    @Test
+    /*@Test
     public void displayKeyValuePairRuleActionTest() {
 
         putFieldViewModel();
@@ -175,8 +178,9 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
+        assertThat(testFieldViewModels).doesNotContainKey(testUid);
 
-    }
+    }*/
 
 
 }
