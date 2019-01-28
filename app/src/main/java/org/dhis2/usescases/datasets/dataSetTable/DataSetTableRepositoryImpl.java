@@ -87,12 +87,13 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
             "GROUP BY section, dataElement, categoryOption";
 
-    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement, distinct(CategoryOptionComboCategoryOptionLink.categoryOption) " +
+    private static final String GET_COMPULSORY_DATA_ELEMENT = "select DataElementOperand.dataElement as dataElement, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
             "from DataSetCompulsoryDataElementOperandsLink " +
             "JOIN DataElementOperand ON DataElementOperand.uid = DataSetCompulsoryDataElementOperandsLink.dataElementOperand " +
             "JOIN CategoryOptionCombo on CategoryOptionCombo.uid = DataElementOperand.categoryOptionCombo " +
             "JOIN CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
-            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) ";
+            "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
+            "GROUP BY dataElement, categoryOption";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;

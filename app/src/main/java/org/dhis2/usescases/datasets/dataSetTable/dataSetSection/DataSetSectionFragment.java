@@ -107,7 +107,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 editable = !dataElementDisabled.containsKey(sectionUid) || !dataElementDisabled.get(sectionUid).containsKey(de.uid())
                         || !dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts);
 
-                compulsory = !compulsoryDataElement.containsKey(sectionUid) || !compulsoryDataElement.get(sectionUid).containsAll(catOpts);
+                if(compulsoryDataElement.containsKey(de.uid()) && compulsoryDataElement.get(de.uid()).containsAll(catOpts))
+                    compulsory = true;
+
 
                 for (DataSetTableModel dataValue : dataValues) {
 
