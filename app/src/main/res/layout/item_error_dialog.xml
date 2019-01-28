@@ -21,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
+            android:theme="@style/checkBoxErrorLog"
             android:visibility="@{sharing ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/parentLayout"
             app:layout_constraintStart_toStartOf="parent"
