@@ -80,16 +80,19 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     }
 
     public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
-                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled){
+                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled,
+                        Map<String, List<String>> compulsoryDataElement){
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
+        List<Pair<DataElementModel, Boolean>> listDataElement = new ArrayList<>();
         for (DataElementModel de : dataElements.get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
             ArrayList<FieldViewModel> fields = new ArrayList<>();
             for (List<String> catOpts : presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null)) {
                 boolean exitsValue = false;
                 boolean editable = true;
+                boolean compulsory = false;
                 FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
                         "",
                         "",
@@ -101,11 +104,12 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                         "",
                         "");
 
-                if(dataElementDisabled.containsKey(sectionUid) && dataElementDisabled.get(sectionUid).containsKey(de.uid())
-                        && dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts) )
-                    editable = false;
-                else
-                    editable = true;
+                editable = !dataElementDisabled.containsKey(sectionUid) || !dataElementDisabled.get(sectionUid).containsKey(de.uid())
+                        || !dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts);
+
+                if(compulsoryDataElement.containsKey(de.uid()) && compulsoryDataElement.get(de.uid()).containsAll(catOpts))
+                    compulsory = true;
+
 
                 for (DataSetTableModel dataValue : dataValues) {
 
@@ -113,7 +117,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
-                                false, "", dataValue.value(), sectionUid, true,
+                                compulsory, "", dataValue.value(), sectionUid, true,
                                 editable, null, de.description()));
                         values.add(dataValue.value());
                         exitsValue = true;
@@ -122,12 +126,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
                 if (!exitsValue) {
                     fields.add(fieldFactory.create("", "", de.valueType(),
-                            false, "", "", sectionUid, true,
+                            compulsory, "", "", sectionUid, true,
                             editable, null, de.description()));
 
                     values.add("");
                 }
             }
+            //listDataElement.add(Pair.create(de, compulsoryDataElement.contains(de.uid())));
             listFields.add(fields);
             cells.add(values);
         }

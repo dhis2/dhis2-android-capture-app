@@ -34,6 +34,7 @@ import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -215,7 +216,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).displayFormName());
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).displayName());
     }
 
 
