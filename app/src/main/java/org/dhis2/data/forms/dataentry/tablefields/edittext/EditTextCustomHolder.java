@@ -96,8 +96,7 @@ final class EditTextCustomHolder extends FormViewHolder {
                 0 : editText.getText().length());
         if (inputLayout.getHint() == null || !inputLayout.getHint().toString().equals(editTextModel.label())) {
             label = new StringBuilder(editTextModel.label());
-            if (editTextModel.mandatory())
-                label.append("*");
+
             inputLayout.setHint(label);
 
             if (label.length() > 16 || model.description() != null)
@@ -106,6 +105,8 @@ final class EditTextCustomHolder extends FormViewHolder {
                 description.setVisibility(View.GONE);
 
         }
+        if (editTextModel.mandatory())
+            label.append("*");
 
         descriptionText = editTextModel.description();
         binding.executePendingBindings();
