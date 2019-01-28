@@ -1,5 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -88,7 +89,7 @@ public class RadioButtonHolder extends FormViewHolder {
         });
 
         clearButton.setOnClickListener(view -> {
-            if(checkBoxViewModel.editable().booleanValue()) {
+            if (checkBoxViewModel.editable().booleanValue()) {
                 radioGroup.clearCheck();
                 processor.onNext(RowAction.create(checkBoxViewModel.uid(), null));
             }

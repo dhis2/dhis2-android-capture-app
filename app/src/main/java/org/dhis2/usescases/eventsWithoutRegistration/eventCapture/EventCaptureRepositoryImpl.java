@@ -350,7 +350,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                     " WHERE ProgramStageDataElement.dataElement = ?", uid);
-            if (rendering != null && rendering.moveToFirst()) {
+            if (rendering != null) {
+                rendering.moveToFirst();
                 fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
                 rendering.close();
             }
