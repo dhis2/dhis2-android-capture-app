@@ -28,6 +28,7 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class RulesUtilsProviderImplTest {
 
+    String testUid = "XXXXXX";
     private RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
     private FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
             "",
@@ -109,7 +110,6 @@ public class RulesUtilsProviderImplTest {
 
         Assert.assertNotNull(testFieldViewModels.get(testUid).warning());
     }
-}
 
     @Test
     public void showErrorRuleActionTest() {
