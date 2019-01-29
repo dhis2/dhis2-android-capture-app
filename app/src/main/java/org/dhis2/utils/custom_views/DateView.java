@@ -3,13 +3,10 @@ package org.dhis2.utils.custom_views;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputEditText;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -20,20 +17,20 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class DateView extends RelativeLayout implements View.OnClickListener {
+public class DateView extends FieldLayout implements View.OnClickListener {
 
     private TextInputEditText editText;
     private ViewDataBinding binding;
 
     private Calendar selectedCalendar;
-    private boolean isBgTransparent;
-    private LayoutInflater inflater;
     DatePickerDialog dateDialog;
 
     private OnDateSelected listener;
@@ -58,10 +55,13 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
+    public void init(Context context) {
+        super.init(context);
+    }
 
-
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
     }
 
     private void setLayout() {
@@ -102,7 +102,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     public void initData(String data) {
         if (data != null) {
             date = null;
-            data = data.replace("'",""); //TODO: Check why it is happening
+            data = data.replace("'", ""); //TODO: Check why it is happening
             if (data.length() == 10) //has format yyyy-MM-dd
                 try {
                     date = DateUtils.uiDateFormat().parse(data);
@@ -140,7 +140,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         Calendar c = Calendar.getInstance();
-        if(date!=null)
+        if (date != null)
             c.setTime(date);
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -157,6 +157,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
                     String result = DateUtils.uiDateFormat().format(selectedDate);
                     editText.setText(result);
                     listener.onDateSelected(selectedDate);
+                    nextFocus(view);
                 }),
                 year,
                 month,
@@ -169,6 +170,7 @@ public class DateView extends RelativeLayout implements View.OnClickListener {
             editText.setText(null);
             listener.onDateSelected(null);
         });
+
         dateDialog.show();
     }
 

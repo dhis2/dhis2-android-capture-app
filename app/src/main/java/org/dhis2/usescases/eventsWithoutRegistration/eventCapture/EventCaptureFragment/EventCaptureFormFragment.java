@@ -36,7 +36,6 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -80,6 +79,21 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
         this.flowableProcessor = PublishProcessor.create();
         this.flowableOptions = PublishProcessor.create();
+
+        binding.sectionSelector.buttonNext.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && binding.sectionSelector.buttonNext.getVisibility() == View.VISIBLE)
+                binding.sectionSelector.buttonNext.performClick();
+            else
+                binding.sectionSelector.buttonEnd.requestFocus();
+
+        });
+
+        binding.sectionSelector.buttonEnd.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && binding.sectionSelector.buttonEnd.getVisibility() == View.VISIBLE)
+                binding.sectionSelector.buttonEnd.performClick();
+
+        });
+
         return binding.getRoot();
     }
 

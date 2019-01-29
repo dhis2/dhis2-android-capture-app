@@ -2,14 +2,11 @@ package org.dhis2.utils.custom_views;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputEditText;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -22,19 +19,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class TimeView extends RelativeLayout implements View.OnClickListener {
+public class TimeView extends FieldLayout implements View.OnClickListener {
 
     private TextInputEditText editText;
     private ViewDataBinding binding;
 
-    private LayoutInflater inflater;
-    private boolean isBgTransparent;
     private OnDateSelected listener;
 
     private String label;
@@ -56,10 +53,9 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
-
-
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
     }
 
     private void setLayout() {
@@ -119,7 +115,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         final Calendar c = Calendar.getInstance();
-        if(date!=null)
+        if (date != null)
             c.setTime(date);
 
         int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -142,6 +138,7 @@ public class TimeView extends RelativeLayout implements View.OnClickListener {
                 editText.setText(calendarTime);
             }
             listener.onDateSelected(selectedDate);
+            nextFocus(view);
         }, hour, minute, is24HourFormat);
         dialog.setTitle(label);
         dialog.show();

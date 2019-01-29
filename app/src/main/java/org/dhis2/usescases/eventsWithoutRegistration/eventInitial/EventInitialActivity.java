@@ -715,13 +715,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
-        if (requestCode == RQ_PROGRAM_STAGE) {
-            if (resultCode == RESULT_OK) {
-                presenter.getProgramStage(data.getStringExtra(Constants.PROGRAM_STAGE_UID));
-            } else {
-                finish();
-            }
-        }
     }
 
     @Override
