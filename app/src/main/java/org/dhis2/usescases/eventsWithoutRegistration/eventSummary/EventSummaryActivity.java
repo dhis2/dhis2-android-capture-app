@@ -16,11 +16,13 @@ import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventSummaryBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -66,6 +68,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private CustomDialog dialog;
     private boolean fieldsWithErrors;
     private EventModel eventModel;
+    private ProgramModel programModel;
     private ArrayList<String> sectionsToHide;
 
     @Override
@@ -102,6 +105,7 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void setProgram(@NonNull ProgramModel program) {
         binding.setName(program.displayName());
+        programModel = program;
     }
 
     @Override
@@ -187,24 +191,29 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        switch (eventModel.status()) {
-            case ACTIVE:
-                binding.actionButton.setText(getString(R.string.complete_and_close));
-                binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
-                break;
-            case SKIPPED:
-                binding.actionButton.setVisibility(View.GONE);
-                break;
-            case VISITED:
-                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                break;
-            case SCHEDULE:
-                binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
-                break;
-            case COMPLETED:
-                binding.actionButton.setText(getString(R.string.re_open));
-                binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
-                break;
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+            binding.actionButton.setVisibility(View.GONE);
+        }
+        else {
+            switch (eventModel.status()) {
+                case ACTIVE:
+                    binding.actionButton.setText(getString(R.string.complete_and_close));
+                    binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                    break;
+                case SKIPPED:
+                    binding.actionButton.setVisibility(View.GONE);
+                    break;
+                case VISITED:
+                    binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                    break;
+                case SCHEDULE:
+                    binding.actionButton.setVisibility(View.GONE); //TODO: Can this happen?
+                    break;
+                case COMPLETED:
+                    binding.actionButton.setText(getString(R.string.re_open));
+                    binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
+                    break;
+            }
         }
 
         if (!HelpManager.getInstance().isTutorialReadyForScreen(getClass().getName()))
