@@ -327,6 +327,7 @@
     <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
+    <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
     <string name="check_event">Check</string>
 
     <string name="menu_home">Home</string>

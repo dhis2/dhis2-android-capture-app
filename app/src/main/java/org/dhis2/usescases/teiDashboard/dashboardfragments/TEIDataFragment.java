@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,14 +23,11 @@ import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.EventCreationType;
 import org.dhis2.utils.custom_views.CustomDialog;
-import org.dhis2.utils.custom_views.PeriodDialog;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -229,10 +225,22 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                         this);
                 dialog.show();
             } else if (programStageModel.remindCompleted())
-                presenter.areEventsCompleted(this);
+                showDialogCloseProgram();
+                //presenter.areEventsCompleted(this);
         };
     }
 
+    private void showDialogCloseProgram(){
+        dialog = new CustomDialog(
+                getContext(),
+                getString(R.string.event_completed),
+                getString(R.string.complete_enrollment_message),
+                getString(R.string.button_ok),
+                getString(R.string.cancel),
+                RC_EVENTS_COMPLETED,
+                this);
+        dialog.show();
+    }
 
     public Consumer<Single<Boolean>> areEventsCompleted() {
         return eventsCompleted -> {
