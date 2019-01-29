@@ -3,11 +3,10 @@ package org.dhis2.utils.custom_views;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import com.google.android.material.textfield.TextInputEditText;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.datetime.OnDateSelected;
@@ -25,15 +24,13 @@ import timber.log.Timber;
  * QUADRAM. Created by frodriguez on 1/15/2018.
  */
 
-public class DateTimeView extends RelativeLayout implements View.OnClickListener, View.OnFocusChangeListener {
+public class DateTimeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private TextInputEditText editText;
     private DateTimeViewBinding binding;
 
     private Calendar selectedCalendar;
     private DateFormat dateFormat;
-    private LayoutInflater inflater;
-    private boolean isBgTransparent;
     private OnDateSelected listener;
     private boolean allowFutureDates;
     private Date date;
@@ -54,8 +51,10 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
+
+    @Override
+    public void performOnFocusAction() {
+        editText.performClick();
     }
 
 
@@ -140,7 +139,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
                     selectedCalendar.set(Calendar.YEAR, year1);
                     selectedCalendar.set(Calendar.MONTH, month1);
                     selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
-                    showTimePicker();
+                    showTimePicker(view);
                 }),
                 year,
                 month,
@@ -152,7 +151,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
         dateDialog.show();
     }
 
-    private void showTimePicker() {
+    private void showTimePicker(View view) {
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
@@ -166,6 +165,7 @@ public class DateTimeView extends RelativeLayout implements View.OnClickListener
             String result = dateFormat.format(selectedDate);
             editText.setText(result);
             listener.onDateSelected(selectedDate);
+            nextFocus(view);
         },
                 hour,
                 minute,

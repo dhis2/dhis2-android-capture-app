@@ -3,12 +3,10 @@ package org.dhis2.utils.custom_views;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.dhis2.BR;
@@ -24,7 +22,7 @@ import androidx.databinding.ViewDataBinding;
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
-public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedChangeListener {
+public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChangeListener {
 
     private ViewDataBinding binding;
 
@@ -33,8 +31,6 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
     private RadioButton no;
     //    private RadioButton no_value;
     private TextView labelView;
-    private boolean isBgTransparent;
-    private LayoutInflater inflater;
     private View clearButton;
 
     public YesNoView(Context context) {
@@ -52,11 +48,13 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
-        setFocusable(true);
-        setClickable(true);
-        setFocusableInTouchMode(true);
+    public void init(Context context) {
+        super.init(context);
+    }
+
+    @Override
+    public void performOnFocusAction() {
+        //no action to perform
     }
 
     public void setValueType(ValueType valueType) {
@@ -122,6 +120,7 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-        yes.performClick();
+
+
     }
 }

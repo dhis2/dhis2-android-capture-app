@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.radiobutton;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -85,6 +84,7 @@ public class RadioButtonHolder extends FormViewHolder {
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null);
                     break;
             }
+            binding.customYesNo.nextFocus(binding.customYesNo);
             processor.onNext(rowAction);
         });
 

@@ -351,8 +351,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                     " WHERE ProgramStageDataElement.dataElement = ?", uid);
             if (rendering != null) {
-                rendering.moveToFirst();
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+                if (rendering.moveToFirst())
+                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
                 rendering.close();
             }
         } catch (Exception e) {
