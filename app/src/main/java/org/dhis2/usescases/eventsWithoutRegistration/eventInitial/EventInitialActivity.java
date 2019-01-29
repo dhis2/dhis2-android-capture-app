@@ -441,7 +441,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.temp.setEnabled(false);
-            binding.actionButton.setVisibility(View.GONE);
+            binding.actionButton.setText(getString(R.string.check_event));
 
         }
     }
