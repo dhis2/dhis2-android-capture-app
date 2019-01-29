@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionHideField;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 
 /**
  * QUADRAM. Created by ppajuelo on 07/11/2018.
@@ -26,8 +29,8 @@ import java.util.List;
 public class RulesUtilsProviderImplTest {
 
     String testUid = "XXXXXX";
-    RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
-    FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
+    private RulesUtilsProviderImpl ruleUtils = new RulesUtilsProviderImpl(new CodeGeneratorImpl());
+    private FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
             "",
             "",
             "",
@@ -37,11 +40,13 @@ public class RulesUtilsProviderImplTest {
             "",
             "",
             "");
-    List<RuleEffect> testRuleEffects = new ArrayList<>();
+
+    private List<RuleEffect> testRuleEffects = new ArrayList<>();
 
     HashMap<String, FieldViewModel> testFieldViewModels = new HashMap<>();
 
     RulesActionCallbacks actionCallbacks = new RulesActionCallbacks() {
+
         @Override
         public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
 
@@ -80,14 +85,21 @@ public class RulesUtilsProviderImplTest {
 
     private  void putFieldViewModel(){
         testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
-                ValueType.TEXT, false, "optionSet", "test", null,
+                ValueType.TEXT, false, "optionSet", "test", "section",
                 null, true, null, null, null));
     }
 
     @Test
     public void showWarningRuleActionTest() {
 
+        HashMap<String, FieldViewModel> testFieldViewModels = new HashMap<>();
+        String testUid = "XXXXXX";
+        testFieldViewModels.put(testUid, fieldFactory.create(testUid, "label",
+                ValueType.TEXT, false, "", "test", null,
+                null, true, null, null, null));
+      
         putFieldViewModel();
+
         testRuleEffects.add(RuleEffect.create(
                 RuleActionShowWarning.create("content", "action_data", testUid),
                 "data")
@@ -105,7 +117,7 @@ public class RulesUtilsProviderImplTest {
         putFieldViewModel();
 
         testRuleEffects.add(RuleEffect.create(
-                RuleActionShowWarning.create("content", "action_data", testUid),
+                RuleActionShowError.create("content", "action_data", testUid),
                 "data")
         );
         Result<RuleEffect> ruleEffect = Result.success(testRuleEffects);
@@ -128,7 +140,7 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-        //assertThat(testFieldViewModels).doesNotContainKey(testUid);
+        assertThat(testFieldViewModels).doesNotContainKey(testUid);
     }
 
     @Test
@@ -144,10 +156,10 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
-        //assertThat(testFieldViewModels).containsKey("content");
+        assertThat(testFieldViewModels).containsKey("content");
     }
 
-    @Test
+    /*@Test
     public void displayKeyValuePairRuleActionTest() {
 
         putFieldViewModel();
@@ -175,8 +187,9 @@ public class RulesUtilsProviderImplTest {
 
         ruleUtils.applyRuleEffects(testFieldViewModels, ruleEffect, actionCallbacks);
 
+        assertThat(testFieldViewModels).doesNotContainKey(testUid);
 
-    }
+    }*/
 
 
 }

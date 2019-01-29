@@ -23,6 +23,7 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 
@@ -46,6 +47,10 @@ android {
         setProperty("archivesBaseName", "dhis2-v" + versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -305,8 +310,6 @@ dependencies {
     implementation 'com.github.pwittchen:rxbiometric:0.0.1'
 
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
-
-
 }
 
 apply plugin: 'kotlin-kapt'

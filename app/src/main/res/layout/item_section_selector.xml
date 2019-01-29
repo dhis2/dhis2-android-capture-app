@@ -34,27 +34,38 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
-        <ImageView
-            android:id="@+id/sectionStateIcon"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sectionState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat = "@drawable/ic_check_circle"
-            android:visibility="@{currentSection == sectionUid? View.VISIBLE : View.GONE}"
-            android:tint="@color/colorGreyDefault"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:id="@+id/sectionStateIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat = "@drawable/ic_check_circle"
+                android:visibility="@{currentSection == sectionUid? View.VISIBLE : View.GONE}"
+                android:tint="@color/colorGreyDefault"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/sectionStateIconUnchecked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat = "@drawable/ic_unchecked_circle"
-            android:visibility="@{currentSection == sectionUid? View.GONE : View.VISIBLE}"
-            android:tint="@color/colorGreyDefault"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/sectionStateIconUnchecked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat = "@drawable/ic_unchecked_circle"
+                android:visibility="@{currentSection == sectionUid? View.GONE : View.VISIBLE}"
+                android:tint="@color/colorGreyDefault"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <TextView
             android:id="@+id/sectionTitle"
@@ -64,7 +75,7 @@
             android:textColor="@color/colorGreyDefault"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/sectionStateIcon"
+            app:layout_constraintStart_toEndOf="@id/sectionState"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Diagnosis Result Microscopy" />
 

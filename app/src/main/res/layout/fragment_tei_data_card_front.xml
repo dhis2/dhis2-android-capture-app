@@ -258,7 +258,7 @@
                     android:text='@{@string/text_plus_colon(program.incidentDateLabel()!=null?program.incidentDateLabel():@string/incident_date)}'
                     android:textColor="@color/icon_color"
                     android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null &amp;&amp; program.displayIncidentDate())?View.GONE:View.VISIBLE}"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null || program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Date of diagnosis:" />
 
@@ -292,7 +292,7 @@
                     android:gravity="end"
                     android:textColor="@color/gray_444"
                     android:textSize="14sp"
-                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null &amp;&amp; program.displayIncidentDate())?View.GONE:View.VISIBLE}"
+                    android:visibility="@{(dashboardModel.currentEnrollment.incidentDate()==null || program.displayIncidentDate()) ? View.VISIBLE : View.GONE}"
                     app:date="@{dashboardModel.currentEnrollment.incidentDate ()}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/incident_date_label"
