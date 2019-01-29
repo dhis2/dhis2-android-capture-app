@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.DataSetModel;
 import org.hisp.dhis.android.core.dataset.SectionGreyedFieldsLinkModel;
+import org.hisp.dhis.android.core.dataset.SectionModel;
 import org.hisp.dhis.android.core.datavalue.DataValueModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
@@ -94,6 +95,11 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
             "JOIN CategoryOptionComboCategoryOptionLink on CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
             "where CategoryOptionComboCategoryOptionLink.categoryOptionCombo in (?) " +
             "GROUP BY dataElement, categoryOption";
+
+    private static final String SECTION_TOTAL_ROW_COLUMN = "SELECT Section.* " +
+            "FROM Section " +
+            "JOIN DataSet ON DataSet.uid = Section.dataSet " +
+            "WHERE DataSet.uid = ?";
 
     private final BriteDatabase briteDatabase;
     private final String dataSetUid;
@@ -297,5 +303,11 @@ public class DataSetTableRepositoryImpl implements DataSetTableRepository {
 
                     return mapData ;
                 }).map(data->mapData).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<List<SectionModel>> getSectionByDataSet() {
+       return briteDatabase.createQuery(SectionModel.TABLE, SECTION_TOTAL_ROW_COLUMN, dataSetUid)
+               .mapToList(SectionModel::create).toFlowable(BackpressureStrategy.LATEST);
     }
 }

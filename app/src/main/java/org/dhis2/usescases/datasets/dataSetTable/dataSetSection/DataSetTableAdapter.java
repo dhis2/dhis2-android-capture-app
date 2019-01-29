@@ -74,6 +74,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private final List<Row> rows;
     private int columnPos = 0;
     private int rowPos = 0;
+    private Boolean showRowTotal;
+    private Boolean showColumnTotal;
 
     public DataSetTableAdapter(Context context, boolean accessDataWrite) {
         super(context);
@@ -269,10 +271,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getColumnHeaderItemViewType(int columnPosition) {
-        // The unique ID for this type of column header item
-        // If you have different items for Cell View by X (Column) position,
-        // then you should fill this method to be able create different
-        // type of CellViewHolder on "onCreateCellViewHolder"
         return 0;
     }
 
@@ -283,49 +281,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
     @Override
     public int getCellItemViewType(int columnPosition) {
-
-      /*
-      FieldViewModel viewModel;
-        if(rowPos <= viewModels.size()-1){
-            viewModel = viewModels.get(rowPos).get(columnPosition);
-        }else{
-            viewModel = viewModels.get(viewModels.size()-1).get(columnPosition);
-        }
-
-        if(columnPosition == viewModels.get(0).size()-1){
-            rowPos ++;
-        }
-        if (viewModel instanceof EditTextModel) {
-            return EDITTEXT;
-        } else if (viewModel instanceof RadioButtonViewModel) {
-            return CHECKBOX;
-        } else if (viewModel instanceof SpinnerViewModel) {
-            return SPINNER;
-        } else if (viewModel instanceof CoordinateViewModel) {
-            return COORDINATES;
-
-        } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
-        } else if (viewModel instanceof AgeViewModel) {
-            return AGEVIEW;
-        } else if (viewModel instanceof FileViewModel) {
-            return BUTTON;
-        *//*} else if (viewModel instanceof OrgUnitViewModel) {
-            return ORG_UNIT;*//*
-        } else if (viewModel instanceof ImageViewModel) {
-            return IMAGE;
-        } else if (viewModel instanceof UnsupportedViewModel) {
-            return UNSUPPORTED;
-        } else {
-            throw new IllegalStateException("Unsupported view model type: "
-                    + viewModel.getClass());
-        }*/
-
         return 0;
+    }
+
+    @NonNull
+    public FlowableProcessor<RowAction> asFlowable() {
+        return processor;
     }
 }

@@ -7,8 +7,10 @@ import android.support.annotation.Nullable;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityDatasetTableBinding;
+import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.category.CategoryModel;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
+
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
     String orgUnitUid;
@@ -31,6 +35,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String periodInitialDate;
     String catCombo;
     boolean accessDataWrite;
+    int rowTotal;
+    int columTotal;
     @Inject
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
@@ -104,4 +110,11 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     public Boolean accessDataWrite() {
         return accessDataWrite;
     }
+
+    @Override
+    public Flowable<RowAction> rowActions() {
+        return ((DataSetSectionFragment)viewPagerAdapter.getItem(binding.viewPager.getCurrentItem())).rowActions();
+    }
+
+
 }

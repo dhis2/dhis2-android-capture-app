@@ -4,8 +4,10 @@ import android.support.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
+import org.dhis2.data.tuples.Quintet;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.hisp.dhis.android.core.category.CategoryModel;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -73,6 +76,17 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::e
                         )
         );
+
+    }
+    @Override
+    public void test(@NonNull DataSetSectionFragment dataSetSectionFragment){
+        compositeDisposable.add(dataSetSectionFragment.rowActions()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(rowAction -> {
+                            String a = "";
+                        },
+                        Timber::e));
     }
 
     @Override
@@ -86,21 +100,26 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                                 tableRepository.getDataSet(),
                                                 tableRepository.getGreyedFields(getUidCatOptionsCombo(data)),
                                                 tableRepository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
-                                                Quartet::create
+                                                tableRepository.getSectionByDataSet(),
+                                                Quintet::create
                                         ))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                quartet -> {
-                                    view.setDataValue(quartet.val0());
-                                    view.setDataSet(quartet.val1());
+                                quintet -> {
+                                    view.setDataValue(quintet.val0());
+                                    view.setDataSet(quintet.val1());
                                     dataSetSectionFragment.setData(tableData.val0(),
-                                            transformCategories(tableData.val1()), quartet.val0(),
-                                            tableData.val1(), quartet.val2(), quartet.val3());
+                                            transformCategories(tableData.val1()), quintet.val0(),
+                                            tableData.val1(), quintet.val2(), quintet.val3(), quintet.val4());
                                 },
                                 Timber::e
                         )
         );
+    }
+
+    void subscribeToRowAction(){
+
     }
 
     @Override
@@ -189,4 +208,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
         return catOptionsCombo;
     }
+
+
 }
