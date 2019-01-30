@@ -128,6 +128,8 @@ public class EventInitialContract {
         void onShareClick(android.view.View mView);
 
         void deleteEvent(String trackedEntityInstance);
+
+        boolean isEnrollmentOpen();
     }
 
 }

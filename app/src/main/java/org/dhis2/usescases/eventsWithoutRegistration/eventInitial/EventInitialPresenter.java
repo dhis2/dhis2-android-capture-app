@@ -223,6 +223,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
+    public boolean isEnrollmentOpen() {
+        return eventInitialRepository.isEnrollmentOpen();
+    }
+
+    @Override
     public void getProgramStage(String programStageUid) {
         compositeDisposable.add(eventInitialRepository.programStageWithId(programStageUid)
                 .subscribeOn(Schedulers.io())

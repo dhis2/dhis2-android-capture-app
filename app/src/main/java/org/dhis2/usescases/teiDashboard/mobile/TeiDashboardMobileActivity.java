@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
@@ -80,8 +81,8 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
-            if(changingProgram)
-                recreate();
+         /*   if(changingProgram)
+                recreate();*/
             orientation = Resources.getSystem().getConfiguration().orientation;
             init(teiUid, programUid);
         }

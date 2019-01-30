@@ -20,6 +20,8 @@ import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -183,6 +185,20 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 .createQuery(SECTION_TABLES, SELECT_SECTIONS, eventUid == null ? "" : eventUid)
                 .mapToList(cursor -> mapToFormSectionViewModels(eventUid, cursor))
                 .distinctUntilChanged().toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        Boolean isEnrollmentOpen = true;
+        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+        if (enrollmentCursor != null) {
+            if (enrollmentCursor.moveToFirst()) {
+                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+            }
+            enrollmentCursor.close();
+        }
+        return isEnrollmentOpen;
     }
 
     @NonNull

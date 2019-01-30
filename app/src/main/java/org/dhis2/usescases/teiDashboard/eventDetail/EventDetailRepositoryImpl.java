@@ -1,7 +1,6 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.content.ContentValues;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -10,6 +9,8 @@ import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -25,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -221,13 +223,23 @@ public class EventDetailRepositoryImpl implements EventDetailRepository {
         updateTEi();
     }
 
+    @Override
+    public Observable<Boolean> isEnrollmentActive(String eventUid) {
+        return briteDatabase.createQuery(EnrollmentModel.TABLE,
+                "SELECT Enrollment.* FROM Enrollment " +
+                        "JOIN Event ON Event.enrollment = Enrollment.uid " +
+                        "WHERE Event.uid = ?", eventUid)
+                .mapToOne(EnrollmentModel::create)
+                .map(enrollment -> enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE);
+    }
+
     private void updateProgramTable(Date lastUpdated, String programUid) {
        /* ContentValues program = new ContentValues();  TODO: Crash if active
         program.put(EnrollmentModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         briteDatabase.update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = ?", programUid);*/
     }
 
-    private void updateTEi(){
+    private void updateTEi() {
 
         ContentValues tei = new ContentValues();
         tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));

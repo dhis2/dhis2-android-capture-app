@@ -12,6 +12,14 @@
             type="org.dhis2.utils.custom_views.OnFormBottomDialogItemSelection" />
 
         <variable
+            name="canWrite"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="isEnrollmentOpen"
+            type="java.lang.Boolean" />
+
+        <variable
             name="canComplete"
             type="java.lang.Boolean" />
 
@@ -43,56 +51,56 @@
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.FINISH_ADD_NEW)}"
                 android:text="@string/finish_add_new"
-                android:visibility="@{canComplete || reschedule || skip || reschedule ? View.GONE:View.VISIBLE}" />
+                android:visibility="@{canWrite &amp;&amp; (!isEnrollmentOpen || canComplete || reschedule || skip || reschedule) ? View.GONE:View.VISIBLE}" />
 
             <TextView
                 android:id="@+id/skip"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.SKIP)}"
                 android:text="@string/skip"
-                android:visibility="@{skip?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp; skip?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/reopen"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.REOPEN)}"
                 android:text="@string/re_open"
-                android:visibility="@{reopen?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp; reopen?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/reschedule"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.RESCHEDULE)}"
                 android:text="@string/reschedule"
-                android:visibility="@{reschedule?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;reschedule?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/complete"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE)}"
                 android:text="@string/complete"
-                android:visibility="@{canComplete?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/completeAndAddNew"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_ADD_NEW)}"
                 android:text="@string/complete_add_new"
-                android:visibility="@{canComplete?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/completeLater"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_LATER)}"
                 android:text="@string/complete_later"
-                android:visibility="@{canComplete?View.VISIBLE:View.GONE}" />
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />
 
             <TextView
                 android:id="@+id/finish"
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.FINISH)}"
                 android:text="@string/finish"
-                android:visibility="@{canComplete?View.GONE:View.VISIBLE}" />
+                android:visibility="@{!canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.GONE:View.VISIBLE}" />
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

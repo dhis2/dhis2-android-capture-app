@@ -14,8 +14,8 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLink
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -63,12 +63,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
-    private final DatabaseAdapter databaseAdapter;
+    private final String eventUid;
 
-    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
+    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String eventUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
-        this.databaseAdapter = databaseAdapter;
+        this.eventUid = eventUid;
     }
 
 
@@ -410,6 +410,20 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
             eventCursor.close();
         }
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        Boolean isEnrollmentOpen = true;
+        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+        if (enrollmentCursor != null) {
+            if (enrollmentCursor.moveToFirst()) {
+                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+            }
+            enrollmentCursor.close();
+        }
+        return isEnrollmentOpen;
     }
 
     private void updateEnrollment(String enrollmentUid) {

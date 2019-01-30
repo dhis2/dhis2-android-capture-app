@@ -87,7 +87,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
-        if(eventDetailModel.getEventModel().eventDate()!=null){
+        if(eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().eventDate()!=null){
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEventModel().uid(), eventDetailModel.getEventModel().program()));
             startActivity(intent2, null);
@@ -97,6 +97,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
             binding.setEvent(eventDetailModel.getEventModel());
             binding.setStage(eventDetailModel.getProgramStage());
+            binding.setEnrollmentActive(eventDetailModel.isEnrollmentActive());
             setDataEditable();
             binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 

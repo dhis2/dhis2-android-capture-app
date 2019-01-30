@@ -60,4 +60,6 @@ public interface EventDetailRepository {
     Observable<ProgramModel> getProgram(String eventUid);
 
     void saveCatOption(CategoryOptionComboModel selectedOption);
+
+    Observable<Boolean> isEnrollmentActive(String eventUid);
 }
