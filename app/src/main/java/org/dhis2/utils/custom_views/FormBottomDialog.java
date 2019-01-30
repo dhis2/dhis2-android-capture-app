@@ -24,6 +24,13 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     private boolean reopen = false;
     private boolean skip = false;
     private boolean reschedule = false;
+    private boolean isEnrollmentOpen = true;
+    private boolean accessDataWrite = true;
+
+    public FormBottomDialog setAccessDataWrite(boolean canWrite) {
+        this.accessDataWrite = canWrite;
+        return this;
+    }
 
     public FormBottomDialog setCanComplete(boolean canComplete) {
         this.canComplete = canComplete;
@@ -42,6 +49,11 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
 
     public FormBottomDialog setReschedule(boolean reschedule) {
         this.reschedule = reschedule;
+        return this;
+    }
+
+    public FormBottomDialog setIsEnrollmentOpen(boolean isEnrollmentOpen) {
+        this.isEnrollmentOpen = isEnrollmentOpen;
         return this;
     }
 
@@ -69,6 +81,8 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FormBottomDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_bottom_dialog, container, false);
+        binding.setCanWrite(accessDataWrite);
+        binding.setIsEnrollmentOpen(isEnrollmentOpen);
         binding.setListener(listener);
         binding.setCanComplete(canComplete);
         binding.setReopen(reopen);

@@ -151,7 +151,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showCompleteActions(boolean canComplete) {
 
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
                 .setCanComplete(canComplete)
+                .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
@@ -159,6 +161,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void attemptToReopen() {
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
                 .setReopen(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -168,6 +171,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void attemptToSkip() {
 
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
                 .setSkip(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -176,6 +180,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void attemptToReschedule() {
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
                 .setReschedule(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");

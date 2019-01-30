@@ -76,13 +76,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         .flatMap(
                                 data -> Observable.zip(
                                         eventDetailRepository.eventModelDetail(eventUid),
-                                        eventDetailRepository.dataValueModelList(eventUid),
-                                        eventDetailRepository.programStageSection(eventUid),
-                                        eventDetailRepository.programStageDataElement(eventUid),
                                         eventDetailRepository.programStage(eventUid),
                                         eventDetailRepository.orgUnit(eventUid),
                                         eventDetailRepository.getCategoryOptionCombos(),
                                         eventDetailRepository.getProgram(eventUid),
+                                        eventDetailRepository.isEnrollmentActive(eventUid),
                                         EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())

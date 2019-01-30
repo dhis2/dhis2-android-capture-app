@@ -60,10 +60,10 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     private static final int RC_EVENTS_COMPLETED = 1601;
 
 
-    FragmentTeiDataBinding binding;
+    private FragmentTeiDataBinding binding;
 
-    static TEIDataFragment instance;
-    TeiDashboardContracts.Presenter presenter;
+    private static TEIDataFragment instance;
+    private TeiDashboardContracts.Presenter presenter;
 
     private EventAdapter adapter;
     private CustomDialog dialog;
@@ -73,6 +73,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
 
     private boolean hasCatComb;
     private ArrayList<EventModel> catComboShowed = new ArrayList<>();
+    private Context context;
 
 
     public static TEIDataFragment getInstance() {
@@ -89,6 +90,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         presenter = ((TeiDashboardMobileActivity) context).getPresenter();
     }
 
@@ -137,7 +139,7 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
     public void setData(DashboardProgramModel nprogram) {
 
         if (nprogram != null && nprogram.getCurrentEnrollment() != null) {
-            SharedPreferences prefs = getContext().getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+            SharedPreferences prefs = context.getSharedPreferences(Constants.SHARE_PREFS, Context.MODE_PRIVATE);
             hasCatComb = !nprogram.getCurrentProgram().categoryCombo().equals(prefs.getString(Constants.DEFAULT_CAT_COMBO, ""));
             List<EventModel> events = new ArrayList<>();
             adapter = new EventAdapter(presenter, nprogram.getProgramStages(), events, nprogram.getCurrentEnrollment());
@@ -226,7 +228,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 dialog.show();
             } else if (programStageModel.remindCompleted())
                 showDialogCloseProgram();
-                //presenter.areEventsCompleted(this);
         };
     }
 
@@ -274,37 +275,6 @@ public class TEIDataFragment extends FragmentGlobalAbstract implements DialogCli
                 break;
             case RC_GENERATE_EVENT:
                 createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval() != null ? programStageFromEvent.standardInterval() : 0);
-                /*if (programStageFromEvent.standardInterval() != null && programStageFromEvent.standardInterval() > 0) {
-//                    presenter.generateEvent(lastModifiedEventUid, programStageFromEvent.standardInterval());
-                    createEvent(EventCreationType.SCHEDULE, programStageFromEvent.standardInterval());
-                } else {
-                    if (programStageFromEvent.periodType() == null || programStageFromEvent.periodType() == PeriodType.Daily) {
-                        Calendar calendar = Calendar.getInstance();
-                        DatePickerDialog datePickerDialog = new DatePickerDialog(getAbstracContext(), (view, year, month, dayOfMonth) -> {
-                            Calendar chosenDate = Calendar.getInstance();
-                            chosenDate.set(year, month, dayOfMonth);
-                            presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
-                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                        if (programStageFromEvent != null && programStageFromEvent.hideDueDate())
-                            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis() - 1000);
-                        else {
-                            // ONLY FUTURE DATES
-                            calendar.add(Calendar.DAY_OF_YEAR, 1);
-                            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-                        }
-                        datePickerDialog.show();
-                    } else {
-                        new PeriodDialog()
-                                .setPeriod(programStageFromEvent.periodType())
-                                .setMinDate(DateUtils.getInstance().getNextPeriod(programStageFromEvent.periodType(), Calendar.getInstance().getTime(), 0))
-                                .setPossitiveListener(selectedDate -> {
-                                    Calendar chosenDate = Calendar.getInstance();
-                                    chosenDate.setTime(selectedDate);
-                                    presenter.generateEventFromDate(lastModifiedEventUid, chosenDate);
-                                })
-                                .show(getChildFragmentManager(), PeriodDialog.class.getSimpleName());
-                    }
-                }*/
                 break;
             default:
                 break;

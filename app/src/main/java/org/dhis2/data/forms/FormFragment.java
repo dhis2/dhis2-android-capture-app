@@ -496,6 +496,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                     /*FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
                     startActivityForResult(FormActivity.create(getContext(), formViewArguments, isEnrollment), RQ_EVENT);*/
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
+                    this.programUid = enrollmentTrio.val1();
+                    this.teiUid = enrollmentTrio.val0();
                     openDashboard();
                 }
             } else {

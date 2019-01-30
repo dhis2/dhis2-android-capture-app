@@ -636,14 +636,14 @@ class EnrollmentFormRepository implements FormRepository {
                         }
                     } else { //open Dashboard
                         Cursor tetCursor = briteDatabase.query(SELECT_TE_TYPE, enrollmentUid == null ? "" : enrollmentUid);
-                        String val0 = "";
-                        String val1 = "";
+                        String programUid = "";
+                        String teiUid = "";
                         if (tetCursor != null && tetCursor.moveToFirst()) {
-                            val0 = tetCursor.getString(0);
-                            val1 = tetCursor.getString(1);
+                            programUid = tetCursor.getString(0);
+                            teiUid = tetCursor.getString(1);
                             tetCursor.close();
                         }
-                        return Trio.create(val0, val1, "");
+                        return Trio.create(teiUid, programUid, "");
                     }
                 });
     }
