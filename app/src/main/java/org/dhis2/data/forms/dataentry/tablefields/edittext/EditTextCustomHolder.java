@@ -75,7 +75,9 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setEnabled(true);
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
         }else{
-            editText.setEnabled(false);
+            //TODO change to false enabled!!!
+            editText.setEnabled(true);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
         }
 
         this.editTextModel = (EditTextModel) model;

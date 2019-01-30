@@ -3,6 +3,8 @@ package org.dhis2.data.forms.dataentry.tablefields;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 public abstract class FieldViewModel {
@@ -50,4 +52,13 @@ public abstract class FieldViewModel {
 
     @Nonnull
     public abstract FieldViewModel withValue(String data);
+
+    @Nonnull
+    public abstract String dataElement();
+
+    @Nonnull
+    public abstract List<String> listCategoryOption();
+
+    @Nonnull
+    public abstract String storeBy();
 }

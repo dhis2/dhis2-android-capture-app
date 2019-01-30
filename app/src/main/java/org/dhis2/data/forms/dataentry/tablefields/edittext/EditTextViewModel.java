@@ -9,6 +9,8 @@ import com.google.auto.value.AutoValue;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -21,7 +23,8 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
     @NonNull
     public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
                                            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
-                                           @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section, @NonNull Boolean editable, @Nullable String description) {
+                                           @NonNull Integer lines, @NonNull ValueType valueType, @Nullable String section, @NonNull Boolean editable, @Nullable String description,
+                                           @NonNull String dataElement, @NonNull List<String> listCategoryOption, @NonNull String storeBy) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
                 value, section, null, editable, null, description, hint, lines, InputType.TYPE_CLASS_TEXT, valueType, null, null);
     }

@@ -47,6 +47,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private DataSetTableAdapter adapter;
     private String sectionUid;
     private boolean accessDataWrite;
+
+
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
         Bundle bundle = new Bundle();
@@ -82,28 +84,27 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenter.getData(this, sectionUid);
-        presenter.test(this);
+        presenter.initializeProcessor(this);
     }
 
-    public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
-                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled,
-                        Map<String, List<String>> compulsoryDataElement, List<SectionModel> sections){
+
+    public void createTable() {
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
-        List<List<String>> listCatOptions = presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null);
+        List<List<String>> listCatOptions = presenter.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
         int countColumn = 0;
         Integer[] totalColumn = new Integer[listCatOptions.size()];
         boolean showColumnTotal = false;
         boolean showRowTotal = false;
         boolean isNumber = true;
-        for(SectionModel section: sections) {
-            if(section.name().equals(sectionUid)) {
+        for (SectionModel section : presenter.getSections()) {
+            if (section.name().equals(sectionUid)) {
                 showColumnTotal = section.showColumnTotals();
                 showRowTotal = section.showRowTotals();
             }
         }
-        for (DataElementModel de : dataElements.get(sectionUid)) {
+        for (DataElementModel de : presenter.getDataElements().get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
             ArrayList<FieldViewModel> fields = new ArrayList<>();
             int totalRow = 0;
@@ -113,92 +114,106 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 boolean compulsory = false;
                 FieldViewModelFactoryImpl fieldFactory = createField();
 
-                boolean editable = !dataElementDisabled.containsKey(sectionUid) || !dataElementDisabled.get(sectionUid).containsKey(de.uid())
-                        || !dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts);
+                boolean editable = !presenter.getDataElementDisabled().containsKey(sectionUid) || !presenter.getDataElementDisabled().get(sectionUid).containsKey(de.uid())
+                        || !presenter.getDataElementDisabled().get(sectionUid).get(de.uid()).containsAll(catOpts);
 
-                if(compulsoryDataElement.containsKey(de.uid()) && compulsoryDataElement.get(de.uid()).containsAll(catOpts))
+                if (presenter.getCompulsoryDataElement().containsKey(de.uid()) && presenter.getCompulsoryDataElement().get(de.uid()).containsAll(catOpts))
                     compulsory = true;
 
-                if(de.valueType() != ValueType.NUMBER && de.valueType() != ValueType.INTEGER) {
+                if (de.valueType() != ValueType.NUMBER && de.valueType() != ValueType.INTEGER) {
                     isNumber = false;
                 }
 
-                for (DataSetTableModel dataValue : dataValues) {
+                for (DataSetTableModel dataValue : presenter.getDataValues()) {
 
                     if (dataValue.listCategoryOption().containsAll(catOpts)
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
-                        if(isNumber) {
-                            if(showColumnTotal)
+                        if (isNumber) {
+                            if (showColumnTotal)
                                 totalColumn[countColumn] = totalColumn[countColumn] != null ?
                                         Integer.parseInt(dataValue.value()) + totalColumn[countColumn] : Integer.parseInt(dataValue.value());
-                            if(showRowTotal)
+                            if (showRowTotal)
                                 totalRow = totalRow + Integer.parseInt(dataValue.value());
                         }
 
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 compulsory, "", dataValue.value(), sectionUid, true,
-                                editable, null, null));
+                                editable, null, null, de.uid(), catOpts, ""));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
                 }
 
                 if (!exitsValue) {
+                    //If value type is null, it is due to is dataElement for Total row/column
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             compulsory, "", "", sectionUid, true,
-                            editable, null, null));
+                            editable, null, null, de.uid(), catOpts, ""));
 
                     values.add("");
                 }
-
+                if(totalColumn[countColumn] == null)
+                    totalColumn[countColumn] = 0;
                 countColumn++;
             }
             countColumn = 0;
-            if(isNumber && showRowTotal) {
+            if (isNumber && showRowTotal) {
                 setTotalRow(totalRow, fields, values);
             }
             listFields.add(fields);
             cells.add(values);
         }
-        if(isNumber) {
-            if(showColumnTotal)
-                setTotalColumn(totalColumn, listFields, cells, dataElements);
-            if(showRowTotal)
-                catOptions.get(sectionUid).get(catOptions.get(sectionUid).size() - 1).add(CategoryOptionModel.builder().displayName("Total").build());
+        if (isNumber) {
+            if (showColumnTotal)
+                setTotalColumn(totalColumn, listFields, cells, presenter.getDataElements());
+            if (showRowTotal)
+                presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1).
+                        add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
         }
         adapter.swap(listFields);
         adapter.setAllItems(
-                catOptions.get(sectionUid).get(catOptions.get(sectionUid).size()-1),
-                dataElements.get(sectionUid),
+                presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                presenter.getDataElements().get(sectionUid),
                 cells);
     }
 
-    private void setTotalColumn( Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
-                                 Map<String, List<DataElementModel>> dataElements){
+    private void setTotalColumn(Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
+                                Map<String, List<DataElementModel>> dataElements) {
         FieldViewModelFactoryImpl fieldFactory = createField();
 
         ArrayList<FieldViewModel> fields = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
+        boolean existTotal = false;
+        for (DataElementModel data : dataElements.get(sectionUid))
+            if (data.displayName().equals(getString(R.string.total)))
+                existTotal = true;
 
-        for(Integer column: totalColumn){
+        for (Integer column : totalColumn) {
             fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                     false, "", column.toString(), sectionUid, true,
-                    false, null, null));
+                    false, null, null, "",null,""));
 
             values.add(column.toString());
         }
 
+        if (existTotal){
+            listFields.remove(listFields.size()-1);
+            cells.remove(listFields.size()-1);
+        }
+
         listFields.add(fields);
         cells.add(values);
-        dataElements.get(sectionUid).add(DataElementModel.builder().displayName("Total").build());
+
+        if(!existTotal)
+            dataElements.get(sectionUid).add(DataElementModel.builder().displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
     }
 
     private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values){
         FieldViewModelFactoryImpl fieldFactory = createField();
         fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                 false, "", String.valueOf(totalRow), sectionUid, true,
-                false, null, null));
+                false, null, null, "",null,""));
         values.add(String.valueOf(totalRow));
 
     }
