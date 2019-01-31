@@ -308,6 +308,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().accessDataWrite() && eventDetailModel.isEnrollmentActive());
         popupMenu.show();
     }
 }

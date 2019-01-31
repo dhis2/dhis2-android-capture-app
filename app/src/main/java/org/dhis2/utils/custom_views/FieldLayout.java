@@ -41,7 +41,7 @@ public abstract class FieldLayout extends RelativeLayout {
 
     public abstract void performOnFocusAction();
 
-    @Override
+   /* @Override TODO: DISABLED FOR 1.1.0
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         if (gainFocus) {
@@ -51,7 +51,7 @@ public abstract class FieldLayout extends RelativeLayout {
             setBackgroundColor(0x00000000);
         } else
             setBackgroundColor(ColorUtils.getPrimaryColor(getContext(), ColorUtils.ColorType.PRIMARY));
-    }
+    }*/
 
     public void nextFocus(View view) {
         View nextView;

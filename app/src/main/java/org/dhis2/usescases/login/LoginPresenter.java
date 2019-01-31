@@ -3,9 +3,9 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.CancellationSignal;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
 import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
@@ -14,6 +14,7 @@ import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.databinding.ObservableField;
 import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.reactivex.Observable;
@@ -90,17 +92,18 @@ public class LoginPresenter implements LoginContracts.Presenter {
                                     Timber::e));
         }
 
-        disposable.add(RxPreconditions
-                .canHandleBiometric(view.getContext())
-                .filter(canHandleBiometrics -> {
-                    this.canHandleBiometrics = canHandleBiometrics;
-                    return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        canHandleBiometrics -> view.showBiometricButton(),
-                        Timber::e));
+        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //TODO: REMOVE FALSE WHEN GREEN LIGHT
+            disposable.add(RxPreconditions
+                    .hasBiometricSupport(view.getContext())
+                    .filter(canHandleBiometrics -> {
+                        this.canHandleBiometrics = canHandleBiometrics;
+                        return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            canHandleBiometrics -> view.showBiometricButton(),
+                            Timber::e));
 
 
     }
@@ -282,11 +285,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         .negativeButtonText("Cancel")
                         .negativeButtonListener((dialog, which) -> {
                         })
-                        .cancellationSignal(new CancellationSignal())
-                        .executor(Executors.newSingleThreadExecutor())
+                        .executor(ActivityCompat.getMainExecutor(view.getAbstractActivity()))
                         .build()
-                        .authenticate(view.getContext())
-                        .subscribeOn(Schedulers.io())
+                        .authenticate(view.getAbstractActivity())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> view.checkSecuredCredentials(),

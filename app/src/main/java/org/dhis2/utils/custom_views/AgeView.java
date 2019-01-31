@@ -154,7 +154,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         if (!result.equals(date.getText().toString())) {
             date.setText(result);
             listener.onAgeSet(selectedCalendar.getTime());
-            nextFocus(view);
+//            nextFocus(view);
         }
     }
 

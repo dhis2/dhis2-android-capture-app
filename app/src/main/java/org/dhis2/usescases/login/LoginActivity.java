@@ -283,9 +283,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             saveListToPreference(Constants.PREFS_USERS, users);
         }
 
-        goToNextScreen();
-
-       /* if (presenter.canHandleBiometrics() &&
+        if (false && presenter.canHandleBiometrics() && //TODO: Remove false when green light
                 (!BiometricStorage.areCredentialsSet() &&
                         !BiometricStorage.areSameCredentials(
                                 binding.serverUrlEdit.getText().toString(),
@@ -309,7 +307,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                         }
                     }).show();
         } else
-            goToNextScreen();*/
+            goToNextScreen();
 
     }
 

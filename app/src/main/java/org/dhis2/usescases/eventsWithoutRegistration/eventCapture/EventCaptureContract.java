@@ -97,6 +97,8 @@ public class EventCaptureContract {
         void rescheduleEvent(Date time);
 
         boolean canWrite();
+
+        boolean hasExpired();
     }
 
     public interface EventCaptureRepository {

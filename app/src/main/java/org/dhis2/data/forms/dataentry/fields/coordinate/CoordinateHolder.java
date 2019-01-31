@@ -30,7 +30,7 @@ public class CoordinateHolder extends FormViewHolder {
                             RowAction.create(model.uid(),
                                     String.format(Locale.US,
                                             "[%.5f,%.5f]", latitude, longitude)));
-                    binding.formCoordinates.nextFocus(binding.formCoordinates);
+//                    binding.formCoordinates.nextFocus(binding.formCoordinates);
                 }
         );
         binding.formCoordinates.setMapListener(

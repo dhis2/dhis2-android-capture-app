@@ -84,7 +84,7 @@ public class RadioButtonHolder extends FormViewHolder {
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null);
                     break;
             }
-            binding.customYesNo.nextFocus(binding.customYesNo);
+//            binding.customYesNo.nextFocus(binding.customYesNo);
             processor.onNext(rowAction);
         });
 

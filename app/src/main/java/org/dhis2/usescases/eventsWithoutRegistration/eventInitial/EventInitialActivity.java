@@ -121,6 +121,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLon;
     private ArrayList<String> sectionsToHide;
     private String getTrackedEntityInstance;
+    private Boolean accessData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -805,6 +806,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setAccessDataWrite(Boolean canWrite) {
+        this.accessData = canWrite;
         if (!canWrite || !presenter.isEnrollmentOpen()) {
             binding.date.setEnabled(false);
             binding.orgUnit.setEnabled(false);
@@ -931,6 +933,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(accessData && presenter.isEnrollmentOpen());
         popupMenu.show();
     }
 

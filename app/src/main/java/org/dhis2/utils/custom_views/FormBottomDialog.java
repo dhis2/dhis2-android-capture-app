@@ -26,6 +26,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
     private boolean reschedule = false;
     private boolean isEnrollmentOpen = true;
     private boolean accessDataWrite = true;
+    private boolean hasExpired = false;
 
     public FormBottomDialog setAccessDataWrite(boolean canWrite) {
         this.accessDataWrite = canWrite;
@@ -57,6 +58,11 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         return this;
     }
 
+    public FormBottomDialog setIsExpired(boolean hasExpired) {
+        this.hasExpired = hasExpired;
+        return this;
+    }
+
     public enum ActionType {
         FINISH_ADD_NEW,
         SKIP,
@@ -64,8 +70,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         RESCHEDULE,
         FINISH,
         COMPLETE_ADD_NEW,
-        COMPLETE,
-        COMPLETE_LATER
+        COMPLETE
     }
 
     public static FormBottomDialog getInstance() {
@@ -83,6 +88,7 @@ public class FormBottomDialog extends BottomSheetDialogFragment {
         FormBottomDialogBinding binding = DataBindingUtil.inflate(inflater, R.layout.form_bottom_dialog, container, false);
         binding.setCanWrite(accessDataWrite);
         binding.setIsEnrollmentOpen(isEnrollmentOpen);
+        binding.setHasExpired(hasExpired);
         binding.setListener(listener);
         binding.setCanComplete(canComplete);
         binding.setReopen(reopen);
