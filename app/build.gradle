@@ -307,7 +307,7 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
 
-    implementation 'com.github.pwittchen:rxbiometric:0.0.1'
+    implementation "com.github.pwittchen:rxbiometric:0.1.0"
 
     implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 }

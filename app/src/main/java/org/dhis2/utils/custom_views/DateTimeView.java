@@ -165,7 +165,7 @@ public class DateTimeView extends FieldLayout implements View.OnClickListener, V
             String result = dateFormat.format(selectedDate);
             editText.setText(result);
             listener.onDateSelected(selectedDate);
-            nextFocus(view);
+//            nextFocus(view);
         },
                 hour,
                 minute,

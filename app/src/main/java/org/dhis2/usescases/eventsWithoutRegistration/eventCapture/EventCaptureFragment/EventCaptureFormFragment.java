@@ -155,7 +155,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     public Consumer<List<FieldViewModel>> showFields() {
         return updates -> {
             if (currentSection.equals("NO_SECTION") ||
-                    updates.get(0).programStageSection().equals(currentSection)) {
+                    (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
                 dataEntryAdapter.swap(updates);
                 int completedValues = 0;
                 HashMap<String, Boolean> fields = new HashMap<>();
@@ -181,8 +181,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
 
     public void showSectionSelector() {
-        binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        if (binding.sectionRecycler.getAdapter().getItemCount() >= 0) {
+            binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+            binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        }
     }
 
     public View getSectionSelector() {

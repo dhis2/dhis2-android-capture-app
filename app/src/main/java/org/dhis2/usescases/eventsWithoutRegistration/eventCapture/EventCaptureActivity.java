@@ -152,8 +152,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
-                .setCanComplete(canComplete)
                 .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
+                .setIsExpired(presenter.hasExpired())
+                .setCanComplete(canComplete)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
@@ -162,6 +163,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void attemptToReopen() {
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setReopen(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -172,6 +174,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setSkip(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -181,6 +184,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void attemptToReschedule() {
         FormBottomDialog.getInstance()
                 .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setReschedule(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -211,7 +215,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case RESCHEDULE:
                 reschedule();
                 break;
-            case COMPLETE_LATER:
             case FINISH:
                 finishDataEntry();
                 break;
@@ -342,6 +345,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
     }
 

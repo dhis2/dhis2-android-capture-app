@@ -1,8 +1,5 @@
 package org.dhis2.usescases.programEventDetail;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,6 +9,10 @@ import org.hisp.dhis.android.core.event.EventModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2018.
@@ -37,8 +38,7 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
 
     @Override
     public void onBindViewHolder(@NonNull ProgramEventDetailViewHolder holder, int position) {
-        EventModel event = events.get(position);
-        holder.bind(presenter, event);
+        holder.bind(presenter, events.get(position));
     }
 
     @Override
@@ -50,12 +50,11 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
 
         if (currentPage == 0)
             this.events = new ArrayList<>();
-//        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ProgramEventDiffCallback(this.events, newList));
+
         this.events.addAll(events);
 
         notifyDataSetChanged();
 
-//        diffResult.dispatchUpdatesTo(this);
     }
 
     public void clearData() {
