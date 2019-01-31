@@ -54,6 +54,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     EventCaptureContract.Presenter presenter;
     private int completionPercentage = 0;
     private String programStageUid;
+    private Boolean isEventCompleted = false;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -198,6 +199,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private void setAction(FormBottomDialog.ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
+                isEventCompleted = true;
                 presenter.completeEvent(false);
                 break;
             case COMPLETE_ADD_NEW:
@@ -260,7 +262,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void finishDataEntry() {
         Intent intent = new Intent();
         intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        setResult(RESULT_OK, intent);
+        if(isEventCompleted)
+            setResult(RESULT_OK, intent);
         finish();
     }
 
