@@ -546,8 +546,8 @@ public final class RulesRepository {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
-                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+                    Date eventDate = cursor.isNull(3) ? null : DateUtils.databaseDateFormat().parse(cursor.getString(3));
+                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4)); //TODO: Should due date always be not null?
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);

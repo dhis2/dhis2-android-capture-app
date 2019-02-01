@@ -2,13 +2,11 @@ package org.dhis2.utils.custom_views;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputEditText;
 import android.text.InputFilter;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.R;
 import org.dhis2.databinding.AgeCustomViewAccentBinding;
@@ -19,6 +17,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.databinding.ViewDataBinding;
 import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
@@ -28,7 +27,7 @@ import static android.text.TextUtils.isEmpty;
  */
 
 
-public class AgeView extends RelativeLayout implements View.OnClickListener, View.OnFocusChangeListener {
+public class AgeView extends FieldLayout implements View.OnClickListener, View.OnFocusChangeListener {
 
     private TextInputEditText date;
     private TextInputEditText day;
@@ -40,7 +39,6 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
     private DateFormat dateFormat;
 
     private OnAgeSet listener;
-    private LayoutInflater inflater;
     private String label;
     private String description;
 
@@ -59,19 +57,18 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
-
-
+    @Override
+    public void performOnFocusAction() {
+        date.performClick();
     }
 
-    public void setLabel(String label,String description) {
+    public void setLabel(String label, String description) {
         this.label = label;
         this.description = description;
         if (binding instanceof AgeCustomViewAccentBinding) {
             ((AgeCustomViewAccentBinding) binding).setLabel(label);
             ((AgeCustomViewAccentBinding) binding).setDescription(description);
-        }else {
+        } else {
             ((AgeCustomViewBinding) binding).setLabel(label);
             ((AgeCustomViewBinding) binding).setDescription(description);
         }
@@ -94,7 +91,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dateDialog = new DatePickerDialog(getContext(), (
-                (datePicker, year1, month1, day1) -> handleDateInput(year1, month1, day1)),
+                (datePicker, year1, month1, day1) -> handleDateInput(view, year1, month1, day1)),
                 year,
                 month,
                 day);
@@ -138,7 +135,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         }
     }
 
-    private void handleDateInput(int year1, int month1, int day1) {
+    private void handleDateInput(View view, int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
@@ -157,6 +154,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         if (!result.equals(date.getText().toString())) {
             date.setText(result);
             listener.onAgeSet(selectedCalendar.getTime());
+//            nextFocus(view);
         }
     }
 
@@ -169,7 +167,7 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
             Timber.e(e);
         }
 
-        if(initialDate == null)
+        if (initialDate == null)
             try {
                 initialDate = DateUtils.uiDateFormat().parse(initialValue);
 
@@ -201,10 +199,18 @@ public class AgeView extends RelativeLayout implements View.OnClickListener, Vie
         year = findViewById(R.id.input_year);
         selectedCalendar = Calendar.getInstance();
         dateFormat = DateUtils.uiDateFormat();
+
         date.setFocusable(false); //Makes editText not editable
         date.setClickable(true);//  but clickable
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
+
+        day.setFocusable(false);
+        day.setClickable(true);
+        month.setFocusable(false);
+        month.setClickable(true);
+        year.setFocusable(false);
+        year.setClickable(true);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
         month.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});

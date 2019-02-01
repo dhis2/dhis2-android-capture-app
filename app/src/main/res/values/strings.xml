@@ -327,6 +327,7 @@
     <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
+    <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
     <string name="check_event">Check</string>
 
     <string name="menu_home">Home</string>
@@ -380,7 +381,7 @@
     <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
     <string name="sectionSelectorPrev">PREV</string>
     <string name="sectionSelectorNext">NEXT</string>
-    <string name="event_overview">Overview</string>
+    <string name="event_overview">Details</string>
     <string name="event_event">Event</string>
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>

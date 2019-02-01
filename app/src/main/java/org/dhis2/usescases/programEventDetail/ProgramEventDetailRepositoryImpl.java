@@ -2,10 +2,10 @@ package org.dhis2.usescases.programEventDetail;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.dhis2.utils.ValueUtils;
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -56,7 +57,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
     @NonNull
     private Flowable<List<EventModel>> programEvents(String programUid, List<Date> dates, Period period, String orgUnitQuery, int page) {
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
-        if(orgUnitQuery == null)
+        if (orgUnitQuery == null)
             orgUnitQuery = "";
 
         if (dates != null) {
@@ -103,6 +104,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                             }
                             program.close();
                         }
+//                        transformIntoEventViewModel(eventModel);
                         return eventModel;
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
@@ -115,7 +117,7 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                                                             CategoryOptionComboModel categoryOptionComboModel,
                                                             String orgUnitQuery,
                                                             int page) {
-        if(orgUnitQuery == null)
+        if (orgUnitQuery == null)
             orgUnitQuery = "";
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 20, 20);
 
@@ -164,10 +166,54 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
                             }
                             program.close();
                         }
+//                        transformIntoEventViewModel(eventModel);
                         return eventModel;
                     }).toFlowable(BackpressureStrategy.LATEST);
         }
     }
+
+    private ProgramEventViewModel transformIntoEventViewModel(EventModel eventModel) {
+
+        String orgUnitName = getOrgUnitName(eventModel.organisationUnit());
+        List<Pair<String, String>> data = getData(eventModel.uid());
+        boolean hasExpired = false /*= isExpired(eventModel.uid())*/;
+
+        return ProgramEventViewModel.create(eventModel.uid(), eventModel.organisationUnit(), orgUnitName, eventModel.state(), data, eventModel.status(), hasExpired);
+    }
+
+    private String getOrgUnitName(String orgUnitUid) {
+        String orgUrgUnitName = "";
+        Cursor orgUnitCursor = briteDatabase.query("SELECT displayName FROM OrganisationUnit WHERE uid = ?", orgUnitUid);
+        if (orgUnitCursor != null) {
+            if (orgUnitCursor.moveToFirst())
+                orgUrgUnitName = orgUnitCursor.getString(0);
+            orgUnitCursor.close();
+        }
+        return orgUrgUnitName;
+    }
+
+    private List<Pair<String, String>> getData(String eventUid) {
+        List<Pair<String, String>> data = new ArrayList<>();
+        Cursor cursor = briteDatabase.query(EVENT_DATA_VALUES, eventUid, eventUid);
+        if (cursor != null && cursor.moveToFirst()) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                String displayName = cursor.getString(cursor.getColumnIndex("displayName"));
+                String value = cursor.getString(cursor.getColumnIndex("value"));
+                if (cursor.getString(cursor.getColumnIndex("optionSet")) != null)
+                    value = ValueUtils.optionSetCodeToDisplayName(briteDatabase, cursor.getString(cursor.getColumnIndex("optionSet")), value);
+                else if (cursor.getString(cursor.getColumnIndex("valueType")).equals(ValueType.ORGANISATION_UNIT.name()))
+                    value = ValueUtils.orgUnitUidToDisplayName(briteDatabase, value);
+
+                //TODO: Would be good to check other value types to render value (coordinates)
+
+                data.add(Pair.create(displayName, value));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return data;
+    }
+
 
     @NonNull
     @Override

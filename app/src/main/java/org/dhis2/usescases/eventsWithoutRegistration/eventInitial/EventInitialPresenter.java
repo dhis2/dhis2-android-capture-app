@@ -112,8 +112,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             .subscribe(quartetFlowable -> {
                                 this.programModel = quartetFlowable.val1();
                                 this.catCombo = quartetFlowable.val2();
-                                view.setProgram(quartetFlowable.val1());
                                 view.setEvent(quartetFlowable.val0());
+                                view.setProgram(quartetFlowable.val1());
                                 view.setCatComboOptions(catCombo, quartetFlowable.val3());
                             }, Timber::d)
             );
@@ -220,6 +220,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             view.showEventWasDeleted();
         } else
             view.displayMessage("This event has not been created yet");
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        return eventInitialRepository.isEnrollmentOpen();
     }
 
     @Override

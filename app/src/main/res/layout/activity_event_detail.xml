@@ -21,6 +21,10 @@
             name="stage"
             type="org.hisp.dhis.android.core.program.ProgramStageModel" />
 
+        <variable
+            name="enrollmentActive"
+            type="java.lang.Boolean" />
+
     </data>
 
 
@@ -195,7 +199,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:clickable="true"
-                                        android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : false}"
+                                        android:enabled="@{(enrollmentActive &amp;&amp; (event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE )) ? true : false}"
                                         android:focusable="false"
                                         android:inputType="date"
                                         android:onClick="@{ () -> presenter.setDate()}"
@@ -236,7 +240,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:clickable="true"
-                                        android:enabled="@{(event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE ) ? true : false}"
+                                        android:enabled="@{(enrollmentActive &amp;&amp; (event.status() == EventStatus.SCHEDULE || event.status() == EventStatus.ACTIVE )) ? true : false}"
                                         android:focusable="false"
                                         android:inputType="date"
                                         android:onClick="@{ () -> presenter.selectCatOption()}"

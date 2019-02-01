@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -102,24 +102,23 @@ public class DashboardRepositoryImpl implements DashboardRepository {
             EventModel.TABLE, EventModel.TABLE, EventModel.Columns.UID);
 
     private final String EVENTS_QUERY = String.format(
-            "SELECT DISTINCT %s.* FROM %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "JOIN %s ON %s.%s " +
-                    "IN (SELECT %s FROM %s WHERE %s = ?)" +
+            "SELECT DISTINCT %s.* FROM %s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
+                    "JOIN %s ON %s.%s = %s.%s " +
                     "WHERE %s.%s = ? " + //ProgramUid
                     "AND %s.%s = ? " + //TeiUid
                     "AND %s.%s != '%s' " +
-                    "ORDER BY CASE WHEN ( Event.status IN ('SCHEDULE','SKIPPED','OVERDUE')) " + /*AND %s.%s = 'SCHEDULE'*/
+                    "AND %s.%s IN (SELECT %s FROM %s WHERE %s = ?) " +
+                    "ORDER BY CASE WHEN ( Event.status IN ('SCHEDULE','SKIPPED','OVERDUE')) " +
                     "THEN %s.%s " +
                     "ELSE %s.%s END DESC, %s.%s ASC",
-            EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE,
-            EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
-            ProgramStageModel.TABLE, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
-            ProgramStageModel.Columns.UID, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
+            EventModel.TABLE, EventModel.TABLE,
+            EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
+            ProgramStageModel.TABLE, ProgramStageModel.TABLE, ProgramStageModel.Columns.UID, EventModel.TABLE, EventModel.Columns.PROGRAM_STAGE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
             EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE,
-            /*EventModel.TABLE, EventModel.Columns.DUE_DATE, EventModel.TABLE, EventModel.Columns.STATUS,*/
+            ProgramStageModel.TABLE, ProgramModel.Columns.UID, ProgramStageModel.Columns.UID, ProgramStageModel.TABLE, ProgramStageModel.Columns.PROGRAM,
             EventModel.TABLE, EventModel.Columns.DUE_DATE,
             EventModel.TABLE, EventModel.Columns.EVENT_DATE, ProgramStageModel.TABLE, ProgramStageModel.Columns.SORT_ORDER);
 
@@ -259,7 +258,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public Observable<List<EventModel>> getTEIEnrollmentEvents(String programUid, String teiUid) {
         String progId = programUid == null ? "" : programUid;
         String teiId = teiUid == null ? "" : teiUid;
-        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, progId, teiId)
+        return briteDatabase.createQuery(EVENTS_TABLE, EVENTS_QUERY, progId, teiId, progId)
                 .mapToList(cursor -> {
                     EventModel eventModel = EventModel.create(cursor);
                     if (eventModel.status() == EventStatus.SCHEDULE && eventModel.dueDate().before(DateUtils.getInstance().getToday()))
@@ -549,8 +548,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
             insetNoteStatement.clearBindings();
 
-            return Observable.just(success == 1).flatMap(value->updateEnrollment(success).toObservable())
-                    .map(value-> value == 1);
+            return Observable.just(success == 1).flatMap(value -> updateEnrollment(success).toObservable())
+                    .map(value -> value == 1);
 
         } else
             return Observable.just(false);

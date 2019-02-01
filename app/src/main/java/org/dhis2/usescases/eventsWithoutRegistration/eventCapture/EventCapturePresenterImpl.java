@@ -112,7 +112,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                programStageUid ->view.setProgramStage(programStageUid),
+                                programStageUid -> view.setProgramStage(programStageUid),
                                 Timber::e
                         )
         );
@@ -174,7 +174,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 currentSectionPosition
                         .startWith(0)
                         .flatMap(position -> {
-                            if(sectionList == null){
+                            if (sectionList == null) {
                                 return eventCaptureRepository.eventSections()
                                         .map(list -> {
                                             sectionList = list;
@@ -211,7 +211,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 EventCaptureFormFragment.getInstance().showFields(),
-                                error -> Timber.log(1, "Something went wrong")
+                                throwable -> {}
                         )
         );
 
@@ -262,7 +262,9 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                             List<EventSectionModel> eventSectionModels = new ArrayList<>();
                             for (FormSectionViewModel sectionModel : sectionList) {
                                 if (sectionList.size() > 1 && !sectionsToHide.contains(sectionModel.sectionUid())) {
-                                    List<FieldViewModel> fieldViewModels = fieldMap.get(sectionModel.sectionUid());
+                                    List<FieldViewModel> fieldViewModels = new ArrayList<>();
+                                    if (fieldMap.get(sectionModel.sectionUid()) != null)
+                                        fieldViewModels.addAll(fieldMap.get(sectionModel.sectionUid()));
 
                                     int cont = 0;
                                     for (FieldViewModel fieldViewModel : fieldViewModels)
@@ -285,7 +287,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 EventCaptureFormFragment.getInstance().setSectionSelector(),
-                                e -> Timber.log(1, "Error")
+                                Timber::e
                         ));
     }
 
@@ -350,7 +352,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                                 .subscribe(
                                         data -> view.showMessageOnComplete(canComplete, completeMessage),
                                         Timber::e,
-                                        () -> view.attemptToFinish(canComplete)
+                                        () -> view.attemptToFinish(canComplete && eventCaptureRepository.isEnrollmentOpen())
                                 )
                 );
             }
@@ -404,6 +406,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public ObservableField<String> getCurrentSection() {
         return currentSection;
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        return eventCaptureRepository.isEnrollmentOpen();
     }
 
     @Override
@@ -494,7 +501,17 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     }
 
     @Override
-    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) { ;
+    public boolean canWrite() {
+        return eventCaptureRepository.getAccessDataWrite();
+    }
+
+    @Override
+    public boolean hasExpired() {
+        return hasExpired;
+    }
+
+    @Override
+    public void initCompletionPercentage(FlowableProcessor<Float> completionPercentage) {
         compositeDisposable.add(
                 completionPercentage
                         .observeOn(AndroidSchedulers.mainThread())

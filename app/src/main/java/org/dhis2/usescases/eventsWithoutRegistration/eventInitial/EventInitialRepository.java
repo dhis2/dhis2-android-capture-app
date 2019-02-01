@@ -68,4 +68,6 @@ public interface EventInitialRepository {
     Observable<Boolean> accessDataWrite(String programId);
 
     void deleteEvent(String eventId, String trackedEntityInstance);
+
+    boolean isEnrollmentOpen();
 }

@@ -25,12 +25,14 @@ public class CoordinateHolder extends FormViewHolder {
         super(binding);
         this.processor = processor;
         this.binding = binding;
-        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) ->
-                processor.onNext(
-                        RowAction.create(model.uid(),
-                                String.format(Locale.US,
-                                        "[%.5f,%.5f]", latitude, longitude))
-                ));
+        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
+                    processor.onNext(
+                            RowAction.create(model.uid(),
+                                    String.format(Locale.US,
+                                            "[%.5f,%.5f]", latitude, longitude)));
+//                    binding.formCoordinates.nextFocus(binding.formCoordinates);
+                }
+        );
         binding.formCoordinates.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
         );
@@ -38,7 +40,7 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
-        binding.formCoordinates.setProcessor(coordinateViewModel.uid(),processor);
+        binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
 
         model = coordinateViewModel;
 

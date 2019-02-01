@@ -53,7 +53,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final String SELECT_PROGRAM_ATTRIBUTES = "SELECT TrackedEntityAttribute.* FROM " + TrackedEntityAttributeModel.TABLE +
             " INNER JOIN " + ProgramTrackedEntityAttributeModel.TABLE +
             " ON " + TrackedEntityAttributeModel.TABLE + "." + TrackedEntityAttributeModel.Columns.UID + " = " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE +
-            " WHERE " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE + " = 1 " +
+            " WHERE (" + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.SEARCHABLE + " = 1 OR TrackedEntityAttribute.uniqueProperty = '1')" +
             " AND " + ProgramTrackedEntityAttributeModel.TABLE + "." + ProgramTrackedEntityAttributeModel.Columns.PROGRAM + " = ";
     private final String SELECT_OPTION_SET = "SELECT * FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ";
 
@@ -446,7 +446,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     id);
         } else {
             String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            String progId = selectedProgram != null && selectedProgram.uid() != null ? selectedProgram.uid() : "";
+            String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
             attributes = briteDatabase.query(PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY,
                     progId,
                     teiId);
@@ -454,7 +454,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         if (attributes != null) {
             attributes.moveToFirst();
             for (int i = 0; i < attributes.getCount(); i++) {
-                tei.addAttributeValues(ValueUtils.transform(briteDatabase, attributes));
+                if (tei != null)
+                    tei.addAttributeValues(ValueUtils.transform(briteDatabase, attributes));
                 attributes.moveToNext();
             }
             attributes.close();
@@ -462,7 +463,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
 
-    private void setOverdueEvents(SearchTeiModel tei, ProgramModel selectedProgram) {
+    private void setOverdueEvents(@NonNull SearchTeiModel tei, ProgramModel selectedProgram) {
 
         String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
                 "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
@@ -476,14 +477,15 @@ public class SearchRepositoryImpl implements SearchRepository {
                     teiId, EventStatus.SKIPPED.name());
         } else {
             String teiId = tei != null && tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
-            String progId = selectedProgram != null && selectedProgram.uid() != null ? selectedProgram.uid() : "";
+            String progId = selectedProgram.uid() != null ? selectedProgram.uid() : "";
             hasOverdueCursor = briteDatabase.query(overdueQuery + overdueProgram,
                     teiId,
                     EventStatus.SKIPPED.name(),
                     progId);
         }
         if (hasOverdueCursor != null && hasOverdueCursor.moveToNext()) {
-            tei.setHasOverdue(true);
+            if (tei != null)
+                tei.setHasOverdue(true);
             hasOverdueCursor.close();
         }
     }

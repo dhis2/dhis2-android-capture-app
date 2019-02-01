@@ -2,10 +2,10 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -63,21 +64,6 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
                 .compileStatement(INSERT);
     }
 
-   /* @NonNull
-    @Override
-    public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return Flowable
-                .defer(() -> {
-                    long updated = update(uid, value);
-                    if (updated > 0) {
-                        return Flowable.just(updated);
-                    }
-
-                    return Flowable.just(insert(uid, value));
-                })
-                .switchMap(status -> updateEnrollment(status));
-    }*/
-
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @NonNull EnrollmentStatus value) {
@@ -96,6 +82,29 @@ public final class EnrollmentStatusStore implements EnrollmentStatusEntryStore {
         return briteDatabase.createQuery(EnrollmentModel.TABLE, query, enrollmentUid)
                 .mapToOne(EnrollmentModel::create)
                 .map(EnrollmentModel::enrollmentStatus).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<Pair<Double, Double>> enrollmentCoordinates() {
+        return briteDatabase.createQuery(EnrollmentModel.TABLE, "SELECT * FROM Enrollment WHERE uid = ? LIMIT 1", enrollment)
+                .mapToOne(EnrollmentModel::create)
+                .map(enrollmentModel ->
+                        Pair.create(Double.valueOf(enrollmentModel.latitude()),
+                                Double.valueOf(enrollmentModel.longitude())))
+                .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<Long> saveCoordinates(double latitude, double longitude) {
+        return Flowable.defer(() -> {
+            ContentValues cv = new ContentValues();
+            cv.put(EnrollmentModel.Columns.LATITUDE, latitude);
+            cv.put(EnrollmentModel.Columns.LONGITUDE, longitude);
+            long updated = briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollment);
+            return Flowable.just(updated);
+        })
+                .switchMap(this::updateEnrollment);
+
     }
 
     private long update(EnrollmentStatus value) {

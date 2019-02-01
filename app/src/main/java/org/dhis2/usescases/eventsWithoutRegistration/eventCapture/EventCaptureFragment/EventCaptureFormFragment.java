@@ -36,7 +36,6 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -80,6 +79,21 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
         binding.sectionRecycler.setAdapter(sectionSelectorAdapter);
         this.flowableProcessor = PublishProcessor.create();
         this.flowableOptions = PublishProcessor.create();
+
+        binding.sectionSelector.buttonNext.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && binding.sectionSelector.buttonNext.getVisibility() == View.VISIBLE)
+                binding.sectionSelector.buttonNext.performClick();
+            else
+                binding.sectionSelector.buttonEnd.requestFocus();
+
+        });
+
+        binding.sectionSelector.buttonEnd.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && binding.sectionSelector.buttonEnd.getVisibility() == View.VISIBLE)
+                binding.sectionSelector.buttonEnd.performClick();
+
+        });
+
         return binding.getRoot();
     }
 
@@ -141,7 +155,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     public Consumer<List<FieldViewModel>> showFields() {
         return updates -> {
             if (currentSection.equals("NO_SECTION") ||
-                    updates.get(0).programStageSection().equals(currentSection)) {
+                    (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
                 dataEntryAdapter.swap(updates);
                 int completedValues = 0;
                 HashMap<String, Boolean> fields = new HashMap<>();
@@ -167,8 +181,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
 
     public void showSectionSelector() {
-        binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-        binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        if (binding.sectionRecycler.getAdapter().getItemCount() >= 0) {
+            binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+            binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        }
     }
 
     public View getSectionSelector() {

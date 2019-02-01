@@ -15,6 +15,8 @@ public class TeiDataDetailContracts {
         void setData(DashboardProgramModel program);
 
         Consumer<EnrollmentStatus> handleStatus();
+
+        void setLocation(double latitude, double longitude);
     }
 
     public interface Presenter {
@@ -29,6 +31,12 @@ public class TeiDataDetailContracts {
         void onComplete(DashboardProgramModel dashboardProgramModel);
 
         void onActivate(DashboardProgramModel dashboardProgramModel);
+
+        void saveLocation(double latitude, double longitude);
+
+        void onLocationClick();
+
+        void onLocation2Click();
 
     }
 

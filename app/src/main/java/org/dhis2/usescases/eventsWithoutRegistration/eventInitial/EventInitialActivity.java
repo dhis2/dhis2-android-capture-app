@@ -121,6 +121,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     private String savedLon;
     private ArrayList<String> sectionsToHide;
     private String getTrackedEntityInstance;
+    private Boolean accessData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -381,22 +382,26 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        Calendar now = DateUtils.getInstance().getCalendar();
-        if (periodType == null) {
+        if(eventModel==null) {
+            Calendar now = DateUtils.getInstance().getCalendar();
+            if (periodType == null) {
 
-            if (eventCreationType != EventCreationType.SCHEDULE)
+                if (eventCreationType != EventCreationType.SCHEDULE)
+                    selectedDate = now.getTime();
+                else {
+                    now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
+                    selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+                }
+
+                selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
+
+            } else {
+                now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
                 selectedDate = now.getTime();
-            else {
-                now.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
-                selectedDate = DateUtils.getInstance().getNextPeriod(null, now.getTime(), 1);
+                selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
             }
 
-            selectedDateString = DateUtils.uiDateFormat().format(selectedDate);
-
-        } else {
-            now.setTime(DateUtils.getInstance().getNextPeriod(periodType, now.getTime(), eventCreationType != EventCreationType.SCHEDULE ? 0 : 1));
-            selectedDate = now.getTime();
-            selectedDateString = DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault());
+            binding.date.setText(selectedDateString);
         }
 
         binding.date.setOnClickListener(view -> {
@@ -416,8 +421,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
                         .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
         });
 
-        binding.date.setText(selectedDateString);
         presenter.filterOrgUnits(DateUtils.uiDateFormat().format(selectedDate));
+
 
         if (program.captureCoordinates()) {
             binding.coordinatesLayout.setVisibility(View.VISIBLE);
@@ -437,7 +442,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             binding.location1.setEnabled(false);
             binding.location2.setEnabled(false);
             binding.temp.setEnabled(false);
-            binding.actionButton.setVisibility(View.GONE);
+            binding.actionButton.setText(getString(R.string.check_event));
 
         }
     }
@@ -499,8 +504,10 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
         binding.setEvent(event);
 
-        if (event.eventDate() != null)
-            binding.date.setText(DateUtils.uiDateFormat().format(event.eventDate()));
+        if (event.eventDate() != null) {
+            selectedDate = event.eventDate();
+            binding.date.setText(DateUtils.uiDateFormat().format(selectedDate));
+        }
 
         if (event.latitude() != null && event.longitude() != null) {
             runOnUiThread(() -> {
@@ -709,13 +716,6 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
             setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
         }
-        if (requestCode == RQ_PROGRAM_STAGE) {
-            if (resultCode == RESULT_OK) {
-                presenter.getProgramStage(data.getStringExtra(Constants.PROGRAM_STAGE_UID));
-            } else {
-                finish();
-            }
-        }
     }
 
     @Override
@@ -806,8 +806,8 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void setAccessDataWrite(Boolean canWrite) {
-        if (!canWrite) {
-            Boolean canWrite1 = canWrite;
+        this.accessData = canWrite;
+        if (!canWrite || !presenter.isEnrollmentOpen()) {
             binding.date.setEnabled(false);
             binding.orgUnit.setEnabled(false);
             binding.catCombo.setEnabled(false);
@@ -933,6 +933,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(accessData && presenter.isEnrollmentOpen());
         popupMenu.show();
     }
 

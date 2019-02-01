@@ -86,7 +86,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         throwable -> view.renderError(throwable.getMessage())
                 ));
 
-        getProgramEventsWithDates();
+        compositeDisposable.add(
+                view.currentPage()
+                        .startWith(0)
+                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                throwable -> view.renderError(throwable.getMessage())));
 
     }
 
@@ -122,19 +130,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public void setProgram(ProgramModel program) {
 
         this.program = program;
-    }
-
-    @Override
-    public void getProgramEventsWithDates() {
-        compositeDisposable.add(
-                view.currentPage()
-                        .startWith(0)
-                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setData,
-                                throwable -> view.renderError(throwable.getMessage())));
     }
 
     @Override

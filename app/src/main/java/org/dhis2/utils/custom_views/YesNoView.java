@@ -1,36 +1,36 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.common.ValueType;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+
 
 /**
  * QUADRAM. Created by frodriguez on 1/24/2018.
  */
 
-public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedChangeListener {
+public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChangeListener {
 
     private ViewDataBinding binding;
 
     private RadioGroup radioGroup;
     private RadioButton yes;
     private RadioButton no;
-//    private RadioButton no_value;
+    //    private RadioButton no_value;
     private TextView labelView;
-    private boolean isBgTransparent;
-    private LayoutInflater inflater;
     private View clearButton;
 
     public YesNoView(Context context) {
@@ -48,8 +48,13 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
+    public void init(Context context) {
+        super.init(context);
+    }
+
+    @Override
+    public void performOnFocusAction() {
+        //no action to perform
     }
 
     public void setValueType(ValueType valueType) {
@@ -110,5 +115,12 @@ public class YesNoView extends RelativeLayout implements RadioGroup.OnCheckedCha
 
     public View getClearButton() {
         return clearButton;
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+
+
     }
 }

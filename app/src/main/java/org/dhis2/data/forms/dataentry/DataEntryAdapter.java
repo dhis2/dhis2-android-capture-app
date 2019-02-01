@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

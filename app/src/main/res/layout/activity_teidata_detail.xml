@@ -106,8 +106,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:paddingEnd="12dp"
                     android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
                     app:alignContent="stretch"
                     app:alignItems="stretch"
                     app:flexWrap="wrap">
@@ -257,18 +257,91 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.flexbox.FlexboxLayout>
 
-                <com.google.android.flexbox.FlexboxLayout
-                    android:id="@+id/teiDetailAttr"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    app:alignContent="stretch"
-                    app:alignItems="stretch"
-                    app:flexWrap="wrap"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/data_layout" />
+                <LinearLayout
+                    android:id="@+id/coordinates_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:visibility="@{program!=null &amp;&amp; program.captureCoordinates()?View.VISIBLE:View.GONE}">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:layout_weight="1"
+                        android:hint="@string/latitude"
+                        android:textColorHint="@color/text_black_808">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/lat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:focusable="false"
+                            android:inputType="numberDecimal"
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/longitude"
+                        android:textColorHint="@color/text_black_808">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/lon"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:focusable="false"
+                            android:inputType="numberDecimal"
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageButton
+                            android:id="@+id/location1"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/selector_gray_button_round_7"
+                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:padding="6dp"
+                            app:srcCompat="@drawable/ic_my_location" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp">
+
+                        <ImageButton
+                            android:id="@+id/location2"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/selector_gray_button_round_7"
+                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:padding="6dp"
+                            app:srcCompat="@drawable/ic_map" />
+                    </RelativeLayout>
+                </LinearLayout>
+
 
                 <FrameLayout
                     android:id="@+id/dataFragment"

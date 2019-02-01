@@ -54,6 +54,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     EventCaptureContract.Presenter presenter;
     private int completionPercentage = 0;
     private String programStageUid;
+    private Boolean isEventCompleted = false;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -74,19 +75,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         gestureScanner = new GestureDetector(this, this);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         presenter.init(this);
 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     protected void onPause() {
-        presenter.onDettach();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDettach();
+        super.onDestroy();
     }
 
     @Override
@@ -139,6 +152,9 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void showCompleteActions(boolean canComplete) {
 
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
+                .setIsExpired(presenter.hasExpired())
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -147,6 +163,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void attemptToReopen() {
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setReopen(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -156,6 +174,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void attemptToSkip() {
 
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setSkip(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -164,6 +184,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void attemptToReschedule() {
         FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
                 .setReschedule(true)
                 .setListener(this::setAction)
                 .show(getSupportFragmentManager(), "SHOW_OPTIONS");
@@ -177,6 +199,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     private void setAction(FormBottomDialog.ActionType actionType) {
         switch (actionType) {
             case COMPLETE:
+                isEventCompleted = true;
                 presenter.completeEvent(false);
                 break;
             case COMPLETE_ADD_NEW:
@@ -194,7 +217,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             case RESCHEDULE:
                 reschedule();
                 break;
-            case COMPLETE_LATER:
             case FINISH:
                 finishDataEntry();
                 break;
@@ -240,7 +262,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void finishDataEntry() {
         Intent intent = new Intent();
         intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        setResult(RESULT_OK, intent);
+        if(isEventCompleted)
+            setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -325,6 +348,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
     }
 
