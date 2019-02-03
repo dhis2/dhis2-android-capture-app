@@ -81,13 +81,13 @@ public class RadioButtonHolder extends FormViewHolder {
             RowAction rowAction;
             switch (checkedId) {
                 case R.id.yes:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption());
                     break;
                 case R.id.no:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption());
                     break;
                 default:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), null);
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), null, checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption());
                     break;
             }
             processor.onNext(rowAction);

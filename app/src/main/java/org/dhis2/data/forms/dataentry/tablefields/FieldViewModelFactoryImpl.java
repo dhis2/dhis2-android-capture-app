@@ -79,14 +79,14 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
         if (!isEmpty(optionSet)) {
             if (renderingType == null || renderingType == ProgramStageSectionRenderingType.LISTING)
-                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description);
+                return SpinnerViewModel.create(id, label, hintFilterOptions, mandatory, optionSet, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             else
-                return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory, description); //transforms option set into image option selector
+                return ImageViewModel.create(id, label, optionSet, value, section, editable, mandatory, description,dataElement,listCategoryOption,storeBy); //transforms option set into image option selector
         }
 
         switch (type) {
             case AGE:
-                return AgeViewModel.create(id, label, mandatory, value, section, editable, description);
+                return AgeViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             case TEXT:
             case EMAIL:
             case LETTER:
@@ -104,19 +104,19 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TIME:
             case DATE:
             case DATETIME:
-                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description);
+                return DateTimeViewModel.create(id, label, mandatory, type, value, section, allowFutureDates, editable, description,dataElement,listCategoryOption,storeBy);
             case COORDINATE:
-                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description);
+                return CoordinateViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             case BOOLEAN:
             case TRUE_ONLY:
-                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description);
+                return RadioButtonViewModel.fromRawValue(id, label, type, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             case ORGANISATION_UNIT:
-                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description);
+                return OrgUnitViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             case FILE_RESOURCE:
             case IMAGE:
             case TRACKER_ASSOCIATE:
             case USERNAME:
-                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description);
+                return UnsupportedViewModel.create(id, label, mandatory, value, section, editable, description,dataElement,listCategoryOption,storeBy);
             default:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1, type, section, editable, description, dataElement, listCategoryOption, storeBy);
         }

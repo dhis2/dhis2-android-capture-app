@@ -6,6 +6,8 @@ import com.google.auto.value.AutoValue;
 
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -14,30 +16,30 @@ import javax.annotation.Nonnull;
 
 @AutoValue
 public abstract class CoordinateViewModel extends FieldViewModel {
-    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description) {
-        return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null, editable, null, null, null,description);
+    public static FieldViewModel create(String id, String label, Boolean mandatory, String value, String section, Boolean editable, String description, @NonNull String dataElement, @NonNull List<String> listCategoryOption, @NonNull String storeBy) {
+        return new AutoValue_CoordinateViewModel(id, label, mandatory, value, section, null, editable, null, null, null,description,dataElement, listCategoryOption, storeBy);
     }
 
     @Override
     public FieldViewModel setMandatory() {
-        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(),description());
+        return new AutoValue_CoordinateViewModel(uid(), label(), true, value(), programStageSection(), null, editable(), null, warning(), error(),description(), dataElement(),listCategoryOption(), storeBy());
     }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(),description());
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning, error(),description(), dataElement(),listCategoryOption(), storeBy());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error,description());
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), value(), programStageSection(), null, editable(), null, warning(), error,description(), dataElement(),listCategoryOption(), storeBy());
     }
 
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
-        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(),description());
+        return new AutoValue_CoordinateViewModel(uid(), label(), mandatory(), data, programStageSection(), null, editable(), null, warning(), error(),description(), dataElement(),listCategoryOption(), storeBy());
     }
 }

@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.List;
+
 
 @AutoValue
 public abstract class RowAction {
@@ -15,8 +17,14 @@ public abstract class RowAction {
     @Nullable
     public abstract String value();
 
+    @Nullable
+    public abstract String dataElement();
+
+    @Nullable
+    public abstract List<String> listCategoryOption();
+
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value) {
-        return new AutoValue_RowAction(id, value);
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable List<String> listCategoryOption) {
+        return new AutoValue_RowAction(id, value, dataElement, listCategoryOption);
     }
 }

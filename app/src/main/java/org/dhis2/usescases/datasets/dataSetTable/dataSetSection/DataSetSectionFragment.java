@@ -192,7 +192,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         for (Integer column : totalColumn) {
             fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                     false, "", column.toString(), sectionUid, true,
-                    false, null, null, "",null,""));
+                    false, null, null, "",new ArrayList<>(),""));
 
             values.add(column.toString());
         }
@@ -213,7 +213,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         FieldViewModelFactoryImpl fieldFactory = createField();
         fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                 false, "", String.valueOf(totalRow), sectionUid, true,
-                false, null, null, "",null,""));
+                false, null, null, "",new ArrayList<>(),""));
         values.add(String.valueOf(totalRow));
 
     }

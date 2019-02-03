@@ -93,18 +93,31 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rowAction -> {
+                    boolean exists = false;
                     for(DataSetTableModel dataValue: dataValues){
-                        if(dataValue.id().toString().equals(rowAction.id())){
-                            DataSetTableModel dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(), dataValue.period(), dataValue.organisationUnit(),
-                                    dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(), rowAction.value(), dataValue.storedBy(),
+                        if(dataValue.dataElement().equals(rowAction.dataElement()) &&
+                                dataValue.listCategoryOption().equals(rowAction.listCategoryOption())){
+                            DataSetTableModel dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
+                                    dataValue.period(), dataValue.organisationUnit(),
+                                    dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                                    rowAction.value(), dataValue.storedBy(),
                                     dataValue.catOption(), dataValue.listCategoryOption() );
                             dataValues.remove(dataValue);
                             dataValues.add(dataSetTableModel);
                             dataSetSectionFragment.createTable();
+                            exists = true;
                             break;
                         }
                     }
-                    }, Timber::e));
+                    if(!exists) {
+                        DataSetTableModel dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
+                                "", catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
+                                "", rowAction.listCategoryOption());
+                        dataValues.add(dataSetTableModel);
+                        dataSetSectionFragment.createTable();
+                    }
+                    },
+                        Timber::e));
     }
 
     @Override
