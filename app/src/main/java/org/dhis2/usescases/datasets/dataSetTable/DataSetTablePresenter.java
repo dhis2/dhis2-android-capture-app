@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quartet;
@@ -96,7 +97,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                     boolean exists = false;
                     for(DataSetTableModel dataValue: dataValues){
                         if(dataValue.dataElement().equals(rowAction.dataElement()) &&
-                                dataValue.listCategoryOption().equals(rowAction.listCategoryOption())){
+                                dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())){
                             DataSetTableModel dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
                                     dataValue.period(), dataValue.organisationUnit(),
                                     dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
@@ -104,17 +105,17 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                     dataValue.catOption(), dataValue.listCategoryOption() );
                             dataValues.remove(dataValue);
                             dataValues.add(dataSetTableModel);
-                            dataSetSectionFragment.createTable();
+                            dataSetSectionFragment.createTable(rowAction);
                             exists = true;
                             break;
                         }
                     }
-                    if(!exists) {
+                    if(!exists && rowAction.value() != null) {
                         DataSetTableModel dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
                                 "", catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
                                 "", rowAction.listCategoryOption());
                         dataValues.add(dataSetTableModel);
-                        dataSetSectionFragment.createTable();
+                        dataSetSectionFragment.createTable(rowAction);
                     }
                     },
                         Timber::e));
@@ -147,7 +148,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                     dataElementDisabled = quintet.val2();
                                     compulsoryDataElement = quintet.val3();
                                     sections = quintet.val4();
-                                    dataSetSectionFragment.createTable();
+                                    dataSetSectionFragment.createTable(null);
                                 },
                                 Timber::e
                         )

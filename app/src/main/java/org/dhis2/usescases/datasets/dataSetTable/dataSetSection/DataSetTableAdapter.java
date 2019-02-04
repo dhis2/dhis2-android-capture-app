@@ -77,6 +77,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private Boolean showRowTotal;
     private Boolean showColumnTotal;
 
+    public void setRowPos(int rowPos) {
+        this.rowPos = rowPos;
+    }
+
     public DataSetTableAdapter(Context context, boolean accessDataWrite) {
         super(context);
         rows = new ArrayList<>();

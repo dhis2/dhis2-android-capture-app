@@ -1,6 +1,7 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
@@ -88,7 +90,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     }
 
 
-    public void createTable() {
+    public void createTable(RowAction rowAction) {
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -98,12 +100,14 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         boolean showColumnTotal = false;
         boolean showRowTotal = false;
         boolean isNumber = true;
+        int rowChanged = 0;
         for (SectionModel section : presenter.getSections()) {
             if (section.name().equals(sectionUid)) {
                 showColumnTotal = section.showColumnTotals();
                 showRowTotal = section.showRowTotals();
             }
         }
+        int countRow = 0;
         for (DataElementModel de : presenter.getDataElements().get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
             ArrayList<FieldViewModel> fields = new ArrayList<>();
@@ -136,7 +140,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             if (showRowTotal)
                                 totalRow = totalRow + Integer.parseInt(dataValue.value());
                         }
-
+                        if(rowAction != null && de.uid().equals(rowAction.dataElement()) &&
+                                catOpts.containsAll(rowAction.listCategoryOption()))
+                            rowChanged = countRow;
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 compulsory, "", dataValue.value(), sectionUid, true,
                                 editable, null, null, de.uid(), catOpts, ""));
@@ -149,7 +155,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                     //If value type is null, it is due to is dataElement for Total row/column
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             compulsory, "", "", sectionUid, true,
-                            editable, null, null, de.uid(), catOpts, ""));
+                            editable, null, null, de.uid()== null ? "": de.uid(), catOpts, ""));
 
                     values.add("");
                 }
@@ -163,7 +169,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             }
             listFields.add(fields);
             cells.add(values);
+            countRow++;
         }
+
         if (isNumber) {
             if (showColumnTotal)
                 setTotalColumn(totalColumn, listFields, cells, presenter.getDataElements());
@@ -171,11 +179,24 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1).
                         add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
         }
-        adapter.swap(listFields);
-        adapter.setAllItems(
-                presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
-                presenter.getDataElements().get(sectionUid),
-                cells);
+        //adapter.setRowPos(rowChanged);
+
+        /*if(rowAction != null){
+            adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
+            binding.tableView.setAdapter(adapter);
+            adapter.swap(listFields);
+            adapter.setAllItems(
+                    presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    presenter.getDataElements().get(sectionUid),
+                    cells);
+        }
+        else {*/
+            adapter.swap(listFields);
+            adapter.setAllItems(
+                    presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    presenter.getDataElements().get(sectionUid),
+                    cells);
+        //}
     }
 
     private void setTotalColumn(Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
