@@ -101,7 +101,7 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             binding.userPassEdit.setText(SecurePreferences.getStringValue(Constants.SECURE_PASS, null));
             showLoginProgress(true);
         } else
-            showInfoDialog("Empty Credentials", "To be able to log in using the fingerprint scanner you first need to use the default way");
+            showInfoDialog(getString(R.string.biometrics_dialog_title), getString(R.string.biometrics_first_use_text));
     }
 
     @Override
@@ -289,8 +289,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
                                 binding.serverUrlEdit.getText().toString(),
                                 binding.userNameEdit.getText().toString(),
                                 binding.userPassEdit.getText().toString()))) {
-            showInfoDialog("Biometric Security",
-                    "Use your fingerprint to log in with this user?",
+            showInfoDialog(getString(R.string.biometrics_security_title),
+                    getString(R.string.biometrics_security_text),
                     new OnDialogClickListener() {
                         @Override
                         public void onPossitiveClick(AlertDialog alertDialog) {

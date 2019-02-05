@@ -303,6 +303,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
         //Reset effects
         sectionsToHide.clear();
+        completeMessage = null;
+        canComplete = true;
 
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
@@ -550,7 +552,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
     @Override
     public void unsupportedRuleAction() {
-        view.displayMessage("There is one program rule which is not supported. Please check the documentation");
+        view.displayMessage(view.getContext().getString(R.string.unsupported_program_rule));
     }
 
     @Override
