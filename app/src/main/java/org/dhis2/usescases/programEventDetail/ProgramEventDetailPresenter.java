@@ -1,9 +1,10 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
@@ -85,7 +86,15 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         throwable -> view.renderError(throwable.getMessage())
                 ));
 
-        getProgramEventsWithDates();
+        compositeDisposable.add(
+                view.currentPage()
+                        .startWith(0)
+                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view::setData,
+                                throwable -> view.renderError(throwable.getMessage())));
 
     }
 
@@ -124,19 +133,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     }
 
     @Override
-    public void getProgramEventsWithDates() {
-        compositeDisposable.add(
-                view.currentPage()
-                        .startWith(0)
-                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                view::setData,
-                                throwable -> view.renderError(throwable.getMessage())));
-    }
-
-    @Override
     public List<OrganisationUnitModel> getOrgUnits() {
         return this.orgUnits;
     }
@@ -166,7 +162,12 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
+
+        view.startActivity(EventCaptureActivity.class,
+                EventCaptureActivity.getActivityBundle(eventId, programId),
+                false, false, null
+        );
     }
 
     @Override

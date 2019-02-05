@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -43,7 +43,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
 
     @Override
     public void enroll(String programUid, String uid) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Enrollment Org Unit")
                 .setPossitiveListener(v -> {
                     if (orgUnitDialog.getSelectedOrgUnit() != null)
@@ -75,7 +75,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
-                                    view.goToEnrollmentScreen(enrollmentUid);
+                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
                                 },
                                 Timber::d)
         );
@@ -141,6 +141,11 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
             }
         }
         view.setPrograms(programListToPrint);
+    }
+
+    @Override
+    public String getProgramColor(String uid) {
+        return teiProgramListRepository.getProgramColor(uid);
     }
 
     @Override

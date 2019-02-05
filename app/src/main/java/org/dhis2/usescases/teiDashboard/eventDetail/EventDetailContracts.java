@@ -1,11 +1,10 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
-import android.support.annotation.NonNull;
-import android.view.View;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
@@ -50,7 +49,7 @@ public class EventDetailContracts {
         void showCatOptionDialog();
     }
 
-    public interface Presenter {
+    public interface Presenter extends AbstractActivityContracts.Presenter {
         void init(EventDetailContracts.View view);
 
         void getEventData(String eventUid);

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -20,6 +20,12 @@ import dagger.Provides;
 @Module
 public class SearchTEModule {
 
+    private final String teiType;
+
+    public SearchTEModule(String tEType) {
+        this.teiType = tEType;
+    }
+
     @Provides
     @PerActivity
     SearchTEContractsModule.View provideView(SearchTEActivity searchTEActivity) {
@@ -36,6 +42,6 @@ public class SearchTEModule {
     @PerActivity
     SearchRepository searchRepository(@NonNull CodeGenerator codeGenerator,
                                       @NonNull BriteDatabase briteDatabase) {
-        return new SearchRepositoryImpl(codeGenerator, briteDatabase);
+        return new SearchRepositoryImpl(codeGenerator, briteDatabase, teiType);
     }
 }

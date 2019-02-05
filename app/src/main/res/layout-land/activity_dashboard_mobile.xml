@@ -22,7 +22,7 @@
             type="org.dhis2.usescases.teiDashboard.DashboardProgramModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick='@{()->presenter.onBackPressed()}'
-                android:padding="10dp"
+                android:padding="@dimen/default_start_margin"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -63,7 +63,7 @@
 
         </LinearLayout>
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -79,7 +79,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             style="@style/DhisTabLayout"
             android:layout_width="0dp"
@@ -89,7 +89,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:tabTextAppearance="@style/DhisTabText" />
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/tei_pager"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -118,5 +118,5 @@
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@id/sectionTitle" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

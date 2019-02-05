@@ -33,7 +33,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -44,8 +44,8 @@
                 android:id="@+id/menu"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -53,6 +53,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:text="@{ name }"
@@ -94,22 +95,22 @@
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -119,9 +120,9 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
                 tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.v4.widget.DrawerLayout
+        <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -132,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v4.widget.NestedScrollView
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -198,9 +199,9 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginEnd="8dp"
                                         android:layout_marginStart="8dp"
                                         android:layout_marginTop="2dp"
+                                        android:layout_marginEnd="8dp"
                                         android:text="@string/share"
                                         android:textColor="@color/text_black_4d4d4d"
                                         android:textSize="16sp"
@@ -216,7 +217,7 @@
                             android:orientation="horizontal">
 
 
-                            <android.support.design.widget.TextInputLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/date_layout"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -225,28 +226,28 @@
                                 tools:hint="executionDateLabel">
                                 <!--android:hint="@{programStage.executionDateLabel()!=null?programStage.executionDateLabel():@string/event_date}"-->
 
-                                <android.support.design.widget.TextInputEditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/date"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:textSize="15sp" />
-                            </android.support.design.widget.TextInputLayout>
+                            </com.google.android.material.textfield.TextInputLayout>
 
-                            <android.support.design.widget.TextInputLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:hint="@string/org_unit"
                                 android:textColorHint="@color/text_black_808">
 
-                                <android.support.design.widget.TextInputEditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/org_unit"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:textSize="15sp" />
-                            </android.support.design.widget.TextInputLayout>
+                            </com.google.android.material.textfield.TextInputLayout>
 
 
                             <LinearLayout
@@ -273,8 +274,8 @@
                                     android:id="@+id/cat_combo_line"
                                     android:layout_width="match_parent"
                                     android:layout_height="0.8dp"
-                                    android:layout_marginEnd="4dp"
                                     android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="4dp"
                                     android:background="@color/black_de0" />
                             </LinearLayout>
                         </LinearLayout>
@@ -307,7 +308,7 @@
                                 app:srcCompat="@drawable/ic_map" />
 
 
-                            <android.support.design.widget.TextInputLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="12dp"
@@ -315,7 +316,7 @@
                                 android:hint="@string/latitude"
                                 android:textColorHint="@color/text_black_808">
 
-                                <android.support.design.widget.TextInputEditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/lat"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -323,10 +324,10 @@
                                     android:text='@{event != null ? event.latitude() : ""}'
                                     android:textSize="15sp" />
 
-                            </android.support.design.widget.TextInputLayout>
+                            </com.google.android.material.textfield.TextInputLayout>
 
 
-                            <android.support.design.widget.TextInputLayout
+                            <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="12dp"
@@ -334,7 +335,7 @@
                                 android:hint="@string/longitude"
                                 android:textColorHint="@color/text_black_808">
 
-                                <android.support.design.widget.TextInputEditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/lon"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -342,7 +343,7 @@
                                     android:text='@{event != null ? event.longitude() : ""}'
                                     android:textSize="15sp" />
 
-                            </android.support.design.widget.TextInputLayout>
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -359,7 +360,7 @@
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <android.support.v7.widget.AppCompatRadioButton
+                                <androidx.appcompat.widget.AppCompatRadioButton
                                     android:id="@+id/one_time"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
@@ -367,7 +368,7 @@
                                     android:text="@string/one_time"
                                     app:buttonTint="?colorPrimary" />
 
-                                <android.support.v7.widget.AppCompatRadioButton
+                                <androidx.appcompat.widget.AppCompatRadioButton
                                     android:id="@+id/permanent"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
@@ -381,25 +382,25 @@
                             android:layout_width="match_parent"
                             android:layout_height="80dp" />
                     </LinearLayout>
-                </android.support.v4.widget.NestedScrollView>
+                </androidx.core.widget.NestedScrollView>
 
                 <Button
                     android:id="@+id/action_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginBottom="16dp"
+                    android:layout_alignParentBottom="true"
                     android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:background="?attr/selector_button_round_7"
-                    android:paddingEnd="10dp"
                     android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
                     android:text="@string/create"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
             </RelativeLayout>
 
-            <android.support.design.widget.NavigationView
+            <com.google.android.material.navigation.NavigationView
                 android:id="@+id/org_unit_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -413,20 +414,20 @@
                     android:id="@+id/tree_view_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingEnd="0dp"
                     android:paddingStart="20dp"
-                    android:paddingTop="40dp" />
+                    android:paddingTop="40dp"
+                    android:paddingEnd="0dp" />
 
                 <LinearLayout
                     android:id="@+id/linear_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingEnd="0dp"
                     android:paddingStart="20dp"
-                    android:paddingTop="40dp" />
+                    android:paddingTop="40dp"
+                    android:paddingEnd="0dp" />
 
-            </android.support.design.widget.NavigationView>
-        </android.support.v4.widget.DrawerLayout>
+            </com.google.android.material.navigation.NavigationView>
+        </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
 </layout>

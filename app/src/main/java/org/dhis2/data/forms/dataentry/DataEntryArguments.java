@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
@@ -10,16 +10,16 @@ import com.google.auto.value.AutoValue;
 public abstract class DataEntryArguments implements Parcelable {
 
     @NonNull
-    abstract String event();
+    public abstract String event();
 
     @NonNull
-    abstract String section();
+    public abstract String section();
 
     @NonNull
-    abstract String enrollment();
+    public abstract String enrollment();
 
     @Nullable
-    abstract String renderType();
+    public abstract String renderType();
 
     @NonNull
     public static DataEntryArguments forEvent(@NonNull String event) {

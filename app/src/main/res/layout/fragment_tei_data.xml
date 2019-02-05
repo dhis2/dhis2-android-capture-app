@@ -31,11 +31,11 @@
 
         <variable
             name="followup"
-            type="android.databinding.ObservableBoolean" />
+            type="androidx.databinding.ObservableBoolean" />
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -54,20 +54,22 @@
                 layout="@layout/fragment_tei_data_card_front"
                 app:dashboardModel="@{dashboardModel}"
                 app:enrollment="@{enrollment}"
+                app:followup="@{followup}"
                 app:presenter="@{presenter}"
                 app:program="@{program}"
-                app:trackEntity="@{trackEntity}"
-                app:followup="@{followup}"/>
+                app:trackEntity="@{trackEntity}" />
         </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tei_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="@dimen/default_start_margin"
+            android:layout_marginEnd="@dimen/default_start_margin"
             android:clipToPadding="false"
             android:paddingTop="10dp"
             android:paddingBottom="200dp"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +80,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{enrollment==null || enrollment.enrollmentStatus() == EnrollmentStatus.CANCELLED ? View.GONE : View.VISIBLE}"
+            android:visibility="@{enrollment==null || enrollment.enrollmentStatus() != EnrollmentStatus.ACTIVE ? View.GONE : View.VISIBLE}"
             app:close_on_click="true"
             app:color_main_button="?colorPrimary"
             app:color_secondary_buttons="?colorPrimaryDark"
@@ -89,5 +91,5 @@
             app:size_main_button="@integer/omfm_fab_size_normal"
             app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.teiDataDetail;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import org.dhis2.App;
 import org.dhis2.Bindings.Bindings;
@@ -11,12 +11,16 @@ import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
 import org.dhis2.databinding.ActivityTeidataDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
+import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.DashboardProgramModel;
-
+import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+
+import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 
 public class TeiDataDetailActivity extends ActivityGlobalAbstract implements TeiDataDetailContracts.View {
@@ -26,7 +30,6 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     TeiDataDetailContracts.Presenter presenter;
 
     private DashboardProgramModel dashboardProgramModel;
-    private ObservableBoolean isEditable = new ObservableBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +91,14 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
         binding.setEnrollmentStatus(program.getCurrentEnrollment().enrollmentStatus());
         binding.executePendingBindings();
 
+        if (program.getCurrentProgram().captureCoordinates()) {
+            binding.coordinatesLayout.setVisibility(View.VISIBLE);
+            binding.location1.setOnClickListener(v -> presenter.onLocationClick());
+            binding.location2.setOnClickListener(v -> presenter.onLocation2Click());
+        }
+
         supportStartPostponedEnterTransition();
+
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dataFragment, FormFragment.newInstance(
@@ -110,9 +120,26 @@ public class TeiDataDetailActivity extends ActivityGlobalAbstract implements Tei
     }
 
     @Override
+    public void setLocation(double latitude, double longitude) {
+        binding.lat.setText(String.format(Locale.US, "%.5f", latitude));
+        binding.lon.setText(String.format(Locale.US, "%.5f", longitude));
+    }
+
+    @Override
     public void onBackPressed() {
         setResult(RESULT_OK);
         super.onBackPressed();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.RQ_MAP_LOCATION && resultCode == RESULT_OK) {
+            String savedLat = data.getStringExtra(MapSelectorActivity.LATITUDE);
+            String savedLon = data.getStringExtra(MapSelectorActivity.LONGITUDE);
+            setLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+            presenter.saveLocation(Double.valueOf(savedLat), Double.valueOf(savedLon));
+        }
+    }
+
 
 }

@@ -1,16 +1,11 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.databinding.library.baseAdapters.BR;
+import org.dhis2.BR;
 import org.dhis2.databinding.ItemDatasetBinding;
 
-import org.hisp.dhis.android.core.dataset.DataSetModel;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class DataSetDetailViewHolder extends RecyclerView.ViewHolder{
 

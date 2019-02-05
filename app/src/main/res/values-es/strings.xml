@@ -171,6 +171,7 @@
   <string name="date_dialog_clear">Limpiar</string>
   <string name="period">Periodo</string>
   <string name="org_unit_filter">(%d) Unidad Org.</string>
+  <string name="org_unit_select_level">Nivel %d</string>
   <string name="tuto_main_1">Bienvenido a dhis2</string>
   <string name="tuto_main_2">Aquí aparecerán tus actividades</string>
   <string name="tuto_main_3">Puedes aplicar un filtro…</string>
@@ -258,8 +259,8 @@
   <string name="dialog_generate_new_event">Generar nuevo evento</string>
   <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
   <string name="event_completed_title">Eventos Completados</string>
-  <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
-  <string name="check_event">Vérifier</string>
+  <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quieres completar el programa también?</string>
+  <string name="check_event">Ver</string>
   <string name="burmesse_test">" "</string>
   <string name="chinesse_test">" "</string>
   <string name="menu_home">Inicio</string>
@@ -309,4 +310,5 @@
   <string name="unselect_enrollment_description">Mostrar todos los programas activos</string>
   <string name="CHECK_SYNC_ERRORS">Comprobar errores de sincronización</string>
   <string name="error_dialog_title">Lista de errores de sincronización</string>
+    <string name="no_intructions">No hay información sobre esta pantalla</string>
 </resources>

@@ -3,20 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
-
-        <TextView
-            android:id="@+id/levelText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@id/arrow_down"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Level 1" />
 
         <ImageView
             android:id="@+id/arrow_down"
@@ -28,5 +18,15 @@
             app:srcCompat="@drawable/ic_arrow_down"
             android:tint="@color/colorGreyDefault"/>
 
-    </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/levelText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Level 1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

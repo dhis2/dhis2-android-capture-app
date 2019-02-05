@@ -1,6 +1,6 @@
 package org.dhis2.usescases.splash;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
 

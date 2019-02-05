@@ -1,14 +1,10 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
-import android.databinding.ObservableBoolean;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +14,26 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
-
+import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.ObservableBoolean;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
@@ -37,9 +43,8 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Inject
     DataEntryPresenter dataEntryPresenter;
 
-    DataEntryAdapter dataEntryAdapter;
-
-    RecyclerView recyclerView;
+    private DataEntryAdapter dataEntryAdapter;
+    private RecyclerView recyclerView;
     private Fragment formFragment;
     private String section;
 
@@ -64,10 +69,9 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
         this.section = args.section();
 
         ((App) context.getApplicationContext())
-            .formComponent()
-            .plus(new DataEntryModule(context, args),
-                    new DataEntryStoreModule(args))
-            .inject(this);
+                .formComponent()
+                .plus(new DataEntryModule(context, args), new DataEntryStoreModule(args))
+                .inject(this);
     }
 
     public String getSection() {
@@ -84,8 +88,6 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recyclerView = view.findViewById(R.id.recyclerview_data_entry);
-        if(dataEntryPresenter == null)
-            dataEntryPresenter.onAttach(this);
         setUpRecyclerView();
     }
 
@@ -110,6 +112,12 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     @Override
     public Flowable<RowAction> rowActions() {
         return dataEntryAdapter.asFlowable();
+    }
+
+    @NonNull
+    @Override
+    public Flowable<Trio<String, String, Integer>> optionSetActions() {
+        return dataEntryAdapter.asFlowableOption();
     }
 
     @NonNull
@@ -140,21 +148,42 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
                 getChildFragmentManager(), arguments,
                 dataEntryPresenter.getOrgUnits(),
                 new ObservableBoolean(true));
-//        dataEntryAdapter.setHasStableIds(true);
 
         RecyclerView.LayoutManager layoutManager;
         if (arguments.renderType() != null && arguments.renderType().equals(ProgramStageSectionRenderingType.MATRIX.name())) {
             layoutManager = new GridLayoutManager(getActivity(), 2);
         } else
             layoutManager = new LinearLayoutManager(getActivity(),
-                    LinearLayoutManager.VERTICAL, false);
+                    RecyclerView.VERTICAL, false);
         recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
-        /*recyclerView.addItemDecoration(new DividerItemDecoration(
-                recyclerView.getContext(), DividerItemDecoration.VERTICAL));*/
+
     }
 
     public boolean checkErrors() {
         return dataEntryAdapter.hasError();
+    }
+
+    @Override
+    public void setListOptions(List<String> options) {
+        OptionSetDialog.newInstance().setOptions(options);
+    }
+
+    @Override
+    public void showMessage(int messageId) {
+        AlertDialog dialog = showInfoDialog(getString(R.string.error), getString(R.string.unique_warning), new OnDialogClickListener() {
+
+            @Override
+            public void onPossitiveClick(androidx.appcompat.app.AlertDialog alertDialog) {
+                //nothing
+            }
+
+            @Override
+            public void onNegativeClick(androidx.appcompat.app.AlertDialog alertDialog) {
+                //nothing
+            }
+        });
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
     }
 }

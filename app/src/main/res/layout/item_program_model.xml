@@ -20,13 +20,13 @@
             type="org.dhis2.utils.Period" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:onClick="@{()->presenter.onItemClick(program,currentPeriod)}">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/imageLayout"
             android:layout_width="130dp"
             android:layout_height="100dp"
@@ -40,7 +40,7 @@
                 tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_with_registration" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <TextView
@@ -79,12 +79,14 @@
         <TextView
             android:id="@+id/program_name"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:lines="2"
-            android:padding="5dp"
+            android:paddingStart="5dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:text="@{program.title()}"
             android:textColor="@color/text_black_333"
             android:textSize="18sp"
@@ -92,6 +94,7 @@
             app:layout_constraintEnd_toStartOf="@id/sync_status"
             app:layout_constraintStart_toEndOf="@id/imageLayout"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/events_number"
             tools:text="Child Program" />
 
         <ImageView
@@ -112,5 +115,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_info_outline"
             app:tint="?colorPrimary" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

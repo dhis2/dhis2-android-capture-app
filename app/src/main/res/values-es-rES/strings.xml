@@ -157,6 +157,7 @@
     <string name="date_dialog_clear">Limpiar</string>
     <string name="period">Periodo</string>
     <string name="org_unit_filter">(%d) Unidad Org.</string>
+    <string name="org_unit_select_level">Nivel %d</string>
     <string name="tuto_main_1">Bienvenido a dhis2</string>
     <string name="tuto_main_2">Aquí aparecerán tus programas</string>
     <string name="tuto_main_3">Puedes aplicar un filtro…</string>
@@ -255,7 +256,8 @@
     <string name="dialog_generate_new_event">Generar nuevo evento</string>
     <string name="message_generate_new_event">¿Quieres crear un nuevo evento?</string>
     <string name="event_completed_title">Eventos Completados</string>
-    <string name="event_completed_message">Todos los eventos de este programa han están completados. ¿Quieres completar el programa también?</string>
+    <string name="event_completed_message">Todos los eventos de este programa están completados. ¿Quieres completar el programa también?</string>
     <string name="missing_mandatory_fields_events">Faltan algunos campos obligatorios. Puedes cerrar la edición, pero este evento no podrá ser completado.</string>
+    <string name="no_intructions">No hay información sobre esta pantalla</string>
 
 </resources>

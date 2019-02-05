@@ -1,6 +1,6 @@
 package org.dhis2.usescases.splash;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;

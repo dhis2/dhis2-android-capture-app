@@ -1,13 +1,14 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.forms.FormRepository;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
+import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -66,9 +67,10 @@ public class DataEntryModule {
             @NonNull SchedulerProvider schedulerProvider,
             @NonNull DataEntryStore dataEntryStore,
             @NonNull DataEntryRepository dataEntryRepository,
-            @NonNull RuleEngineRepository ruleEngineRepository) {
+            @NonNull RuleEngineRepository ruleEngineRepository,
+            @NonNull MetadataRepository metadataRepository) {
         return new DataEntryPresenterImpl(codeGenerator, dataEntryStore,
-                dataEntryRepository, ruleEngineRepository, schedulerProvider);
+                dataEntryRepository, ruleEngineRepository, schedulerProvider, metadataRepository);
     }
 
     @Provides

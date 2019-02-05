@@ -1,7 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.dhis2.Bindings.Bindings;
@@ -9,12 +7,10 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.utils.Result;
-
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
-import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -27,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -73,6 +71,7 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
 
         compositeDisposable.add(
                 eventSummaryRepository.accessDataWrite(eventId)
+                        .map(hasDataAccess -> hasDataAccess && eventSummaryRepository.isEnrollmentOpen())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -220,8 +219,8 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
                 FieldViewModel model = fieldViewModels.get(mandatoryField.field());
                 if (model != null)
                     fieldViewModels.put(mandatoryField.field(), model.setMandatory());
-            }else if(ruleAction instanceof RuleActionHideSection){
-                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 view.setHideSection(hideSection.programStageSection());
             }
         }

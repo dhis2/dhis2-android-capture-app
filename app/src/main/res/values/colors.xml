@@ -6,6 +6,7 @@
     <color name="colorPrimaryLight">#BACFFF</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentAlpha">#7fffffff</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 
     <!--RED THEME-->
     <color name="colorPrimaryRed">#8c2121</color>
@@ -23,6 +24,7 @@
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
     <color name="colorGreyDefault">#4d4d4d</color>
+    <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
     <!--BACKEND 64 COLOR THEMES-->
@@ -337,15 +339,22 @@
     <color name="yellow_ffd">#ffd55d</color>
 
     <color name="event_green">#e9fdd2</color>
+    <color name="event_green_pressed">#bbcea6</color>
     <color name="event_red">#fdc1c1</color>
+    <color name="event_red_pressed">#b98a8a</color>
     <color name="event_yellow">#fceec4</color>
+    <color name="event_yellow_pressed">#b7ac89</color>
     <color name="event_gray">#f8f9f9</color>
+    <color name="event_gray_pressed">#dcdede</color>
 
     <color name="blue_4fa">#4fa8d1</color>
     <color name="blue_fab">#1D69A3</color>
     <color name="gray_979">#979797</color>
     <color name="gray_9b9">#9b9b9b</color>
     <color name="gray_b2e">#b2e3e3e3</color>
+    <color name="sectionSelectorBgColor">#fdfdfe</color>
+    <color name="color_item_selected_c3">#c3c3c3</color>
+    <color name="item_unselected_fdf">#fdfdfe</color>
     <!--endregion-->
 
 </resources>

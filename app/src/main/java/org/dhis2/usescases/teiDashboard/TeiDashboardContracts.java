@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.widget.TextView;
 
 import org.dhis2.data.tuples.Pair;
@@ -10,7 +10,8 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.NotesFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.RelationshipFragment;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
-
+import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.relationship.Relationship;
 import org.hisp.dhis.android.core.relationship.RelationshipModel;
@@ -45,6 +46,8 @@ public class TeiDashboardContracts {
         void goToEnrollmentList(Bundle extras);
 
         void restoreAdapter(String programUid);
+
+        void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions);
     }
 
     public interface Presenter {
@@ -119,5 +122,12 @@ public class TeiDashboardContracts {
         void generateEventFromDate(String lastModifiedEventUid, Calendar chosenDate);
 
         void subscribeToRelationshipTypes(RelationshipFragment relationshipFragment);
-    }
+
+        void onScheduleSelected(String uid, android.view.View sharedView);
+
+        void getCatComboOptions(EventModel event);
+
+        void changeCatOption(String eventUid, CategoryOptionComboModel selectedOption);
+
+        }
 }

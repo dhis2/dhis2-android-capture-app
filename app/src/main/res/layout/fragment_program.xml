@@ -11,11 +11,12 @@
 
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        tools:openDrawer="end">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,8 +27,8 @@
                 android:id="@+id/filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp"
                 android:layout_marginTop="7dp"
+                android:layout_marginBottom="7dp"
                 android:gravity="end"
                 android:visibility="gone">
 
@@ -54,8 +55,8 @@
                         android:background="?attr/period_time_button"
                         android:ellipsize="end"
                         android:gravity="center"
-                        android:maxLines="1"
                         android:maxWidth="140dp"
+                        android:maxLines="1"
                         android:minWidth="70dp"
                         android:onClick="@{()->presenter.onDateRangeButtonClick()}"
                         android:padding="7dp"
@@ -67,15 +68,15 @@
                     android:id="@+id/button_org_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
                     android:layout_marginStart="15dp"
+                    android:layout_marginEnd="5dp"
                     android:background="?attr/selector_button_round_20"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:minHeight="40dp"
                     android:onClick="@{()->presenter.onOrgUnitButtonClick()}"
-                    android:paddingEnd="15dp"
                     android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
                     android:text="@string/org_unit"
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
@@ -89,13 +90,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/program_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     app:initGrid="@{false}"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="@{1}" />
 
                 <ProgressBar
@@ -120,7 +121,7 @@
         </LinearLayout>
 
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/org_unit_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -129,38 +130,34 @@
             android:background="@color/white_faf"
             app:itemTextColor="?colorPrimary">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/tree_view_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:paddingEnd="0dp"
-                    android:paddingStart="20dp"
-                    android:paddingTop="40dp"
-                    app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="vertical"
+                android:paddingStart="@dimen/default_start_margin"
+                android:paddingTop="@dimen/default_top_margin"
+                android:paddingEnd="@dimen/default_start_margin"
+                android:paddingBottom="@dimen/default_top_margin">
 
                 <Button
                     android:id="@+id/org_unit_all"
                     style="@style/TextButton"
                     android:text="@string/select_all"
-                    app:layout_constraintBottom_toTopOf="@id/org_unit_unselect_all"
-                    app:layout_constraintEnd_toStartOf="@string/cancel" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/org_unit_unselect_all"
                     style="@style/TextButton"
+                    android:layout_marginEnd="@dimen/item_margin"
                     android:text="@string/clear_all"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@string/cancel" />
+                    app:layout_constraintEnd_toStartOf="@id/org_unit_all"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/org_unit_cancel"
                     style="@style/TextButton"
+                    android:layout_marginEnd="@dimen/item_margin"
                     android:text="@string/cancel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/org_unit_apply" />
@@ -171,7 +168,14 @@
                     android:text="@string/action_accept"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.design.widget.NavigationView>
-    </android.support.v4.widget.DrawerLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tree_view_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@id/org_unit_apply"
+                    app:layout_constraintTop_toBottomOf="@+id/org_unit_all" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.navigation.NavigationView>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

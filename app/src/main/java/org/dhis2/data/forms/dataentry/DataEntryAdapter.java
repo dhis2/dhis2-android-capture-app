@@ -1,11 +1,14 @@
 package org.dhis2.data.forms.dataentry;
 
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView.Adapter;
-import android.support.v7.widget.RecyclerView.ViewHolder;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -32,6 +35,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.fields.unsupported.UnsupportedViewModel;
+import org.dhis2.data.tuples.Trio;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
@@ -68,11 +72,13 @@ public final class DataEntryAdapter extends Adapter {
     private final FlowableProcessor<Integer> currentPosition;
 
     @NonNull
-    private final FlowableProcessor<String> imageSelector;
+    private final ObservableField<String> imageSelector;
 
     @NonNull
     private final List<Row> rows;
     private final DataEntryArguments dataEntryArguments;
+
+    private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
 
     public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
                             @NonNull FragmentManager fragmentManager,
@@ -83,15 +89,15 @@ public final class DataEntryAdapter extends Adapter {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
-        imageSelector = PublishProcessor.create();
+        imageSelector = new ObservableField<>("");
         currentPosition = PublishProcessor.create();
-
+        this.processorOptionSet = PublishProcessor.create();
         this.dataEntryArguments = dataEntryArguments;
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
-        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
@@ -99,7 +105,39 @@ public final class DataEntryAdapter extends Adapter {
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
         rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
-        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
+        rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+
+    }
+
+    public DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
+                            @NonNull FragmentManager fragmentManager,
+                            @NonNull DataEntryArguments dataEntryArguments,
+                            @NonNull Observable<List<OrganisationUnitModel>> orgUnits,
+                            ObservableBoolean isEditable,
+                            @NonNull FlowableProcessor<RowAction> processor,
+                            @NonNull FlowableProcessor<Trio<String, String, Integer>> processorOptSet) { //TODO: Add isEditable to all fields and test if can be changed on the fly
+        setHasStableIds(true);
+        rows = new ArrayList<>();
+        viewModels = new ArrayList<>();
+        this.processor = processor;
+        imageSelector = new ObservableField<>("");
+        currentPosition = PublishProcessor.create();
+        this.processorOptionSet = processorOptSet;
+        this.dataEntryArguments = dataEntryArguments;
+
+        rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType(), isEditable));
+        rows.add(BUTTON, new FileRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, currentPosition, processorOptionSet, true, dataEntryArguments.renderType()));
+        rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(TIME, new DateTimeRow(layoutInflater, processor, currentPosition, TIME, true, dataEntryArguments.renderType()));
+        rows.add(DATE, new DateTimeRow(layoutInflater, processor, currentPosition, DATE, true, dataEntryArguments.renderType()));
+        rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, currentPosition, DATETIME, true, dataEntryArguments.renderType()));
+        rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
+        rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, currentPosition, true, orgUnits, dataEntryArguments.renderType()));
+        rows.add(IMAGE, new ImageRow(layoutInflater, processor, currentPosition, dataEntryArguments.renderType()));
         rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, currentPosition, true, dataEntryArguments.renderType()));
 
     }
@@ -166,10 +204,13 @@ public final class DataEntryAdapter extends Adapter {
     }
 
     @NonNull
-    FlowableProcessor<RowAction> asFlowable() {
+    public FlowableProcessor<RowAction> asFlowable() {
         return processor;
     }
 
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
+        return processorOptionSet;
+    }
 
     public void swap(@NonNull List<FieldViewModel> updates) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(

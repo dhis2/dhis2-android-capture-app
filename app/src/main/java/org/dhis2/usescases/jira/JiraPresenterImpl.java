@@ -1,6 +1,6 @@
 package org.dhis2.usescases.jira;
 
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableField;
 import android.util.Base64;
 
 import org.dhis2.R;

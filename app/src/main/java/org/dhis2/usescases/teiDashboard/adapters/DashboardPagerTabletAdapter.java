@@ -1,9 +1,9 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.R;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.IndicatorsFragment;
@@ -31,11 +31,11 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             default:
-                return RelationshipFragment.createInstance();
+                return IndicatorsFragment.getInstance();
             case 1:
-                return IndicatorsFragment.createInstance();
+                return RelationshipFragment.getInstance();
             case 2:
-                return NotesFragment.createInstance();
+                return NotesFragment.getInstance();
         }
     }
 
@@ -48,9 +48,9 @@ public class DashboardPagerTabletAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             default:
-                return context.getString(R.string.dashboard_relationships);
-            case 1:
                 return context.getString(R.string.dashboard_indicators);
+            case 1:
+                return context.getString(R.string.dashboard_relationships);
             case 2:
                 return context.getString(R.string.dashboard_notes);
         }

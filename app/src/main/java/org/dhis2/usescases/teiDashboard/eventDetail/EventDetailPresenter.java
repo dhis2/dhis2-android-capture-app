@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -13,8 +13,8 @@ import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.dataentry.DataEntryFragment;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
-import org.dhis2.utils.CustomViews.PeriodDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.OnDialogClickListener;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -76,13 +76,11 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
                         .flatMap(
                                 data -> Observable.zip(
                                         eventDetailRepository.eventModelDetail(eventUid),
-                                        eventDetailRepository.dataValueModelList(eventUid),
-                                        eventDetailRepository.programStageSection(eventUid),
-                                        eventDetailRepository.programStageDataElement(eventUid),
                                         eventDetailRepository.programStage(eventUid),
                                         eventDetailRepository.orgUnit(eventUid),
                                         eventDetailRepository.getCategoryOptionCombos(),
                                         eventDetailRepository.getProgram(eventUid),
+                                        eventDetailRepository.isEnrollmentActive(eventUid),
                                         EventDetailModel::new).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
@@ -206,7 +204,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
     @Override
     public void onOrgUnitClick() {
 
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setTitle("Event Org Unit")
                 .setPossitiveListener(v -> {
                     view.setSelectedOrgUnit(orgUnitDialog.getSelectedOrgUnitModel());
@@ -279,8 +277,12 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
 
-        if (eventDetailModel.orgUnitOpeningDate() != null) {
-            dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
+        if (eventDetailModel.getProgram().expiryPeriodType() != null){// eventDetailModel.orgUnitOpeningDate() != null) {
+            Date minDate = DateUtils.getInstance().expDate(null,
+                    eventDetailModel.getProgram().expiryDays() != null ? eventDetailModel.getProgram().expiryDays() : 0,
+                    eventDetailModel.getProgram().expiryPeriodType());
+            dateDialog.getDatePicker().setMinDate(minDate.getTime());
+            //dateDialog.getDatePicker().setMinDate(eventDetailModel.orgUnitOpeningDate().getTime());
         }
 
         if (eventDetailModel.orgUnitClosingDate() != null)
@@ -315,5 +317,15 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
             periodDialog.setMaxDate(eventDetailModel.orgUnitClosingDate());
 
         periodDialog.show(view.getAbstractActivity().getSupportFragmentManager(), PeriodDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onDettach() {
+        disposable.clear();
+    }
+
+    @Override
+    public void displayMessage(String message) {
+        view.displayMessage(message);
     }
 }

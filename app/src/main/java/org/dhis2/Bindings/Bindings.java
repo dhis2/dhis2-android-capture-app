@@ -4,20 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
@@ -27,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -51,6 +45,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -177,7 +179,7 @@ public class Bindings {
         if (spanCount == -1)
             spanCount = 1;
 
-        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, LinearLayoutManager.VERTICAL, false);
+        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, RecyclerView.VERTICAL, false);
 
         recyclerView.setLayoutManager(recyclerLayout);
 
@@ -305,6 +307,7 @@ public class Bindings {
                                         Timber::d
                                 );
                     break;
+                case OVERDUE:
                 case COMPLETED:
                 case SKIPPED:
                     view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
@@ -361,7 +364,7 @@ public class Bindings {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
                                         program -> {
-                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), eventProgramStage.periodType() != null ? eventProgramStage.periodType() : program.expiryPeriodType())) {
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                                 view.setText(view.getContext().getString(R.string.event_expired));
                                             } else {
                                                 view.setText(view.getContext().getString(R.string.event_completed));
@@ -386,10 +389,11 @@ public class Bindings {
                                         Timber::d
                                 );
                     break;
-                case VISITED:
-                    break;
                 case SKIPPED:
                     view.setText(view.getContext().getString(R.string.event_skipped));
+                    break;
+                case OVERDUE:
+                    view.setText(R.string.event_overdue);
                     break;
                 default:
                     view.setText(view.getContext().getString(R.string.read_only));
@@ -414,25 +418,52 @@ public class Bindings {
                     .subscribe(
                             program -> {
                                 int eventColor;
-                                if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                int bgColor;
+                                if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                     eventColor = R.color.event_red;
+                                    bgColor = R.drawable.item_event_red_ripple;
                                 } else {
                                     switch (event.status()) {
                                         case ACTIVE:
-                                            eventColor = R.color.event_yellow;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
+                                            } else {
+                                                eventColor = R.color.event_yellow;
+                                                bgColor = R.drawable.item_event_yellow_ripple;
+                                            }
                                             break;
                                         case COMPLETED:
-                                            eventColor = R.color.event_gray;
+                                            if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
+                                                eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
+
+                                            } else {
+                                                eventColor = R.color.event_gray;
+                                                bgColor = R.drawable.item_event_gray_ripple;
+
+                                            }
                                             break;
                                         case SCHEDULE:
-                                            eventColor = R.color.event_green;
+                                            if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
+                                                eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
+                                            } else {
+                                                eventColor = R.color.event_green;
+                                                bgColor = R.drawable.item_event_green_ripple;
+                                            }
                                             break;
+                                        case VISITED:
+                                        case SKIPPED:
                                         default:
                                             eventColor = R.color.event_red;
+                                            bgColor = R.drawable.item_event_red_ripple;
                                             break;
                                     }
                                 }
-                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
+
+                                view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
+//                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
 
                             },
                             Timber::d
@@ -537,7 +568,7 @@ public class Bindings {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 program -> {
-                                    if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                    if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                         textView.setText(textView.getContext().getString(R.string.event_editing_expired));
                                         textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                                     } else {
@@ -586,7 +617,7 @@ public class Bindings {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     program -> {
-                                        if (DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType())) {
+                                        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays())) {
                                             imageView.setImageResource(R.drawable.ic_eye_red);
                                         } else {
                                             imageView.setImageResource(R.drawable.ic_eye_grey);
@@ -694,6 +725,10 @@ public class Bindings {
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})
     public static List<OptionModel> setOptionSet(@NonNull String optionSet) {
         return metadataRepository.optionSet(optionSet);
+    }
+
+    public static int optionSetItemSize(@Nonnull String optionSet) {
+        return metadataRepository.optionSetSize(optionSet);
     }
 
     @BindingAdapter("fromResBgColor")

@@ -1,11 +1,14 @@
 package org.dhis2.data.service;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Build;
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.dhis2.App;
 import org.dhis2.R;
@@ -24,7 +27,7 @@ import timber.log.Timber;
 
 public class ReservedValuesWorker extends Worker {
 
-    private final static String data_channel = "sync_data_notification";
+    private final static String rv_channel = "sync_rv_notification";
     private final static int SYNC_RV_ID = 8071987;
 
     @Inject
@@ -66,16 +69,20 @@ public class ReservedValuesWorker extends Worker {
     }
 
     private void triggerNotification(String title, String content) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(rv_channel, "ReservedValuesSync", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), data_channel)
+                new NotificationCompat.Builder(getApplicationContext(), rv_channel)
                         .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(title)
                         .setContentText(content)
                         .setAutoCancel(false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(getApplicationContext());
 
         notificationManager.notify(ReservedValuesWorker.SYNC_RV_ID, notificationBuilder.build());
     }

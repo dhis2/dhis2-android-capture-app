@@ -2,10 +2,10 @@ package org.dhis2.usescases.about;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.databinding.FragmentAboutBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import javax.inject.Inject;
@@ -27,7 +26,7 @@ import timber.log.Timber;
  * QUADRAM. Created by ppajuelo on 05/07/2018.
  */
 
-public class AboutFragment extends FragmentGlobalAbstract implements AboutContracts.AboutView{
+public class AboutFragment extends FragmentGlobalAbstract implements AboutContracts.AboutView {
 
     @Inject
     AboutContracts.AboutPresenter presenter;
@@ -51,7 +50,6 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         aboutBinding.aboutGit.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutDev.setMovementMethod(LinkMovementMethod.getInstance());
         aboutBinding.aboutContact.setMovementMethod(LinkMovementMethod.getInstance());
-
         setAppVersion();
         setSDKVersion();
 
@@ -59,7 +57,7 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
     }
 
 
-    private void setAppVersion(){
+    private void setAppVersion() {
         try {
             String versionName = getAbstractActivity()
                     .getPackageManager()
@@ -74,7 +72,7 @@ public class AboutFragment extends FragmentGlobalAbstract implements AboutContra
         }
     }
 
-    private void setSDKVersion(){
+    private void setSDKVersion() {
         String text = String.format(getString(R.string.about_sdk), BuildConfig.SDK_VERSION);
         aboutBinding.appSDK.setText(text);
     }

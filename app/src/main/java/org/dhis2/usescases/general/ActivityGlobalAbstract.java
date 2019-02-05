@@ -5,16 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.ContentLoadingProgressBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,10 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.usescases.login.LoginActivity;
@@ -38,10 +39,11 @@ import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.splash.SplashActivity;
 import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CoordinatesView;
-import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
+import org.dhis2.utils.SyncUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,21 +62,17 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
     public ContentLoadingProgressBar progressBar;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
                 if (intent.getExtras() != null) {
-                    boolean isMetaSync = intent.getExtras().getBoolean("metaSyncInProgress");
-                    boolean isDataSync = intent.getExtras().getBoolean("dataSyncInProgress");
-                    ((App) getApplication()).setMetaSync(isMetaSync);
-                    ((App) getApplication()).seDataSync(isDataSync);
-
                     if (progressBar != null)
-                        if (((App) getApplication()).isSyncing() && progressBar.getVisibility() == View.GONE)
+                        if (SyncUtils.isSyncRunning() && progressBar.getVisibility() == View.GONE)
                             progressBar.setVisibility(View.VISIBLE);
-                        else if (!(((App) getApplication()).isSyncing()))
+                        else if (!SyncUtils.isSyncRunning())
                             progressBar.setVisibility(View.GONE);
                 }
 
@@ -96,6 +94,10 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        if (!getResources().getBoolean(R.bool.is_tablet))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         if (!BuildConfig.DEBUG)
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
@@ -354,7 +356,7 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
     public void setProgressBar(ContentLoadingProgressBar progressBar) {
         if (progressBar != null) {
             this.progressBar = progressBar;
-            if (((App) getApplication()).isSyncing())
+            if (SyncUtils.isSyncRunning())
                 progressBar.setVisibility(View.VISIBLE);
             else progressBar.setVisibility(View.GONE);
         }

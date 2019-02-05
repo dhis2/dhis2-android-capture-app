@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.forms.EventRepository;
@@ -75,8 +75,8 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
-        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, databaseAdapter);
+    EventInitialRepository eventDetailRepository(@NonNull CodeGenerator codeGenerator, BriteDatabase briteDatabase) {
+        return new EventInitialRepositoryImpl(codeGenerator, briteDatabase, eventUid);
     }
 
     @Provides

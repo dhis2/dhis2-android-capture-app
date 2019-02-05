@@ -19,16 +19,15 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/bg_gray_f2f"
         android:paddingBottom="8dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="29dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         >
 
         <TextView
@@ -60,7 +59,6 @@
             android:id="@+id/clear_relationship_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
             android:onClick="@{ () -> presenter.deleteRelationship(relationship)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,12 +70,11 @@
             android:id="@+id/tei_relationship_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clear_relationship_button"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_insert_link"
             tools:ignore="ContentDescription" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

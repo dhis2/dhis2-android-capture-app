@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import android.databinding.ViewDataBinding;
+import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
@@ -13,9 +13,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -26,40 +24,15 @@ import static android.text.TextUtils.isEmpty;
 
 public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
-    private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Integer> currentPosition;
-    /* @NonNull
-     private BehaviorProcessor<DateTimeViewModel> model;*/
+
     private DateTimeViewModel dateTimeViewModel;
 
     DateTimeHolder(ViewDataBinding binding, FlowableProcessor<RowAction> processor, FlowableProcessor<Integer> currentPosition) {
         super(binding);
-        this.disposable = new CompositeDisposable();
         this.processor = processor;
         this.currentPosition = currentPosition;
-
-        /*currentPosition
-                .subscribe(
-                        position -> {
-                            if (position + 1 == getAdapterPosition()){
-                                if (binding instanceof FormTimeTextBinding) {
-                                    ((FormTimeTextBinding) binding).timeView.performClick();
-                                }
-
-                                if (binding instanceof FormDateTextBinding) {
-                                    ((FormDateTextBinding) binding).dateView.performClick();
-                                }
-
-                                if (binding instanceof FormDateTimeTextBinding) {
-                                    ((FormDateTimeTextBinding) binding).dateTimeView.onClick(itemView);
-                                }
-                            }
-                        },
-                        Timber::e
-                );*/
-
-//        model = BehaviorProcessor.create();
 
         if (binding instanceof FormTimeTextBinding) {
             ((FormTimeTextBinding) binding).timeView.setDateListener(this);
@@ -78,7 +51,6 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     public void update(DateTimeViewModel viewModel) {
         this.dateTimeViewModel = viewModel;
-//        model.onNext(viewModel);
         descriptionText = viewModel.description();
         label = new StringBuilder(dateTimeViewModel.label());
         if (dateTimeViewModel.mandatory())
@@ -136,7 +108,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     @Override
     public void onDateSelected(Date date) {
         String dateFormatted = "";
-        if (date != null)
+        if (date != null) {
             if (dateTimeViewModel.valueType() == ValueType.DATE)
                 dateFormatted = DateUtils.uiDateFormat().format(date);
             else if (dateTimeViewModel.valueType() == ValueType.TIME)
@@ -144,16 +116,17 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             else {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
-        processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)
-        );
+        }
+        RowAction rowAction = RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null);
+        processor.onNext(rowAction);
 
-        currentPosition.onNext(getAdapterPosition());
+        if (currentPosition != null)
+            currentPosition.onNext(getAdapterPosition());
 
     }
 
     @Override
     public void dispose() {
-        disposable.clear();
+
     }
 }

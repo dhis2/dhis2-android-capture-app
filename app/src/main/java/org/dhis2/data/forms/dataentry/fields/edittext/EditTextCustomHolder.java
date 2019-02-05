@@ -1,11 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -13,9 +8,12 @@ import android.text.method.DigitsKeyListener;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -23,13 +21,24 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.utils.Constants;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.common.ValueTypeRenderingType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
 import static java.lang.String.valueOf;
 
@@ -41,11 +50,10 @@ import static java.lang.String.valueOf;
 final class EditTextCustomHolder extends FormViewHolder {
 
     private final TextInputLayout inputLayout;
-    private EditText editText;
+    private TextInputAutoCompleteTextView editText;
     private ImageView icon;
-    /* @NonNull
-     private BehaviorProcessor<EditTextModel> model;*/
-    EditTextModel editTextModel;
+    List<String> autoCompleteValues;
+    EditTextViewModel editTextModel;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
@@ -59,22 +67,29 @@ final class EditTextCustomHolder extends FormViewHolder {
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             icon.setVisibility(View.VISIBLE);
 
-        // show and hide hint
-
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
 
-
-
-                if (!isEmpty(editText.getText()) && validate())
+                if (!isEmpty(editText.getText()) && validate()) {
+                    checkAutocompleteRendering();
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
-                else
+
+                } else
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
 
 
             }
         });
 
+    }
+
+    private void checkAutocompleteRendering() {
+        if (editTextModel.fieldRendering() != null &&
+                editTextModel.fieldRendering().type() == ValueTypeRenderingType.AUTOCOMPLETE &&
+                !autoCompleteValues.contains(editText.getText().toString())) {
+            autoCompleteValues.add(editText.getText().toString());
+            saveListToPreference(editTextModel.uid(), autoCompleteValues);
+        }
     }
 
     private void setInputType(ValueType valueType) {
@@ -153,8 +168,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     }
 
     public void update(@NonNull FieldViewModel model) {
-//        model.onNext((EditTextModel) editTextModel);
-        this.editTextModel = (EditTextModel) model;
+        this.editTextModel = (EditTextViewModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
         editText.setEnabled(editTextModel.editable());
@@ -186,6 +200,30 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         descriptionText = editTextModel.description();
         setInputType(editTextModel.valueType());
+        setRenderingType(editTextModel.fieldRendering());
+    }
+
+    private void setRenderingType(ValueTypeDeviceRenderingModel renderingType) {
+        if (renderingType != null && renderingType.type() == ValueTypeRenderingType.AUTOCOMPLETE) {
+            autoCompleteValues = getListFromPreference(editTextModel.uid());
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(editText.getContext(), android.R.layout.simple_dropdown_item_1line, autoCompleteValues);
+            editText.setAdapter(autoCompleteAdapter);
+        }
+    }
+
+    public void saveListToPreference(String key, List<String> list) {
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editText.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).edit().putString(key, json).apply();
+    }
+
+    private List<String> getListFromPreference(String key) {
+        Gson gson = new Gson();
+        String json = editText.getContext().getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE).getString(key, "[]");
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+
+        return gson.fromJson(json, type);
     }
 
     private boolean validate() {

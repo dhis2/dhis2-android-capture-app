@@ -11,11 +11,11 @@
 
         <variable
             name="sharing"
-            type="android.databinding.ObservableBoolean"/>
+            type="androidx.databinding.ObservableBoolean"/>
 
         <variable
             name="shareList"
-            type="android.databinding.ObservableArrayList"/>
+            type="androidx.databinding.ObservableArrayList"/>
 
     </data>
 
@@ -24,11 +24,11 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/title_container"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
@@ -43,6 +43,7 @@
                     android:layout_height="0dp"
                     android:gravity="center|start"
                     android:padding="5dp"
+                    android:paddingEnd="70dp"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -64,13 +65,13 @@
                     android:src="@{sharing?@drawable/ic_clear:@drawable/ic_share,default=@drawable/ic_share}"
                     />
                 <!--app:srcCompat="@drawable/ic_share"-->
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/errorRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@id/possitive"
                 app:layout_constraintTop_toBottomOf="@id/title_container"
                 tools:listitem="@layout/item_error_dialog" />
@@ -89,6 +90,6 @@
                 tools:text="Send"
                 tools:visibility="visible" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </layout>

@@ -1,26 +1,30 @@
 package org.dhis2.usescases.syncManager;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.widget.NestedScrollView;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
@@ -28,8 +32,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSyncManagerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.SyncUtils;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +62,8 @@ import static org.dhis2.utils.Constants.TIME_WEEKLY;
  */
 public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncManagerContracts.View {
 
-    public final static String TAG_DATA = "DATA";
-    public final static String TAG_META_NOW = "META_NOW";
-    public final static String TAG_META = "DATA_NOW";
-    public final static String TAG_DATA_NOW = "DATA_NOW";
+    private int metaInitializationCheck = 0;
+    private int dataInitializationCheck = 0;
 
     @Inject
     SyncManagerContracts.Presenter presenter;
@@ -79,8 +82,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (((App) getActivity().getApplication()).isSyncing() &&
-                        getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
+                if (SyncUtils.isSyncRunning() && getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
                     binding.buttonSyncData.setEnabled(false);
                     binding.buttonSyncMeta.setEnabled(false);
                 } else {
@@ -113,8 +115,29 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         initRadioGroups();
 
-        binding.radioData.setOnCheckedChangeListener((radioGroup, i) -> saveTimeData(i));
-        binding.radioMeta.setOnCheckedChangeListener((radioGroup, i) -> saveTimeMeta(i));
+        binding.dataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (dataInitializationCheck++ >= 1)
+                    saveTimeData(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+        binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (metaInitializationCheck++ >= 1)
+                    saveTimeMeta(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return binding.getRoot();
     }
@@ -125,7 +148,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         presenter.init(this);
         LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
 
-        if (((App) getActivity().getApplication()).isSyncing()) {
+        if (SyncUtils.isSyncRunning()) {
             binding.buttonSyncData.setEnabled(false);
             binding.buttonSyncMeta.setEnabled(false);
         }
@@ -162,6 +185,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
+    public void onStop() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(123456);
+        super.onStop();
+    }
+
+    @Override
     public Consumer<Pair<Integer, Integer>> setSyncData() {
         return syncParameters -> {
             binding.eventMaxData.setText(String.valueOf(prefs.getInt(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)));
@@ -186,10 +216,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         else
             binding.metadataLastSync.setText(getString(R.string.sync_error_text));
 
-      /*  if (!metaStatus || !dataStatus)
-            binding.buttonSyncError.setVisibility(View.VISIBLE);
-        else
-            binding.buttonSyncError.setVisibility(View.GONE);*/
     }
 
     private void initRadioGroups() {
@@ -198,27 +224,30 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         switch (timeData) {
             case TIME_15M:
-                binding.radioData.check(R.id.data15);
+                binding.dataPeriods.setSelection(0);
                 break;
             case TIME_HOURLY:
-                binding.radioData.check(R.id.dataHour);
+                binding.dataPeriods.setSelection(1);
+                break;
+            case TIME_MANUAL:
+                binding.dataPeriods.setSelection(3);
                 break;
             case TIME_DAILY:
             default:
-                binding.radioData.check(R.id.dataDay);
+                binding.dataPeriods.setSelection(2);
                 break;
         }
 
         switch (timeMeta) {
             case TIME_MANUAL:
-                binding.radioMeta.check(R.id.metaManual);
+                binding.metadataPeriods.setSelection(2);
                 break;
             case TIME_WEEKLY:
-                binding.radioMeta.check(R.id.metaWeek);
+                binding.metadataPeriods.setSelection(1);
                 break;
             case TIME_DAILY:
             default:
-                binding.radioMeta.check(R.id.metaDay);
+                binding.metadataPeriods.setSelection(0);
                 break;
         }
     }
@@ -227,53 +256,52 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         int time;
 
         switch (i) {
-            case R.id.dataManual:
-                // manual
+            case 3:
                 time = TIME_MANUAL;
                 break;
-            case R.id.data15:
-                // 15 minutes
+            case 0:
                 time = TIME_15M;
                 break;
-            case R.id.dataHour:
-                // 1 hour
+            case 1:
                 time = TIME_HOURLY;
                 break;
-            case R.id.dataDay:
-                //daily
+            case 2:
                 time = TIME_DAILY;
                 break;
             default:
-                // Manual
                 time = TIME_MANUAL;
                 break;
         }
-        prefs.edit().putInt("timeData", time).apply();
+        prefs.edit().putInt(Constants.TIME_DATA, time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncData(time, "Data");
+            presenter.syncData(time, Constants.DATA);
+        else
+            presenter.cancelPendingWork(Constants.DATA);
     }
 
     private void saveTimeMeta(int i) {
         int time;
 
         switch (i) {
-            case R.id.metaWeek:
+            case 1:
                 // 1 week
                 time = TIME_WEEKLY;
                 break;
-            case R.id.metaManual:
+            case 2:
                 time = TIME_MANUAL;
                 break;
-            case R.id.metaDay:
+            case 0:
             default:
                 // 1 day (default)
                 time = TIME_DAILY;
                 break;
         }
 
-        prefs.edit().putInt("timeMeta", time).apply();
+        prefs.edit().putInt(Constants.TIME_META, time).apply();
         if (time != TIME_MANUAL)
-            presenter.syncMeta(time, "Meta");
+            presenter.syncMeta(time, Constants.META);
+        else
+            presenter.cancelPendingWork(Constants.META);
     }
 
     @Override
@@ -281,9 +309,31 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> presenter.wipeDb())
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
+                    showDeleteProgress();
+                })
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    private void showDeleteProgress() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel("wipe_notification", "Restart", NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(context, "wipe_notification")
+                        .setSmallIcon(R.drawable.ic_sync)
+                        .setContentTitle(getString(R.string.wipe_data))
+                        .setContentText(getString(R.string.please_wait))
+                        .setOngoing(true)
+                        .setAutoCancel(false)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        notificationManager.notify(123456, notificationBuilder.build());
+        presenter.wipeDb();
+
     }
 
     @Override
@@ -293,7 +343,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.radioData))
+                    .focusOn(getAbstractActivity().findViewById(R.id.dataPeriods))
                     .title(getString(R.string.tuto_settings_1))
                     .closeOnTouch(true)
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
@@ -301,7 +351,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                         @Override
                         public void onDismiss(String id) {
                             if (scrollView != null) {
-                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.radioMeta).getX(), (int) getAbstractActivity().findViewById(R.id.radioMeta).getY());
+                                scrollView.scrollTo((int) getAbstractActivity().findViewById(R.id.metadataPeriods).getX(), (int) getAbstractActivity().findViewById(R.id.metadataPeriods).getY());
                             }
                         }
 
@@ -312,7 +362,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     })
                     .build();
             FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                    .focusOn(getAbstractActivity().findViewById(R.id.radioMeta))
+                    .focusOn(getAbstractActivity().findViewById(R.id.metadataPeriods))
                     .title(getString(R.string.tuto_settings_2))
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
                     .closeOnTouch(true)
@@ -349,7 +399,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<ErrorMessageModel> data) {
+    public void showSyncErrors(List<D2Error> data) {
         ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
     }
 }

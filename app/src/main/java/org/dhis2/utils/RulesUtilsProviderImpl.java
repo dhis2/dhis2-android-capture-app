@@ -1,7 +1,5 @@
 package org.dhis2.utils;
 
-import android.support.annotation.NonNull;
-
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 /**
@@ -51,7 +50,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
             RuleAction ruleAction = ruleEffect.ruleAction();
 
             if (ruleAction instanceof RuleActionShowWarning)
-                showWarning((RuleActionShowWarning) ruleAction, fieldViewModels);
+                showWarning((RuleActionShowWarning) ruleAction, fieldViewModels, ruleEffect.data());
             else if (ruleAction instanceof RuleActionShowError)
                 showError((RuleActionShowError) ruleAction, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideField)
@@ -61,7 +60,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
             else if (ruleAction instanceof RuleActionDisplayKeyValuePair)
                 displayKeyValuePair((RuleActionDisplayKeyValuePair) ruleAction, ruleEffect, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideSection)
-                hideSection((RuleActionHideSection) ruleAction, rulesActionCallbacks);
+                hideSection((RuleActionHideSection) ruleAction, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionAssign)
                 assign((RuleActionAssign) ruleAction, ruleEffect, fieldViewModels, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionCreateEvent)
@@ -95,12 +94,12 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
 
     private void showWarning(RuleActionShowWarning showWarning,
-                             Map<String, FieldViewModel> fieldViewModels) {
+                             Map<String, FieldViewModel> fieldViewModels, String data) {
 
         FieldViewModel model = fieldViewModels.get(showWarning.field());
 
         if (model != null)
-            fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content()));
+            fieldViewModels.put(showWarning.field(), model.withWarning(showWarning.content() + data));
         else
             Timber.d("Field with uid %s is missing", showWarning.field());
 
@@ -116,7 +115,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         else
             Timber.d("Field with uid %s is missing", showError.field());
 
-        rulesActionCallbacks.setShowError(showError);
+        rulesActionCallbacks.setShowError(showError, model);
     }
 
     private void hideField(RuleActionHideField hideField, Map<String,
@@ -132,7 +131,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
+                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
 
         if (this.currentFieldViewModels == null ||
                 !this.currentFieldViewModels.containsKey(uid)) {
@@ -150,8 +149,12 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
     }
 
     private void hideSection(RuleActionHideSection hideSection,
-                             RulesActionCallbacks rulesActionCallbacks) {
+                             Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
         rulesActionCallbacks.sethideSection(hideSection.programStageSection());
+        for (FieldViewModel field : fieldViewModels.values()) {
+            if (Objects.equals(field.programStageSection(), hideSection.programStageSection()) && field.value() != null)
+                rulesActionCallbacks.save(field.uid(), null);
+        }
     }
 
     private void assign(RuleActionAssign assign, RuleEffect ruleEffect,

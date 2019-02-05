@@ -1,6 +1,6 @@
 package org.dhis2.data.forms;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.tuples.Pair;
@@ -37,7 +37,7 @@ interface FormView {
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
     @NonNull
-    Consumer<String> renderReportDate();
+    Consumer<Pair<ProgramModel, String>> renderReportDate();
 
     @NonNull
     Consumer<String> renderTitle();

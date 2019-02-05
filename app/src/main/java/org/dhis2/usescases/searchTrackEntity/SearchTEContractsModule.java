@@ -1,9 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -35,6 +36,8 @@ public class SearchTEContractsModule {
 
         Flowable<RowAction> rowActionss();
 
+        Flowable<Trio<String, String, Integer>> optionSetActions();
+
         Flowable<Integer> onlinePage();
 
         Flowable<Integer> offlinePage();
@@ -46,6 +49,8 @@ public class SearchTEContractsModule {
         void setProgramColor(String data);
 
         String fromRelationshipTEI();
+
+        void setListOptions(List<String> options);
     }
 
     public interface Presenter {

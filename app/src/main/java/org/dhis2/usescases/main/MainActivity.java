@@ -3,14 +3,14 @@ package org.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableInt;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.res.ResourcesCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,8 +28,8 @@ import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -49,21 +49,18 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     ObservableInt currentFragment = new ObservableInt(R.id.menu_home);
     private boolean isPinLayoutVisible = false;
 
+    private int fragId;
+
     //-------------------------------------
     //region LIFECYCLE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
-        if (getResources().getBoolean(R.bool.is_tablet))
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setPresenter(presenter);
-        binding.setCurrentFragment(currentFragment);
         binding.navView.setNavigationItemSelectedListener(item -> {
             changeFragment(item.getItemId());
             return false;
@@ -86,7 +83,21 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             }
         });
 
-        changeFragment(R.id.menu_home);
+        if(savedInstanceState != null) {
+            int frag = savedInstanceState.getInt("Fragment");
+            currentFragment.set(frag);
+            binding.setCurrentFragment(currentFragment);
+            changeFragment(frag);
+        } else {
+            binding.setCurrentFragment(currentFragment);
+            changeFragment(R.id.menu_home);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("Fragment", fragId);
     }
 
     @Override
@@ -185,6 +196,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void changeFragment(int id) {
+        fragId = id;
         binding.navView.setCheckedItem(id);
         Fragment fragment = null;
         String tag = null;
@@ -234,7 +246,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void showSyncErrors(List<ErrorMessageModel> data) {
+    public void showSyncErrors(List<D2Error> data) {
         ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 
@@ -245,5 +257,14 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showTutorial(boolean shaked) {
+        if(fragId == R.id.menu_home || fragId == R.id.sync_manager)
+            super.showTutorial(shaked);
+        else
+            showToast(getString(R.string.no_intructions));
+
     }
 }

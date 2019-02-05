@@ -20,7 +20,7 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{()->presenter.onBackClick()}"
-                android:padding="15dp"
+                android:layout_marginStart="16dp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -47,6 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginStart="12dp"
                 android:gravity="start|center"
                 android:text="@{dataSetModel.displayName()}"
                 android:textColor="@android:color/white"
@@ -93,14 +94,14 @@
                         tools:text="@string/lorem" />
                 </LinearLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/dataSetOrgUnitInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/org_unit"
                     android:textColorHint="@color/text_black_808">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/dataSetOrgUnitEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -110,16 +111,16 @@
                         android:textSize="15sp"
                         tools:text="Ngelehun CHC" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/dataSetPeriodInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/report_period"
                     android:textColorHint="@color/text_black_808">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/dataSetPeriodEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -129,7 +130,7 @@
                         android:textSize="15sp"
                         tools:text="June 2018" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:id="@+id/catComboContainer"
@@ -153,5 +154,5 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

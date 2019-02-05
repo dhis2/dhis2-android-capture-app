@@ -2,18 +2,20 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.user.UserRepository;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.user.UserCredentialsModel;
 
 import java.util.Calendar;
@@ -29,7 +31,7 @@ import io.reactivex.Flowable;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.DATA_ELEMENT;
 
-final class DataValueStore implements DataEntryStore {
+public final class DataValueStore implements DataEntryStore {
     private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
             " WHERE " + EventModel.Columns.UID + " = ? AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
 
@@ -41,9 +43,9 @@ final class DataValueStore implements DataEntryStore {
     @NonNull
     private final String eventUid;
 
-    DataValueStore(@NonNull BriteDatabase briteDatabase,
-                   @NonNull UserRepository userRepository,
-                   @NonNull String eventUid) {
+    public DataValueStore(@NonNull BriteDatabase briteDatabase,
+                          @NonNull UserRepository userRepository,
+                          @NonNull String eventUid) {
         this.briteDatabase = briteDatabase;
         this.eventUid = eventUid;
 
@@ -74,6 +76,7 @@ final class DataValueStore implements DataEntryStore {
                 })
                 .switchMap(this::updateEvent);
     }
+
 
     private long update(@NonNull String uid, @Nullable String value, valueType valueType) {
         ContentValues dataValue = new ContentValues();
@@ -221,7 +224,21 @@ final class DataValueStore implements DataEntryStore {
                         }
                     }
 
+                    if (eventModel.enrollment() != null) {
+                        Cursor teiCursor = briteDatabase.query("SELECT TrackedEntityInstance .* FROM TrackedEntityInstance " +
+                                "JOIN Enrollment ON Enrollment.trackedEntityInstance = TrackedEntityInstance.uid WHERE Enrollment.uid = ?", eventModel.enrollment());
+                        if (teiCursor != null && teiCursor.moveToFirst()) {
+                            TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.create(teiCursor);
+                            ContentValues cv = tei.toContentValues();
+                            cv.put(TrackedEntityInstanceModel.Columns.STATE, tei.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+                            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+
+                            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", tei.uid());
+                        }
+                    }
+
                     return Flowable.just(status);
                 });
     }
+
 }

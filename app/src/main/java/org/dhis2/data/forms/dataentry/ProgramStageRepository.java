@@ -2,17 +2,22 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactory;
+import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
+import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
@@ -21,8 +26,6 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
@@ -150,12 +153,12 @@ final class ProgramStageRepository implements DataEntryRepository {
                         for (int i = 0; i < cursor.getCount(); i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
-                            String code = cursor.getString(2);
+                            String optionCode = cursor.getString(2);
                             renderList.add(fieldFactory.create(
                                     fieldViewModel.uid() + "." + uid, //fist
-                                    displayName+"-"+code, ValueType.TEXT, false,
+                                    displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description()));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null));
 
                             cursor.moveToNext();
                         }
@@ -212,9 +215,33 @@ final class ProgramStageRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
+        ValueTypeDeviceRenderingModel fieldRendering = null;
+        Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
+                " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
+                " WHERE ProgramStageDataElement.uid = ?", uid);
+        if (rendering != null && rendering.moveToFirst()) {
+            fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
+            rendering.close();
+        }
+
+        Cursor eventCursor = briteDatabase.query("SELECT * FROM Event WHERE uid = ?", eventUid);
+        eventCursor.moveToFirst();
+        EventModel eventModel = EventModel.create(eventCursor);
+        eventCursor.close();
+        Cursor programStageCursor = briteDatabase.query("SELECT * FROM ProgramStage WHERE uid = ?", eventModel.programStage());
+        programStageCursor.moveToFirst();
+        ProgramStageModel programStageModel = ProgramStageModel.create(programStageCursor);
+        programStageCursor.close();
+        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
+        programCursor.moveToFirst();
+        ProgramModel programModel = ProgramModel.create(programCursor);
+        programCursor.close();
+
+        boolean hasExpired = DateUtils.getInstance().hasExpired(eventModel, programModel.expiryDays(), programModel.completeEventsExpiryDays(), programStageModel.periodType() != null ? programStageModel.periodType() : programModel.expiryPeriodType());
+
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE, renderingType, description);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering);
     }
 
     @NonNull

@@ -2,14 +2,12 @@ package org.dhis2.usescases.main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Gravity;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.user.UserRepository;
 import org.dhis2.usescases.login.LoginActivity;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
@@ -55,6 +53,19 @@ final class MainPresenter implements MainContracts.Presenter {
                 .subscribe(
                         view.renderUsername(),
                         Timber::e));
+
+        compositeDisposable.add(
+                metadataRepository.getDefaultCategoryOptionId()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                id -> {
+                                    SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                                    prefs.edit().putString(Constants.DEFAULT_CAT_COMBO, id).apply();
+                                },
+                                Timber::e
+                        )
+        );
 
         compositeDisposable.addAll(userObservable.connect());
     }

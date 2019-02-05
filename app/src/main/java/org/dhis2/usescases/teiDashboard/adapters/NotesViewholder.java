@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.adapters;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 
 import org.dhis2.databinding.ItemNotesBinding;

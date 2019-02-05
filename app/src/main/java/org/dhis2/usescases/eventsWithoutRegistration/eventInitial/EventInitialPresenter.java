@@ -5,9 +5,9 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -15,6 +15,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -214,12 +215,17 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void deleteEvent() {
+    public void deleteEvent(String trackedEntityInstance) {
         if (eventId != null) {
-            eventInitialRepository.deleteEvent(eventId);
+            eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
             view.showEventWasDeleted();
         } else
-            view.displayMessage("This event has not been created yet");
+            view.displayMessage(view.getContext().getString(R.string.delete_event_error));
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        return eventInitialRepository.isEnrollmentOpen();
     }
 
     @Override
@@ -241,10 +247,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void createEvent(String enrollmentUid, String programStageModel, Date date, String orgUnitUid,
                             String categoryOptionComboUid, String categoryOptionsUid,
-                            String latitude, String longitude) {
+                            String latitude, String longitude, String trackedEntityInstance) {
         if (programModel != null)
             compositeDisposable.add(
-                    eventInitialRepository.createEvent(enrollmentUid, null, view.getContext(), programModel.uid(),
+                    eventInitialRepository.createEvent(enrollmentUid, trackedEntityInstance, view.getContext(), programModel.uid(),
                             programStageModel, date, orgUnitUid,
                             categoryOptionComboUid, categoryOptionsUid,
                             latitude, longitude)
@@ -291,11 +297,11 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     }
 
     @Override
-    public void editEvent(String programStageModel, String eventUid, String date, String orgUnitUid,
+    public void editEvent(String trackedEntityInstance, String programStageModel, String eventUid, String date, String orgUnitUid,
                           String catComboUid, String catOptionCombo,
                           String latitude, String longitude) {
 
-        compositeDisposable.add(eventInitialRepository.editEvent(eventUid, date, orgUnitUid, catComboUid, catOptionCombo, latitude, longitude)
+        compositeDisposable.add(eventInitialRepository.editEvent(trackedEntityInstance, eventUid, date, orgUnitUid, catComboUid, catOptionCombo, latitude, longitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -371,7 +377,10 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        orgUnits -> view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true)),
+                        orgUnits -> {
+                            this.orgUnits = orgUnits;
+                            view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                        },
                         throwable -> view.showNoOrgUnits()
                 ));
     }
@@ -387,7 +396,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     @Override
     public void getSectionCompletion(@Nullable String sectionUid) {
         Flowable<List<FieldViewModel>> fieldsFlowable = eventSummaryRepository.list(sectionUid, eventId);
-
         Flowable<Result<RuleEffect>> ruleEffectFlowable = eventSummaryRepository.calculate().subscribeOn(schedulerProvider.computation())
                 .onErrorReturn(throwable -> Result.failure(new Exception(throwable)));
 
@@ -450,8 +458,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             } else if (ruleAction instanceof RuleActionHideField) {
                 RuleActionHideField hideField = (RuleActionHideField) ruleAction;
                 fieldViewModels.remove(hideField.field());
-            } else if(ruleAction instanceof RuleActionHideSection){
-                RuleActionHideSection hideSection = (RuleActionHideSection)ruleAction;
+            } else if (ruleAction instanceof RuleActionHideSection) {
+                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
                 view.setHideSection(hideSection.programStageSection());
             }
         }

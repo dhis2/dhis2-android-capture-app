@@ -22,12 +22,14 @@ public class RadioButtonHolder extends FormViewHolder {
 
     final RadioGroup radioGroup;
     final FormYesNoBinding binding;
+    private final View clearButton;
 
     RadioButtonViewModel viewModel;
 
     RadioButtonHolder(ViewGroup parent, FormYesNoBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         radioGroup = binding.customYesNo.getRadioGroup();
+        clearButton = binding.customYesNo.getClearButton();
         this.binding = binding;
         this.processor = processor;
     }
@@ -52,7 +54,7 @@ public class RadioButtonHolder extends FormViewHolder {
         else if (checkBoxViewModel.value() != null)
             binding.customYesNo.getRadioGroup().check(R.id.no);
         else
-            binding.customYesNo.getRadioGroup().check(R.id.no_value);
+            binding.customYesNo.getRadioGroup().clearCheck();
 
         if (checkBoxViewModel.warning() != null) {
             binding.warningError.setVisibility(View.VISIBLE);
@@ -82,7 +84,15 @@ public class RadioButtonHolder extends FormViewHolder {
                     rowAction = RowAction.create(checkBoxViewModel.uid(), null);
                     break;
             }
+//            binding.customYesNo.nextFocus(binding.customYesNo);
             processor.onNext(rowAction);
+        });
+
+        clearButton.setOnClickListener(view -> {
+            if (checkBoxViewModel.editable().booleanValue()) {
+                radioGroup.clearCheck();
+                processor.onNext(RowAction.create(checkBoxViewModel.uid(), null));
+            }
         });
 
 

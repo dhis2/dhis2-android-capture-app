@@ -1,6 +1,6 @@
 package org.dhis2.data.server;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 

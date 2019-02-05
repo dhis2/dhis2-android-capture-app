@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -10,12 +10,9 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.enrollment.note.NoteModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramIndicatorModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 
 import java.util.Calendar;
@@ -31,12 +28,6 @@ import io.reactivex.functions.Consumer;
 
 public interface DashboardRepository {
 
-    Observable<ProgramModel> getProgramData(String programUid);
-
-    Observable<List<TrackedEntityAttributeModel>> getAttributes(String programId);
-
-    Observable<OrganisationUnitModel> getOrgUnit(String orgUnitId);
-
     Observable<List<ProgramStageModel>> getProgramStages(String programStages);
 
     Observable<EnrollmentModel> getEnrollment(String programUid, String teiUid);
@@ -47,12 +38,6 @@ public interface DashboardRepository {
 
     Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid);
 
-    /*Observable<List<RelationshipModel>> getRelationships(String teiUid);
-
-    void saveRelationship(String teuid_a, String teuid_b, String relationshipType);
-
-    void deleteRelationship(RelationshipModel relationshipId);*/
-
     Flowable<List<ProgramIndicatorModel>> getIndicators(String programUid);
 
     boolean setFollowUp(String enrollmentUid);
@@ -61,9 +46,9 @@ public interface DashboardRepository {
 
     Consumer<Pair<String, Boolean>> handleNote();
 
-    void setDashboardDetails(String teiUid, String programUid);
+    Observable<Boolean> handleNote(Pair<String,Boolean> pair);
 
-    Flowable<List<EventModel>> getScheduleEvents(String programUid, String teUid, String filter);
+    void setDashboardDetails(String teiUid, String programUid);
 
     Observable<List<TrackedEntityAttributeValueModel>> mainTrackedEntityAttributes(String teiUid);
 

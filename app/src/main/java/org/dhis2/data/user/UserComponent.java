@@ -1,32 +1,24 @@
 package org.dhis2.data.user;
 
-import android.support.annotation.NonNull;
-
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
-import org.dhis2.data.service.DataServiceComponent;
-import org.dhis2.data.service.DataServiceModule;
-import org.dhis2.data.service.MetadataServiceComponent;
-import org.dhis2.data.service.MetadataServiceModule;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
-import org.dhis2.data.service.ServiceComponent;
-import org.dhis2.data.service.ServiceModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
 import org.dhis2.data.service.SyncMetadataWorkerModule;
 import org.dhis2.usescases.about.AboutComponent;
 import org.dhis2.usescases.about.AboutModule;
-import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodComponent;
-import org.dhis2.usescases.dataset.dataSetPeriod.DataSetPeriodModule;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableComponent;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModule;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailComponent;
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModule;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialComponent;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialModule;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureComponent;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialComponent;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialModule;
 import org.dhis2.usescases.eventsWithoutRegistration.eventSummary.EventSummaryComponent;
@@ -47,6 +39,8 @@ import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationCo
 import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationModule;
 import org.dhis2.usescases.qrReader.QrReaderComponent;
 import org.dhis2.usescases.qrReader.QrReaderModule;
+import org.dhis2.usescases.reservedValue.ReservedValueComponent;
+import org.dhis2.usescases.reservedValue.ReservedValueModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEComponent;
 import org.dhis2.usescases.searchTrackEntity.SearchTEModule;
 import org.dhis2.usescases.syncManager.SyncManagerComponent;
@@ -62,6 +56,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import dagger.Subcomponent;
 
 @PerUser
@@ -83,19 +78,10 @@ public interface UserComponent {
     TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
 
     @NonNull
-    ServiceComponent plus(@NonNull ServiceModule serviceModule);
-
-    @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
 
     @NonNull
     QrEventsWORegistrationComponent plus(@NonNull QrEventsWORegistrationModule qrModule);
-
-    @NonNull
-    MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);
-
-    @NonNull
-    DataServiceComponent plus(@NonNull DataServiceModule serviceModule);
 
     @NonNull
     TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);
@@ -134,9 +120,6 @@ public interface UserComponent {
     AboutComponent plus(AboutModule aboutModule);
 
     @NonNull
-    DataSetPeriodComponent plus(DataSetPeriodModule dataSetPeriodModule);
-
-    @NonNull
     DataSetDetailComponent plus(DataSetDetailModule dataSetDetailModel);
 
     @NonNull
@@ -144,6 +127,9 @@ public interface UserComponent {
 
     @NonNull
     DataSetTableComponent plus(DataSetTableModule dataSetTableModule);
+
+    @NonNull
+    ReservedValueComponent plus(ReservedValueModule reservedValueModule);
 
     @Nonnull
     SyncDataWorkerComponent plus(SyncDataWorkerModule syncDataWorkerModule);
@@ -153,4 +139,7 @@ public interface UserComponent {
 
     @NonNull
     ReservedValuesWorkerComponent plus(ReservedValuesWorkerModule reservedValuesWorkerModule);
+
+    @NonNull
+    EventCaptureComponent plus(EventCaptureModule eventCaptureModule);
 }

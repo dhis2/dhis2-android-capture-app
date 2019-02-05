@@ -4,8 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -16,8 +14,8 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLink
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -31,8 +29,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 import timber.log.Timber;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by Cristian on 22/03/2018.
@@ -61,12 +63,12 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     private final BriteDatabase briteDatabase;
     private final CodeGenerator codeGenerator;
-    private final DatabaseAdapter databaseAdapter;
+    private final String eventUid;
 
-    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, DatabaseAdapter databaseAdapter) {
+    EventInitialRepositoryImpl(CodeGenerator codeGenerator, BriteDatabase briteDatabase, String eventUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
-        this.databaseAdapter = databaseAdapter;
+        this.eventUid = eventUid;
     }
 
 
@@ -139,7 +141,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         String uid = codeGenerator.generate();
 
         if (categoryOptionComboUid != null) {
-            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid == null ? "" : categoryOptionComboUid);
+            Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
             if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
                 categoryOptionsUid = cursorCatOpt.getString(0);
                 cursorCatOpt.close();
@@ -161,7 +163,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .completedDate(null)
                 .dueDate(null)
                 .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)//TODO: For now categoryOptionsUid is always null. Should check SELECT_CAT_OPTION_FROM_OPTION_COMBO
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 
@@ -180,6 +181,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if (trackedEntityInstanceUid != null)
+                updateTei(trackedEntityInstanceUid);
             updateProgramTable(createDate, programUid);
             return Observable.just(uid);
         }
@@ -211,11 +214,9 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 .program(program)
                 .programStage(programStage)
                 .organisationUnit(orgUnitUid)
-//                .eventDate(cal.getTime()) Schedule events should not have an event date
                 .completedDate(null)
                 .dueDate(cal.getTime())
                 .state(State.TO_POST)
-                .attributeCategoryOptions(categoryOptionsUid)
                 .attributeOptionCombo(categoryOptionComboUid)
                 .build();
 
@@ -234,6 +235,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     orgUnitUid, programStage);
             return Observable.error(new SQLiteConstraintException(message));
         } else {
+            if (trackedEntityInstanceUid != null)
+                updateTei(trackedEntityInstanceUid);
             updateTrackedEntityInstance(uid, trackedEntityInstanceUid, orgUnitUid);
             updateProgramTable(createDate, program);
             return Observable.just(uid);
@@ -297,7 +300,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
     @NonNull
     @Override
-    public Observable<EventModel> editEvent(String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
+    public Observable<EventModel> editEvent(String trackedEntityInstance, String eventUid, String date, String orgUnitUid, String catComboUid, String catOptionCombo, String latitude, String longitude) {
 
         Date currentDate = Calendar.getInstance().getTime();
         Date dueDate = null;
@@ -320,7 +323,6 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         contentValues.put(EventModel.Columns.LATITUDE, latitude);
         contentValues.put(EventModel.Columns.LONGITUDE, longitude);
         contentValues.put(EventModel.Columns.ATTRIBUTE_OPTION_COMBO, catComboUid);
-        contentValues.put(EventModel.Columns.ATTRIBUTE_CATEGORY_OPTIONS, catOptionCombo);
         contentValues.put(EventModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(currentDate));
 
         long row = -1;
@@ -337,7 +339,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
             String message = String.format(Locale.US, "Failed to update event for uid=[%s]", id);
             return Observable.error(new SQLiteConstraintException(message));
         }
-
+        if (trackedEntityInstance != null)
+            updateTei(trackedEntityInstance);
         return event(id).map(eventModel1 -> {
 //            updateProgramTable(currentDate, eventModel1.program()); //TODO: This is crashing the app
             return eventModel1;
@@ -383,7 +386,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
     }
 
     @Override
-    public void deleteEvent(String eventId) {
+    public void deleteEvent(String eventId, String trackedEntityInstance) {
         Cursor eventCursor = briteDatabase.query("SELECT Event.* FROM Event WHERE Event.uid = ?", eventId);
         if (eventCursor != null && eventCursor.moveToNext()) {
             EventModel eventModel = EventModel.create(eventCursor);
@@ -398,6 +401,56 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                 contentValues.put(EventModel.Columns.STATE, State.TO_DELETE.name());
                 briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + " = ?", eventId);
             }
+
+            if (!isEmpty(eventModel.enrollment()))
+                updateEnrollment(eventModel.enrollment());
+
+            if (trackedEntityInstance != null)
+                updateTei(trackedEntityInstance);
+
+            eventCursor.close();
+        }
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        Boolean isEnrollmentOpen = true;
+        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+        if (enrollmentCursor != null) {
+            if (enrollmentCursor.moveToFirst()) {
+                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+            }
+            enrollmentCursor.close();
+        }
+        return isEnrollmentOpen;
+    }
+
+    private void updateEnrollment(String enrollmentUid) {
+        String selectEnrollment = "SELECT * FROM Enrollment WHERE uid = ?";
+        Cursor enrollmentCursor = briteDatabase.query(selectEnrollment, enrollmentUid);
+        if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
+            EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+            ContentValues cv = enrollment.toContentValues();
+            cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(EnrollmentModel.Columns.STATE,
+                    enrollment.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+            enrollmentCursor.close();
+        }
+    }
+
+    private void updateTei(String teiUid) {
+        String selectTei = "SELECT * FROM TrackedEntityInstance WHERE uid = ?";
+        Cursor teiCursor = briteDatabase.query(selectTei, teiUid);
+        if (teiCursor != null && teiCursor.moveToFirst()) {
+            TrackedEntityInstanceModel teiModel = TrackedEntityInstanceModel.create(teiCursor);
+            ContentValues cv = teiModel.toContentValues();
+            cv.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(TrackedEntityInstanceModel.Columns.STATE,
+                    teiModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(TrackedEntityInstanceModel.TABLE, cv, "uid = ?", teiUid);
+            teiCursor.close();
         }
     }
 }

@@ -1,10 +1,6 @@
 package org.dhis2.data.metadata;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.utils.ErrorMessageModel;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -13,6 +9,7 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -27,9 +24,10 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 
 
 /**
@@ -58,9 +56,16 @@ public interface MetadataRepository {
 
     Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId);
 
+    Observable<String> getDefaultCategoryOptionId();
+
+
     /*CATEGORY OPTION COMBO*/
 
     Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId);
+
+    Observable<List<CategoryOptionComboModel>> getCategoryComboOptions(String categoryComboId);
+
+    void saveCatOption(String eventUid, CategoryOptionComboModel selectedOption);
 
     /*CATEGORY COMBO*/
 
@@ -117,6 +122,8 @@ public interface MetadataRepository {
 
     Observable<ProgramModel> getExpiryDateFromEvent(String eventUid);
 
+    Observable<Boolean> isCompletedEventExpired(String eventUid);
+
 
     /*OPTION SET*/
     List<OptionModel> optionSet(String optionSetId);
@@ -147,9 +154,11 @@ public interface MetadataRepository {
 
     Observable<String> getServerUrl();
 
-    void createErrorTable();
+    Observable<List<D2Error>> getSyncErrors();
 
-    Observable<List<ErrorMessageModel>> getSyncErrors();
+    Observable<Integer> getOrgUnitsForDataElementsCount();
 
-    void deleteErrorLogs();
+    Observable<List<String>> searchOptions(String text, String idOptionSet, int page);
+
+    int optionSetSize(String optionSet);
 }

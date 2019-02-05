@@ -4,15 +4,17 @@ package org.dhis2.usescases.splash;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.UserManager;
 import org.dhis2.usescases.login.LoginActivity;
 import org.dhis2.usescases.main.MainActivity;
+import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.Constants;
+import org.dhis2.utils.SyncUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -64,22 +66,29 @@ public class SplashPresenter implements SplashContracts.Presenter {
             return;
         }
 
-        compositeDisposable.add(
-                splashRespository.checkExpiredEvents()
-                        .subscribeOn(Schedulers.computation())
-                        .flatMap(data -> userManager.isUserLoggedIn())
-                        .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(isUserLoggedIn -> {
-                            SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
-                                    Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                            if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
-                                navigateToHomeView();
-                            } else {
-                                navigateToLoginView();
-                            }
-                        }, Timber::e));
+        if (SyncUtils.isSyncRunning()){
+
+            view.startActivity(SyncActivity.class, null, true, true, null);
+
+        }else {
+
+            compositeDisposable.add(
+                    splashRespository.checkExpiredEvents()
+                            .subscribeOn(Schedulers.computation())
+                            .flatMap(data -> userManager.isUserLoggedIn())
+                            .delay(2000, TimeUnit.MILLISECONDS, Schedulers.io())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(isUserLoggedIn -> {
+                                SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
+                                        Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                                if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                                    navigateToHomeView();
+                                } else {
+                                    navigateToLoginView();
+                                }
+                            }, Timber::e));
+        }
     }
 
     @Override

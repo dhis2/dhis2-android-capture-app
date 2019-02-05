@@ -1,9 +1,9 @@
 package org.dhis2.usescases.datasets.datasetInitial;
 
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputEditText;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -15,8 +15,8 @@ import org.dhis2.databinding.ActivityDatasetInitialBinding;
 import org.dhis2.databinding.ItemCategoryComboBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
-import org.dhis2.utils.CustomViews.PeriodDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
+import org.dhis2.utils.custom_views.PeriodDialog;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -93,7 +94,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
      */
     @Override
     public void showOrgUnitDialog(List<OrganisationUnitModel> data) {
-        OrgUnitDialog orgUnitDialog = OrgUnitDialog.newInstace(false);
+        OrgUnitDialog orgUnitDialog = OrgUnitDialog.getInstace().setMultiSelection(false);
         orgUnitDialog.setOrgUnits(data);
         orgUnitDialog.setTitle(getString(R.string.org_unit))
                 .setPossitiveListener(v -> {
@@ -118,7 +119,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
                 .setPossitiveListener(selectedDate -> {
                     this.selectedPeriod = selectedDate;
-                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
+                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
                 })
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());

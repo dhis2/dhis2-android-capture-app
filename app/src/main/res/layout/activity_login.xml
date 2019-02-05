@@ -31,84 +31,16 @@
                 android:layout_height="wrap_content"
                 android:background="?colorPrimary">
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottieView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/sync_layout"
-                    android:layout_below="@id/logo_layout"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone"
-                    app:lottie_autoPlay="false"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/world_lottie" />
-
-                <include
-                    android:id="@+id/logo_layout"
-                    layout="@layout/logo_dhis"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true" />
-
                 <ImageView
-                    android:id="@+id/dhisLogo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
+                    android:layout_width="200dp"
+                    android:layout_height="100dp"
                     android:layout_centerInParent="true"
-                    android:layout_margin="10dp"
-                    android:tint="@color/white"
-                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_dhis_white" />
-
-                <ImageView
-                    android:id="@+id/logo_flag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:alpha="0"
-                    android:paddingBottom="80dp"
-                    android:visibility="gone"
-                    tools:src="@drawable/sierra_leone" />
-
-                <LinearLayout
-                    android:id="@+id/sync_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_margin="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:gravity="bottom"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/metadataText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/syncing_configuration"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="11sp"
-                        app:drawableEnd="@{@drawable/animator_sync}" />
-
-                    <TextView
-                        android:id="@+id/eventsText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_margin="5dp"
-                        android:alpha=".3"
-                        android:gravity="center_vertical"
-                        android:text="@string/syncing_data_shortly"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="11sp" />
-
-                </LinearLayout>
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/credentialLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_margin="10dp"
@@ -118,89 +50,147 @@
 
                 <ImageButton
                     android:id="@+id/qr_button"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/full_width_button_bg"
+                    style="@style/ActionIcon"
                     android:onClick="@{presenter::onQRClick}"
+                    android:tint="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/server_url"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/server_url"
                     app:srcCompat="@drawable/ic_qr"
                     tools:ignore="ContentDescription" />
 
-                <android.support.design.widget.TextInputLayout
+                <ImageButton
+                    android:id="@+id/visibility_button"
+                    style="@style/ActionIcon"
+                    android:layout_toEndOf="@id/user_pass"
+                    android:onClick="@{presenter::onVisibilityClick}"
+                    android:tint="?colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="@id/user_pass"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/user_pass"
+                    app:srcCompat="@drawable/ic_visibility_off"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/server_url"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/qr_button"
                     android:hint="@string/url_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/user_name"
+                    app:layout_constraintEnd_toStartOf="@id/qr_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed">
 
-                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/server_url_edit"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:imeOptions="actionNext"
                         android:inputType="textUri"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onServerChanged}"
                         android:padding="5dp"
                         android:text="https://"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/server_url"
                     android:layout_centerInParent="true"
                     android:hint="@string/user_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/user_pass"
+                    app:layout_constraintTop_toBottomOf="@+id/server_url"
+                    app:layout_constraintVertical_chainStyle="spread">
 
-                    <org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView
+                    <org.dhis2.utils.custom_views.TextInputAutoCompleteTextView
                         android:id="@+id/user_name_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:imeOptions="actionNext"
                         android:inputType="textPersonName"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onUserChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/user_pass"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/user_name"
                     android:layout_centerInParent="true"
                     android:hint="@string/password_hint"
                     android:textColorHint="@color/text_black_808"
-                    android:theme="@style/loginInputText">
+                    android:theme="@style/loginInputText"
+                    app:layout_constraintBottom_toTopOf="@+id/biometricButton"
+                    app:layout_constraintEnd_toStartOf="@id/visibility_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/user_name"
+                    app:layout_constraintVertical_chainStyle="spread">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_pass_edit"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
-                        android:onTextChanged="@{presenter::onTextChanged}"
+                        android:onTextChanged="@{presenter::onPassChanged}"
                         android:textColor="@color/text_black_333"
                         android:textSize="17sp" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <include
-                    android:id="@+id/testingEnvironment"
-                    layout="@layout/testing_env"
+                <ImageButton
+                    android:id="@+id/biometricButton"
+                    style="@style/ActionIcon"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{()->presenter.onFingerprintClick()}"
+                    android:tint="?colorPrimary"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/user_pass"
+                    app:layout_constraintVertical_chainStyle="spread"
+                    app:srcCompat="@drawable/ic_fingerprint"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/progressLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/user_pass" />
+                    android:text="Authenticating"
+                    android:textColor="@color/text_black_333" />
 
-            </RelativeLayout>
+                <ProgressBar
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    app:progressColor="@{@color/colorPrimary}" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/login"
