@@ -15,6 +15,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -219,7 +220,7 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
             view.showEventWasDeleted();
         } else
-            view.displayMessage("This event has not been created yet");
+            view.displayMessage(view.getContext().getString(R.string.delete_event_error));
     }
 
     @Override
