@@ -227,47 +227,6 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
     }
 
-    /*private int getCellViewType(int rowPosition) {
-        columnPos = rowPosition;
-
-        FieldViewModel viewModel;
-        if (viewModels.size() <= rowPosition)
-            viewModel = viewModels.get(rowPosition - 1).get(0);
-        else
-            viewModel = viewModels.get(rowPosition).get(0);
-
-        if (viewModel instanceof EditTextModel) {
-            return EDITTEXT;
-        } else if (viewModel instanceof RadioButtonViewModel) {
-            return CHECKBOX;
-        } else if (viewModel instanceof SpinnerViewModel) {
-            return SPINNER;
-        } else if (viewModel instanceof CoordinateViewModel) {
-            return COORDINATES;
-
-        } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
-        } else if (viewModel instanceof AgeViewModel) {
-            return AGEVIEW;
-        } else if (viewModel instanceof FileViewModel) {
-            return BUTTON;
-        } else if (viewModel instanceof OrgUnitViewModel) {
-            return ORG_UNIT;
-        } else if (viewModel instanceof ImageViewModel) {
-            return IMAGE;
-        } else if (viewModel instanceof UnsupportedViewModel) {
-            return UNSUPPORTED;
-        } else {
-            throw new IllegalStateException("Unsupported view model type: "
-                    + viewModel.getClass());
-        }
-    }*/
-
     @Override
     public int getColumnHeaderItemViewType(int columnPosition) {
         return 0;

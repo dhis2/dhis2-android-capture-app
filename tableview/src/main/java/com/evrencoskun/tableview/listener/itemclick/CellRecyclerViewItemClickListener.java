@@ -45,7 +45,7 @@ public class CellRecyclerViewItemClickListener extends AbstractItemClickListener
         // Get interacted view from x,y coordinate.
         View childView = view.findChildViewUnder(e.getX(), e.getY());
 
-        if (childView != null && mGestureDetector.onTouchEvent(e)) {
+        if (childView != null) {
             // Find the view holder
             AbstractViewHolder holder = (AbstractViewHolder) mRecyclerView.getChildViewHolder
                     (childView);
