@@ -11,7 +11,7 @@ public interface Row<VH extends AbstractViewHolder, VM extends FieldViewModel> {
     @NonNull
     VH onCreate(@NonNull ViewGroup parent);
 
-    void onBind(@NonNull VH viewHolder, @NonNull VM viewModel);
+    void onBind(@NonNull VH viewHolder, @NonNull VM viewModel, String value);
 
     void deAttach(@NonNull VH viewHolder);
 }

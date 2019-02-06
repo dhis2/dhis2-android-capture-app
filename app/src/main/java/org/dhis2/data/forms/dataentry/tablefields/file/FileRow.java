@@ -53,7 +53,7 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull FileHolder viewHolder, @NonNull FileViewModel viewModel) {
+    public void onBind(@NonNull FileHolder viewHolder, @NonNull FileViewModel viewModel, String value) {
         binding.setLabel(viewModel.label());
     }
 

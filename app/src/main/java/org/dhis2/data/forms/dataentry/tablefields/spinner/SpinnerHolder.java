@@ -109,7 +109,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             if(value.equals(optionModel.displayName()))
                 code = optionModel.code();
         processor.onNext(
-                RowAction.create(viewModel.uid(), code, viewModel.dataElement(), viewModel.listCategoryOption())
+                RowAction.create(viewModel.uid(), code, viewModel.dataElement(), viewModel.listCategoryOption(), viewModel.row(), viewModel.column())
         );
         return false;
     }

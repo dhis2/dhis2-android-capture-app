@@ -49,7 +49,7 @@ public class AgeRow implements Row<AgeHolder, AgeViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel) {
+    public void onBind(@NonNull AgeHolder viewHolder, @NonNull AgeViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 

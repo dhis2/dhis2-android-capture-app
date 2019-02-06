@@ -58,7 +58,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel) {
+    public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel, String value) {
         viewHolder.update(viewModel);
     }
 

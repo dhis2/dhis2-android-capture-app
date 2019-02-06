@@ -60,8 +60,8 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     }
 
     @Override
-    public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel) {
-        viewHolder.update(viewModel);
+    public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel, String value) {
+        viewHolder.update(viewModel, value);
     }
 
     @Override

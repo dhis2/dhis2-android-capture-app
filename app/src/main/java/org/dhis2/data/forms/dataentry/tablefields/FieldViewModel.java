@@ -61,4 +61,8 @@ public abstract class FieldViewModel {
 
     @Nonnull
     public abstract String storeBy();
+
+    public abstract int row();
+
+    public abstract int column();
 }

@@ -48,7 +48,7 @@ public class UnsupportedRow implements Row<UnsupportedHolder, UnsupportedViewMod
     }
 
     @Override
-    public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel) {
+    public void onBind(@NonNull UnsupportedHolder viewHolder, @NonNull UnsupportedViewModel viewModel, String value) {
         viewHolder.update(viewModel);
     }
 

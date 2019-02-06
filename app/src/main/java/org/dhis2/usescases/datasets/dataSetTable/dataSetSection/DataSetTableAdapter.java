@@ -14,6 +14,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
+import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.data.forms.dataentry.tablefields.age.AgeRow;
@@ -32,9 +33,7 @@ import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -74,8 +73,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private final List<Row> rows;
     private int columnPos = 0;
     private int rowPos = 0;
-    private Boolean showRowTotal;
-    private Boolean showColumnTotal;
+    private Boolean showRowTotal = false;
+    private Boolean showColumnTotal = false;
 
     public void setRowPos(int rowPos) {
         this.rowPos = rowPos;
@@ -90,14 +89,14 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), new ObservableBoolean(accessDataWrite)));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
@@ -118,7 +117,9 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         /*return new DataSetCell(
                 DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dataset_cell, parent, false)
         );*/
-        return rows.get(getCellViewType(rowPos)).onCreate(parent);
+        AbstractViewHolder holder = rows.get(getCellViewType(rowPos)).onCreate(parent);
+        holder.setIsRecyclable(false);
+        return holder;
     }
 
     /**
@@ -137,12 +138,15 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
+        try {
+            rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition), cellItemModel != null ? cellItemModel.toString() : "");
+            holder.itemView.setEnabled(false);
+            holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            rowPos = rowPosition + 1;
+        }catch (Exception e){
 
-        rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
-        holder.itemView.setEnabled(false);
-        holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        rowPos = rowPosition +1;
+        }
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -232,12 +236,12 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
     }
 
-    private int getCellViewType(int rowPosition){
+    private int getCellViewType(int rowPosition) {
         columnPos = rowPosition;
 
         FieldViewModel viewModel;
-        if(viewModels.size() <= rowPosition)
-            viewModel = viewModels.get(rowPosition-1).get(0);
+        if (viewModels.size() <= rowPosition)
+            viewModel = viewModels.get(rowPosition - 1).get(0);
         else
             viewModel = viewModels.get(rowPosition).get(0);
 
@@ -291,5 +295,22 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @NonNull
     public FlowableProcessor<RowAction> asFlowable() {
         return processor;
+    }
+
+    public void updateValue(RowAction rowAction) {
+        int oldValue = 0;
+        if(getCellItem(rowAction.columnPos(),rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(),rowAction.rowPos()).isEmpty())
+            oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(),rowAction.rowPos()));
+
+        changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "");
+
+        int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
+                + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+        int totalColumn = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
+                + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+        if(showRowTotal)
+            changeCellItem(viewModels.get(0).size()-1,rowAction.rowPos(),totalRow+"");
+        if(showColumnTotal)
+            changeCellItem(rowAction.columnPos(),viewModels.size()-1,totalColumn+"");
     }
 }

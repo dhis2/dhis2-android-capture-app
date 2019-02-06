@@ -51,7 +51,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     }
 
     @Override
-    public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel) {
+    public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 

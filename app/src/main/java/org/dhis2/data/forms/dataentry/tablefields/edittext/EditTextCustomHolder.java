@@ -58,16 +58,16 @@ final class EditTextCustomHolder extends FormViewHolder {
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
                 if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.row(), editTextModel.column()));
                 else
-                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.row(), editTextModel.column()));
             }
         });
 
     }
 
 
-    public void update(@NonNull FieldViewModel model) {
+    public void update(@NonNull FieldViewModel model, String value) {
         if (!model.editable()) {
             editText.setEnabled(false);
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
@@ -86,6 +86,9 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
+
+        if(value != null && !value.isEmpty())
+            editText.setText(value);
 
         if (!isEmpty(editTextModel.warning())) {
             inputLayout.setError(editTextModel.warning());

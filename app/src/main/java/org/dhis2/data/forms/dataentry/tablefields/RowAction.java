@@ -23,8 +23,15 @@ public abstract class RowAction {
     @Nullable
     public abstract List<String> listCategoryOption();
 
+
+    public abstract int rowPos();
+
+
+    public abstract int columnPos();
+
     @NonNull
-    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable List<String> listCategoryOption) {
-        return new AutoValue_RowAction(id, value, dataElement, listCategoryOption);
+    public static RowAction create(@NonNull String id, @Nullable String value, @Nullable String dataElement, @Nullable List<String> listCategoryOption,
+                                    int rowPos,  int columnPos) {
+        return new AutoValue_RowAction(id, value, dataElement, listCategoryOption, rowPos, columnPos);
     }
 }

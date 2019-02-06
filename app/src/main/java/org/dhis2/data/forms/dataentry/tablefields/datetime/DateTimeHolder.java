@@ -119,11 +119,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
 
         if (binding instanceof FormTimeTextBinding)
-            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormTimeTextBinding) binding).timeView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
         if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormDateTextBinding) binding).dateView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
         if (binding instanceof FormDateTimeTextBinding)
-            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
 
         binding.executePendingBindings();
     }
@@ -140,7 +140,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.listCategoryOption())
+                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.listCategoryOption(), dateTimeViewModel.row(), dateTimeViewModel.column())
         );
     }
 

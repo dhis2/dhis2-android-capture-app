@@ -72,7 +72,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
+    public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel, String value) {
         viewHolder.update(viewModel);
     }
 

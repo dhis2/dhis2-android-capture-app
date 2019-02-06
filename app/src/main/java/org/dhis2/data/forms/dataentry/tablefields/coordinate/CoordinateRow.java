@@ -52,7 +52,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     }
 
     @Override
-    public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
+    public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 

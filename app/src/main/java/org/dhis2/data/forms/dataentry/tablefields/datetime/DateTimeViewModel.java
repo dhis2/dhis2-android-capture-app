@@ -23,31 +23,31 @@ public abstract class DateTimeViewModel extends FieldViewModel {
     public abstract ValueType valueType();
 
     public static FieldViewModel create(String id, String label, Boolean mandatory, ValueType type, String value, String section, Boolean allowFutureDates, Boolean editable, String description,
-                                        @Nullable String dataElement, @Nullable List<String> listCategoryOption, @Nullable String storeBy) {
-        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates,editable,null,null,null,description, dataElement, listCategoryOption, storeBy, type);
+                                        @Nullable String dataElement, @Nullable List<String> listCategoryOption, @Nullable String storeBy, @Nullable int row, @Nullable int column) {
+        return new AutoValue_DateTimeViewModel(id, label, mandatory, value,section, allowFutureDates,editable,null,null,null,description, dataElement, listCategoryOption, storeBy, row, column, type);
     }
 
     @Override
     public FieldViewModel setMandatory() {
         return new AutoValue_DateTimeViewModel(uid(),label(),true,value(),programStageSection(),
-                allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(),valueType());
+                allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(), row(), column(),valueType());
     }
 
     @NonNull
     @Override
     public FieldViewModel withError(@NonNull String error) {
         return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),value(),programStageSection(),
-                allowFutureDate(),editable(),optionSet(),warning(),error,description(), dataElement(),listCategoryOption(), storeBy(),valueType());    }
+                allowFutureDate(),editable(),optionSet(),warning(),error,description(), dataElement(),listCategoryOption(), storeBy(), row(), column(),valueType());    }
 
     @NonNull
     @Override
     public FieldViewModel withWarning(@NonNull String warning) {
         return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),value(),programStageSection(),
-                allowFutureDate(),editable(),optionSet(),warning,error(),description(), dataElement(),listCategoryOption(), storeBy(),valueType());    }
+                allowFutureDate(),editable(),optionSet(),warning,error(),description(), dataElement(),listCategoryOption(), storeBy(),row(), column(),valueType());    }
 
     @Nonnull
     @Override
     public FieldViewModel withValue(String data) {
         return new AutoValue_DateTimeViewModel(uid(),label(),mandatory(),data,programStageSection(),
-                allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(),valueType());    }
+                allowFutureDate(),editable(),optionSet(),warning(),error(),description(), dataElement(),listCategoryOption(), storeBy(),row(), column(),valueType());    }
 }

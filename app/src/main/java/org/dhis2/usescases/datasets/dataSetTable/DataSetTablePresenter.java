@@ -4,12 +4,8 @@ import android.support.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
-import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.data.schedulers.SchedulerProvider;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
 import org.dhis2.data.tuples.Quintet;
-import org.dhis2.data.tuples.Trio;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -18,11 +14,9 @@ import org.hisp.dhis.android.core.dataelement.DataElementModel;
 import org.hisp.dhis.android.core.dataset.SectionModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -105,7 +99,6 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                     dataValue.catOption(), dataValue.listCategoryOption() );
                             dataValues.remove(dataValue);
                             dataValues.add(dataSetTableModel);
-                            dataSetSectionFragment.createTable(rowAction);
                             exists = true;
                             break;
                         }
@@ -115,8 +108,8 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 "", catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
                                 "", rowAction.listCategoryOption());
                         dataValues.add(dataSetTableModel);
-                        dataSetSectionFragment.createTable(rowAction);
                     }
+                    dataSetSectionFragment.updateData(rowAction);
                     },
                         Timber::e));
     }

@@ -24,5 +24,7 @@ public interface FieldViewModelFactory {
                           @Nullable String description,
                           @Nullable String dataElement,
                           @Nullable List<String> listCategoryOption,
-                          @Nullable String storeBy);
+                          @Nullable String storeBy,
+                          @Nullable int row,
+                          @Nullable int column);
 }
