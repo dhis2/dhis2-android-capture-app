@@ -55,7 +55,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     }
 
 
-    public void update(DateTimeViewModel viewModel, boolean accessDataWrite) {
+    public void update(DateTimeViewModel viewModel, boolean accessDataWrite, String value) {
         this.dateTimeViewModel = viewModel;
 //        model.onNext(viewModel);
         descriptionText = viewModel.description();
@@ -71,6 +71,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         } else {
             binding.setVariable(BR.initData, null);
         }
+
+        if(!isEmpty(value))
+            binding.setVariable(BR.initData, value);
 
         if (binding instanceof FormDateTextBinding)
             ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());

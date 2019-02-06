@@ -126,6 +126,7 @@ dependencies {
 
     implementation project(":customFab")
     implementation project(":dhis2-rule-engine")
+    implementation project(":tableview")
 
     //region SUPPORT LIBRARIES
     implementation "com.android.support:appcompat-v7:${libraries.support}"
@@ -159,7 +160,7 @@ dependencies {
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
     //TABLEVIEW
-    implementation "com.evrencoskun.library:tableview:${libraries.tableview}"
+    //implementation "com.evrencoskun.library:tableview:${libraries.tableview}"
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     //endregion

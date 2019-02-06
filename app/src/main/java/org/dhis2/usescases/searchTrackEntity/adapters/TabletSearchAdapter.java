@@ -84,7 +84,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     }
 
     @Override
-    public int getCellItemViewType(int position) {
+    public int getCellItemViewType(int columnPosition, int rowPosition) {
         return 0;
     }
 

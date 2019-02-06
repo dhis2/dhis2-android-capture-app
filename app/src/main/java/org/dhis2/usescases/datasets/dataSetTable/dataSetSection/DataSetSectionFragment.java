@@ -98,15 +98,13 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         List<List<String>> listCatOptions = presenter.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
         int countColumn = 0;
         Integer[] totalColumn = new Integer[listCatOptions.size()];
-        boolean showColumnTotal = false;
-        boolean showRowTotal = false;
         boolean isNumber = true;
         int row = 0, column = 0;
 
         for (SectionModel section : presenter.getSections()) {
             if (section.name().equals(sectionUid)) {
-                showColumnTotal = section.showColumnTotals();
-                showRowTotal = section.showRowTotals();
+                adapter.setShowColumnTotal(section.showColumnTotals());
+                adapter.setShowRowTotal(section.showRowTotals());
             }
         }
 
@@ -136,10 +134,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
                         if (isNumber) {
-                            if (showColumnTotal)
+                            if (adapter.getShowColumnTotal())
                                 totalColumn[countColumn] = totalColumn[countColumn] != null ?
                                         Integer.parseInt(dataValue.value()) + totalColumn[countColumn] : Integer.parseInt(dataValue.value());
-                            if (showRowTotal)
+                            if (adapter.getShowRowTotal())
                                 totalRow = totalRow + Integer.parseInt(dataValue.value());
                         }
 
@@ -165,7 +163,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                 column++;
             }
             countColumn = 0;
-            if (isNumber && showRowTotal) {
+            if (isNumber && adapter.getShowRowTotal()) {
                 setTotalRow(totalRow, fields, values, row, column);
             }
             listFields.add(fields);
@@ -175,9 +173,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         }
 
         if (isNumber) {
-            if (showColumnTotal)
+            if (adapter.getShowColumnTotal())
                 setTotalColumn(totalColumn, listFields, cells, presenter.getDataElements(), row, column);
-            if (showRowTotal)
+            if (adapter.getShowRowTotal())
                 presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1).
                         add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
         }
@@ -202,7 +200,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         ArrayList<String> values = new ArrayList<>();
         boolean existTotal = false;
         for (DataElementModel data : dataElements.get(sectionUid))
-            if (data.displayName().equals(getString(R.string.total)))
+            if (data.displayName().equals(getContext().getString(R.string.total)))
                 existTotal = true;
 
         for (Integer column : totalColumn) {

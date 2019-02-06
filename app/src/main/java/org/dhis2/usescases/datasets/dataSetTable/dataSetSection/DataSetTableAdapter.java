@@ -71,14 +71,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private final FlowableProcessor<RowAction> processor;
     @NonNull
     private final List<Row> rows;
-    private int columnPos = 0;
-    private int rowPos = 0;
+
     private Boolean showRowTotal = false;
     private Boolean showColumnTotal = false;
 
-    public void setRowPos(int rowPos) {
-        this.rowPos = rowPos;
-    }
+
 
     public DataSetTableAdapter(Context context, boolean accessDataWrite) {
         super(context);
@@ -110,16 +107,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      *
      * @param viewType : This value comes from #getCellItemViewType method to support different type
      *                 of viewHolder as a Cell item.
-     * @see #getCellItemViewType(int);
+     * @see #getCellItemViewType(int, int);
      */
     @Override
     public AbstractViewHolder onCreateCellViewHolder(ViewGroup parent, int viewType) {
-        /*return new DataSetCell(
-                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dataset_cell, parent, false)
-        );*/
-        AbstractViewHolder holder = rows.get(getCellViewType(rowPos)).onCreate(parent);
-        holder.setIsRecyclable(false);
-        return holder;
+       return rows.get(viewType).onCreate(parent);
     }
 
     /**
@@ -138,15 +130,14 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      */
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
-        try {
-            rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition), cellItemModel != null ? cellItemModel.toString() : "");
-            holder.itemView.setEnabled(false);
-            holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            rowPos = rowPosition + 1;
-        }catch (Exception e){
 
-        }
+        String value =  cellItemModel != null && !cellItemModel.equals("") ? cellItemModel.toString() :viewModels.get(rowPosition).get(columnPosition).value();
+
+        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
+        holder.itemView.setEnabled(false);
+        holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
+
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -236,7 +227,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
     }
 
-    private int getCellViewType(int rowPosition) {
+    /*private int getCellViewType(int rowPosition) {
         columnPos = rowPosition;
 
         FieldViewModel viewModel;
@@ -275,7 +266,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
         }
-    }
+    }*/
 
     @Override
     public int getColumnHeaderItemViewType(int columnPosition) {
@@ -288,8 +279,40 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     }
 
     @Override
-    public int getCellItemViewType(int columnPosition) {
-        return 0;
+    public int getCellItemViewType(int columnPosition, int rowPosition) {
+
+        FieldViewModel viewModel = viewModels.get(rowPosition).get(0);
+
+        if (viewModel instanceof EditTextModel) {
+            return EDITTEXT;
+        } else if (viewModel instanceof RadioButtonViewModel) {
+            return CHECKBOX;
+        } else if (viewModel instanceof SpinnerViewModel) {
+            return SPINNER;
+        } else if (viewModel instanceof CoordinateViewModel) {
+            return COORDINATES;
+
+        } else if (viewModel instanceof DateTimeViewModel) {
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
+                return DATE;
+            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
+                return TIME;
+            else
+                return DATETIME;
+        } else if (viewModel instanceof AgeViewModel) {
+            return AGEVIEW;
+        } else if (viewModel instanceof FileViewModel) {
+            return BUTTON;
+        } else if (viewModel instanceof OrgUnitViewModel) {
+            return ORG_UNIT;
+        } else if (viewModel instanceof ImageViewModel) {
+            return IMAGE;
+        } else if (viewModel instanceof UnsupportedViewModel) {
+            return UNSUPPORTED;
+        } else {
+            throw new IllegalStateException("Unsupported view model type: "
+                    + viewModel.getClass());
+        }
     }
 
     @NonNull
@@ -298,19 +321,38 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     }
 
     public void updateValue(RowAction rowAction) {
-        int oldValue = 0;
-        if(getCellItem(rowAction.columnPos(),rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(),rowAction.rowPos()).isEmpty())
-            oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(),rowAction.rowPos()));
+        if(showRowTotal || showColumnTotal){
+            int oldValue = 0;
+            if(getCellItem(rowAction.columnPos(),rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(),rowAction.rowPos()).isEmpty())
+                oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(),rowAction.rowPos()));
 
+            if(showRowTotal) {
+                int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
+                        + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "");
+            }
+            if(showColumnTotal) {
+                int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(),viewModels.size()-1))
+                        + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "");
+            }
+        }
         changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "");
+    }
 
-        int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
-                + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
-        int totalColumn = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
-                + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
-        if(showRowTotal)
-            changeCellItem(viewModels.get(0).size()-1,rowAction.rowPos(),totalRow+"");
-        if(showColumnTotal)
-            changeCellItem(rowAction.columnPos(),viewModels.size()-1,totalColumn+"");
+    public void setShowRowTotal(Boolean showRowTotal) {
+        this.showRowTotal = showRowTotal;
+    }
+
+    public void setShowColumnTotal(Boolean showColumnTotal) {
+        this.showColumnTotal = showColumnTotal;
+    }
+
+    public Boolean getShowRowTotal() {
+        return showRowTotal;
+    }
+
+    public Boolean getShowColumnTotal() {
+        return showColumnTotal;
     }
 }

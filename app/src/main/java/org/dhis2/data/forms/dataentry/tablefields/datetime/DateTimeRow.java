@@ -77,7 +77,7 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
 
     @Override
     public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel, String value) {
-        viewHolder.update(viewModel, accessDataWrite);
+        viewHolder.update(viewModel, accessDataWrite, value);
     }
 
     @Override
