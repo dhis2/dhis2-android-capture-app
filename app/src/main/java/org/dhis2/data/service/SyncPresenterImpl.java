@@ -2,6 +2,7 @@ package org.dhis2.data.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.D2;
@@ -18,22 +19,10 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @Override
-    public void syncAggregateData() {
+    public void syncAggregateData() throws Exception {
         Log.d("SYNC_AGGREGATE", "Sync up of aggregate values");
-        disposable.add(Observable.fromCallable(d2.syncDataValues())
-                .doOnError(throwable -> Log.d("SYNC_AGGREGATE", throwable.getMessage()))
-                .map(webResponse -> SyncResult.success())
-                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                        data -> {
-                            Log.d("SYNC_AGGREGATE", "Sync up of data values is done");
-                            downloadDataValues();
-                        },
-                        Timber::d
-                )
-        );
+        d2.syncAggregatedData().call();
+        d2.syncDataValues().call();
     }
 
     @Override

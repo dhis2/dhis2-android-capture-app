@@ -155,7 +155,7 @@ dependencies {
     implementation project(":customFab")
 //    implementation project(":dhis2-rule-engine")
     implementation project(":viewpagerdotsindicator")
-
+    implementation project(":tableview")
     //region SUPPORT LIBRARIES
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
     implementation 'androidx.annotation:annotation:1.0.1'
@@ -187,8 +187,7 @@ dependencies {
     implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
-    //TABLEVIEW
-    implementation "com.evrencoskun.library:tableview:${libraries.tableview}"
+
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     //endregion

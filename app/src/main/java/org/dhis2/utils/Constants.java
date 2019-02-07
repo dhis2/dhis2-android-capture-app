@@ -100,6 +100,7 @@ public class Constants {
     public static final String TIME_META = "timeMeta";
     public static final String TIME_DATA = "timeData";
 
+    public static final String ACCESS_DATA = "access_data";
     private Constants() {
         // hide public constructor
     }
