@@ -3,7 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -22,6 +21,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -46,6 +46,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -149,6 +150,20 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 context.getString(R.string.enter_positive_integer_or_zero),
                 context.getString(R.string.filter_options),
                 context.getString(R.string.choose_date));
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        Boolean isEnrollmentOpen = true;
+        Cursor enrollmentCursor = briteDatabase.query("SELECT Enrollment.* FROM Enrollment JOIN Event ON Event.enrollment = Enrollment.uid WHERE Event.uid = ?", eventUid);
+        if (enrollmentCursor != null) {
+            if (enrollmentCursor.moveToFirst()) {
+                EnrollmentModel enrollment = EnrollmentModel.create(enrollmentCursor);
+                isEnrollmentOpen = enrollment.enrollmentStatus() == EnrollmentStatus.ACTIVE;
+            }
+            enrollmentCursor.close();
+        }
+        return isEnrollmentOpen;
     }
 
     @Override
@@ -350,8 +365,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                     " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
                     " WHERE ProgramStageDataElement.dataElement = ?", uid);
-            if (rendering != null && rendering.moveToFirst()) {
-                fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
+            if (rendering != null) {
+                if (rendering.moveToFirst())
+                    fieldRendering = ValueTypeDeviceRenderingModel.create(rendering);
                 rendering.close();
             }
         } catch (Exception e) {
@@ -362,7 +378,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering);
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering);
     }
 
     @NonNull
@@ -426,13 +442,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         if (enrollmentCursor != null && enrollmentCursor.moveToFirst()) {
             EnrollmentModel enrollmentModel = EnrollmentModel.create(enrollmentCursor);
 
-            if (enrollmentModel.state() != State.TO_POST) {
-                ContentValues cv = enrollmentModel.toContentValues();
-                cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
-                cv.put(EnrollmentModel.Columns.STATE, State.TO_DELETE.name());
-                briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
-            } else
-                briteDatabase.delete(EnrollmentModel.TABLE, "uid = ?", enrollmentUid);
+            ContentValues cv = enrollmentModel.toContentValues();
+            cv.put(EnrollmentModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));
+            cv.put(EnrollmentModel.Columns.STATE, enrollmentModel.state() == State.TO_POST ? State.TO_POST.name() : State.TO_UPDATE.name());
+            briteDatabase.update(EnrollmentModel.TABLE, cv, "uid = ?", enrollmentUid);
+
             enrollmentCursor.close();
 
             updateTei(enrollmentModel.trackedEntityInstance());
@@ -461,6 +475,43 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         String updateDate = DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime());
         contentValues.put(EventModel.Columns.LAST_UPDATED, updateDate);
         return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid) > 0);
+    }
+
+    @Override
+    public Observable<Boolean> rescheduleEvent(Date newDate) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(EventModel.Columns.DUE_DATE, DateUtils.databaseDateFormat().format(newDate));
+        return Observable.just(briteDatabase.update(EventModel.TABLE, contentValues, "uid = ?", eventUid))
+                .flatMap(result -> updateEventStatus(EventStatus.SCHEDULE));
+    }
+
+    @Override
+    public Observable<String> programStage() {
+        return briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE Event.uid = ?", eventUid)
+                .mapToOne(EventModel::create)
+                .map(EventModel::programStage);
+    }
+
+    @Override
+    public boolean getAccessDataWrite() {
+        boolean canWrite = true;
+        Cursor programAccessData = briteDatabase.query("SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? ", eventUid);
+        if (programAccessData != null) {
+            if (programAccessData.moveToFirst()) {
+                canWrite = ProgramModel.create(programAccessData).accessDataWrite();
+                if (canWrite) {
+                    Cursor stageAccessData = briteDatabase.query("SELECT ProgramStage.* FROM ProgramStage JOIN Event ON Event.programStage = ProgramStage.uid WHERE Event.uid = ? ", eventUid);
+                    if (stageAccessData != null) {
+                        if (stageAccessData.moveToFirst()) {
+                            canWrite = ProgramStageModel.create(stageAccessData).accessDataWrite();
+                        }
+                        stageAccessData.close();
+                    }
+                }
+            }
+            programAccessData.close();
+        }
+        return canWrite;
     }
 
     @Override

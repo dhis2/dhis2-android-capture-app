@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -323,7 +325,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.treeViewContainer.removeAllViews();
         binding.orgUnitApply.setOnClickListener(view -> apply());
         binding.orgUnitCancel.setOnClickListener(view -> {
-            binding.drawerLayout.closeDrawer(Gravity.END);
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
             binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         });
@@ -337,6 +339,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
             for (TreeNode node : treeView.getSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                ((OrgUnitHolder) node.getViewHolder()).update();
             }
             treeView.deselectAll();
 

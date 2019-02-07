@@ -43,6 +43,7 @@
                     android:layout_height="0dp"
                     android:gravity="center|start"
                     android:padding="5dp"
+                    android:paddingEnd="70dp"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"

@@ -4,22 +4,16 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-
-import com.google.android.material.textfield.TextInputEditText;
-import androidx.core.app.ActivityCompat;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -29,6 +23,9 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 
 import java.util.Locale;
 
+import androidx.core.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
@@ -37,7 +34,7 @@ import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventIn
  * QUADRAM. Created by Administrador on 21/03/2018.
  */
 
-public class CoordinatesView extends RelativeLayout implements View.OnClickListener {
+public class CoordinatesView extends FieldLayout implements View.OnClickListener {
 
     private ViewDataBinding binding;
     private TextInputEditText latLong;
@@ -46,8 +43,6 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
     private LocationCallback locationCallback;
     private OnMapPositionClick listener;
     private OnCurrentLocationClick listener2;
-    private boolean isBgTransparent;
-    private LayoutInflater inflater;
     private FlowableProcessor<RowAction> processor;
     private String uid;
 
@@ -67,9 +62,14 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
         init(context);
     }
 
-    private void init(Context context) {
-        inflater = LayoutInflater.from(context);
+    public void init(Context context) {
+        super.init(context);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+    }
+
+    @Override
+    public void performOnFocusAction() {
+        //not needed
     }
 
 
@@ -179,7 +179,7 @@ public class CoordinatesView extends RelativeLayout implements View.OnClickListe
 
     @SuppressLint("MissingPermission")
     public void updateLocation(double latitude, double longitude) {
-        if(uid!=null) {
+        if (uid != null) {
             processor.onNext(
                     RowAction.create(uid,
                             String.format(Locale.US,

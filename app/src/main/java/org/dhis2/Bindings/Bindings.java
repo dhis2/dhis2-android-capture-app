@@ -4,20 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import androidx.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
@@ -27,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -53,6 +47,12 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -179,7 +179,7 @@ public class Bindings {
         if (spanCount == -1)
             spanCount = 1;
 
-        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, LinearLayoutManager.VERTICAL, false);
+        recyclerLayout = new GridLayoutManager(recyclerView.getContext(), spanCount, RecyclerView.VERTICAL, false);
 
         recyclerView.setLayoutManager(recyclerLayout);
 
@@ -307,6 +307,7 @@ public class Bindings {
                                         Timber::d
                                 );
                     break;
+                case OVERDUE:
                 case COMPLETED:
                 case SKIPPED:
                     view.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_visibility));
@@ -391,6 +392,9 @@ public class Bindings {
                 case SKIPPED:
                     view.setText(view.getContext().getString(R.string.event_skipped));
                     break;
+                case OVERDUE:
+                    view.setText(R.string.event_overdue);
+                    break;
                 default:
                     view.setText(view.getContext().getString(R.string.read_only));
                     break;
@@ -414,39 +418,52 @@ public class Bindings {
                     .subscribe(
                             program -> {
                                 int eventColor;
+                                int bgColor;
                                 if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                     eventColor = R.color.event_red;
+                                    bgColor = R.drawable.item_event_red_ripple;
                                 } else {
                                     switch (event.status()) {
                                         case ACTIVE:
                                             if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
                                                 eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
                                             } else {
                                                 eventColor = R.color.event_yellow;
+                                                bgColor = R.drawable.item_event_yellow_ripple;
                                             }
                                             break;
                                         case COMPLETED:
                                             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
                                                 eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
+
                                             } else {
                                                 eventColor = R.color.event_gray;
+                                                bgColor = R.drawable.item_event_gray_ripple;
+
                                             }
                                             break;
                                         case SCHEDULE:
                                             if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
                                                 eventColor = R.color.event_red;
+                                                bgColor = R.drawable.item_event_red_ripple;
                                             } else {
                                                 eventColor = R.color.event_green;
+                                                bgColor = R.drawable.item_event_green_ripple;
                                             }
                                             break;
                                         case VISITED:
                                         case SKIPPED:
                                         default:
                                             eventColor = R.color.event_red;
+                                            bgColor = R.drawable.item_event_red_ripple;
                                             break;
                                     }
                                 }
-                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
+
+                                view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
+//                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
 
                             },
                             Timber::d
@@ -710,7 +727,7 @@ public class Bindings {
         return metadataRepository.optionSet(optionSet);
     }
 
-    public static int optionSetItemSize(@Nonnull String optionSet){
+    public static int optionSetItemSize(@Nonnull String optionSet) {
         return metadataRepository.optionSetSize(optionSet);
     }
 

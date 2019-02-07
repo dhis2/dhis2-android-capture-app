@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
@@ -86,7 +87,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
-        if(eventDetailModel.getEventModel().eventDate()!=null){
+        if(eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().eventDate()!=null){
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEventModel().uid(), eventDetailModel.getEventModel().program()));
             startActivity(intent2, null);
@@ -96,6 +97,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
             binding.setEvent(eventDetailModel.getEventModel());
             binding.setStage(eventDetailModel.getProgramStage());
+            binding.setEnrollmentActive(eventDetailModel.isEnrollmentActive());
             setDataEditable();
             binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 
@@ -267,7 +269,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_TEI_EVENT", false)) {
+            if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
             }
@@ -306,6 +308,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().accessDataWrite() && eventDetailModel.isEnrollmentActive());
         popupMenu.show();
     }
 }

@@ -3,9 +3,6 @@ package org.dhis2.usescases.teiDashboard;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.PopupMenu;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -46,6 +43,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.Fragment;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -114,7 +114,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
-                            throwable -> Log.d("ERROR", throwable.getMessage())
+                            Timber::e
                     )
             );
 
@@ -135,7 +135,7 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                                 this.teType = dashboardProgramModel.getTei().trackedEntityType();
                                 view.setData(dashboardProgramModel);
                             },
-                            throwable -> Log.d("ERROR", throwable.getMessage()))
+                            Timber::e)
             );
         }
     }
@@ -571,15 +571,15 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
         view.showDescription(description);
     }
 
-    public void getCatComboOptions(EventModel event){
+    public void getCatComboOptions(EventModel event) {
         compositeDisposable.add(metadataRepository.getCategoryComboOptions(dashboardProgramModel.getCurrentProgram().categoryCombo())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(categoryOptionComboModels -> {
-                        for(ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
-                            if (event.programStage().equals(programStage.uid()))
-                                view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
-                        }
+                            for (ProgramStageModel programStage : dashboardProgramModel.getProgramStages()) {
+                                if (event.programStage().equals(programStage.uid()))
+                                    view.showCatComboDialog(event.uid(), programStage.displayName(), categoryOptionComboModels);
+                            }
                         },
                         Timber::e));
     }

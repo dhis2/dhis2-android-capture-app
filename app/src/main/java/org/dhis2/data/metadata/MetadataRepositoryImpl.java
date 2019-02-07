@@ -2,8 +2,6 @@ package org.dhis2.data.metadata;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Base64;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -12,7 +10,6 @@ import com.squareup.sqlbrite2.SqlBrite.Query;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
-import org.dhis2.utils.ErrorMessageModel;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
@@ -23,6 +20,8 @@ import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -47,10 +46,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -213,8 +213,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private final String SELECT_CATEGORY_COMBO = String.format("SELECT * FROM %s WHERE %s.%s = ",
             CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.UID);
 
-    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = 'default'",
-            CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.CODE);
+    private final String SELECT_DEFAULT_CAT_COMBO = String.format("SELECT %s FROM %s WHERE %s.%s = '1'",
+            CategoryComboModel.Columns.UID, CategoryComboModel.TABLE, CategoryComboModel.TABLE, CategoryComboModel.Columns.IS_DEFAULT);
 
 
     private static final String RESOURCES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ? LIMIT 1",
@@ -633,8 +633,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public Observable<Boolean> isCompletedEventExpired(String eventUid) {
-        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE,"SELECT * FROM Event WHERE uid = ?",eventUid)
-                .mapToOne(EventModel::create),
+        return Observable.zip(briteDatabase.createQuery(EventModel.TABLE, "SELECT * FROM Event WHERE uid = ?", eventUid)
+                        .mapToOne(EventModel::create),
                 getExpiryDateFromEvent(eventUid),
                 ((eventModel, programModel) -> DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())));
     }
@@ -708,38 +708,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public void createErrorTable() {
-        String CREATE_ERROR_TABLE = "CREATE TABLE IF NOT EXISTS ErrorMessage(\n" +
-                "errorDate TEXT,\n" +
-                "errorMessage TEXT,\n" +
-                "errorCode INT(3),\n" +
-                "errorDescription TEXT\n" +
-                ")";
-        try {
-            briteDatabase.execute(CREATE_ERROR_TABLE);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-    }
-
-    @Override
-    public Observable<List<ErrorMessageModel>> getSyncErrors() {
-        return briteDatabase.createQuery(ErrorMessageModel.TABLE, "SELECT * FROM ErrorMessage ORDER BY errorDate DESC")
-                .mapToList(cursor -> new ErrorMessageModel(
-                        cursor.getInt(cursor.getColumnIndex("errorCode")),
-                        cursor.getString(cursor.getColumnIndex("errorMessage")),
-                        cursor.getString(cursor.getColumnIndex("errorDescription")),
-                        DateUtils.databaseDateFormat().parse(cursor.getString(cursor.getColumnIndex("errorDate")))
-                ));
-    }
-
-    @Override
-    public void deleteErrorLogs() {
-        try {
-            briteDatabase.delete(ErrorMessageModel.TABLE, null);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+    public Observable<List<D2Error>> getSyncErrors() {
+        return briteDatabase.createQuery(D2ErrorTableInfo.TABLE_INFO.name(), "SELECT * FROM D2Error ORDER BY created DESC")
+                .mapToList(D2Error::create);
     }
 
     @Override

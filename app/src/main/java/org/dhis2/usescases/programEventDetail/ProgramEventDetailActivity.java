@@ -24,6 +24,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -360,8 +361,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         binding.orgUnitUnselectAll.setOnClickListener(view -> {
             for (TreeNode node : treeView.getSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).uncheck();
+                ((OrgUnitHolder) node.getViewHolder()).update();
             }
             treeView.deselectAll();
+            binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
 
         });
         treeView = new AndroidTreeView(getContext(), treeNode);
@@ -383,6 +386,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+        apply();
     }
 
     @Override
@@ -566,7 +570,7 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false)) {
+            if (!prefs.getBoolean("TUTO_PROGRAM_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_PROGRAM_EVENT", true).apply();
             }

@@ -1,10 +1,9 @@
 package org.dhis2.usescases.reservedValue;
 
 
-import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
 import org.dhis2.databinding.ItemReservedValueBinding;
-
+import org.dhis2.BR;
 public class ReservedValueViewHolder extends RecyclerView.ViewHolder {
 
     private ItemReservedValueBinding binding;

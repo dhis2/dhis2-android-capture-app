@@ -75,7 +75,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
-                                    view.goToEnrollmentScreen(enrollmentUid);
+                                    view.goToEnrollmentScreen(enrollmentUid, programUid);
                                 },
                                 Timber::d)
         );
@@ -141,6 +141,11 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
             }
         }
         view.setPrograms(programListToPrint);
+    }
+
+    @Override
+    public String getProgramColor(String uid) {
+        return teiProgramListRepository.getProgramColor(uid);
     }
 
     @Override

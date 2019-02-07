@@ -34,4 +34,6 @@ public interface EventSummaryRepository {
     Flowable<EventModel> getEvent(String eventId);
 
     Observable<Boolean> accessDataWrite(String eventId);
+
+    boolean isEnrollmentOpen();
 }

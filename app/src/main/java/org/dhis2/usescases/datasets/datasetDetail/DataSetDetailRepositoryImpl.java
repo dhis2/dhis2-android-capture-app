@@ -13,6 +13,7 @@ import org.hisp.dhis.android.core.period.PeriodModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -84,7 +85,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     Cursor periodCursor = briteDatabase.query("SELECT Period.* FROM Period WHERE Period.periodId = ?", period);
                     if (periodCursor != null && periodCursor.moveToFirst()) {
                         PeriodModel periodModel = PeriodModel.create(periodCursor);
-                        periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate());
+                        periodName = DateUtils.getInstance().getPeriodUIString(periodModel.periodType(), periodModel.startDate(), Locale.getDefault());
                         periodCursor.close();
                     }
 

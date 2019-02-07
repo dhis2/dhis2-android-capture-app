@@ -24,6 +24,7 @@
     <color name="colorPrimaryLightOrange">#FFA77B</color>
 
     <color name="colorGreyDefault">#4d4d4d</color>
+    <color name="colorGreyDefaultPressed">#383838</color>
 
     <!--region BACKEND COLOR-->
     <!--BACKEND 64 COLOR THEMES-->
@@ -338,9 +339,13 @@
     <color name="yellow_ffd">#ffd55d</color>
 
     <color name="event_green">#e9fdd2</color>
+    <color name="event_green_pressed">#bbcea6</color>
     <color name="event_red">#fdc1c1</color>
+    <color name="event_red_pressed">#b98a8a</color>
     <color name="event_yellow">#fceec4</color>
+    <color name="event_yellow_pressed">#b7ac89</color>
     <color name="event_gray">#f8f9f9</color>
+    <color name="event_gray_pressed">#dcdede</color>
 
     <color name="blue_4fa">#4fa8d1</color>
     <color name="blue_fab">#1D69A3</color>

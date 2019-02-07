@@ -1,8 +1,8 @@
 package org.dhis2.usescases.programEventDetail;
 
-import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.BR;
 
 import org.dhis2.databinding.ItemProgramEventBinding;
 import org.hisp.dhis.android.core.event.EventModel;

@@ -1,8 +1,8 @@
 package org.dhis2.usescases.programStageSelection;
 
-import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dhis2.BR;
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.databinding.ItemProgramStageBinding;
 

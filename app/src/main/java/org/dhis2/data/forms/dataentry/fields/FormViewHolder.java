@@ -31,7 +31,7 @@ public abstract class FormViewHolder extends RecyclerView.ViewHolder {
                     new CustomDialog(
                             itemView.getContext(),
                             label.toString(),
-                            descriptionText != null ? descriptionText : "No info for this field",
+                            descriptionText != null ? descriptionText : itemView.getContext().getString(R.string.empty_description),
                             itemView.getContext().getString(R.string.action_accept),
                             null,
                             Constants.DESCRIPTION_DIALOG,

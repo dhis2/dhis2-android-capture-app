@@ -1,7 +1,6 @@
 package org.dhis2.data.forms;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -57,6 +56,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -159,7 +159,7 @@ public final class RulesRepository {
             "  ProgramStage.displayName\n" +
             "FROM Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.program = ? AND Event.uid != ? AND Event.eventDate <= ?\n" +
+            "WHERE Event.enrollment = ? AND Event.uid != ? AND Event.eventDate <= ?\n" +
             " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
 
     /**
@@ -338,7 +338,7 @@ public final class RulesRepository {
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
             case TEI_ATTRIBUTE:
-                return RuleVariableAttribute.create(name, attribute==null?"":attribute, mimeType);
+                return RuleVariableAttribute.create(name, attribute == null ? "" : attribute, mimeType);
             case DATAELEMENT_CURRENT_EVENT:
                 return RuleVariableCurrentEvent.create(name, dataElement, mimeType);
             case DATAELEMENT_NEWEST_EVENT_PROGRAM:
@@ -498,7 +498,7 @@ public final class RulesRepository {
                         briteDatabase.createQuery(ProgramModel.TABLE, "SELECT Program.* FROM Program JOIN Event ON Event.program = Program.uid WHERE Event.uid = ? LIMIT 1", eventUidToEvaluate == null ? "" : eventUidToEvaluate)
                                 .mapToOne(ProgramModel::create).flatMap(programModel ->
                                 briteDatabase.createQuery(EventModel.TABLE, eventModel.enrollment() == null ? QUERY_OTHER_EVENTS : QUERY_OTHER_EVENTS_ENROLLMENTS,
-                                        programModel.uid() == null ? "" : programModel.uid(),
+                                        eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                         eventUidToEvaluate == null ? "" : eventUidToEvaluate,
                                         DateUtils.databaseDateFormat().format(eventModel.eventDate()))
                                         .mapToList(cursor -> {
@@ -546,8 +546,8 @@ public final class RulesRepository {
                     List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
-                    Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+                    Date eventDate = cursor.isNull(3) ? null : DateUtils.databaseDateFormat().parse(cursor.getString(3));
+                    Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4)); //TODO: Should due date always be not null?
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);

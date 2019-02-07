@@ -34,9 +34,9 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return TEIDataFragment.createInstance();
             case 1:
-                return RelationshipFragment.createInstance();
-            case 2:
                 return IndicatorsFragment.createInstance();
+            case 2:
+                return  RelationshipFragment.createInstance();
             case 3:
                 return NotesFragment.createInstance();
 
@@ -54,9 +54,9 @@ public class DashboardPagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return context.getString(R.string.dashboard_overview);
             case 1:
-                return context.getString(R.string.dashboard_relationships);
-            case 2:
                 return context.getString(R.string.dashboard_indicators);
+            case 2:
+                return context.getString(R.string.dashboard_relationships);
             case 3:
                 return context.getString(R.string.dashboard_notes);
         }

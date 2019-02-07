@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.period.PeriodType;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -118,7 +119,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
                 .setMaxDate(DateUtils.getInstance().getCalendar().getTime())
                 .setPossitiveListener(selectedDate -> {
                     this.selectedPeriod = selectedDate;
-                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate));
+                    binding.dataSetPeriodEditText.setText(DateUtils.getInstance().getPeriodUIString(periodType, selectedDate, Locale.getDefault()));
                     checkActionVisivbility();
                 })
                 .show(getSupportFragmentManager(), PeriodDialog.class.getSimpleName());

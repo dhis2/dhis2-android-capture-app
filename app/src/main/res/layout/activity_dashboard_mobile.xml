@@ -37,10 +37,10 @@
 
             <ImageView
                 android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick='@{()->presenter.onBackPressed()}'
-                android:padding="@dimen/default_start_margin"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
 
@@ -58,22 +58,21 @@
 
             <ImageView
                 android:id="@+id/program_selector_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="@{()->presenter.onEnrollmentSelectorClick()}"
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/moreOptions"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_program_border"
                 tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
-                android:layout_marginEnd="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
@@ -104,8 +103,8 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             app:elevation="8dp"
-            app:tabPaddingStart="16dp"
             app:tabPaddingEnd="16dp"
+            app:tabPaddingStart="16dp"
             app:tabTextAppearance="@style/DhisTabText" />
 
         <androidx.viewpager.widget.ViewPager

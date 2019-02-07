@@ -1,9 +1,9 @@
 package org.dhis2.usescases.reservedValue;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.library.baseAdapters.BR;
-
 import android.os.Bundle;
+
+import org.dhis2.BR;
 
 import org.dhis2.App;
 import org.dhis2.R;

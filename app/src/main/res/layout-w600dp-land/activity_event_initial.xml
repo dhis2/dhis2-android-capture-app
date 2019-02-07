@@ -44,8 +44,8 @@
                 android:id="@+id/menu"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:onClick="@{()->presenter.onBackClick()}"
                 android:layout_marginStart="16dp"
+                android:onClick="@{()->presenter.onBackClick()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_arrow_back"
                 tools:ignore="ContentDescription" />
@@ -53,12 +53,12 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:text="@{ name }"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toStartOf="@+id/percentage"
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TITLE\ntest\n234" />
@@ -95,11 +95,11 @@
 
             <ImageView
                 android:id="@+id/moreOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                style="@style/ActionIcon"
                 android:onClick="showMoreOptions"
-                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_more"
                 tools:ignore="ContentDescription" />
 
@@ -199,9 +199,9 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginEnd="8dp"
                                         android:layout_marginStart="8dp"
                                         android:layout_marginTop="2dp"
+                                        android:layout_marginEnd="8dp"
                                         android:text="@string/share"
                                         android:textColor="@color/text_black_4d4d4d"
                                         android:textSize="16sp"
@@ -274,8 +274,8 @@
                                     android:id="@+id/cat_combo_line"
                                     android:layout_width="match_parent"
                                     android:layout_height="0.8dp"
-                                    android:layout_marginEnd="4dp"
                                     android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="4dp"
                                     android:background="@color/black_de0" />
                             </LinearLayout>
                         </LinearLayout>
@@ -388,13 +388,13 @@
                     android:id="@+id/action_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginBottom="16dp"
+                    android:layout_alignParentBottom="true"
                     android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:background="?attr/selector_button_round_7"
-                    android:paddingEnd="10dp"
                     android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
                     android:text="@string/create"
                     android:textAllCaps="true"
                     android:textColor="@color/white" />
@@ -414,18 +414,18 @@
                     android:id="@+id/tree_view_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingEnd="0dp"
                     android:paddingStart="20dp"
-                    android:paddingTop="40dp" />
+                    android:paddingTop="40dp"
+                    android:paddingEnd="0dp" />
 
                 <LinearLayout
                     android:id="@+id/linear_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingEnd="0dp"
                     android:paddingStart="20dp"
-                    android:paddingTop="40dp" />
+                    android:paddingTop="40dp"
+                    android:paddingEnd="0dp" />
 
             </com.google.android.material.navigation.NavigationView>
         </androidx.drawerlayout.widget.DrawerLayout>

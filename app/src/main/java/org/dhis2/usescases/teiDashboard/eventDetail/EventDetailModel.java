@@ -1,7 +1,5 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
-import androidx.databinding.BaseObservable;
-
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -16,81 +14,41 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import java.util.Date;
 import java.util.List;
 
+import androidx.databinding.BaseObservable;
+
 /**
  * QUADRAM. Created by Cristian on 08/02/2018.
  */
 
 public class EventDetailModel extends BaseObservable {
 
-    private final List<ProgramStageDataElementModel> dataElemets;
-    private final List<ProgramStageSectionModel> stageSections;
-//    private final HashMap<String, List<ProgramStageDataElementModel>> fieldsElements;
     private final ProgramStageModel programStage;
     private final List<CategoryOptionComboModel> optionComboList;
     private final ProgramModel programModel;
     private final String catComboName;
+    private final boolean isEnrollmentActive;
     private EventModel eventModel;
-    private List<TrackedEntityDataValueModel> dataValueModelList;
     private final OrganisationUnitModel orgUnit;
 
-    EventDetailModel(EventModel eventModel, List<TrackedEntityDataValueModel> dataValueModelList,
-                     List<ProgramStageSectionModel> programStageSectionModelList, List<ProgramStageDataElementModel> programStageDataElementModelList,
-                     ProgramStageModel programStage, OrganisationUnitModel orgUnit, Pair<String, List<CategoryOptionComboModel>> optionComboList, ProgramModel programModel) {
+    EventDetailModel(EventModel eventModel,
+                     ProgramStageModel programStage,
+                     OrganisationUnitModel orgUnit,
+                     Pair<String, List<CategoryOptionComboModel>> optionComboList,
+                     ProgramModel programModel,
+                     boolean isEnrollmentActive) {
         this.eventModel = eventModel;
-        this.dataValueModelList = dataValueModelList;
-        this.dataElemets = programStageDataElementModelList;
-        this.stageSections = programStageSectionModelList;
         this.programStage = programStage;
-//        fieldsElements = new HashMap<>();
         this.orgUnit = orgUnit;
         this.catComboName = optionComboList.val0();
         this.optionComboList = optionComboList.val1();
         this.programModel = programModel;
-
-//        setUpFields();
+        this.isEnrollmentActive = isEnrollmentActive;
 
     }
-
-   /* private void setUpFields() {
-
-        ArrayList<ProgramStageDataElementModel> sectionDataElements = new ArrayList<>();
-        for (ProgramStageDataElementModel de : dataElemets) {
-            if (de.programStageSection() == null)
-                sectionDataElements.add(de);
-        }
-        fieldsElements.put("null", sectionDataElements);
-
-        for (ProgramStageSectionModel section : stageSections) {
-            sectionDataElements = new ArrayList<>();
-            for (ProgramStageDataElementModel de : dataElemets)
-                if (de.programStageSection() != null && de.programStageSection().equals(section.uid()))
-                    sectionDataElements.add(de);
-            fieldsElements.put(section.uid(), sectionDataElements);
-        }
-    }*/
 
     EventModel getEventModel() {
         return eventModel;
     }
-/*
-    List<ProgramStageSectionModel> getStageSections() {
-        return stageSections;
-    }
-
-    List<ProgramStageDataElementModel> getDataElementsForSection(String sectionUid) {
-        if (sectionUid != null)
-            return fieldsElements.get(sectionUid);
-        else
-            return dataElemets;
-    }
-
-    String getValueForDE(String dataelementUid) {
-        for (TrackedEntityDataValueModel trackedEntityDataValueModel : dataValueModelList) {
-            if (trackedEntityDataValueModel.dataElement().equals(dataelementUid))
-                return trackedEntityDataValueModel.value();
-        }
-        return null;
-    }*/
 
     public ProgramStageModel getProgramStage() {
         return programStage;
@@ -129,6 +87,10 @@ public class EventDetailModel extends BaseObservable {
         }
 
         return eventCatComboOptionName;
+    }
+
+    public boolean isEnrollmentActive() {
+        return isEnrollmentActive;
     }
 
     public ProgramModel getProgram() {

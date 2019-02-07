@@ -1,23 +1,37 @@
 package org.dhis2.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 
 import org.dhis2.R;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import static android.text.TextUtils.isEmpty;
+
 /**
  * QUADRAM. Created by ppajuelo on 12/06/2018.
  */
 
 public class ColorUtils {
+
+    public static RippleDrawable getRippleDrawable(int pressedColor, Drawable bgDrawable) {
+        return new RippleDrawable(getPressedState(pressedColor), bgDrawable, null);
+    }
+
+    public static ColorStateList getPressedState(int pressedColor)
+    {
+        return new ColorStateList(new int[][]{ new int[]{}},new int[]{pressedColor});
+    }
 
     public enum ColorType {
         PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
@@ -27,7 +41,7 @@ public class ColorUtils {
 
         int colorToReturn = Color.BLACK;
 
-        if (hexColor != null) {
+        if (!isEmpty(hexColor)) {
             if (hexColor.length() == 4) {//Color is formatted as #fff
                 char r = hexColor.charAt(1);
                 char g = hexColor.charAt(2);
@@ -36,7 +50,7 @@ public class ColorUtils {
             }
             colorToReturn = Color.parseColor(hexColor);
         }
-        if (hexColor == null || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
+        if (isEmpty(hexColor) || colorToReturn == Color.BLACK || colorToReturn == Color.WHITE) {
             colorToReturn = defaultPrimaryColor;
         }
 
@@ -48,7 +62,7 @@ public class ColorUtils {
         return drawableToTint;
     }
 
-    public static Drawable tintDrawableWithColor(@NonNull Drawable drawableToTint, int tintColor){
+    public static Drawable tintDrawableWithColor(@NonNull Drawable drawableToTint, int tintColor) {
         drawableToTint.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN);
         return drawableToTint;
     }
