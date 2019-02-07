@@ -131,6 +131,11 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
         binding.userPassEdit.setSelection(binding.userPassEdit.getText().length());
     }
 
+    @Override
+    public void setUrl(String url) {
+        binding.serverUrlEdit.setText(url);
+    }
+
 
     @Override
     public ActivityLoginBinding getBinding() {

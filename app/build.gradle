@@ -99,7 +99,7 @@ android {
         }
     }
 
-    /* flavorDimensions "default"
+     flavorDimensions "default"
      productFlavors {
          dhis{
              applicationId "com.dhis2"
@@ -108,14 +108,14 @@ android {
              versionCode versions.vCode
              versionName versions.vName
          }
-         PSI {
-             applicationId "org.psi.dhis2"
+         psi {
+             applicationId "org.dhis2.psi"
              archivesBaseName = "PSI"
              dimension "default"
              versionCode 1
              versionName "1.0.3"
          }
-     }*/
+     }
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
