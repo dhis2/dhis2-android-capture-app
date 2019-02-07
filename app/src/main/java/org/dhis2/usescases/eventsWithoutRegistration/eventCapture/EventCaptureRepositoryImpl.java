@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
 
@@ -400,8 +401,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else
                                         return getRulesFor(lastUpdatedUid)
-                                                .filter(rules -> !rules.isEmpty())
-                                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
+                                                .flatMap(rules -> {
+                                                    if (!rules.isEmpty())
+                                                        return Flowable.fromCallable(ruleEngine.evaluate(event, rules));
+                                                    else
+                                                        return Flowable.just(new ArrayList<RuleEffect>());
+                                                });
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
@@ -430,14 +435,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private Flowable<List<Rule>> getRulesFor(String lastUpdatedElement) {
+        AtomicReference<String> selectedProgramUid = new AtomicReference<>("");
         return briteDatabase.createQuery(ProgramStageModel.TABLE,
                 "SELECT Event.* FROM Event " +
                         "WHERE Event.uid = ? LIMIT 1", eventUid)
                 .mapToOne(cursor -> EventModel.create(cursor).program())
-                .flatMap(programUid ->
-                        briteDatabase.createQuery(ProgramRuleVariableModel.TABLE,
-                                "SELECT * FROM ProgramRuleVariable WHERE program = ? AND dataElement = ?", programUid, lastUpdatedElement)
-                                .mapToList(cursor -> "%" + ProgramRuleVariableModel.create(cursor).displayName() + "%")
+                .flatMap(programUid -> {
+                            selectedProgramUid.set(programUid);
+                            return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE,
+                                    "SELECT * FROM ProgramRuleVariable WHERE program = ? AND dataElement = ?", programUid, lastUpdatedElement)
+                                    .mapToList(cursor -> "%" + ProgramRuleVariableModel.create(cursor).displayName() + "%");
+                        }
                 ).flatMap(variableList -> {
                     String likeCondition = "condition LIKE '%s'";
                     StringBuilder st = new StringBuilder();
@@ -449,7 +457,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
                     if (!isEmpty(st))
                         return briteDatabase.createQuery(ProgramRuleModel.TABLE,
-                                String.format("SELECT * FROM ProgramRule WHERE %s", st.toString()))
+                                String.format("SELECT * FROM ProgramRule WHERE program = ? AND %s", st.toString()), selectedProgramUid.get())
                                 .mapToList(cursor -> {
                                     ProgramRuleModel ruleModel = ProgramRuleModel.create(cursor);
                                     List<RuleAction> ruleActions = new ArrayList<>();
@@ -480,6 +488,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 });
                     else
                         return Observable.just(new ArrayList<Rule>());
+                }).map(ruleList -> {
+                    //TODO: We need to always evaluate all rules with rule actions of type HideField or HideSection
+                    return ruleList;
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
 
