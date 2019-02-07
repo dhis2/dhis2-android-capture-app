@@ -174,6 +174,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                 currentSectionPosition
                         .startWith(0)
                         .flatMap(position -> {
+                            eventCaptureRepository.setLastUpdated(null);
                             if (sectionList == null) {
                                 return eventCaptureRepository.eventSections()
                                         .map(list -> {
@@ -211,7 +212,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 EventCaptureFormFragment.getInstance().showFields(),
-                                throwable -> {}
+                                throwable -> {
+                                }
                         )
         );
 
@@ -219,8 +221,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 //                .debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
-                        .switchMap(action ->
-                                dataEntryStore.save(action.id(), action.value())
+                        .switchMap(action -> {
+                                    eventCaptureRepository.setLastUpdated(action.id());
+                                    return dataEntryStore.save(action.id(), action.value());
+                                }
                         ).subscribe(result -> Timber.d(result.toString()),
                         Timber::d)
         );
@@ -546,8 +550,8 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
 
                 })
                 .show();
-
-        save(model.uid(), null);
+        if (model != null)
+            save(model.uid(), null);
     }
 
     @Override
