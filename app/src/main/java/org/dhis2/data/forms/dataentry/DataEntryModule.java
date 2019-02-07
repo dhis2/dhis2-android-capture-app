@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.R;
 import org.dhis2.data.dagger.PerFragment;

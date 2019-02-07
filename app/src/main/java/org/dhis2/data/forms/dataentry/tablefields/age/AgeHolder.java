@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields.age;
 
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.programDetail;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;

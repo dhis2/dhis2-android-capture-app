@@ -1,6 +1,6 @@
 package org.dhis2.usescases.about;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.dagger.PerFragment;
 import org.dhis2.data.metadata.MetadataRepository;

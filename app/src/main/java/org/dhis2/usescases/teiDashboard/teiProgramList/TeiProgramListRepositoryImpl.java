@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteConstraintException;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.usescases.main.program.ProgramViewModel;
 import org.dhis2.utils.CodeGenerator;

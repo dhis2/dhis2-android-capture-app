@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import android.widget.TextView;
 
 import org.dhis2.data.tuples.Pair;

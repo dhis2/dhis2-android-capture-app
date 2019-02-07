@@ -1,9 +1,9 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.databinding.ItemSectionSelectorBinding;
 

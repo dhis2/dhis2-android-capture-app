@@ -1,14 +1,14 @@
-package org.dhis2.utils.CustomViews;
+package org.dhis2.utils.custom_views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.location.Location;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+
+import com.google.android.material.textfield.TextInputEditText;
+import androidx.core.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +20,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.RowAction;

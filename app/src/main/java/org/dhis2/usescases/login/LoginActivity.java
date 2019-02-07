@@ -1,7 +1,7 @@
 package org.dhis2.usescases.login;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;

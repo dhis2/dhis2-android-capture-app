@@ -1,9 +1,9 @@
-package org.dhis2.utils.CustomViews;
+package org.dhis2.utils.custom_views;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputEditText;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;

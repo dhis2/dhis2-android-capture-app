@@ -2,7 +2,7 @@ package org.dhis2.usescases.main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Gravity;
 
 import org.dhis2.data.metadata.MetadataRepository;

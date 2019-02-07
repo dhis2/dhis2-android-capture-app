@@ -1,8 +1,8 @@
-package org.dhis2.utils.CustomViews.orgUnitCascade;
+package org.dhis2.utils.custom_views.orgUnitCascade;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;

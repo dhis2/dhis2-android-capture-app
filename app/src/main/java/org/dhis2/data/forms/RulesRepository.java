@@ -1,7 +1,7 @@
 package org.dhis2.data.forms;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 

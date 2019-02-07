@@ -1,4 +1,4 @@
-package org.dhis2.utils.CustomViews;
+package org.dhis2.utils.custom_views;
 
 import android.app.Activity;
 import android.app.AlertDialog;

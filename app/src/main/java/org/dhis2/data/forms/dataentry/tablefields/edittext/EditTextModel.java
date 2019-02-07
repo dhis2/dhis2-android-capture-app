@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.dataentry.tablefields.EditableFieldViewModel;
 import org.hisp.dhis.android.core.common.ValueType;

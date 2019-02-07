@@ -3,8 +3,8 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 

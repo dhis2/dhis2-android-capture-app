@@ -1,8 +1,8 @@
-package org.dhis2.utils.CustomViews;
+package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
 import android.view.ViewParent;
 import android.view.inputmethod.EditorInfo;

@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.PopupMenu;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,8 +17,8 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.OptionSetDialog;
-import org.dhis2.utils.CustomViews.OptionSetOnClickListener;
+import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 

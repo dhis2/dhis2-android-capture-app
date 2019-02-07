@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.content.ContextCompat;
+
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -20,7 +20,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewBinding;
-import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 

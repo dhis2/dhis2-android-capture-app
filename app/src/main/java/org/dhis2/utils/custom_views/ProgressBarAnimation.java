@@ -1,4 +1,4 @@
-package org.dhis2.utils.CustomViews;
+package org.dhis2.utils.custom_views;
 
 import android.view.animation.Animation;
 import android.view.animation.Transformation;

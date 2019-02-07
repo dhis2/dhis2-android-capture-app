@@ -30,7 +30,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -72,14 +72,14 @@
                 tools:ignore="ContentDescription" />
 
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -89,9 +89,9 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
                 tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/toolbar"
@@ -128,7 +128,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">-->
 
-            <android.support.design.widget.AppBarLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,12 +136,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.design.widget.CollapsingToolbarLayout
+                <com.google.android.material.appbar.CollapsingToolbarLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -184,14 +184,14 @@
                                 app:flexWrap="wrap">
 
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@{stage.executionDateLabel()!=null?stage.executionDateLabel():@string/event_date}"
                                     android:theme="@style/loginInputText"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/event_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -202,9 +202,9 @@
                                         android:onClick="@{ () -> presenter.setDate()}"
                                         app:date="@{event.eventDate()}"
                                         tools:text="2018-01-01" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/due_date"
@@ -212,7 +212,7 @@
                                     android:visibility="@{stage.hideDueDate()?View.GONE:View.VISIBLE}"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/due_date"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -222,9 +222,9 @@
                                         android:inputType="date"
                                         app:date="@{event.dueDate()}"
                                         tools:text="2018-01-01" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:id="@+id/category_combo_layout"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -232,7 +232,7 @@
                                     android:theme="@style/loginInputText"
                                     app:layout_flexBasisPercent="50%">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/category_combo"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -242,10 +242,10 @@
                                         android:inputType="date"
                                         android:onClick="@{ () -> presenter.selectCatOption()}"
                                         tools:ignore="LabelFor" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/org_unit"
@@ -263,9 +263,9 @@
                                         android:onClick="@{()->presenter.onOrgUnitClick()}"
                                         tools:ignore="LabelFor"
                                         tools:text="Sierre Leone" />
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <org.dhis2.utils.CustomViews.CoordinatesView
+                                <org.dhis2.utils.custom_views.CoordinatesView
                                     android:id="@+id/captureCoordinates"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -276,15 +276,15 @@
 
                         </LinearLayout>
 
-                    </android.support.constraint.ConstraintLayout>
-                </android.support.design.widget.CollapsingToolbarLayout>
-            </android.support.design.widget.AppBarLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
 
             <!--</android.support.constraint.ConstraintLayout>-->
 
 
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </RelativeLayout>
 </layout>

@@ -1,13 +1,12 @@
 package org.dhis2.usescases.programEventDetail;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.utils.Period;
 
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 
 import java.util.Date;
 import java.util.List;

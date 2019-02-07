@@ -1,9 +1,9 @@
 package org.dhis2.usescases.login;
 
 
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 import org.dhis2.databinding.ActivityLoginBinding;
 import org.dhis2.usescases.general.AbstractActivityContracts;

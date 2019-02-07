@@ -1,11 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.AdapterView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ItemSearchRelationshipTrackedEntityBinding;
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule;
 
@@ -15,10 +12,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * QUADRAM. Created by frodriguez on 11/7/2017.

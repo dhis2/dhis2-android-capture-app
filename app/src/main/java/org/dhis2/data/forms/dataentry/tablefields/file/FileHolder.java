@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields.file;
 
-import android.databinding.ViewDataBinding;
+import androidx.databinding.ViewDataBinding;
 
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 

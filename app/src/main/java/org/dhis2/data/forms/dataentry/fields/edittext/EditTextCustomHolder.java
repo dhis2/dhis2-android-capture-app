@@ -1,10 +1,10 @@
 package org.dhis2.data.forms.dataentry.fields.edittext;
 
 import android.annotation.SuppressLint;
-import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
+import com.google.android.material.textfield.TextInputLayout;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -17,7 +17,6 @@ import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -26,7 +25,7 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.dhis2.utils.Preconditions;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.common.ValueTypeDeviceRenderingModel;
@@ -35,11 +34,9 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
-import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;

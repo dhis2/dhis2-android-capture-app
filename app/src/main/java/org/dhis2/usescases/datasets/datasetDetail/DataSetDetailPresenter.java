@@ -2,13 +2,11 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.constraint.ConstraintLayout;
+import androidx.annotation.IntDef;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
-import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
@@ -27,10 +25,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.DEFAULT_CAT_OPTION;
-import static org.dhis2.utils.Constants.DEFAULT_CAT_OPTION_COMBO;
 import static org.dhis2.utils.Constants.ORG_UNIT;
-import static org.dhis2.utils.Constants.PROGRAM_UID;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {

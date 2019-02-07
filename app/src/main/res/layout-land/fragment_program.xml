@@ -10,7 +10,7 @@
             type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -87,13 +87,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/program_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     app:initGrid="@{true}"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="@{3}" />
 
                 <ProgressBar
@@ -117,7 +117,7 @@
 
         </LinearLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/org_unit_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -126,7 +126,7 @@
             android:background="@color/white_faf"
             app:itemTextColor="?colorPrimary">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -168,7 +168,7 @@
                     android:text="@string/action_accept"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.design.widget.NavigationView>
-    </android.support.v4.widget.DrawerLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.navigation.NavigationView>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

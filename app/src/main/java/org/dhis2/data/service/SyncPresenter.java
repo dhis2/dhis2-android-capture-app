@@ -1,8 +1,8 @@
 package org.dhis2.data.service;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 
 interface SyncPresenter {
     void sync();
