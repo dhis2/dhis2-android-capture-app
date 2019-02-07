@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:tint="?colorPrimary"
+                android:tint="@color/colorGreyDefault"
                 android:visibility="@{isOnline?View.VISIBLE:View.GONE}"
                 app:srcCompat="@drawable/ic_download" />
 
@@ -80,6 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_toStartOf="@id/syncState"
+                android:tint="@color/colorGreyDefault"
                 android:visibility="@{overdue? View.VISIBLE: View.GONE}"
                 app:srcCompat="@drawable/ic_overdue" />
 
@@ -88,16 +89,16 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="5dp"
-                app:srcCompat = "@drawable/ic_tei_default"
                 android:tint="@color/white"
+                app:srcCompat="@drawable/ic_tei_default"
                 tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/follow_up"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
-                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_alignEnd="@id/tracked_entity_image"
+                android:layout_alignBottom="@id/tracked_entity_image"
                 android:layout_gravity="center_vertical"
                 android:padding="8dp"
                 android:visibility='@{followUp ? View.VISIBLE : View.GONE}'
@@ -147,15 +148,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tracked_entity_image"
-                android:layout_marginEnd="6dp"
                 android:layout_marginStart="6dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="6dp"
                 app:alignContent="stretch"
                 app:alignItems="flex_start"
-                app:showDivider="middle"
-                app:flexWrap="wrap">
+                app:flexWrap="wrap"
+                app:showDivider="middle">
+
 
             </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tracked_entity_image"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="6dp"
+                app:chipSpacing="8dp" />
 
             <RelativeLayout
                 android:id="@+id/buttons_layout"
@@ -174,22 +186,22 @@
                     android:visibility="gone"
                     app:srcCompat="@drawable/ic_add_circle"
                     tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:id="@+id/view_more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/add_program"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/view_more"
-                    android:textAllCaps="true"
-                    android:textColor="?colorPrimary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:ignore="RelativeOverlap"
-                    tools:text="view more" />
+                <!--
+                                <TextView
+                                    android:id="@+id/view_more"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignBottom="@id/add_program"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="end"
+                                    android:layout_marginEnd="10dp"
+                                    android:text="@string/view_more"
+                                    android:textAllCaps="true"
+                                    android:textColor="?colorPrimary"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    tools:ignore="RelativeOverlap"
+                                    tools:text="view more" />-->
 
             </RelativeLayout>
 

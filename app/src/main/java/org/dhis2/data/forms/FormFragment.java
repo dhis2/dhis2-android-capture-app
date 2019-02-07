@@ -4,18 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +12,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.dhis2.App;
@@ -33,15 +25,16 @@ import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.section.viewmodels.date.DatePickerDialogFragment;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.usescases.map.MapSelectorActivity;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CategoryComboDialog;
-import org.dhis2.utils.CustomViews.CoordinatesView;
-import org.dhis2.utils.CustomViews.CustomDialog;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.Preconditions;
+import org.dhis2.utils.custom_views.CategoryComboDialog;
+import org.dhis2.utils.custom_views.CoordinatesView;
+import org.dhis2.utils.custom_views.CustomDialog;
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
@@ -55,6 +48,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -100,6 +101,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private RuleActionErrorOnCompletion errorOnCompletion;
     private RuleActionWarningOnCompletion warningOnCompletion;
     private RuleActionShowError showError;
+    private String programUid;
+    private String teiUid;
 
 
     public FormFragment() {
@@ -160,9 +163,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         if (getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
             setupActionBar();
         else if (getArguments().getBoolean(FORM_VIEW_TABLAYOUT)) {
-            /*ViewGroup.LayoutParams lp = nestedScrollView.getLayoutParams();
-            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            nestedScrollView.setLayoutParams(lp);*/
             toolbar.setVisibility(View.GONE);
             datesLayout.setVisibility(View.GONE);
             nextButton.setVisibility(View.GONE);
@@ -442,10 +442,18 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
                 this.coordinatesView = null;
                 break;
             case RQ_EVENT:
-                getActivity().finish();
+                openDashboard();
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    void openDashboard(){
+        Bundle bundle = new Bundle();
+        bundle.putString("PROGRAM_UID", programUid);
+        bundle.putString("TEI_UID", teiUid);
+        startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
+        getActivity().finish();
     }
 
     void publishCoordinatesChanged(Double lat, Double lon) {
@@ -478,15 +486,19 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         }
         if (!mandatoryRequired) {
             if (enrollmentTrio != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString("PROGRAM_UID", enrollmentTrio.val0());
-                bundle.putString("TEI_UID", enrollmentTrio.val1());
-                if (!enrollmentTrio.val2().isEmpty()) { //val0 is enrollment uid, val1 is trackedEntityType, val2 is event uid
-                    FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
-                    startActivityForResult(FormActivity.create(this.getAbstractActivity(), formViewArguments, isEnrollment), RQ_EVENT);
+                if (!enrollmentTrio.val2().isEmpty()) { //val0 is teiUid uid, val1 is programUid, val2 is event uid
+                    this.programUid = enrollmentTrio.val1();
+                    this.teiUid = enrollmentTrio.val0();
+                    Intent eventCreationIntent = new Intent(getAbstracContext(), EventCaptureActivity.class);
+                    eventCreationIntent.putExtras(EventCaptureActivity.getActivityBundle(enrollmentTrio.val2(), enrollmentTrio.val1()));
+                    eventCreationIntent.putExtra(Constants.TRACKED_ENTITY_INSTANCE, enrollmentTrio.val0());
+                    startActivityForResult(eventCreationIntent, RQ_EVENT);
+                    /*FormViewArguments formViewArguments = FormViewArguments.createForEvent(enrollmentTrio.val2());
+                    startActivityForResult(FormActivity.create(getContext(), formViewArguments, isEnrollment), RQ_EVENT);*/
                 } else { //val0 is program uid, val1 is trackedEntityInstance, val2 is empty
-                    startActivity(TeiDashboardMobileActivity.class, bundle, false, false, null);
-                    getActivity().finish();
+                    this.programUid = enrollmentTrio.val1();
+                    this.teiUid = enrollmentTrio.val0();
+                    openDashboard();
                 }
             } else {
                 checkAction();

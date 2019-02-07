@@ -1,8 +1,8 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventInitial;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.hisp.dhis.android.core.category.CategoryComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -68,4 +68,6 @@ public interface EventInitialRepository {
     Observable<Boolean> accessDataWrite(String programId);
 
     void deleteEvent(String eventId, String trackedEntityInstance);
+
+    boolean isEnrollmentOpen();
 }

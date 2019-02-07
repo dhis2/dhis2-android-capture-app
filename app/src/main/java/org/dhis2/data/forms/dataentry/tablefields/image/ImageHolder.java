@@ -7,6 +7,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FormImageBinding;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -58,7 +59,7 @@ public class ImageHolder extends FormViewHolder {
                 if(binding.frame.getVisibility()==View.VISIBLE) {*/
                     if (imageSelector != null)
                         imageSelector.onNext(value);
-                    processor.onNext(RowAction.create(uids[0], value));
+                    processor.onNext(RowAction.create(uids[0], value, "", new ArrayList<>(), 0, 0));
                 /*}else
                     processor.onNext(RowAction.create(uids[0], null));*/
             }

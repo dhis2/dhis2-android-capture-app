@@ -1,15 +1,13 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
 import android.content.Context;
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.dhis2.Bindings.Bindings;
 import org.dhis2.R;
@@ -17,13 +15,16 @@ import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.OptionSetDialog;
-import org.dhis2.utils.CustomViews.OptionSetOnClickListener;
+import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentActivity;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -60,6 +61,11 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
             iconView.setVisibility(View.VISIBLE);
 
         editText.setOnClickListener(this);
+
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                editText.performClick();
+        });
 
         this.disposable = new CompositeDisposable();
 
@@ -122,6 +128,9 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setClearListener(view -> {
                                 processor.onNext(
                                         RowAction.create(viewModel.uid(), ""));
+                               /* View nextView;
+                                if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
+                                    nextView.requestFocus();*/
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
@@ -152,5 +161,8 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );
+      /*  View nextView;
+        if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
+            nextView.requestFocus();*/
     }
 }

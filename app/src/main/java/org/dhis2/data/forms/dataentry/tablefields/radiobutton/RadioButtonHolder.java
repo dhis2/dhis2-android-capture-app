@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -81,13 +81,13 @@ public class RadioButtonHolder extends FormViewHolder {
             RowAction rowAction;
             switch (checkedId) {
                 case R.id.yes:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(true), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(), checkBoxViewModel.row(), checkBoxViewModel.column());
                     break;
                 case R.id.no:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false));
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), String.valueOf(false), checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(), checkBoxViewModel.row(), checkBoxViewModel.column());
                     break;
                 default:
-                    rowAction = RowAction.create(checkBoxViewModel.uid(), null);
+                    rowAction = RowAction.create(checkBoxViewModel.uid(), null, checkBoxViewModel.dataElement(), checkBoxViewModel.listCategoryOption(), checkBoxViewModel.row(), checkBoxViewModel.column());
                     break;
             }
             processor.onNext(rowAction);

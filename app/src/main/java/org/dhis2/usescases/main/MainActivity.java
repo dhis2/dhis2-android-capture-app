@@ -3,18 +3,17 @@ package org.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableInt;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.res.ResourcesCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.andrognito.pinlockview.PinLockListener;
 
@@ -29,8 +28,8 @@ import org.dhis2.usescases.qrReader.QrReaderFragment;
 import org.dhis2.usescases.syncManager.ErrorDialog;
 import org.dhis2.usescases.syncManager.SyncManagerFragment;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.Period;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.List;
 
@@ -247,7 +246,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
     }
 
     @Override
-    public void showSyncErrors(List<ErrorMessageModel> data) {
+    public void showSyncErrors(List<D2Error> data) {
         ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 

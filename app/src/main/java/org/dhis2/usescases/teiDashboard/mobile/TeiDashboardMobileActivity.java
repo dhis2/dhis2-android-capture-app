@@ -1,20 +1,22 @@
 package org.dhis2.usescases.teiDashboard.mobile;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
+
+import androidx.annotation.Nullable;
+
+import com.google.android.material.ripple.RippleUtils;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
@@ -32,8 +34,8 @@ import org.dhis2.usescases.teiDashboard.adapters.DashboardPagerTabletAdapter;
 import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CategoryComboDialog;
 import org.dhis2.utils.HelpManager;
+import org.dhis2.utils.custom_views.CategoryComboDialog;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(getSharedPreferences().getInt(Constants.PROGRAM_THEME, getSharedPreferences().getInt(Constants.THEME, R.style.AppTheme)));
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dashboard_mobile);
@@ -78,6 +81,8 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
+         /*   if(changingProgram)
+                recreate();*/
             orientation = Resources.getSystem().getConfiguration().orientation;
             init(teiUid, programUid);
         }
@@ -87,6 +92,22 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     protected void onPause() {
         super.onPause();
         presenter.onDettach();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        orientation = Resources.getSystem().getConfiguration().orientation;
+        teiUid = savedInstanceState.getString(Constants.TRACKED_ENTITY_INSTANCE);
+        programUid = savedInstanceState.getString(Constants.PROGRAM_UID);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.clear();
+        outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
+        outState.putString(Constants.PROGRAM_UID, programUid);
     }
 
     @Override

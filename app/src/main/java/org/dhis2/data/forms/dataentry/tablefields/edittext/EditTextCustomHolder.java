@@ -1,11 +1,11 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
 import android.annotation.SuppressLint;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.content.ContextCompat;
+
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -20,7 +20,7 @@ import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomTextViewBinding;
-import org.dhis2.utils.CustomViews.TextInputAutoCompleteTextView;
+import org.dhis2.utils.custom_views.TextInputAutoCompleteTextView;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
@@ -58,16 +58,16 @@ final class EditTextCustomHolder extends FormViewHolder {
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
                 if (!isEmpty(editText.getText()) && validate())
-                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
+                    processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString(), editTextModel.dataElement(), editTextModel.listCategoryOption(), editTextModel.row(), editTextModel.column()));
                 else
-                    processor.onNext(RowAction.create(editTextModel.uid(), null));
+                    processor.onNext(RowAction.create(editTextModel.uid(), null, editTextModel.dataElement(), editTextModel.listCategoryOption(),editTextModel.row(), editTextModel.column()));
             }
         });
 
     }
 
 
-    public void update(@NonNull FieldViewModel model) {
+    public void update(@NonNull FieldViewModel model, String value) {
         if (!model.editable()) {
             editText.setEnabled(false);
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.bg_black_e6e));
@@ -75,7 +75,9 @@ final class EditTextCustomHolder extends FormViewHolder {
             editText.setEnabled(true);
             editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
         }else{
-            editText.setEnabled(false);
+            //TODO change to false enabled!!!
+            editText.setEnabled(true);
+            editText.setBackgroundColor(ContextCompat.getColor(editText.getContext(), R.color.white));
         }
 
         this.editTextModel = (EditTextModel) model;
@@ -84,6 +86,9 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));
+
+        if(value != null && !value.isEmpty())
+            editText.setText(value);
 
         if (!isEmpty(editTextModel.warning())) {
             inputLayout.setError(editTextModel.warning());

@@ -1,15 +1,14 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.dhis2.R;
 import org.dhis2.databinding.ItemDatasetBinding;
-import org.hisp.dhis.android.core.dataset.DataSetModel;
 
 import java.util.ArrayList;
 import java.util.List;

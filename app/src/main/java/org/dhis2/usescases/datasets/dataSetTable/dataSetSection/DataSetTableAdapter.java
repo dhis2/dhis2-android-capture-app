@@ -1,9 +1,9 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +32,7 @@ import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.tablefields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.tablefields.spinner.SpinnerViewModel;
-import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedRow;
 import org.dhis2.data.forms.dataentry.tablefields.unsupported.UnsupportedViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -72,8 +70,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private final FlowableProcessor<RowAction> processor;
     @NonNull
     private final List<Row> rows;
-    private int columnPos = 0;
-    private int rowPos = 0;
+
+    private Boolean showRowTotal = false;
+    private Boolean showColumnTotal = false;
+
+
 
     public DataSetTableAdapter(Context context, boolean accessDataWrite) {
         super(context);
@@ -84,14 +85,14 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
 
         rows.add(EDITTEXT, new EditTextRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), new ObservableBoolean(accessDataWrite)));
         rows.add(BUTTON, new FileRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
-        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
+        rows.add(CHECKBOX, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(SPINNER, new SpinnerRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(COORDINATES, new CoordinateRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(TIME, new DateTimeRow(layoutInflater, processor, TIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(DATE, new DateTimeRow(layoutInflater, processor, DATE, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(DATETIME, new DateTimeRow(layoutInflater, processor, DATETIME, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         rows.add(AGEVIEW, new AgeRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
-        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(),accessDataWrite));
+        rows.add(YES_NO, new RadioButtonRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name(), accessDataWrite));
         //rows.add(ORG_UNIT, new OrgUnitRow(fragmentManager, layoutInflater, processor, true, orgUnits, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(IMAGE, new ImageRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
         //rows.add(UNSUPPORTED, new UnsupportedRow(layoutInflater, processor, true, ProgramStageSectionRenderingType.LISTING.name()));
@@ -105,14 +106,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      *
      * @param viewType : This value comes from #getCellItemViewType method to support different type
      *                 of viewHolder as a Cell item.
-     * @see #getCellItemViewType(int);
+     * @see #getCellItemViewType(int, int);
      */
     @Override
     public AbstractViewHolder onCreateCellViewHolder(ViewGroup parent, int viewType) {
-        /*return new DataSetCell(
-                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_dataset_cell, parent, false)
-        );*/
-        return rows.get(getCellViewType(rowPos)).onCreate(parent);
+       return rows.get(viewType).onCreate(parent);
     }
 
     /**
@@ -132,11 +130,13 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int columnPosition, int rowPosition) {
 
-        rows.get(getCellViewType(rowPosition)).onBind(holder, viewModels.get(rowPosition).get(columnPosition));
+        String value =  cellItemModel != null && !cellItemModel.equals("") ? cellItemModel.toString() :viewModels.get(rowPosition).get(columnPosition).value();
+
+        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(rowPosition).get(columnPosition), value);
         holder.itemView.setEnabled(false);
         holder.itemView.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
         holder.itemView.getLayoutParams().height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        rowPos = rowPosition +1;
+
     }
 
     public void swap(List<List<FieldViewModel>> viewModels) {
@@ -216,7 +216,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindRowHeaderViewHolder(AbstractViewHolder holder, Object rowHeaderItemModel, int
             position) {
-        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position).displayName());
+        ((DataSetRowHeader) holder).bind(mRowHeaderItems.get(position));
     }
 
 
@@ -226,14 +226,20 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         return LayoutInflater.from(mContext).inflate(R.layout.table_view_corner_layout, null);
     }
 
-    private int getCellViewType(int rowPosition){
-        columnPos = rowPosition;
+    @Override
+    public int getColumnHeaderItemViewType(int columnPosition) {
+        return 0;
+    }
 
-        FieldViewModel viewModel;
-        if(viewModels.size() <= rowPosition)
-            viewModel = viewModels.get(rowPosition-1).get(0);
-        else
-            viewModel = viewModels.get(rowPosition).get(0);
+    @Override
+    public int getRowHeaderItemViewType(int rowPosition) {
+        return 0;
+    }
+
+    @Override
+    public int getCellItemViewType(int columnPosition, int rowPosition) {
+
+        FieldViewModel viewModel = viewModels.get(rowPosition).get(0);
 
         if (viewModel instanceof EditTextModel) {
             return EDITTEXT;
@@ -267,65 +273,44 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
         }
     }
 
-    @Override
-    public int getColumnHeaderItemViewType(int columnPosition) {
-        // The unique ID for this type of column header item
-        // If you have different items for Cell View by X (Column) position,
-        // then you should fill this method to be able create different
-        // type of CellViewHolder on "onCreateCellViewHolder"
-        return 0;
+    @NonNull
+    public FlowableProcessor<RowAction> asFlowable() {
+        return processor;
     }
 
-    @Override
-    public int getRowHeaderItemViewType(int rowPosition) {
-        return 0;
+    public void updateValue(RowAction rowAction) {
+        if(showRowTotal || showColumnTotal){
+            int oldValue = 0;
+            if(getCellItem(rowAction.columnPos(),rowAction.rowPos()) != null && !getCellItem(rowAction.columnPos(),rowAction.rowPos()).isEmpty())
+                oldValue = Integer.parseInt(getCellItem(rowAction.columnPos(),rowAction.rowPos()));
+
+            if(showRowTotal) {
+                int totalRow = Integer.parseInt(getCellItem(viewModels.get(0).size()-1,rowAction.rowPos()))
+                        + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+                changeCellItem(viewModels.get(0).size() - 1, rowAction.rowPos(), totalRow + "");
+            }
+            if(showColumnTotal) {
+                int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(),viewModels.size()-1))
+                        + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+                changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "");
+            }
+        }
+        changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "");
     }
 
-    @Override
-    public int getCellItemViewType(int columnPosition) {
+    public void setShowRowTotal(Boolean showRowTotal) {
+        this.showRowTotal = showRowTotal;
+    }
 
-      /*
-      FieldViewModel viewModel;
-        if(rowPos <= viewModels.size()-1){
-            viewModel = viewModels.get(rowPos).get(columnPosition);
-        }else{
-            viewModel = viewModels.get(viewModels.size()-1).get(columnPosition);
-        }
+    public void setShowColumnTotal(Boolean showColumnTotal) {
+        this.showColumnTotal = showColumnTotal;
+    }
 
-        if(columnPosition == viewModels.get(0).size()-1){
-            rowPos ++;
-        }
-        if (viewModel instanceof EditTextModel) {
-            return EDITTEXT;
-        } else if (viewModel instanceof RadioButtonViewModel) {
-            return CHECKBOX;
-        } else if (viewModel instanceof SpinnerViewModel) {
-            return SPINNER;
-        } else if (viewModel instanceof CoordinateViewModel) {
-            return COORDINATES;
+    public Boolean getShowRowTotal() {
+        return showRowTotal;
+    }
 
-        } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
-        } else if (viewModel instanceof AgeViewModel) {
-            return AGEVIEW;
-        } else if (viewModel instanceof FileViewModel) {
-            return BUTTON;
-        *//*} else if (viewModel instanceof OrgUnitViewModel) {
-            return ORG_UNIT;*//*
-        } else if (viewModel instanceof ImageViewModel) {
-            return IMAGE;
-        } else if (viewModel instanceof UnsupportedViewModel) {
-            return UNSUPPORTED;
-        } else {
-            throw new IllegalStateException("Unsupported view model type: "
-                    + viewModel.getClass());
-        }*/
-
-        return 0;
+    public Boolean getShowColumnTotal() {
+        return showColumnTotal;
     }
 }

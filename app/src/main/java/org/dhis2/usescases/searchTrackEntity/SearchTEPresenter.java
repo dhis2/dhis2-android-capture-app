@@ -17,7 +17,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.D2;
@@ -268,7 +268,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                             })
                             .flatMap(list -> {
                                 if (currentPage == 1)
-                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData)
+                                    return searchRepository.trackedEntityInstancesToUpdate(trackedEntity.uid(), selectedProgram, queryData, list.size())
                                             .map(trackedEntityInstanceModels -> {
                                                 List<SearchTeiModel> helperList = new ArrayList<>();
 
@@ -512,7 +512,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(enrollmentUid -> {
                                     FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getAbstractActivity(), formViewArguments, true));
+                                    this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
                                 },
                                 Timber::d)
         );

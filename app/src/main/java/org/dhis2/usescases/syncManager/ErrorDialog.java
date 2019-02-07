@@ -3,14 +3,14 @@ package org.dhis2.usescases.syncManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableBoolean;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DividerItemDecoration;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +21,8 @@ import com.google.gson.Gson;
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
-import org.dhis2.utils.ErrorMessageModel;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,14 +39,14 @@ public class ErrorDialog extends DialogFragment {
 
     private static ErrorDialog instace;
     private String title;
-    private List<ErrorMessageModel> data;
+    private List<D2Error> data;
     private DividerItemDecoration divider;
     public static String TAG = "FullScreenDialog";
     private String shareTitle;
     private String shareMessageTitle;
     private ObservableBoolean sharing = new ObservableBoolean(false);
     private CompositeDisposable disposable;
-    private ObservableArrayList<ErrorMessageModel> shareData;
+    private ObservableArrayList<D2Error> shareData;
 
     public static ErrorDialog newInstace() {
         if (instace == null) {
@@ -56,7 +55,7 @@ public class ErrorDialog extends DialogFragment {
         return instace;
     }
 
-    public ErrorDialog setData(List<ErrorMessageModel> data) {
+    public ErrorDialog setData(List<D2Error> data) {
         this.data = data;
         return this;
     }
@@ -125,7 +124,7 @@ public class ErrorDialog extends DialogFragment {
         return binding.getRoot();
     }
 
-    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, ErrorMessageModel>> pairFlowableProcessor) {
+    private void subscribeToErrors(FlowableProcessor<Pair<Boolean, D2Error>> pairFlowableProcessor) {
         if (disposable == null)
             disposable = new CompositeDisposable();
         disposable.add(pairFlowableProcessor

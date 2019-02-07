@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.radiobutton;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -51,7 +51,7 @@ public class RadioButtonRow implements Row<RadioButtonHolder, RadioButtonViewMod
     }
 
     @Override
-    public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel) {
+    public void onBind(@NonNull RadioButtonHolder viewHolder, @NonNull RadioButtonViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 

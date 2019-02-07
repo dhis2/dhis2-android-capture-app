@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
 
 import org.dhis2.App;
+import org.dhis2.BuildConfig;
 import org.dhis2.R;
 import org.dhis2.data.forms.FormFragment;
 import org.dhis2.data.forms.FormViewArguments;
@@ -22,11 +23,10 @@ import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.databinding.ActivityEventDetailBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
-import org.dhis2.usescases.teiDashboard.dashboardfragments.TEIDataFragment;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CategoryComboDialog;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.custom_views.CategoryComboDialog;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
 import org.dhis2.utils.HelpManager;
@@ -87,7 +87,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
     @Override
     public void setData(EventDetailModel eventDetailModel, MetadataRepository metadataRepository) {
-        if(eventDetailModel.getEventModel().eventDate()!=null){
+        if(eventDetailModel.getEventModel().status() != EventStatus.SCHEDULE && eventDetailModel.getEventModel().eventDate()!=null){
             Intent intent2 = new Intent(this, EventCaptureActivity.class);
             intent2.putExtras(EventCaptureActivity.getActivityBundle(eventDetailModel.getEventModel().uid(), eventDetailModel.getEventModel().program()));
             startActivity(intent2, null);
@@ -97,6 +97,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             presenter.getExpiryDate(eventDetailModel.getEventModel().uid());
             binding.setEvent(eventDetailModel.getEventModel());
             binding.setStage(eventDetailModel.getProgramStage());
+            binding.setEnrollmentActive(eventDetailModel.isEnrollmentActive());
             setDataEditable();
             binding.orgUnit.setText(eventDetailModel.getOrgUnitName());
 
@@ -268,7 +269,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
 
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-            if (!prefs.getBoolean("TUTO_TEI_EVENT", false)) {
+            if (!prefs.getBoolean("TUTO_TEI_EVENT", false) && !BuildConfig.DEBUG) {
                 HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
                 prefs.edit().putBoolean("TUTO_TEI_EVENT", true).apply();
             }
@@ -307,6 +308,7 @@ public class EventDetailActivity extends ActivityGlobalAbstract implements Event
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(binding.getStage().accessDataWrite() && eventDetailModel.isEnrollmentActive());
         popupMenu.show();
     }
 }

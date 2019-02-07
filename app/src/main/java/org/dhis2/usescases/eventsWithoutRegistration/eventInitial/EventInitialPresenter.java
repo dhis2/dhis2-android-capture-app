@@ -5,9 +5,9 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -15,6 +15,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.dhis2.Bindings.Bindings;
+import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
 import org.dhis2.data.metadata.MetadataRepository;
@@ -112,8 +113,8 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
                             .subscribe(quartetFlowable -> {
                                 this.programModel = quartetFlowable.val1();
                                 this.catCombo = quartetFlowable.val2();
-                                view.setProgram(quartetFlowable.val1());
                                 view.setEvent(quartetFlowable.val0());
+                                view.setProgram(quartetFlowable.val1());
                                 view.setCatComboOptions(catCombo, quartetFlowable.val3());
                             }, Timber::d)
             );
@@ -219,7 +220,12 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
             eventInitialRepository.deleteEvent(eventId, trackedEntityInstance);
             view.showEventWasDeleted();
         } else
-            view.displayMessage("This event has not been created yet");
+            view.displayMessage(view.getContext().getString(R.string.delete_event_error));
+    }
+
+    @Override
+    public boolean isEnrollmentOpen() {
+        return eventInitialRepository.isEnrollmentOpen();
     }
 
     @Override

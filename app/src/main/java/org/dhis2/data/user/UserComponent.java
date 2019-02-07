@@ -1,18 +1,10 @@
 package org.dhis2.data.user;
 
-import android.support.annotation.NonNull;
-
 import org.dhis2.data.dagger.PerUser;
 import org.dhis2.data.forms.FormComponent;
 import org.dhis2.data.forms.FormModule;
-import org.dhis2.data.service.DataServiceComponent;
-import org.dhis2.data.service.DataServiceModule;
-import org.dhis2.data.service.MetadataServiceComponent;
-import org.dhis2.data.service.MetadataServiceModule;
 import org.dhis2.data.service.ReservedValuesWorkerComponent;
 import org.dhis2.data.service.ReservedValuesWorkerModule;
-import org.dhis2.data.service.ServiceComponent;
-import org.dhis2.data.service.ServiceModule;
 import org.dhis2.data.service.SyncDataWorkerComponent;
 import org.dhis2.data.service.SyncDataWorkerModule;
 import org.dhis2.data.service.SyncMetadataWorkerComponent;
@@ -64,6 +56,7 @@ import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
 import dagger.Subcomponent;
 
 @PerUser
@@ -85,19 +78,10 @@ public interface UserComponent {
     TeiDashboardComponent plus(@NonNull TeiDashboardModule dashboardModule);
 
     @NonNull
-    ServiceComponent plus(@NonNull ServiceModule serviceModule);
-
-    @NonNull
     QrComponent plus(@NonNull QrModule qrModule);
 
     @NonNull
     QrEventsWORegistrationComponent plus(@NonNull QrEventsWORegistrationModule qrModule);
-
-    @NonNull
-    MetadataServiceComponent plus(@NonNull MetadataServiceModule serviceModule);
-
-    @NonNull
-    DataServiceComponent plus(@NonNull DataServiceModule serviceModule);
 
     @NonNull
     TeiDataDetailComponent plus(@NonNull TeiDataDetailModule dataDetailModule);

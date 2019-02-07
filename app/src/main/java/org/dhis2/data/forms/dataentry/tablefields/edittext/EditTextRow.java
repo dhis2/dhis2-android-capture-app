@@ -1,13 +1,12 @@
 package org.dhis2.data.forms.dataentry.tablefields.edittext;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableBoolean;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.Row;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
@@ -60,8 +59,8 @@ public class EditTextRow implements Row<EditTextCustomHolder, EditTextModel> {
     }
 
     @Override
-    public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel) {
-        viewHolder.update(viewModel);
+    public void onBind(@NonNull EditTextCustomHolder viewHolder, @NonNull EditTextModel viewModel, String value) {
+        viewHolder.update(viewModel, value);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package org.dhis2.data.forms.dataentry.tablefields.orgUnit;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -72,7 +72,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel) {
+    public void onBind(@NonNull OrgUnitHolder viewHolder, @NonNull OrgUnitViewModel viewModel, String value) {
         viewHolder.update(viewModel);
     }
 

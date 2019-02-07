@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +84,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
     }
 
     @Override
-    public int getCellItemViewType(int position) {
+    public int getCellItemViewType(int columnPosition, int rowPosition) {
         return 0;
     }
 

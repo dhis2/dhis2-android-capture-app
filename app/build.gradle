@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
-//apply from: rootProject.file("plugins/android-paperwork.gradle")
 
 def libraries = rootProject.ext.libraries
 def versions = rootProject.ext.versions
@@ -24,6 +23,7 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 
@@ -40,13 +40,17 @@ android {
         targetSdkVersion versions.sdk
         versionCode versions.vCode
         versionName versions.vName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
         setProperty("archivesBaseName", "dhis2-v" + versionName)
 
         buildConfigField "String", "SDK_VERSION", "\"" + libraries.dhis2sdk + "\""
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 
     configurations.all*.exclude module: 'jsr305'
@@ -95,6 +99,24 @@ android {
         }
     }
 
+    /* flavorDimensions "default"
+     productFlavors {
+         dhis{
+             applicationId "com.dhis2"
+             archivesBaseName = "dhis"
+             dimension "default"
+             versionCode versions.vCode
+             versionName versions.vName
+         }
+         PSI {
+             applicationId "org.psi.dhis2"
+             archivesBaseName = "PSI"
+             dimension "default"
+             versionCode 1
+             versionName "1.0.3"
+         }
+     }*/
+
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -122,20 +144,27 @@ android {
     }
 }
 
+sonarqube {
+    properties {
+        property "sonar.language", "java"
+    }
+}
+
 dependencies {
 
     implementation project(":customFab")
-    implementation project(":dhis2-rule-engine")
-
+//    implementation project(":dhis2-rule-engine")
+    implementation project(":viewpagerdotsindicator")
+    implementation project(":tableview")
     //region SUPPORT LIBRARIES
-    implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:support-annotations:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"
-    implementation "com.android.support:support-v4:${libraries.support}"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.annotation:annotation:1.0.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation "com.android.support:multidex:${libraries.multidex}"
-    implementation "com.android.support.constraint:constraint-layout:${libraries.constraintlayout}"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     //endregion
 
     //region DHIS2 LIBRARIES
@@ -148,7 +177,7 @@ dependencies {
          exclude group: "org.hisp.dhis", module: "core-rules"
      }*/
 
-//    implementation"org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
+    implementation "org.hisp.dhis.rules:rule-engine:${libraries.ruleEngine}"
     //endregion
 
     //region UI LIBRARIES
@@ -158,8 +187,7 @@ dependencies {
     implementation "com.github.dekoservidoni:omfm:${libraries.omfm}"
     //FLEXBOX
     implementation "com.google.android:flexbox:${libraries.flexbox}"
-    //TABLEVIEW
-    implementation "com.evrencoskun.library:tableview:${libraries.tableview}"
+
     //PIN LOCK
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     //endregion
@@ -175,7 +203,7 @@ dependencies {
 
     //region DAGGER
     implementation "com.google.dagger:dagger:${libraries.dagger}"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     //endregion
 
@@ -231,7 +259,7 @@ dependencies {
     //Test
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs'
 
@@ -263,12 +291,11 @@ dependencies {
     implementation 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
 
     //Lottie animations
-    implementation 'com.airbnb.android:lottie:2.5.4'
+    implementation 'com.airbnb.android:lottie:2.8.0'
 
     //Glide load images
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    kapt 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation "com.tbuonomo.andrui:viewpagerdotsindicator:${libraries.indicatordots}"
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    kapt 'com.github.bumptech.glide:compiler:4.8.0'
 
     //Paperwork
     implementation "hu.supercluster:paperwork:${libraries.paperwork}"
@@ -277,7 +304,11 @@ dependencies {
 
     implementation 'cat.ereza:customactivityoncrash:2.2.0'
 
+    implementation "com.google.android.gms:play-services-analytics:${libraries.analytics}"
 
+    implementation "com.github.pwittchen:rxbiometric:0.1.0"
+
+    implementation "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
 }
 
 apply plugin: 'kotlin-kapt'

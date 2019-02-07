@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.image;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +58,7 @@ public class ImageRow implements Row<ImageHolder, ImageViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel) {
+    public void onBind(@NonNull ImageHolder viewHolder, @NonNull ImageViewModel viewModel, String value) {
         viewHolder.update(viewModel);
     }
 

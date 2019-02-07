@@ -1,6 +1,6 @@
 package org.dhis2.usescases.splash;
 
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 
 import org.dhis2.usescases.general.AbstractActivityContracts;
 

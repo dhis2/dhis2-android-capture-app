@@ -6,7 +6,7 @@ import android.annotation.SuppressLint;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.CustomFormCoordinateBinding;
-import org.dhis2.utils.CustomViews.CoordinatesView;
+import org.dhis2.utils.custom_views.CoordinatesView;
 
 import java.util.Locale;
 
@@ -27,7 +27,7 @@ public class CoordinateHolder extends FormViewHolder {
                 processor.onNext(
                         RowAction.create(model.uid(),
                                 String.format(Locale.US,
-                                        "[%.5f,%.5f]", latitude, longitude))
+                                        "[%.5f,%.5f]", latitude, longitude), model.dataElement(), model.listCategoryOption(), model.row(), model.column())
                 ));
         binding.formCoordinates.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()

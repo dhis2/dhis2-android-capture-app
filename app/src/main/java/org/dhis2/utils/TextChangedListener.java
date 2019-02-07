@@ -1,6 +1,6 @@
 package org.dhis2.utils;
 
-import android.databinding.adapters.TextViewBindingAdapter;
+import androidx.databinding.adapters.TextViewBindingAdapter;
 import android.text.Editable;
 
 /**

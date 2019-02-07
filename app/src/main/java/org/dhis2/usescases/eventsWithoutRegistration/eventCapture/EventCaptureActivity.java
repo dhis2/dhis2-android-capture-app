@@ -1,36 +1,39 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.databinding.ActivityEventCaptureBinding;
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureFragment.EventCaptureFormFragment;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
-import org.dhis2.utils.CustomViews.ProgressBarAnimation;
+import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.DialogClickListener;
-import org.dhis2.utils.Utils;
+import org.dhis2.utils.custom_views.CustomDialog;
+import org.dhis2.utils.custom_views.FormBottomDialog;
+import org.dhis2.utils.custom_views.ProgressBarAnimation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
@@ -50,6 +53,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     @Inject
     EventCaptureContract.Presenter presenter;
     private int completionPercentage = 0;
+    private String programStageUid;
+    private Boolean isEventCompleted = false;
 
     public static Bundle getActivityBundle(@NonNull String eventUid, @NonNull String programUid) {
         Bundle bundle = new Bundle();
@@ -70,19 +75,31 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         binding.setPresenter(presenter);
         gestureScanner = new GestureDetector(this, this);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         presenter.init(this);
 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     protected void onPause() {
-        presenter.onDettach();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDettach();
+        super.onDestroy();
     }
 
     @Override
@@ -133,89 +150,88 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
     @Override
     public void showCompleteActions(boolean canComplete) {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                canComplete ? R.menu.event_form_complete_menu : R.menu.event_form_cant_complete_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.complete:
-                            presenter.completeEvent(false);
-                            break;
-                        case R.id.completeAndAddNew:
-                            presenter.completeEvent(true);
-                            break;
-                        case R.id.finishAndAddNew:
-                            restartDataEntry();
-                            break;
-                        case R.id.completeLater:
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsEnrollmentOpen(presenter.isEnrollmentOpen())
+                .setIsExpired(presenter.hasExpired())
+                .setCanComplete(canComplete)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToReopen() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_reopen_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.reopen:
-                            presenter.reopenEvent();
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
+                .setReopen(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToSkip() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_overdue_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.skip:
-                            presenter.skipEvent();
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
+                .setSkip(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
     }
 
     @Override
     public void attemptToReschedule() {
-        Utils.getPopUpMenu(this,
-                EventCaptureFormFragment.getInstance().getSectionSelector(),
-                Gravity.TOP,
-                R.menu.event_form_skip_menu,
-                item -> {
-                    switch (item.getItemId()) {
-                        case R.id.reschedule:
-                            //TODO: OPEN DATE SELECTOR
-                            break;
-                        case R.id.finish:
-                            finishDataEntry();
-                            break;
-                    }
-                    return false;
-                },
-                true).show();
+        FormBottomDialog.getInstance()
+                .setAccessDataWrite(presenter.canWrite())
+                .setIsExpired(presenter.hasExpired())
+                .setReschedule(true)
+                .setListener(this::setAction)
+                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+    }
+
+    @Override
+    public void setProgramStage(String programStageUid) {
+        this.programStageUid = programStageUid;
+    }
+
+    private void setAction(FormBottomDialog.ActionType actionType) {
+        switch (actionType) {
+            case COMPLETE:
+                isEventCompleted = true;
+                presenter.completeEvent(false);
+                break;
+            case COMPLETE_ADD_NEW:
+                presenter.completeEvent(true);
+                break;
+            case FINISH_ADD_NEW:
+                restartDataEntry();
+                break;
+            case REOPEN:
+                presenter.reopenEvent();
+                break;
+            case SKIP:
+                presenter.skipEvent();
+                break;
+            case RESCHEDULE:
+                reschedule();
+                break;
+            case FINISH:
+                finishDataEntry();
+                break;
+        }
+    }
+
+    private void reschedule() {
+        Calendar calendar = DateUtils.getInstance().getCalendar();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            Calendar chosenDate = Calendar.getInstance();
+            chosenDate.set(year, month, dayOfMonth);
+            presenter.rescheduleEvent(chosenDate.getTime());
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.show();
     }
 
     @Override
@@ -246,7 +262,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void finishDataEntry() {
         Intent intent = new Intent();
         intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        setResult(RESULT_OK, intent);
+        if(isEventCompleted)
+            setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -331,6 +348,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
             }
             return false;
         });
+        popupMenu.getMenu().getItem(1).setVisible(presenter.canWrite() && presenter.isEnrollmentOpen());
         popupMenu.show();
     }
 
@@ -343,7 +361,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
         Bundle bundle = new Bundle();
         bundle.putString(PROGRAM_UID, getIntent().getStringExtra(Constants.PROGRAM_UID));
         bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        bundle.putString(Constants.TRACKED_ENTITY_INSTANCE, getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE));
+        bundle.putString(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
+        bundle.putString(Constants.PROGRAM_STAGE_UID, programStageUid);
         startActivity(EventInitialActivity.class, bundle, true, false, null);
     }
 

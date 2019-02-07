@@ -134,6 +134,7 @@
     <string name="delete_event">Delete event</string>
     <string name="confirm_delete_event">Are you sure that you want to delete this event?</string>
     <string name="event_was_deleted">Event deleted successfully</string>
+    <string name="total">Total</string>
 
     <!--TEI Enrollment list-->
     <string name="enrollment_list">Enrollment List</string>
@@ -327,6 +328,7 @@
     <string name="message_generate_new_event">Do you want to create another event?</string>
     <string name="event_completed_title">Events Completed</string>
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
+    <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
     <string name="check_event">Check</string>
 
     <string name="menu_home">Home</string>
@@ -380,7 +382,7 @@
     <string name="errors_during_sync">Your configuration sync has failed. There  could be errors in your server. Click here for more information.</string>
     <string name="sectionSelectorPrev">PREV</string>
     <string name="sectionSelectorNext">NEXT</string>
-    <string name="event_overview">Overview</string>
+    <string name="event_overview">Details</string>
     <string name="event_event">Event</string>
     <string name="event_indicators">Indicators</string>
     <string name="event_notes">Notes</string>
@@ -397,5 +399,13 @@
     <string name="reschedule">Reschedule</string>
     <string name="event_was_skipped">The event was marked as skipped</string>
     <string name="no_intructions">There is no information for this screen</string>
+    <string name="event_overdue">Overdue</string>
+    <string name="unsupported_program_rule">There is one program rule which is not supported. Please check the documentation</string>
+    <string name="delete_event_error">This event has not been created yet</string>
+    <string name="empty_description">No info for this field</string>
+    <string name="biometrics_dialog_title">Empty Credentials</string>
+    <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
+    <string name="biometrics_security_title">Biometric Security</string>
+    <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
 
 </resources>

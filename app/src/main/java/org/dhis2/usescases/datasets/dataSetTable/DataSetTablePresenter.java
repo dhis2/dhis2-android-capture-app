@@ -1,17 +1,17 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
-import org.dhis2.data.tuples.Quartet;
-import org.dhis2.data.tuples.Trio;
+import org.dhis2.data.tuples.Quintet;
 import org.dhis2.usescases.datasets.dataSetTable.dataSetSection.DataSetSectionFragment;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.SectionModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +32,18 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
-    private List<DataSetTableModel> dataValues;
+    //private List<DataSetTableModel> dataValues;
     private String orgUnitUid;
     private String periodTypeName;
     private String periodInitialDate;
     private String catCombo;
+    private Map<String, List<DataElementModel>> dataElements;
+    Map<String, List<List<CategoryOptionModel>>> catOptions;
+    List<DataSetTableModel> dataValues;
+    Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform;
+    Map<String, Map<String, List<String>>> dataElementDisabled;
+    Map<String, List<String>> compulsoryDataElement;
+    List<SectionModel> sections;
 
     public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
@@ -73,6 +80,38 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                 Timber::e
                         )
         );
+
+    }
+    @Override
+    public void initializeProcessor(@NonNull DataSetSectionFragment dataSetSectionFragment){
+        compositeDisposable.add(dataSetSectionFragment.rowActions()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(rowAction -> {
+                    boolean exists = false;
+                    for(DataSetTableModel dataValue: dataValues){
+                        if(dataValue.dataElement().equals(rowAction.dataElement()) &&
+                                dataValue.listCategoryOption().containsAll(rowAction.listCategoryOption())){
+                            DataSetTableModel dataSetTableModel = DataSetTableModel.create(dataValue.id(), dataValue.dataElement(),
+                                    dataValue.period(), dataValue.organisationUnit(),
+                                    dataValue.categoryOptionCombo(), dataValue.attributeOptionCombo(),
+                                    rowAction.value(), dataValue.storedBy(),
+                                    dataValue.catOption(), dataValue.listCategoryOption() );
+                            dataValues.remove(dataValue);
+                            dataValues.add(dataSetTableModel);
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if(!exists && rowAction.value() != null) {
+                        DataSetTableModel dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
+                                "", catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
+                                "", rowAction.listCategoryOption());
+                        dataValues.add(dataSetTableModel);
+                    }
+                    dataSetSectionFragment.updateData(rowAction);
+                    },
+                        Timber::e));
     }
 
     @Override
@@ -86,22 +125,29 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                                 tableRepository.getDataSet(),
                                                 tableRepository.getGreyedFields(getUidCatOptionsCombo(data)),
                                                 tableRepository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
-                                                Quartet::create
+                                                tableRepository.getSectionByDataSet(),
+                                                Quintet::create
                                         ))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                quartet -> {
-                                    view.setDataValue(quartet.val0());
-                                    view.setDataSet(quartet.val1());
-                                    dataSetSectionFragment.setData(tableData.val0(),
-                                            transformCategories(tableData.val1()), quartet.val0(),
-                                            tableData.val1(), quartet.val2(), quartet.val3());
+                                quintet -> {
+                                    view.setDataValue(quintet.val0());
+                                    view.setDataSet(quintet.val1());
+                                    dataElements = tableData.val0();
+                                    catOptions =  transformCategories(tableData.val1());
+                                    dataValues = quintet.val0();
+                                    mapWithoutTransform = tableData.val1();
+                                    dataElementDisabled = quintet.val2();
+                                    compulsoryDataElement = quintet.val3();
+                                    sections = quintet.val4();
+                                    dataSetSectionFragment.createTable(null);
                                 },
                                 Timber::e
                         )
         );
     }
+
 
     @Override
     public Map<String, List<List<CategoryOptionModel>>> transformCategories(@NonNull Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> map) {
@@ -188,5 +234,34 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
         }
 
         return catOptionsCombo;
+    }
+
+
+    public Map<String, List<DataElementModel>> getDataElements() {
+        return dataElements;
+    }
+
+    public Map<String, List<List<CategoryOptionModel>>> getCatOptions() {
+        return catOptions;
+    }
+
+    public List<DataSetTableModel> getDataValues() {
+        return dataValues;
+    }
+
+    public Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> getMapWithoutTransform() {
+        return mapWithoutTransform;
+    }
+
+    public Map<String, Map<String, List<String>>> getDataElementDisabled() {
+        return dataElementDisabled;
+    }
+
+    public Map<String, List<String>> getCompulsoryDataElement() {
+        return compulsoryDataElement;
+    }
+
+    public List<SectionModel> getSections() {
+        return sections;
     }
 }

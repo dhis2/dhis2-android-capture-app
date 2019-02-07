@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry.fields.file;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

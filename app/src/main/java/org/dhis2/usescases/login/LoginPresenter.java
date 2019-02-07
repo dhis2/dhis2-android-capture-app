@@ -3,23 +3,31 @@ package org.dhis2.usescases.login;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import android.os.Build;
+import android.os.CancellationSignal;
 import android.view.View;
+
+import com.github.pwittchen.rxbiometric.library.RxBiometric;
+import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
+import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
-import org.dhis2.usescases.sync.SyncActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
+import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.databinding.ObservableField;
+import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,9 +47,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
     private UserManager userManager;
     private CompositeDisposable disposable;
 
-    public ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
-    public ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
-    public ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
+    private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
+    private boolean testingSet;
+    private Boolean canHandleBiometrics;
 
     LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
         this.configurationRepository = configurationRepository;
@@ -51,8 +61,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
     @Override
     public void init(LoginContracts.View view) {
         this.view = view;
-
         this.disposable = new CompositeDisposable();
+
         userManager = null;
         if (((App) view.getContext().getApplicationContext()).getServerComponent() != null)
             userManager = ((App) view.getContext().getApplicationContext()).getServerComponent().userManager();
@@ -71,70 +81,98 @@ public class LoginPresenter implements LoginContracts.Presenter {
                         }
 
                     }, Timber::e));
+
+            disposable.add(
+                    Observable.just(userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() != null ?
+                            userManager.getD2().systemInfoModule().systemInfo.getWithAllChildren() : SystemInfo.builder().build())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    systemInfo -> view.getBinding().serverUrlEdit.setText(systemInfo.contextPath()),
+                                    Timber::e));
         }
+
+        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //TODO: REMOVE FALSE WHEN GREEN LIGHT
+            disposable.add(RxPreconditions
+                    .hasBiometricSupport(view.getContext())
+                    .filter(canHandleBiometrics -> {
+                        this.canHandleBiometrics = canHandleBiometrics;
+                        return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            canHandleBiometrics -> view.showBiometricButton(),
+                            Timber::e));
+
+
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onServerChanged(CharSequence s, int start, int before, int count) {
+        testingSet = false;
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
-        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
-        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
+        view.resetCredentials(false, true, true);
 
+        if (isServerUrlSet.get() && !testingSet &&
+                (view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_229) ||
+                        view.getBinding().serverUrl.getEditText().getText().toString().equals(Constants.URL_TEST_230))) {
+            view.setTestingCredentials();
+        }
+
+        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
+
+
+    }
+
+    @Override
+    public void onUserChanged(CharSequence s, int start, int before, int count) {
+        isUserNameSet.set(!view.getBinding().userName.getEditText().getText().toString().isEmpty());
+        view.resetCredentials(false, false, true);
+
+        view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
+
+    }
+
+    @Override
+    public void onPassChanged(CharSequence s, int start, int before, int count) {
+        isUserPassSet.set(!view.getBinding().userPass.getEditText().getText().toString().isEmpty());
         view.setLoginVisibility(isServerUrlSet.get() && isUserNameSet.get() && isUserPassSet.get());
     }
 
     @Override
     public void onButtonClick() {
         view.hideKeyboard();
-        //view.handleSync();
+        view.showLoginProgress(true);
+    }
 
-        String serverUrl = view.getBinding().serverUrl.getEditText().getText().toString();
-        String username = view.getBinding().userName.getEditText().getText().toString();
-        String password = view.getBinding().userPass.getEditText().getText().toString();
-
+    @Override
+    public void logIn(String serverUrl, String userName, String pass) {
         HttpUrl baseUrl = HttpUrl.parse(canonizeUrl(serverUrl));
         if (baseUrl == null) {
             return;
         }
-
-        disposable.add(configurationRepository.configure(baseUrl)
-                .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
-                .switchMap(userManager -> {
-                    SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
-                            Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                    prefs.edit().putString(Constants.SERVER, serverUrl).apply();
-                    this.userManager = userManager;
-                    return userManager.logIn(username.trim(), password);
-                })
-                .map(user -> {
-                    if (user == null)
-                        return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));
-                    else {
-                        return Response.success(null);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        this::handleResponse,
-                        this::handleError));
-    }
-
-    @Override
-    public void onTestingEnvironmentClick(int dhisVersion) {
-        switch (dhisVersion) {
-            case 29:
-                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-previous1");
-                break;
-            case 30:
-                view.getBinding().serverUrl.getEditText().setText("https://play.dhis2.org/android-current");
-                break;
-        }
-
-        view.getBinding().userName.getEditText().setText("android");
-        view.getBinding().userPass.getEditText().setText("Android123");
-
-        onButtonClick();
+        disposable.add(
+                configurationRepository.configure(baseUrl)
+                        .map(config -> ((App) view.getAbstractActivity().getApplicationContext()).createServerComponent(config).userManager())
+                        .switchMap(userManager -> {
+                            SharedPreferences prefs = view.getAbstractActivity().getSharedPreferences(
+                                    Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+                            prefs.edit().putString(Constants.SERVER, serverUrl).apply();
+                            this.userManager = userManager;
+                            return userManager.logIn(userName.trim(), pass).map(user -> {
+                                if (user == null)
+                                    return Response.error(404, ResponseBody.create(MediaType.parse("text"), "NOT FOUND"));
+                                else {
+                                    return Response.success(null);
+                                }
+                            });
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::handleResponse,
+                                this::handleError));
     }
 
     private String canonizeUrl(@NonNull String serverUrl) {
@@ -147,6 +185,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void onQRClick(View v) {
         Intent intent = new Intent(view.getContext(), QRActivity.class);
         view.getAbstractActivity().startActivityForResult(intent, Constants.RQ_QR_SCANNER);
+    }
+
+    @Override
+    public void onVisibilityClick(View v) {
+        view.switchPasswordVisibility();
     }
 
     @Override
@@ -203,15 +246,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void handleResponse(@NonNull Response userResponse) {
         Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
         Timber.d("Authentication response code: %s", userResponse.code());
+        view.showLoginProgress(false);
         if (userResponse.isSuccessful()) {
             ((App) view.getContext().getApplicationContext()).createUserComponent();
             view.saveUsersData();
-            if (NetworkUtils.isOnline(view.getContext())) {
-                metadataRepository.createErrorTable();
-                view.startActivity(SyncActivity.class, null, true, true, null);
-            } else
-                view.startActivity(MainActivity.class, null, true, true, null);
         }
+
     }
 
     @Override
@@ -232,6 +272,31 @@ public class LoginPresenter implements LoginContracts.Presenter {
         } else {
             view.renderUnexpectedError();
         }
+
+        view.showLoginProgress(false);
+    }
+
+    @Override
+    public void onFingerprintClick() {
+        disposable.add(
+                RxBiometric
+                        .title("Title")
+                        .description("description")
+                        .negativeButtonText("Cancel")
+                        .negativeButtonListener((dialog, which) -> {
+                        })
+                        .executor(ActivityCompat.getMainExecutor(view.getAbstractActivity()))
+                        .build()
+                        .authenticate(view.getAbstractActivity())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> view.checkSecuredCredentials(),
+                                error -> view.displayMessage("AUTH ERROR")));
+    }
+
+    @Override
+    public Boolean canHandleBiometrics() {
+        return canHandleBiometrics;
     }
 
 

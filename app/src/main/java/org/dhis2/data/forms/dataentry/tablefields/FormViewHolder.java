@@ -1,14 +1,14 @@
 package org.dhis2.data.forms.dataentry.tablefields;
 
-import android.databinding.ViewDataBinding;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ViewDataBinding;
+
 import android.widget.ImageView;
 
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.R;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.CustomViews.CustomDialog;
+import org.dhis2.utils.custom_views.CustomDialog;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.

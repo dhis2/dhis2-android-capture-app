@@ -8,16 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.widget.NestedScrollView;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,6 @@ import android.widget.AdapterView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
@@ -33,9 +32,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSyncManagerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.ErrorMessageModel;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
+import org.hisp.dhis.android.core.maintenance.D2Error;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,7 +324,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         }
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, "wipe_notification")
-                        .setSmallIcon(R.drawable.ic_dhis)
+                        .setSmallIcon(R.drawable.ic_sync)
                         .setContentTitle(getString(R.string.wipe_data))
                         .setContentText(getString(R.string.please_wait))
                         .setOngoing(true)
@@ -400,7 +399,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     }
 
     @Override
-    public void showSyncErrors(List<ErrorMessageModel> data) {
+    public void showSyncErrors(List<D2Error> data) {
         ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
     }
 }

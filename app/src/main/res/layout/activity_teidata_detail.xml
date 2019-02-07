@@ -26,12 +26,12 @@
             type="EnrollmentStatus" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorAccent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -64,14 +64,14 @@
                 app:layout_constraintStart_toEndOf="@id/menu"
                 tools:text="TEI NAME" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/toolbar_guideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintGuide_end="10dp" />
 
-            <android.support.v4.widget.ContentLoadingProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/toolbarProgress"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -81,9 +81,9 @@
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar_guideline"
                 tools:visibility="visible" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="5dp"
@@ -106,13 +106,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:paddingEnd="12dp"
                     android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
                     app:alignContent="stretch"
                     app:alignItems="stretch"
                     app:flexWrap="wrap">
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp">
@@ -177,9 +177,9 @@
                             app:layout_constraintTop_toBottomOf="@id/program_lock"
                             tools:text="Abierto" />
 
-                    </android.support.constraint.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="5dp">
@@ -254,21 +254,94 @@
                             android:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/org_unit_label" />
-                    </android.support.constraint.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.flexbox.FlexboxLayout>
 
-                <com.google.android.flexbox.FlexboxLayout
-                    android:id="@+id/teiDetailAttr"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    app:alignContent="stretch"
-                    app:alignItems="stretch"
-                    app:flexWrap="wrap"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/data_layout" />
+                <LinearLayout
+                    android:id="@+id/coordinates_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:visibility="@{program!=null &amp;&amp; program.captureCoordinates()?View.VISIBLE:View.GONE}">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:layout_weight="1"
+                        android:hint="@string/latitude"
+                        android:textColorHint="@color/text_black_808">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/lat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:focusable="false"
+                            android:inputType="numberDecimal"
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.latitude():""}'
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/longitude"
+                        android:textColorHint="@color/text_black_808">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/lon"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:focusable="false"
+                            android:inputType="numberDecimal"
+                            android:text='@{dashboardModel.currentEnrollment!=null?dashboardModel.currentEnrollment.longitude():""}'
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageButton
+                            android:id="@+id/location1"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/selector_gray_button_round_7"
+                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:padding="6dp"
+                            app:srcCompat="@drawable/ic_my_location" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp">
+
+                        <ImageButton
+                            android:id="@+id/location2"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/selector_gray_button_round_7"
+                            android:clickable="@{dashboardModel.currentEnrollment.enrollmentStatus()==EnrollmentStatus.ACTIVE}"
+                            android:padding="6dp"
+                            app:srcCompat="@drawable/ic_map" />
+                    </RelativeLayout>
+                </LinearLayout>
+
 
                 <FrameLayout
                     android:id="@+id/dataFragment"
@@ -276,7 +349,7 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <com.dekoservidoni.omfm.OneMoreFabMenu
             android:id="@+id/fabActive"
@@ -323,6 +396,6 @@
             app:size_main_button="@integer/omfm_fab_size_normal"
             app:size_secondary_buttons="@integer/omfm_fab_size_mini" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -1,9 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -29,7 +26,6 @@ import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonRow;
 import org.dhis2.data.forms.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerRow;
 import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.utils.Constants;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -41,9 +37,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  * QUADRAM. Created by ppajuelo on 06/11/2017.
@@ -111,8 +112,8 @@ public class FormAdapter extends RecyclerView.Adapter {
             viewModel = DateTimeViewModel.create(
                     position == 0 ? Constants.ENROLLMENT_DATE_UID : Constants.INCIDENT_DATE_UID,
                     holder.getAdapterPosition() == 0 ?
-                            programModel.enrollmentDateLabel() != null && programModel.enrollmentDateLabel().isEmpty() ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
-                            programModel.incidentDateLabel() != null && programModel.incidentDateLabel().isEmpty() ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
+                            !isEmpty(programModel.enrollmentDateLabel()) ? programModel.enrollmentDateLabel() : context.getString(R.string.enrollmment_date) :
+                            !isEmpty(programModel.incidentDateLabel()) ? programModel.incidentDateLabel() : context.getString(R.string.incident_date),
                     false,
                     ValueType.DATE,
                     null,
@@ -254,7 +255,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption() {
         return processorOptionSet;
     }
 }

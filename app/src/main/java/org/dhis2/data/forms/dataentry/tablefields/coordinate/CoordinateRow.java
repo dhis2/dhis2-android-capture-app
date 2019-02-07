@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.coordinate;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -52,7 +52,7 @@ public class CoordinateRow implements Row<CoordinateHolder, CoordinateViewModel>
     }
 
     @Override
-    public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel) {
+    public void onBind(@NonNull CoordinateHolder viewHolder, @NonNull CoordinateViewModel viewModel, String value) {
         viewHolder.update(viewModel, accessDataWrite);
     }
 

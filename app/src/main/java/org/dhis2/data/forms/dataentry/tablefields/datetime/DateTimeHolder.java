@@ -1,7 +1,7 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
-import android.databinding.ViewDataBinding;
-import android.support.v4.content.ContextCompat;
+import androidx.databinding.ViewDataBinding;
+import androidx.core.content.ContextCompat;
 
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -55,7 +55,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
     }
 
 
-    public void update(DateTimeViewModel viewModel, boolean accessDataWrite) {
+    public void update(DateTimeViewModel viewModel, boolean accessDataWrite, String value) {
         this.dateTimeViewModel = viewModel;
 //        model.onNext(viewModel);
         descriptionText = viewModel.description();
@@ -71,6 +71,9 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         } else {
             binding.setVariable(BR.initData, null);
         }
+
+        if(!isEmpty(value))
+            binding.setVariable(BR.initData, value);
 
         if (binding instanceof FormDateTextBinding)
             ((FormDateTextBinding) binding).dateView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
@@ -119,11 +122,11 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
         }
 
         if (binding instanceof FormTimeTextBinding)
-            ((FormTimeTextBinding) binding).timeView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormTimeTextBinding) binding).timeView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
         if (binding instanceof FormDateTextBinding)
-            ((FormDateTextBinding) binding).dateView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormDateTextBinding) binding).dateView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
         if (binding instanceof FormDateTimeTextBinding)
-            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(accessDataWrite && viewModel.editable());
+            ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(/*accessDataWrite &&*/ viewModel.editable());
 
         binding.executePendingBindings();
     }
@@ -140,7 +143,7 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
                 dateFormatted = DateUtils.databaseDateFormatNoMillis().format(date);
             }
         processor.onNext(
-                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null)
+                RowAction.create(dateTimeViewModel.uid(), date != null ? dateFormatted : null, dateTimeViewModel.dataElement(), dateTimeViewModel.listCategoryOption(), dateTimeViewModel.row(), dateTimeViewModel.column())
         );
     }
 

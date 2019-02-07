@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.tuples.Pair;
 
@@ -60,4 +60,6 @@ public interface EventDetailRepository {
     Observable<ProgramModel> getProgram(String eventUid);
 
     void saveCatOption(CategoryOptionComboModel selectedOption);
+
+    Observable<Boolean> isEnrollmentActive(String eventUid);
 }

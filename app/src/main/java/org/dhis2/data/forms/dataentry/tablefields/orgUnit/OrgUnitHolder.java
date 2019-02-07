@@ -1,16 +1,16 @@
 package org.dhis2.data.forms.dataentry.tablefields.orgUnit;
 
-import android.databinding.ViewDataBinding;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentManager;
+import androidx.databinding.ViewDataBinding;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.tablefields.RowAction;
-import org.dhis2.utils.CustomViews.OrgUnitDialog;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class OrgUnitHolder extends FormViewHolder {
                     .setMultiSelection(false)
                     .setOrgUnits(this.orgUnits)
                     .setPossitiveListener(data -> {
-                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit()));
+                        processor.onNext(RowAction.create(model.uid(), orgUnitDialog.getSelectedOrgUnit(), model.dataElement(), model.listCategoryOption(), model.row(), model.column()));
                         this.editText.setText(orgUnitDialog.getSelectedOrgUnitName());
                         orgUnitDialog.dismiss();
                         editText.setEnabled(true);

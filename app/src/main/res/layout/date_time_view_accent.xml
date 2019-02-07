@@ -37,7 +37,7 @@
             android:orientation="horizontal">
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -47,15 +47,16 @@
                 android:theme="@style/loginInputTextAccent"
                 tools:hint="Date label">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:textAlignment="textStart"
+                    android:textColor="?colorAccent"
                     android:textSize="15sp" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
                 android:id="@+id/descriptionLabel"

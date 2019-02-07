@@ -1,10 +1,11 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,22 +13,24 @@ import android.view.ViewGroup;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
-import org.dhis2.data.tuples.Pair;
+import org.dhis2.data.forms.dataentry.tablefields.RowAction;
 import org.dhis2.databinding.FragmentDatasetSectionBinding;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableContract;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
+import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
+import org.hisp.dhis.android.core.dataset.SectionModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import io.reactivex.Flowable;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -41,6 +44,9 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private DataSetTableAdapter adapter;
     private String sectionUid;
     private boolean accessDataWrite;
+    private boolean tableCreated = false;
+
+
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
         Bundle bundle = new Bundle();
@@ -57,12 +63,16 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
         presenter = ((DataSetTableActivity) context).getPresenter();
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dataset_section, container, false);
+        adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
+        binding.tableView.setAdapter(adapter);
+        binding.tableView.setEnabled(false);
         return binding.getRoot();
     }
 
@@ -72,75 +82,170 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         sectionUid = getArguments().getString(Constants.DATA_SET_SECTION);
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenter.getData(this, sectionUid);
-
-        adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
-        binding.tableView.setAdapter(adapter);
-        binding.tableView.setEnabled(false);
-
+        presenter.initializeProcessor(this);
     }
 
-    public void setData(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<CategoryOptionModel>>> catOptions, List<DataSetTableModel> dataValues,
-                        Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> mapWithoutTransform, Map<String, Map<String, List<String>>> dataElementDisabled,
-                        Map<String, List<String>> compulsoryDataElement){
+
+    public void createTable(RowAction rowAction) {
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
-        List<Pair<DataElementModel, Boolean>> listDataElement = new ArrayList<>();
-        for (DataElementModel de : dataElements.get(sectionUid)) {
+        List<List<String>> listCatOptions = presenter.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
+        int countColumn = 0;
+        Integer[] totalColumn = new Integer[listCatOptions.size()];
+        boolean isNumber = true;
+        int row = 0, column = 0;
+
+        for (SectionModel section : presenter.getSections()) {
+            if (section.name().equals(sectionUid)) {
+                adapter.setShowColumnTotal(section.showColumnTotals());
+                adapter.setShowRowTotal(section.showRowTotals());
+            }
+        }
+
+        for (DataElementModel de : presenter.getDataElements().get(sectionUid)) {
             ArrayList<String> values = new ArrayList<>();
             ArrayList<FieldViewModel> fields = new ArrayList<>();
-            for (List<String> catOpts : presenter.getCatOptionCombos(mapWithoutTransform.get(sectionUid), 0, new ArrayList<>(), null)) {
+            int totalRow = 0;
+
+            for (List<String> catOpts : listCatOptions) {
                 boolean exitsValue = false;
-                boolean editable = true;
                 boolean compulsory = false;
-                FieldViewModelFactoryImpl fieldFactory = new FieldViewModelFactoryImpl(
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "");
+                FieldViewModelFactoryImpl fieldFactory = createField();
 
-                editable = !dataElementDisabled.containsKey(sectionUid) || !dataElementDisabled.get(sectionUid).containsKey(de.uid())
-                        || !dataElementDisabled.get(sectionUid).get(de.uid()).containsAll(catOpts);
+                boolean editable = !presenter.getDataElementDisabled().containsKey(sectionUid) || !presenter.getDataElementDisabled().get(sectionUid).containsKey(de.uid())
+                        || !presenter.getDataElementDisabled().get(sectionUid).get(de.uid()).containsAll(catOpts);
 
-                if(compulsoryDataElement.containsKey(de.uid()) && compulsoryDataElement.get(de.uid()).containsAll(catOpts))
+                if (presenter.getCompulsoryDataElement().containsKey(de.uid()) && presenter.getCompulsoryDataElement().get(de.uid()).containsAll(catOpts))
                     compulsory = true;
 
+                if (de.valueType() != ValueType.NUMBER && de.valueType() != ValueType.INTEGER) {
+                    isNumber = false;
+                }
 
-                for (DataSetTableModel dataValue : dataValues) {
+                for (DataSetTableModel dataValue : presenter.getDataValues()) {
 
                     if (dataValue.listCategoryOption().containsAll(catOpts)
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
+                        if (isNumber) {
+                            if (adapter.getShowColumnTotal())
+                                totalColumn[countColumn] = totalColumn[countColumn] != null ?
+                                        Integer.parseInt(dataValue.value()) + totalColumn[countColumn] : Integer.parseInt(dataValue.value());
+                            if (adapter.getShowRowTotal())
+                                totalRow = totalRow + Integer.parseInt(dataValue.value());
+                        }
+
                         fields.add(fieldFactory.create(dataValue.id().toString(), "", de.valueType(),
                                 compulsory, "", dataValue.value(), sectionUid, true,
-                                editable, null, de.description()));
+                                editable, null, null, de.uid(), catOpts, "", row, column));
                         values.add(dataValue.value());
                         exitsValue = true;
                     }
                 }
 
                 if (!exitsValue) {
+                    //If value type is null, it is due to is dataElement for Total row/column
                     fields.add(fieldFactory.create("", "", de.valueType(),
                             compulsory, "", "", sectionUid, true,
-                            editable, null, de.description()));
+                            editable, null, null, de.uid()== null ? "": de.uid(), catOpts, "", row, column));
 
                     values.add("");
                 }
+                if(totalColumn[countColumn] == null)
+                    totalColumn[countColumn] = 0;
+                countColumn++;
+                column++;
             }
-            //listDataElement.add(Pair.create(de, compulsoryDataElement.contains(de.uid())));
+            countColumn = 0;
+            if (isNumber && adapter.getShowRowTotal()) {
+                setTotalRow(totalRow, fields, values, row, column);
+            }
             listFields.add(fields);
             cells.add(values);
+            column = 0;
+            row++;
         }
 
-        adapter.swap(listFields);
-        adapter.setAllItems(
-                catOptions.get(sectionUid).get(catOptions.get(sectionUid).size()-1),
-                dataElements.get(sectionUid),
-                cells);
+        if (isNumber) {
+            if (adapter.getShowColumnTotal())
+                setTotalColumn(totalColumn, listFields, cells, presenter.getDataElements(), row, column);
+            if (adapter.getShowRowTotal())
+                presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1).
+                        add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
+        }
+
+            adapter.swap(listFields);
+        if(!tableCreated)
+            adapter.setAllItems(
+                    presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    presenter.getDataElements().get(sectionUid),
+                    cells);
+        else
+            adapter.setCellItems(cells);
+
+            tableCreated = true;
+    }
+
+    private void setTotalColumn(Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
+                                Map<String, List<DataElementModel>> dataElements, int row, int columnPos) {
+        FieldViewModelFactoryImpl fieldFactory = createField();
+
+        ArrayList<FieldViewModel> fields = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+        boolean existTotal = false;
+        for (DataElementModel data : dataElements.get(sectionUid))
+            if (data.displayName().equals(getContext().getString(R.string.total)))
+                existTotal = true;
+
+        for (Integer column : totalColumn) {
+            fields.add(fieldFactory.create("", "", ValueType.INTEGER,
+                    false, "", column.toString(), sectionUid, true,
+                    false, null, null, "",new ArrayList<>(),"", row, columnPos));
+
+            values.add(column.toString());
+        }
+
+        if (existTotal){
+            listFields.remove(listFields.size()-1);
+            cells.remove(listFields.size()-1);
+        }
+
+        listFields.add(fields);
+        cells.add(values);
+
+        if(!existTotal)
+            dataElements.get(sectionUid).add(DataElementModel.builder().displayName(getString(R.string.total)).valueType(ValueType.INTEGER).build());
+    }
+
+    private void setTotalRow(int totalRow, ArrayList<FieldViewModel> fields, ArrayList<String> values, int row, int column){
+        FieldViewModelFactoryImpl fieldFactory = createField();
+        fields.add(fieldFactory.create("", "", ValueType.INTEGER,
+                false, "", String.valueOf(totalRow), sectionUid, true,
+                false, null, null, "",new ArrayList<>(),"", row, column));
+        values.add(String.valueOf(totalRow));
+
+    }
+
+    private FieldViewModelFactoryImpl createField(){
+        return new FieldViewModelFactoryImpl(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "");
+    }
+
+    @NonNull
+    public Flowable<RowAction> rowActions() {
+        return adapter.asFlowable();
+    }
+
+    public void updateData(RowAction rowAction) {
+        adapter.updateValue(rowAction);
     }
 }

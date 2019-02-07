@@ -18,7 +18,7 @@
             type="org.hisp.dhis.android.core.event.EventModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -133,5 +133,5 @@
             app:layout_constraintTop_toTopOf="@id/status_icon"
             tools:text="@string/event_open" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

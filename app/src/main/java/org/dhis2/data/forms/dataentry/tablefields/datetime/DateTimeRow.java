@@ -1,8 +1,8 @@
 package org.dhis2.data.forms.dataentry.tablefields.datetime;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -76,8 +76,8 @@ public class DateTimeRow implements Row<DateTimeHolder, DateTimeViewModel> {
     }
 
     @Override
-    public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel) {
-        viewHolder.update(viewModel, accessDataWrite);
+    public void onBind(@NonNull DateTimeHolder viewHolder, @NonNull DateTimeViewModel viewModel, String value) {
+        viewHolder.update(viewModel, accessDataWrite, value);
     }
 
     @Override

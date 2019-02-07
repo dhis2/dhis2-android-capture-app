@@ -1,8 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.usescases.general.AbstractActivityContracts;
@@ -11,9 +8,12 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableField;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -59,6 +59,8 @@ public class EventCaptureContract {
         void attemptToSkip();
 
         void attemptToReschedule();
+
+        void setProgramStage(String programStageUid);
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -76,6 +78,8 @@ public class EventCaptureContract {
 
         ObservableField<String> getCurrentSection();
 
+        boolean isEnrollmentOpen();
+
         void onSectionSelectorClick(boolean isCurrentSection, int position, String sectionUid);
 
         void initCompletionPercentage(FlowableProcessor<Float> integerFlowableProcessor);
@@ -90,7 +94,11 @@ public class EventCaptureContract {
 
         void skipEvent();
 
-        void rescheduleEvent();
+        void rescheduleEvent(Date time);
+
+        boolean canWrite();
+
+        boolean hasExpired();
     }
 
     public interface EventCaptureRepository {
@@ -120,9 +128,17 @@ public class EventCaptureContract {
 
         boolean reopenEvent();
 
+        boolean isEnrollmentOpen();
+
         Observable<Boolean> deleteEvent();
 
         Observable<Boolean> updateEventStatus(EventStatus skipped);
+
+        Observable<Boolean> rescheduleEvent(Date time);
+
+        Observable<String> programStage();
+
+        boolean getAccessDataWrite();
     }
 
 }

@@ -1,6 +1,6 @@
 package org.dhis2.data.forms.dataentry.fields.spinner;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import com.google.auto.value.AutoValue;
