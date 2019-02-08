@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -48,6 +49,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
@@ -489,9 +491,54 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     else
                         return Observable.just(new ArrayList<Rule>());
                 }).map(ruleList -> {
+                    Map<String, Rule> ruleMap = new HashMap<>();
+                    for (Rule rule : ruleList)
+                        ruleMap.put(rule.name(), rule);
                     //TODO: We need to always evaluate all rules with rule actions of type HideField or HideSection
-                    return ruleList;
+                    Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
+                            "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
+                            "WHERE ProgramRule.program = ? " +
+                            "AND ProgramRuleAction.programRuleActionType IN (?,?)", selectedProgramUid.get(), ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name());
+                    if (hideRulesCursor != null) {
+                        if (hideRulesCursor.moveToFirst()) {
+                            for (int i = 0; i < hideRulesCursor.getCount(); i++) {
+                                ProgramRuleModel ruleModel = ProgramRuleModel.create(hideRulesCursor);
+                                ruleMap.put(ruleModel.displayName(), Rule.create(ruleModel.programStage(), ruleModel.priority(), ruleModel.condition(), getRuleActionsFor(ruleModel.uid()), ruleModel.displayName()));
+                                hideRulesCursor.moveToNext();
+                            }
+                        }
+                        hideRulesCursor.close();
+                    }
+                    List<Rule> finalRules = new ArrayList<>(ruleMap.values());
+                    return finalRules;
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private List<RuleAction> getRuleActionsFor(String programRuleUid) {
+        List<RuleAction> ruleActions = new ArrayList<>();
+        Cursor actionsCursor = briteDatabase.query("SELECT " +
+                "ProgramRuleAction.programRule, " +
+                "ProgramRuleAction.programStage, " +
+                "ProgramRuleAction.programStageSection, " +
+                "ProgramRuleAction.programRuleActionType, " +
+                "ProgramRuleAction.programIndicator, " +
+                "ProgramRuleAction.trackedEntityAttribute, " +
+                "ProgramRuleAction.dataElement, " +
+                "ProgramRuleAction.location, " +
+                "ProgramRuleAction.content, " +
+                "ProgramRuleAction.data " +
+                "FROM ProgramRuleAction WHERE programRule = ?", programRuleUid);
+        if (actionsCursor != null) {
+            if (actionsCursor.moveToFirst()) {
+                for (int i = 0; i < actionsCursor.getCount(); i++) {
+                    ruleActions.add(RulesRepository.create(actionsCursor));
+                    actionsCursor.moveToNext();
+                }
+            }
+            actionsCursor.close();
+        }
+
+        return ruleActions;
     }
 
     @Override

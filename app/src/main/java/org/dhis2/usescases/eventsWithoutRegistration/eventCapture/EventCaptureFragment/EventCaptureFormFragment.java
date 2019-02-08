@@ -181,7 +181,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
 
 
     public void showSectionSelector() {
-        if (binding.sectionRecycler.getAdapter().getItemCount() >= 0) {
+        if (binding.sectionRecycler.getAdapter().getItemCount() > 1) {
             binding.sectionRecycler.setVisibility(binding.sectionRecycler.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             binding.currentSectionTitle.root.setVisibility(binding.currentSectionTitle.root.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         }

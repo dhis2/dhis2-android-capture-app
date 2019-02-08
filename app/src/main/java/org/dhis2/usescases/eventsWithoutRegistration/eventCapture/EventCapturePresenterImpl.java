@@ -317,6 +317,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
+        for (FormSectionViewModel formSectionViewModel : getFinalSections())
+            if (formSectionViewModel.sectionUid().equals(currentSection.get()))
+                EventCaptureFormFragment.getInstance().setSectionProgress(
+                        getFinalSections().indexOf(formSectionViewModel),
+                        sectionList.size() - sectionsToHide.size());
+
         return new ArrayList<>(fieldViewModels.values());
     }
 
@@ -549,7 +555,7 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     @Override
     public void setShowError(@NonNull RuleActionShowError showError, FieldViewModel model) {
         canComplete = false;
-        if(!snackBarIsShowing) {
+        if (!snackBarIsShowing) {
             snackBarIsShowing = true;
             Snackbar.make(view.getSnackbarAnchor(), showError.content(), Snackbar.LENGTH_INDEFINITE)
                     .setAction(view.getAbstracContext().getString(R.string.delete), v1 -> {
@@ -587,6 +593,13 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
     public void sethideSection(String sectionUid) {
         if (!sectionsToHide.contains(sectionUid))
             sectionsToHide.add(sectionUid);
+
+       /* for (FormSectionViewModel formSectionViewModel : getFinalSections())
+            if (formSectionViewModel.sectionUid().equals(currentSection.get()))
+                EventCaptureFormFragment.getInstance().setSectionProgress(
+                        getFinalSections().indexOf(formSectionViewModel),
+                        sectionList.size() - sectionsToHide.size());*/
+
     }
 
     @Override

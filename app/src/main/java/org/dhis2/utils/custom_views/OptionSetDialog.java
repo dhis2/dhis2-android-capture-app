@@ -67,7 +67,7 @@ public class OptionSetDialog extends DialogFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_option_set, container, false);
 
 
-        binding.title.setText(optionSet.description());
+        binding.title.setText(optionSet.label());
         disposable = new CompositeDisposable();
 
         endlessScrollListener = new EndlessRecyclerViewScrollListener(binding.recycler.getLayoutManager(), 2, 0) {

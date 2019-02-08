@@ -112,8 +112,8 @@ android {
              applicationId "org.dhis2.psi"
              archivesBaseName = "PSI"
              dimension "default"
-             versionCode 1
-             versionName "1.0.3"
+             versionCode 2
+             versionName "1.1.0"
          }
      }
 
