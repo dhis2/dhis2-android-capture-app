@@ -8,16 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import androidx.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.widget.NestedScrollView;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -400,6 +400,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
+        if (!ErrorDialog.newInstace().isAdded())
+            ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
     }
 }

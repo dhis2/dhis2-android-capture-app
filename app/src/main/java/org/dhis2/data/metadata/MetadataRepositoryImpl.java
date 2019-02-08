@@ -502,8 +502,9 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
         Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
         int numberOfOptions = 0;
-        if (cursor != null && cursor.moveToFirst()) {
-            numberOfOptions = cursor.getInt(0);
+        if (cursor != null) {
+            if (cursor.moveToFirst())
+                numberOfOptions = cursor.getInt(0);
             cursor.close();
         }
         return numberOfOptions;

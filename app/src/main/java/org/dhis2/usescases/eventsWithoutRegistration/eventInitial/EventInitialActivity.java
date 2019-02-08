@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -76,7 +77,6 @@ import static org.dhis2.utils.Constants.ONE_TIME;
 import static org.dhis2.utils.Constants.ORG_UNIT;
 import static org.dhis2.utils.Constants.PERMANENT;
 import static org.dhis2.utils.Constants.PROGRAM_UID;
-import static org.dhis2.utils.Constants.RQ_PROGRAM_STAGE;
 import static org.dhis2.utils.Constants.TRACKED_ENTITY_INSTANCE;
 
 
@@ -382,7 +382,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         }
         binding.setName(activityTitle);
 
-        if(eventModel==null) {
+        if (eventModel == null) {
             Calendar now = DateUtils.getInstance().getCalendar();
             if (periodType == null) {
 
@@ -657,7 +657,7 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
     public void showDateDialog(DatePickerDialog.OnDateSetListener listener) {
         Calendar calendar = Calendar.getInstance();
 
-        if(eventCreationType == EventCreationType.SCHEDULE)
+        if (eventCreationType == EventCreationType.SCHEDULE)
             calendar.add(Calendar.DAY_OF_YEAR, getIntent().getIntExtra(Constants.EVENT_SCHEDULE_INTERVAL, 0));
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, listener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -753,11 +753,17 @@ public class EventInitialActivity extends ActivityGlobalAbstract implements Even
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
         int completionPercent = (int) (completionPerone * 100);
 
-        runOnUiThread(() -> {
-            ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
-            gainAnim.setDuration(PROGRESS_TIME);
-            binding.progressGains.startAnimation(gainAnim);
-        });
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
+            runOnUiThread(() -> {
+                ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, EventInitialActivity.this);
+                gainAnim.setDuration(PROGRESS_TIME);
+                binding.progressGains.startAnimation(gainAnim);
+            });
+        else {
+            binding.progressGains.setProgress(completionPercent);
+            String text = String.valueOf(completionPercent) + "%";
+            binding.progress.setText(text);
+        }
 
     }
 

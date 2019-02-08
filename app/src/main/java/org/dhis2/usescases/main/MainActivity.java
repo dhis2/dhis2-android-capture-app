@@ -3,14 +3,8 @@ package org.dhis2.usescases.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableInt;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.res.ResourcesCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -35,6 +29,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
+import androidx.fragment.app.Fragment;
 import io.reactivex.functions.Consumer;
 
 
@@ -83,7 +82,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
             }
         });
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             int frag = savedInstanceState.getInt("Fragment");
             currentFragment.set(frag);
             binding.setCurrentFragment(currentFragment);
@@ -247,7 +246,8 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showSyncErrors(List<D2Error> data) {
-        ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
+        if (!ErrorDialog.newInstace().isAdded())
+            ErrorDialog.newInstace().setData(data).show(getSupportFragmentManager().beginTransaction(), "ErrorDialog");
     }
 
     public void setTitle(String title) {
@@ -261,7 +261,7 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showTutorial(boolean shaked) {
-        if(fragId == R.id.menu_home || fragId == R.id.sync_manager)
+        if (fragId == R.id.menu_home || fragId == R.id.sync_manager)
             super.showTutorial(shaked);
         else
             showToast(getString(R.string.no_intructions));

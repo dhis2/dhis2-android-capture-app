@@ -494,7 +494,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                     Map<String, Rule> ruleMap = new HashMap<>();
                     for (Rule rule : ruleList)
                         ruleMap.put(rule.name(), rule);
-                    //TODO: We need to always evaluate all rules with rule actions of type HideField or HideSection
+
                     Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
                             "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
                             "WHERE ProgramRule.program = ? " +

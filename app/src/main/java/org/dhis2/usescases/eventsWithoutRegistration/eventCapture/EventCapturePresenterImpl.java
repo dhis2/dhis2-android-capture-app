@@ -317,11 +317,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
-        for (FormSectionViewModel formSectionViewModel : getFinalSections())
-            if (formSectionViewModel.sectionUid().equals(currentSection.get()))
-                EventCaptureFormFragment.getInstance().setSectionProgress(
-                        getFinalSections().indexOf(formSectionViewModel),
-                        sectionList.size() - sectionsToHide.size());
+        if (getFinalSections().size() > 1)
+            for (FormSectionViewModel formSectionViewModel : getFinalSections())
+                if (formSectionViewModel.sectionUid().equals(currentSection.get()))
+                    EventCaptureFormFragment.getInstance().setSectionProgress(
+                            getFinalSections().indexOf(formSectionViewModel),
+                            sectionList.size() - sectionsToHide.size());
 
         return new ArrayList<>(fieldViewModels.values());
     }
