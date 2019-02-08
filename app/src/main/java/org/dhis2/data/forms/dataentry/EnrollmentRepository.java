@@ -133,13 +133,13 @@ final class EnrollmentRepository implements DataEntryRepository {
                     tei.close();
                 }
 
-                if (teiUid != null) { //checks if tei has been deleted
-                    dataValue = d2.popTrackedEntityAttributeReservedValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                if (teiUid != null) { //checks if tei has been deleted);
+                    dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid, pattern == null || pattern.contains("OU") ? null : orgUnitUid);
 
                     //Checks if ValueType is Numeric and that it start with a 0, then removes the 0
                     if (valueType == ValueType.NUMBER)
                         while (dataValue.startsWith("0")) {
-                            dataValue = d2.popTrackedEntityAttributeReservedValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
+                            dataValue = d2.trackedEntityModule().reservedValueManager.getValue(uid,  pattern == null || pattern.contains("OU") ? null : orgUnitUid);
                         }
 
                     String INSERT = "INSERT INTO TrackedEntityAttributeValue\n" +

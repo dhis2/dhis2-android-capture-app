@@ -227,7 +227,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void logOut() {
         if (userManager != null)
             disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
+                    userManager.getD2().userModule().logOut())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
