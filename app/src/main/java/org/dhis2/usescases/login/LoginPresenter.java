@@ -4,17 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.CancellationSignal;
 import android.view.View;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
 import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
+import org.dhis2.R;
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
@@ -22,7 +21,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -88,9 +86,11 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    systemInfo -> view.getBinding().serverUrlEdit.setText(systemInfo.contextPath()),
+                                    systemInfo -> view.setUrl(systemInfo.contextPath()),
                                     Timber::e));
-        }
+        } else
+            view.setUrl(view.getContext().getString(R.string.login_https));
+
 
         if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //TODO: REMOVE FALSE WHEN GREEN LIGHT
             disposable.add(RxPreconditions
@@ -227,7 +227,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void logOut() {
         if (userManager != null)
             disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
+                    userManager.getD2().userModule().logOut())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

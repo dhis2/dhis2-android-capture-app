@@ -25,7 +25,6 @@ import java.util.List;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -36,7 +35,6 @@ import static android.text.TextUtils.isEmpty;
 
 public class SpinnerHolder extends FormViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, OptionSetOnClickListener {
 
-    private final CompositeDisposable disposable;
     private final FlowableProcessor<RowAction> processor;
     private final FlowableProcessor<Trio<String, String, Integer>> processorOptionSet;
     private final ImageView iconView;
@@ -48,7 +46,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private int numberOfOptions = 0;
     private List<OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, boolean isBackgroundTransparent, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
@@ -67,7 +65,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                 editText.performClick();
         });
 
-        this.disposable = new CompositeDisposable();
 
     }
 
@@ -81,9 +78,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         editText.setFocusable(false);
         editText.setClickable(viewModel.editable());
 
-
         editText.setText(viewModel.value()); //option code is already transformed to value in the fieldviewmodelfactory implementation
-
 
         if (!isEmpty(viewModel.warning())) {
             inputLayout.setError(viewModel.warning());
@@ -106,7 +101,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     }
 
     public void dispose() {
-        disposable.clear();
     }
 
     @Override
@@ -127,7 +121,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setCancelListener(view -> dialog.dismiss())
                     .setClearListener(view -> {
                                 processor.onNext(
-                                        RowAction.create(viewModel.uid(), ""));
+                                        RowAction.create(viewModel.uid(), null));
                                /* View nextView;
                                 if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
                                     nextView.requestFocus();*/
