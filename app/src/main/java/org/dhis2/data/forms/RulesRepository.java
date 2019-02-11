@@ -417,7 +417,7 @@ public final class RulesRepository {
     }
 
     @NonNull
-    private static RuleAction create(@NonNull Cursor cursor) {
+    public static RuleAction create(@NonNull Cursor cursor) {
         String programStage = cursor.getString(1);
         String section = cursor.getString(2);
         String attribute = cursor.getString(5);

@@ -68,6 +68,8 @@
                     android:imeOptions="actionNext"
                     android:textAlignment="textStart"
                     android:textColor="?colorAccent"
+                    app:drawableEndCompat="@drawable/ic_arrow_drop_down"
+                    android:drawableTint="?colorAccent"
                     android:textSize="15sp"
                     tools:text="hello" />
 

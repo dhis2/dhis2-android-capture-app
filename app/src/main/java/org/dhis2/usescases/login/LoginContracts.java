@@ -53,6 +53,8 @@ public class LoginContracts {
         void goToNextScreen();
 
         void switchPasswordVisibility();
+
+        void setUrl(String url);
     }
 
     public interface Presenter {
