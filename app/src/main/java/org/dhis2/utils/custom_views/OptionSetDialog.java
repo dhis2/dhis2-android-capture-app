@@ -19,6 +19,7 @@ import org.dhis2.data.forms.dataentry.fields.spinner.SpinnerViewModel;
 import org.dhis2.data.tuples.Trio;
 import org.dhis2.databinding.DialogOptionSetBinding;
 import org.dhis2.utils.EndlessRecyclerViewScrollListener;
+import org.hisp.dhis.android.core.option.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +113,7 @@ public class OptionSetDialog extends DialogFragment {
         return this;
     }
 
-    public OptionSetDialog setOptions(List<String> options) {
+    public OptionSetDialog setOptions(List<OptionModel> options) {
         adapter.setOptions(options,endlessScrollListener.getCurrentPage());
         return this;
     }

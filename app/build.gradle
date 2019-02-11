@@ -99,23 +99,23 @@ android {
         }
     }
 
-     flavorDimensions "default"
-     productFlavors {
-         dhis{
-             applicationId "com.dhis2"
-             archivesBaseName = "dhis"
-             dimension "default"
-             versionCode versions.vCode
-             versionName versions.vName
-         }
-         psi {
-             applicationId "org.dhis2.psi"
-             archivesBaseName = "PSI"
-             dimension "default"
-             versionCode 2
-             versionName "1.1.0"
-         }
-     }
+    flavorDimensions "default"
+    productFlavors {
+        dhis {
+            applicationId "com.dhis2"
+            archivesBaseName = "dhis"
+            dimension "default"
+            versionCode versions.vCode
+            versionName versions.vName
+        }
+        psi {
+            applicationId "org.dhis2.psi"
+            archivesBaseName = "PSI"
+            dimension "default"
+            versionCode 2
+            versionName "1.1.0"
+        }
+    }
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -226,13 +226,11 @@ dependencies {
     //endregion
 
     //region PLAY SERVICES
-    //VISION (QR SCANNER)
-    implementation("com.google.android.gms:play-services-vision:${libraries.gmsVersion}") {
-        force = true
-    }
+
     //LOCATION
-    implementation("com.google.android.gms:play-services-location:${libraries.gmsVersion}")
-    implementation("com.google.android.gms:play-services-maps:${libraries.gmsVersion}")
+    implementation 'com.google.android.gms:play-services-basement:16.2.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     //endregion
 
     // Jake Wharton libraries
@@ -243,7 +241,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 
     //JOB SCHEDULER
-    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation("android.arch.work:work-runtime:1.0.0-alpha10") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
 
@@ -255,7 +252,8 @@ dependencies {
     }
 
     //FIREBASE
-    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
+
 
     //Test
 

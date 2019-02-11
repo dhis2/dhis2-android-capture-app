@@ -152,8 +152,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     @NonNull
-    public Consumer<List<FieldViewModel>> showFields() {
-        return updates -> {
+    public void showFields(List<FieldViewModel> updates) {
             if (currentSection.equals("NO_SECTION") ||
                     (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
                 dataEntryAdapter.swap(updates);
@@ -167,12 +166,10 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
                         completedValues++;
                 binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
             }
-        };
-
     }
 
-    public Consumer<List<EventSectionModel>> setSectionSelector() {
-        return data -> sectionSelectorAdapter.swapData(currentSection, data);
+    public void setSectionSelector(List<EventSectionModel> data) {
+       sectionSelectorAdapter.swapData(currentSection, data);
     }
 
     public FlowableProcessor<RowAction> dataEntryFlowable() {

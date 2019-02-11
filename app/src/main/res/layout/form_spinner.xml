@@ -65,14 +65,14 @@
                     android:id="@+id/input_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableTint="?colorPrimary"
                     android:imeOptions="actionNext"
-                    android:maxLines="1"
+                    android:maxLines="4"
                     android:textAlignment="textStart"
                     android:textColor="@color/text_black_333"
                     android:textSize="15sp"
-                    tools:text="hello"
                     app:drawableEndCompat="@drawable/ic_arrow_drop_down"
-                    android:drawableTint="?colorPrimary"/>
+                    tools:text="@string/lorem" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -24,7 +24,7 @@ import io.reactivex.Observable;
 public class ProgramEventDetailContract {
 
     public interface View extends AbstractActivityContracts.View {
-        void setData(List<EventModel> events);
+        void setData(List<ProgramEventViewModel> events);
 
         void addTree(TreeNode treeNode);
 

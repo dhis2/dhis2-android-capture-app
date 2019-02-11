@@ -237,6 +237,8 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             "JOIN OrganisationUnitProgramLink ON OrganisationUnitProgramLink.program = ProgramTrackedEntityAttribute.program\n" +
             "WHERE TrackedEntityAttribute.generated = ?";
 
+    private final String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
+
     private final BriteDatabase briteDatabase;
 
     MetadataRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
@@ -273,28 +275,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(TrackedEntityInstanceModel::create);
     }
 
-    @Override
-    public Observable<List<TrackedEntityInstanceModel>> getTrackedEntityInstances(String programUid) {
-        String id = programUid == null ? "" : programUid;
-        String PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY = "SELECT * FROM " + TrackedEntityInstanceModel.TABLE
-                + " JOIN " + TrackedEntityTypeModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + TrackedEntityInstanceModel.TABLE + "." + TrackedEntityInstanceModel.Columns.TRACKED_ENTITY_TYPE
-                + " JOIN " + ProgramModel.TABLE + " ON " + TrackedEntityTypeModel.TABLE + "." + TrackedEntityTypeModel.Columns.UID + " = " + ProgramModel.TABLE + "." + ProgramModel.Columns.TRACKED_ENTITY_TYPE
-                + " WHERE " + ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + id + "'";
-
-        final Set<String> PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES = new HashSet<>(Arrays.asList(TrackedEntityInstanceModel.TABLE, TrackedEntityTypeModel.TABLE, ProgramModel.TABLE));
-
-        return briteDatabase
-                .createQuery(PROGRAM_TRACKED_ENTITY_INSTANCE_TABLES, PROGRAM_TRACKED_ENTITY_INSTANCE_QUERY)
-                .mapToList(TrackedEntityInstanceModel::create);
-    }
-
-    @Override
-    public Observable<CategoryOptionModel> getCategoryOptionWithId(String categoryOptionId) {
-        String id = categoryOptionId == null ? "" : categoryOptionId;
-        return briteDatabase
-                .createQuery(CategoryOptionModel.TABLE, SELECT_CATEGORY_OPTION + "'" + id + "' LIMIT 1")
-                .mapToOne(CategoryOptionModel::create);
-    }
 
     @Override
     public Observable<CategoryOptionComboModel> getCategoryOptionComboWithId(String categoryOptionComboId) {
@@ -346,13 +326,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<List<OrganisationUnitModel>> getOrgUnitForOpenAndClosedDate(String currentDate) {
-        return briteDatabase
-                .createQuery(OrganisationUnitModel.TABLE, ORG_UNIT_DATE_QUERY, currentDate == null ? "" : currentDate)
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @Override
     public Observable<List<ProgramTrackedEntityAttributeModel>> getProgramTrackedEntityAttributes(String programUid) {
         if (programUid != null)
             return briteDatabase
@@ -364,45 +337,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                     .mapToList(ProgramTrackedEntityAttributeModel::create);
     }
 
-    @Override
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String uid) {
-        return briteDatabase
-                .createQuery(ATTR_VALUE_TABLES, PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_QUERY, uid == null ? "" : uid)
-                .mapToList(TrackedEntityAttributeValueModel::create);
-    }
-
-    @Override
-    public Observable<List<TrackedEntityAttributeValueModel>> getTEIAttributeValues(String programUid, String teiUid) {
-        return briteDatabase
-                .createQuery(ATTR_PROGRAM_VALUE_TABLES, PROGRAM_TRACKED_ENTITY_ATTRIBUTES_VALUES_PROGRAM_QUERY, programUid == null ? "" : programUid, teiUid == null ? "" : teiUid)
-                .mapToList(TrackedEntityAttributeValueModel::create);
-    }
-
-    @Override
-    public Observable<TrackedEntityAttributeModel> getTrackedEntityAttribute(String teAttribute) {
-        return briteDatabase
-                .createQuery(TrackedEntityAttributeModel.TABLE, TE_ATTRIBUTE_QUERY, teAttribute == null ? "" : teAttribute)
-                .mapToOne(TrackedEntityAttributeModel::create);
-    }
-
-    @Override
-    public Observable<RelationshipTypeModel> getRelationshipType(String programID) {
-        RelationshipTypeModel defaultRelationshipType = RelationshipTypeModel.builder()
-                .aIsToB("...")
-                .bIsToA("...")
-                .build();
-        String id = programID == null ? "" : programID;
-        return briteDatabase
-                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_QUERY + "'" + id + "' LIMIT 1")
-                .lift(Query.mapToOneOrDefault(RelationshipTypeModel::create, defaultRelationshipType));
-    }
-
-    @Override
-    public Observable<List<RelationshipTypeModel>> getRelationshipTypeList() {
-        return briteDatabase
-                .createQuery(RELATIONSHIP_TYPE_TABLES, RELATIONSHIP_TYPE_LIST_QUERY)
-                .mapToList(RelationshipTypeModel::create);
-    }
 
     @NonNull
     @Override
@@ -413,13 +347,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(ProgramStageModel::create);
     }
 
-    @Override
-    public Observable<DataElementModel> getDataElement(String dataElementUid) {
-        String id = dataElementUid == null ? "" : dataElementUid;
-        return briteDatabase
-                .createQuery(DataElementModel.TABLE, DATA_ELEMENT_QUERY + "'" + id + "' LIMIT 1")
-                .mapToOne(DataElementModel::create);
-    }
 
     @Override
     public Observable<List<EnrollmentModel>> getTEIEnrollments(String teiUid) {
@@ -429,58 +356,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToList(EnrollmentModel::create);
     }
 
-    @Override
-    public Observable<List<ProgramModel>> getTEIProgramsToEnroll(String teiUid) {
-        return briteDatabase
-                .createQuery(ProgramModel.TABLE, SELECT_PROGRMAS_TO_ENROLL, teiUid == null ? "" : teiUid)
-                .mapToList(ProgramModel::create);
-    }
-
-    @Override
-    public Observable<EventModel> getEnrollmentLastEvent(String enrollmentUid) {
-        return briteDatabase
-                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_EVENTS, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToOne(EventModel::create);
-    }
-
-    @Override
-    public Observable<List<EventModel>> getEnrollmentEvents(String enrollmentUid) {
-        return briteDatabase
-                .createQuery(SELECT_ENROLLMENT_LAST_EVENT_TABLES, SELECT_ENROLLMENT_LAST_EVENT, enrollmentUid == null ? "" : enrollmentUid)
-                .mapToList(EventModel::create);
-    }
-
-    @Override
-    public Observable<Integer> getProgramStageDataElementCount(String programStageId) {
-        String SELECT_PROGRAM_STAGE_COUNT = "SELECT COUNT(*) FROM " + ProgramStageDataElementModel.TABLE +
-                " WHERE " + ProgramStageDataElementModel.Columns.PROGRAM_STAGE + " = '%s' LIMIT 1";
-        String id = programStageId == null ? "" : programStageId;
-        return briteDatabase
-                .createQuery(ProgramStageDataElementModel.TABLE, String.format(SELECT_PROGRAM_STAGE_COUNT, id))
-                .mapToOne(cursor -> {
-                    if (cursor.getCount() > 0) {
-                        cursor.moveToFirst();
-                        return cursor.getInt(0);
-                    } else
-                        return 0;
-                });
-    }
-
-    @Override
-    public Observable<Integer> getTrackEntityDataValueCount(String eventId) {
-        String SELECT_TRACKED_ENTITY_COUNT = "SELECT COUNT(*) FROM " + TrackedEntityDataValueModel.TABLE +
-                " WHERE " + TrackedEntityDataValueModel.Columns.EVENT + " = '%s' LIMIT 1";
-        String id = eventId == null ? "" : eventId;
-        return briteDatabase
-                .createQuery(TrackedEntityDataValueModel.TABLE, String.format(SELECT_TRACKED_ENTITY_COUNT, id))
-                .mapToOne(cursor -> {
-                    if (cursor.getCount() > 0) {
-                        cursor.moveToFirst();
-                        return cursor.getInt(0);
-                    } else
-                        return 0;
-                });
-    }
 
     @Override
     public List<OptionModel> optionSet(String optionSetId) {
@@ -499,32 +374,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     @Override
     public int optionSetSize(String optionSetUid) {
-        String SELECT_OPTION_SET = "SELECT COUNT(Option.uid) FROM " + OptionModel.TABLE + " WHERE Option.optionSet = ?";
         Cursor cursor = briteDatabase.query(SELECT_OPTION_SET, optionSetUid == null ? "" : optionSetUid);
         int numberOfOptions = 0;
-        if (cursor != null) {
+        try {
             if (cursor.moveToFirst())
                 numberOfOptions = cursor.getInt(0);
-            cursor.close();
+        } finally {
+            if (cursor != null)
+                cursor.close();
         }
+
         return numberOfOptions;
     }
 
-    @Override
-    public Observable<List<ProgramModel>> getProgramModelFromEnrollmentList(List<Enrollment> enrollments) {
-        String query = "";
-        for (Enrollment enrollment : enrollments) {
-            String id = enrollment.program() == null ? "" : enrollment.program();
-            query = query.concat(ProgramModel.TABLE + "." + ProgramModel.Columns.UID + " = '" + id + "'");
-            if (!enrollment.program().equals(enrollments.get(enrollments.size() - 1).program()))
-                query = query.concat(" OR ");
-        }
-
-        return briteDatabase
-                .createQuery(ProgramModel.TABLE, PROGRAM_LIST_QUERY + query)
-                .mapToList(ProgramModel::create);
-
-    }
 
     @Override
     public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid) {
@@ -540,13 +402,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(ProgramModel::create);
     }
 
-    @Override
-    public Observable<ResourceModel> getLastSync(ResourceModel.Type resourceType) {
-        String id = resourceType.name() == null ? "" : resourceType.name();
-        return briteDatabase
-                .createQuery(ResourceModel.TABLE, RESOURCES_QUERY, id)
-                .mapToOne(ResourceModel::create);
-    }
 
     @Override
     public Observable<Pair<String, Integer>> getTheme() {
@@ -586,44 +441,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToList(OrganisationUnitModel::create);
     }
 
-    @Override
-    public Observable<List<OrganisationUnitModel>> getSearchOrganisationUnits() {
-        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, "SELECT * FROM OrganisationUnit " +
-                "WHERE uid IN (SELECT UserOrganisationUnit.organisationUnit FROM UserOrganisationUnit " +
-                "WHERE UserOrganisationUnit.organisationUnitScope = 'SCOPE_TEI_SEARCH')")
-                .mapToList(OrganisationUnitModel::create);
-    }
-
-    @Override
-    public Observable<List<Pair<String, String>>> getReserveUids() {
-        Cursor cursor = briteDatabase.query(RESERVED_UIDS, "1");
-        List<Pair<String, String>> pairs = new ArrayList<>();
-        if (cursor != null && cursor.moveToFirst()) {
-            for (int i = 0; i < cursor.getCount(); i++) {
-                pairs.add(Pair.create(cursor.getString(0), cursor.getString(1)));
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-
-        return Observable.just(pairs);
-    }
-
-    @Override
-    public Observable<Boolean> hasOverdue(@Nullable String programUid, @NonNull String teiUid) {
-
-        String overdueQuery = "SELECT * FROM EVENT JOIN Enrollment ON Enrollment.uid = Event.enrollment " +
-                "JOIN TrackedEntityInstance ON TrackedEntityInstance.uid = Enrollment.trackedEntityInstance " +
-                "WHERE TrackedEntityInstance.uid = ? AND Event.status = ?";
-
-        String overdueProgram = " AND Enrollment.program = ?";
-
-        if (programUid == null)
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery, teiUid == null ? "" : teiUid, EventStatus.SKIPPED.name()).mapToList(EventModel::create).map(list -> !list.isEmpty());
-        else
-            return briteDatabase.createQuery(EventModel.TABLE, overdueQuery + overdueProgram, teiUid == null ? "" : teiUid, EventStatus.SKIPPED.name(), programUid).mapToList(EventModel::create).map(list -> !list.isEmpty());
-
-    }
 
     @Override
     public Observable<ProgramModel> getExpiryDateFromEvent(String eventUid) {
@@ -673,19 +490,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
     }
 
-    @Override
-    public Flowable<Boolean> validateCredentials(String serverUrl, String username, String password) {
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT AuthenticatedUser.credentials, SystemInfo.contextPath FROM AuthenticatedUser JOIN SystemInfo LIMIT 1")
-                .mapToOne(cursor -> {
-                    String userCredentials = cursor.getString(0);
-                    String currentServer = cursor.getString(1);
-                    byte[] bytes = String.format("%s:%s", username, password).getBytes("UTF-8");
-                    String encodedCredentials = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-                    return currentServer.equals(serverUrl) && userCredentials.equals(encodedCredentials);
-
-                }).toFlowable(BackpressureStrategy.LATEST);
-    }
 
     @Override
     public Observable<String> getServerUrl() {
@@ -693,20 +497,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
                 .mapToOne(cursor -> cursor.getString(0));
     }
 
-    @Override
-    public Observable<Integer> getOrgUnitsForDataElementsCount() {
-        String sqlQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT t.uid, o.organisationUnit " +
-                "FROM TrackedEntityAttribute t, OrganisationUnitProgramLink o, ProgramTrackedEntityAttribute p " +
-                "WHERE t.generated = 1 AND p.trackedEntityAttribute = t.uid AND p.program = o.program)";
-        return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, sqlQuery)
-                .mapToOne(cursor -> {
-                    if (cursor.getCount() > 0) {
-                        cursor.moveToFirst();
-                        return cursor.getInt(0);
-                    } else
-                        return 0;
-                });
-    }
+
 
     @Override
     public Observable<List<D2Error>> getSyncErrors() {
@@ -715,19 +506,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Observable<List<String>> searchOptions(String text, String idOptionSet, int page) {
+    public Observable<List<OptionModel>> searchOptions(String text, String idOptionSet, int page) {
         String pageQuery = String.format(Locale.US, " LIMIT %d,%d", page * 15, 15);
 
         String optionQuery = !isEmpty(text) ?
-                "select Option.displayName from OptionSet " +
+                "select Option.* from OptionSet " +
                         "JOIN Option ON Option.optionSet = OptionSet.uid " +
                         "where OptionSet.uid = ? and Option.displayName like '%" + text + "%' " + pageQuery :
-                "select Option.displayName from OptionSet " +
+                "select Option.* from OptionSet " +
                         "JOIN Option ON Option.optionSet = OptionSet.uid " +
                         "where OptionSet.uid = ? " + pageQuery;
 
         return briteDatabase.createQuery(OptionSetModel.TABLE, optionQuery, idOptionSet)
-                .mapToList(cursor -> cursor.getString(0));
+                .mapToList(OptionModel::create);
 
     }
 

@@ -194,8 +194,11 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         })
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                EventCaptureFormFragment.getInstance().setSectionSelector(),
+                        .subscribe(data -> {
+                                    EventCaptureFormFragment.getInstance().setSectionSelector(data);
+                                    checkProgress();
+                                }
+                                ,
                                 Timber::e
                         ));
 
@@ -265,7 +268,10 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                EventCaptureFormFragment.getInstance().showFields(),
+                                updates -> {
+                                    EventCaptureFormFragment.getInstance().showFields(updates);
+                                    checkProgress();
+                                },
                                 throwable -> {
                                     Log.d("ERROR", "Something went wrong");
                                 }
@@ -317,14 +323,18 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
         Map<String, FieldViewModel> fieldViewModels = toMap(viewModels);
         rulesUtils.applyRuleEffects(fieldViewModels, calcResult, this);
 
+
+        return new ArrayList<>(fieldViewModels.values());
+    }
+
+    private void checkProgress() {
+
         if (getFinalSections().size() > 1)
             for (FormSectionViewModel formSectionViewModel : getFinalSections())
                 if (formSectionViewModel.sectionUid().equals(currentSection.get()))
                     EventCaptureFormFragment.getInstance().setSectionProgress(
                             getFinalSections().indexOf(formSectionViewModel),
                             sectionList.size() - sectionsToHide.size());
-
-        return new ArrayList<>(fieldViewModels.values());
     }
 
     @NonNull
