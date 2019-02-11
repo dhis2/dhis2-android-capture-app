@@ -179,7 +179,7 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
             position) {
         ((DataSetRHeaderHeader) holder).bind(mColumnHeaderItems.get(position).displayName());
 
-        ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = 800;
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }
 
