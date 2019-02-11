@@ -4,9 +4,6 @@
 
     <data>
 
-        <variable
-            name="presenter"
-            type="org.dhis2.usescases.qrReader.QrReaderContracts.Presenter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

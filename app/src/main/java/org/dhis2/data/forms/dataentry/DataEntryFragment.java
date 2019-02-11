@@ -21,6 +21,7 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.custom_views.OptionSetDialog;
 import org.dhis2.utils.Preconditions;
 import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.List;
@@ -165,7 +166,7 @@ public final class DataEntryFragment extends FragmentGlobalAbstract implements D
     }
 
     @Override
-    public void setListOptions(List<String> options) {
+    public void setListOptions(List<OptionModel> options) {
         OptionSetDialog.newInstance().setOptions(options);
     }
 

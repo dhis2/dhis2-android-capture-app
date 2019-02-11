@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEventDetailViewHolder> {
 
     private ProgramEventDetailContract.Presenter presenter;
-    private List<EventModel> events;
+    private List<ProgramEventViewModel> events;
 
     ProgramEventDetailAdapter(ProgramEventDetailContract.Presenter presenter) {
         this.presenter = presenter;
@@ -46,7 +46,7 @@ public class ProgramEventDetailAdapter extends RecyclerView.Adapter<ProgramEvent
         return events != null ? events.size() : 0;
     }
 
-    public void setEvents(List<EventModel> events, int currentPage) {
+    public void setEvents(List<ProgramEventViewModel> events, int currentPage) {
 
         if (currentPage == 0)
             this.events = new ArrayList<>();

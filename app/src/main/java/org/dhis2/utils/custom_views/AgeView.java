@@ -205,11 +205,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(false);
+        day.setFocusable(true);
         day.setClickable(true);
-        month.setFocusable(false);
+        month.setFocusable(true);
         month.setClickable(true);
-        year.setFocusable(false);
+        year.setFocusable(true);
         year.setClickable(true);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
