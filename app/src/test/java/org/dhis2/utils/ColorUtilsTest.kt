@@ -1,4 +1,4 @@
-package org.dhis2
+package org.dhis2.utils
 
 import android.content.Context
 import android.content.res.Resources
@@ -6,7 +6,7 @@ import android.content.res.TypedArray
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
-import org.dhis2.utils.ColorUtils
+import org.dhis2.R
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
