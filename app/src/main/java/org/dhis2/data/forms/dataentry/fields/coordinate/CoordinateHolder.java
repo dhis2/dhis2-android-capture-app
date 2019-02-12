@@ -17,21 +17,18 @@ import static android.text.TextUtils.isEmpty;
 public class CoordinateHolder extends FormViewHolder {
 
     private final FlowableProcessor<RowAction> processor;
-    CustomFormCoordinateBinding binding;
-    CoordinateViewModel model;
+    private CustomFormCoordinateBinding customFormCoordinateBinding;
+    private CoordinateViewModel model;
 
     @SuppressLint("CheckResult")
     CoordinateHolder(CustomFormCoordinateBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
         this.processor = processor;
-        this.binding = binding;
-        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> {
-                    processor.onNext(
-                            RowAction.create(model.uid(),
-                                    String.format(Locale.US,
-                                            "[%.5f,%.5f]", latitude, longitude)));
-//                    binding.formCoordinates.nextFocus(binding.formCoordinates);
-                }
+        this.customFormCoordinateBinding = binding;
+        binding.formCoordinates.setCurrentLocationListener((latitude, longitude) -> processor.onNext(
+                RowAction.create(model.uid(),
+                        String.format(Locale.US,
+                                "[%.5f,%.5f]", latitude, longitude)))
         );
         binding.formCoordinates.setMapListener(
                 (CoordinatesView.OnMapPositionClick) binding.formCoordinates.getContext()
@@ -40,7 +37,7 @@ public class CoordinateHolder extends FormViewHolder {
     }
 
     void update(CoordinateViewModel coordinateViewModel) {
-        binding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
+        customFormCoordinateBinding.formCoordinates.setProcessor(coordinateViewModel.uid(), processor);
 
         model = coordinateViewModel;
 
@@ -48,25 +45,26 @@ public class CoordinateHolder extends FormViewHolder {
         label = new StringBuilder(coordinateViewModel.label());
         if (coordinateViewModel.mandatory())
             label.append("*");
-        binding.formCoordinates.setLabel(label.toString());
-        binding.formCoordinates.setDescription(descriptionText);
+        customFormCoordinateBinding.formCoordinates.setLabel(label.toString());
+        customFormCoordinateBinding.formCoordinates.setDescription(descriptionText);
 
         if (!isEmpty(coordinateViewModel.value()))
-            binding.formCoordinates.setInitialValue(coordinateViewModel.value());
+            customFormCoordinateBinding.formCoordinates.setInitialValue(coordinateViewModel.value());
 
         if (coordinateViewModel.warning() != null)
-            binding.formCoordinates.setWargingOrError(coordinateViewModel.warning());
+            customFormCoordinateBinding.formCoordinates.setWargingOrError(coordinateViewModel.warning());
         else if (coordinateViewModel.error() != null)
-            binding.formCoordinates.setWargingOrError(coordinateViewModel.error());
+            customFormCoordinateBinding.formCoordinates.setWargingOrError(coordinateViewModel.error());
         else
-            binding.formCoordinates.setWargingOrError(null);
+            customFormCoordinateBinding.formCoordinates.setWargingOrError(null);
 
-        binding.formCoordinates.setEditable(coordinateViewModel.editable());
+        customFormCoordinateBinding.formCoordinates.setEditable(coordinateViewModel.editable());
 
-        binding.executePendingBindings();
+        customFormCoordinateBinding.executePendingBindings();
     }
 
     @Override
     public void dispose() {
+        // do nothing
     }
 }

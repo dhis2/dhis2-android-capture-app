@@ -144,12 +144,6 @@ android {
     }
 }
 
-sonarqube {
-    properties {
-        property "sonar.language", "java"
-    }
-}
-
 dependencies {
 
     implementation project(":customFab")

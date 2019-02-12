@@ -2,8 +2,6 @@ package org.dhis2.data.forms;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -37,16 +35,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AS;
+import static org.dhis2.data.database.SqlConstants.COMMA;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.LEFT_OUTER_JOIN;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
-@SuppressWarnings({
-        "PMD.AvoidDuplicateLiterals"
-})
 public class EventRepository implements FormRepository {
     private static final List<String> TITLE_TABLES = Arrays.asList(
             ProgramModel.TABLE, ProgramStageModel.TABLE);
@@ -54,53 +66,61 @@ public class EventRepository implements FormRepository {
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
 
-    private static final String SELECT_PROGRAM = "SELECT Program.*\n" +
-            "FROM Program JOIN Event ON Event.program = Program.uid \n" +
-            "WHERE Event.uid =?\n" +
-            "LIMIT 1;";
+    private static final String SELECT_PROGRAM =
+            SELECT + ProgramModel.TABLE + POINT + ALL +
+                    FROM + ProgramModel.TABLE +
+                    JOIN + EventModel.TABLE +
+                    ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM +
+                    EQUAL + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID +
+                    EQUAL + QUESTION_MARK + LIMIT_1;
 
     private static final String SELECT_PROGRAM_FROM_EVENT = String.format(
-            "SELECT %s.* from %s JOIN %s " +
-                    "ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ? LIMIT 1",
+            SELECT + "%s.*" + FROM + "%s" + JOIN + "%s" + ON + TABLE_POINT_FIELD_EQUALS + "%s.%s" +
+                    WHERE + "%s.%s" + EQUAL + QUESTION_MARK + LIMIT_1,
             ProgramModel.TABLE, ProgramModel.TABLE, EventModel.TABLE,
             EventModel.TABLE, EventModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
             EventModel.TABLE, EventModel.Columns.UID);
 
-    private static final String SELECT_TITLE = "SELECT\n" +
-            "  Program.displayName,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "  JOIN Program ON Event.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
+    private static final String SELECT_TITLE =
+            SELECT + ProgramModel.TABLE + POINT + ProgramModel.Columns.DISPLAY_NAME + COMMA +
+                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    FROM + EventModel.TABLE +
+                    JOIN + ProgramModel.TABLE +
+                    ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM +
+                    EQUAL + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
+                    JOIN + ProgramStageModel.TABLE +
+                    ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    EQUAL + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID +
+                    EQUAL + QUESTION_MARK + LIMIT_1;
 
-    private static final String SELECT_SECTIONS = "SELECT\n" +
-            "  Program.uid AS programUid,\n" +
-            "  ProgramStage.uid AS programStageUid,\n" +
-            "  ProgramStageSection.uid AS programStageSectionUid,\n" +
-            "  ProgramStageSection.displayName AS programStageDisplayName,\n" +
-            "  ProgramStageSection.mobileRenderType AS renderType,\n" +
-            "  ProgramStageSection.sortOrder AS sectionOrder\n" +
-            "FROM Event\n" +
-            "  JOIN Program ON Event.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ? ORDER BY ProgramStageSection.sortOrder";
+    private static final String SELECT_SECTIONS =
+            SELECT + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID + AS + "programUid" + COMMA +
+                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID + AS + "programUid" + COMMA +
+                    ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.UID + AS + "programStageSectionUid" + COMMA +
+                    ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.DISPLAY_NAME + AS + "programStageDisplayName" + COMMA +
+                    ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.MOBILE_RENDER_TYPE + AS + "renderType" + COMMA +
+                    ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.SORT_ORDER + AS + "sectionOrder" +
+                    FROM + EventModel.TABLE +
+                    JOIN + ProgramModel.TABLE +
+                    ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM +
+                    EQUAL + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
+                    JOIN + ProgramStageModel.TABLE +
+                    ON + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    EQUAL + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    LEFT_OUTER_JOIN + ProgramStageSectionModel.TABLE +
+                    ON + ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.PROGRAM_STAGE +
+                    EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID +
+                    EQUAL + QUESTION_MARK +
+                    ORDER_BY + ProgramStageSectionModel.TABLE + POINT + ProgramStageSectionModel.Columns.SORT_ORDER;
 
-    private static final String SELECT_EVENT_DATE = "SELECT\n" +
-            "  Event.eventDate, ProgramStage.periodType\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
-
-    private static final String SELECT_EVENT_STATUS = "SELECT\n" +
-            "  Event.status\n" +
-            "FROM Event\n" +
-            "WHERE Event.uid = ? " +
-            "LIMIT 1";
+    private static final String SELECT_EVENT_STATUS =
+            SELECT + EventModel.TABLE + POINT + EventModel.Columns.STATUS +
+                    FROM + EventModel.TABLE +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID +
+                    EQUAL + QUESTION_MARK + LIMIT_1;
 
     private static final String QUERY = "SELECT\n" +
             "  Field.id,\n" +
@@ -418,7 +438,7 @@ public class EventRepository implements FormRepository {
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
         }

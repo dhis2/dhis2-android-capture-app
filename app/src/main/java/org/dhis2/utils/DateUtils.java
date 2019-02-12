@@ -1,8 +1,5 @@
 package org.dhis2.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.period.PeriodType;
@@ -14,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 16/01/2018.
@@ -202,7 +202,6 @@ public class DateUtils {
     /**********************
      COMPARE DATES REGION*/
 
-    @Deprecated
     public boolean hasExpired(@NonNull EventModel event, int expiryDays, int completeEventExpiryDays, @Nullable PeriodType expiryPeriodType) {
         Calendar expiredDate = Calendar.getInstance();
 

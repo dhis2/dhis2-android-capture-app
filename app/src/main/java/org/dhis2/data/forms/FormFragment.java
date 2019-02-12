@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,12 +52,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -69,11 +68,12 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private static final String IS_ENROLLMENT = "isEnrollment";
     private static final String FORM_VIEW_TABLAYOUT = "formViewTablayout";
     private static final int RC_GO_BACK = 101;
+    private static final int RQ_EVENT = 9876;
 
-    View nextButton;
-    ViewPager viewPager;
-    TabLayout tabLayout;
-    Toolbar toolbar;
+    private View nextButton;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private Toolbar toolbar;
 
     @Inject
     FormPresenter formPresenter;
@@ -84,7 +84,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private PublishSubject<LatLng> onCoordinatesChanged;
     private TextInputLayout reportDateLayout;
     private TextInputEditText reportDate;
-    PublishSubject<ReportStatus> undoObservable;
+    private PublishSubject<ReportStatus> undoObservable;
     private CoordinatorLayout coordinatorLayout;
     private TextInputLayout incidentDateLayout;
     private TextInputEditText incidentDate;
@@ -96,10 +96,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private boolean canComplete = true;
     private LinearLayout dateLayout;
     public View datesLayout;
-    private NestedScrollView nestedScrollView;
-    private final int RQ_EVENT = 9876;
     private RuleActionErrorOnCompletion errorOnCompletion;
-    private RuleActionWarningOnCompletion warningOnCompletion;
     private RuleActionShowError showError;
     private String programUid;
     private String teiUid;
@@ -143,7 +140,6 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        nestedScrollView = view.findViewById(R.id.content_frame);
         dateLayout = view.findViewById(R.id.date_layout);
         nextButton = view.findViewById(R.id.next);
         viewPager = view.findViewById(R.id.viewpager_dataentry);
@@ -160,9 +156,9 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        if (getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
+        if (getArguments() != null && getArguments().getBoolean(FORM_VIEW_ACTIONBAR))
             setupActionBar();
-        else if (getArguments().getBoolean(FORM_VIEW_TABLAYOUT)) {
+        else if (getArguments() != null && getArguments().getBoolean(FORM_VIEW_TABLAYOUT)) {
             toolbar.setVisibility(View.GONE);
             datesLayout.setVisibility(View.GONE);
             nextButton.setVisibility(View.GONE);
@@ -238,7 +234,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         FormViewArguments arguments = Preconditions.isNull(getArguments()
                 .getParcelable(FORM_VIEW_ARGUMENTS), "formViewArguments == null");
@@ -267,6 +263,14 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         super.onPause();
     }
 
+    private void removeInnerFragments() {
+        for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            if (!(fragment instanceof DataEntryFragment) && fragment != null) {
+                getChildFragmentManager().beginTransaction().remove(fragment).commit();
+            }
+        }
+    }
+
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
@@ -274,13 +278,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             int currentPostion = -1;
             if (formSectionAdapter.getCount() > 0 && formSectionAdapter.areDifferentSections(sectionViewModels)) {
                 currentPostion = viewPager.getCurrentItem();
-                for (Fragment fragment : getChildFragmentManager().getFragments()) {
-                    if (fragment instanceof DataEntryFragment) {
-                        continue;
-                    } else if (fragment != null) {
-                        getChildFragmentManager().beginTransaction().remove(fragment).commit();
-                    }
-                }
+                removeInnerFragments();
                 formSectionAdapter = new FormSectionAdapter(getChildFragmentManager());
                 viewPager.setAdapter(formSectionAdapter);
             }
@@ -288,8 +286,8 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             tabLayout.setupWithViewPager(viewPager);
             if (currentPostion != -1)
                 viewPager.setCurrentItem(currentPostion, false);
-            if (sectionViewModels.size() == 0) {
-                Log.d("EMPTY", "Show empty state");
+            if (sectionViewModels.isEmpty()) {
+                Timber.d("Show empty state");
                 // TODO: Show empty state
             }
             if (viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1) {
@@ -444,11 +442,13 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
             case RQ_EVENT:
                 openDashboard();
                 break;
+            default:
+                break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    void openDashboard(){
+    private void openDashboard() {
         Bundle bundle = new Bundle();
         bundle.putString("PROGRAM_UID", programUid);
         bundle.putString("TEI_UID", teiUid);
@@ -456,7 +456,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
         getActivity().finish();
     }
 
-    void publishCoordinatesChanged(Double lat, Double lon) {
+    private void publishCoordinatesChanged(Double lat, Double lon) {
         if (onCoordinatesChanged != null) {
             onCoordinatesChanged.onNext(new LatLng(lat, lon));
         }
@@ -525,6 +525,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
                     @Override
                     public void onNegative() {
+                        // do nothing
                     }
                 });
         if (!isEmpty(messageOnComplete))
@@ -595,7 +596,7 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
 
     @Override
     public void setWarningOnCompletion(RuleActionWarningOnCompletion warningOnCompletion) {
-        this.warningOnCompletion = warningOnCompletion;
+        RuleActionWarningOnCompletion warningOnCompletion1 = warningOnCompletion;
     }
 
     @Override

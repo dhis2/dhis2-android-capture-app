@@ -5,9 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -46,6 +43,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -61,7 +61,7 @@ import timber.log.Timber;
 public class EventInitialPresenter implements EventInitialContract.Presenter {
 
     public static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 101;
-    static private EventInitialContract.View view;
+    private static EventInitialContract.View view;
     private final MetadataRepository metadataRepository;
     private final EventInitialRepository eventInitialRepository;
     private final EventSummaryRepository eventSummaryRepository;
@@ -73,7 +73,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
     private ProgramModel programModel;
     private CategoryComboModel catCombo;
     private String programId;
-    private String programStageId;
     private List<OrganisationUnitModel> orgUnits;
 
     public EventInitialPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
@@ -93,7 +92,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         view = mview;
         this.eventId = eventId;
         this.programId = programId;
-        this.programStageId = programStageId;
 
         compositeDisposable = new CompositeDisposable();
 

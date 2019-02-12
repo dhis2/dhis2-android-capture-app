@@ -4,12 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
-import androidx.appcompat.app.AppCompatDelegate;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -43,6 +37,11 @@ import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
@@ -59,8 +58,6 @@ public class App extends MultiDexApplication implements Components {
     }
 
     private static final String DATABASE_NAME = "dhis.db";
-
-    private static App instance;
 
     @Inject
     ConfigurationManager configurationManager;
@@ -96,8 +93,6 @@ public class App extends MultiDexApplication implements Components {
         Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
 
-        this.instance = this;
-
         setUpAppComponent();
         setUpServerComponent();
         setUpUserComponent();
@@ -115,16 +110,16 @@ public class App extends MultiDexApplication implements Components {
             ProviderInstaller.installIfNeededAsync(this, new ProviderInstaller.ProviderInstallListener() {
                 @Override
                 public void onProviderInstalled() {
-                    Log.e(App.class.getName(), "New security provider installed.");
+                    Timber.e(App.class.getName(), "New security provider installed.");
                 }
 
                 @Override
                 public void onProviderInstallFailed(int errorCode, Intent recoveryIntent) {
-                    Log.e(App.class.getName(), "New security provider install failed.");
+                    Timber.e(App.class.getName(), "New security provider install failed.");
                 }
             });
         } catch (Exception ex) {
-            Log.e(App.class.getName(), "Unknown issue trying to install a new security provider", ex);
+            Timber.e(App.class.getName(), "Unknown issue trying to install a new security provider", ex);
         }
 
     }
@@ -173,11 +168,6 @@ public class App extends MultiDexApplication implements Components {
     }
 
     @NonNull
-    protected AppComponent createAppComponent() {
-        return (appComponent = prepareAppComponent().build());
-    }
-
-    @NonNull
     @Override
     public AppComponent appComponent() {
         return appComponent;
@@ -190,7 +180,8 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     @Override
     public LoginComponent createLoginComponent() {
-        return (loginComponent = appComponent.plus(new LoginModule()));
+        loginComponent = appComponent.plus(new LoginModule());
+        return loginComponent;
     }
 
     @Nullable
@@ -207,7 +198,8 @@ public class App extends MultiDexApplication implements Components {
     @NonNull
     @Override
     public SyncComponent createSyncComponent() {
-        return (syncComponent = appComponent.plus(new SyncModule()));
+        syncComponent = appComponent.plus(new SyncModule());
+        return syncComponent;
     }
 
     @Nullable
@@ -224,6 +216,7 @@ public class App extends MultiDexApplication implements Components {
     ////////////////////////////////////////////////////////////////////////
     // Server component
     ////////////////////////////////////////////////////////////////////////
+    @NonNull
     @Override
     public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
         serverComponent = appComponent.plus(new ServerModule(configuration));
@@ -242,6 +235,7 @@ public class App extends MultiDexApplication implements Components {
         serverComponent = null;
     }
 
+    @Nullable
     public ServerComponent getServerComponent() {
         return serverComponent;
     }
@@ -250,9 +244,11 @@ public class App extends MultiDexApplication implements Components {
     // User component
     ////////////////////////////////////////////////////////////////////////
 
+    @NonNull
     @Override
     public UserComponent createUserComponent() {
-        return (userComponent = serverComponent.plus(new UserModule()));
+        userComponent = serverComponent.plus(new UserModule());
+        return userComponent;
     }
 
     @Override
@@ -270,7 +266,8 @@ public class App extends MultiDexApplication implements Components {
 
     @NonNull
     public FormComponent createFormComponent(@NonNull FormModule formModule) {
-        return (formComponent = userComponent.plus(formModule));
+        formComponent = userComponent.plus(formModule);
+        return formComponent;
     }
 
     @Nullable
@@ -286,11 +283,6 @@ public class App extends MultiDexApplication implements Components {
     ////////////////////////////////////////////////////////////////////////
     // AndroidInjector
     ////////////////////////////////////////////////////////////////////////
-
-
-    public static App getInstance() {
-        return instance;
-    }
 
     /**
      * Visible only for testing purposes.

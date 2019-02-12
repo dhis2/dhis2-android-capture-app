@@ -15,49 +15,46 @@ import static android.text.TextUtils.isEmpty;
 
 public class AgeHolder extends FormViewHolder {
 
-    FormAgeCustomBinding binding;
-    AgeViewModel ageViewModel;
+    private FormAgeCustomBinding formAgeCustomBinding;
+    private AgeViewModel ageViewModel;
 
     AgeHolder(FormAgeCustomBinding binding, FlowableProcessor<RowAction> processor) {
         super(binding);
-        this.binding = binding;
+        this.formAgeCustomBinding = binding;
         binding.customAgeview.setAgeChangedListener(ageDate -> {
                     if (ageViewModel.value() == null || !ageViewModel.value().equals(DateUtils.databaseDateFormat().format(ageDate)))
                         processor.onNext(RowAction.create(ageViewModel.uid(), DateUtils.databaseDateFormat().format(ageDate)));
                 }
         );
-
     }
 
-
     public void update(AgeViewModel ageViewModel) {
-//        model.onNext(viewModel);
         this.ageViewModel = ageViewModel;
 
         descriptionText = ageViewModel.description();
         label = new StringBuilder(ageViewModel.label());
         if (ageViewModel.mandatory())
             label.append("*");
-        binding.customAgeview.setLabel(label.toString(),ageViewModel.description());
+        formAgeCustomBinding.customAgeview.setLabel(label.toString(), ageViewModel.description());
         if (!isEmpty(ageViewModel.value())) {
-            binding.customAgeview.setInitialValue(ageViewModel.value());
+            formAgeCustomBinding.customAgeview.setInitialValue(ageViewModel.value());
         }
 
         if (ageViewModel.warning() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.warning());
+            formAgeCustomBinding.customAgeview.setWarningOrError(ageViewModel.warning());
         else if (ageViewModel.error() != null)
-            binding.customAgeview.setWarningOrError(ageViewModel.error());
+            formAgeCustomBinding.customAgeview.setWarningOrError(ageViewModel.error());
         else
-            binding.customAgeview.setWarningOrError(null);
+            formAgeCustomBinding.customAgeview.setWarningOrError(null);
 
-        binding.customAgeview.setEditable(ageViewModel.editable());
+        formAgeCustomBinding.customAgeview.setEditable(ageViewModel.editable());
 
-        binding.executePendingBindings();
+        formAgeCustomBinding.executePendingBindings();
 
     }
 
     @Override
     public void dispose() {
-//        disposable.clear();
+        // do nothing
     }
 }

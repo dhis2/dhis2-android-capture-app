@@ -2,12 +2,14 @@ package org.dhis2.data.forms;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.AttributeSet;
+
+import com.google.android.material.tabs.TabLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.google.android.material.tabs.TabLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import android.util.AttributeSet;
 
 import static org.dhis2.utils.Preconditions.isNull;
 
@@ -15,7 +17,8 @@ import static org.dhis2.utils.Preconditions.isNull;
  * A TabLayout that automatically hides when the attached adapter has less than 2 elements
  */
 public class AutoHidingTabLayout extends TabLayout {
-    private ViewPager viewPager;
+
+    private ViewPager vPager;
 
     public AutoHidingTabLayout(Context context) {
         super(context);
@@ -31,8 +34,8 @@ public class AutoHidingTabLayout extends TabLayout {
 
     @Override
     public void setupWithViewPager(@Nullable ViewPager viewPager) {
-        this.viewPager = isNull(viewPager, "viewPager == null");
-        isNull(viewPager.getAdapter(), "viewPager.getAdapter == null. You must set " +
+        this.vPager = isNull(viewPager, "vPager == null");
+        isNull(viewPager.getAdapter(), "vPager.getAdapter == null. You must set " +
                 "an adapter on the ViewPager before setting up the AutoHidingTabLayout");
 
         AdapterChangeObserver adapterChangeObserver = new AdapterChangeObserver();
@@ -63,10 +66,10 @@ public class AutoHidingTabLayout extends TabLayout {
 
         @Override
         public void onChanged() {
-            if (viewPager == null || viewPager.getAdapter() == null) {
+            if (vPager == null || vPager.getAdapter() == null) {
                 setVisibility(GONE);
             } else {
-                toggleVisibility(viewPager.getAdapter());
+                toggleVisibility(vPager.getAdapter());
             }
         }
     }

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.program;
 
 import android.content.Context;
-import androidx.core.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +8,14 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.dhis2.R;
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.dhis2.R;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/10/2017.
@@ -28,7 +29,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
     private CheckBox checkBox;
     private TreeNode node;
     private OrganisationUnitModel value;
-    public int numberOfSelections;
+    private int numberOfSelections;
 
     public OrgUnitHolder(Context context, Boolean isMultiSelection) {
         super(context);
@@ -47,7 +48,7 @@ public class OrgUnitHolder extends TreeNode.BaseNodeViewHolder<OrganisationUnitM
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         textView.setText(value.displayName());
         checkBox = view.findViewById(R.id.checkbox);
-        checkBox.setChecked(isMultiSelection & node.isSelectable());
+        checkBox.setChecked(isMultiSelection && node.isSelectable());
 
         imageView.setOnClickListener(v -> {
             if (node.isExpanded())
