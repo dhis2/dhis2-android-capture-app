@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +102,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.programRecycler.setAdapter(new ProgramModelAdapter(presenter, currentPeriod));
         binding.programRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        binding.orgUnitApply.setOnClickListener(view -> apply());
+        binding.orgUnitCancel.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        });
         return binding.getRoot();
     }
 
@@ -322,12 +327,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void addTree(TreeNode treeNode) {
         this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
-        binding.orgUnitApply.setOnClickListener(view -> apply());
-        binding.orgUnitCancel.setOnClickListener(view -> {
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        });
         binding.orgUnitAll.setOnClickListener(view -> {
             treeView.selectAll(false);
             for (TreeNode node : treeView.getSelected()) {
@@ -371,7 +371,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void openDrawer() {
-        binding.drawerLayout.openDrawer(Gravity.END);
+        binding.drawerLayout.openDrawer(GravityCompat.END);
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
@@ -393,6 +393,11 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public Date getChosenDateDay() {
         return chosenDateDay;
+    }
+
+    @Override
+    public void orgUnitProgress(boolean showProgress) {
+        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 
 

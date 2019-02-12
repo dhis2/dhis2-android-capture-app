@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
@@ -43,7 +44,7 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
-    private List<OrganisationUnitModel> myOrgs;
+    private List<OrganisationUnitModel> myOrgs = new ArrayList<>();
     private FlowableProcessor<Trio> programQueries;
 
     ProgramPresenter(HomeRepository homeRepository) {
@@ -56,20 +57,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         programQueries = PublishProcessor.create();
-        compositeDisposable.add(
-                homeRepository.orgUnits()
-                        .subscribeOn(Schedulers.from(executorService))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> {
-                                    this.myOrgs = data;
-                                    programQueries.onNext(Trio.create(null, null, null));
-                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
-                                },
-                                throwable -> view.renderError(throwable.getMessage())));
 
         compositeDisposable.add(
                 programQueries
+                        .startWith(Trio.create(null, null, null))
                         .flatMap(datePeriodOrgs -> homeRepository.programModels(
                                 (List<Date>) datePeriodOrgs.val0(),
                                 (Period) datePeriodOrgs.val1(),
@@ -172,6 +163,20 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void onOrgUnitButtonClick() {
         view.openDrawer();
+        if(myOrgs.isEmpty()) {
+            view.orgUnitProgress(true);
+            compositeDisposable.add(
+                    homeRepository.orgUnits()
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    data -> {
+                                        this.myOrgs = data;
+                                        view.orgUnitProgress(false);
+                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
+                                    },
+                                    throwable -> view.renderError(throwable.getMessage())));
+        }
     }
 
     @Override

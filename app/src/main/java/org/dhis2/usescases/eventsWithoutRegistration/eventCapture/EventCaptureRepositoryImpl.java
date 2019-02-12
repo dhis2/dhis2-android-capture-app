@@ -399,6 +399,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .switchMap(
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
+//                                    return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     if (isEmpty(lastUpdatedUid))
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else
@@ -449,17 +450,19 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     .mapToList(cursor -> "%" + ProgramRuleVariableModel.create(cursor).displayName() + "%");
                         }
                 ).flatMap(variableList -> {
-                    String likeCondition = "condition LIKE '%s'";
+                    String likeCondition = "condition LIKE '%s' OR data LIKE '%s'";
                     StringBuilder st = new StringBuilder();
                     for (int i = 0; i < variableList.size(); i++) {
-                        st.append(String.format(likeCondition, variableList.get(i)));
+                        st.append(String.format(likeCondition, variableList.get(i), variableList.get(i)));
                         if (i != variableList.size() - 1)
                             st.append(" OR ");
                     }
 
                     if (!isEmpty(st))
                         return briteDatabase.createQuery(ProgramRuleModel.TABLE,
-                                String.format("SELECT * FROM ProgramRule WHERE program = ? AND %s", st.toString()), selectedProgramUid.get())
+                                String.format("SELECT ProgramRule.* FROM ProgramRule " +
+                                        "LEFT JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
+                                        "WHERE program = ? AND %s", st.toString()), selectedProgramUid.get())
                                 .mapToList(cursor -> {
                                     ProgramRuleModel ruleModel = ProgramRuleModel.create(cursor);
                                     List<RuleAction> ruleActions = new ArrayList<>();
