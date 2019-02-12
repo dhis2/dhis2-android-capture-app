@@ -22,7 +22,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-09";
+        String date2String = "2018-12-08";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -110,9 +110,9 @@ public class DateUtilsTest {
         assertEquals("2018-07-28", DateUtils.uiDateFormat().format(minDateWeeklySaturday));
         assertEquals("2018-08-04", DateUtils.uiDateFormat().format(minDateWeeklySaturday2));
         assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday));
-        assertEquals("2018-08-05", DateUtils.uiDateFormat().format(minDateWeeklySunday2));
-        assertEquals("2018-07-16", DateUtils.uiDateFormat().format(minDateBiWeekly));
-        assertEquals("2018-06-18", DateUtils.uiDateFormat().format(minDateBiWeekly2));
+        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateWeeklySunday2));
+        assertEquals("2018-07-29", DateUtils.uiDateFormat().format(minDateBiWeekly));
+        assertEquals("2018-06-17", DateUtils.uiDateFormat().format(minDateBiWeekly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateMonthly));
         assertEquals("2018-06-01", DateUtils.uiDateFormat().format(minDateMonthly2));
         assertEquals("2018-07-01", DateUtils.uiDateFormat().format(minDateBiMonthly));
@@ -145,7 +145,7 @@ public class DateUtilsTest {
                 "2018-09-19",//WeeklyWednesday
                 "2018-09-20",//WeeklyThursday
                 "2018-09-22",//WeeklySaturday
-                "2018-09-23",//WeeklySunday
+                "2018-09-16",//WeeklySunday
                 "2018-09-24",//BiWeekly
                 "2018-10-01",//Monthly
                 "2018-11-01",//BiMonthly
@@ -241,8 +241,8 @@ public class DateUtilsTest {
         assertEquals(dates2[0], firstDayOfMonth);
         assertEquals(dates2[1], lastDayOfMonth);
 
-        String firstDayOfWeekString = "2018-12-03";
-        String lastDayOfWeekString = "2018-12-09";
+        String firstDayOfWeekString = "2018-12-02";
+        String lastDayOfWeekString = "2018-12-08";
         Date firstDayOfWeek = DateUtils.uiDateFormat().parse(firstDayOfWeekString);
         Date lastDayOfWeek = DateUtils.uiDateFormat().parse(lastDayOfWeekString);
 
@@ -393,14 +393,19 @@ public class DateUtilsTest {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.setTime(date3);
 
-        String date4String = "2018-12-15";
+        String date4String = "2018-12-22";
         Date date4 = DateUtils.uiDateFormat().parse(date4String);
         Calendar calendar4 = Calendar.getInstance();
         calendar4.setTime(date4);
 
+        String date5String = "2018-12-15";
+        Date date5 = DateUtils.uiDateFormat().parse(date5String);
+        Calendar calendar5 = Calendar.getInstance();
+        calendar5.setTime(date5);
+
 
         assertEquals(calendar2.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar));
-        assertEquals(calendar4.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar2));
+        assertEquals(calendar5.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar2));
         assertEquals(calendar4.getTime(), DateUtils.getInstance().moveWeeklySaturday(calendar3));
     }
 
@@ -411,7 +416,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-09";
+        String date2String = "2018-12-02";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -421,7 +426,7 @@ public class DateUtilsTest {
         Calendar calendar3 = Calendar.getInstance();
         calendar3.setTime(date3);
 
-        String date4String = "2018-12-16";
+        String date4String = "2018-12-09";
         Date date4 = DateUtils.uiDateFormat().parse(date4String);
         Calendar calendar4 = Calendar.getInstance();
         calendar4.setTime(date4);
@@ -439,7 +444,7 @@ public class DateUtilsTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String date2String = "2018-12-17";
+        String date2String = "2018-12-16";
         Date date2 = DateUtils.uiDateFormat().parse(date2String);
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
@@ -622,7 +627,7 @@ public class DateUtilsTest {
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyWednesday, testDate, Locale.ENGLISH));
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklyThursday, testDate, Locale.ENGLISH));
         assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySaturday, testDate, Locale.ENGLISH));
-        assertEquals("3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
+        assertEquals("2 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.WeeklySunday, testDate, Locale.ENGLISH));
         assertEquals("2 2019 - 3 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiWeekly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.Monthly, testDate, Locale.ENGLISH));
         assertEquals("Jan 2019 - Feb 2019", DateUtils.getInstance().getPeriodUIString(PeriodType.BiMonthly, testDate, Locale.ENGLISH));
