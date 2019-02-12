@@ -176,9 +176,25 @@ public class ProgramEventDetailRepositoryImpl implements ProgramEventDetailRepos
 
         String orgUnitName = getOrgUnitName(eventModel.organisationUnit());
         List<Pair<String, String>> data = getData(eventModel.uid());
-        boolean hasExpired = false /*= isExpired(eventModel.uid())*/;
+        boolean hasExpired = isExpired(eventModel);
 
         return ProgramEventViewModel.create(eventModel.uid(), eventModel.organisationUnit(), orgUnitName, eventModel.state(), data, eventModel.status(), hasExpired);
+    }
+
+    private boolean isExpired(EventModel eventModel) {
+        boolean hasExpired = false;
+        Cursor programCursor = briteDatabase.query("SELECT * FROM Program WHERE uid = ?", eventModel.program());
+        if (programCursor != null) {
+            if (programCursor.moveToFirst()) {
+                ProgramModel program = ProgramModel.create(programCursor);
+                if (eventModel.status() == EventStatus.ACTIVE)
+                    hasExpired = DateUtils.getInstance().hasExpired(eventModel, program.expiryDays(), program.completeEventsExpiryDays(), program.expiryPeriodType());
+                if (eventModel.status() == EventStatus.COMPLETED)
+                    hasExpired = DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), program.completeEventsExpiryDays());
+            }
+            programCursor.close();
+        }
+        return hasExpired;
     }
 
     private String getOrgUnitName(String orgUnitUid) {

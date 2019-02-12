@@ -399,5 +399,13 @@
     <string name="event_was_skipped">The event was marked as skipped</string>
     <string name="no_intructions">There is no information for this screen</string>
     <string name="event_overdue">Overdue</string>
+    <string name="unsupported_program_rule">There is one program rule which is not supported. Please check the documentation</string>
+    <string name="delete_event_error">This event has not been created yet</string>
+    <string name="empty_description">No info for this field</string>
+    <string name="biometrics_dialog_title">Empty Credentials</string>
+    <string name="biometrics_first_use_text">To be able to log in using the fingerprint scanner you first need to use the default way</string>
+    <string name="biometrics_security_title">Biometric Security</string>
+    <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
+    <string name="login_https">https://</string>
 
 </resources>
