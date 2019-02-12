@@ -52,6 +52,7 @@ public class ProgramContract {
 
         Date getChosenDateDay();
 
+        void orgUnitProgress(boolean showProgress);
     }
 
     public interface Presenter {

@@ -20,6 +20,7 @@ import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -130,6 +131,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
         } else {
+            options = new HashMap<>();
             List<OptionModel> optionList = Bindings.setOptionSet(viewModel.optionSet());
             PopupMenu menu = new PopupMenu(itemView.getContext(), v);
             menu.setOnMenuItemClickListener(this);
