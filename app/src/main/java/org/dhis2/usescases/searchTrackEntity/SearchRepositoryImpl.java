@@ -21,9 +21,14 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttribute;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeEntityDIModule;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeFields;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeAttributeTableInfo;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -108,6 +113,14 @@ public class SearchRepositoryImpl implements SearchRepository {
             ObjectStyleModel.TABLE, ObjectStyleModel.TABLE, ObjectStyleModel.Columns.UID, ProgramModel.TABLE, ProgramModel.Columns.UID,
             ProgramModel.TABLE, ProgramModel.Columns.UID
     );
+
+    private final String SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES = String.format(
+            "SELECT %s.* FROM %s " +
+                    "JOIN %s ON %s.trackedEntityAttribute = %s.%s " +
+                    "WHERE %s.trackedEntityType = ? AND %s.searchable = 1",
+            TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE,
+            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.Columns.UID,
+            TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name(), TrackedEntityTypeAttributeTableInfo.TABLE_INFO.name());
 
     private static final String[] TABLE_NAMES = new String[]{TrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE};
     private static final Set<String> TABLE_SET = new HashSet<>(Arrays.asList(TABLE_NAMES));
@@ -498,5 +511,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             return cursor.getString(0);
         }
         return null;
+    }
+
+    @Override
+    public Observable<List<TrackedEntityAttributeModel>> trackedEntityTypeAttributes() {
+        return briteDatabase.createQuery(TrackedEntityAttributeModel.TABLE, SELECT_TRACKED_ENTITY_TYPE_ATTRIBUTES, teiType)
+                .mapToList(TrackedEntityAttributeModel::create);
     }
 }

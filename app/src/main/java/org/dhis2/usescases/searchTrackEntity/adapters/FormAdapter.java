@@ -236,12 +236,12 @@ public class FormAdapter extends RecyclerView.Adapter {
             programData = programModel.displayIncidentDate() ? 1 : 1;
         } else {
             programData = 0;
-            List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
+           /* List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();
             for (TrackedEntityAttributeModel attributeModel : modelList) {
                 if (attributeModel.displayInListNoProgram())
                     modelListnew.add(attributeModel);
             }
-            modelList = new ArrayList<>(modelListnew);
+            modelList = new ArrayList<>(modelListnew);*/
         }
 
         this.attributeList = modelList;

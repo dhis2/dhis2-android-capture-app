@@ -359,6 +359,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes()
+                .flatMap(list -> {
+                    if(selectedProgram == null)
+                        return searchRepository.trackedEntityTypeAttributes();
+                    else
+                        return Observable.just(list);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
