@@ -18,8 +18,7 @@ import io.reactivex.processors.FlowableProcessor;
  */
 
 public class FileRow implements Row<FileHolder, FileViewModel> {
-    private final String renderType;
-    FormButtonBinding binding;
+    private FormButtonBinding binding;
     @NonNull
     private final LayoutInflater inflater;
     @NonNull
@@ -30,15 +29,13 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = null;
     }
 
-    public FileRow(LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
-                   @NonNull FlowableProcessor<Integer> currentPosition,boolean isBgTransparent, String renderType) {
+    public FileRow(@NonNull LayoutInflater layoutInflater, @NonNull FlowableProcessor<RowAction> processor,
+                   @NonNull FlowableProcessor<Integer> currentPosition, boolean isBgTransparent, String renderType) {
         this.inflater = layoutInflater;
         this.processor = processor;
         this.isBgTransparent = isBgTransparent;
-        this.renderType = renderType;
     }
 
     @NonNull
@@ -60,6 +57,6 @@ public class FileRow implements Row<FileHolder, FileViewModel> {
 
     @Override
     public void deAttach(@NonNull FileHolder viewHolder) {
-
+        // do nothing
     }
 }

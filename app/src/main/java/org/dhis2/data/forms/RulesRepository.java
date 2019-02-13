@@ -18,7 +18,9 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableSourceType;
+import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.rules.models.Rule;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionAssign;
@@ -46,6 +48,7 @@ import org.hisp.dhis.rules.models.RuleVariableNewestEvent;
 import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent;
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -62,19 +65,38 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.COMMA;
+import static org.dhis2.data.database.SqlConstants.DESC;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.INNER_JOIN;
+import static org.dhis2.data.database.SqlConstants.IS_NOT_NULL;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.LESS_OR_EQUAL;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.LIMIT_10;
+import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
+import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 
 @SuppressWarnings("PMD")
 public final class RulesRepository {
-    private static final String QUERY_RULES = "SELECT\n" +
-            "  ProgramRule.uid, \n" +
-            "  ProgramRule.programStage,\n" +
-            "  ProgramRule.priority,\n" +
-            "  ProgramRule.condition\n" +
-            "FROM ProgramRule\n" +
-            "WHERE program = ?;";
+    private static final String QUERY_RULES =
+            SELECT + ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.UID + COMMA +
+                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PROGRAM_STAGE + COMMA +
+                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PRIORITY + COMMA +
+                    ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.CONDITION +
+                    FROM + ProgramRuleModel.TABLE +
+                    WHERE + ProgramRuleModel.TABLE + POINT + ProgramRuleModel.Columns.PROGRAM +
+                    EQUAL + QUESTION_MARK;
 
-    private static final String QUERY_VARIABLES = "SELECT\n" +
+    private static final String QUERY_VARIABLES = SELECT +
             "  name,\n" +
             "  programStage,\n" +
             "  programRuleVariableSourceType,\n" +
@@ -104,7 +126,7 @@ public final class RulesRepository {
             "  \"TEI_ATTRIBUTE\"\n" +
             ");";
 
-    private static final String QUERY_ACTIONS = "SELECT\n" +
+    private static final String QUERY_ACTIONS = SELECT +
             "  ProgramRuleAction.programRule,\n" +
             "  ProgramRuleAction.programStage,\n" +
             "  ProgramRuleAction.programStageSection,\n" +
@@ -135,70 +157,105 @@ public final class RulesRepository {
     /**
      * Query all events except current one from a program without registration
      */
-    private static final String QUERY_OTHER_EVENTS = "SELECT Event.uid,\n" +
-            "  Event.programStage,\n" +
-            "  Event.status,\n" +
-            "  Event.eventDate,\n" +
-            "  Event.dueDate,\n" +
-            "  Event.organisationUnit,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.program = ? AND Event.uid != ? AND Event.eventDate <= ? \n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
+    private static final String QUERY_OTHER_EVENTS =
+            SELECT + EventModel.TABLE + POINT + EventModel.Columns.UID + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.STATUS + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
+                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    FROM + EventModel.TABLE +
+                    JOIN + ProgramStageModel.TABLE +
+                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM +
+                    EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE +
+                    LESS_OR_EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
+                    NOT_EQUAL + State.TO_DELETE +
+                    ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
+                    LIMIT_10;
 
     /**
      * Query all events except current one from an enrollment
      */
-    private static final String QUERY_OTHER_EVENTS_ENROLLMENTS = "SELECT Event.uid,\n" +
-            "  Event.programStage,\n" +
-            "  Event.status,\n" +
-            "  Event.eventDate,\n" +
-            "  Event.dueDate,\n" +
-            "  Event.organisationUnit,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.enrollment = ? AND Event.uid != ? AND Event.eventDate <= ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate DESC,Event.lastUpdated DESC LIMIT 10";
+    private static final String QUERY_OTHER_EVENTS_ENROLLMENTS =
+            SELECT + EventModel.TABLE + POINT + EventModel.Columns.UID + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.STATUS + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
+                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    FROM + EventModel.TABLE +
+                    JOIN + ProgramStageModel.TABLE +
+                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.ENROLLMENT +
+                    EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE +
+                    LESS_OR_EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
+                    NOT_EQUAL + State.TO_DELETE +
+                    ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
+                    LIMIT_10;
 
     /**
      * Query all events from an enrollment
      */
-    private static final String QUERY_EVENTS_ENROLLMENTS = "SELECT Event.uid,\n" +
-            "  Event.programStage,\n" +
-            "  Event.status,\n" +
-            "  Event.eventDate,\n" +
-            "  Event.dueDate,\n" +
-            "  Event.organisationUnit,\n" +
-            "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
-            "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
-            "WHERE Event.enrollment = ?\n" +
-            " AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY Event.eventDate,Event.lastUpdated DESC LIMIT 10";
+    private static final String QUERY_EVENTS_ENROLLMENTS =
+            SELECT + EventModel.TABLE + POINT + EventModel.Columns.UID + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.STATUS + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.DUE_DATE + COMMA +
+                    EventModel.TABLE + POINT + EventModel.Columns.ORGANISATION_UNIT + COMMA +
+                    ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.DISPLAY_NAME +
+                    FROM + EventModel.TABLE +
+                    JOIN + ProgramStageModel.TABLE +
+                    ON + ProgramStageModel.TABLE + POINT + ProgramStageModel.Columns.UID +
+                    EQUAL + EventModel.TABLE + POINT + EventModel.Columns.PROGRAM_STAGE +
+                    WHERE + EventModel.TABLE + POINT + EventModel.Columns.ENROLLMENT +
+                    EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
+                    NOT_EQUAL + State.TO_DELETE +
+                    ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
+                    LIMIT_10;
 
-    private static final String QUERY_VALUES = "SELECT " +
-            "  eventDate," +
-            "  programStage," +
-            "  dataElement," +
-            "  value" +
-            " FROM TrackedEntityDataValue " +
-            "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'";
+    private static final String QUERY_VALUES = SELECT +
+            EventModel.Columns.EVENT_DATE + COMMA +
+            EventModel.Columns.PROGRAM_STAGE + COMMA +
+            TrackedEntityDataValueModel.Columns.DATA_ELEMENT + COMMA +
+            TrackedEntityDataValueModel.Columns.VALUE +
+            FROM + TrackedEntityDataValueModel.TABLE +
+            INNER_JOIN + EventModel.TABLE +
+            ON + TrackedEntityDataValueModel.TABLE + POINT + TrackedEntityDataValueModel.Columns.EVENT +
+            EQUAL + EventModel.TABLE + POINT + EventModel.Columns.UID +
+            WHERE + TrackedEntityDataValueModel.Columns.EVENT +
+            EQUAL + QUESTION_MARK +
+            AND + TrackedEntityDataValueModel.Columns.VALUE + IS_NOT_NULL +
+            AND + EventModel.Columns.STATE +
+            NOT_EQUAL + State.TO_DELETE;
 
-    private static final String QUERY_ENROLLMENT = "SELECT\n" +
-            "  Enrollment.uid,\n" +
-            "  Enrollment.incidentDate,\n" +
-            "  Enrollment.enrollmentDate,\n" +
-            "  Enrollment.status,\n" +
-            "  Enrollment.organisationUnit,\n" +
-            "  Program.displayName\n" +
-            "FROM Enrollment\n" +
-            "JOIN Program ON Program.uid = Enrollment.program\n" +
-            "WHERE Enrollment.uid = ? \n" +
-            "LIMIT 1;";
+    private static final String QUERY_ENROLLMENT =
+            SELECT + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.UID + COMMA +
+                    EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.INCIDENT_DATE + COMMA +
+                    EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.ENROLLMENT_DATE + COMMA +
+                    EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.ENROLLMENT_STATUS + COMMA +
+                    EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.ORGANISATION_UNIT + COMMA +
+                    ProgramModel.TABLE + POINT + ProgramModel.Columns.DISPLAY_NAME +
+                    FROM + EnrollmentModel.TABLE +
+                    JOIN + ProgramModel.TABLE +
+                    ON + ProgramModel.TABLE + POINT + ProgramModel.Columns.UID +
+                    EQUAL + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.PROGRAM +
+                    WHERE + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.UID +
+                    EQUAL + QUESTION_MARK +
+                    LIMIT_1;
 
-    private static final String QUERY_ATTRIBUTE_VALUES = "SELECT\n" +
+    private static final String QUERY_ATTRIBUTE_VALUES = SELECT +
             "  Field.id,\n" +
             "  Value.value\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
@@ -228,7 +285,7 @@ public final class RulesRepository {
     }
 
     @NonNull
-    public Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
+    Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
         return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
@@ -264,9 +321,6 @@ public final class RulesRepository {
             if (actions == null) {
                 actions = new ArrayList<>();
             }
-
-           /* rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(actions)));*/
         }
 
         return rules;
@@ -286,9 +340,6 @@ public final class RulesRepository {
                     pairActions.add(pair.val1());
             }
 
-            /*if (actions == null) {
-                actions = new ArrayList<>();
-            }*/
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
                     rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
         }
@@ -333,7 +384,6 @@ public final class RulesRepository {
         }
 
         if (mimeType == null)
-//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
             mimeType = RuleValueType.TEXT;
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
@@ -379,7 +429,6 @@ public final class RulesRepository {
         }
 
         if (mimeType == null)
-//            throw new IllegalArgumentException(String.format("No ValueType was supplied attributeType=%s, elementType=%s, mimeTye =%s", attributeType, elementType, mimeType));
             mimeType = RuleValueType.TEXT;
 
         switch (ProgramRuleVariableSourceType.valueOf(sourceType)) {
@@ -431,40 +480,38 @@ public final class RulesRepository {
             attribute = "";
         }
 
+        String field = isEmpty(attribute) ? dataElement : attribute;
+
         switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
             case DISPLAYTEXT:
                 return createDisplayTextAction(content, data, location);
             case DISPLAYKEYVALUEPAIR:
                 return createDisplayKeyValuePairAction(content, data, location);
             case HIDEFIELD:
-                return RuleActionHideField.create(content,
-                        isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionHideField.create(content, field);
             case HIDESECTION:
                 return RuleActionHideSection.create(section);
             case ASSIGN:
-                return RuleActionAssign.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionAssign.create(content, data, field);
             case SHOWWARNING:
-                return RuleActionShowWarning.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionShowWarning.create(content, data, field);
             case WARNINGONCOMPLETE:
-                return RuleActionWarningOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionWarningOnCompletion.create(content, data, field);
             case SHOWERROR:
-                return RuleActionShowError.create(content, data,
-                        isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionShowError.create(content, data, field);
             case ERRORONCOMPLETE:
                 if (content == null)
                     content = "";
                 if (data == null)
                     data = "";
 
-                return RuleActionErrorOnCompletion.create(content, data, isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionErrorOnCompletion.create(content, data, field);
             case CREATEEVENT:
                 return RuleActionCreateEvent.create(content, data, programStage);
             case HIDEPROGRAMSTAGE:
                 return RuleActionHideProgramStage.create(programStage);
             case SETMANDATORYFIELD:
-                return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
+                return RuleActionSetMandatoryField.create(field);
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));
@@ -501,49 +548,51 @@ public final class RulesRepository {
                                         eventModel.enrollment() == null ? programModel.uid() : eventModel.enrollment(),
                                         eventUidToEvaluate == null ? "" : eventUidToEvaluate,
                                         DateUtils.databaseDateFormat().format(eventModel.eventDate()))
-                                        .mapToList(cursor -> {
-                                            List<RuleDataValue> dataValues = new ArrayList<>();
-                                            String eventUid = cursor.getString(0);
-                                            String programStageUid = cursor.getString(1);
-                                            Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
-                                            Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
-                                            String orgUnit = cursor.getString(5);
-                                            String orgUnitCode = getOrgUnitCode(orgUnit);
-                                            String programStageName = cursor.getString(6);
-                                            RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
-
-                                            Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
-                                            if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                                                for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                                                    Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                                                    String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                                                    dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                                            dataValueCursor.getString(2), value));
-                                                    dataValueCursor.moveToNext();
-                                                }
-                                                dataValueCursor.close();
-                                            }
-
-                                            return RuleEvent.builder()
-                                                    .event(eventUid)
-                                                    .programStage(programStageUid)
-                                                    .programStageName(programStageName)
-                                                    .status(status)
-                                                    .eventDate(eventDate)
-                                                    .dueDate(dueDate)
-                                                    .organisationUnit(orgUnit)
-                                                    .organisationUnitCode(orgUnitCode)
-                                                    .dataValues(dataValues)
-                                                    .build();
-
-                                        }))).toFlowable(BackpressureStrategy.LATEST);
+                                        .mapToList(this::createRuleEvent))).toFlowable(BackpressureStrategy.LATEST);
     }
 
+    private RuleEvent createRuleEvent(Cursor cursor) throws ParseException {
+        String eventUid = cursor.getString(0);
+        String programStageUid = cursor.getString(1);
+        Date eventDate = DateUtils.databaseDateFormat().parse(cursor.getString(3));
+        Date dueDate = cursor.isNull(4) ? eventDate : DateUtils.databaseDateFormat().parse(cursor.getString(4));
+        String orgUnit = cursor.getString(5);
+        String orgUnitCode = getOrgUnitCode(orgUnit);
+        String programStageName = cursor.getString(6);
+        RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+
+        return RuleEvent.builder()
+                .event(eventUid)
+                .programStage(programStageUid)
+                .programStageName(programStageName)
+                .status(status)
+                .eventDate(eventDate)
+                .dueDate(dueDate)
+                .organisationUnit(orgUnit)
+                .organisationUnitCode(orgUnitCode)
+                .dataValues(getDataValues(eventUid, cursor))
+                .build();
+    }
+
+    private List<RuleDataValue> getDataValues(String eventUid, Cursor cursor) throws ParseException {
+        List<RuleDataValue> dataValues = new ArrayList<>();
+        Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
+        if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
+            for (int i = 0; i < dataValueCursor.getCount(); i++) {
+                Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
+                String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
+                dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
+                        dataValueCursor.getString(2), value));
+                dataValueCursor.moveToNext();
+            }
+            dataValueCursor.close();
+        }
+        return dataValues;
+    }
 
     public Flowable<List<RuleEvent>> enrollmentEvents(String enrollmentUid) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENTS_ENROLLMENTS, enrollmentUid)
                 .mapToList(cursor -> {
-                    List<RuleDataValue> dataValues = new ArrayList<>();
                     String eventUid = cursor.getString(0);
                     String programStageUid = cursor.getString(1);
                     Date eventDate = cursor.isNull(3) ? null : DateUtils.databaseDateFormat().parse(cursor.getString(3));
@@ -552,18 +601,6 @@ public final class RulesRepository {
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
                     RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
-
-                    Cursor dataValueCursor = briteDatabase.query(QUERY_VALUES, eventUid);
-                    if (dataValueCursor != null && dataValueCursor.moveToFirst()) {
-                        for (int i = 0; i < dataValueCursor.getCount(); i++) {
-                            Date eventDateV = DateUtils.databaseDateFormat().parse(dataValueCursor.getString(0));
-                            String value = cursor.getString(3) != null ? dataValueCursor.getString(3) : "";
-                            dataValues.add(RuleDataValue.create(eventDateV, dataValueCursor.getString(1),
-                                    dataValueCursor.getString(2), value));
-                            dataValueCursor.moveToNext();
-                        }
-                        dataValueCursor.close();
-                    }
 
                     return RuleEvent.builder()
                             .event(eventUid)
@@ -574,7 +611,7 @@ public final class RulesRepository {
                             .dueDate(dueDate)
                             .organisationUnit(orgUnit)
                             .organisationUnitCode(orgUnitCode)
-                            .dataValues(dataValues)
+                            .dataValues(getDataValues(eventUid, cursor))
                             .build();
 
                 }).toFlowable(BackpressureStrategy.LATEST);
@@ -647,5 +684,4 @@ public final class RulesRepository {
                             incidentDate, enrollmentDate, status, orgUnit, ouCode, attributeValues, programName);
                 }).toFlowable(BackpressureStrategy.LATEST);
     }
-
 }

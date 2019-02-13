@@ -2,8 +2,6 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -25,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
 
@@ -145,37 +145,41 @@ final class ProgramStageRepository implements DataEntryRepository {
         ArrayList<FieldViewModel> renderList = new ArrayList<>();
 
         if (renderingType != ProgramStageSectionRenderingType.LISTING) {
-
             for (FieldViewModel fieldViewModel : fieldViewModels) {
-                if (!isEmpty(fieldViewModel.optionSet())) {
-                    Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
-                    if (cursor != null && cursor.moveToFirst()) {
-                        for (int i = 0; i < cursor.getCount(); i++) {
-                            String uid = cursor.getString(0);
-                            String displayName = cursor.getString(1);
-                            String optionCode = cursor.getString(2);
-                            renderList.add(fieldFactory.create(
-                                    fieldViewModel.uid() + "." + uid, //fist
-                                    displayName + "-" + optionCode, ValueType.TEXT, false,
-                                    fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null));
+                renderList.addAll(parseFieldViewModel(fieldViewModel));
+            }
+        } else {
+            renderList.addAll(fieldViewModels);
+        }
+        return renderList;
 
-                            cursor.moveToNext();
-                        }
-                        cursor.close();
-                    }
+    }
 
+    private ArrayList<FieldViewModel> parseFieldViewModel(FieldViewModel fieldViewModel) {
+        ArrayList<FieldViewModel> renderList = new ArrayList<>();
+        if (!isEmpty(fieldViewModel.optionSet())) {
+            Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
+            if (cursor != null && cursor.moveToFirst()) {
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    String uid = cursor.getString(0);
+                    String displayName = cursor.getString(1);
+                    String optionCode = cursor.getString(2);
+                    renderList.add(fieldFactory.create(
+                            fieldViewModel.uid() + "." + uid, //fist
+                            displayName + "-" + optionCode, ValueType.TEXT, false,
+                            fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
+                            fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null));
 
-                } else
-                    renderList.add(fieldViewModel);
+                    cursor.moveToNext();
+                }
+                cursor.close();
             }
 
 
         } else
-            renderList.addAll(fieldViewModels);
+            renderList.add(fieldViewModel);
 
         return renderList;
-
     }
 
     @Override

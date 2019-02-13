@@ -66,6 +66,10 @@ import timber.log.Timber;
 
 public class Bindings {
 
+    private Bindings() {
+        // hide public constructor
+    }
+
     private static MetadataRepository metadataRepository;
 
     @BindingAdapter("date")
@@ -112,9 +116,8 @@ public class Bindings {
     public static void setDrawableEnd(TextView textView, Drawable drawable) {
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (drawable instanceof AnimatedVectorDrawable)
-                ((AnimatedVectorDrawable) drawable).start();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && drawable instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) drawable).start();
         }
     }
 
@@ -137,9 +140,7 @@ public class Bindings {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        data -> {
-                            textView.setText(recordsPlusType(data.val0(), data.val1()));
-                        },
+                        data -> textView.setText(recordsPlusType(data.val0(), data.val1())),
                         Timber::d,
                         disposable::dispose));
     }
@@ -203,9 +204,9 @@ public class Bindings {
     public static void setProgressColor(ProgressBar progressBar, int color) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = progressBar.getContext().obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
-        color = a.getColor(0, 0);
+        int newColor = a.getColor(0, 0);
         a.recycle();
-        progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        progressBar.getIndeterminateDrawable().setColorFilter(newColor, PorterDuff.Mode.SRC_IN);
     }
 
     @SuppressLint({"CheckResult", "RxLeakedSubscription"})

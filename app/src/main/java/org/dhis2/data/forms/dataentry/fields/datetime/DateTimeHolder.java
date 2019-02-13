@@ -1,7 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.datetime;
 
-import androidx.databinding.ViewDataBinding;
-
 import org.dhis2.BR;
 import org.dhis2.data.forms.dataentry.fields.FormViewHolder;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
@@ -13,6 +11,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 import java.util.Date;
 
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
 import static android.text.TextUtils.isEmpty;
@@ -71,38 +70,54 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
             ((FormDateTimeTextBinding) binding).dateTimeView.setAllowFutureDates(dateTimeViewModel.allowFutureDate());
 
         if (dateTimeViewModel.warning() != null) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
-            if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+            setWarnings();
 
         } else if (dateTimeViewModel.error() != null) {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
-            if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
+            setErrors();
 
         } else {
-            if (binding instanceof FormTimeTextBinding)
-                ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
-            if (binding instanceof FormDateTextBinding)
-                ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
-            if (binding instanceof FormDateTimeTextBinding)
-                ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+            removeWarningOnError();
         }
 
+        setEditables();
+
+        binding.executePendingBindings();
+    }
+
+    private void setEditables() {
         if (binding instanceof FormTimeTextBinding)
             ((FormTimeTextBinding) binding).timeView.setEditable(dateTimeViewModel.editable());
         if (binding instanceof FormDateTextBinding)
             ((FormDateTextBinding) binding).dateView.setEditable(dateTimeViewModel.editable());
         if (binding instanceof FormDateTimeTextBinding)
             ((FormDateTimeTextBinding) binding).dateTimeView.setEditable(dateTimeViewModel.editable());
+    }
 
-        binding.executePendingBindings();
+    private void removeWarningOnError() {
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.setWarningOrError(null);
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.setWarningOrError(null);
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(null);
+    }
+
+    private void setWarnings() {
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.warning());
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.warning());
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.warning());
+    }
+
+    private void setErrors() {
+        if (binding instanceof FormTimeTextBinding)
+            ((FormTimeTextBinding) binding).timeView.setWarningOrError(dateTimeViewModel.error());
+        if (binding instanceof FormDateTextBinding)
+            ((FormDateTextBinding) binding).dateView.setWarningOrError(dateTimeViewModel.error());
+        if (binding instanceof FormDateTimeTextBinding)
+            ((FormDateTimeTextBinding) binding).dateTimeView.setWarningOrError(dateTimeViewModel.error());
     }
 
     @Override
@@ -127,6 +142,6 @@ public class DateTimeHolder extends FormViewHolder implements OnDateSelected {
 
     @Override
     public void dispose() {
-
+        // do nothing
     }
 }

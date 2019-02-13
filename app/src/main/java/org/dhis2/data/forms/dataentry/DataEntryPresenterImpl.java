@@ -1,6 +1,5 @@
 package org.dhis2.data.forms.dataentry;
 
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import org.dhis2.R;
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -120,7 +120,7 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         disposable.add(
                 dataEntryView.optionSetActions()
                         .flatMap(
-                                data -> metadataRepository.searchOptions(data.val0(), data.val1(),data.val2()).toFlowable(BackpressureStrategy.LATEST)
+                                data -> metadataRepository.searchOptions(data.val0(), data.val1(), data.val2()).toFlowable(BackpressureStrategy.LATEST)
                         )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -183,94 +183,124 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
         return map;
     }
 
+    private void applyRuleActionShowWarning(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+        RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
+        FieldViewModel model = fieldViewModels.get(showWarning.field());
+
+        if (model != null)
+            fieldViewModels.put(showWarning.field(),
+                    model.withWarning(showWarning.content()));
+        else
+            Timber.d(String.format("Field with uid %s is missing", showWarning.field()));
+    }
+
+    private void applyRuleActionShowError(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+        RuleActionShowError showError = (RuleActionShowError) ruleAction;
+        FieldViewModel model = fieldViewModels.get(showError.field());
+
+        if (model != null)
+            fieldViewModels.put(showError.field(),
+                    model.withError(showError.content()));
+    }
+
+    private void applyRuleActionHideField(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+        RuleActionHideField hideField = (RuleActionHideField) ruleAction;
+        fieldViewModels.remove(hideField.field());
+        dataEntryStore.save(hideField.field(), null);
+    }
+
+    private void applyRuleActionHideSection(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+        RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
+        dataEntryView.removeSection(hideSection.programStageSection());
+    }
+
+    private void applyRuleActionDisplayText(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels, RuleEffect ruleEffect) {
+        RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
+        String uid = displayText.content();
+
+        EditTextViewModel textViewModel = EditTextViewModel.create(uid,
+                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+
+        if (this.currentFieldViewModels == null ||
+                !this.currentFieldViewModels.containsKey(uid)) {
+            fieldViewModels.put(uid, textViewModel);
+        } else if (this.currentFieldViewModels.containsKey(uid) &&
+                !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
+            fieldViewModels.put(uid, textViewModel);
+        }
+    }
+
+    private void applyRuleActionAssign(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels, RuleEffect ruleEffect) {
+        RuleActionAssign assign = (RuleActionAssign) ruleAction;
+
+        if (fieldViewModels.get(assign.field()) == null)
+            save(assign.field(), ruleEffect.data());
+        else {
+            String value = fieldViewModels.get(assign.field()).value();
+
+            if (value == null || !value.equals(ruleEffect.data())) {
+                save(assign.field(), ruleEffect.data());
+            }
+
+            fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
+
+        }
+    }
+
+    private void applyRuleActionMandatoryField(RuleAction ruleAction, Map<String, FieldViewModel> fieldViewModels) {
+        RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
+        FieldViewModel model = fieldViewModels.get(mandatoryField.field());
+        if (model != null)
+            fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+    }
+
+    private void applyRuleActionWarningOnComplete(RuleAction ruleAction) {
+        RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
+        dataEntryView.messageOnComplete(warningOnCompletion.content(), true);
+    }
+
+    private void applyRuleActionErrorOnComplete(RuleAction ruleAction) {
+        RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
+        dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
+    }
+
     private void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels, Result<RuleEffect> calcResult) {
 
         for (RuleEffect ruleEffect : calcResult.items()) {
             RuleAction ruleAction = ruleEffect.ruleAction();
             if (ruleAction instanceof RuleActionShowWarning) {
-                RuleActionShowWarning showWarning = (RuleActionShowWarning) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showWarning.field());
-
-                if (model != null)
-                    fieldViewModels.put(showWarning.field(),
-                            model.withWarning(showWarning.content()));
-                else
-                    Log.d("PR_FIELD_ERROR", String.format("Field with uid %s is missing", showWarning.field()));
+                applyRuleActionShowWarning(ruleAction, fieldViewModels);
 
             } else if (ruleAction instanceof RuleActionShowError) {
-                RuleActionShowError showError = (RuleActionShowError) ruleAction;
-                FieldViewModel model = fieldViewModels.get(showError.field());
-
-                if (model != null)
-                    fieldViewModels.put(showError.field(),
-                            model.withError(showError.content()));
+                applyRuleActionShowError(ruleAction, fieldViewModels);
 
             } else if (ruleAction instanceof RuleActionHideField) {
-                RuleActionHideField hideField = (RuleActionHideField) ruleAction;
-                fieldViewModels.remove(hideField.field());
-                dataEntryStore.save(hideField.field(), null);
+                applyRuleActionHideField(ruleAction, fieldViewModels);
+
             } else if (ruleAction instanceof RuleActionDisplayText) {
-                RuleActionDisplayText displayText = (RuleActionDisplayText) ruleAction;
-                String uid = displayText.content();
-
-                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
-
-                if (this.currentFieldViewModels == null ||
-                        !this.currentFieldViewModels.containsKey(uid)) {
-                    fieldViewModels.put(uid, textViewModel);
-                } else if (this.currentFieldViewModels.containsKey(uid) &&
-                        !currentFieldViewModels.get(uid).value().equals(textViewModel.value())) {
-                    fieldViewModels.put(uid, textViewModel);
-                } else {
-
-                }
-
-            /*} else if (ruleAction instanceof RuleActionDisplayKeyValuePair) { TODO: 18/10/2018 disabled for now
-                String uid = codeGenerator.generate();
-                RuleActionDisplayKeyValuePair displayKeyValuePair = (RuleActionDisplayKeyValuePair) ruleAction;
-                EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                        displayKeyValuePair.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null);
-                fieldViewModels.put(uid, textViewModel);*/
+                applyRuleActionDisplayText(ruleAction, fieldViewModels, ruleEffect);
 
             } else if (ruleAction instanceof RuleActionHideSection) {
-                RuleActionHideSection hideSection = (RuleActionHideSection) ruleAction;
-                dataEntryView.removeSection(hideSection.programStageSection());
+                applyRuleActionHideSection(ruleAction, fieldViewModels);
+
             } else if (ruleAction instanceof RuleActionAssign) {
-                RuleActionAssign assign = (RuleActionAssign) ruleAction;
-
-                if (fieldViewModels.get(assign.field()) == null)
-                    save(assign.field(), ruleEffect.data());
-                else {
-                    String value = fieldViewModels.get(assign.field()).value();
-
-                    if (value == null || !value.equals(ruleEffect.data())) {
-                        save(assign.field(), ruleEffect.data());
-                    }
-
-                    fieldViewModels.put(assign.field(), fieldViewModels.get(assign.field()).withValue(ruleEffect.data()));
-
-                }
-
+                applyRuleActionAssign(ruleAction, fieldViewModels, ruleEffect);
 
             } else if (ruleAction instanceof RuleActionCreateEvent) {
                 RuleActionCreateEvent createEvent = (RuleActionCreateEvent) ruleAction;
                 //TODO: CREATE event with data from createEvent
             } else if (ruleAction instanceof RuleActionSetMandatoryField) {
-                RuleActionSetMandatoryField mandatoryField = (RuleActionSetMandatoryField) ruleAction;
-                FieldViewModel model = fieldViewModels.get(mandatoryField.field());
-                if (model != null)
-                    fieldViewModels.put(mandatoryField.field(), model.setMandatory());
+                applyRuleActionMandatoryField(ruleAction, fieldViewModels);
+
             } else if (ruleAction instanceof RuleActionWarningOnCompletion) {
-                RuleActionWarningOnCompletion warningOnCompletion = (RuleActionWarningOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(warningOnCompletion.content(), true);
+                applyRuleActionWarningOnComplete(ruleAction);
+
             } else if (ruleAction instanceof RuleActionErrorOnCompletion) {
-                RuleActionErrorOnCompletion errorOnCompletion = (RuleActionErrorOnCompletion) ruleAction;
-                dataEntryView.messageOnComplete(errorOnCompletion.content(), false);
+                applyRuleActionErrorOnComplete(ruleAction);
+
             }
 
             dataEntryView.removeSection(null);
-
         }
     }
 }

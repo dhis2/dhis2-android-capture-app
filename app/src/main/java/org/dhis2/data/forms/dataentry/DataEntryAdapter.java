@@ -1,14 +1,5 @@
 package org.dhis2.data.forms.dataentry;
 
-import androidx.databinding.ObservableBoolean;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -42,6 +33,13 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -176,12 +174,7 @@ public final class DataEntryAdapter extends Adapter {
             return COORDINATES;
 
         } else if (viewModel instanceof DateTimeViewModel) {
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.DATE)
-                return DATE;
-            if (((DateTimeViewModel) viewModel).valueType() == ValueType.TIME)
-                return TIME;
-            else
-                return DATETIME;
+            return dateTimeViewModelValueType((DateTimeViewModel) viewModel);
         } else if (viewModel instanceof AgeViewModel) {
             return AGEVIEW;
         } else if (viewModel instanceof FileViewModel) {
@@ -198,6 +191,15 @@ public final class DataEntryAdapter extends Adapter {
         }
     }
 
+    private int dateTimeViewModelValueType(DateTimeViewModel viewModel) {
+        if (viewModel.valueType() == ValueType.DATE)
+            return DATE;
+        if (viewModel.valueType() == ValueType.TIME)
+            return TIME;
+        else
+            return DATETIME;
+    }
+
     @Override
     public long getItemId(int position) {
         return viewModels.get(position).uid().hashCode();
@@ -208,7 +210,7 @@ public final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption(){
+    public FlowableProcessor<Trio<String, String, Integer>> asFlowableOption() {
         return processorOptionSet;
     }
 

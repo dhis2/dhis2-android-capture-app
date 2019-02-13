@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard.eventDetail;
 
 import android.content.ContentValues;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -20,13 +18,28 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
+
 final class DataValueStore implements DataEntryStore {
-    private static final String SELECT_EVENT = "SELECT * FROM " + EventModel.TABLE +
-            " WHERE " + EventModel.Columns.UID + " = ? " +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' LIMIT 1";
+    private static final String SELECT_EVENT =
+            SELECT + ALL + FROM + EventModel.TABLE + WHERE + EventModel.Columns.UID +
+                    EQUAL + QUESTION_MARK +
+                    AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
+                    NOT_EQUAL + State.TO_DELETE + LIMIT_1;
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -62,7 +75,7 @@ final class DataValueStore implements DataEntryStore {
 
                     return Flowable.just(insert(uid, value, userCredentials.username()));
                 })
-                .switchMap(id -> updateEvent(id));
+                .switchMap(this::updateEvent);
     }
 
     @Override
@@ -130,7 +143,7 @@ final class DataValueStore implements DataEntryStore {
 
         // ToDo: write test cases for different events
         return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
+                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + EQUAL + QUESTION_MARK + AND +
                         TrackedEntityDataValueModel.Columns.EVENT + " = ?",
                 uid == null ? "" : uid,
                 eventUid == null ? "" : eventUid);
@@ -176,8 +189,7 @@ final class DataValueStore implements DataEntryStore {
     }
 
 
-
-    private void updateTEi(){
+    private void updateTEi() {
 
         ContentValues tei = new ContentValues();
         tei.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED, DateUtils.databaseDateFormat().format(Calendar.getInstance().getTime()));

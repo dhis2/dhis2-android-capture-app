@@ -53,6 +53,22 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.DESC;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.ON;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_EQUALS;
+import static org.dhis2.data.database.SqlConstants.TABLE_POINT_FIELD_NOT_EQUALS;
+import static org.dhis2.data.database.SqlConstants.VARIABLE;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 
 /**
@@ -62,17 +78,17 @@ import static android.text.TextUtils.isEmpty;
 public class MetadataRepositoryImpl implements MetadataRepository {
 
     private static final String SELECT_PROGRMAS_TO_ENROLL = String.format(
-            "SELECT * FROM %s WHERE %s.%s = ?",
+            SELECT + ALL + FROM + "%s" + WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK,
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.TRACKED_ENTITY_TYPE
     );
 
     private static final String SELECT_TEI_ENROLLMENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s =",
+            SELECT + ALL + FROM + "%s" + WHERE + TABLE_POINT_FIELD_EQUALS,
             EnrollmentModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE);
 
     private static final String SELECT_ENROLLMENT_EVENTS = String.format(
-            "SELECT * FROM %s WHERE %s.%s != %s AND %s.%s = ? LIMIT 1",
+            SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_NOT_EQUALS + VARIABLE + AND + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK + LIMIT_1,
             EventModel.TABLE,
             EventModel.TABLE,
             EventModel.Columns.STATE,
@@ -81,20 +97,20 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             EventModel.Columns.ENROLLMENT);
 
     private static final String SELECT_ENROLLMENT_LAST_EVENT = String.format(
-            "SELECT %s.* FROM %s JOIN %s ON %s.%s = %s.%s WHERE %s.%s = ? ORDER BY %s.%s AND %s.%s != %s DESC LIMIT 1",
+            SELECT + VARIABLE + POINT + ALL + FROM + VARIABLE + JOIN + VARIABLE + ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD
+                    + WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK
+                    + ORDER_BY + TABLE_POINT_FIELD + AND + TABLE_POINT_FIELD_NOT_EQUALS + VARIABLE + DESC + LIMIT_1,
             EventModel.TABLE, EventModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.ENROLLMENT,
             EnrollmentModel.TABLE, EnrollmentModel.Columns.UID, EventModel.TABLE, EventModel.Columns.EVENT_DATE, EventModel.TABLE, EventModel.Columns.STATE, State.TO_DELETE
     );
 
     private Set<String> SELECT_ENROLLMENT_LAST_EVENT_TABLES = new HashSet<>(Arrays.asList(EventModel.TABLE, EnrollmentModel.TABLE));
 
-    private final String PROGRAM_LIST_QUERY = String.format("SELECT * FROM %s WHERE ",
-            ProgramModel.TABLE);
+    private final String PROGRAM_LIST_QUERY = String.format(SELECT + ALL + FROM + VARIABLE + WHERE, ProgramModel.TABLE);
 
     private final String ACTIVE_TEI_PROGRAMS = String.format(
-            " SELECT %s.* FROM %s " +
-                    "JOIN %s ON %s.%s = %s.%s " +
-                    "WHERE %s.%s = ?",
+            SELECT + VARIABLE + POINT + ALL + FROM + VARIABLE + JOIN + VARIABLE +
+                    ON + TABLE_POINT_FIELD_EQUALS + TABLE_POINT_FIELD + WHERE + TABLE_POINT_FIELD_EQUALS + QUESTION_MARK,
             ProgramModel.TABLE,
             ProgramModel.TABLE,
             EnrollmentModel.TABLE, EnrollmentModel.TABLE, EnrollmentModel.Columns.PROGRAM, ProgramModel.TABLE, ProgramModel.Columns.UID,
@@ -103,16 +119,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     private Set<String> ACTIVE_TEI_PROGRAMS_TABLES = new HashSet<>(Arrays.asList(ProgramModel.TABLE, EnrollmentModel.TABLE));
 
 
-    private final String PROGRAM_LIST_ALL_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private final String PROGRAM_LIST_ALL_QUERY = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.UID);
 
-    private final String TRACKED_ENTITY_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private final String TRACKED_ENTITY_QUERY = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.TABLE, TrackedEntityTypeModel.Columns.UID);
 
-    private final String TRACKED_ENTITY_INSTANCE_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private final String TRACKED_ENTITY_INSTANCE_QUERY = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.TABLE, TrackedEntityInstanceModel.Columns.UID);
 
-    private final String ORG_UNIT_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private final String ORG_UNIT_QUERY = String.format(SELECT + ALL + FROM + VARIABLE + WHERE + TABLE_POINT_FIELD_EQUALS,
             OrganisationUnitModel.TABLE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID);
 
     private final String TEI_ORG_UNIT_QUERY = String.format(
@@ -139,7 +155,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.OPENING_DATE, OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.CLOSED_DATE
     );
 
-    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_QUERY = String.format("SELECT * FROM %s WHERE %s.%s = ",
+    private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_QUERY = String.format(SELECT + ALL + FROM + "%s" + WHERE + TABLE_POINT_FIELD_EQUALS,
             ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.TABLE, ProgramTrackedEntityAttributeModel.Columns.PROGRAM);
 
     private final String PROGRAM_TRACKED_ENTITY_ATTRIBUTES_NO_PROGRAM_QUERY = String.format(

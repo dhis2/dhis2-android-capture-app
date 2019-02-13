@@ -1,12 +1,11 @@
 package org.dhis2.utils;
 
-import androidx.annotation.NonNull;
-
 import java.util.Random;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by ppajuelo on 09/01/2018.
- *
  */
 
 public class CodeGeneratorImpl implements CodeGenerator {
@@ -17,10 +16,13 @@ public class CodeGeneratorImpl implements CodeGenerator {
     private static final int NUMBER_OF_CODEPOINTS = ALLOWED_CHARS.length();
     private static final int CODESIZE = 11;
 
+    private Random sr;
+
     @NonNull
     @Override
     public String generate() {
-        Random sr = new Random();
+        if (sr == null)
+            sr = new Random();
 
         char[] randomChars = new char[CODESIZE];
 

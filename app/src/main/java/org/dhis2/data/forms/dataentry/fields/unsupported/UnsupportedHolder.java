@@ -17,9 +17,8 @@ public class UnsupportedHolder extends FormViewHolder {
 
     @Override
     public void dispose() {
-
+        // do nothing
     }
-
 
     public void update(UnsupportedViewModel viewModel) {
         button.setText(viewModel.label());

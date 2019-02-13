@@ -1,9 +1,5 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,6 +9,9 @@ import org.dhis2.databinding.ItemSectionSelectorBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -21,7 +20,7 @@ import io.reactivex.processors.PublishProcessor;
  */
 public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHolder> {
     private final EventCaptureContract.Presenter presenter;
-    List<EventSectionModel> items;
+    private List<EventSectionModel> items;
     private float percentage;
     private FlowableProcessor<Float> percentageFlowable;
 
@@ -71,6 +70,11 @@ public class SectionSelectorAdapter extends RecyclerView.Adapter<EventSectionHol
             wValues += (float) sectionModel.numberOfCompletedFields();
             totals += (float) sectionModel.numberOfTotalFields();
         }
+
+        if (totals == 0) {
+            return 0;
+        }
+
         percentage = wValues / totals;
         return percentage;
     }
