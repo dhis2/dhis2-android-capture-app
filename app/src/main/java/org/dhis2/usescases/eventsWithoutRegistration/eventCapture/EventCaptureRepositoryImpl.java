@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.core.program.ProgramRuleActionType;
 import org.hisp.dhis.android.core.program.ProgramRuleModel;
 import org.hisp.dhis.android.core.program.ProgramRuleVariableModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -48,6 +49,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nonnull;
 
@@ -396,12 +399,17 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .switchMap(
                         event -> formRepository.ruleEngine()
                                 .switchMap(ruleEngine -> {
+//                                    return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     if (isEmpty(lastUpdatedUid))
                                         return Flowable.fromCallable(ruleEngine.evaluate(event));
                                     else
                                         return getRulesFor(lastUpdatedUid)
-                                                .filter(rules -> !rules.isEmpty())
-                                                .flatMap(rules -> Flowable.fromCallable(ruleEngine.evaluate(event, rules)));
+                                                .flatMap(rules -> {
+                                                    if (!rules.isEmpty())
+                                                        return Flowable.fromCallable(ruleEngine.evaluate(event, rules));
+                                                    else
+                                                        return Flowable.just(new ArrayList<RuleEffect>());
+                                                });
                                 })
                                 .map(Result::success)
                                 .onErrorReturn(error -> Result.failure(new Exception(error)))
@@ -430,26 +438,31 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     private Flowable<List<Rule>> getRulesFor(String lastUpdatedElement) {
+        AtomicReference<String> selectedProgramUid = new AtomicReference<>("");
         return briteDatabase.createQuery(ProgramStageModel.TABLE,
                 "SELECT Event.* FROM Event " +
                         "WHERE Event.uid = ? LIMIT 1", eventUid)
                 .mapToOne(cursor -> EventModel.create(cursor).program())
-                .flatMap(programUid ->
-                        briteDatabase.createQuery(ProgramRuleVariableModel.TABLE,
-                                "SELECT * FROM ProgramRuleVariable WHERE program = ? AND dataElement = ?", programUid, lastUpdatedElement)
-                                .mapToList(cursor -> "%" + ProgramRuleVariableModel.create(cursor).displayName() + "%")
+                .flatMap(programUid -> {
+                            selectedProgramUid.set(programUid);
+                            return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE,
+                                    "SELECT * FROM ProgramRuleVariable WHERE program = ? AND dataElement = ?", programUid, lastUpdatedElement)
+                                    .mapToList(cursor -> "%" + ProgramRuleVariableModel.create(cursor).displayName() + "%");
+                        }
                 ).flatMap(variableList -> {
-                    String likeCondition = "condition LIKE '%s'";
+                    String likeCondition = "condition LIKE '%s' OR data LIKE '%s'";
                     StringBuilder st = new StringBuilder();
                     for (int i = 0; i < variableList.size(); i++) {
-                        st.append(String.format(likeCondition, variableList.get(i)));
+                        st.append(String.format(likeCondition, variableList.get(i), variableList.get(i)));
                         if (i != variableList.size() - 1)
                             st.append(" OR ");
                     }
 
                     if (!isEmpty(st))
                         return briteDatabase.createQuery(ProgramRuleModel.TABLE,
-                                String.format("SELECT * FROM ProgramRule WHERE %s", st.toString()))
+                                String.format("SELECT ProgramRule.* FROM ProgramRule " +
+                                        "LEFT JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
+                                        "WHERE program = ? AND %s", st.toString()), selectedProgramUid.get())
                                 .mapToList(cursor -> {
                                     ProgramRuleModel ruleModel = ProgramRuleModel.create(cursor);
                                     List<RuleAction> ruleActions = new ArrayList<>();
@@ -480,7 +493,55 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                 });
                     else
                         return Observable.just(new ArrayList<Rule>());
+                }).map(ruleList -> {
+                    Map<String, Rule> ruleMap = new HashMap<>();
+                    for (Rule rule : ruleList)
+                        ruleMap.put(rule.name(), rule);
+
+                    Cursor hideRulesCursor = briteDatabase.query("SELECT ProgramRule.* FROM ProgramRule " +
+                            "JOIN ProgramRuleAction ON ProgramRuleAction.programRule = ProgramRule.uid " +
+                            "WHERE ProgramRule.program = ? " +
+                            "AND ProgramRuleAction.programRuleActionType IN (?,?)", selectedProgramUid.get(), ProgramRuleActionType.HIDEFIELD.name(), ProgramRuleActionType.HIDESECTION.name());
+                    if (hideRulesCursor != null) {
+                        if (hideRulesCursor.moveToFirst()) {
+                            for (int i = 0; i < hideRulesCursor.getCount(); i++) {
+                                ProgramRuleModel ruleModel = ProgramRuleModel.create(hideRulesCursor);
+                                ruleMap.put(ruleModel.displayName(), Rule.create(ruleModel.programStage(), ruleModel.priority(), ruleModel.condition(), getRuleActionsFor(ruleModel.uid()), ruleModel.displayName()));
+                                hideRulesCursor.moveToNext();
+                            }
+                        }
+                        hideRulesCursor.close();
+                    }
+                    List<Rule> finalRules = new ArrayList<>(ruleMap.values());
+                    return finalRules;
                 }).toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    private List<RuleAction> getRuleActionsFor(String programRuleUid) {
+        List<RuleAction> ruleActions = new ArrayList<>();
+        Cursor actionsCursor = briteDatabase.query("SELECT " +
+                "ProgramRuleAction.programRule, " +
+                "ProgramRuleAction.programStage, " +
+                "ProgramRuleAction.programStageSection, " +
+                "ProgramRuleAction.programRuleActionType, " +
+                "ProgramRuleAction.programIndicator, " +
+                "ProgramRuleAction.trackedEntityAttribute, " +
+                "ProgramRuleAction.dataElement, " +
+                "ProgramRuleAction.location, " +
+                "ProgramRuleAction.content, " +
+                "ProgramRuleAction.data " +
+                "FROM ProgramRuleAction WHERE programRule = ?", programRuleUid);
+        if (actionsCursor != null) {
+            if (actionsCursor.moveToFirst()) {
+                for (int i = 0; i < actionsCursor.getCount(); i++) {
+                    ruleActions.add(RulesRepository.create(actionsCursor));
+                    actionsCursor.moveToNext();
+                }
+            }
+            actionsCursor.close();
+        }
+
+        return ruleActions;
     }
 
     @Override

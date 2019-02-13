@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.unnamed.b.atv.model.TreeNode;
+
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Trio;
@@ -15,7 +17,6 @@ import org.dhis2.utils.Constants;
 import org.dhis2.utils.OrgUnitUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
-import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 
 import java.util.ArrayList;
@@ -24,12 +25,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import io.reactivex.Observable;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -43,8 +45,10 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
-    private List<OrganisationUnitModel> myOrgs;
+    private List<OrganisationUnitModel> myOrgs = new ArrayList<>();
     private FlowableProcessor<Trio> programQueries;
+
+    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
 
     ProgramPresenter(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
@@ -56,20 +60,11 @@ public class ProgramPresenter implements ProgramContract.Presenter {
         this.compositeDisposable = new CompositeDisposable();
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         programQueries = PublishProcessor.create();
-        compositeDisposable.add(
-                homeRepository.orgUnits()
-                        .subscribeOn(Schedulers.from(executorService))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                data -> {
-                                    this.myOrgs = data;
-                                    programQueries.onNext(Trio.create(null, null, null));
-                                    view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
-                                },
-                                throwable -> view.renderError(throwable.getMessage())));
+        parentOrgUnit = PublishProcessor.create();
 
         compositeDisposable.add(
                 programQueries
+                        .startWith(Trio.create(null, null, null))
                         .flatMap(datePeriodOrgs -> homeRepository.programModels(
                                 (List<Date>) datePeriodOrgs.val0(),
                                 (Period) datePeriodOrgs.val1(),
@@ -80,6 +75,18 @@ public class ProgramPresenter implements ProgramContract.Presenter {
                         .subscribe(
                                 view.swapProgramModelData(),
                                 throwable -> view.renderError(throwable.getMessage())
+                        ));
+
+        compositeDisposable.add(
+                parentOrgUnit
+                        .flatMap(orgUnit -> homeRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
+                                .map(this::transformToNode)
+                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                        .subscribeOn(Schedulers.from(executorService))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.addNodeToTree(),
+                                Timber::e
                         ));
     }
 
@@ -101,6 +108,16 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void getAllPrograms(String orgUnitQuery) {
         programQueries.onNext(Trio.create(null, null, orgUnitQuery));
+    }
+
+    @Override
+    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
+        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+    }
+
+    @Override
+    public List<TreeNode> transformToNode(List<OrganisationUnitModel> orgUnits) {
+        return OrgUnitUtils.createNode(view.getContext(), orgUnits, true);
     }
 
     @Override
@@ -172,6 +189,20 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void onOrgUnitButtonClick() {
         view.openDrawer();
+        if (myOrgs.isEmpty()) {
+            view.orgUnitProgress(true);
+            compositeDisposable.add(
+                    homeRepository.orgUnits()
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    data -> {
+                                        this.myOrgs = data;
+                                        view.orgUnitProgress(false);
+                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), myOrgs, true));
+                                    },
+                                    throwable -> view.renderError(throwable.getMessage())));
+        }
     }
 
     @Override
@@ -188,11 +219,6 @@ public class ProgramPresenter implements ProgramContract.Presenter {
     @Override
     public void showDescription(String description) {
         view.showDescription(description);
-    }
-
-    @Override
-    public Observable<Pair<Integer, String>> getNumberOfRecords(ProgramModel programModel) {
-        return homeRepository.numberOfRecords(programModel);
     }
 
     private String orgUnitQuery() {

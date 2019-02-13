@@ -4,19 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +17,14 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.RxDateDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.Period;
+import org.dhis2.utils.custom_views.RxDateDialog;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +36,14 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import io.reactivex.functions.Consumer;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -104,6 +103,12 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.programRecycler.setAdapter(new ProgramModelAdapter(presenter, currentPeriod));
         binding.programRecycler.addItemDecoration(new DividerItemDecoration(getAbstracContext(), DividerItemDecoration.VERTICAL));
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        binding.orgUnitApply.setOnClickListener(view -> apply());
+        binding.orgUnitCancel.setOnClickListener(view -> {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        });
         return binding.getRoot();
     }
 
@@ -236,7 +241,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                 break;
         }
-//        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
@@ -282,10 +286,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.buttonPeriodText.setText(textToShow);
     }
 
-    @Override
-    public void setUpRecycler() {
-        presenter.init(this);
-    }
 
     @Override
     public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
@@ -323,12 +323,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void addTree(TreeNode treeNode) {
         this.treeNode = treeNode;
         binding.treeViewContainer.removeAllViews();
-        binding.orgUnitApply.setOnClickListener(view -> apply());
-        binding.orgUnitCancel.setOnClickListener(view -> {
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        });
         binding.orgUnitAll.setOnClickListener(view -> {
             treeView.selectAll(false);
             for (TreeNode node : treeView.getSelected()) {
@@ -360,6 +355,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             } else if (treeView.getSelected().size() > 1) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
+            if (node.getChildren().isEmpty())
+                presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+            else
+                node.setExpanded(node.isExpanded());
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
@@ -372,7 +371,7 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
 
     @Override
     public void openDrawer() {
-        binding.drawerLayout.openDrawer(Gravity.END);
+        binding.drawerLayout.openDrawer(GravityCompat.END);
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
@@ -394,6 +393,20 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public Date getChosenDateDay() {
         return chosenDateDay;
+    }
+
+    @Override
+    public void orgUnitProgress(boolean showProgress) {
+        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1())
+                treeView.addNode(node.val0(), childNode);
+            treeView.expandAll();
+        };
     }
 
 
@@ -443,83 +456,87 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     public void setTutorial() {
         SharedPreferences prefs = getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        try {
 
-        if (isAdded() && getAbstractActivity() != null) {
-            new Handler().postDelayed(() -> {
-                FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_1))
-                        .closeOnTouch(true)
-                        .build();
-                FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_2))
-                        .closeOnTouch(true)
-                        .build();
+            if (isAdded() && getAbstractActivity() != null) {
+                new Handler().postDelayed(() -> {
+                    FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_1))
+                            .closeOnTouch(true)
+                            .build();
+                    FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_2))
+                            .closeOnTouch(true)
+                            .build();
 
-                FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_3))
-                        .focusOn(getAbstractActivity().findViewById(R.id.filter))
-                        .closeOnTouch(true)
-                        .dismissListener(new DismissListener() {
-                            @Override
-                            public void onDismiss(String id) {
-                                if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
-                                    getAbstractActivity().findViewById(R.id.filter).performClick();
-                            }
+                    FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_3))
+                            .focusOn(getAbstractActivity().findViewById(R.id.filter))
+                            .closeOnTouch(true)
+                            .dismissListener(new DismissListener() {
+                                @Override
+                                public void onDismiss(String id) {
+                                    if (getAbstractActivity().findViewById(R.id.filter_layout).getVisibility() == View.GONE)
+                                        getAbstractActivity().findViewById(R.id.filter).performClick();
+                                }
 
-                            @Override
-                            public void onSkipped(String id) {
+                                @Override
+                                public void onSkipped(String id) {
 
-                            }
-                        })
-                        .build();
+                                }
+                            })
+                            .build();
 
-                FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_4))
-                        .focusOn(binding.periodLayout)
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .closeOnTouch(true)
-                        .build();
+                    FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_4))
+                            .focusOn(binding.periodLayout)
+                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                            .closeOnTouch(true)
+                            .build();
 
-                FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_5))
-                        .focusOn(binding.buttonOrgUnit)
-                        .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                        .closeOnTouch(true)
-                        .build();
+                    FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_5))
+                            .focusOn(binding.buttonOrgUnit)
+                            .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                            .closeOnTouch(true)
+                            .build();
 
-                FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
-                        .title(getString(R.string.tuto_main_6))
-                        .focusOn(getAbstractActivity().findViewById(R.id.menu))
-                        .closeOnTouch(true)
-                        .dismissListener(new DismissListener() {
-                            @Override
-                            public void onDismiss(String id) {
-                            }
+                    FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(getAbstractActivity())
+                            .title(getString(R.string.tuto_main_6))
+                            .focusOn(getAbstractActivity().findViewById(R.id.menu))
+                            .closeOnTouch(true)
+                            .dismissListener(new DismissListener() {
+                                @Override
+                                public void onDismiss(String id) {
+                                }
 
-                            @Override
-                            public void onSkipped(String id) {
+                                @Override
+                                public void onSkipped(String id) {
 
-                            }
-                        })
-                        .build();
+                                }
+                            })
+                            .build();
 
-                ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-                steps.add(tuto1);
-                steps.add(tuto2);
-                steps.add(tuto3);
-                steps.add(tuto4);
-                steps.add(tuto5);
-                steps.add(tuto6);
+                    ArrayList<FancyShowCaseView> steps = new ArrayList<>();
+                    steps.add(tuto1);
+                    steps.add(tuto2);
+                    steps.add(tuto3);
+                    steps.add(tuto4);
+                    steps.add(tuto5);
+                    steps.add(tuto6);
 
 
-                HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
+                    HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
-                if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
-                    HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
-                    prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
-                }
+                    if (!prefs.getBoolean("TUTO_SHOWN", false) && !BuildConfig.DEBUG) {
+                        HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                        prefs.edit().putBoolean("TUTO_SHOWN", true).apply();
+                    }
 
-            }, 500);
+                }, 500);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
         }
     }
 }
