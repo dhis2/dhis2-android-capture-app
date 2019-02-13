@@ -1,11 +1,9 @@
 package org.dhis2.usescases.main.program;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.Period;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
@@ -15,7 +13,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitProgramLinkModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.UserOrganisationUnitLinkModel;
 
 import java.util.ArrayList;
@@ -25,9 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+
+import static android.text.TextUtils.isEmpty;
 
 class HomeRepositoryImpl implements HomeRepository {
 
@@ -77,6 +77,14 @@ class HomeRepositoryImpl implements HomeRepository {
             "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
                     "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
                     " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
+                    "' AND UserOrganisationUnit.root = '1' " +
+                    " ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
+
+    private final static String SELECT_ORG_UNITS_BY_PARENT =
+            "SELECT * FROM " + OrganisationUnitModel.TABLE + ", " + UserOrganisationUnitLinkModel.TABLE + " " +
+                    "WHERE " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.UID + " = " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT +
+                    " AND " + UserOrganisationUnitLinkModel.TABLE + "." + UserOrganisationUnitLinkModel.Columns.ORGANISATION_UNIT_SCOPE + " = '" + OrganisationUnitModel.Scope.SCOPE_DATA_CAPTURE +
+                    " AND " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.PARENT + " = ? " +
                     "' ORDER BY " + OrganisationUnitModel.TABLE + "." + OrganisationUnitModel.Columns.DISPLAY_NAME + " ASC";
 
     private final BriteDatabase briteDatabase;
@@ -85,22 +93,6 @@ class HomeRepositoryImpl implements HomeRepository {
         this.briteDatabase = briteDatabase;
     }
 
-    @NonNull
-    @Override
-    public Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program) {
-        String queryFinal = null;
-
-        String id = program == null || program.uid() == null ? "" : program.uid();
-
-        return briteDatabase.createQuery(EventModel.TABLE, queryFinal, id).mapToList(EventModel::create)
-                .flatMap(data -> {
-                    if (program.programType() == ProgramType.WITH_REGISTRATION)
-                        return briteDatabase.createQuery(TrackedEntityTypeModel.TABLE, TRACKED_ENTITY_TYPE_NAME, program.trackedEntityType())
-                                .mapToOne(cursor -> Pair.create(data.size(), cursor.getString(0)));
-                    else
-                        return Observable.just(Pair.create(data.size(), "events"));
-                });
-    }
 
     @NonNull
     @Override
@@ -110,7 +102,7 @@ class HomeRepositoryImpl implements HomeRepository {
         boolean filteringOrgs = orgUnitsId != null && orgUnitsSize != orgUnits;
         //QUERYING Program - orgUnit filter
         String orgQuery = "";
-        if (orgUnitsId != null)
+        if (!isEmpty(orgUnitsId))
             orgQuery = String.format("WHERE OrganisationUnitProgramLink.organisationUnit IN (%s)", orgUnitsId);
 
         String programQuery = PROGRAM_MODELS.replace("%s", orgQuery);
@@ -191,6 +183,25 @@ class HomeRepositoryImpl implements HomeRepository {
                     models.add(programViewModel);
             return models;
         }
+    }
+
+    @NonNull
+    @Override
+    public Observable<Integer> numberOfUserOrgUnits() {
+        return briteDatabase.createQuery("sqlite_sequence", "SELECT seq FROM sqlite_sequence WHERE name = 'UserOrganisationUnit'")
+                .mapToOne(cursor -> cursor.getInt(0));
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<OrganisationUnitModel>> orgUnits(String parentUid) {
+        String SELECT_ORG_UNITS_BY_PARENT = "SELECT OrganisationUnit.* FROM OrganisationUnit " +
+                "JOIN UserOrganisationUnit ON UserOrganisationUnit.organisationUnit = OrganisationUnit.uid " +
+                "WHERE OrganisationUnit.parent = ? AND UserOrganisationUnit.organisationUnitScope = 'SCOPE_DATA_CAPTURE' " +
+                "ORDER BY OrganisationUnit.displayName ASC";
+
+        return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_BY_PARENT, parentUid)
+                .mapToList(OrganisationUnitModel::create);
     }
 
     @NonNull

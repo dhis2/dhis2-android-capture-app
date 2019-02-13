@@ -300,15 +300,15 @@ public class DateUtilsTest {
 
     @Test
     public void testGetDifference() throws ParseException {
-        String startDateString = "2017-11-04";
-        String endDateString = "2018-12-05";
+        String startDateString = "2006-01-24";
+        String endDateString = "2019-01-23";
         Date startDate = DateUtils.uiDateFormat().parse(startDateString);
         Date endDate = DateUtils.uiDateFormat().parse(endDateString);
 
         int[] diff = DateUtils.getDifference(startDate, endDate);
-        assertEquals(1, diff[0]);
-        assertEquals(1, diff[1]);
-        assertEquals(1, diff[2]);
+        assertEquals(12, diff[0]);
+        assertEquals(11, diff[1]);
+        assertEquals(30, diff[2]);
     }
 
     @Test

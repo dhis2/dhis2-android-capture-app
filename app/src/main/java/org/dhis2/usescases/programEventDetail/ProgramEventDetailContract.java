@@ -1,5 +1,6 @@
 package org.dhis2.usescases.programEventDetail;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
 import org.dhis2.utils.Period;
 import com.unnamed.b.atv.model.TreeNode;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 /**
  * QUADRAM. Created by Cristian on 13/02/2017.
@@ -47,6 +49,10 @@ public class ProgramEventDetailContract {
         void setWritePermission(Boolean aBoolean);
 
         Flowable<Integer> currentPage();
+
+        void orgUnitProgress(boolean showProgress);
+
+        Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter {
@@ -77,5 +83,7 @@ public class ProgramEventDetailContract {
         List<OrganisationUnitModel> getOrgUnits();
 
         void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits);
+
+        void onExpandOrgUnitNode(TreeNode node, String uid);
     }
 }
