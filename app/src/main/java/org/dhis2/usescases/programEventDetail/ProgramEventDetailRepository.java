@@ -28,6 +28,9 @@ public interface ProgramEventDetailRepository {
     Observable<List<OrganisationUnitModel>> orgUnits();
 
     @NonNull
+    Observable<List<OrganisationUnitModel>> orgUnits(String parentUid);
+
+    @NonNull
     Observable<List<CategoryOptionComboModel>> catCombo(String programUid);
 
     Observable<List<String>> eventDataValuesNew(EventModel eventModel);

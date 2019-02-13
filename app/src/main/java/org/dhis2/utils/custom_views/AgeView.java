@@ -116,7 +116,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
             }
     }
 
-    private void handleSingleInputs() {
+    protected void handleSingleInputs() {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -135,7 +135,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         }
     }
 
-    private void handleDateInput(View view, int year1, int month1, int day1) {
+    protected void handleDateInput(View view, int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);

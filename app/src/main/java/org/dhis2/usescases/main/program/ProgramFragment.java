@@ -17,6 +17,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.BuildConfig;
 import org.dhis2.Components;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentProgramBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
 import org.dhis2.utils.Constants;
@@ -240,7 +241,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
                 drawable = ContextCompat.getDrawable(context, R.drawable.ic_view_none);
                 break;
         }
-//        ((ProgramAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         ((ProgramModelAdapter) binding.programRecycler.getAdapter()).setCurrentPeriod(currentPeriod);
         binding.buttonTime.setImageDrawable(drawable);
 
@@ -286,10 +286,6 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
         binding.buttonPeriodText.setText(textToShow);
     }
 
-    @Override
-    public void setUpRecycler() {
-        presenter.init(this);
-    }
 
     @Override
     public void getSelectedPrograms(ArrayList<Date> dates, Period period, String orgUnitQuery) {
@@ -359,6 +355,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
             } else if (treeView.getSelected().size() > 1) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             }
+            if (node.getChildren().isEmpty())
+                presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+            else
+                node.setExpanded(node.isExpanded());
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
@@ -398,6 +398,15 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     @Override
     public void orgUnitProgress(boolean showProgress) {
         binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1())
+                treeView.addNode(node.val0(), childNode);
+            treeView.expandAll();
+        };
     }
 
 

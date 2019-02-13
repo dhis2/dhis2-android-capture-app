@@ -1,7 +1,6 @@
 package org.dhis2.utils;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -16,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 /**
@@ -72,7 +72,7 @@ public class OrgUnitUtils {
         SortedSet<Integer> keys = new TreeSet<>(subLists.keySet());
 
         try {
-            if(!keys.isEmpty()) {
+            if (!keys.isEmpty()) {
                 for (int level = keys.last(); level > 1; level--) {
                     for (TreeNode treeNode : subLists.get(level - 1)) {
                         for (TreeNode childTreeNode : subLists.get(level)) {
@@ -93,57 +93,15 @@ public class OrgUnitUtils {
         return root;
     }
 
-    public static List<ParentChildModel<OrganisationUnitModel>> renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
-        HashMap<Integer, ArrayList<OrganisationUnitModel>> orgUnitsByLevel = new HashMap<>();
-
-        List<ParentChildModel<OrganisationUnitModel>> allOrgs = new ArrayList<>();
-        ArrayList<String> myOrgUnitUids = new ArrayList<>();
-
-        int minLevel = -1;
-        for (OrganisationUnitModel myorg : myOrgs) {
-            myOrgUnitUids.add(myorg.uid());
-            String[] pathName = myorg.displayNamePath().split("/");
-            String[] pathUid = myorg.path().split("/");
-            for (int i = myorg.level(); i > 0; i--) {
-
-                OrganisationUnitModel orgToAdd = OrganisationUnitModel.builder()
-                        .uid(pathUid[i])
-                        .level(i)
-                        .parent(pathUid[i - 1])
-                        .name(pathName[i])
-                        .displayName(pathName[i])
-                        .displayShortName(pathName[i])
-                        .build();
-
-                ParentChildModel<OrganisationUnitModel> orgUnitParent =
-                        ParentChildModel.create(orgToAdd, new ArrayList<>(), myOrgUnitUids.contains(orgToAdd.uid()));
-
-                if (!allOrgs.contains(orgUnitParent)) {
-                    allOrgs.add(orgUnitParent);
-                }
-
-                if (orgUnitsByLevel.get(i) == null)
-                    orgUnitsByLevel.put(i, new ArrayList<>());
-                orgUnitsByLevel.get(i).add(myorg);
-
-                if (minLevel == -1 || i < minLevel)
-                    minLevel = i;
-            }
+    public static List<TreeNode> createNode(Context context, List<OrganisationUnitModel> orgUnits, boolean isMultiSelection) {
+        List<TreeNode> levelNode = new ArrayList<>();
+        for (OrganisationUnitModel org : orgUnits) {
+            TreeNode treeNode = new TreeNode(org).setViewHolder(new OrgUnitHolder(context, isMultiSelection));
+            treeNode.setSelectable(true);
+            levelNode.add(treeNode);
         }
 
-        List<ParentChildModel<OrganisationUnitModel>> minLevelList = new ArrayList<>();
-
-        for (ParentChildModel<OrganisationUnitModel> parentModel : allOrgs) {
-            for (ParentChildModel<OrganisationUnitModel> childModel : allOrgs)
-                if (childModel.parent().parent().equals(parentModel.parent().uid()))
-                    parentModel.addItem(childModel);
-            if (parentModel.parent().level() == minLevel)
-                minLevelList.add(parentModel);
-        }
-
-        return minLevelList;
-
+        return levelNode;
     }
-
 }

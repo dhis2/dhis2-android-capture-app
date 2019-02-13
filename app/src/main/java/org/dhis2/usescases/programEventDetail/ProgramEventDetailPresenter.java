@@ -1,9 +1,11 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+
+import com.unnamed.b.atv.model.TreeNode;
 
 import org.dhis2.data.metadata.MetadataRepository;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.utils.Constants;
@@ -15,12 +17,17 @@ import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -41,13 +48,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     public String programId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
-    private List<OrganisationUnitModel> orgUnits;
+    private List<OrganisationUnitModel> orgUnits = new ArrayList<>();
+    private FlowableProcessor<Pair<TreeNode, String>> parentOrgUnit;
 
     //Search fields
     private CategoryComboModel mCatCombo;
     private List<Date> dates;
-    private Period period;
     private String orgUnitQuery;
+    private Period currentPeriod;
 
     ProgramEventDetailPresenter(
             @NonNull ProgramEventDetailRepository programEventDetailRepository,
@@ -61,6 +69,8 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         view = mview;
         compositeDisposable = new CompositeDisposable();
         this.programId = programId;
+        this.currentPeriod = period;
+        parentOrgUnit = PublishProcessor.create();
 
         compositeDisposable.add(metaRepository.getProgramWithId(programId)
                 .subscribeOn(Schedulers.io())
@@ -74,27 +84,27 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
                         Timber::d)
         );
 
-        compositeDisposable.add(eventRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
-                    return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
-                })
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        treeNode -> view.addTree(treeNode),
-                        throwable -> view.renderError(throwable.getMessage())
-                ));
+        compositeDisposable.add(
+                parentOrgUnit
+                        .flatMap(orgUnit -> eventRepository.orgUnits(orgUnit.val1()).toFlowable(BackpressureStrategy.LATEST)
+                                .map(orgUnits1 -> OrgUnitUtils.createNode(view.getContext(), orgUnits, true))
+                                .map(nodeList -> Pair.create(orgUnit.val0(), nodeList)))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                view.addNodeToTree(),
+                                Timber::e
+                        ));
 
         compositeDisposable.add(
                 view.currentPage()
                         .startWith(0)
-                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, period, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
+                        .flatMap(page -> eventRepository.filteredProgramEvents(programId, dates, currentPeriod, categoryOptionComboModel, orgUnitQuery, page).distinctUntilChanged())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 view::setData,
-                                throwable -> view.renderError(throwable.getMessage())));
+                                Timber::e));
 
     }
 
@@ -124,6 +134,20 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void onOrgUnitButtonClick() {
         view.openDrawer();
+        if (orgUnits.isEmpty()) {
+            view.orgUnitProgress(true);
+            compositeDisposable.add(
+                    eventRepository.orgUnits()
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    data -> {
+                                        this.orgUnits = data;
+                                        view.orgUnitProgress(false);
+                                        view.addTree(OrgUnitUtils.renderTree(view.getContext(), orgUnits, true));
+                                    },
+                                    throwable -> view.renderError(throwable.getMessage())));
+        }
     }
 
     @Override
@@ -140,8 +164,14 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
         this.dates = selectedDates;
-        this.period = currentPeriod;
+        this.currentPeriod = currentPeriod;
         this.orgUnitQuery = orgUnits;
+    }
+
+    @Override
+    public void onExpandOrgUnitNode(TreeNode treeNode, String parentUid) {
+        parentOrgUnit.onNext(Pair.create(treeNode, parentUid));
+
     }
 
     @Override

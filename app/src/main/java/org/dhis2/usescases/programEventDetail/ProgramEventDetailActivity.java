@@ -17,6 +17,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import org.dhis2.App;
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.ActivityProgramEventDetailBinding;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.program.OrgUnitHolder;
@@ -51,6 +52,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import timber.log.Timber;
@@ -381,11 +383,24 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
             } else if (treeView.getSelected().size() > 1) {
                 binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
+
+                if (node.getChildren().isEmpty())
+                    presenter.onExpandOrgUnitNode(node, ((OrganisationUnitModel) node.getValue()).uid());
+                else
+                    node.setExpanded(node.isExpanded());
             }
         });
 
         binding.buttonOrgUnit.setText(String.format(getString(R.string.org_unit_filter), treeView.getSelected().size()));
-        apply();
+    }
+
+    @Override
+    public Consumer<Pair<TreeNode, List<TreeNode>>> addNodeToTree() {
+        return node -> {
+            for (TreeNode childNode : node.val1())
+                treeView.addNode(node.val0(), childNode);
+            treeView.expandAll();
+        };
     }
 
     @Override
@@ -503,11 +518,9 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
 
         switch (currentPeriod) {
             case NONE:
-
                 presenter.setFilters(null, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(null, currentPeriod, orgUnitFilter.toString());
                 break;
             case DAILY:
                 ArrayList<Date> datesD = new ArrayList<>();
@@ -515,25 +528,21 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
                 presenter.setFilters(datesD, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(datesD, currentPeriod, orgUnitFilter.toString());
                 break;
             case WEEKLY:
                 presenter.setFilters(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateWeek, currentPeriod, orgUnitFilter.toString());
                 break;
             case MONTHLY:
                 presenter.setFilters(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateMonth, currentPeriod, orgUnitFilter.toString());
                 break;
             case YEARLY:
                 presenter.setFilters(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 endlessScrollListener.resetState(0);
                 pageProcessor.onNext(0);
-//                presenter.getProgramEventsWithDates(chosenDateYear, currentPeriod, orgUnitFilter.toString());
                 break;
         }
     }
@@ -581,5 +590,10 @@ public class ProgramEventDetailActivity extends ActivityGlobalAbstract implement
     @Override
     public Flowable<Integer> currentPage() {
         return pageProcessor;
+    }
+
+    @Override
+    public void orgUnitProgress(boolean showProgress) {
+        binding.orgUnitProgress.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 }
