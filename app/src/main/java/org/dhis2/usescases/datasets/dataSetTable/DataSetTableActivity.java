@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -86,6 +88,12 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+
+        if(dataElements.size()>1)
+            dataElements.remove("NO_SECTION");
+        else
+            binding.tabLayout.setVisibility(View.GONE);
+
         viewPagerAdapter.swapData(dataElements);
     }
 
