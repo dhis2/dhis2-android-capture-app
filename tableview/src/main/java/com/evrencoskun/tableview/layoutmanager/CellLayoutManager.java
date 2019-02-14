@@ -63,7 +63,7 @@ public class CellLayoutManager extends LinearLayoutManager {
         super(context);
         this.mTableView = tableView;
         this.mCellRecyclerView = tableView.getCellRecyclerView();
-        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager();
+        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount()-1);
         this.mRowHeaderLayoutManager = tableView.getRowHeaderLayoutManager();
         this.mRowHeaderRecyclerView = tableView.getRowHeaderRecyclerView();
 
@@ -72,7 +72,7 @@ public class CellLayoutManager extends LinearLayoutManager {
 
 
     private void initialize() {
-        this.setOrientation(VERTICAL);
+        this.setOrientation(RecyclerView.VERTICAL);
         // Add new one
     }
 
@@ -263,7 +263,7 @@ public class CellLayoutManager extends LinearLayoutManager {
         mColumnHeaderLayoutManager.customRequestLayout();
 
         // Get the right scroll position information from Column header RecyclerView
-        int columnHeaderScrollPosition = mTableView.getColumnHeaderRecyclerView().getScrolledX();
+        int columnHeaderScrollPosition = mTableView.getColumnHeaderRecyclerView(mTableView.getHeaderCount()-1).getScrolledX();
         int columnHeaderOffset = mColumnHeaderLayoutManager.getFirstItemLeft();
         int columnHeaderFirstItem = mColumnHeaderLayoutManager.findFirstVisibleItemPosition();
 
@@ -290,7 +290,7 @@ public class CellLayoutManager extends LinearLayoutManager {
         mColumnHeaderLayoutManager.customRequestLayout();
 
         // Get the right scroll position information from Column header RecyclerView
-        int columnHeaderScrollPosition = mTableView.getColumnHeaderRecyclerView().getScrolledX();
+        int columnHeaderScrollPosition = mTableView.getColumnHeaderRecyclerView(mTableView.getHeaderCount()-1).getScrolledX();
         int columnHeaderOffset = mColumnHeaderLayoutManager.getFirstItemLeft();
         int columnHeaderFirstItem = mColumnHeaderLayoutManager.findFirstVisibleItemPosition();
 

@@ -57,6 +57,9 @@ import com.evrencoskun.tableview.listener.scroll.VerticalRecyclerViewListener;
 import com.evrencoskun.tableview.preference.SavedState;
 import com.evrencoskun.tableview.sort.SortState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by evrencoskun on 11/06/2017.
  */
@@ -67,7 +70,7 @@ public class TableView extends FrameLayout implements ITableView {
 
     protected CellRecyclerView mCellRecyclerView;
     protected CellRecyclerView mColumnHeaderRecyclerView;
-    protected CellRecyclerView mColumnHeaderRecyclerView2;
+    protected List<CellRecyclerView> mColumnHeaderRecyclerViews = new ArrayList<>();
     protected CellRecyclerView mRowHeaderRecyclerView;
 
     protected AbstractTableAdapter mTableAdapter;
@@ -80,6 +83,8 @@ public class TableView extends FrameLayout implements ITableView {
     private RowHeaderRecyclerViewItemClickListener mRowHeaderRecyclerViewItemClickListener;
 
     private ColumnHeaderLayoutManager mColumnHeaderLayoutManager;
+    private ColumnHeaderLayoutManager mColumnHeaderLayoutManager2;
+    private List<ColumnHeaderLayoutManager> mColumnHeaderLayoutManagers = new ArrayList<>();
     private LinearLayoutManager mRowHeaderLayoutManager;
     private CellLayoutManager mCellLayoutManager;
 
@@ -107,6 +112,7 @@ public class TableView extends FrameLayout implements ITableView {
     private boolean mShowHorizontalSeparators = true;
     private boolean mShowVerticalSeparators = true;
     private boolean mIsSortable;
+    private int mHeaderCount = 1;
 
     public TableView(@NonNull Context context) {
         super(context);
@@ -177,14 +183,16 @@ public class TableView extends FrameLayout implements ITableView {
     private void initialize() {
 
         // Create Views
-        mColumnHeaderRecyclerView = createColumnHeaderRecyclerView();
-        mColumnHeaderRecyclerView2 = createColumnHeaderRecyclerView2();
+        for(int i=0; i<mHeaderCount; i++){
+            mColumnHeaderRecyclerViews.add(createColumnHeaderRecyclerView(i));
+        }
         mRowHeaderRecyclerView = createRowHeaderRecyclerView();
         mCellRecyclerView = createCellRecyclerView();
 
         // Add Views
-        addView(mColumnHeaderRecyclerView);
-        addView(mColumnHeaderRecyclerView2);
+        for(int i=0; i<mHeaderCount; i++){
+            addView(mColumnHeaderRecyclerViews.get(i));
+        }
         addView(mRowHeaderRecyclerView);
         addView(mCellRecyclerView);
 
@@ -195,6 +203,7 @@ public class TableView extends FrameLayout implements ITableView {
         mPreferencesHandler = new PreferencesHandler(this);
         mColumnWidthHandler = new ColumnWidthHandler(this);
 
+        mColumnHeaderRecyclerView=mColumnHeaderRecyclerViews.get(0);
         initializeListeners();
     }
 
@@ -208,21 +217,24 @@ public class TableView extends FrameLayout implements ITableView {
         mRowHeaderRecyclerView.addOnItemTouchListener(mVerticalRecyclerListener);
         mCellRecyclerView.addOnItemTouchListener(mVerticalRecyclerListener);
 
+
         // It handles Horizontal scroll listener
         mHorizontalRecyclerViewListener = new HorizontalRecyclerViewListener(this);
         // Set scroll listener to be able to scroll all rows synchrony.
-        mColumnHeaderRecyclerView.addOnItemTouchListener(mHorizontalRecyclerViewListener);
+        for(int i=0; i<mHeaderCount; i++){
+            mColumnHeaderRecyclerViews.get(i).addOnItemTouchListener(mHorizontalRecyclerViewListener);
+        }
 
 
         // --- Listeners to help item clicks ---
         // Create item click listeners
         mColumnHeaderRecyclerViewItemClickListener = new
-                ColumnHeaderRecyclerViewItemClickListener(mColumnHeaderRecyclerView, this);
+                ColumnHeaderRecyclerViewItemClickListener(mColumnHeaderRecyclerViews.get(mHeaderCount-1), this);
         mRowHeaderRecyclerViewItemClickListener = new RowHeaderRecyclerViewItemClickListener
                 (mRowHeaderRecyclerView, this);
 
         // Add item click listeners for both column header & row header recyclerView
-        mColumnHeaderRecyclerView.addOnItemTouchListener
+        mColumnHeaderRecyclerViews.get(mHeaderCount-1).addOnItemTouchListener
                 (mColumnHeaderRecyclerViewItemClickListener);
         mRowHeaderRecyclerView.addOnItemTouchListener(mRowHeaderRecyclerViewItemClickListener);
 
@@ -232,41 +244,21 @@ public class TableView extends FrameLayout implements ITableView {
         // For some case, it is pretty necessary.
         TableViewLayoutChangeListener layoutChangeListener = new TableViewLayoutChangeListener
                 (this);
-        mColumnHeaderRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
+        mColumnHeaderRecyclerViews.get(mHeaderCount-1).addOnLayoutChangeListener(layoutChangeListener);
         mCellRecyclerView.addOnLayoutChangeListener(layoutChangeListener);
 
     }
 
-    protected CellRecyclerView createColumnHeaderRecyclerView() {
+    protected CellRecyclerView createColumnHeaderRecyclerView(int header) {
         CellRecyclerView recyclerView = new CellRecyclerView(getContext());
 
         // Set layout manager
-        recyclerView.setLayoutManager(getColumnHeaderLayoutManager());
+        recyclerView.setLayoutManager(getColumnHeaderLayoutManager(header));
 
         // Set layout params
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                mColumnHeaderHeight);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, mColumnHeaderHeight);
         layoutParams.leftMargin = mRowHeaderWidth;
-        recyclerView.setLayoutParams(layoutParams);
-
-        if (isShowHorizontalSeparators()) {
-            // Add vertical item decoration to display column line
-            recyclerView.addItemDecoration(getHorizontalItemDecoration());
-        }
-
-        return recyclerView;
-    }
-    protected CellRecyclerView createColumnHeaderRecyclerView2() {
-        CellRecyclerView recyclerView = new CellRecyclerView(getContext());
-
-        // Set layout manager
-        recyclerView.setLayoutManager(getColumnHeaderLayoutManager2());
-
-        // Set layout params
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                mColumnHeaderHeight);
-        layoutParams.leftMargin = mRowHeaderWidth;
-        layoutParams.topMargin = mColumnHeaderHeight;
+        layoutParams.topMargin = mColumnHeaderHeight*header;
         recyclerView.setLayoutParams(layoutParams);
 
         if (isShowHorizontalSeparators()) {
@@ -278,47 +270,52 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     protected CellRecyclerView createRowHeaderRecyclerView() {
-        CellRecyclerView recyclerView = new CellRecyclerView(getContext());
+        if(mRowHeaderRecyclerView==null) {
+            mRowHeaderRecyclerView = new CellRecyclerView(getContext());
 
-        // Set layout manager
-        recyclerView.setLayoutManager(getRowHeaderLayoutManager());
+            // Set layout manager
+            mRowHeaderRecyclerView.setLayoutManager(getRowHeaderLayoutManager());
 
-        // Set layout params
-        LayoutParams layoutParams = new LayoutParams(mRowHeaderWidth, LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = mColumnHeaderHeight*2;
-        recyclerView.setLayoutParams(layoutParams);
+        }else {
+
+            // Set layout params
+            LayoutParams layoutParams = new LayoutParams(mRowHeaderWidth, LayoutParams.WRAP_CONTENT);
+            layoutParams.topMargin = mColumnHeaderHeight * mHeaderCount;
+            mRowHeaderRecyclerView.setLayoutParams(layoutParams);
 
 
-        if (isShowVerticalSeparators()) {
-            // Add vertical item decoration to display row line
-            recyclerView.addItemDecoration(getVerticalItemDecoration());
+            if (isShowVerticalSeparators()) {
+                // Add vertical item decoration to display row line
+                mRowHeaderRecyclerView.addItemDecoration(getVerticalItemDecoration());
+            }
+
         }
-
-        return recyclerView;
+        return mRowHeaderRecyclerView;
     }
 
     protected CellRecyclerView createCellRecyclerView() {
-        CellRecyclerView recyclerView = new CellRecyclerView(getContext());
+        if(mCellRecyclerView==null) {
+            mCellRecyclerView = new CellRecyclerView(getContext());
 
-        // Disable multitouch
-        recyclerView.setMotionEventSplittingEnabled(false);
+            // Disable multitouch
+            mCellRecyclerView.setMotionEventSplittingEnabled(false);
 
-        // Set layout manager
-        recyclerView.setLayoutManager(getCellLayoutManager());
+            // Set layout manager
+            mCellRecyclerView.setLayoutManager(getCellLayoutManager());
+        }else {
+            // Set layout params
+            LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
+                    .WRAP_CONTENT);
+            layoutParams.leftMargin = mRowHeaderWidth;
+            layoutParams.topMargin = mColumnHeaderHeight * mHeaderCount;
+            mCellRecyclerView.setLayoutParams(layoutParams);
 
-        // Set layout params
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams
-                .WRAP_CONTENT);
-        layoutParams.leftMargin = mRowHeaderWidth;
-        layoutParams.topMargin = mColumnHeaderHeight*2;
-        recyclerView.setLayoutParams(layoutParams);
-
-        if (isShowVerticalSeparators()) {
-            // Add vertical item decoration to display row line on center recycler view
-            recyclerView.addItemDecoration(getVerticalItemDecoration());
+            if (isShowVerticalSeparators()) {
+                // Add vertical item decoration to display row line on center recycler view
+                mCellRecyclerView.addItemDecoration(getVerticalItemDecoration());
+            }
         }
-
-        return recyclerView;
+        return mCellRecyclerView;
     }
 
 
@@ -330,13 +327,11 @@ public class TableView extends FrameLayout implements ITableView {
             this.mTableAdapter.setTableView(this);
 
             // set adapters
-            if (mColumnHeaderRecyclerView != null) {
-                mColumnHeaderRecyclerView.setAdapter(mTableAdapter
-                        .getColumnHeaderRecyclerViewAdapter());
-            }
-            if (mColumnHeaderRecyclerView2 != null) {
-                mColumnHeaderRecyclerView2.setAdapter(mTableAdapter
-                        .getColumnHeaderRecyclerViewAdapter());
+            for (int i = 0; i<mHeaderCount; i++){
+                if (mColumnHeaderRecyclerViews.get(i) != null) {
+                    mColumnHeaderRecyclerViews.get(i).setAdapter(mTableAdapter
+                            .getColumnHeaderRecyclerViewAdapter(i));
+                }
             }
             if (mRowHeaderRecyclerView != null) {
                 mRowHeaderRecyclerView.setAdapter(mTableAdapter.getRowHeaderRecyclerViewAdapter());
@@ -403,8 +398,13 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     @Override
-    public CellRecyclerView getColumnHeaderRecyclerView() {
-        return mColumnHeaderRecyclerView;
+    public CellRecyclerView getColumnHeaderRecyclerView(int header) {
+        return mColumnHeaderRecyclerViews.get(header);
+    }
+
+    @Override
+    public List<CellRecyclerView> getColumnHeaderRecyclerView() {
+        return mColumnHeaderRecyclerViews;
     }
 
     @Override
@@ -413,17 +413,12 @@ public class TableView extends FrameLayout implements ITableView {
     }
 
     @Override
-    public ColumnHeaderLayoutManager getColumnHeaderLayoutManager() {
-        if (mColumnHeaderLayoutManager == null) {
-            mColumnHeaderLayoutManager = new ColumnHeaderLayoutManager(getContext(), this);
+    public ColumnHeaderLayoutManager getColumnHeaderLayoutManager(int index) {
+        if (index >= mColumnHeaderLayoutManagers.size()) {
+            mColumnHeaderLayoutManagers.add(new ColumnHeaderLayoutManager(getContext(), this));
         }
-        return mColumnHeaderLayoutManager;
+        return mColumnHeaderLayoutManagers.get(index);
     }
-
-    public ColumnHeaderLayoutManager getColumnHeaderLayoutManager2() {
-        return new ColumnHeaderLayoutManager(getContext(), this);
-    }
-
 
     @Override
     public CellLayoutManager getCellLayoutManager() {
@@ -477,7 +472,7 @@ public class TableView extends FrameLayout implements ITableView {
     @Override
     public void remeasureColumnWidth(int column) {
         // Remove calculated width value to be ready for recalculation.
-        getColumnHeaderLayoutManager().removeCachedWidth(column);
+        mColumnHeaderLayoutManager.removeCachedWidth(column);
         // Recalculate of the width values of the columns
         getCellLayoutManager().fitWidthSize(column, false);
     }
@@ -529,6 +524,11 @@ public class TableView extends FrameLayout implements ITableView {
 
     public ScrollHandler getScrollHandler() {
         return mScrollHandler;
+    }
+
+    @Override
+    public int getHeaderCount() {
+        return mHeaderCount;
     }
 
     @Override
@@ -606,7 +606,7 @@ public class TableView extends FrameLayout implements ITableView {
 
     public void setSelectedColumn(int column) {
         // Find the column view holder which is located on column position .
-        AbstractViewHolder columnViewHolder = (AbstractViewHolder) getColumnHeaderRecyclerView()
+        AbstractViewHolder columnViewHolder = (AbstractViewHolder) getColumnHeaderRecyclerView(0)
                 .findViewHolderForAdapterPosition(column);
 
         mSelectionHandler.setSelectedColumnPosition(columnViewHolder, column);
@@ -666,6 +666,21 @@ public class TableView extends FrameLayout implements ITableView {
      */
     public void setSelectedColor(@ColorInt int selectedColor) {
         this.mSelectedColor = selectedColor;
+    }
+
+    public void setHeaderCount(int headerCount){
+        this.mHeaderCount = headerCount;
+        clear();
+        initialize();
+        mTableAdapter.setTableView(this);
+        setAdapter(mTableAdapter);
+    }
+
+    private void clear(){
+        mColumnHeaderRecyclerViews.clear();
+        mColumnHeaderLayoutManagers.clear();
+        mTableAdapter.clear();
+        removeAllViews();
     }
 
     @Override

@@ -193,7 +193,7 @@ public class VisibilityHandler {
     }
 
     private Column getColumnValueFromPosition(int column) {
-        Object columnHeaderModel = mTableView.getAdapter().getColumnHeaderItem(column);
+        Object columnHeaderModel = mTableView.getAdapter().getColumnHeaderItem(column, 0);
         List<Object> cellModelList = (List<Object>) mTableView.getAdapter().getCellColumnItems
                 (column);
 

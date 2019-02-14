@@ -175,11 +175,10 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
      * @see #onCreateColumnHeaderViewHolder(ViewGroup, int) ;
      */
     @Override
-    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int
-            position) {
-        ((DataSetRHeaderHeader) holder).bind(mColumnHeaderItems.get(position).displayName());
-
-        ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = 800;
+    public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
+        ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel)columnHeaderItemModel).displayName());
+        int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
+        ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = 800*i;
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }
 

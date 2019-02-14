@@ -66,7 +66,7 @@ public class ColumnSortHandler {
                 .getRowHeaderRecyclerView().getAdapter();
 
         this.mColumnHeaderRecyclerViewAdapter = (ColumnHeaderRecyclerViewAdapter) tableView
-                .getColumnHeaderRecyclerView().getAdapter();
+                .getColumnHeaderRecyclerView(tableView.getHeaderCount()-1).getAdapter();
     }
 
     public void sortByRowHeader(final SortState sortState) {

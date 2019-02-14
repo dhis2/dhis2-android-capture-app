@@ -70,7 +70,7 @@ public class TabletSearchAdapter extends AbstractTableAdapter<String, TrackedEnt
                 .subscribe(data -> setCellItems(cellItems), Timber::d);
 
         setRowHeaderItems(teis);
-        setColumnHeaderItems(headers);
+        setColumnHeaderItems(headers, 0);
     }
 
     @Override
