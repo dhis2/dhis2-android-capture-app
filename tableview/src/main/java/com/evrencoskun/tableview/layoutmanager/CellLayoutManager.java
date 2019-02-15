@@ -446,7 +446,7 @@ public class CellLayoutManager extends LinearLayoutManager {
                 // for the first time to populate adapter
                 if (mRowHeaderLayoutManager.findLastVisibleItemPosition() == position) {
 
-                    fitWidthSize2(false);
+                    //fitWidthSize2(false);
                     Log.e(LOG_TAG, position + " fitWidthSize populating data for the first time");
 
                     mNeedFit = false;
