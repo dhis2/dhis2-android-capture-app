@@ -15,7 +15,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.Presenter" />
+            type="org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract.EventCapturePresenter" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

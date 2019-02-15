@@ -15,7 +15,7 @@ import io.reactivex.Flowable;
 
 public class DataSetDetailContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface DataSetDetailView extends AbstractActivityContracts.View {
         void setData(List<DataSetDetailModel> dataSetDetailModels);
 
         void addTree(TreeNode treeNode);
@@ -43,8 +43,8 @@ public class DataSetDetailContract {
         String dataSetUid();
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(View view);
+    public interface DataSetDetailPresenter extends AbstractActivityContracts.Presenter {
+        void init(DataSetDetailView view);
 
         void onTimeButtonClick();
 

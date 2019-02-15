@@ -19,7 +19,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
+public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.DataSetTableView {
 
     String orgUnitUid;
     String periodTypeName;
@@ -27,7 +27,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     String catCombo;
 
     @Inject
-    DataSetTableContract.Presenter presenter;
+    DataSetTableContract.DataSetTablePresenter presenter;
     private ActivityDatasetTableBinding binding;
     private DataSetSectionAdapter viewPagerAdapter;
 
@@ -85,7 +85,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         binding.dataSetName.setText(data.displayName());
     }
 
-    public DataSetTableContract.Presenter getPresenter() {
+    public DataSetTableContract.DataSetTablePresenter getPresenter() {
         return presenter;
     }
 }

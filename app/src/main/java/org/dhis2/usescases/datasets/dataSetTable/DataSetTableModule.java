@@ -19,14 +19,14 @@ public class DataSetTableModule {
 
     @Provides
     @PerActivity
-    DataSetTableContract.View provideView(DataSetTableActivity activity) {
+    DataSetTableContract.DataSetTableView provideView(DataSetTableActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    DataSetTableContract.Presenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
-        return new DataSetTablePresenter(DataSetTableRepository);
+    DataSetTableContract.DataSetTablePresenter providesPresenter(DataSetTableRepository DataSetTableRepository) {
+        return new DataSetTablePresenterImpl(DataSetTableRepository);
     }
 
     @Provides

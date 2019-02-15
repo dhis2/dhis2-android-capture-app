@@ -69,7 +69,7 @@ public class SearchRelationshipViewHolder extends RecyclerView.ViewHolder {
         binding.relationshipSpinner.setSelection(0);
         binding.relationshipSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, DataSetTableView view, int position, long id) {
                 if (position > 0) {
                     Pair<RelationshipTypeModel, String> selectedRelationShip = (Pair<RelationshipTypeModel, String>) parent.getItemAtPosition(position);
                     presenter.addRelationship(trackedEntityInstanceModel.getTei().uid(), selectedRelationShip.val0().uid(),trackedEntityInstanceModel.isOnline());

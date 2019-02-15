@@ -91,7 +91,7 @@
                 style="@style/BottomDialogItem"
                 android:onClick="@{()->listener.onActionSelected(ActionType.COMPLETE_LATER)}"
                 android:text="@string/complete_later"
-                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?View.VISIBLE:View.GONE}" />-->
+                android:visibility="@{canWrite &amp;&amp; isEnrollmentOpen &amp;&amp;canComplete?DataSetTableView.VISIBLE:DataSetTableView.GONE}" />-->
             <TextView
                 android:id="@+id/finishAndAddNew"
                 style="@style/BottomDialogItem"

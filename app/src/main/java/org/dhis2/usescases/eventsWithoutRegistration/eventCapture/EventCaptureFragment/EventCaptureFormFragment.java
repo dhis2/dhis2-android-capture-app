@@ -24,6 +24,7 @@ import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,7 +63,7 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.activity = (EventCaptureActivity) context;
         setRetainInstance(true);
@@ -157,18 +158,29 @@ public class EventCaptureFormFragment extends FragmentGlobalAbstract {
             if (currentSection.equals("NO_SECTION") ||
                     (!updates.isEmpty() && updates.get(0).programStageSection().equals(currentSection))) {
                 dataEntryAdapter.swap(updates);
-                int completedValues = 0;
-                HashMap<String, Boolean> fields = new HashMap<>();
-                for (FieldViewModel fieldViewModel : updates) {
-                    fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
-                }
-                for (String key : fields.keySet())
-                    if (fields.get(key))
-                        completedValues++;
+                HashMap<String, Boolean> fields = getFields(updates);
+                int completedValues = getCompletedValues(fields);
                 binding.currentSectionTitle.sectionValues.setText(String.format("%s/%s", completedValues, fields.keySet().size()));
             }
         };
+    }
 
+    private int getCompletedValues(HashMap<String, Boolean> fields) {
+        int completedValues = 0;
+        for (Map.Entry<String, Boolean> field : fields.entrySet()) {
+            if (field.getValue()) {
+                completedValues++;
+            }
+        }
+        return completedValues;
+    }
+
+    private HashMap<String, Boolean> getFields(List<FieldViewModel> updates) {
+        HashMap<String, Boolean> fields = new HashMap<>();
+        for (FieldViewModel fieldViewModel : updates) {
+            fields.put(fieldViewModel.optionSet() == null ? fieldViewModel.uid() : fieldViewModel.optionSet(), !isEmpty(fieldViewModel.value()));
+        }
+        return fields;
     }
 
     public Consumer<List<EventSectionModel>> setSectionSelector() {

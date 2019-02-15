@@ -2,10 +2,7 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import org.dhis2.data.dagger.PerActivity;
 import org.dhis2.data.metadata.MetadataRepository;
-import org.dhis2.usescases.programDetail.ProgramRepository;
-import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository;
-import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepositoryImpl;
+
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -18,15 +15,15 @@ public class DataSetDetailModule {
 
     @Provides
     @PerActivity
-    DataSetDetailContract.View provideView(DataSetDetailActivity activity) {
+    DataSetDetailContract.DataSetDetailView provideView(DataSetDetailActivity activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    DataSetDetailContract.Presenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
-                                                      MetadataRepository metadataRepository) {
-        return new DataSetDetailPresenter(dataSetDetailRepository, metadataRepository);
+    DataSetDetailContract.DataSetDetailPresenter providesPresenter(DataSetDetailRepository dataSetDetailRepository,
+                                                                   MetadataRepository metadataRepository) {
+        return new DataSetDetailPresenterImpl(dataSetDetailRepository, metadataRepository);
     }
 
     @Provides

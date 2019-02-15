@@ -42,16 +42,17 @@ import static org.dhis2.utils.Constants.PROGRAM_UID;
 /**
  * QUADRAM. Created by ppajuelo on 19/11/2018.
  */
-public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.View, View.OnTouchListener, GestureDetector.OnGestureListener {
+public class EventCaptureActivity extends ActivityGlobalAbstract implements EventCaptureContract.EventCaptureView, View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+    private static final String DIALOG_TAG = "SHOW_OPTIONS";
 
     private GestureDetector gestureScanner;
 
     private ActivityEventCaptureBinding binding;
     @Inject
-    EventCaptureContract.Presenter presenter;
+    EventCaptureContract.EventCapturePresenter presenter;
     private int completionPercentage = 0;
     private String programStageUid;
     private Boolean isEventCompleted = false;
@@ -77,23 +78,6 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
 
         presenter.init(this);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
     }
 
     @Override
@@ -132,7 +116,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 getAbstracContext().getString(R.string.missing_mandatory_fields_title),
                 getAbstracContext().getString(R.string.missing_mandatory_fields_events),
                 getAbstracContext().getString(R.string.button_ok),
-                "Check",
+                getAbstracContext().getString(R.string.check_event),
                 Constants.RQ_MANDATORY_EVENTS,
                 new DialogClickListener() {
                     @Override
@@ -157,7 +141,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setCanComplete(canComplete)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
@@ -167,7 +151,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setReopen(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
@@ -178,7 +162,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setSkip(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
@@ -188,7 +172,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                 .setIsExpired(presenter.hasExpired())
                 .setReschedule(true)
                 .setListener(this::setAction)
-                .show(getSupportFragmentManager(), "SHOW_OPTIONS");
+                .show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
@@ -262,7 +246,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     public void finishDataEntry() {
         Intent intent = new Intent();
         intent.putExtra(Constants.EVENT_UID, getIntent().getStringExtra(Constants.EVENT_UID));
-        if(isEventCompleted)
+        if (isEventCompleted)
             setResult(RESULT_OK, intent);
         finish();
     }
@@ -311,7 +295,7 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
     }
 
     @Override
-    public EventCaptureContract.Presenter getPresenter() {
+    public EventCaptureContract.EventCapturePresenter getPresenter() {
         return presenter;
     }
 
@@ -344,6 +328,8 @@ public class EventCaptureActivity extends ActivityGlobalAbstract implements Even
                     break;
                 case R.id.menu_overview:
                     goToInitialScreen();
+                    break;
+                default:
                     break;
             }
             return false;

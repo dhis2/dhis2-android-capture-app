@@ -12,7 +12,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.DataSetDetailPresenter" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

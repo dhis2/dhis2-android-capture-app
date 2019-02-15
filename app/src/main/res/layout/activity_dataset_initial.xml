@@ -12,7 +12,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetInitial.DataSetInitialContract.DataSetInitialPresenter" />
 
         <variable
             name="action"

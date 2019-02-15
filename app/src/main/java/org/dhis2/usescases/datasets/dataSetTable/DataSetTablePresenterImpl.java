@@ -1,7 +1,5 @@
 package org.dhis2.usescases.datasets.dataSetTable;
 
-import android.util.Log;
-
 import org.dhis2.data.tuples.Pair;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -15,14 +13,14 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataSetTablePresenter implements DataSetTableContract.Presenter {
+public class DataSetTablePresenterImpl implements DataSetTableContract.DataSetTablePresenter {
 
     private final DataSetTableRepository tableRepository;
-    DataSetTableContract.View view;
+    private DataSetTableContract.DataSetTableView view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<CategoryOptionComboModel>>> tableData;
 
-    public DataSetTablePresenter(DataSetTableRepository dataSetTableRepository) {
+    public DataSetTablePresenterImpl(DataSetTableRepository dataSetTableRepository) {
         this.tableRepository = dataSetTableRepository;
     }
 
@@ -32,7 +30,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     }
 
     @Override
-    public void init(DataSetTableContract.View view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
+    public void init(DataSetTableContract.DataSetTableView view, String orgUnitUid, String periodTypeName, String periodInitialDate, String catCombo) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
 
@@ -41,7 +39,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                data -> Log.d("SATA_SETS", "VALUES LIST SIZE = " + data.size()),
+                                data -> Timber.d("VALUES LIST SIZE = %d", data.size()),
                                 Timber::e
                         )
         );
@@ -82,7 +80,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
 
     @Override
     public List<CategoryOptionComboModel> getCatOptionCombos(String key) {
-        return tableData.val1().get( tableData.val0().get(key).get(0).categoryCombo());
+        return tableData.val1().get(tableData.val0().get(key).get(0).categoryCombo());
     }
 
     @Override

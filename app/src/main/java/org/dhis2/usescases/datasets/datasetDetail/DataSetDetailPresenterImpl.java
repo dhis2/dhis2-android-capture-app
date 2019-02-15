@@ -2,7 +2,6 @@ package org.dhis2.usescases.datasets.datasetDetail;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.annotation.IntDef;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.datasets.datasetInitial.DataSetInitialActivity;
@@ -19,18 +18,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.IntDef;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
+public class DataSetDetailPresenterImpl implements DataSetDetailContract.DataSetDetailPresenter {
 
     private DataSetDetailRepository dataSetDetailRepository;
-    private DataSetDetailContract.View view;
-    private CategoryOptionComboModel categoryOptionComboModel;
-    private MetadataRepository metadataRepository;
+    private DataSetDetailContract.DataSetDetailView view;
     private int lastSearchType;
     private Date fromDate;
     private Date toDate;
@@ -49,14 +47,13 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         int DATE_RANGES = 32;
     }
 
-    public DataSetDetailPresenter(DataSetDetailRepository dataSetDetailRepository, MetadataRepository metadataRepository) {
+    public DataSetDetailPresenterImpl(DataSetDetailRepository dataSetDetailRepository, MetadataRepository metadataRepository) {
         this.dataSetDetailRepository = dataSetDetailRepository;
-        this.metadataRepository = metadataRepository;
         compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void init(DataSetDetailContract.View view) {
+    public void init(DataSetDetailContract.DataSetDetailView view) {
         this.view = view;
         getOrgUnits(null);
         compositeDisposable.add(
@@ -93,7 +90,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());
 
-        view.startActivity(DataSetInitialActivity.class,bundle,false,false,null);
+        view.startActivity(DataSetInitialActivity.class, bundle, false, false, null);
     }
 
     @Override
@@ -115,7 +112,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
 
     @Override
     public void onDataSetClick(String eventId, String orgUnit) {
-
+        // do nothing
     }
 
     @Override
@@ -148,8 +145,8 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     @Override
     public void getOrgUnits(Date date) {
         compositeDisposable.add(dataSetDetailRepository.orgUnits()
-                .map(orgUnits -> {
-                    this.orgUnits = orgUnits;
+                .map(data -> {
+                    this.orgUnits = data;
                     return OrgUnitUtils.renderTree(view.getContext(), orgUnits, true);
                 })
                 .subscribeOn(Schedulers.computation())
@@ -160,9 +157,7 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
                 ));
     }
 
-    private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String
-            orgUnitQuery) {
-        this.categoryOptionComboModel = categoryOptionComboModel;
+    private void updateFilters(CategoryOptionComboModel categoryOptionComboModel, String orgUnitQuery) {
         switch (lastSearchType) {
             case LastSearchType.DATES:
                 getDataSets(this.fromDate, this.toDate, orgUnitQuery);

@@ -11,19 +11,19 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class DataSetInitialPresenter implements DataSetInitialContract.Presenter {
+public class DataSetInitialPresenterImpl implements DataSetInitialContract.DataSetInitialPresenter {
 
     private CompositeDisposable compositeDisposable;
     private DataSetInitialRepository dataSetInitialRepository;
-    private DataSetInitialContract.View view;
+    private DataSetInitialContract.DataSetInitialView view;
 
-    public DataSetInitialPresenter(DataSetInitialRepository dataSetInitialRepository) {
+    public DataSetInitialPresenterImpl(DataSetInitialRepository dataSetInitialRepository) {
         this.dataSetInitialRepository = dataSetInitialRepository;
     }
 
 
     @Override
-    public void init(DataSetInitialContract.View view) {
+    public void init(DataSetInitialContract.DataSetInitialView view) {
         this.view = view;
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(

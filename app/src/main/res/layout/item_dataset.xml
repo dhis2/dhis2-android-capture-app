@@ -11,7 +11,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.Presenter" />
+            type="org.dhis2.usescases.datasets.datasetDetail.DataSetDetailContract.DataSetDetailPresenter" />
 
         <variable
             name="dataset"
