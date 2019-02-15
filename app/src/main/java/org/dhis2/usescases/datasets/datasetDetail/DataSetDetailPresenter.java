@@ -25,7 +25,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.utils.Constants.ORG_UNIT;
 
 
 public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
@@ -120,9 +119,10 @@ public class DataSetDetailPresenter implements DataSetDetailContract.Presenter {
     }
 
     @Override
-    public void onDataSetClick(String orgUnit, String periodType, String initPeriodType, String catOptionComb) {
+    public void onDataSetClick(String orgUnit, String orgUnitName, String periodType, String initPeriodType, String catOptionComb) {
         Bundle bundle = new Bundle();
-        bundle.putString(ORG_UNIT, orgUnit);
+        bundle.putString(Constants.ORG_UNIT, orgUnit);
+        bundle.putString(Constants.ORG_UNIT_NAME, orgUnitName+" - "+initPeriodType);
         bundle.putString(Constants.PERIOD_TYPE, periodType);
         bundle.putString(Constants.CAT_COMB, catOptionComb);
         bundle.putString(Constants.DATA_SET_UID, view.dataSetUid());

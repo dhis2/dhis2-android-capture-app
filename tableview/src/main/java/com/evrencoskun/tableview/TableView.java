@@ -226,7 +226,7 @@ public class TableView extends FrameLayout implements ITableView {
         }
 
 
-        // --- Listeners to help item clicks ---
+        /*// --- Listeners to help item clicks ---
         // Create item click listeners
         mColumnHeaderRecyclerViewItemClickListener = new
                 ColumnHeaderRecyclerViewItemClickListener(mColumnHeaderRecyclerViews.get(mHeaderCount-1), this);
@@ -236,7 +236,7 @@ public class TableView extends FrameLayout implements ITableView {
         // Add item click listeners for both column header & row header recyclerView
         mColumnHeaderRecyclerViews.get(mHeaderCount-1).addOnItemTouchListener
                 (mColumnHeaderRecyclerViewItemClickListener);
-        mRowHeaderRecyclerView.addOnItemTouchListener(mRowHeaderRecyclerViewItemClickListener);
+        mRowHeaderRecyclerView.addOnItemTouchListener(mRowHeaderRecyclerViewItemClickListener);*/
 
 
         // Add Layout change listener both of Column Header  & Cell recyclerView to detect

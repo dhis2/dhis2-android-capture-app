@@ -62,7 +62,7 @@ public class DataSetDetailContract {
 
         void clearCatComboFilters(String orgUnitQuery);
 
-        void onDataSetClick(String orgUnit, String periodType, String initPeriodType, String catOptionComb);
+        void onDataSetClick(String orgUnit, String orgUnitName, String periodType, String initPeriodType, String catOptionComb);
 
         List<OrganisationUnitModel> getOrgUnits();
 
