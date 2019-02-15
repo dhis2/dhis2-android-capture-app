@@ -117,10 +117,9 @@ final class DataValueStore implements DataEntryStore {
         contentValues.put(EventModel.Columns.EVENT_DATE, DateUtils.databaseDateFormat().format(eventDate));
         if (eventDate.before(currentDate))
             contentValues.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
-        if (eventModel != null) {
-            briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
-            updateTEi();
-        }
+
+        briteDatabase.update(EventModel.TABLE, contentValues, EventModel.Columns.UID + "= ?", eventModel.uid());
+        updateTEi();
     }
 
     private void updateProgramTable(Date lastUpdated, String programUid) {

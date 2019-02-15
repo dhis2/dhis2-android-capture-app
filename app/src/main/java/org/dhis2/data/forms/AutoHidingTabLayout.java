@@ -11,8 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import static org.dhis2.utils.Preconditions.isNull;
-
 /**
  * A TabLayout that automatically hides when the attached adapter has less than 2 elements
  */
@@ -34,22 +32,21 @@ public class AutoHidingTabLayout extends TabLayout {
 
     @Override
     public void setupWithViewPager(@Nullable ViewPager viewPager) {
-        this.vPager = isNull(viewPager, "vPager == null");
-        isNull(viewPager.getAdapter(), "vPager.getAdapter == null. You must set " +
-                "an adapter on the ViewPager before setting up the AutoHidingTabLayout");
+        if (viewPager != null && viewPager.getAdapter() != null) {
+            this.vPager = viewPager;
+            AdapterChangeObserver adapterChangeObserver = new AdapterChangeObserver();
+            viewPager.getAdapter().registerDataSetObserver(adapterChangeObserver);
+            viewPager.addOnAdapterChangeListener((pager, oldAdapter, newAdapter) -> {
+                if (oldAdapter != null) {
+                    oldAdapter.unregisterDataSetObserver(adapterChangeObserver);
+                }
+                if (newAdapter != null) {
+                    newAdapter.registerDataSetObserver(adapterChangeObserver);
+                }
+            });
 
-        AdapterChangeObserver adapterChangeObserver = new AdapterChangeObserver();
-        viewPager.getAdapter().registerDataSetObserver(adapterChangeObserver);
-        viewPager.addOnAdapterChangeListener((pager, oldAdapter, newAdapter) -> {
-            if (oldAdapter != null) {
-                oldAdapter.unregisterDataSetObserver(adapterChangeObserver);
-            }
-            if (newAdapter != null) {
-                newAdapter.registerDataSetObserver(adapterChangeObserver);
-            }
-        });
-
-        toggleVisibility(viewPager.getAdapter());
+            toggleVisibility(viewPager.getAdapter());
+        }
 
         super.setupWithViewPager(viewPager);
     }

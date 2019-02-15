@@ -118,7 +118,7 @@ public final class DataValueStore implements DataEntryStore {
             // ToDo: write test cases for different events
             return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + EQUAL + QUESTION_MARK + AND +
-                            TrackedEntityDataValueModel.Columns.EVENT + EQUAL + QUESTION_MARK, uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                            TrackedEntityDataValueModel.Columns.EVENT + EQUAL + QUESTION_MARK, uid, eventUid);
         } else {
             dataValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
                     BaseIdentifiableObject.DATE_FORMAT.format(Calendar.getInstance().getTime()));
@@ -211,7 +211,7 @@ public final class DataValueStore implements DataEntryStore {
             return (long) briteDatabase.delete(TrackedEntityDataValueModel.TABLE,
                     TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
                             TrackedEntityDataValueModel.Columns.EVENT + " = ?",
-                    uid == null ? "" : uid, eventUid == null ? "" : eventUid);
+                    uid, eventUid);
         else {
             Cursor enrollmentCursor = briteDatabase.query(ENROLLMENT_QUERY, uid);
             String teiUid = "";
@@ -226,7 +226,7 @@ public final class DataValueStore implements DataEntryStore {
     }
 
     private Flowable<Long> updateEvent(long status) {
-        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid == null ? "" : eventUid)
+        return briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
                 .mapToOne(EventModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(eventModel -> {
                     if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||

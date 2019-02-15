@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -374,7 +375,7 @@ class EnrollmentFormRepository implements FormRepository {
         };
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Observable<String> autoGenerateEvents(String enrollmentUid) {
         try {
@@ -593,7 +594,7 @@ class EnrollmentFormRepository implements FormRepository {
                 allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
     }
 
-    @NonNull
+    @Nullable
     @Override
     public Observable<Trio<String, String, String>> useFirstStageDuringRegistration() { //enrollment uid, trackedEntityType, event uid
 

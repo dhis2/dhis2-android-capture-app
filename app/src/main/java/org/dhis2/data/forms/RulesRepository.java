@@ -52,10 +52,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -286,44 +284,27 @@ public final class RulesRepository {
 
     @NonNull
     Flowable<List<RuleVariable>> ruleVariables(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariable).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     public Flowable<List<RuleVariable>> ruleVariablesProgramStages(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleVariableModel.TABLE, QUERY_VARIABLES, programUid)
                 .mapToList(RulesRepository::mapToRuleVariableProgramStages).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Quartet<String, String, Integer, String>>> queryRules(
             @NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleModel.TABLE, QUERY_RULES, programUid)
                 .mapToList(RulesRepository::mapToQuartet).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @NonNull
     private Flowable<List<Pair<String, RuleAction>>> queryRuleActionsList(@NonNull String programUid) {
-        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid == null ? "" : programUid)
+        return briteDatabase.createQuery(ProgramRuleActionModel.TABLE, QUERY_ACTIONS, programUid)
                 .mapToList(RulesRepository::mapToActionPairs).toFlowable(BackpressureStrategy.LATEST);
-    }
-
-    @NonNull
-    private static List<Rule> mapActionsToRules(
-            @NonNull List<Quartet<String, String, Integer, String>> rawRules,
-            @NonNull Map<String, Collection<RuleAction>> ruleActions) {
-        List<Rule> rules = new ArrayList<>();
-
-        for (Quartet<String, String, Integer, String> rawRule : rawRules) {
-            Collection<RuleAction> actions = ruleActions.get(rawRule.val0());
-
-            if (actions == null) {
-                actions = new ArrayList<>();
-            }
-        }
-
-        return rules;
     }
 
     @NonNull
@@ -341,7 +322,8 @@ public final class RulesRepository {
             }
 
             rules.add(Rule.create(rawRule.val1(), rawRule.val2(),
-                    rawRule.val3(), new ArrayList<>(pairActions), rawRule.val0())); //TODO: Change val0 to Rule Name
+                    rawRule.val3(), new ArrayList<>(pairActions),
+                    rawRule.val0())); //TODO: Change val0 to Rule Name
         }
 
         return rules;
@@ -469,18 +451,13 @@ public final class RulesRepository {
     private static RuleAction create(@NonNull Cursor cursor) {
         String programStage = cursor.getString(1);
         String section = cursor.getString(2);
-        String attribute = cursor.getString(5);
-        String dataElement = cursor.getString(6);
+        @NonNull String dataElement = cursor.getString(6) != null ? cursor.getString(6) : "";
+        @NonNull String attribute = cursor.getString(5) != null ? cursor.getString(5) : "";
         String location = cursor.getString(7);
         String content = cursor.getString(8);
         String data = cursor.getString(9);
 
-        if (dataElement == null && attribute == null) {
-            dataElement = "";
-            attribute = "";
-        }
-
-        String field = isEmpty(attribute) ? dataElement : attribute;
+        @NonNull String field = isEmpty(attribute) ? dataElement : attribute;
 
         switch (ProgramRuleActionType.valueOf(cursor.getString(3))) {
             case DISPLAYTEXT:
@@ -559,7 +536,9 @@ public final class RulesRepository {
         String orgUnit = cursor.getString(5);
         String orgUnitCode = getOrgUnitCode(orgUnit);
         String programStageName = cursor.getString(6);
-        RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+        RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED) ?
+                RuleEvent.Status.ACTIVE :
+                RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
         return RuleEvent.builder()
                 .event(eventUid)
@@ -600,7 +579,9 @@ public final class RulesRepository {
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = cursor.getString(2).equals("VISITED") ? RuleEvent.Status.ACTIVE : RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED) ?
+                            RuleEvent.Status.ACTIVE :
+                            RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
 
                     return RuleEvent.builder()
                             .event(eventUid)
