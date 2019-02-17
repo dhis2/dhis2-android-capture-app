@@ -32,7 +32,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     DataSetTableContract.View view;
     private CompositeDisposable compositeDisposable;
     private Pair<Map<String, List<DataElementModel>>, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>>> tableData;
-    //private List<DataSetTableModel> dataValues;
+
     private String orgUnitUid;
     private String periodTypeName;
     private String periodInitialDate;
@@ -141,7 +141,7 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
                                     dataElementDisabled = quintet.val2();
                                     compulsoryDataElement = quintet.val3();
                                     sections = quintet.val4();
-                                    dataSetSectionFragment.createTable(null);
+                                    dataSetSectionFragment.createTable();
                                 },
                                 Timber::e
                         )
@@ -264,4 +264,5 @@ public class DataSetTablePresenter implements DataSetTableContract.Presenter {
     public List<SectionModel> getSections() {
         return sections;
     }
+
 }

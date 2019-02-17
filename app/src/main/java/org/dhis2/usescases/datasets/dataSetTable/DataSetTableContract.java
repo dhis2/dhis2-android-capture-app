@@ -55,6 +55,7 @@ public class DataSetTableContract {
         Map<String, Map<String, List<String>>> getDataElementDisabled();
         Map<String, List<String>> getCompulsoryDataElement();
         List<SectionModel> getSections();
+
     }
 
 }

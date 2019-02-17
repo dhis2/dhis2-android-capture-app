@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -30,13 +31,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
  */
 
-public class DataSetSectionFragment extends FragmentGlobalAbstract {
+public class DataSetSectionFragment extends FragmentGlobalAbstract implements DataValueContract.View {
 
     FragmentDatasetSectionBinding binding;
     private DataSetTableContract.Presenter presenter;
@@ -45,7 +48,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
     private String sectionUid;
     private boolean accessDataWrite;
     private boolean tableCreated = false;
-
+    @Inject
+    DataValueContract.Presenter presenterFragment;
 
     @NonNull
     public static DataSetSectionFragment create(@NonNull String sectionUid, boolean accessDataWrite) {
@@ -63,7 +67,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         super.onAttach(context);
         activity = (DataSetTableActivity) context;
         presenter = ((DataSetTableActivity) context).getPresenter();
-
+        ((App) context.getApplicationContext()).userComponent().plus(new DataValueModule()).inject(this);
     }
 
     @Nullable
@@ -73,6 +77,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         adapter = new DataSetTableAdapter(getAbstracContext(), accessDataWrite);
         binding.tableView.setAdapter(adapter);
         binding.tableView.setEnabled(false);
+        binding.setPresenter(presenterFragment);
         return binding.getRoot();
     }
 
@@ -83,10 +88,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
         accessDataWrite = getArguments().getBoolean(Constants.ACCESS_DATA);
         presenter.getData(this, sectionUid);
         presenter.initializeProcessor(this);
+        presenterFragment.init(this);
     }
 
 
-    public void createTable(RowAction rowAction) {
+    public void createTable() {
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
