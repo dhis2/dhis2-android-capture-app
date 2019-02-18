@@ -28,7 +28,7 @@ ext {
             tableview        : "0.8.8",
             pinlock          : "2.1.0",
             gmsVersion       : "15.0.1",
-            analytics       : "16.0.1",
+            analytics       : "16.0.7",
             gson             : "2.8.5",
             workmanager      : "1.0.0-alpha10",
             crashlytics      : "2.9.5@aar",

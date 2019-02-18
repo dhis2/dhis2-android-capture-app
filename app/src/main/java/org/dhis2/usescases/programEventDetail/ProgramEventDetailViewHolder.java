@@ -27,11 +27,21 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
         disposable = new CompositeDisposable();
     }
 
-    public void bind(ProgramEventDetailContract.Presenter presenter, EventModel event) {
+    public void bind(ProgramEventDetailContract.Presenter presenter, ProgramEventViewModel event) {
         binding.setVariable(BR.presenter, presenter);
         binding.setVariable(BR.event, event);
         binding.executePendingBindings();
 
+        StringBuilder stringBuilder = new StringBuilder("");
+        int valuesSize = event.eventDisplayData().size() > 3 ? 3 : event.eventDisplayData().size();
+        for (int i = 0; i < valuesSize; i++) {
+            if (event.eventDisplayData().get(i) != null)
+                stringBuilder.append(event.eventDisplayData().get(i).val1());
+            if (i != valuesSize - 1)
+                stringBuilder.append("\n");
+        }
+        binding.dataValue.setText(stringBuilder);
+/*
         disposable.add(presenter.getEventDataValueNew(event)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -48,9 +58,9 @@ public class ProgramEventDetailViewHolder extends RecyclerView.ViewHolder {
                             binding.dataValue.setText(stringBuilder);
                         },
                         Timber::d
-                ));
+                ));*/
 
-        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid(), event.organisationUnit()));
+        itemView.setOnClickListener(view -> presenter.onEventClick(event.uid(), event.orgUnitUid()));
     }
 
 

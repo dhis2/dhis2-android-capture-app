@@ -5,7 +5,9 @@ import android.os.Build;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import org.dhis2.R;
 import org.dhis2.data.dagger.PerServer;
+import org.hisp.dhis.android.BuildConfig;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.Configuration;
 import org.hisp.dhis.android.core.data.api.Authenticator;
@@ -29,6 +31,7 @@ import dagger.Provides;
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.TlsVersion;
 import timber.log.Timber;
 
@@ -60,9 +63,22 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    OkHttpClient okHttpClient(Authenticator authenticator) {
+    OkHttpClient okHttpClient(Authenticator authenticator, Context context) {
+        String userAgent = String.format("%s/%s/%s/Android_%s",
+                context.getString(R.string.app_name), //App name
+                BuildConfig.VERSION_NAME,//SDK version
+                org.dhis2.BuildConfig.VERSION_NAME, //App version
+                Build.VERSION.SDK_INT //Android Version
+        );
         OkHttpClient.Builder client = new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
+                .addInterceptor(chain -> {
+                    Request originalRequest = chain.request();
+                    Request withUserAgent = originalRequest.newBuilder()
+                            .header("User-Agent", userAgent)
+                            .build();
+                    return chain.proceed(withUserAgent);
+                })
                 .readTimeout(2, TimeUnit.MINUTES)
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)

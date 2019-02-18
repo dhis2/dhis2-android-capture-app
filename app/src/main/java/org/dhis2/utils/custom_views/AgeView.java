@@ -116,7 +116,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
             }
     }
 
-    private void handleSingleInputs() {
+    protected void handleSingleInputs() {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -135,7 +135,7 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         }
     }
 
-    private void handleDateInput(View view, int year1, int month1, int day1) {
+    protected void handleDateInput(View view, int year1, int month1, int day1) {
         selectedCalendar.set(Calendar.YEAR, year1);
         selectedCalendar.set(Calendar.MONTH, month1);
         selectedCalendar.set(Calendar.DAY_OF_MONTH, day1);
@@ -205,11 +205,11 @@ public class AgeView extends FieldLayout implements View.OnClickListener, View.O
         date.setOnFocusChangeListener(this::onFocusChanged);
         date.setOnClickListener(this);
 
-        day.setFocusable(false);
+        day.setFocusable(true);
         day.setClickable(true);
-        month.setFocusable(false);
+        month.setFocusable(true);
         month.setClickable(true);
-        year.setFocusable(false);
+        year.setFocusable(true);
         year.setClickable(true);
 
         day.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});

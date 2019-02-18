@@ -91,8 +91,14 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getAbstractActivity().getApplicationContext()).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(syncReceiver, new IntentFilter("action_sync"));
         handleSyncStatus();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(syncReceiver);
+        super.onPause();
     }
 
     public void handleSyncStatus() {
@@ -116,6 +122,7 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
         if (binding.lottieView != null) {
             binding.lottieView.cancelAnimation();
         }
+        presenter.onDettach();
         super.onStop();
     }
 
@@ -188,7 +195,6 @@ public class SyncActivity extends ActivityGlobalAbstract implements SyncContract
 
 
     public void startMain() {
-        presenter.onDettach();
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

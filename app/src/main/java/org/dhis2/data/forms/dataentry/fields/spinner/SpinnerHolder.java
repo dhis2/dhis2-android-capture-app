@@ -20,7 +20,9 @@ import org.dhis2.utils.custom_views.OptionSetOnClickListener;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.program.ProgramStageSectionRenderingType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ViewDataBinding;
@@ -44,7 +46,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     private SpinnerViewModel viewModel;
     private int numberOfOptions = 0;
-    private List<OptionModel> options;
+    private Map<String, OptionModel> options;
 
     SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType) {
         super(mBinding);
@@ -72,7 +74,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.viewModel = viewModel;
 
         numberOfOptions = Bindings.optionSetItemSize(viewModel.optionSet());
-        options = Bindings.setOptionSet(viewModel.optionSet());
         Bindings.setObjectStyle(iconView, itemView, viewModel.uid());
         editText.setEnabled(viewModel.editable());
         editText.setFocusable(false);
@@ -105,7 +106,8 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        setValueOption(item.getTitle().toString());
+        OptionModel selectedOption = options.get(item.getTitle().toString());
+        setValueOption(selectedOption.displayName(), selectedOption.code());
         return false;
     }
 
@@ -129,31 +131,29 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
         } else {
+            options = new HashMap<>();
+            List<OptionModel> optionList = Bindings.setOptionSet(viewModel.optionSet());
             PopupMenu menu = new PopupMenu(itemView.getContext(), v);
             menu.setOnMenuItemClickListener(this);
-            for (OptionModel optionModel : options)
-                menu.getMenu().add(Menu.NONE, Menu.NONE, options.indexOf(optionModel) + 1, optionModel.displayName());
+            for (OptionModel optionModel : optionList) {
+                options.put(optionModel.displayName(), optionModel);
+                menu.getMenu().add(Menu.NONE, Menu.NONE, optionList.indexOf(optionModel) + 1, optionModel.displayName());
+            }
             menu.show();
         }
     }
 
     @Override
-    public void onSelectOption(String option) {
-        setValueOption(option);
+    public void onSelectOption(OptionModel option) {
+        setValueOption(option.displayName(), option.code());
         OptionSetDialog.newInstance().dismiss();
     }
 
-    private void setValueOption(String option) {
-        String code = null;
-        String displayName = null;
-        for (OptionModel optionModel : options)
-            if (option.equals(optionModel.displayName())) {
-                code = optionModel.code();
-                displayName = optionModel.displayName();
-            }
-        editText.setText(displayName);
+    private void setValueOption(String optionDisplayName, String optionCode) {
+
+        editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), code)
+                RowAction.create(viewModel.uid(), optionCode)
         );
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
