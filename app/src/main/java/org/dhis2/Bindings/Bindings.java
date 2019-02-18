@@ -302,60 +302,43 @@ public class Bindings {
 
     @BindingAdapter(value = {"eventColor", "eventProgramStage"})
     public static void setEventColor(View view, EventModel event, ProgramStageModel programStage) {
-
         if (metadataRepository != null)
             metadataRepository.getExpiryDateFromEvent(event.uid())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             program -> {
-                                int eventColor;
                                 int bgColor;
                                 if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
-                                    eventColor = R.color.event_red;
-                                    bgColor = R.drawable.item_event_red_ripple;
+                                    bgColor = R.drawable.item_event_dark_gray_ripple;
                                 } else {
                                     switch (event.status()) {
                                         case ACTIVE:
                                             if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
-                                                eventColor = R.color.event_red;
-                                                bgColor = R.drawable.item_event_red_ripple;
-                                            } else {
-                                                eventColor = R.color.event_yellow;
+                                                bgColor = R.drawable.item_event_dark_gray_ripple;
+                                            } else
                                                 bgColor = R.drawable.item_event_yellow_ripple;
-                                            }
                                             break;
                                         case COMPLETED:
                                             if (DateUtils.getInstance().isEventExpired(null, event.completedDate(), program.completeEventsExpiryDays())) {
-                                                eventColor = R.color.event_red;
-                                                bgColor = R.drawable.item_event_red_ripple;
-
-                                            } else {
-                                                eventColor = R.color.event_gray;
+                                                bgColor = R.drawable.item_event_dark_gray_ripple;
+                                            } else
                                                 bgColor = R.drawable.item_event_gray_ripple;
-
-                                            }
                                             break;
                                         case SCHEDULE:
                                             if (DateUtils.getInstance().hasExpired(event, program.expiryDays(), program.completeEventsExpiryDays(), programStage.periodType() != null ? programStage.periodType() : program.expiryPeriodType())) {
-                                                eventColor = R.color.event_red;
-                                                bgColor = R.drawable.item_event_red_ripple;
-                                            } else {
-                                                eventColor = R.color.event_green;
+                                                bgColor = R.drawable.item_event_dark_gray_ripple;
+                                            } else
                                                 bgColor = R.drawable.item_event_green_ripple;
-                                            }
                                             break;
                                         case VISITED:
                                         case SKIPPED:
                                         default:
-                                            eventColor = R.color.event_red;
                                             bgColor = R.drawable.item_event_red_ripple;
                                             break;
                                     }
                                 }
-
                                 view.setBackground(ContextCompat.getDrawable(view.getContext(), bgColor));
-//                                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), eventColor));
 
                             },
                             Timber::d
@@ -389,7 +372,6 @@ public class Bindings {
                 textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.red_060));
                 break;
             default:
-                // TODO CRIS: HERE CHECK THE EVENT APPROVAL
                 textView.setText(textView.getContext().getString(R.string.read_only));
                 textView.setTextColor(ContextCompat.getColor(textView.getContext(), R.color.green_7ed));
                 break;

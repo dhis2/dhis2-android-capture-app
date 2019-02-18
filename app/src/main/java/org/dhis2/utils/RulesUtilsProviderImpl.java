@@ -161,7 +161,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                         Map<String, FieldViewModel> fieldViewModels, RulesActionCallbacks rulesActionCallbacks) {
 
         if (fieldViewModels.get(assign.field()) == null)
-            rulesActionCallbacks.save(assign.field(), ruleEffect.data());
+            rulesActionCallbacks.setCalculatedValue(assign.content(), ruleEffect.data());
         else {
             String value = fieldViewModels.get(assign.field()).value();
 
