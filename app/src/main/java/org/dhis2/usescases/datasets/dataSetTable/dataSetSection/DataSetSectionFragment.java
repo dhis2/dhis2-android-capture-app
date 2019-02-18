@@ -6,11 +6,17 @@ import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.dhis2.App;
+
+import com.evrencoskun.tableview.TableView;
+import com.google.common.collect.Table;
+
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModelFactoryImpl;
@@ -93,6 +99,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
 
     public void createTable() {
+
+        binding.tableView.setHeaderCount(presenter.getCatOptions().get(sectionUid).size());
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -181,16 +189,17 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
                         add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
         }
 
-            adapter.swap(listFields);
+        adapter.swap(listFields);
         if(!tableCreated)
             adapter.setAllItems(
-                    presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    //presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    presenter.getCatOptions().get(sectionUid),
                     presenter.getDataElements().get(sectionUid),
                     cells);
         else
             adapter.setCellItems(cells);
 
-            tableCreated = true;
+        tableCreated = true;
     }
 
     private void setTotalColumn(Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,

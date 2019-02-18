@@ -97,8 +97,7 @@ public class ColumnHeaderRecyclerViewAdapter<CH> extends AbstractRecyclerViewAda
     public ColumnSortHelper getColumnSortHelper() {
         if (mColumnSortHelper == null) {
             // It helps to store sorting state of column headers
-            this.mColumnSortHelper = new ColumnSortHelper(mTableView.getColumnHeaderLayoutManager
-                    ());
+            this.mColumnSortHelper = new ColumnSortHelper(mTableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount()-1));
         }
         return mColumnSortHelper;
     }
