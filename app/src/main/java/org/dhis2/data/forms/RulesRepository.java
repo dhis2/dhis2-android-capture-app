@@ -27,6 +27,8 @@ import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideOption;
+import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
@@ -130,6 +132,8 @@ public final class RulesRepository {
             "  \"CREATEEVENT\",\n" +
             "  \"HIDEPROGRAMSTAGE\",\n" +
             "  \"SETMANDATORYFIELD\"" +
+            "  \"HIDEOPTION\",\n" +
+            "  \"HIDEOPTIONGROUP\"" +
             ");";
 
     /**
@@ -465,6 +469,10 @@ public final class RulesRepository {
                 return RuleActionHideProgramStage.create(programStage);
             case SETMANDATORYFIELD:
                 return RuleActionSetMandatoryField.create(isEmpty(attribute) ? dataElement : attribute);
+            case HIDEOPTION:
+                return RuleActionHideOption.create(content, isEmpty(attribute) ? dataElement : attribute);
+            case HIDEOPTIONGROUP:
+                return RuleActionHideOptionGroup.create(content, isEmpty(attribute) ? dataElement : attribute);
             default:
                 throw new IllegalArgumentException(
                         "Unsupported RuleActionType: " + cursor.getString(3));

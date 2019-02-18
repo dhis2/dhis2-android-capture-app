@@ -1,1 +1,2 @@
 include ':app', ':customFab', ':dhis2-rule-engine', ':viewpagerdotsindicator'
+project(':dhis2-rule-engine').projectDir = new File(settingsDir, '../../dhis/dhis2-rule-engine')

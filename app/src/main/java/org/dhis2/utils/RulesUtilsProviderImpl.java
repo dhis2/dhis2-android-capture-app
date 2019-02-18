@@ -11,6 +11,8 @@ import org.hisp.dhis.rules.models.RuleActionDisplayKeyValuePair;
 import org.hisp.dhis.rules.models.RuleActionDisplayText;
 import org.hisp.dhis.rules.models.RuleActionErrorOnCompletion;
 import org.hisp.dhis.rules.models.RuleActionHideField;
+import org.hisp.dhis.rules.models.RuleActionHideOption;
+import org.hisp.dhis.rules.models.RuleActionHideOptionGroup;
 import org.hisp.dhis.rules.models.RuleActionHideProgramStage;
 import org.hisp.dhis.rules.models.RuleActionHideSection;
 import org.hisp.dhis.rules.models.RuleActionSetMandatoryField;
@@ -73,6 +75,10 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
                 errorOnCompletion((RuleActionErrorOnCompletion) ruleAction, rulesActionCallbacks);
             else if (ruleAction instanceof RuleActionHideProgramStage)
                 hideProgramStage((RuleActionHideProgramStage) ruleAction, rulesActionCallbacks);
+            else if (ruleAction instanceof RuleActionHideOption)
+                hideOption((RuleActionHideOption) ruleAction, fieldViewModels, rulesActionCallbacks);
+            else if (ruleAction instanceof RuleActionHideOptionGroup)
+                hideOptionGroup((RuleActionHideOptionGroup) ruleAction, fieldViewModels,  rulesActionCallbacks);
             else
                 rulesActionCallbacks.unsupportedRuleAction();
 
@@ -199,5 +205,17 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
 
     private void hideProgramStage(Map<String, ProgramStageModel> programStages, RuleActionHideProgramStage hideProgramStage) {
         programStages.remove(hideProgramStage.programStage());
+    }
+
+    private void hideOption(RuleActionHideOption ruleAction,
+                            Map<String, FieldViewModel> fieldViewModels,
+                            RulesActionCallbacks rulesActionCallbacks) {
+        ruleAction.option();
+    }
+
+    private void hideOptionGroup(RuleActionHideOptionGroup ruleAction,
+                                 Map<String, FieldViewModel> fieldViewModels,
+                                 RulesActionCallbacks rulesActionCallbacks) {
+        ruleAction.optionGroup();
     }
 }
