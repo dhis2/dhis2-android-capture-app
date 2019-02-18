@@ -82,6 +82,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         chosenDateYear.add(new Date());
 
         dataSetUid = getIntent().getStringExtra("DATASET_UID");
+        binding.setName(getIntent().getStringExtra(Constants.DATA_SET_NAME));
         accessWriteData = Boolean.valueOf(getIntent().getStringExtra(Constants.ACCESS_DATA));
         binding.setPresenter(presenter);
 

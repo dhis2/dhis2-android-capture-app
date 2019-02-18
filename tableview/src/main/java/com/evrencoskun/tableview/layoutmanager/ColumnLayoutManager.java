@@ -48,8 +48,8 @@ public class ColumnLayoutManager extends LinearLayoutManager {
     public ColumnLayoutManager(Context context, ITableView tableView) {
         super(context);
         this.mTableView = tableView;
-        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView();
-        this.mColumnHeaderLayoutManager = mTableView.getColumnHeaderLayoutManager();
+        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView(mTableView.getHeaderCount()-1);
+        this.mColumnHeaderLayoutManager = mTableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount()-1);
         this.mCellLayoutManager = mTableView.getCellLayoutManager();
 
         // Set default orientation
@@ -192,7 +192,7 @@ public class ColumnLayoutManager extends LinearLayoutManager {
                 mCellRowRecyclerView.isScrollOthers()) {
             // Every CellRowRecyclerViews should be scrolled after the ColumnHeaderRecyclerView.
             // Because it is the main compared one to make each columns fit.
-            mColumnHeaderRecyclerView.scrollBy(dx, 0);
+            //mColumnHeaderRecyclerView.scrollBy(dx, 0);
         }
         // It is important to determine the next attached view to fit all columns
         mLastDx = dx;

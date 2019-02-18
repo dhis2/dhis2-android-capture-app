@@ -6,9 +6,14 @@ import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.evrencoskun.tableview.TableView;
+import com.google.common.collect.Table;
 
 import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.tablefields.FieldViewModel;
@@ -87,6 +92,8 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
 
     public void createTable(RowAction rowAction) {
+
+        binding.tableView.setHeaderCount(presenter.getCatOptions().get(sectionUid).size());
 
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
@@ -178,7 +185,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             adapter.swap(listFields);
         if(!tableCreated)
             adapter.setAllItems(
-                    presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1),
+                    presenter.getCatOptions().get(sectionUid),
                     presenter.getDataElements().get(sectionUid),
                     cells);
         else

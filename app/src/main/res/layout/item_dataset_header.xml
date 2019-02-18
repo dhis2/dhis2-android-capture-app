@@ -6,8 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/title"
@@ -23,12 +22,16 @@
             tools:text="DATA ELEMENT TEXT" />
 
         <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="?colorPrimary"/>
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:background="?colorPrimary"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,7 +47,7 @@ public class SelectionHandler {
 
     public SelectionHandler(ITableView tableView) {
         this.mTableView = tableView;
-        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView();
+        this.mColumnHeaderRecyclerView = mTableView.getColumnHeaderRecyclerView(tableView.getHeaderCount()-1);
         this.mRowHeaderRecyclerView = mTableView.getRowHeaderRecyclerView();
         this.mCellLayoutManager = mTableView.getCellLayoutManager();
     }

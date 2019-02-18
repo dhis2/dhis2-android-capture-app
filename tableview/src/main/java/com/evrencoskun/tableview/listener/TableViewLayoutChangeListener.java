@@ -37,7 +37,7 @@ public class TableViewLayoutChangeListener implements View.OnLayoutChangeListene
 
     public TableViewLayoutChangeListener(ITableView tableView) {
         this.mCellRecyclerView = tableView.getCellRecyclerView();
-        this.mColumnHeaderRecyclerView = tableView.getColumnHeaderRecyclerView();
+        this.mColumnHeaderRecyclerView = tableView.getColumnHeaderRecyclerView(tableView.getHeaderCount()-1);
         this.mCellLayoutManager = tableView.getCellLayoutManager();
     }
 

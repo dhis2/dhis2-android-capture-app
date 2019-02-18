@@ -36,6 +36,8 @@ import com.evrencoskun.tableview.listener.scroll.HorizontalRecyclerViewListener;
 import com.evrencoskun.tableview.listener.scroll.VerticalRecyclerViewListener;
 import com.evrencoskun.tableview.sort.SortState;
 
+import java.util.List;
+
 /**
  * Created by evrencoskun on 19/06/2017.
  */
@@ -56,11 +58,13 @@ public interface ITableView {
 
     CellRecyclerView getCellRecyclerView();
 
-    CellRecyclerView getColumnHeaderRecyclerView();
+    CellRecyclerView getColumnHeaderRecyclerView(int header);
+
+    List<CellRecyclerView> getColumnHeaderRecyclerView();
 
     CellRecyclerView getRowHeaderRecyclerView();
 
-    ColumnHeaderLayoutManager getColumnHeaderLayoutManager();
+    ColumnHeaderLayoutManager getColumnHeaderLayoutManager(int header);
 
     CellLayoutManager getCellLayoutManager();
 
@@ -152,4 +156,6 @@ public interface ITableView {
      * @return The ScrollHandler of the TableView.
      */
     ScrollHandler getScrollHandler();
+
+    int getHeaderCount();
 }

@@ -134,7 +134,7 @@ public class ColumnHeaderLayoutManager extends LinearLayoutManager {
         AbstractViewHolder[] views = new AbstractViewHolder[visibleChildCount];
         for (int i = findFirstVisibleItemPosition(); i < findLastVisibleItemPosition() + 1; i++) {
 
-            views[index] = (AbstractViewHolder) mTableView.getColumnHeaderRecyclerView()
+            views[index] = (AbstractViewHolder) mTableView.getColumnHeaderRecyclerView(mTableView.getHeaderCount()-1)
                     .findViewHolderForAdapterPosition(i);
 
             index++;
@@ -143,7 +143,7 @@ public class ColumnHeaderLayoutManager extends LinearLayoutManager {
     }
 
     public AbstractViewHolder getViewHolder(int xPosition) {
-        return (AbstractViewHolder) mTableView.getColumnHeaderRecyclerView()
+        return (AbstractViewHolder) mTableView.getColumnHeaderRecyclerView(mTableView.getHeaderCount()-1)
                 .findViewHolderForAdapterPosition(xPosition);
     }
 

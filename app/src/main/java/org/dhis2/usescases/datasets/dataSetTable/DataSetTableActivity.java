@@ -2,6 +2,8 @@ package org.dhis2.usescases.datasets.dataSetTable;
 
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,6 +30,7 @@ import io.reactivex.Flowable;
 public class DataSetTableActivity extends ActivityGlobalAbstract implements DataSetTableContract.View {
 
     String orgUnitUid;
+    String orgUnitName;
     String periodTypeName;
     String periodInitialDate;
     String catCombo;
@@ -58,6 +61,7 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         orgUnitUid = getIntent().getStringExtra(Constants.ORG_UNIT);
+        orgUnitName = getIntent().getStringExtra(Constants.ORG_UNIT_NAME);
         periodTypeName = getIntent().getStringExtra(Constants.PERIOD_TYPE);
         periodInitialDate = getIntent().getStringExtra(Constants.PERIOD_TYPE_DATE);
         catCombo = getIntent().getStringExtra(Constants.CAT_COMB);
@@ -86,12 +90,18 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
         viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+
+        if(dataElements.size()>1)
+            dataElements.remove("NO_SECTION");
+        else
+            binding.tabLayout.setVisibility(View.GONE);
+
         viewPagerAdapter.swapData(dataElements);
     }
 
     @Override
     public void setDataSet(DataSetModel data) {
-        binding.dataSetName.setText(data.displayName());
+        binding.dataSetName.setText(String.format("%s\n%s", data.displayName(), orgUnitName));
     }
 
     @Override

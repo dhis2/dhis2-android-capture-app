@@ -40,7 +40,7 @@ public class ScrollHandler {
         this.mTableView = tableView;
         this.mCellLayoutManager = tableView.getCellLayoutManager();
         this.mRowHeaderLayoutManager = tableView.getRowHeaderLayoutManager();
-        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager();
+        this.mColumnHeaderLayoutManager = tableView.getColumnHeaderLayoutManager(mTableView.getHeaderCount()-1);
     }
 
     public void scrollToColumnPosition(int columnPosition) {
@@ -98,8 +98,10 @@ public class ScrollHandler {
     }
 
     private void scrollColumnHeader(int columnPosition, int offset) {
-        mTableView.getColumnHeaderLayoutManager().scrollToPositionWithOffset(columnPosition,
-                offset);
+        for(int i = 0; i<mTableView.getHeaderCount(); i++){
+            mTableView.getColumnHeaderLayoutManager(i).scrollToPositionWithOffset(columnPosition,
+                    offset);
+        }
     }
 
     public int getColumnPosition() {
