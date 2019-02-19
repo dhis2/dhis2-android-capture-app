@@ -1,9 +1,5 @@
 package org.dhis2.data.forms.dataentry.fields.orgUnit;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,11 +8,14 @@ import org.dhis2.R;
 import org.dhis2.data.forms.dataentry.fields.Row;
 import org.dhis2.data.forms.dataentry.fields.RowAction;
 import org.dhis2.databinding.FormButtonBinding;
-
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -33,6 +32,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
     private final Observable<List<OrganisationUnitModel>> orgUnits;
     private final String renderType;
     private FormButtonBinding binding;
+    private boolean isSearchMode = false;
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
                       boolean isBgTransparent, Observable<List<OrganisationUnitModel>> orgUnits) {
@@ -42,6 +42,7 @@ public class OrgUnitRow implements Row<OrgUnitHolder, OrgUnitViewModel> {
         this.fm = fm;
         this.orgUnits = orgUnits;
         this.renderType = null;
+        this.isSearchMode = true;
     }
 
     public OrgUnitRow(FragmentManager fm, LayoutInflater layoutInflater, FlowableProcessor<RowAction> processor,
