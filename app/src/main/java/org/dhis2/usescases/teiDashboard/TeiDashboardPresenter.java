@@ -440,11 +440,11 @@ public class TeiDashboardPresenter implements TeiDashboardContracts.Presenter {
                         Observable.fromIterable(indicators)
                                 .filter(indicator -> indicator.displayInForm())
                                 .map(indicator -> {
-                                    String indcatorValue = d2.evaluateProgramIndicator(
+                                    String indicatorValue = d2.programModule().programIndicatorEngine.getProgramIndicatorValue(
                                             dashboardProgramModel.getCurrentEnrollment().uid(),
                                             null,
                                             indicator.uid());
-                                    return Pair.create(indicator, indcatorValue == null ? "" : indcatorValue);
+                                    return Pair.create(indicator, indicatorValue == null ? "" : indicatorValue);
                                 })
                                 .filter(pair -> !pair.val1().isEmpty())
                                 .flatMap(pair -> dashboardRepository.getLegendColorForIndicator(pair.val0(), pair.val1()))

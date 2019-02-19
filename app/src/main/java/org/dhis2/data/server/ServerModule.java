@@ -9,7 +9,7 @@ import org.dhis2.R;
 import org.dhis2.data.dagger.PerServer;
 import org.hisp.dhis.android.BuildConfig;
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.core.configuration.Configuration;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
@@ -38,9 +38,9 @@ import timber.log.Timber;
 @Module
 @PerServer
 public class ServerModule {
-    private final ConfigurationModel configuration;
+    private final Configuration configuration;
 
-    public ServerModule(@NonNull ConfigurationModel configuration) {
+    public ServerModule(@NonNull Configuration configuration) {
         this.configuration = configuration;
     }
 
@@ -117,7 +117,6 @@ public class ServerModule {
                         .sslSocketFactory(new TLSSocketFactory(sc.getSocketFactory()), trustManager)
                         .connectionSpecs(specs);
 
-
             } catch (Exception e) {
                 Timber.e(e);
             }
@@ -132,6 +131,5 @@ public class ServerModule {
     UserManager configurationRepository(D2 d2) {
         return new UserManagerImpl(d2);
     }
-
 
 }

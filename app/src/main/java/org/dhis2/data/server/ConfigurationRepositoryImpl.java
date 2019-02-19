@@ -1,10 +1,9 @@
 package org.dhis2.data.server;
 
-import androidx.annotation.NonNull;
-
+import org.hisp.dhis.android.core.configuration.Configuration;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import okhttp3.HttpUrl;
 
@@ -18,16 +17,16 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
 
     @NonNull
     @Override
-    public Observable<ConfigurationModel> configure(@NonNull HttpUrl baseUrl) {
+    public Observable<Configuration> configure(@NonNull HttpUrl baseUrl) {
         return Observable.defer(() -> Observable.fromCallable(
                 () -> configurationManager.configure(baseUrl)));
     }
 
     @NonNull
     @Override
-    public Observable<ConfigurationModel> get() {
+    public Observable<Configuration> get() {
         return Observable.defer(() -> {
-            ConfigurationModel configuration = configurationManager.get();
+            Configuration configuration = configurationManager.get();
             if (configuration != null) {
                 return Observable.just(configuration);
             }
@@ -39,6 +38,6 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
     @NonNull
     @Override
     public Observable<Integer> remove() {
-        return Observable.defer(() -> Observable.fromCallable(() -> configurationManager.remove()));
+        return Observable.defer(() -> Observable.fromCallable(configurationManager::remove));
     }
 }

@@ -2,7 +2,6 @@ package org.dhis2.utils;
 
 import java.util.List;
 
-import me.toptas.fancyshowcase.BuildConfig;
 import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 
@@ -14,7 +13,6 @@ public class HelpManager {
 
     private static HelpManager instance;
     private List<FancyShowCaseView> help;
-    private FancyShowCaseQueue queue;
     private String screen;
 
     public static HelpManager getInstance() {
@@ -31,7 +29,7 @@ public class HelpManager {
 
     public void showHelp() {
         if (help != null) {
-            queue = new FancyShowCaseQueue();
+            FancyShowCaseQueue queue = new FancyShowCaseQueue();
             for (FancyShowCaseView view : help) {
                 queue.add(view);
             }
@@ -39,7 +37,7 @@ public class HelpManager {
         }
     }
 
-    public boolean isTutorialReadyForScreen(String screen){
-        return this.screen.equals(screen) && help!=null && !help.isEmpty();
+    public boolean isTutorialReadyForScreen(String screen) {
+        return this.screen.equals(screen) && help != null && !help.isEmpty();
     }
 }

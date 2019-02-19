@@ -17,9 +17,9 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.searchTrackEntity.adapters.SearchTeiModel;
 import org.dhis2.usescases.teiDashboard.mobile.TeiDashboardMobileActivity;
 import org.dhis2.utils.Constants;
-import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.dhis2.utils.DateUtils;
 import org.dhis2.utils.NetworkUtils;
+import org.dhis2.utils.custom_views.OrgUnitDialog;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.data.api.OuMode;
 import org.hisp.dhis.android.core.maintenance.D2Error;
@@ -27,7 +27,6 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModelBuilder;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModelBuilder;
@@ -234,7 +233,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                         .orgUnitMode(OuMode.ACCESSIBLE)
                                         .build();
 
-                                return Flowable.defer(() -> Flowable.fromCallable(d2.queryTrackedEntityInstances(query)))
+                                return Flowable.defer(() -> Flowable.fromCallable(d2.trackedEntityModule().queryTrackedEntityInstances(query)))
                                         .observeOn(Schedulers.io())
                                         .subscribeOn(Schedulers.io())
                                         .doOnError(this::handleError)
@@ -248,9 +247,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                                 for (TrackedEntityInstance tei : trackedEntityInstances) {
                                     if (view.fromRelationshipTEI() == null || !tei.uid().equals(view.fromRelationshipTEI())) { //If fetching for relationship, discard selected TEI
                                         List<TrackedEntityAttributeValueModel> attributeModels = new ArrayList<>();
-                                        TrackedEntityAttributeValueModelBuilder attrValueBuilder = new TrackedEntityAttributeValueModelBuilder(tei);
+                                        TrackedEntityAttributeValueModel.Builder attrValueBuilder = TrackedEntityAttributeValueModel.builder();
                                         for (TrackedEntityAttributeValue attrValue : tei.trackedEntityAttributeValues()) {
-                                            attributeModels.add(attrValueBuilder.buildModel(attrValue));
+                                            attrValueBuilder.value(attrValue.value())
+                                                    .created(attrValue.created())
+                                                    .lastUpdated(attrValue.lastUpdated())
+                                                    .trackedEntityAttribute(attrValue.trackedEntityAttribute())
+                                                    .trackedEntityInstance(tei.uid());
+                                            attributeModels.add(attrValueBuilder.build());
                                         }
                                         SearchTeiModel teiModel = new SearchTeiModel(teiBuilder.buildModel(tei), attributeModels);
                                         teiList.add(teiModel);
@@ -355,6 +359,12 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     private void getTrackedEntityAttributes() {
         compositeDisposable.add(searchRepository.programAttributes()
+                .flatMap(list -> {
+                    if(selectedProgram == null)
+                        return searchRepository.trackedEntityTypeAttributes();
+                    else
+                        return Observable.just(list);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -563,7 +573,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(teiUid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -578,7 +588,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         List<String> teiUids = new ArrayList<>();
         teiUids.add(TEIuid);
         compositeDisposable.add(
-                Flowable.fromCallable(d2.downloadTrackedEntityInstancesByUid(teiUids))
+                Flowable.fromCallable(d2.trackedEntityModule().downloadTrackedEntityInstancesByUid(teiUids))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

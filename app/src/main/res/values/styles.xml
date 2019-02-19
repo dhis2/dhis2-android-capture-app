@@ -131,6 +131,7 @@
 
     <style name="CustomDialog" parent="Base.AlertDialog.AppCompat.Light">
         <item name="android:textColor">?colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
     </style>
 
     <style name="ButtonRoundedGrey" parent="Base.TextAppearance.AppCompat.Button">

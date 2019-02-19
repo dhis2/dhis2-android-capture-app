@@ -86,7 +86,12 @@ public class LoginPresenter implements LoginContracts.Presenter {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    systemInfo -> view.setUrl(systemInfo.contextPath()),
+                                    systemInfo -> {
+                                        if (systemInfo.contextPath() != null)
+                                            view.setUrl(systemInfo.contextPath());
+                                        else
+                                            view.setUrl(view.getContext().getString(R.string.login_https));
+                                    },
                                     Timber::e));
         } else
             view.setUrl(view.getContext().getString(R.string.login_https));
@@ -227,7 +232,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void logOut() {
         if (userManager != null)
             disposable.add(Observable.fromCallable(
-                    userManager.getD2().logout())
+                    userManager.getD2().userModule().logOut())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

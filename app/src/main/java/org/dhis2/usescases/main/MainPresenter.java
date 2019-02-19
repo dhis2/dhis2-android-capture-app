@@ -74,7 +74,7 @@ final class MainPresenter implements MainContracts.Presenter {
     public void logOut() {
         try {
             WorkManager.getInstance().cancelAllWork();
-            d2.logout().call();
+            d2.userModule().logOut().call();
             view.startActivity(LoginActivity.class, null, true, true, null);
         } catch (Exception e) {
             Timber.e(e);
