@@ -43,12 +43,13 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
     private final TextInputEditText editText;
     private final TextInputLayout inputLayout;
     private final View descriptionLabel;
+    private final boolean isSearchMode;
 
     private SpinnerViewModel viewModel;
     private int numberOfOptions = 0;
     private Map<String, OptionModel> options;
 
-    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType) {
+    SpinnerHolder(ViewDataBinding mBinding, FlowableProcessor<RowAction> processor, FlowableProcessor<Trio<String, String, Integer>> processorOptionSet, String renderType, boolean isSearchMode) {
         super(mBinding);
         this.editText = mBinding.getRoot().findViewById(R.id.input_editText);
         this.iconView = mBinding.getRoot().findViewById(R.id.renderImage);
@@ -56,6 +57,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         this.descriptionLabel = mBinding.getRoot().findViewById(R.id.descriptionLabel);
         this.processor = processor;
         this.processorOptionSet = processorOptionSet;
+        this.isSearchMode = isSearchMode;
 
         if (renderType != null && !renderType.equals(ProgramStageSectionRenderingType.LISTING.name()))
             iconView.setVisibility(View.VISIBLE);
@@ -153,7 +155,7 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
 
         editText.setText(optionDisplayName);
         processor.onNext(
-                RowAction.create(viewModel.uid(), optionCode)
+                RowAction.create(viewModel.uid(), isSearchMode ? optionDisplayName : optionCode)
         );
       /*  View nextView;
         if ((nextView = editText.focusSearch(View.FOCUS_DOWN)) != null)
