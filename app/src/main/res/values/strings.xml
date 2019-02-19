@@ -349,7 +349,7 @@
     <string name="tuto_dashboard_5">Click to create or schedule an event or refer to another Org Unit.</string>
     <string name="tuto_dashboard_6">Here you will see all events. Click to see an event detail.</string>
     <string name="tuto_dashboard_7">Navigate through the menu to add relationships, see indicators or write notes.</string>
-    <string name="tuto_dashboard_8">Click to see all enrollmets of your entity or create a new one.</string>
+    <string name="tuto_dashboard_8">Click to see all enrollments of your entity or create a new one.</string>
     <string name="tuto_tei_event_1">Click to delete this event. This action can not be undone.</string>
     <string name="tuto_tei_event_2">Complete the event.</string>
     <string name="tuto_program_event_1">All events related to this program will be listed here.</string>
