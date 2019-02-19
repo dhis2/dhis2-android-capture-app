@@ -498,7 +498,9 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         if (selectedProgram != null && !selectedProgram.selectEnrollmentDatesInFuture()) {
             dateDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
-        dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        if (selectedProgram != null && selectedProgram.enrollmentDateLabel() != null) {
+            dateDialog.setTitle(selectedProgram.enrollmentDateLabel());
+        }
         dateDialog.setButton(DialogInterface.BUTTON_NEGATIVE, view.getContext().getString(R.string.date_dialog_clear), (dialog, which) -> {
             dialog.dismiss();
         });
@@ -506,16 +508,18 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid, Date enrollmentDate) {
-        compositeDisposable.add(
-                searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(enrollmentUid -> {
-                                    FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
-                                    this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
-                                },
-                                Timber::d)
-        );
+        if (trackedEntity != null && trackedEntity.uid() != null) {
+            compositeDisposable.add(
+                    searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, enrollmentDate)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(enrollmentUid -> {
+                                        FormViewArguments formViewArguments = FormViewArguments.createForEnrollment(enrollmentUid);
+                                        this.view.getContext().startActivity(FormActivity.create(this.view.getContext(), formViewArguments, true));
+                                    },
+                                    Timber::d)
+            );
+        }
     }
 
     @Override

@@ -3,8 +3,6 @@ package org.dhis2.usescases.teiDashboard.teiDataDetail;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -16,6 +14,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
@@ -71,7 +71,6 @@ public final class AttrValueStore implements AttrEntryStore {
         return Flowable
                 .defer(() -> {
                     if (checkUnique(uid, value)) {
-
                         long updated = update(uid, value);
                         if (updated > 0) {
                             return Flowable.just(updated);
@@ -94,8 +93,8 @@ public final class AttrValueStore implements AttrEntryStore {
         sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime()));
         sqLiteBind(updateStatement, 2, value == null ? "" : value);
-        sqLiteBind(updateStatement, 3, enrollment == null ? "" : value);
-        sqLiteBind(updateStatement, 4, attribute == null ? "" : value);
+        sqLiteBind(updateStatement, 3, enrollment);
+        sqLiteBind(updateStatement, 4, attribute);
 
         long updated = briteDatabase.executeUpdateDelete(
                 TrackedEntityAttributeValueModel.TABLE, updateStatement);
@@ -108,11 +107,11 @@ public final class AttrValueStore implements AttrEntryStore {
         String created = BaseIdentifiableObject.DATE_FORMAT
                 .format(Calendar.getInstance().getTime());
 
-        sqLiteBind(insertStatement, 1, created == null ? "" : created);
-        sqLiteBind(insertStatement, 2, created == null ? "" : created);
-        sqLiteBind(insertStatement, 3, value == null ? "" : value);
-        sqLiteBind(insertStatement, 4, attribute == null ? "" : attribute);
-        sqLiteBind(insertStatement, 5, enrollment == null ? "" : enrollment);
+        sqLiteBind(insertStatement, 1, created);
+        sqLiteBind(insertStatement, 2, created);
+        sqLiteBind(insertStatement, 3, value);
+        sqLiteBind(insertStatement, 4, attribute);
+        sqLiteBind(insertStatement, 5, enrollment);
 
         long inserted = briteDatabase.executeInsert(
                 TrackedEntityAttributeValueModel.TABLE, insertStatement);
@@ -128,15 +127,12 @@ public final class AttrValueStore implements AttrEntryStore {
                 " TrackedEntityAttribute.uniqueProperty = ? AND" +
                 " TrackedEntityAttributeValue.value = ?", attribute, "1", value);
 
-        if (uniqueCursor == null || uniqueCursor.getCount() == 0)
-            return true;
-        else
-            return false;
+        return uniqueCursor == null || uniqueCursor.getCount() == 0;
     }
 
     @NonNull
     private Flowable<Long> updateEnrollment(long status) {
-        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment == null ? "" : enrollment)
+        return briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
                 .mapToOne(TrackedEntityInstanceModel::create).take(1).toFlowable(BackpressureStrategy.LATEST)
                 .switchMap(tei -> {
                     if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||

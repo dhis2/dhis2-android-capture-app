@@ -27,15 +27,19 @@ import io.reactivex.SingleEmitter;
 
 public class DateDialog extends DialogFragment {
 
-    static private ActionTrigger<DateDialog> dialogActionTrigger;
-    public SingleEmitter<List<Date>> callback;
+    private static ActionTrigger<DateDialog> dialogActionTrigger;
+    private SingleEmitter<List<Date>> callback;
 
-    static DateDialog instace;
-    static Period period = Period.WEEKLY;
-    static DateAdapter adapter;
+    private static DateDialog instace;
+    private static Period period = Period.WEEKLY;
+    private static DateAdapter adapter;
 
-    View.OnClickListener possitiveListener;
-    View.OnClickListener negativeListener;
+    private View.OnClickListener possitiveListener;
+    private View.OnClickListener negativeListener;
+
+    public SingleEmitter<List<Date>> getCallback() {
+        return callback;
+    }
 
     public static DateDialog newInstace(Period mPeriod) {
         if (period != mPeriod || instace == null) {

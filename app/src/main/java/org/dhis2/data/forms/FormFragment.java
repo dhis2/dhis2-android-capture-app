@@ -95,12 +95,15 @@ public class FormFragment extends FragmentGlobalAbstract implements FormView, Co
     private String messageOnComplete = "";
     private boolean canComplete = true;
     private LinearLayout dateLayout;
-    public View datesLayout;
+    private View datesLayout;
     private RuleActionErrorOnCompletion errorOnCompletion;
     private RuleActionShowError showError;
     private String programUid;
     private String teiUid;
 
+    public View getDatesLayout() {
+        return datesLayout;
+    }
 
     public FormFragment() {
         // Required empty public constructor

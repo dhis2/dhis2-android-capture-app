@@ -1,6 +1,6 @@
 package org.dhis2.utils.custom_views;
 
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.utils.Period;
@@ -16,14 +16,13 @@ import io.reactivex.disposables.CompositeDisposable;
  */
 
 public class RxDateDialog {
-    public static int BUTTON_POSSITIVE = AlertDialog.BUTTON_POSITIVE;
-    public static int BUTTON_NEGATIVE = AlertDialog.BUTTON_NEGATIVE;
 
     private final ActionTrigger<DateDialog> actionTrigger = ActionTrigger.create();
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final ActivityGlobalAbstract activity;
     private final Period period;
 
+    @SuppressLint({"RxLeakedSubscription", "RxSubscribeOnError"})
     public RxDateDialog(final ActivityGlobalAbstract activity, Period mPeriod) {
         this.activity = activity;
         this.period = mPeriod;
@@ -34,21 +33,20 @@ public class RxDateDialog {
             else
                 compositeSubscription.clear();
         });
-
     }
 
     private void showDialog(DateDialog dialog) {
         dialog.setCancelable(true);
         dialog.setPossitiveListener(v -> {
-            notifyClick(dialog.callback, dialog.getFilters());
+            notifyClick(dialog.getCallback(), dialog.getFilters());
             dialog.dismiss();
         });
         dialog.setNegativeListener(v -> {
-            notifyClick(dialog.callback, dialog.clearFilters());
+            notifyClick(dialog.getCallback(), dialog.clearFilters());
             dialog.dismiss();
         });
 
-        if(activity.getSupportFragmentManager().findFragmentByTag("dialog") == null){
+        if (activity.getSupportFragmentManager().findFragmentByTag("dialog") == null) {
             activity.getSupportFragmentManager().beginTransaction().add(dialog, "dialog").commit();
         }
 

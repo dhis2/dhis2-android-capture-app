@@ -128,9 +128,6 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
                     .setClearListener(view -> {
                                 processor.onNext(
                                         RowAction.create(viewModel.uid(), ""));
-                               /* DataSetTableView nextView;
-                                if ((nextView = editText.focusSearch(DataSetTableView.FOCUS_DOWN)) != null)
-                                    nextView.requestFocus();*/
                                 dialog.dismiss();
                             }
                     ).show(((FragmentActivity) binding.getRoot().getContext()).getSupportFragmentManager(), null);
@@ -161,8 +158,5 @@ public class SpinnerHolder extends FormViewHolder implements View.OnClickListene
         processor.onNext(
                 RowAction.create(viewModel.uid(), code)
         );
-      /*  DataSetTableView nextView;
-        if ((nextView = editText.focusSearch(DataSetTableView.FOCUS_DOWN)) != null)
-            nextView.requestFocus();*/
     }
 }

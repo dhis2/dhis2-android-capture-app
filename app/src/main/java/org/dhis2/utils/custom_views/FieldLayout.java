@@ -1,24 +1,18 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
-
-import org.dhis2.utils.ColorUtils;
-
-import androidx.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 29/01/2019.
  */
 public abstract class FieldLayout extends RelativeLayout {
 
-    public boolean isBgTransparent;
-    public LayoutInflater inflater;
-
+    protected boolean isBgTransparent;
+    protected LayoutInflater inflater;
 
     public FieldLayout(Context context) {
         super(context);

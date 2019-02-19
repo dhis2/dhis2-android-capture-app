@@ -1,10 +1,6 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -16,11 +12,16 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.dhis2.BR;
 import org.dhis2.R;
 import org.dhis2.utils.TextChangedListener;
-
 import org.hisp.dhis.android.core.common.ValueType;
+
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 /**
  * QUADRAM. Created by frodriguez on 1/17/2018.
@@ -28,11 +29,11 @@ import org.hisp.dhis.android.core.common.ValueType;
 
 public class CustomTextView extends RelativeLayout implements TextWatcher {
 
-    private static boolean isBgTransparent;
+    private boolean isBgTransparent;
     private EditText editText;
-    public static String label;
-    public static ValueType valueType;
-    private static ViewDataBinding binding;
+    private String label;
+    private ValueType valueType;
+    private ViewDataBinding binding;
 
     private TextChangedListener listener;
 
@@ -120,11 +121,10 @@ public class CustomTextView extends RelativeLayout implements TextWatcher {
     }
 
     @BindingAdapter(value = {"isBgTransparent", "label", "valueType"})
-    public static void setIsBgTransparent(CustomTextView view, boolean mIsBgTransparent, String mLabel, ValueType mValueType) {
+    public void setIsBgTransparent(CustomTextView view, boolean mIsBgTransparent, String mLabel, ValueType mValueType) {
         isBgTransparent = mIsBgTransparent;
         label = mLabel;
         valueType = mValueType;
-
         view.setLayout();
     }
 

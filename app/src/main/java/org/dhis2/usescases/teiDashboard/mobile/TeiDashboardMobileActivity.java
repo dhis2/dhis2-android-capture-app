@@ -5,20 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.annotation.Nullable;
-
-import com.google.android.material.ripple.RippleUtils;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.dhis2.BuildConfig;
 import org.dhis2.R;
@@ -41,6 +34,11 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
@@ -51,7 +49,7 @@ import me.toptas.fancyshowcase.FocusShape;
 public class TeiDashboardMobileActivity extends TeiDashboardActivity implements TeiDashboardContracts.View {
 
     ActivityDashboardMobileBinding binding;
-    public FragmentStatePagerAdapter adapter;
+    private FragmentStatePagerAdapter adapter;
     private int orientation;
     private boolean changingProgram;
 
@@ -81,8 +79,6 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
         if (!changingProgram && prevDashboardProgram != null && !prevDashboardProgram.equals(programUid)) {
             finish();
         } else {
-         /*   if(changingProgram)
-                recreate();*/
             orientation = Resources.getSystem().getConfiguration().orientation;
             init(teiUid, programUid);
         }
@@ -103,7 +99,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.clear();
         outState.putString(Constants.TRACKED_ENTITY_INSTANCE, teiUid);
@@ -337,7 +333,7 @@ public class TeiDashboardMobileActivity extends TeiDashboardActivity implements 
 
     @Override
     public void showTutorial(boolean shaked) {
-        if(binding.tabLayout.getSelectedTabPosition()==0)
+        if (binding.tabLayout.getSelectedTabPosition() == 0)
             super.showTutorial(shaked);
         else
             showToast(getString(R.string.no_intructions));

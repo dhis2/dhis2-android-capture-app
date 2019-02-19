@@ -1,7 +1,5 @@
 package org.dhis2.usescases.programStageSelection;
 
-import androidx.annotation.NonNull;
-
 import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
@@ -12,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -63,7 +62,7 @@ public class ProgramStageSelectionPresenter implements ProgramStageSelectionCont
 
     private List<ProgramStageModel> applyEffects(List<ProgramStageModel> stageModels, Result<RuleEffect> calcResult) {
         if (calcResult.error() != null) {
-            calcResult.error().printStackTrace();
+            Timber.e(calcResult.error());
             return stageModels;
         }
 

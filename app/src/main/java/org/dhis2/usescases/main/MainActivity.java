@@ -39,7 +39,8 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ActivityGlobalAbstract implements MainContracts.MainView {
 
-    public ActivityMainBinding binding;
+    private ActivityMainBinding binding;
+
     @Inject
     MainContracts.MainPresenter presenter;
 
@@ -143,13 +144,13 @@ public class MainActivity extends ActivityGlobalAbstract implements MainContract
 
     @Override
     public void showHideFilter() {
-        programFragment.binding.filterLayout.setVisibility(programFragment.binding.filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        programFragment.getBinding().filterLayout.setVisibility(programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         checkFilterEnabled();
     }
 
     private void checkFilterEnabled() {
         int color = getPrimaryColor();
-        if (programFragment.binding.filterLayout.getVisibility() == View.VISIBLE) {
+        if (programFragment.getBinding().filterLayout.getVisibility() == View.VISIBLE) {
             binding.filter.setBackgroundColor(color);
             binding.filter.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             binding.filter.setBackgroundResource(0);

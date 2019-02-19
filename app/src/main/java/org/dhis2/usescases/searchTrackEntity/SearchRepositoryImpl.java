@@ -183,6 +183,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             initialLoop++;
         if (incidentDateWHERE != null)
             initialLoop++;
+
+        if (queryData == null) {
+            queryData = new HashMap<>();
+        }
+
         for (int i = initialLoop; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
@@ -241,6 +246,11 @@ public class SearchRepositoryImpl implements SearchRepository {
             initialLoop++;
         if (incidentDateWHERE != null)
             initialLoop++;
+
+        if (queryData == null) {
+            queryData = new HashMap<>();
+        }
+
         for (int i = initialLoop; i < queryData.keySet().size(); i++) {
             String dataId = queryData.keySet().toArray()[i].toString();
             String dataValue = queryData.get(dataId);
@@ -251,7 +261,7 @@ public class SearchRepositoryImpl implements SearchRepository {
             attr.append(attrQuery.replace("ATTR_ID", dataId).replace("ATTR_VALUE", dataValue));
             attr.append(i + 1);
             if (i > initialLoop)
-                attr.append(" ON t" + (i) + ".trackedEntityInstance = t" + (i + 1) + ".trackedEntityInstance ");
+                attr.append(" ON t").append(i).append(".trackedEntityInstance = t").append(i + 1).append(".trackedEntityInstance ");
         }
 
         String search = String.format(SEARCH, queryData.size() - initialLoop == 0 ? "" : SEARCH_ATTR);

@@ -88,20 +88,19 @@ public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
                                     Timber::e));
         }
 
-        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //TODO: REMOVE FALSE WHEN GREEN LIGHT
-            disposable.add(RxPreconditions
-                    .hasBiometricSupport(view.getContext())
-                    .filter(canHandleBiometrics -> {
-                        this.canHandleBiometrics = canHandleBiometrics;
-                        return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            canHandleBiometrics -> view.showBiometricButton(),
-                            Timber::e));
-
-
+        //TODO: UNCOMMENT WHEN GREEN LIGHT
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//            disposable.add(RxPreconditions
+//                    .hasBiometricSupport(view.getContext())
+//                    .filter(canHandleBiometrics -> {
+//                        this.canHandleBiometrics = canHandleBiometrics;
+//                        return canHandleBiometrics && SecurePreferences.contains(Constants.SECURE_SERVER_URL);
+//                    })
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                            canHandleBiometrics -> view.showBiometricButton(),
+//                            Timber::e));
     }
 
     @Override

@@ -60,7 +60,11 @@ public abstract class ActivityGlobalAbstract extends AppCompatActivity implement
 
     private BehaviorSubject<Status> lifeCycleObservable = BehaviorSubject.create();
     private CoordinatesView coordinatesView;
-    public ContentLoadingProgressBar progressBar;
+    private ContentLoadingProgressBar progressBar;
+
+    public ContentLoadingProgressBar getProgressBar() {
+        return progressBar;
+    }
 
     private BroadcastReceiver syncReceiver = new BroadcastReceiver() {
         @Override

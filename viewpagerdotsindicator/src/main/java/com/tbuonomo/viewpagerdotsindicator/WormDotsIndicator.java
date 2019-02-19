@@ -81,7 +81,7 @@ public class WormDotsIndicator extends FrameLayout {
       dotsStrokeColor = a.getColor(R.styleable.WormDotsIndicator_dotsStrokeColor, dotIndicatorColor);
       dotsSize = (int) a.getDimension(R.styleable.WormDotsIndicator_dotsSize, dotsSize);
       dotsSpacing = (int) a.getDimension(R.styleable.WormDotsIndicator_dotsSpacing, dotsSpacing);
-      dotsCornerRadius = (int) a.getDimension(R.styleable.WormDotsIndicator_dotsCornerRadius, dotsSize / 2);
+      dotsCornerRadius = (int) a.getDimension(R.styleable.WormDotsIndicator_dotsCornerRadius, dotsSize / 2f);
 
       // Spring dots attributes
       dotsStrokeWidth = (int) a.getDimension(R.styleable.WormDotsIndicator_dotsStrokeWidth, dotsStrokeWidth);
@@ -213,13 +213,13 @@ public class WormDotsIndicator extends FrameLayout {
         float widthFinalPosition;
 
         if (positionOffset >= 0 && positionOffset < 0.1f) {
-          xFinalPosition = horizontalMargin + position * stepX;
+          xFinalPosition = (float) horizontalMargin + position * stepX;
           widthFinalPosition = dotsSize;
         } else if (positionOffset >= 0.1f && positionOffset <= 0.9f) {
-          xFinalPosition = horizontalMargin + position * stepX;
-          widthFinalPosition = dotsSize + stepX;
+          xFinalPosition = (float) horizontalMargin + position * stepX;
+          widthFinalPosition = (float) dotsSize + stepX;
         } else {
-          xFinalPosition = horizontalMargin + (position + 1) * stepX;
+          xFinalPosition = (float) horizontalMargin + (position + 1) * stepX;
           widthFinalPosition = dotsSize;
         }
 

@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder;
 
 import org.dhis2.databinding.ItemDatasetHeaderBinding;
-import org.dhis2.databinding.ItemDatasetRowBinding;
 
 /**
  * QUADRAM. Created by ppajuelo on 02/10/2018.
@@ -11,7 +10,7 @@ import org.dhis2.databinding.ItemDatasetRowBinding;
 
 public class DataSetRHeaderHeader extends AbstractViewHolder {
 
-    public ItemDatasetHeaderBinding binding;
+    protected ItemDatasetHeaderBinding binding;
 
     DataSetRHeaderHeader(ItemDatasetHeaderBinding binding) {
         super(binding.getRoot());

@@ -62,7 +62,8 @@ import static org.dhis2.utils.Period.YEARLY;
 
 public class ProgramFragment extends FragmentGlobalAbstract implements ProgramContract.ProgramView, OrgUnitInterface {
 
-    public FragmentProgramBinding binding;
+    private FragmentProgramBinding binding;
+
     @Inject
     ProgramContract.ProgramPresenter presenter;
 
@@ -83,6 +84,10 @@ public class ProgramFragment extends FragmentGlobalAbstract implements ProgramCo
     //-------------------------------------------
     //region LIFECYCLE
 
+
+    public FragmentProgramBinding getBinding() {
+        return binding;
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {

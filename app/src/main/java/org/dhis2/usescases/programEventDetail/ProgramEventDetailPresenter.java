@@ -1,7 +1,6 @@
 package org.dhis2.usescases.programEventDetail;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 
 import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity;
@@ -18,6 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -37,8 +37,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     private final ProgramEventDetailRepository eventRepository;
     private final MetadataRepository metaRepository;
     private ProgramEventDetailContract.View view;
-    public ProgramModel program;
-    public String programId;
+    private String programId;
     private CompositeDisposable compositeDisposable;
     private CategoryOptionComboModel categoryOptionComboModel;
     private List<OrganisationUnitModel> orgUnits;
@@ -46,7 +45,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     //Search fields
     private CategoryComboModel mCatCombo;
     private List<Date> dates;
-    private Period period;
     private String orgUnitQuery;
 
     ProgramEventDetailPresenter(
@@ -128,8 +126,7 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
 
     @Override
     public void setProgram(ProgramModel program) {
-
-        this.program = program;
+        // do nothing
     }
 
     @Override
@@ -140,7 +137,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
     @Override
     public void setFilters(List<Date> selectedDates, Period currentPeriod, String orgUnits) {
         this.dates = selectedDates;
-        this.period = currentPeriod;
         this.orgUnitQuery = orgUnits;
     }
 
@@ -162,7 +158,6 @@ public class ProgramEventDetailPresenter implements ProgramEventDetailContract.P
         bundle.putString(PROGRAM_UID, programId);
         bundle.putString(Constants.EVENT_UID, eventId);
         bundle.putString(ORG_UNIT, orgUnit);
-//        view.startActivity(EventInitialActivity.class, bundle, false, false, null);
 
         view.startActivity(EventCaptureActivity.class,
                 EventCaptureActivity.getActivityBundle(eventId, programId),

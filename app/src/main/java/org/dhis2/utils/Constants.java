@@ -74,10 +74,10 @@ public class Constants {
     public static final String SECURE_PASS = "SECURE_PASS";
     public static final String SECURE_CREDENTIALS = "SECURE_CREDENTIALS";
 
-    public static String LAST_DATA_SYNC = "last_data_sync";
-    public static String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
-    public static String LAST_META_SYNC = "last_meta_sync";
-    public static String LAST_META_SYNC_STATUS = "last_meta_sync_status";
+    public static final String LAST_DATA_SYNC = "last_data_sync";
+    public static final String LAST_DATA_SYNC_STATUS = "last_data_sync_status";
+    public static final String LAST_META_SYNC = "last_meta_sync";
+    public static final String LAST_META_SYNC_STATUS = "last_meta_sync_status";
 
     public static final String EVENT_UID = "EVENT_UID";
 

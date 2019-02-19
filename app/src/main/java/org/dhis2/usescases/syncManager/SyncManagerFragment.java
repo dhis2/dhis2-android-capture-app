@@ -82,7 +82,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals("action_sync")) {
-                if (SyncUtils.isSyncRunning() && getAbstractActivity().progressBar.getVisibility() == View.VISIBLE) {
+                if (SyncUtils.isSyncRunning() && getAbstractActivity().getProgressBar().getVisibility() == View.VISIBLE) {
                     binding.buttonSyncData.setEnabled(false);
                     binding.buttonSyncMeta.setEnabled(false);
                 } else {

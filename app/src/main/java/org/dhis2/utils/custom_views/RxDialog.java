@@ -1,5 +1,6 @@
 package org.dhis2.utils.custom_views;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 
@@ -16,13 +17,12 @@ import io.reactivex.disposables.CompositeDisposable;
 
 @PerActivity
 public class RxDialog {
-    public static int BUTTON_POSSITIVE = AlertDialog.BUTTON_POSITIVE;
-    public static int BUTTON_NEGATIVE = AlertDialog.BUTTON_NEGATIVE;
 
     private final ActionTrigger<Dialog> actionTrigger = ActionTrigger.create();
     private final CompositeDisposable compositeSubscription = new CompositeDisposable();
     private final Activity activity;
 
+    @SuppressLint({"RxSubscribeOnError", "RxLeakedSubscription"})
     public RxDialog(final ActivityGlobalAbstract activity) {
         this.activity = activity;
 

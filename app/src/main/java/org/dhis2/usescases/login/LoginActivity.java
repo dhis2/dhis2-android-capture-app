@@ -283,30 +283,8 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
             saveListToPreference(Constants.PREFS_USERS, users);
         }
 
-        if (false && presenter.canHandleBiometrics() && //TODO: Remove false when green light
-                (!BiometricStorage.areCredentialsSet() &&
-                        !BiometricStorage.areSameCredentials(
-                                binding.serverUrlEdit.getText().toString(),
-                                binding.userNameEdit.getText().toString(),
-                                binding.userPassEdit.getText().toString()))) {
-            showInfoDialog(getString(R.string.biometrics_security_title),
-                    getString(R.string.biometrics_security_text),
-                    new OnDialogClickListener() {
-                        @Override
-                        public void onPossitiveClick(AlertDialog alertDialog) {
-                            BiometricStorage.saveUserCredentials(
-                                    binding.serverUrlEdit.getText().toString(),
-                                    binding.userNameEdit.getText().toString(),
-                                    binding.userPassEdit.getText().toString());
-                            goToNextScreen();
-                        }
-
-                        @Override
-                        public void onNegativeClick(AlertDialog alertDialog) {
-                            goToNextScreen();
-                        }
-                    }).show();
-        } else
+        //TODO: Uncomment when green light
+//        lo
             goToNextScreen();
 
     }

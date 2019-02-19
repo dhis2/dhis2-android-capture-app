@@ -122,7 +122,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
     @Override
     public void back() {
-        ((FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0)).datesLayout.getRootView().requestFocus();
+        ((FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0)).getDatesLayout().getRootView().requestFocus();
         new Handler().postDelayed(() -> view.goBack(changedEventStatus), 1500);
 
     }
@@ -132,7 +132,7 @@ public class EventDetailPresenter implements EventDetailContracts.Presenter {
 
         if (stageModel.accessDataWrite()) {
             FormFragment formFragment = (FormFragment) view.getAbstractActivity().getSupportFragmentManager().getFragments().get(0);
-            formFragment.datesLayout.getRootView().requestFocus();
+            formFragment.getDatesLayout().getRootView().requestFocus();
             new Handler().postDelayed(() -> {
                 if (formFragment.hasErrorOnComple() != null) { //Checks if there is an error action to display
                     view.showInfoDialog(view.getContext().getString(R.string.error), formFragment.hasErrorOnComple().content());

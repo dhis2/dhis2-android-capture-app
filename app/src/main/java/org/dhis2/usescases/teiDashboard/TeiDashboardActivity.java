@@ -1,8 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.dhis2.App;
 import org.dhis2.usescases.general.ActivityGlobalAbstract;
@@ -11,6 +9,10 @@ import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 /**
  * QUADRAM. Created by ppajuelo on 26/04/2018.
@@ -21,16 +23,16 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     @Inject
     public TeiDashboardContracts.Presenter presenter;
 
-    public DashboardProgramModel programModel;
+    protected DashboardProgramModel programModel;
 
-    public String teiUid;
-    public String programUid;
+    protected String teiUid;
+    protected String programUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ((App) getApplicationContext()).userComponent().plus(new TeiDashboardModule()).inject(this);
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             teiUid = savedInstanceState.getString("UID");
             programUid = savedInstanceState.getString("PROGRAM_ID");
         } else {
@@ -40,7 +42,7 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("UID", teiUid);
         outState.putString("PROGRAM_ID", programUid);
@@ -88,6 +90,6 @@ public class TeiDashboardActivity extends ActivityGlobalAbstract implements TeiD
 
     @Override
     public void showCatComboDialog(String eventId, String programStage, List<CategoryOptionComboModel> catComboOptions) {
-
+        // do nothing
     }
 }

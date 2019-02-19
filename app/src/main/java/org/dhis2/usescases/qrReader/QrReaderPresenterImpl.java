@@ -37,6 +37,12 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.dhis2.utils.DateUtils.DATABASE_FORMAT_EXPRESSION;
 
 /**
@@ -203,8 +209,8 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         // IF TEI READ
         if (teiUid != null) {
             // LOOK FOR TEI ON LOCAL DATABASE.
-            Cursor cursor = briteDatabase.query("SELECT * FROM " + TrackedEntityInstanceModel.TABLE +
-                    " WHERE " + TrackedEntityInstanceModel.Columns.UID + " = ?", teiUid == null ? "" : teiUid);
+            Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + TrackedEntityInstanceModel.TABLE +
+                    WHERE + TrackedEntityInstanceModel.Columns.UID + EQUAL + QUESTION_MARK, teiUid);
             // IF FOUND, OPEN DASHBOARD
             if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
                 view.goToDashBoard(teiUid);

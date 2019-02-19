@@ -28,9 +28,8 @@ public class ColorUtils {
         return new RippleDrawable(getPressedState(pressedColor), bgDrawable, null);
     }
 
-    public static ColorStateList getPressedState(int pressedColor)
-    {
-        return new ColorStateList(new int[][]{ new int[]{}},new int[]{pressedColor});
+    public static ColorStateList getPressedState(int pressedColor) {
+        return new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor});
     }
 
     public enum ColorType {
@@ -38,8 +37,11 @@ public class ColorUtils {
     }
 
     public static int getColorFrom(@Nullable String hexColor, int defaultPrimaryColor) {
-
         int colorToReturn = Color.BLACK;
+
+        if (hexColor == null) {
+            hexColor = "";
+        }
 
         if (!isEmpty(hexColor)) {
             if (hexColor.length() == 4) {//Color is formatted as #fff

@@ -233,7 +233,7 @@ public class FormAdapter extends RecyclerView.Adapter {
         this.queryData = queryData;
         if (programModel != null) {
             this.programModel = programModel;
-            programData = programModel.displayIncidentDate() ? 1 : 1;
+            programData = 1;
         } else {
             programData = 0;
             List<TrackedEntityAttributeModel> modelListnew = new ArrayList<>();

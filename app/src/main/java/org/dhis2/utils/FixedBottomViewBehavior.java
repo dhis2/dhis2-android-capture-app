@@ -1,12 +1,13 @@
 package org.dhis2.utils;
 
 import android.content.Context;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 
 /**
  * QUADRAM. Created by ppajuelo on 19/04/2018.
@@ -34,14 +35,14 @@ public class FixedBottomViewBehavior extends CoordinatorLayout.Behavior<View> {
             int bottomMargin = ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).bottomMargin;
             int xDelta = 0;
             if (dependency.getTop() > parent.getBottom() - child.getHeight() - 2 * bottomMargin - 150) {
-                child.setY(dependency.getTop() + bottomMargin);
-                xDelta = dependency.getTop() - parent.getBottom() + child.getWidth() + 2 * bottomMargin +150;
+                child.setY(dependency.getTop() + (float) bottomMargin);
+                xDelta = dependency.getTop() - parent.getBottom() + child.getWidth() + 2 * bottomMargin + 150;
             } else {
-                child.setY(parent.getBottom() - child.getHeight() - bottomMargin - 150);
+                child.setY(parent.getBottom() - child.getHeight() - bottomMargin - 150f);
                 xDelta = 0;
             }
 
-            child.setX(parent.getRight() - child.getWidth() - bottomMargin + xDelta);
+            child.setX(parent.getRight() - child.getWidth() - (float) bottomMargin + xDelta);
 
 
         }

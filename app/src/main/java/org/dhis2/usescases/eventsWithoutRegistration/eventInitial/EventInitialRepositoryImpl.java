@@ -151,8 +151,8 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         if (date == null)
             return orgUnits(programId);
         return briteDatabase.createQuery(OrganisationUnitModel.TABLE, SELECT_ORG_UNITS_FILTERED,
-                date == null ? "" : date,
-                date == null ? "" : date,
+                date,
+                date,
                 programId == null ? "" : programId)
                 .mapToList(OrganisationUnitModel::create);
     }
@@ -173,18 +173,11 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        //If we are creating a new event, do not schedule it
-        /*if (date != null && date.after(createDate))
-            return scheduleEvent(enrollmentUid, trackedEntityInstanceUid, context, programUid, programStage,
-                    date, orgUnitUid, categoryOptionsUid, categoryOptionComboUid, latitude, longitude);*/
-
-
         String uid = codeGenerator.generate();
 
         if (categoryOptionComboUid != null) {
             Cursor cursorCatOpt = briteDatabase.query(SELECT_CAT_OPTION_FROM_OPTION_COMBO, categoryOptionComboUid);
             if (cursorCatOpt != null && cursorCatOpt.moveToFirst()) {
-                categoryOptionsUid = cursorCatOpt.getString(0);
                 cursorCatOpt.close();
             }
         }

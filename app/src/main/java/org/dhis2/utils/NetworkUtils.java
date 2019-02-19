@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import timber.log.Timber;
+
 /**
  * QUADRAM. Created by ppajuelo on 16/04/2018.
  */
@@ -27,7 +29,7 @@ public class NetworkUtils {
             //should check null because in airplane mode it will be null
             isOnline = (netInfo != null && netInfo.isConnectedOrConnecting());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Timber.e(ex);
         }
         return isOnline;
     }

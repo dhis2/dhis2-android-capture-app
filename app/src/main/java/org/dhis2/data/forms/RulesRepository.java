@@ -537,9 +537,9 @@ public final class RulesRepository {
         String orgUnit = cursor.getString(5);
         String orgUnitCode = getOrgUnitCode(orgUnit);
         String programStageName = cursor.getString(6);
-        RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED) ?
+        RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.name()) ?
                 RuleEvent.Status.ACTIVE :
-                RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                RuleEvent.Status.valueOf(cursor.getString(2));
 
         return RuleEvent.builder()
                 .event(eventUid)
@@ -580,9 +580,9 @@ public final class RulesRepository {
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
                     String programStageName = cursor.getString(6);
-                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED) ?
+                    RuleEvent.Status status = cursor.getString(2).equals(RuleEvent.Status.VISITED.name()) ?
                             RuleEvent.Status.ACTIVE :
-                            RuleEvent.Status.valueOf(cursor.getString(2)); //TODO: WHAT?
+                            RuleEvent.Status.valueOf(cursor.getString(2));
 
                     return RuleEvent.builder()
                             .event(eventUid)

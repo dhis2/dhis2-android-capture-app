@@ -115,7 +115,7 @@ class HomeRepositoryImpl implements HomeRepository {
     @NonNull
     @Override
     public Observable<Pair<Integer, String>> numberOfRecords(ProgramModel program) {
-        String queryFinal = null;
+        String queryFinal = "";
 
         String id = program == null || program.uid() == null ? "" : program.uid();
 
