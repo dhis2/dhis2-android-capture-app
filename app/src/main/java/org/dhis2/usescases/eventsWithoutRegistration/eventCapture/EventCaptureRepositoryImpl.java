@@ -692,7 +692,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     private Flowable<RuleEvent> queryEvent(@NonNull List<RuleDataValue> dataValues) {
         return briteDatabase.createQuery(EventModel.TABLE, QUERY_EVENT, eventUid == null ? "" : eventUid)
                 .mapToOne(cursor -> {
-                    Date eventDate = parseDate(cursor.getString(3));
+                    Date eventDate = cursor.isNull(3) ? parseDate(cursor.getString(4)) : parseDate(cursor.getString(3));
                     Date dueDate = cursor.isNull(4) ? eventDate : parseDate(cursor.getString(4));
                     String orgUnit = cursor.getString(5);
                     String orgUnitCode = getOrgUnitCode(orgUnit);
