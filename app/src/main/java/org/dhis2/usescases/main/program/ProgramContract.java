@@ -22,7 +22,7 @@ import io.reactivex.functions.Consumer;
  */
 public class ProgramContract {
 
-    interface View extends AbstractActivityContracts.View {
+    interface ProgramView extends AbstractActivityContracts.View {
 
         void showRageDatePicker();
 
@@ -54,8 +54,8 @@ public class ProgramContract {
 
     }
 
-    public interface Presenter {
-        void init(View view);
+    public interface ProgramPresenter {
+        void init(ProgramView view);
 
         void onItemClick(ProgramViewModel programModel, Period currentPeriod);
 

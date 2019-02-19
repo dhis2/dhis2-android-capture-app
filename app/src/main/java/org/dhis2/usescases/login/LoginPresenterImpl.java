@@ -4,17 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.CancellationSignal;
 import android.view.View;
 
 import com.github.pwittchen.rxbiometric.library.RxBiometric;
 import com.github.pwittchen.rxbiometric.library.validation.RxPreconditions;
 
 import org.dhis2.App;
-import org.dhis2.data.metadata.MetadataRepository;
 import org.dhis2.data.server.ConfigurationRepository;
 import org.dhis2.data.server.UserManager;
-import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.usescases.main.MainActivity;
 import org.dhis2.usescases.qrScanner.QRActivity;
 import org.dhis2.utils.Constants;
@@ -22,7 +19,6 @@ import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.systeminfo.SystemInfo;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -38,11 +34,13 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class LoginPresenter implements LoginContracts.Presenter {
+import static org.dhis2.utils.Constants.PIN;
+import static org.dhis2.utils.Constants.SESSION_LOCKED;
+
+public class LoginPresenterImpl implements LoginContracts.LoginPresenter {
 
     private final ConfigurationRepository configurationRepository;
-    private final MetadataRepository metadataRepository;
-    private LoginContracts.View view;
+    private LoginContracts.LoginView view;
 
     private UserManager userManager;
     private CompositeDisposable disposable;
@@ -50,16 +48,14 @@ public class LoginPresenter implements LoginContracts.Presenter {
     private ObservableField<Boolean> isServerUrlSet = new ObservableField<>(false);
     private ObservableField<Boolean> isUserNameSet = new ObservableField<>(false);
     private ObservableField<Boolean> isUserPassSet = new ObservableField<>(false);
-    private boolean testingSet;
     private Boolean canHandleBiometrics;
 
-    LoginPresenter(ConfigurationRepository configurationRepository, MetadataRepository metadataRepository) {
+    LoginPresenterImpl(ConfigurationRepository configurationRepository) {
         this.configurationRepository = configurationRepository;
-        this.metadataRepository = metadataRepository;
     }
 
     @Override
-    public void init(LoginContracts.View view) {
+    public void init(LoginContracts.LoginView view) {
         this.view = view;
         this.disposable = new CompositeDisposable();
 
@@ -74,9 +70,9 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     .subscribe(isUserLoggedIn -> {
                         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-                        if (isUserLoggedIn && !prefs.getBoolean("SessionLocked", false)) {
+                        if (isUserLoggedIn && !prefs.getBoolean(SESSION_LOCKED, false)) {
                             view.startActivity(MainActivity.class, null, true, true, null);
-                        } else if (prefs.getBoolean("SessionLocked", false)) {
+                        } else if (prefs.getBoolean(SESSION_LOCKED, false)) {
                             view.getBinding().unlockLayout.setVisibility(View.VISIBLE);
                         }
 
@@ -110,7 +106,7 @@ public class LoginPresenter implements LoginContracts.Presenter {
 
     @Override
     public void onServerChanged(CharSequence s, int start, int before, int count) {
-        testingSet = false;
+        boolean testingSet = false;
         isServerUrlSet.set(!view.getBinding().serverUrl.getEditText().getText().toString().isEmpty());
         view.resetCredentials(false, true, true);
 
@@ -211,8 +207,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
     public void unlockSession(String pin) {
         SharedPreferences prefs = view.getAbstracContext().getSharedPreferences(
                 Constants.SHARE_PREFS, Context.MODE_PRIVATE);
-        if (prefs.getString("pin", "").equals(pin)) {
-            prefs.edit().putBoolean("SessionLocked", false).apply();
+        if (prefs.getString(PIN, "").equals(pin)) {
+            prefs.edit().putBoolean(SESSION_LOCKED, false).apply();
             view.startActivity(MainActivity.class, null, true, true, null);
         }
     }
@@ -233,8 +229,8 @@ public class LoginPresenter implements LoginContracts.Presenter {
                     .subscribe(
                             data -> {
                                 SharedPreferences prefs = view.getAbstracContext().getSharedPreferences();
-                                prefs.edit().putBoolean("SessionLocked", false).apply();
-                                prefs.edit().putString("pin", null).apply();
+                                prefs.edit().putBoolean(SESSION_LOCKED, false).apply();
+                                prefs.edit().putString(PIN, null).apply();
                                 view.handleLogout();
                             },
                             t -> view.handleLogout()
@@ -261,13 +257,13 @@ public class LoginPresenter implements LoginContracts.Presenter {
             view.renderInvalidServerUrlError();
         } else if (throwable instanceof D2Error) {
             D2Error d2CallException = (D2Error) throwable;
-            switch (d2CallException.errorCode()) {
-                case ALREADY_AUTHENTICATED:
-                    handleResponse(Response.success(null));
-                    break;
-                default:
-                    view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
-                    break;
+            org.hisp.dhis.android.core.maintenance.D2ErrorCode i = d2CallException.errorCode();
+            if (i == org.hisp.dhis.android.core.maintenance.D2ErrorCode.ALREADY_AUTHENTICATED) {
+                handleResponse(Response.success(null));
+
+            } else {
+                view.renderError(d2CallException.errorCode(), d2CallException.errorDescription());
+
             }
         } else {
             view.renderUnexpectedError();

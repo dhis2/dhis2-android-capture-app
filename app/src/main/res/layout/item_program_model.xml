@@ -9,7 +9,7 @@
 
         <variable
             name="presenter"
-            type="org.dhis2.usescases.main.program.ProgramContract.Presenter" />
+            type="org.dhis2.usescases.main.program.ProgramContract.ProgramPresenter" />
 
         <variable
             name="program"

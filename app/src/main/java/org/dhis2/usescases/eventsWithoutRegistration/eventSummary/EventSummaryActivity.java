@@ -22,7 +22,6 @@ import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.custom_views.CustomDialog;
 import org.dhis2.utils.custom_views.ProgressBarAnimation;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ import static android.text.TextUtils.isEmpty;
  * QUADRAM. Created by Cristian on 01/03/2018.
  */
 
-public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.View, ProgressBarAnimation.OnUpdate {
+public class EventSummaryActivity extends ActivityGlobalAbstract implements EventSummaryContract.EventSummaryView, ProgressBarAnimation.OnUpdate {
 
     private static final int PROGRESS_TIME = 2000;
 
@@ -55,9 +54,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     private Map<String, View> sections = new HashMap<>();
 
     @Inject
-    EventSummaryContract.Presenter presenter;
+    EventSummaryContract.EventSummaryPresenter presenter;
     private ActivityEventSummaryBinding binding;
-    private int completionPercent;
     private int totalFields;
     private int totalCompletedFields;
     private int fieldsToCompleteBeforeClosing;
@@ -191,10 +189,9 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
     @Override
     public void accessDataWrite(Boolean canWrite) {
 
-        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())){
+        if (DateUtils.getInstance().isEventExpired(null, eventModel.completedDate(), programModel.completeEventsExpiryDays())) {
             binding.actionButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             switch (eventModel.status()) {
                 case ACTIVE:
                     binding.actionButton.setText(getString(R.string.complete_and_close));
@@ -213,6 +210,8 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
                     binding.actionButton.setText(getString(R.string.re_open));
                     binding.actionButton.setVisibility(canWrite ? View.VISIBLE : View.GONE);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -225,6 +224,61 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
         fieldsWithErrors = hasError;
     }
 
+    private void setUpVisibleSection(@NonNull List<FieldViewModel> updates, View sectionView) {
+        int completedSectionFields = calculateCompletedFields(updates);
+        int totalSectionFields = updates.size();
+        totalFields = totalFields + totalSectionFields;
+        totalCompletedFields = totalCompletedFields + completedSectionFields;
+        fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
+        String completionText = completedSectionFields + "/" + totalSectionFields;
+        ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
+        sectionView.findViewById(R.id.completed_progress)
+                .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, totalSectionFields - completedSectionFields));
+        sectionView.findViewById(R.id.empty_progress)
+                .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
+
+        setUpErrors(updates, sectionView);
+    }
+
+    private void setUpErrors(@NonNull List<FieldViewModel> updates, View sectionView) {
+        List<String> missingMandatoryFields = new ArrayList<>();
+        List<String> errorFields = new ArrayList<>();
+        for (FieldViewModel fields : updates) {
+            if (fields.error() != null)
+                errorFields.add(fields.label());
+            if (fields.mandatory() && fields.value() == null)
+                missingMandatoryFields.add(fields.label());
+        }
+
+        if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
+            sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
+
+            String finalMessage = getAllMissing(missingMandatoryFields)
+                    .append("\n")
+                    .append(getAllErrors(errorFields).toString())
+                    .toString();
+
+            sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
+                    showInfoDialog("Error", finalMessage)
+            );
+        }
+    }
+
+    private StringBuilder getAllMissing(List<String> missingMandatoryFields){
+        StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
+        for (String missingField : missingMandatoryFields) {
+            missingString.append(String.format("\n- %s", missingField));
+        }
+        return missingString;
+    }
+
+    private StringBuilder getAllErrors(List<String> errorFields){
+        StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
+        for (String errorField : errorFields) {
+            errorString.append(String.format("\n- %s", errorField));
+        }
+        return errorString;
+    }
 
     void swap(@NonNull List<FieldViewModel> updates, String sectionUid) {
 
@@ -236,51 +290,12 @@ public class EventSummaryActivity extends ActivityGlobalAbstract implements Even
             sectionView.setVisibility(View.VISIBLE);
 
         if (sectionView.getVisibility() == View.VISIBLE) {
-            int completedSectionFields = calculateCompletedFields(updates);
-            int totalSectionFields = updates.size();
-            totalFields = totalFields + totalSectionFields;
-            totalCompletedFields = totalCompletedFields + completedSectionFields;
-            fieldsToCompleteBeforeClosing = fieldsToCompleteBeforeClosing + calculateMandatoryUnansweredFields(updates);
-            String completionText = completedSectionFields + "/" + totalSectionFields;
-            ((TextView) sectionView.findViewById(R.id.section_percent)).setText(completionText);
-            sectionView.findViewById(R.id.completed_progress)
-                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, totalSectionFields - completedSectionFields));
-            sectionView.findViewById(R.id.empty_progress)
-                    .setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, completedSectionFields));
-
-            List<String> missingMandatoryFields = new ArrayList<>();
-            List<String> errorFields = new ArrayList<>();
-            for (FieldViewModel fields : updates) {
-                if (fields.error() != null)
-                    errorFields.add(fields.label());
-                if (fields.mandatory() && fields.value() == null)
-                    missingMandatoryFields.add(fields.label());
-            }
-            if (!missingMandatoryFields.isEmpty() || !errorFields.isEmpty()) {
-                sectionView.findViewById(R.id.section_info).setVisibility(View.VISIBLE);
-
-                StringBuilder missingString = new StringBuilder(missingMandatoryFields.isEmpty() ? "" : "These fields are mandatory. Please check their values to be able to complete the event.");
-                for (String missinField : missingMandatoryFields) {
-                    missingString.append(String.format("\n- %s", missinField));
-                }
-
-                StringBuilder errorString = new StringBuilder(errorFields.isEmpty() ? "" : "These fields contain errors. Please check their values to be able to complete the event.");
-                for (String errorField : errorFields) {
-                    errorString.append(String.format("\n- %s", errorField));
-                }
-
-                String finalMessage = missingString.append("\n").append(errorString.toString()).toString();
-
-                sectionView.findViewById(R.id.section_info).setOnClickListener(view ->
-                        showInfoDialog("Error", finalMessage)
-                );
-            }
-
+            setUpVisibleSection(updates, sectionView);
         }
 
         binding.summaryHeader.setText(String.format(getString(R.string.event_summary_header), String.valueOf(totalCompletedFields), String.valueOf(totalFields)));
         float completionPerone = (float) totalCompletedFields / (float) totalFields;
-        completionPercent = (int) (completionPerone * 100);
+        int completionPercent = (int) (completionPerone * 100);
         ProgressBarAnimation gainAnim = new ProgressBarAnimation(binding.progressGains, 0, completionPercent, false, this);
         gainAnim.setDuration(PROGRESS_TIME);
         binding.progressGains.startAnimation(gainAnim);

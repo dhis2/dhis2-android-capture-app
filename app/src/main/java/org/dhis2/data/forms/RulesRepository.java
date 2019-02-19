@@ -79,6 +79,7 @@ import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.ORDER_BY;
 import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -171,7 +172,7 @@ public final class RulesRepository {
                     AND + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE +
                     LESS_OR_EQUAL + QUESTION_MARK +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
-                    NOT_EQUAL + State.TO_DELETE +
+                    NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
                     ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
                     LIMIT_10;
@@ -196,7 +197,7 @@ public final class RulesRepository {
                     AND + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE +
                     LESS_OR_EQUAL + QUESTION_MARK +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
-                    NOT_EQUAL + State.TO_DELETE +
+                    NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
                     ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.EVENT_DATE + DESC + COMMA +
                     EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
                     LIMIT_10;
@@ -219,7 +220,7 @@ public final class RulesRepository {
                     WHERE + EventModel.TABLE + POINT + EventModel.Columns.ENROLLMENT +
                     EQUAL + QUESTION_MARK +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
-                    NOT_EQUAL + State.TO_DELETE +
+                    NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
                     ORDER_BY + EventModel.TABLE + POINT + EventModel.Columns.LAST_UPDATED + DESC +
                     LIMIT_10;
 
@@ -236,7 +237,7 @@ public final class RulesRepository {
             EQUAL + QUESTION_MARK +
             AND + TrackedEntityDataValueModel.Columns.VALUE + IS_NOT_NULL +
             AND + EventModel.Columns.STATE +
-            NOT_EQUAL + State.TO_DELETE;
+            NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE;
 
     private static final String QUERY_ENROLLMENT =
             SELECT + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.UID + COMMA +

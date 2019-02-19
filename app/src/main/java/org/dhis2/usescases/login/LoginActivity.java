@@ -35,12 +35,12 @@ import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import static org.dhis2.utils.Constants.RQ_QR_SCANNER;
 
 
-public class LoginActivity extends ActivityGlobalAbstract implements LoginContracts.View {
+public class LoginActivity extends ActivityGlobalAbstract implements LoginContracts.LoginView {
 
     ActivityLoginBinding binding;
 
     @Inject
-    LoginContracts.Presenter presenter;
+    LoginContracts.LoginPresenter presenter;
 
     List<String> users;
     List<String> urls;
@@ -232,12 +232,12 @@ public class LoginActivity extends ActivityGlobalAbstract implements LoginContra
 
             @Override
             public void onEmpty() {
-
+                // do nothing
             }
 
             @Override
             public void onPinChange(int pinLength, String intermediatePin) {
-
+                // do nothing
             }
         });
         binding.pinLayout.getRoot().setVisibility(View.VISIBLE);

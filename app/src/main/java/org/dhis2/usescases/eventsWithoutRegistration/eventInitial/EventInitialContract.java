@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer;
 
 public class EventInitialContract {
 
-    public interface View extends AbstractActivityContracts.View {
+    public interface EventInitialView extends AbstractActivityContracts.View {
         void setProgram(@NonNull ProgramModel program);
 
         void setCatComboOptions(CategoryComboModel catCombo, List<CategoryOptionComboModel> catComboList);
@@ -77,8 +77,8 @@ public class EventInitialContract {
         void setHideSection(String sectionUid);
     }
 
-    public interface Presenter extends AbstractActivityContracts.Presenter {
-        void init(EventInitialContract.View view, String programId, String eventId, String orgUnitId, String programStageId);
+    public interface EventInitialPresenter extends AbstractActivityContracts.Presenter {
+        void init(EventInitialView view, String programId, String eventId, String orgUnitId, String programStageId);
 
         void getProgramStage(String programStageUid);
 

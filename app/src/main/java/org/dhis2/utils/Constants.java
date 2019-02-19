@@ -12,6 +12,10 @@ public class Constants {
     public static final String SHARE_PREFS = "org.dhis2";
     public static final String PREFS_URLS = "pref_urls";
     public static final String PREFS_USERS = "pref_users";
+    public static final String SESSION_LOCKED = "SessionLocked";
+    public static final String PIN = "pin";
+    public static final String CURRENT_PERIOD = "CURRENT_PERIOD";
+    public static final String CHOOSEN_DATE = "CHOOSEN_DATE";
 
     //SYNC PARAMETERS
     public static final String EVENT_MAX = "EVENT_MAX";

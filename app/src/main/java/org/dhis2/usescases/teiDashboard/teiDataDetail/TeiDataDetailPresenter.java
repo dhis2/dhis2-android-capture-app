@@ -22,7 +22,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by frodriguez on 12/13/2017.

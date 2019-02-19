@@ -40,6 +40,7 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 import static org.dhis2.data.forms.dataentry.DataEntryStore.valueType.ATTR;
@@ -50,7 +51,7 @@ public final class DataValueStore implements DataEntryStore {
             SELECT + ALL + FROM + EventModel.TABLE +
                     WHERE + EventModel.Columns.UID +
                     EQUAL + QUESTION_MARK +
-                    AND + EventModel.Columns.STATE + NOT_EQUAL + State.TO_DELETE + LIMIT_1;
+                    AND + EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE + LIMIT_1;
 
     private static final String ENROLLMENT_QUERY = SELECT + EnrollmentModel.TABLE + POINT + EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE +
             FROM + TrackedEntityAttributeValueModel.TABLE +

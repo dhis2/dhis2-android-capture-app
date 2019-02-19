@@ -13,7 +13,7 @@ import io.reactivex.functions.Consumer;
 
 public final class MainContracts {
 
-    interface View extends AbstractActivityContracts.View {
+    interface MainView extends AbstractActivityContracts.View {
 
         @NonNull
         @UiThread
@@ -30,8 +30,8 @@ public final class MainContracts {
         void showSyncErrors(List<D2Error> data);
     }
 
-    public interface Presenter {
-        void init(View view);
+    public interface MainPresenter {
+        void init(MainView view);
 
         void onDetach();
 

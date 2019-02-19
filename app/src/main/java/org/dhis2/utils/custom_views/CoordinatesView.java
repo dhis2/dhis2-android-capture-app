@@ -28,7 +28,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import io.reactivex.processors.FlowableProcessor;
 
-import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenter.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
+import static org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialPresenterImpl.ACCESS_COARSE_LOCATION_PERMISSION_REQUEST;
 
 /**
  * QUADRAM. Created by Administrador on 21/03/2018.

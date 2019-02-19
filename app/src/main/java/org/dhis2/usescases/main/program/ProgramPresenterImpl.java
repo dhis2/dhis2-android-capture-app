@@ -32,26 +32,28 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.utils.Constants.CHOOSEN_DATE;
+import static org.dhis2.utils.Constants.CURRENT_PERIOD;
 
 /**
  * Created by ppajuelo on 18/10/2017.f
  */
 
-public class ProgramPresenter implements ProgramContract.Presenter {
+public class ProgramPresenterImpl implements ProgramContract.ProgramPresenter {
 
-    private ProgramContract.View view;
+    private ProgramContract.ProgramView view;
     private final HomeRepository homeRepository;
     private CompositeDisposable compositeDisposable;
 
     private List<OrganisationUnitModel> myOrgs;
     private FlowableProcessor<Trio> programQueries;
 
-    ProgramPresenter(HomeRepository homeRepository) {
+    ProgramPresenterImpl(HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
     }
 
     @Override
-    public void init(ProgramContract.View view) {
+    public void init(ProgramContract.ProgramView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -131,24 +133,24 @@ public class ProgramPresenter implements ProgramContract.Presenter {
 
         switch (currentPeriod) {
             case NONE:
-                bundle.putInt("CURRENT_PERIOD", R.string.period);
-                bundle.putSerializable("CHOOSEN_DATE", null);
+                bundle.putInt(CURRENT_PERIOD, R.string.period);
+                bundle.putSerializable(CHOOSEN_DATE, null);
                 break;
             case DAILY:
-                bundle.putInt("CURRENT_PERIOD", R.string.DAILY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateDay());
+                bundle.putInt(CURRENT_PERIOD, R.string.DAILY);
+                bundle.putSerializable(CHOOSEN_DATE, view.getChosenDateDay());
                 break;
             case WEEKLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.WEEKLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateWeek());
+                bundle.putInt(CURRENT_PERIOD, R.string.WEEKLY);
+                bundle.putSerializable(CHOOSEN_DATE, view.getChosenDateWeek());
                 break;
             case MONTHLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.MONTHLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateMonth());
+                bundle.putInt(CURRENT_PERIOD, R.string.MONTHLY);
+                bundle.putSerializable(CHOOSEN_DATE, view.getChosenDateMonth());
                 break;
             case YEARLY:
-                bundle.putInt("CURRENT_PERIOD", R.string.YEARLY);
-                bundle.putSerializable("CHOOSEN_DATE", view.getChosenDateYear());
+                bundle.putInt(CURRENT_PERIOD, R.string.YEARLY);
+                bundle.putSerializable(CHOOSEN_DATE, view.getChosenDateYear());
                 break;
         }
 

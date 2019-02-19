@@ -31,6 +31,7 @@ import static org.dhis2.data.database.SqlConstants.LIMIT_1;
 import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.WHERE;
 
@@ -39,7 +40,7 @@ final class DataValueStore implements DataEntryStore {
             SELECT + ALL + FROM + EventModel.TABLE + WHERE + EventModel.Columns.UID +
                     EQUAL + QUESTION_MARK +
                     AND + EventModel.TABLE + POINT + EventModel.Columns.STATE +
-                    NOT_EQUAL + State.TO_DELETE + LIMIT_1;
+                    NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE + LIMIT_1;
 
     @NonNull
     private final BriteDatabase briteDatabase;

@@ -21,24 +21,24 @@ import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
-final class MainPresenter implements MainContracts.Presenter {
+final class MainPresenterImpl implements MainContracts.MainPresenter {
 
     private final UserRepository userRepository;
     private final MetadataRepository metadataRepository;
-    private MainContracts.View view;
+    private MainContracts.MainView view;
     private CompositeDisposable compositeDisposable;
 
 
     private final D2 d2;
 
-    MainPresenter(@NonNull D2 d2, UserRepository userRepository, MetadataRepository metadataRepository) {
+    MainPresenterImpl(@NonNull D2 d2, UserRepository userRepository, MetadataRepository metadataRepository) {
         this.d2 = d2;
         this.userRepository = userRepository;
         this.metadataRepository = metadataRepository;
     }
 
     @Override
-    public void init(MainContracts.View view) {
+    public void init(MainContracts.MainView view) {
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
 

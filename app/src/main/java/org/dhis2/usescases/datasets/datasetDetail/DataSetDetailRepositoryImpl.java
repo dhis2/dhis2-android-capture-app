@@ -32,6 +32,7 @@ import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
 import static org.dhis2.data.database.SqlConstants.ON;
 import static org.dhis2.data.database.SqlConstants.POINT;
 import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
 import static org.dhis2.data.database.SqlConstants.SELECT;
 import static org.dhis2.data.database.SqlConstants.VARIABLE;
 import static org.dhis2.data.database.SqlConstants.WHERE;
@@ -137,7 +138,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                         WHERE + DataValueModel.Columns.PERIOD + EQUAL + QUESTION_MARK +
                         AND + DataValueModel.Columns.ORGANISATION_UNIT + EQUAL + QUESTION_MARK +
                         AND + DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO + EQUAL + QUESTION_MARK +
-                        AND + DataValueModel.Columns.STATE + NOT_EQUAL + State.SYNCED,
+                        AND + DataValueModel.Columns.STATE + NOT_EQUAL + QUOTE + State.SYNCED + QUOTE,
                 period, organisationUnitUid, categoryOptionCombo);
         if (stateCursor != null && stateCursor.moveToFirst()) {
             State errorState = null;

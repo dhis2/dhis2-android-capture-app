@@ -3,8 +3,6 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventSummary;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -40,12 +38,28 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import static android.text.TextUtils.isEmpty;
+import static org.dhis2.data.database.SqlConstants.ALL;
+import static org.dhis2.data.database.SqlConstants.AND;
+import static org.dhis2.data.database.SqlConstants.EQUAL;
+import static org.dhis2.data.database.SqlConstants.FROM;
+import static org.dhis2.data.database.SqlConstants.JOIN;
+import static org.dhis2.data.database.SqlConstants.LEFT_OUTER_JOIN;
+import static org.dhis2.data.database.SqlConstants.LIMIT_1;
+import static org.dhis2.data.database.SqlConstants.NOT_EQUAL;
+import static org.dhis2.data.database.SqlConstants.ORDER_BY;
+import static org.dhis2.data.database.SqlConstants.POINT;
+import static org.dhis2.data.database.SqlConstants.QUESTION_MARK;
+import static org.dhis2.data.database.SqlConstants.QUOTE;
+import static org.dhis2.data.database.SqlConstants.SELECT;
+import static org.dhis2.data.database.SqlConstants.WHERE;
 
 /**
  * QUADRAM. Created by Cristian on 22/03/2018.
@@ -68,21 +82,22 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
-    private static final String SELECT_SECTIONS = "SELECT\n" +
+    private static final String SELECT_SECTIONS = SELECT +
             "  Program.uid AS programUid,\n" +
             "  ProgramStage.uid AS programStageUid,\n" +
             "  ProgramStageSection.uid AS programStageSectionUid,\n" +
             "  ProgramStageSection.displayName AS programStageSectionDisplayName,\n" +
             "  ProgramStage.displayName AS programStageDisplayName,\n" +
             "  ProgramStageSection.mobileRenderType AS renderType\n" +
-            "FROM Event\n" +
-            "  JOIN Program ON Event.program = Program.uid\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
-            "  LEFT OUTER JOIN ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
-            "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "' ORDER BY ProgramStageSection.sortOrder";
+            FROM + EventModel.TABLE +
+            JOIN + "Program ON Event.program = Program.uid\n" +
+            JOIN + "ProgramStage ON Event.programStage = ProgramStage.uid\n" +
+            LEFT_OUTER_JOIN + "ProgramStageSection ON ProgramStageSection.programStage = Event.programStage\n" +
+            WHERE + "Event.uid = ?\n" +
+            AND + EventModel.TABLE + "." + EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE +
+            QUOTE + ORDER_BY + "ProgramStageSection.sortOrder";
 
-    private static final String QUERY = "SELECT\n" +
+    private static final String QUERY = SELECT +
             "  Field.id,\n" +
             "  Field.label,\n" +
             "  Field.type,\n" +
@@ -97,7 +112,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
             "  Field.sectionOrder\n" +
-            "FROM Event\n" +
+            FROM + "Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
@@ -136,22 +151,24 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Event.dueDate,\n" +
             "  Event.organisationUnit,\n" +
             "  ProgramStage.displayName\n" +
-            "FROM Event\n" +
+            FROM + "Event\n" +
             "JOIN ProgramStage ON ProgramStage.uid = Event.programStage\n" +
             "WHERE Event.uid = ?\n" +
-            "AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "'\n" +
-            "LIMIT 1;";
+            "AND " + EventModel.TABLE + POINT + EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE +
+            LIMIT_1;
 
-    private static final String QUERY_VALUES = "SELECT " +
+    private static final String QUERY_VALUES = SELECT +
             "  eventDate," +
             "  programStage," +
             "  dataElement," +
             "  value" +
             " FROM TrackedEntityDataValue " +
             "  INNER JOIN Event ON TrackedEntityDataValue.event = Event.uid " +
-            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + "." + EventModel.Columns.STATE + " != '" + State.TO_DELETE + "';";
+            " WHERE event = ? AND value IS NOT NULL AND " + EventModel.TABLE + POINT +
+            EventModel.Columns.STATE + NOT_EQUAL + QUOTE + State.TO_DELETE + QUOTE + ";";
 
-    private static final String EVENT_QUERY = "SELECT * FROM Event WHERE Event.uid = ? LIMIT 1";
+    private static final String EVENT_QUERY = SELECT + ALL + FROM + EventModel.TABLE +
+            WHERE + EventModel.TABLE + POINT + EventModel.Columns.UID + EQUAL + QUESTION_MARK + LIMIT_1;
     private static final String PROGRAM_QUERY = "SELECT * FROM Program JOIN ProgramStage ON " +
             "ProgramStage.program = Program.uid JOIN Event On Event.programStage = ProgramStage.uid WHERE Event.uid = ?";
 
@@ -250,7 +267,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
-        if(rendering!=null && rendering.moveToFirst()){
+        if (rendering != null && rendering.moveToFirst()) {
             fieldRendering = ValueTypeDeviceRenderingModel.create(cursor);
             rendering.close();
         }
@@ -275,62 +292,68 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
                 );
     }
 
+
+    private ContentValues getEventContentValues(EventModel event, String lastUpdated) {
+        ContentValues values = event.toContentValues();
+        switch (event.status()) {
+            case ACTIVE:
+            case SKIPPED:
+            case VISITED:
+            case SCHEDULE:
+                values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
+                values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
+                break;
+            case COMPLETED:
+                values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
+                break;
+            default:
+                break;
+        }
+
+        values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
+        values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
+        return values;
+    }
+
+    private EventModel updateEvent(Cursor cursor, String lastUpdated) {
+        EventModel event = EventModel.create(cursor);
+        cursor.close();
+
+        ContentValues values = getEventContentValues(event, lastUpdated);
+
+        if (briteDatabase.update(EventModel.TABLE, values,
+                EventModel.Columns.UID + EQUAL + QUESTION_MARK, eventUid == null ? "" : eventUid) <= 0) {
+
+            throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
+                    "has not been successfully updated", event.uid()));
+        }
+
+        return event;
+    }
+
+    private void updateProgram(Cursor cursor, EventModel event, String lastUpdated) {
+        Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
+        if (programCursor != null && cursor.moveToNext()) {
+            ProgramModel program = ProgramModel.create(programCursor);
+            programCursor.close();
+            ContentValues programValues = program.toContentValues();
+            programValues.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
+            if (briteDatabase.update(ProgramModel.TABLE, programValues,
+                    ProgramModel.Columns.UID + EQUAL + QUESTION_MARK, program.uid() == null ? "" : program.uid()) <= 0) {
+
+                throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
+                        "has not been successfully updated", event.uid()));
+            }
+        }
+    }
+
     @Override
     public Observable<EventModel> changeStatus(String eventUid) {
         String lastUpdated = DateUtils.databaseDateFormat().format(DateUtils.getInstance().getToday());
         Cursor cursor = briteDatabase.query(EVENT_QUERY, eventUid);
         if (cursor != null && cursor.moveToNext()) {
-
-            EventModel event = EventModel.create(cursor);
-            cursor.close();
-
-            ContentValues values = event.toContentValues();
-            switch (event.status()) {
-                case ACTIVE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case SKIPPED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case VISITED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case SCHEDULE:
-                    values.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name()); //TODO: Can this happen?
-                    values.put(EventModel.Columns.COMPLETE_DATE, lastUpdated);
-                    break;
-                case COMPLETED:
-                    values.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name()); //TODO: This should check dates?
-                    break;
-            }
-
-
-            values.put(EventModel.Columns.STATE, State.TO_UPDATE.toString());
-            values.put(EventModel.Columns.LAST_UPDATED, lastUpdated);
-
-            if (briteDatabase.update(EventModel.TABLE, values,
-                    EventModel.Columns.UID + " = ?", eventUid == null ? "" : eventUid) <= 0) {
-
-                throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                        "has not been successfully updated", event.uid()));
-            }
-
-            Cursor programCursor = briteDatabase.query(PROGRAM_QUERY, eventUid == null ? "" : eventUid);
-            if (programCursor != null && cursor.moveToNext()) {
-                ProgramModel program = ProgramModel.create(programCursor);
-                programCursor.close();
-                ContentValues programValues = program.toContentValues();
-                values.put(ProgramModel.Columns.LAST_UPDATED, lastUpdated);
-                if (briteDatabase.update(ProgramModel.TABLE, programValues,
-                        ProgramModel.Columns.UID + " = ?", program.uid() == null ? "" : program.uid()) <= 0) {
-
-                    throw new IllegalStateException(String.format(Locale.US, "Program=[%s] " +
-                            "has not been successfully updated", event.uid()));
-                }
-            }
+            EventModel event = updateEvent(cursor, lastUpdated);
+            updateProgram(cursor, event, lastUpdated);
             return Observable.just(event);
         } else
             return null;

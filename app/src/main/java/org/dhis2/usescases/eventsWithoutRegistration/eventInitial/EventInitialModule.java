@@ -17,7 +17,6 @@ import org.dhis2.usescases.programDetail.ProgramRepositoryImpl;
 import org.dhis2.utils.CodeGenerator;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import dagger.Module;
@@ -39,17 +38,17 @@ public class EventInitialModule {
 
     @Provides
     @PerActivity
-    EventInitialContract.View provideView(EventInitialContract.View activity) {
+    EventInitialContract.EventInitialView provideView(EventInitialContract.EventInitialView activity) {
         return activity;
     }
 
     @Provides
     @PerActivity
-    EventInitialContract.Presenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
-                                                     @NonNull EventInitialRepository eventInitialRepository,
-                                                     @NonNull MetadataRepository metadataRepository,
-                                                     @NonNull SchedulerProvider schedulerProvider) {
-        return new EventInitialPresenter(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
+    EventInitialContract.EventInitialPresenter providesPresenter(@NonNull EventSummaryRepository eventSummaryRepository,
+                                                                 @NonNull EventInitialRepository eventInitialRepository,
+                                                                 @NonNull MetadataRepository metadataRepository,
+                                                                 @NonNull SchedulerProvider schedulerProvider) {
+        return new EventInitialPresenterImpl(eventSummaryRepository, eventInitialRepository, metadataRepository, schedulerProvider);
     }
 
 
