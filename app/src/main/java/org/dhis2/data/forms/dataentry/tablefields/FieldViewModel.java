@@ -65,4 +65,6 @@ public abstract class FieldViewModel {
     public abstract int row();
 
     public abstract int column();
+
+    public abstract String categoryOptionCombo();
 }

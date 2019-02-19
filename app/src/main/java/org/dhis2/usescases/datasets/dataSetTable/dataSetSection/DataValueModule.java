@@ -9,6 +9,12 @@ import dagger.Provides;
 @Module
 public class DataValueModule {
 
+    private String dataSetUid;
+
+    DataValueModule(String dataSetUid) {
+        this.dataSetUid = dataSetUid;
+    }
+
     @Provides
     @PerFragment
     DataValueContract.View provideView(DataSetSectionFragment fragment){
@@ -24,6 +30,6 @@ public class DataValueModule {
     @Provides
     @PerFragment
     DataValueRepository DataValueRepository(BriteDatabase briteDatabase) {
-        return new DataValueRepositoryImpl(briteDatabase);
+        return new DataValueRepositoryImpl(briteDatabase, dataSetUid);
     }
 }
