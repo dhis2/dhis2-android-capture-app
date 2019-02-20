@@ -408,5 +408,9 @@
     <string name="biometrics_security_title">Biometric Security</string>
     <string name="biometrics_security_text">Use your fingerprint to log in with this user?</string>
     <string name="login_https">https://</string>
+    <string name="delete_local_data_message">Non synchronized data will be lost. Do you really want to continue?</string>
+    <string name="local_data_accept">Accept</string>
+    <string name="delete_local_data_error">Data could not be deleted. Please retry.</string>
+    <string name="delete_local_data_done">Delete local data finished successfully.</string>
 
 </resources>

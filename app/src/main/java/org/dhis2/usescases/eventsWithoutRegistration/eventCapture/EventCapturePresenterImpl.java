@@ -18,6 +18,7 @@ import org.dhis2.utils.Result;
 import org.dhis2.utils.RulesActionCallbacks;
 import org.dhis2.utils.RulesUtilsProvider;
 import org.dhis2.utils.custom_views.OptionSetDialog;
+import org.dhis2.utils.custom_views.OptionSetPopUp;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.rules.models.RuleActionShowError;
@@ -297,7 +298,12 @@ public class EventCapturePresenterImpl implements EventCaptureContract.Presenter
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                options -> OptionSetDialog.newInstance().setOptions(options),
+                                options -> {
+                                    if (OptionSetDialog.isCreated())
+                                        OptionSetDialog.newInstance().setOptions(options);
+                                    else if (OptionSetPopUp.isCreated())
+                                        OptionSetPopUp.getInstance().setOptions(options);
+                                },
                                 Timber::e
                         ));
 

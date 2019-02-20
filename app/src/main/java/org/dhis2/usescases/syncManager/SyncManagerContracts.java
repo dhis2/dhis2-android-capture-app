@@ -20,9 +20,13 @@ public class SyncManagerContracts {
 
         void wipeDatabase();
 
+        void deleteLocalData();
+
         void showTutorial();
 
         void showSyncErrors(List<D2Error> data);
+
+        void showLocalDataDeleted(boolean error);
     }
 
     public interface Presenter {
@@ -44,6 +48,8 @@ public class SyncManagerContracts {
         void onWipeData();
 
         void wipeDb();
+
+        void onDeleteLocalData();
 
         void deleteLocalData();
 

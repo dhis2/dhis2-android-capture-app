@@ -21,5 +21,6 @@ public interface FieldViewModelFactory {
                           @NonNull Boolean editable,
                           @Nullable ProgramStageSectionRenderingType renderingType,
                           @Nullable String description,
-                          @Nullable ValueTypeDeviceRenderingModel fieldRendering);
+                          @Nullable ValueTypeDeviceRenderingModel fieldRendering,
+                          @Nullable Integer optionCount);
 }

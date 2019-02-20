@@ -18,6 +18,10 @@
         <variable
             name="enrollment"
             type="org.hisp.dhis.android.core.enrollment.EnrollmentModel" />
+
+        <variable
+            name="program"
+            type="org.hisp.dhis.android.core.program.ProgramModel"/>
     </data>
 
     <RelativeLayout
@@ -25,6 +29,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="1dp"
         app:eventColor="@{event}"
+        app:eventProgram="@{program}"
         app:eventProgramStage="@{stage}"
         tools:background="@color/event_green">
 
@@ -87,6 +92,7 @@
                     app:enrollmentStatusIcon="@{enrollment}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusIcon="@{event}"
+                    app:eventProgram="@{program}"
                     app:srcCompat="@drawable/ic_edit"
                     android:layout_gravity="end"
                     tools:ignore="ContentDescription" />
@@ -101,6 +107,7 @@
                     app:enrollmentStatus="@{enrollment}"
                     app:eventProgramStage="@{stage}"
                     app:eventStatusText='@{event}'
+                    app:eventProgram="@{program}"
                     tools:text="Read only" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

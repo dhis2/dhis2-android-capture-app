@@ -2,8 +2,6 @@ package org.dhis2.data.forms.dataentry;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -25,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
 
@@ -48,7 +48,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  COUNT(Count.optionCount)\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -74,6 +75,7 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             " %s  " +
             "ORDER BY CASE" +
             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
@@ -150,7 +152,8 @@ final class ProgramStageRepository implements DataEntryRepository {
                 if (!isEmpty(fieldViewModel.optionSet())) {
                     Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
                     if (cursor != null && cursor.moveToFirst()) {
-                        for (int i = 0; i < cursor.getCount(); i++) {
+                        int optionCount = cursor.getCount();
+                        for (int i = 0; i < optionCount; i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
                             String optionCode = cursor.getString(2);
@@ -158,7 +161,7 @@ final class ProgramStageRepository implements DataEntryRepository {
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), null, optionCount));
 
                             cursor.moveToNext();
                         }
@@ -215,6 +218,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
+        int optionCount = cursor.getInt(14);
+
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
                 " JOIN ProgramStageDataElement ON ProgramStageDataElement.uid = ValueTypeDeviceRendering.uid" +
@@ -241,7 +246,7 @@ final class ProgramStageRepository implements DataEntryRepository {
 
 
         return fieldFactory.create(uid, isEmpty(formLabel) ? label : formLabel, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering);
+                allowFutureDates, accessDataWrite && eventStatus == EventStatus.ACTIVE && !hasExpired, renderingType, description, fieldRendering, optionCount);
     }
 
     @NonNull

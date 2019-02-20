@@ -96,7 +96,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  COUNT(Count.optionCount)\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -122,6 +123,7 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             " %s  " +
             "ORDER BY CASE" +
             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
@@ -244,9 +246,12 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
         EventStatus eventStatus = EventStatus.valueOf(cursor.getString(9));
         String formName = cursor.getString(10);
         String description = cursor.getString(11);
+        String optionSet = cursor.getString(4);
         if (!isEmpty(optionCodeName)) {
             dataValue = optionCodeName;
         }
+
+        int optionCount = cursor.getInt(14);
 
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
@@ -257,8 +262,8 @@ public class EventSummaryRepositoryImpl implements EventSummaryRepository {
 
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering);
+                optionSet, dataValue, cursor.getString(7), cursor.getInt(8) == 1,
+                eventStatus == EventStatus.ACTIVE, null, description, fieldRendering,optionCount);
     }
 
     @NonNull

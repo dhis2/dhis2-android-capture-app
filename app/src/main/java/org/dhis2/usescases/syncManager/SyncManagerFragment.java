@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.dhis2.BuildConfig;
@@ -24,6 +25,7 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSyncManagerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
+import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
@@ -309,10 +311,19 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.wipe_data))
                 .setMessage(getString(R.string.wipe_data_meesage))
-                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> {
-                    showDeleteProgress();
-                })
+                .setView(R.layout.warning_layout)
+                .setPositiveButton(getString(R.string.wipe_data_ok), (dialog, which) -> showDeleteProgress())
                 .setNegativeButton(getString(R.string.wipe_data_no), (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    @Override
+    public void deleteLocalData() {
+        new AlertDialog.Builder(context, R.style.CustomDialog)
+                .setTitle(getString(R.string.delete_local_data))
+                .setMessage(getString(R.string.delete_local_data_message))
+                .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> presenter.deleteLocalData())
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
@@ -402,5 +413,13 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     public void showSyncErrors(List<D2Error> data) {
         if (!ErrorDialog.newInstace().isAdded())
             ErrorDialog.newInstace().setData(data).show(getChildFragmentManager().beginTransaction(), "ErrorDialog");
+    }
+
+    @Override
+    public void showLocalDataDeleted(boolean error) {
+        Snackbar deleteDataSnack = Snackbar.make(binding.getRoot(),
+                error ? R.string.delete_local_data_error : R.string.delete_local_data_done,
+                Snackbar.LENGTH_SHORT);
+        deleteDataSnack.show();
     }
 }

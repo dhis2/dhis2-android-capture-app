@@ -101,7 +101,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             "  Field.formLabel,\n" +
             "  Field.displayDescription,\n" +
             "  Field.formOrder,\n" +
-            "  Field.sectionOrder\n" +
+            "  Field.sectionOrder,\n" +
+            "  COUNT(Count.optionCount)\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -127,6 +128,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             " %s  " +
             "ORDER BY CASE" +
             " WHEN Field.sectionOrder IS NULL THEN Field.formOrder" +
@@ -267,7 +269,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 if (!isEmpty(fieldViewModel.optionSet())) {
                     Cursor cursor = briteDatabase.query(OPTIONS, fieldViewModel.optionSet() == null ? "" : fieldViewModel.optionSet());
                     if (cursor != null && cursor.moveToFirst()) {
-                        for (int i = 0; i < cursor.getCount(); i++) {
+                        int optionCount = cursor.getCount();
+                        for (int i = 0; i < optionCount; i++) {
                             String uid = cursor.getString(0);
                             String displayName = cursor.getString(1);
                             String optionCode = cursor.getString(2);
@@ -285,7 +288,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                                     fieldViewModel.uid() + "." + uid, //fist
                                     displayName + "-" + optionCode, ValueType.TEXT, false,
                                     fieldViewModel.optionSet(), fieldViewModel.value(), fieldViewModel.programStageSection(),
-                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering));
+                                    fieldViewModel.allowFutureDate(), fieldViewModel.editable() == null ? false : fieldViewModel.editable(), renderingType, fieldViewModel.description(), fieldRendering, optionCount));
 
                             cursor.moveToNext();
                         }
@@ -370,6 +373,8 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
             dataValue = optionCodeName;
         }
 
+        int optionCount = cursor.getInt(14);
+
         ValueTypeDeviceRenderingModel fieldRendering = null;
         try {
             Cursor rendering = briteDatabase.query("SELECT ValueTypeDeviceRendering.* FROM ValueTypeDeviceRendering" +
@@ -388,7 +393,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return fieldFactory.create(uid, formName == null ? cursor.getString(1) : formName,
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
                 cursor.getString(4), dataValue, cursor.getString(7), cursor.getInt(8) == 1,
-                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering);
+                isEnrollmentOpen() && eventStatus == EventStatus.ACTIVE && accessDataWrite, null, description, fieldRendering, optionCount);
     }
 
     @NonNull

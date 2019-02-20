@@ -1,19 +1,20 @@
 package org.dhis2.usescases.programStageSelection;
 
-import androidx.annotation.NonNull;
-
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.general.AbstractActivityContracts;
-
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.period.PeriodType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 public class ProgramStageSelectionContract {
 
     public interface View extends AbstractActivityContracts.View {
 
-        void setData(List<ProgramStageModel> programStageModels);
+        void setData(List<Pair<ProgramStageModel, ObjectStyleModel>> programStageModels);
 
         void setResult(String programStageUid, boolean repeatable, PeriodType periodType);
     }

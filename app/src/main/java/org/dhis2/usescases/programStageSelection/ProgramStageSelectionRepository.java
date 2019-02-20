@@ -2,8 +2,10 @@ package org.dhis2.usescases.programStageSelection;
 
 import androidx.annotation.NonNull;
 
+import org.dhis2.data.tuples.Pair;
 import org.dhis2.utils.Result;
 
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleEffect;
 
@@ -25,4 +27,6 @@ public interface ProgramStageSelectionRepository {
     Flowable<List<ProgramStageModel>> enrollmentProgramStages(String programId, String enrollmentUid);
 
     Flowable<Result<RuleEffect>> calculate();
+
+    List<Pair<ProgramStageModel,ObjectStyleModel>> objectStyle(List<ProgramStageModel> programStageModel);
 }
