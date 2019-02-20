@@ -104,10 +104,10 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     public void createTable() {
 
-        List<List<CategoryOptionModel>> columnHeaderItems = presenter.getCatOptions().get(sectionUid);
+        List<List<CategoryOptionModel>> columnHeaderItems = presenterFragment.getCatOptions().get(sectionUid);
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
-        List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
+        List<List<String>> listCatOptions = presenterFragment.getCatOptionCombos(presenterFragment.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
         int countColumn = 0;
         boolean isNumber = true;
         int row = 0, column = 0;
@@ -225,7 +225,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         int[] totals = new int[cells.get(0).size()];
         for(List<String> dataValues : cells){
             for (int i=0; i< dataValues.size(); i++){
-                if(!dataValues.get(0).isEmpty())
+                if(!dataValues.get(i).isEmpty())
                     totals[i] += Integer.parseInt(dataValues.get(i));
             }
         }
@@ -233,7 +233,7 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
         for (int column : totals) {
             fields.add(fieldFactory.create("", "", ValueType.INTEGER,
                     false, "", String.valueOf(column), sectionUid, true,
-                    false, null, null, "",new ArrayList<>(),"", row, columnPos));
+                    false, null, null, "",new ArrayList<>(),"", row, columnPos, ""));
 
             values.add(String.valueOf(column));
         }
