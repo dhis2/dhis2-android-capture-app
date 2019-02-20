@@ -164,7 +164,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         StringBuilder catComb = new StringBuilder("");
         for (int i = 0; i < selectedCatOptions.keySet().size(); i++) {
             CategoryOptionModel catOpt = selectedCatOptions.get(selectedCatOptions.keySet().toArray()[i]);
-            catComb.append(catOpt.code());
+            catComb.append(catOpt.uid());
             if (i < selectedCatOptions.values().size() - 1)
                 catComb.append(", ");
         }

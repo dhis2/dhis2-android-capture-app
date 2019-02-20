@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import org.dhis2.App;
 
 import com.evrencoskun.tableview.TableView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.Table;
 
 import org.dhis2.R;
@@ -265,5 +266,11 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract implements Da
 
     public void updateData(RowAction rowAction) {
         adapter.updateValue(rowAction);
+    }
+
+    @Override
+    public void showSnackBar() {
+        Snackbar mySnackbar = Snackbar.make(binding.getRoot(), R.string.datavalue_saved , Snackbar.LENGTH_SHORT);
+        mySnackbar.show();
     }
 }

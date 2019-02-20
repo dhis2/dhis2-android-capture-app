@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 public class DataValueContract {
 
     public interface View {
-
+        void showSnackBar();
     }
 
     public interface Presenter extends AbstractActivityContracts.Presenter{

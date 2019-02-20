@@ -6,6 +6,7 @@ import org.dhis2.data.tuples.Pair;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.dhis2.utils.DateUtils;
 import org.hisp.dhis.android.core.category.CategoryModel;
+import org.hisp.dhis.android.core.category.CategoryOptionComboCategoryOptionLinkModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
 import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
@@ -68,7 +69,6 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "GROUP BY CategoryOption.uid, section.uid ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
-
     private final String CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.*,section.displayName as SectionName FROM CategoryOptionCombo " +
             "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
             "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
@@ -79,6 +79,7 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN SectionDataElementLINK ON SectionDataElementLink.section = Section.uid) as section on section.dataelement = DataElement.uid " +
             "WHERE DataSetDataElementLink.dataSet = ? " +
             "GROUP BY section.uid, CategoryOptionCombo.uid  ORDER BY section.uid, CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
 
     private final String DATA_SET = "SELECT DataSet.* FROM DataSet WHERE DataSet.uid = ?";
 
@@ -105,13 +106,19 @@ public class DataValueRepositoryImpl implements DataValueRepository {
             "JOIN DataSet ON DataSet.uid = Section.dataSet " +
             "WHERE DataSet.uid = ?";
 
-    private static final String SELECT_CATEGORY_OPTION_COMBO = "";
-
     private static final String NEW_ID_DATAVALUE = "SELECT MAX(_id) + 1 FROM DataValue";
-    /*private static String INSERT_DATAVALUE = "INSERT INTO DataValue ( " +
-            "dataElement, period, organisationUnit, categoryOptionCombo, attributeOptionCombo, value, storeBy, created, lastUpdated, followUp, state" +
-            ") VALUES (?, ?, ?, ?,?, ?, ?,?,?, ?, ? );";
-*/
+
+    private static final String SELECT_CATEGORY_OPTION_COMBO = "SELECT CategoryOptionCombo.uid as categoryOptionCombo, CategoryOptionComboCategoryOptionLink.categoryOption as categoryOption " +
+            "FROM CategoryOptionCombo " +
+            "JOIN DataElement ON DataElement.categoryCombo = CategoryOptionCombo.categoryCombo " +
+            "JOIN DataSetDataElementLink ON DataSetDataElementLink.dataElement = DataElement.uid " +
+            "JOIN CategoryCategoryComboLink ON CategoryCategoryComboLink.categoryCombo = categoryOptionCombo.categoryCombo " +
+            "JOIN CategoryOptionComboCategoryOptionLink ON CategoryOptionComboCategoryOptionLink.categoryOptionCombo = CategoryOptionCombo.uid " +
+            "JOIN CategoryCategoryOptionLink ON CategoryCategoryOptionLink.categoryOption = CategoryOptionComboCategoryOptionLink.categoryOption " +
+            "WHERE DataSetDataElementLink.dataSet = ? " +
+            "GROUP BY CategoryOptionCombo.uid, CategoryOptionComboCategoryOptionLink.categoryOption " +
+            "ORDER BY CategoryCategoryComboLink.sortOrder, CategoryCategoryOptionLink.sortOrder";
+
     public DataValueRepositoryImpl(BriteDatabase briteDatabase, String dataSetUid){
         this.briteDatabase = briteDatabase;
         this.dataSetUid = dataSetUid;
@@ -122,6 +129,23 @@ public class DataValueRepositoryImpl implements DataValueRepository {
         return briteDatabase.createQuery(DataValueModel.TABLE, NEW_ID_DATAVALUE)
                 .mapToOne(cursor -> cursor.getString(0))
                 .toFlowable(BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption() {
+        Map<String, List<String>> map = new HashMap<>();
+        return briteDatabase.createQuery(CategoryOptionComboCategoryOptionLinkModel.TABLE,SELECT_CATEGORY_OPTION_COMBO, dataSetUid)
+                .mapToList(cursor -> {
+                    String categoryOptionCombo = cursor.getString(cursor.getColumnIndex("categoryOptionCombo"));
+
+                    if (map.get(categoryOptionCombo) == null) {
+                        map.put(categoryOptionCombo, new ArrayList<>());
+                    }
+                    map.get(categoryOptionCombo).add(cursor.getString(cursor.getColumnIndex("categoryOption")));
+
+                    return categoryOptionCombo;
+                })
+                .flatMap(dataElementModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -142,6 +166,8 @@ public class DataValueRepositoryImpl implements DataValueRepository {
                 })
                 .flatMap(dataElementModels -> Observable.just(map)).toFlowable(BackpressureStrategy.LATEST);
     }
+
+
 
     @Override
     public Flowable<DataSetModel> getDataSet() {
@@ -177,9 +203,16 @@ public class DataValueRepositoryImpl implements DataValueRepository {
     }
 
 
-    public void insertDataValue(List<DataValueModel> dataValues){
-        for(DataValueModel dataValueModel: dataValues)
-            briteDatabase.insert(DataValueModel.TABLE, dataValueModel.toContentValues());
+    public Flowable<Long> insertDataValue(List<DataValueModel> dataValues){
+        Long id = 0L;
+        for(DataValueModel dataValueModel: dataValues) {
+            String where = DataValueModel.Columns.DATA_ELEMENT+ " = '"+ dataValueModel.dataElement() +"' AND "+ DataValueModel.Columns.PERIOD + " = '"+ dataValueModel.period() +
+                    "' AND "+  DataValueModel.Columns.ATTRIBUTE_OPTION_COMBO+ " = '"+ dataValueModel.attributeOptionCombo() +
+                    "' AND "+ DataValueModel.Columns.CATEGORY_OPTION_COMBO + " = '"+ dataValueModel.categoryOptionCombo()+"'";
+            briteDatabase.delete(DataValueModel.TABLE, where);
+            id = briteDatabase.insert(DataValueModel.TABLE, dataValueModel.toContentValues());
+        }
+        return Flowable.just(id);
     }
 
     @Override

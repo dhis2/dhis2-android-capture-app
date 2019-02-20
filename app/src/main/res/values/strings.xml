@@ -330,6 +330,7 @@
     <string name="event_completed_message">All events in this program are completed. Would you like to close the program as well?</string>
     <string name="complete_enrollment_message">Would you like to complete the enrollment as well?</string>
     <string name="check_event">Check</string>
+    <string name="datavalue_saved">Data has been saved!</string>
 
     <string name="menu_home">Home</string>
     <string name="appwidget_text">EXAMPLE</string>

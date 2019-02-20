@@ -16,7 +16,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 
 public interface DataValueRepository {
-    void insertDataValue(List<DataValueModel> dataValues);
+    Flowable<Long> insertDataValue(List<DataValueModel> dataValues);
 
     Flowable<DataSetModel> getDataSet();
 
@@ -35,4 +35,6 @@ public interface DataValueRepository {
     Flowable<List<SectionModel>> getSectionByDataSet();
 
     Flowable<String> getNewIDDataValue();
+
+    Flowable<Map<String, List<String>>> getCategoryOptionComboCatOption();
 }

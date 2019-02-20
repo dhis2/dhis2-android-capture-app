@@ -1,10 +1,13 @@
 package org.dhis2.usescases.datasets.dataSetTable.dataSetSection;
 
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.FieldViewModelFactoryImpl;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.data.tuples.Quintet;
+import org.dhis2.data.tuples.Sextet;
 import org.dhis2.usescases.datasets.dataSetTable.DataSetTableModel;
 import org.hisp.dhis.android.core.category.CategoryModel;
 import org.hisp.dhis.android.core.category.CategoryOptionComboModel;
@@ -15,6 +18,7 @@ import org.hisp.dhis.android.core.datavalue.DataValueModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +52,7 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     Map<String, List<String>> compulsoryDataElement;
     List<SectionModel> sections;
     List<DataSetTableModel> dataValuesChanged;
+    Map<String, List<String>> catOptionComboCatOptions;
 
     public DataValuePresenter(DataValueRepository repository){
         this.repository = repository;
@@ -87,21 +92,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
     @Override
     public void save() {
         compositeDisposable.add(
-                repository.getNewIDDataValue()
+                repository.insertDataValue(tranformDataSetTableModelToDataValueModel())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(id -> repository.insertDataValue(tranformDataSetTableModelToDataValueModel(id)),
-                                Timber::e)
-
+                        .subscribe( aLong -> view.showSnackBar(), Timber::e)
         );
     }
 
-    private List<DataValueModel> tranformDataSetTableModelToDataValueModel(String id){
+    private List<DataValueModel> tranformDataSetTableModelToDataValueModel(){
         List<DataValueModel> listDataValue = new ArrayList<>();
-
+        Date currentDate = Calendar.getInstance().getTime();
         for(DataSetTableModel dataSetTableModel: dataValuesChanged){
             listDataValue.add(DataValueModel.builder()
-                    .id(Long.parseLong(id))
                     .dataElement(dataSetTableModel.dataElement())
                     .period(dataSetTableModel.period())
                     .organisationUnit(dataSetTableModel.organisationUnit())
@@ -109,8 +111,8 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                     .attributeOptionCombo(dataSetTableModel.attributeOptionCombo())
                     .value(dataSetTableModel.value())
                     .storedBy(dataSetTableModel.storedBy())
-                    .created(Calendar.getInstance().getTime())
-                    .lastUpdated(Calendar.getInstance().getTime())
+                    .created(currentDate)
+                    .lastUpdated(currentDate)
                     .comment("")
                     .followUp(false).build());
         }
@@ -151,15 +153,18 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                 }
                             }
                             if(!exists && rowAction.value() != null) {
+                                String catOptionCombo = "";
+                                for(Map.Entry<String, List<String>> entry : catOptionComboCatOptions.entrySet()){
+                                    if(entry.getValue().containsAll(rowAction.listCategoryOption()))
+                                        catOptionCombo = entry.getKey();
+                                }
                                 dataSetTableModel = DataSetTableModel.create(Long.parseLong("0"), rowAction.dataElement(), periodTypeName, orgUnitUid,
-                                        "", catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
+                                        catOptionCombo, catCombo, rowAction.value()!= null ? rowAction.value(): "", "",
                                         "", rowAction.listCategoryOption());
                                 dataValues.add(dataSetTableModel);
                             }
                             dataValuesChanged.add(dataSetTableModel);
                             dataSetSectionFragment.updateData(rowAction);
-
-
                         },
                         Timber::e));
     }
@@ -176,21 +181,21 @@ public class DataValuePresenter implements DataValueContract.Presenter{
                                         repository.getGreyedFields(getUidCatOptionsCombo(data)),
                                         repository.getMandatoryDataElement(getUidCatOptionsCombo(data)),
                                         repository.getSectionByDataSet(),
-                                        Quintet::create
+                                        repository.getCategoryOptionComboCatOption(),
+                                        Sextet::create
                                 ))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                quintet -> {
-                                    /*view.setDataValue(quintet.val0());
-                                    view.setDataSet(quintet.val1());*/
+                                sextet -> {
                                     dataElements = tableData.val0();
                                     catOptions =  transformCategories(tableData.val1());
-                                    dataValues = quintet.val0();
+                                    dataValues = sextet.val0();
                                     mapWithoutTransform = tableData.val1();
-                                    dataElementDisabled = quintet.val2();
-                                    compulsoryDataElement = quintet.val3();
-                                    sections = quintet.val4();
+                                    dataElementDisabled = sextet.val2();
+                                    compulsoryDataElement = sextet.val3();
+                                    sections = sextet.val4();
+                                    catOptionComboCatOptions = sextet.val5();
                                     dataSetSectionFragment.createTable();
                                 },
                                 Timber::e
