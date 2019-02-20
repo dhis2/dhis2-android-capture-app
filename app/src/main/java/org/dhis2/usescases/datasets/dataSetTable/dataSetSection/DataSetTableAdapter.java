@@ -63,6 +63,8 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     private static final int IMAGE = 11;
     private static final int UNSUPPORTED = 12;
 
+    private final int headerWidth = 400;
+
     @NonNull
     private List<List<FieldViewModel>> viewModels;
 
@@ -177,8 +179,12 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
     @Override
     public void onBindColumnHeaderViewHolder(AbstractViewHolder holder, Object columnHeaderItemModel, int position) {
         ((DataSetRHeaderHeader) holder).bind(((CategoryOptionModel)columnHeaderItemModel).displayName());
-        int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
-        ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = 800*i;
+        if(((CategoryOptionModel) columnHeaderItemModel).displayName().isEmpty())
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = headerWidth;
+        else {
+            int i = getHeaderRecyclerPositionFor(columnHeaderItemModel);
+            ((DataSetRHeaderHeader) holder).binding.container.getLayoutParams().width = headerWidth * i;
+        }
         ((DataSetRHeaderHeader) holder).binding.title.requestLayout();
     }
 
@@ -292,6 +298,11 @@ class DataSetTableAdapter extends AbstractTableAdapter<CategoryOptionModel, Data
                 int totalColumn = Integer.parseInt(getCellItem(rowAction.columnPos(),viewModels.size()-1))
                         + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
                 changeCellItem(rowAction.columnPos(), viewModels.size() - 1, totalColumn + "");
+            }
+            if(showRowTotal && showColumnTotal){
+                int total = Integer.parseInt(getCellItem(viewModels.get(0).size()-1, viewModels.size()-1))
+                        + (Integer.parseInt(rowAction.value()!= null? rowAction.value(): "0") - oldValue);
+                changeCellItem(viewModels.get(0).size()-1, viewModels.size()-1, total + "");
             }
         }
         changeCellItem(rowAction.columnPos(),rowAction.rowPos(), rowAction.value()!= null? rowAction.value(): "");

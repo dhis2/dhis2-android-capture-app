@@ -93,15 +93,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
     public void createTable(RowAction rowAction) {
 
-        binding.tableView.setHeaderCount(presenter.getCatOptions().get(sectionUid).size());
-
+        List<List<CategoryOptionModel>> columnHeaderItems = presenter.getCatOptions().get(sectionUid);
         ArrayList<List<String>> cells = new ArrayList<>();
         List<List<FieldViewModel>> listFields = new ArrayList<>();
         List<List<String>> listCatOptions = presenter.getCatOptionCombos(presenter.getMapWithoutTransform().get(sectionUid), 0, new ArrayList<>(), null);
         int countColumn = 0;
-        Integer[] totalColumn = new Integer[listCatOptions.size()];
         boolean isNumber = true;
         int row = 0, column = 0;
+
+        binding.tableView.setHeaderCount(columnHeaderItems.size());
 
         for (SectionModel section : presenter.getSections()) {
             if (section.name().equals(sectionUid)) {
@@ -136,9 +136,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
                             && Objects.equals(dataValue.dataElement(), de.uid())) {
 
                         if (isNumber) {
-                            if (adapter.getShowColumnTotal())
-                                totalColumn[countColumn] = totalColumn[countColumn] != null ?
-                                        Integer.parseInt(dataValue.value()) + totalColumn[countColumn] : Integer.parseInt(dataValue.value());
                             if (adapter.getShowRowTotal())
                                 totalRow = totalRow + Integer.parseInt(dataValue.value());
                         }
@@ -159,8 +156,6 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
                     values.add("");
                 }
-                if(totalColumn[countColumn] == null)
-                    totalColumn[countColumn] = 0;
                 countColumn++;
                 column++;
             }
@@ -176,10 +171,15 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
 
         if (isNumber) {
             if (adapter.getShowColumnTotal())
-                setTotalColumn(totalColumn, listFields, cells, presenter.getDataElements(), row, column);
+                setTotalColumn(listFields, cells, presenter.getDataElements(), row, column);
             if (adapter.getShowRowTotal())
-                presenter.getCatOptions().get(sectionUid).get(presenter.getCatOptions().get(sectionUid).size() - 1).
-                        add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
+                for (int i = 0; i< columnHeaderItems.size(); i++) {
+                    if(i==columnHeaderItems.size()-1)
+                        columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName(getString(R.string.total)).build());
+                    else
+                        columnHeaderItems.get(i).add(CategoryOptionModel.builder().displayName("").build());
+                }
+
         }
 
             adapter.swap(listFields);
@@ -187,14 +187,14 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             adapter.setAllItems(
                     presenter.getCatOptions().get(sectionUid),
                     presenter.getDataElements().get(sectionUid),
-                    cells);
+                    cells, adapter.getShowRowTotal());
         else
             adapter.setCellItems(cells);
 
             tableCreated = true;
     }
 
-    private void setTotalColumn(Integer[] totalColumn, List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
+    private void setTotalColumn(List<List<FieldViewModel>> listFields, ArrayList<List<String>> cells,
                                 Map<String, List<DataElementModel>> dataElements, int row, int columnPos) {
         FieldViewModelFactoryImpl fieldFactory = createField();
 
@@ -205,18 +205,28 @@ public class DataSetSectionFragment extends FragmentGlobalAbstract {
             if (data.displayName().equals(getContext().getString(R.string.total)))
                 existTotal = true;
 
-        for (Integer column : totalColumn) {
-            fields.add(fieldFactory.create("", "", ValueType.INTEGER,
-                    false, "", column.toString(), sectionUid, true,
-                    false, null, null, "",new ArrayList<>(),"", row, columnPos));
-
-            values.add(column.toString());
-        }
-
         if (existTotal){
             listFields.remove(listFields.size()-1);
             cells.remove(listFields.size()-1);
         }
+
+
+        int[] totals = new int[cells.get(0).size()];
+        for(List<String> dataValues : cells){
+            for (int i=0; i< dataValues.size(); i++){
+                if(!dataValues.get(0).isEmpty())
+                    totals[i] += Integer.parseInt(dataValues.get(i));
+            }
+        }
+
+        for (int column : totals) {
+            fields.add(fieldFactory.create("", "", ValueType.INTEGER,
+                    false, "", String.valueOf(column), sectionUid, true,
+                    false, null, null, "",new ArrayList<>(),"", row, columnPos));
+
+            values.add(String.valueOf(column));
+        }
+
 
         listFields.add(fields);
         cells.add(values);
