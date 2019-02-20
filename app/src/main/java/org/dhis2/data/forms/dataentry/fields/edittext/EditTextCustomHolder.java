@@ -37,6 +37,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ViewDataBinding;
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
+import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.text.TextUtils.isEmpty;
@@ -54,12 +55,13 @@ final class EditTextCustomHolder extends FormViewHolder {
     private ImageView icon;
     List<String> autoCompleteValues;
     EditTextViewModel editTextModel;
+    private Boolean isEditable;
 
     @SuppressLint("RxLeakedSubscription")
     EditTextCustomHolder(ViewGroup parent, ViewDataBinding binding, FlowableProcessor<RowAction> processor,
                          boolean isBgTransparent, String renderType, ObservableBoolean isEditable) {
         super(binding);
-
+        this.isEditable = isEditable.get();
         editText = binding.getRoot().findViewById(R.id.input_editText);
         icon = binding.getRoot().findViewById(R.id.renderImage);
 
@@ -69,17 +71,24 @@ final class EditTextCustomHolder extends FormViewHolder {
 
         editText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus && editTextModel != null && editTextModel.editable()) {
-
                 if (!isEmpty(editText.getText()) && validate()) {
                     checkAutocompleteRendering();
                     processor.onNext(RowAction.create(editTextModel.uid(), editText.getText().toString()));
 
                 } else
                     processor.onNext(RowAction.create(editTextModel.uid(), null));
-
-
             }
         });
+
+        if(this.isEditable) {
+            editText.setFocusable(true);
+            editText.setFocusableInTouchMode(true);
+            editText.setEnabled(true);
+        } else {
+            editText.setFocusable(false);
+            editText.setFocusableInTouchMode(false);
+            editText.setEnabled(false);
+        }
 
     }
 
@@ -94,8 +103,15 @@ final class EditTextCustomHolder extends FormViewHolder {
 
     private void setInputType(ValueType valueType) {
 
-        editText.setFocusable(editTextModel.editable());
-        editText.setEnabled(editTextModel.editable());
+        if(this.isEditable) {
+            editText.setFocusable(true);
+            editText.setFocusableInTouchMode(true);
+            editText.setEnabled(true);
+        } else {
+            editText.setFocusable(false);
+            editText.setFocusableInTouchMode(false);
+            editText.setEnabled(false);
+        }
 
         editText.setFilters(new InputFilter[]{});
 
@@ -152,7 +168,7 @@ final class EditTextCustomHolder extends FormViewHolder {
                     break;
             }
         else {
-            editText.setInputType(0);
+            editText.setInputType(InputType.TYPE_NULL);
         }
     }
 
@@ -171,9 +187,20 @@ final class EditTextCustomHolder extends FormViewHolder {
         this.editTextModel = (EditTextViewModel) model;
 
         Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
-        editText.setEnabled(editTextModel.editable());
-        editText.setText(editTextModel.value() == null ?
-                null : valueOf(editTextModel.value()));
+        if(this.isEditable) {
+            editText.setFocusable(true);
+            editText.setFocusableInTouchMode(true);
+            editText.setEnabled(true);
+        } else {
+            editText.setFocusable(false);
+            editText.setFocusableInTouchMode(false);
+            editText.setEnabled(false);
+        }
+
+        if(editTextModel.value() != null)
+            editText.post(() -> editText.setText(valueOf(editTextModel.value())));
+        else
+            editText.setText(null);
 
         if (!isEmpty(editTextModel.warning())) {
             inputLayout.setError(editTextModel.warning());
