@@ -52,6 +52,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
 
     private ITableView mTableView;
     private List<AdapterDataSetChangedListener> dataSetChangedListeners;
+    private boolean mHasTotal;
 
     public AbstractTableAdapter(Context context) {
         mContext = context;
@@ -119,7 +120,7 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
     }
 
     public void setAllItems(List<List<CH>> columnHeaderItems, List<RH> rowHeaderItems, List<List<C>>
-            cellItems) {
+            cellItems, boolean hasTotal) {
         // Set all items
         for(int i=0; i<columnHeaderItems.size(); i++){
             setColumnHeaderItems(columnHeaderItems.get(i), i);
@@ -145,6 +146,9 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
                 mCornerView.setVisibility(View.GONE);
             }
         }
+
+        //Handle totalColumn
+        mHasTotal = hasTotal;
     }
 
     public View getCornerView() {
@@ -355,6 +359,9 @@ public abstract class AbstractTableAdapter<CH, RH, C> implements ITableAdapter {
             if(mColumnsHeaderRecyclerViewAdapters.get(i).getItems().contains(object)) {
                 if(i!=mTableView.getHeaderCount()-1) {
                     int p = mColumnsHeaderRecyclerViewAdapters.get(i+1).getItems().size() / mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size();
+                    if(mHasTotal)
+                        p = (mColumnsHeaderRecyclerViewAdapters.get(i+1).getItems().size()-1) / (mColumnsHeaderRecyclerViewAdapters.get(i).getItems().size()-1);
+
                     return p*(mTableView.getHeaderCount() - (i+1));
                 }
                 return mTableView.getHeaderCount() - i;
