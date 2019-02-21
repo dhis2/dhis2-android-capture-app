@@ -166,12 +166,21 @@ public class SyncManagerPresenter implements SyncManagerContracts.Presenter {
     }
 
     @Override
+    public void onDeleteLocalData() {
+        view.deleteLocalData();
+    }
+
+    @Override
     public void deleteLocalData() {
+        boolean error = false;
         try {
             d2.wipeModule().wipeData();
         } catch (D2Error e) {
             Timber.e(e);
+            error = true;
         }
+
+        view.showLocalDataDeleted(error);
     }
 
     @Override

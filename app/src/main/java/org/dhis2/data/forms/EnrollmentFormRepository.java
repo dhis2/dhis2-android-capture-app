@@ -162,7 +162,8 @@ class EnrollmentFormRepository implements FormRepository {
             "  Field.generated,\n" +
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
-            "  Field.displayDescription\n" +
+            "  Field.displayDescription,\n" +
+            "  COUNT(Count.optionCount)\n"+
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -184,6 +185,7 @@ class EnrollmentFormRepository implements FormRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             "WHERE Enrollment.uid = ?";
     private static final String CHECK_STAGE_IS_NOT_CREATED = "SELECT * FROM Event JOIN Enrollment ON Event.enrollment = Enrollment.uid WHERE Enrollment.uid = ? AND Event.programStage = ?";
     @NonNull
@@ -560,6 +562,8 @@ class EnrollmentFormRepository implements FormRepository {
             dataValue = optionCodeName;
         }
 
+        int optionCount = cursor.getInt(12);
+
         ValueTypeDeviceRenderingModel fieldRendering = null;
         Cursor rendering = briteDatabase.query("SELECT * FROM ValueTypeDeviceRendering WHERE uid = ?", uid);
         if (rendering != null && rendering.moveToFirst()) {
@@ -579,7 +583,7 @@ class EnrollmentFormRepository implements FormRepository {
                 "");
 
         return fieldFactory.create(uid, label, valueType, mandatory, optionSetUid, dataValue, section,
-                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
+                allowFutureDates, status == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount);
     }
 
     @NonNull

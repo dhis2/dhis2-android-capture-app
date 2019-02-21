@@ -42,7 +42,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  Enrollment.organisationUnit,\n" +
             "  Enrollment.status,\n" +
             "  Field.displayDescription,\n" +
-            "  Field.pattern\n" +
+            "  Field.pattern,\n" +
+            "  COUNT(Count.optionCount)\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -65,6 +66,7 @@ final class EnrollmentRepository implements DataEntryRepository {
             "  LEFT OUTER JOIN Option ON (\n" +
             "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
             "  )\n" +
+            " LEFT JOIN (SELECT Option.uid AS optionCount, Option.optionSet AS optionSet FROM Option) AS Count ON Count.optionSet = Field.optionSet\n"+ //TODO: CHECK OPTION COUNT
             "WHERE Enrollment.uid = ?";
 
 
@@ -122,6 +124,8 @@ final class EnrollmentRepository implements DataEntryRepository {
             dataValue = optionCodeName;
         }
 
+        int optionCount = cursor.getInt(13);
+
         if (generated && dataValue == null) {
             try {
                 String teiUid = null;
@@ -171,7 +175,7 @@ final class EnrollmentRepository implements DataEntryRepository {
 
         return fieldFactory.create(uid,
                 label, valueType, mandatory, optionSet, dataValue, null, allowFutureDates,
-                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering);
+                !generated && enrollmentStatus == EnrollmentStatus.ACTIVE, null, description, fieldRendering,optionCount);
 
     }
 
