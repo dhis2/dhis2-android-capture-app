@@ -85,7 +85,6 @@ public class EventInitialPresenter implements EventInitialContract.Presenter {
         this.eventInitialRepository = eventInitialRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
-        Bindings.setMetadataRepository(metadataRepository);
     }
 
     @Override

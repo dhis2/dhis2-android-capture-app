@@ -2,10 +2,8 @@ package org.dhis2.data.metadata;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Base64;
 
 import com.squareup.sqlbrite2.BriteDatabase;
-import com.squareup.sqlbrite2.SqlBrite.Query;
 
 import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
@@ -16,17 +14,14 @@ import org.hisp.dhis.android.core.category.CategoryOptionModel;
 import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.dataelement.DataElementModel;
-import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.maintenance.D2ErrorTableInfo;
 import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
-import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.relationship.RelationshipTypeModel;
@@ -34,23 +29,24 @@ import org.hisp.dhis.android.core.resource.ResourceModel;
 import org.hisp.dhis.android.core.settings.SystemSettingModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityTypeModel;
 import org.hisp.dhis.android.core.user.AuthenticatedUserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -387,6 +383,23 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return numberOfOptions;
     }
 
+    @Override
+    public Observable<Map<String, ObjectStyleModel>> getObjectStylesForPrograms(List<ProgramModel> enrollmentProgramModels) {
+        Map<String, ObjectStyleModel> objectStyleMap = new HashMap<>();
+        for (ProgramModel programModel : enrollmentProgramModels) {
+            ObjectStyleModel objectStyle = ObjectStyleModel.builder().build();
+            try (Cursor cursor = briteDatabase.query("SELECT * FROM ObjectStyle WHERE uid = ? LIMIT 1", programModel.uid())) {
+                if (cursor.moveToFirst())
+                    objectStyle = ObjectStyleModel.create(cursor);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+            objectStyleMap.put(programModel.uid(), objectStyle);
+        }
+
+        return Observable.just(objectStyleMap);
+    }
+
 
     @Override
     public Observable<List<ProgramModel>> getTeiActivePrograms(String teiUid) {
@@ -496,7 +509,6 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         return briteDatabase.createQuery(AuthenticatedUserModel.TABLE, "SELECT SystemInfo.contextPath FROM SystemInfo LIMIT 1")
                 .mapToOne(cursor -> cursor.getString(0));
     }
-
 
 
     @Override

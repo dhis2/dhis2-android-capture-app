@@ -170,7 +170,7 @@ final class EditTextCustomHolder extends FormViewHolder {
     public void update(@NonNull FieldViewModel model) {
         this.editTextModel = (EditTextViewModel) model;
 
-        Bindings.setObjectStyle(icon, itemView, editTextModel.uid());
+        Bindings.setObjectStyle(icon, itemView, editTextModel.objectStyle());
         editText.setEnabled(editTextModel.editable());
         editText.setText(editTextModel.value() == null ?
                 null : valueOf(editTextModel.value()));

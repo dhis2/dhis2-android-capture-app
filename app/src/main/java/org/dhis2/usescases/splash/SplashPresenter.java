@@ -35,7 +35,6 @@ public class SplashPresenter implements SplashContracts.Presenter {
         this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
         this.splashRespository = splashRepository;
-        Bindings.setMetadataRepository(metadataRepository);
     }
 
     @Override

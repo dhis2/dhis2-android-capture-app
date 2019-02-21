@@ -1,5 +1,7 @@
 package org.dhis2.data.forms.dataentry.fields;
 
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -50,4 +52,7 @@ public abstract class FieldViewModel {
 
     @Nonnull
     public abstract FieldViewModel withValue(String data);
+
+    @NonNull
+    public abstract ObjectStyleModel objectStyle();
 }

@@ -1,7 +1,10 @@
 package org.dhis2.utils;
 
+import android.database.Cursor;
+
 import org.dhis2.data.forms.dataentry.fields.FieldViewModel;
 import org.dhis2.data.forms.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.core.common.ObjectStyleModel;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.rules.models.RuleAction;
@@ -131,7 +134,8 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         String uid = displayText.content();
 
         EditTextViewModel textViewModel = EditTextViewModel.create(uid,
-                displayText.content(), false, ruleEffect.data(), "Information", 1, ValueType.TEXT, null, false, null, null);
+                displayText.content(), false, ruleEffect.data(), "Information", 1,
+                ValueType.TEXT, null, false, null, null,ObjectStyleModel.builder().build());
 
         if (this.currentFieldViewModels == null ||
                 !this.currentFieldViewModels.containsKey(uid)) {

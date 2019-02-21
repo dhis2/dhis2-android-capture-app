@@ -22,8 +22,8 @@ public abstract class DataEntryArguments implements Parcelable {
     public abstract String renderType();
 
     @NonNull
-    public static DataEntryArguments forEvent(@NonNull String event) {
-        return new AutoValue_DataEntryArguments(event, "", "",null);
+    public static DataEntryArguments forEvent(@NonNull String event,String renderType) {
+        return new AutoValue_DataEntryArguments(event, "", "",renderType);
     }
 
     @NonNull

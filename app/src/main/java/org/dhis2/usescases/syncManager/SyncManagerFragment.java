@@ -25,7 +25,6 @@ import org.dhis2.R;
 import org.dhis2.data.tuples.Pair;
 import org.dhis2.databinding.FragmentSyncManagerBinding;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
-import org.dhis2.utils.ColorUtils;
 import org.dhis2.utils.Constants;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.SyncUtils;
@@ -126,6 +125,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+                /*NO USE*/
             }
         });
         binding.metadataPeriods.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -137,7 +137,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                /*NO USE*/
             }
         });
 
@@ -204,7 +204,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         };
     }
 
-    public void setLastSyncDate() {
+    private void setLastSyncDate() {
         boolean dataStatus = prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true);
         boolean metaStatus = prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true);
 
@@ -322,6 +322,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         new AlertDialog.Builder(context, R.style.CustomDialog)
                 .setTitle(getString(R.string.delete_local_data))
                 .setMessage(getString(R.string.delete_local_data_message))
+                .setView(R.layout.warning_layout)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> presenter.deleteLocalData())
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
@@ -349,8 +350,8 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     @Override
     public void showTutorial() {
-        SharedPreferences prefs = getAbstracContext().getSharedPreferences(
-                Constants.SHARE_PREFS, Context.MODE_PRIVATE);
+        /*SharedPreferences prefs = getAbstracContext().getSharedPreferences(
+                Constants.SHARE_PREFS, Context.MODE_PRIVATE);*/
         NestedScrollView scrollView = getAbstractActivity().findViewById(R.id.scrollView);
         new Handler().postDelayed(() -> {
             FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(getAbstractActivity())
@@ -402,7 +403,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
             HelpManager.getInstance().setScreenHelp(getClass().getName(), steps);
 
             if (!prefs.getBoolean("TUTO_SETTINGS_SHOWN", false) && !BuildConfig.DEBUG) {
-                HelpManager.getInstance().showHelp();/* getAbstractActivity().fancyShowCaseQueue.show();*/
+                HelpManager.getInstance().showHelp();
                 prefs.edit().putBoolean("TUTO_SETTINGS_SHOWN", true).apply();
             }
 

@@ -57,7 +57,6 @@ public class EventSummaryInteractor implements EventSummaryContract.Interactor {
         this.metadataRepository = metadataRepository;
         this.eventSummaryRepository = eventSummaryRepository;
         this.schedulerProvider = schedulerProvider;
-        Bindings.setMetadataRepository(metadataRepository);
         compositeDisposable = new CompositeDisposable();
     }
 
