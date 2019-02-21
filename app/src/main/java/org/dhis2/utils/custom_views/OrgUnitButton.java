@@ -76,6 +76,7 @@ public class OrgUnitButton extends RelativeLayout {
         button = findViewById(R.id.button_org_unit);
     }
 
+    @SuppressWarnings("squid:S3776")
     public Observable<AndroidTreeView> renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();

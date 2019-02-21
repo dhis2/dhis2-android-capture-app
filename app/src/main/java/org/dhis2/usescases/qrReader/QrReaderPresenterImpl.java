@@ -465,6 +465,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             briteDatabase.insert(EnrollmentModel.TABLE, enrollmentModel.toContentValues());
     }
 
+    @SuppressWarnings("squid:S3776")
     private void insertEvent(JSONObject event) throws JSONException, ParseException {
         EventModel.Builder eventModelBuilder;
         eventModelBuilder = EventModel.builder();
@@ -537,20 +538,20 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         this.view = view;
     }
 
-    // SAVES READ TRACKED ENTITY INSTANCE, TRACKED ENTITY ATTRIBUTE VALUES, ENROLLMENTS, EVENTS AND RELATIONSHIPS INTO LOCAL DATABASE
-    @Override
-    public void download() {
+
+    private void saveTEI() {
         try {
             if (teiJson != null) {
                 insertTEI();
             } else {
                 view.showIdError();
-                return;
             }
         } catch (JSONException | ParseException e) {
             Timber.e(e);
         }
+    }
 
+    private void saveTEIAttributes() {
         if (attrJson != null) {
             for (int i = 0; i < attrJson.size(); i++) {
                 JSONArray attrArray = attrJson.get(i);
@@ -564,6 +565,50 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                 }
             }
         }
+    }
+
+    private void saveEnrollment() {
+        if (enrollmentJson != null) {
+            for (int i = 0; i < enrollmentJson.size(); i++) {
+                JSONArray enrollmentArray = enrollmentJson.get(i);
+                for (int j = 0; j < enrollmentArray.length(); j++) {
+                    try {
+                        JSONObject enrollment = enrollmentArray.getJSONObject(j);
+                        insertEnrollment(enrollment);
+                    } catch (JSONException | ParseException e) {
+                        Timber.e(e);
+                    }
+                }
+            }
+        }
+    }
+
+    private void saveEvents() {
+        if (eventsJson != null) {
+            for (int i = 0; i < eventsJson.size(); i++) {
+                try {
+                    JSONObject event = eventsJson.get(i);
+                    insertEvent(event);
+                } catch (JSONException | ParseException e) {
+                    Timber.e(e);
+                }
+            }
+        }
+    }
+
+    private void saveTEIData() {
+        for (int i = 0; i < teiDataJson.size(); i++) {
+            try {
+                JSONObject attrV = teiDataJson.get(i);
+                insertTEIData(attrV);
+            } catch (JSONException | ParseException e) {
+                Timber.e(e);
+            }
+        }
+    }
+
+    private void saveRelationships() {
+
 //TODO: CHANGE RELATIONSHIPS
 //        if (relationshipsJson != null) {
 //            for (int i = 0; i < relationshipsJson.size(); i++) {
@@ -591,41 +636,17 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 //            }
 //            }
 //        }
+    }
 
-        if (enrollmentJson != null) {
-            for (int i = 0; i < enrollmentJson.size(); i++) {
-                JSONArray enrollmentArray = enrollmentJson.get(i);
-                for (int j = 0; j < enrollmentArray.length(); j++) {
-                    try {
-                        JSONObject enrollment = enrollmentArray.getJSONObject(j);
-                        insertEnrollment(enrollment);
-                    } catch (JSONException | ParseException e) {
-                        Timber.e(e);
-                    }
-                }
-            }
-        }
-
-
-        if (eventsJson != null) {
-            for (int i = 0; i < eventsJson.size(); i++) {
-                try {
-                    JSONObject event = eventsJson.get(i);
-                    insertEvent(event);
-                } catch (JSONException | ParseException e) {
-                    Timber.e(e);
-                }
-            }
-        }
-
-        for (int i = 0; i < teiDataJson.size(); i++) {
-            try {
-                JSONObject attrV = teiDataJson.get(i);
-                insertTEIData(attrV);
-            } catch (JSONException | ParseException e) {
-                Timber.e(e);
-            }
-        }
+    // SAVES READ TRACKED ENTITY INSTANCE, TRACKED ENTITY ATTRIBUTE VALUES, ENROLLMENTS, EVENTS AND RELATIONSHIPS INTO LOCAL DATABASE
+    @Override
+    public void download() {
+        saveTEI();
+        saveTEIAttributes();
+        saveRelationships();
+        saveEnrollment();
+        saveEvents();
+        saveTEIData();
         view.goToDashBoard(teiUid);
     }
 
@@ -663,6 +684,76 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         compositeDisposable.clear();
     }
 
+    @SuppressWarnings("squid:S3776")
+    private void saveEventWORegistration() throws JSONException, ParseException {
+        EventModel.Builder eventModelBuilder = EventModel.builder();
+        if (eventWORegistrationJson.has(EventModel.Columns.UID)) {
+            eventModelBuilder.uid(eventWORegistrationJson.getString(EventModel.Columns.UID));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.ENROLLMENT)) {
+            eventModelBuilder.enrollment(eventWORegistrationJson.getString(EventModel.Columns.ENROLLMENT));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.CREATED)) {
+            eventModelBuilder.created(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.CREATED)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.LAST_UPDATED)) {
+            eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.LAST_UPDATED)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.CREATED_AT_CLIENT)) {
+            eventModelBuilder.createdAtClient(eventWORegistrationJson.getString(EventModel.Columns.CREATED_AT_CLIENT));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.LAST_UPDATED_AT_CLIENT)) {
+            eventModelBuilder.lastUpdatedAtClient(eventWORegistrationJson.getString(EventModel.Columns.LAST_UPDATED_AT_CLIENT));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.STATUS)) {
+            eventModelBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString(EventModel.Columns.STATUS)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.LATITUDE)) {
+            eventModelBuilder.latitude(eventWORegistrationJson.getString(EventModel.Columns.LATITUDE));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.LONGITUDE)) {
+            eventModelBuilder.longitude(eventWORegistrationJson.getString(EventModel.Columns.LONGITUDE));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.PROGRAM)) {
+            eventModelBuilder.program(eventWORegistrationJson.getString(EventModel.Columns.PROGRAM));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.PROGRAM_STAGE)) {
+            eventModelBuilder.programStage(eventWORegistrationJson.getString(EventModel.Columns.PROGRAM_STAGE));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.ORGANISATION_UNIT)) {
+            eventModelBuilder.organisationUnit(eventWORegistrationJson.getString(EventModel.Columns.ORGANISATION_UNIT));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.EVENT_DATE)) {
+            eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.EVENT_DATE)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.COMPLETE_DATE)) {
+            eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.COMPLETE_DATE)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.DUE_DATE)) {
+            eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.DUE_DATE)));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.ATTRIBUTE_OPTION_COMBO)) {
+            eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString(EventModel.Columns.ATTRIBUTE_OPTION_COMBO));
+        }
+        if (eventWORegistrationJson.has(EventModel.Columns.TRACKED_ENTITY_INSTANCE)) {
+            eventModelBuilder.trackedEntityInstance(eventWORegistrationJson.getString(EventModel.Columns.TRACKED_ENTITY_INSTANCE));
+        }
+
+        eventModelBuilder.state(State.TO_UPDATE);
+
+        EventModel eventModel = eventModelBuilder.build();
+
+        Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + EventModel.TABLE +
+                WHERE + EventModel.Columns.UID + EQUAL + QUESTION_MARK, eventModel.uid());
+
+        if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
+            // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
+        } else {
+            long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
+            Timber.d(TIMBER_MESSAGE, result);
+        }
+    }
+
     @Override
     public void downloadEventWORegistration() {
 
@@ -671,115 +762,53 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
         try {
             if (eventWORegistrationJson != null) {
-                EventModel.Builder eventModelBuilder = EventModel.builder();
-                if (eventWORegistrationJson.has(EventModel.Columns.UID)) {
-                    eventModelBuilder.uid(eventWORegistrationJson.getString(EventModel.Columns.UID));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.ENROLLMENT)) {
-                    eventModelBuilder.enrollment(eventWORegistrationJson.getString(EventModel.Columns.ENROLLMENT));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.CREATED)) {
-                    eventModelBuilder.created(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.CREATED)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.LAST_UPDATED)) {
-                    eventModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.LAST_UPDATED)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.CREATED_AT_CLIENT)) {
-                    eventModelBuilder.createdAtClient(eventWORegistrationJson.getString(EventModel.Columns.CREATED_AT_CLIENT));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.LAST_UPDATED_AT_CLIENT)) {
-                    eventModelBuilder.lastUpdatedAtClient(eventWORegistrationJson.getString(EventModel.Columns.LAST_UPDATED_AT_CLIENT));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.STATUS)) {
-                    eventModelBuilder.status(EventStatus.valueOf(eventWORegistrationJson.getString(EventModel.Columns.STATUS)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.LATITUDE)) {
-                    eventModelBuilder.latitude(eventWORegistrationJson.getString(EventModel.Columns.LATITUDE));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.LONGITUDE)) {
-                    eventModelBuilder.longitude(eventWORegistrationJson.getString(EventModel.Columns.LONGITUDE));
-                }
+                saveEventWORegistration();
                 if (eventWORegistrationJson.has(EventModel.Columns.PROGRAM)) {
-                    eventModelBuilder.program(eventWORegistrationJson.getString(EventModel.Columns.PROGRAM));
                     programUid = eventWORegistrationJson.getString(EventModel.Columns.PROGRAM);
                 }
-                if (eventWORegistrationJson.has(EventModel.Columns.PROGRAM_STAGE)) {
-                    eventModelBuilder.programStage(eventWORegistrationJson.getString(EventModel.Columns.PROGRAM_STAGE));
-                }
                 if (eventWORegistrationJson.has(EventModel.Columns.ORGANISATION_UNIT)) {
-                    eventModelBuilder.organisationUnit(eventWORegistrationJson.getString(EventModel.Columns.ORGANISATION_UNIT));
                     orgUnit = eventWORegistrationJson.getString(EventModel.Columns.ORGANISATION_UNIT);
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.EVENT_DATE)) {
-                    eventModelBuilder.eventDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.EVENT_DATE)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.COMPLETE_DATE)) {
-                    eventModelBuilder.completedDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.COMPLETE_DATE)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.DUE_DATE)) {
-                    eventModelBuilder.dueDate(DateUtils.databaseDateFormat().parse(eventWORegistrationJson.getString(EventModel.Columns.DUE_DATE)));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.ATTRIBUTE_OPTION_COMBO)) {
-                    eventModelBuilder.attributeOptionCombo(eventWORegistrationJson.getString(EventModel.Columns.ATTRIBUTE_OPTION_COMBO));
-                }
-                if (eventWORegistrationJson.has(EventModel.Columns.TRACKED_ENTITY_INSTANCE)) {
-                    eventModelBuilder.trackedEntityInstance(eventWORegistrationJson.getString(EventModel.Columns.TRACKED_ENTITY_INSTANCE));
-                }
-
-                eventModelBuilder.state(State.TO_UPDATE);
-
-                EventModel eventModel = eventModelBuilder.build();
-
-                Cursor cursor = briteDatabase.query(SELECT + ALL + FROM + EventModel.TABLE +
-                        WHERE + EventModel.Columns.UID + EQUAL + QUESTION_MARK, eventModel.uid());
-
-                if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0) {
-                    // EVENT ALREADY EXISTS IN THE DATABASE, JUST INSERT ATTRIBUTES
-                } else {
-                    long result = briteDatabase.insert(EventModel.TABLE, eventModel.toContentValues());
-                    Timber.d(TIMBER_MESSAGE, result);
                 }
             } else {
                 view.showIdError();
                 return;
             }
+
+
+            for (int i = 0; i < dataJson.size(); i++) {
+                JSONObject attrV = dataJson.get(i);
+                saveTEIAttrDataValue(attrV);
+            }
+
+            view.goToEvent(eventUid, programUid, orgUnit);
+
         } catch (JSONException | ParseException e) {
             Timber.e(e);
         }
+    }
 
+    private void saveTEIAttrDataValue(JSONObject attrV) throws JSONException, ParseException {
+        TrackedEntityDataValueModel.Builder attrValueModelBuilder;
+        attrValueModelBuilder = TrackedEntityDataValueModel.builder();
 
-        for (int i = 0; i < dataJson.size(); i++) {
-            try {
-                JSONObject attrV = dataJson.get(i);
+        if (attrV.has(TrackedEntityDataValueModel.Columns.EVENT))
+            attrValueModelBuilder.event(attrV.getString(TrackedEntityDataValueModel.Columns.EVENT));
+        if (attrV.has(TrackedEntityDataValueModel.Columns.LAST_UPDATED))
+            attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString(TrackedEntityDataValueModel.Columns.LAST_UPDATED)));
+        if (attrV.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT))
+            attrValueModelBuilder.dataElement(attrV.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
+        if (attrV.has(TrackedEntityDataValueModel.Columns.STORED_BY))
+            attrValueModelBuilder.storedBy(attrV.getString(TrackedEntityDataValueModel.Columns.STORED_BY));
+        if (attrV.has(TrackedEntityDataValueModel.Columns.VALUE))
+            attrValueModelBuilder.value(attrV.getString(TrackedEntityDataValueModel.Columns.VALUE));
+        if (attrV.has(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE))
+            attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE)));
 
-                TrackedEntityDataValueModel.Builder attrValueModelBuilder;
-                attrValueModelBuilder = TrackedEntityDataValueModel.builder();
+        TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
 
-                if (attrV.has(TrackedEntityDataValueModel.Columns.EVENT))
-                    attrValueModelBuilder.event(attrV.getString(TrackedEntityDataValueModel.Columns.EVENT));
-                if (attrV.has(TrackedEntityDataValueModel.Columns.LAST_UPDATED))
-                    attrValueModelBuilder.lastUpdated(DateUtils.databaseDateFormat().parse(attrV.getString(TrackedEntityDataValueModel.Columns.LAST_UPDATED)));
-                if (attrV.has(TrackedEntityDataValueModel.Columns.DATA_ELEMENT))
-                    attrValueModelBuilder.dataElement(attrV.getString(TrackedEntityDataValueModel.Columns.DATA_ELEMENT));
-                if (attrV.has(TrackedEntityDataValueModel.Columns.STORED_BY))
-                    attrValueModelBuilder.storedBy(attrV.getString(TrackedEntityDataValueModel.Columns.STORED_BY));
-                if (attrV.has(TrackedEntityDataValueModel.Columns.VALUE))
-                    attrValueModelBuilder.value(attrV.getString(TrackedEntityDataValueModel.Columns.VALUE));
-                if (attrV.has(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE))
-                    attrValueModelBuilder.providedElsewhere(Boolean.parseBoolean(attrV.getString(TrackedEntityDataValueModel.Columns.PROVIDED_ELSEWHERE)));
-
-                TrackedEntityDataValueModel attrValueModel = attrValueModelBuilder.build();
-
-                if (attrValueModel != null) {
-                    long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
-                    Timber.d(TIMBER_MESSAGE, result);
-                }
-
-            } catch (JSONException | ParseException e) {
-                Timber.e(e);
-            }
+        if (attrValueModel != null) {
+            long result = briteDatabase.insert(TrackedEntityDataValueModel.TABLE, attrValueModel.toContentValues());
+            Timber.d(TIMBER_MESSAGE, result);
         }
-
-        view.goToEvent(eventUid, programUid, orgUnit);
     }
 }

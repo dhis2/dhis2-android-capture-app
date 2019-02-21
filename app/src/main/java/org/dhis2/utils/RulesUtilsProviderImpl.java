@@ -41,6 +41,7 @@ public class RulesUtilsProviderImpl implements RulesUtilsProvider {
         this.codeGenerator = codeGenerator;
     }
 
+    @SuppressWarnings("squid:S3776")
     @Override
     public void applyRuleEffects(Map<String, FieldViewModel> fieldViewModels,
                                  Result<RuleEffect> calcResult,

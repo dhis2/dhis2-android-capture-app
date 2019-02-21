@@ -1,10 +1,9 @@
 package org.dhis2.utils.custom_views.orgUnitCascade;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 
@@ -16,6 +15,9 @@ import org.dhis2.databinding.OrgUnitCascadeLevelItemBinding;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -54,24 +56,31 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         data.add(String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1));
 
         String selectedOrgUnitName = null;
-        if(!isEmpty(currentUid))
-            for(Quartet<String, String, String, Boolean> orgUnit : levelOrgUnit)
-                if(orgUnit.val0().equals(currentUid))
+        if (!isEmpty(currentUid))
+            for (Quartet<String, String, String, Boolean> orgUnit : levelOrgUnit)
+                if (orgUnit.val0().equals(currentUid))
                     selectedOrgUnitName = orgUnit.val1();
 
         if (binding.levelText.getText() == null || binding.levelText.getText().toString().isEmpty() || isEmpty(currentUid))
             binding.levelText.setText(isEmpty(selectedOrgUnitName) ? String.format(context.getString(R.string.org_unit_select_level), getAdapterPosition() + 1) : selectedOrgUnitName);
 
-        for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
-            if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
-                data.add(trio.val1());
+        data.addAll(addRootAndFirstLevel(parent));
 
         if (data.size() > 1/* && selectedUid == null*/) {
             itemView.setVisibility(View.VISIBLE);
             setMenu(data, adapter);
             binding.levelText.setOnClickListener(view -> menu.show());
-        } else if (data.size() <= 1)
+        } else {
             itemView.setVisibility(View.GONE);
+        }
+    }
+
+    private ArrayList<String> addRootAndFirstLevel(String parent) {
+        ArrayList<String> data = new ArrayList<>();
+        for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
+            if (parent.isEmpty() || trio.val2().equals(parent)) //Only if ou is child of parent or is root
+                data.add(trio.val1());
+        return data;
     }
 
     private void setMenu(ArrayList<String> data, OrgUnitCascadeAdapter adapter) {
@@ -80,17 +89,28 @@ class OrgUnitCascadeHolder extends RecyclerView.ViewHolder {
         for (String label : data)
             menu.getMenu().add(Menu.NONE, Menu.NONE, data.indexOf(label), label);
 
+        setMenuClickListener(data, adapter);
+    }
+
+    private void setMenuClickListener(ArrayList<String> data, OrgUnitCascadeAdapter adapter) {
         menu.setOnMenuItemClickListener(item -> {
-            for (Quartet<String, String, String, Boolean> trio : levelOrgUnit)
-                if (trio.val1().equals(item.getTitle())) {
-                    selectedUid = item.getOrder() <= 0 ? "" : trio.val0();
-                    binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
-                    adapter.setSelectedLevel(
-                            getAdapterPosition() + 1,
-                            selectedUid,
-                            item.getOrder() <= 0 ? false : trio.val3());
+            for (Quartet<String, String, String, Boolean> quartet : levelOrgUnit)
+                if (quartet.val1().equals(item.getTitle())) {
+                    selectOrgUnit(item, quartet, data, adapter);
                 }
             return false;
         });
+    }
+
+    private void selectOrgUnit(MenuItem item,
+                               Quartet<String, String, String, Boolean> quartet,
+                               ArrayList<String> data,
+                               OrgUnitCascadeAdapter adapter){
+        selectedUid = item.getOrder() <= 0 ? "" : quartet.val0();
+        binding.levelText.setText(item.getOrder() < 0 ? data.get(0) : data.get(item.getOrder()));
+        adapter.setSelectedLevel(
+                getAdapterPosition() + 1,
+                selectedUid,
+                item.getOrder() <= 0 ? false : quartet.val3());
     }
 }

@@ -24,6 +24,7 @@ import timber.log.Timber;
 
 public class OrgUnitUtils {
 
+    @SuppressWarnings("squid:S3776")
     public static TreeNode renderTree(Context context, @NonNull List<OrganisationUnitModel> myOrgs, Boolean isMultiSelection) {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
@@ -93,6 +94,7 @@ public class OrgUnitUtils {
         return root;
     }
 
+    @SuppressWarnings("squid:S3776")
     public static List<ParentChildModel<OrganisationUnitModel>> renderTree(@NonNull List<OrganisationUnitModel> myOrgs) {
 
         HashMap<Integer, ArrayList<OrganisationUnitModel>> orgUnitsByLevel = new HashMap<>();

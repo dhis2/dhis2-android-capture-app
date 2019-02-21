@@ -30,71 +30,78 @@ public class TeiProgramListEnrollmentViewHolder extends RecyclerView.ViewHolder 
         this.binding = binding;
     }
 
+    private void bindEnrollment(EnrollmentViewModel enrollment) {
+        ImageView programImage;
+        RelativeLayout iconBg;
+        if (binding instanceof ItemTeiProgramsEnrollmentBinding) {
+            programImage = ((ItemTeiProgramsEnrollmentBinding) binding).programImage;
+            iconBg = ((ItemTeiProgramsEnrollmentBinding) binding).iconBg;
+        } else {
+            programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
+            iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
+        }
+
+        int color = ColorUtils.getColorFrom(
+                enrollment.color(),
+                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
+        int icon;
+        if (enrollment.icon() != null) {
+            Resources resources = itemView.getContext().getResources();
+            String iconName = enrollment.icon().startsWith("ic_") ? enrollment.icon() : "ic_" + enrollment.icon();
+            icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
+        } else {
+            icon = R.drawable.ic_program_default;
+        }
+
+        Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+
+        programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+
+        Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+        iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+    }
+
+    private void bindProgram(ProgramViewModel programModel) {
+        ImageView programImage;
+        RelativeLayout iconBg;
+        if (binding instanceof ItemTeiProgramsProgramsBinding) {
+            programImage = ((ItemTeiProgramsProgramsBinding) binding).programImage;
+            iconBg = ((ItemTeiProgramsProgramsBinding) binding).iconBg;
+
+        } else {
+            programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
+            iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
+        }
+
+        int color = ColorUtils.getColorFrom(programModel.color(),
+                ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
+        int icon;
+        if (programModel.icon() != null) {
+            Resources resources = itemView.getContext().getResources();
+            String iconName = programModel.icon().startsWith("ic_") ? programModel.icon() : "ic_" + programModel.icon();
+            icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
+        } else {
+            icon = R.drawable.ic_program_default;
+        }
+
+        Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
+
+        programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
+
+        Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
+        iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+    }
+
     public void bind(TeiProgramListContract.TeiProgramListPresenter presenter, EnrollmentViewModel enrollment, ProgramViewModel programModel) {
         binding.setVariable(BR.enrollment, enrollment);
         binding.setVariable(BR.program, programModel);
         binding.setVariable(BR.presenter, presenter);
 
         if (enrollment != null) {
-
-            ImageView programImage;
-            RelativeLayout iconBg;
-            if (binding instanceof ItemTeiProgramsEnrollmentBinding) {
-                programImage = ((ItemTeiProgramsEnrollmentBinding) binding).programImage;
-                iconBg = ((ItemTeiProgramsEnrollmentBinding) binding).iconBg;
-            } else {
-                programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
-                iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
-            }
-
-            int color = ColorUtils.getColorFrom(
-                    enrollment.color(),
-                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
-            int icon;
-            if (enrollment.icon() != null) {
-                Resources resources = itemView.getContext().getResources();
-                String iconName = enrollment.icon().startsWith("ic_") ? enrollment.icon() : "ic_" + enrollment.icon();
-                icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
-            } else {
-                icon = R.drawable.ic_program_default;
-            }
-
-            Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
-
-            programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
-
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+            bindEnrollment(enrollment);
 
         } else if (programModel != null) {
-            ImageView programImage;
-            RelativeLayout iconBg;
-            if (binding instanceof ItemTeiProgramsProgramsBinding) {
-                programImage = ((ItemTeiProgramsProgramsBinding) binding).programImage;
-                iconBg = ((ItemTeiProgramsProgramsBinding) binding).iconBg;
-
-            } else {
-                programImage = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).programImage;
-                iconBg = ((ItemTeiProgramsEnrollmentInactiveBinding) binding).iconBg;
-            }
-
-            int color = ColorUtils.getColorFrom(programModel.color(),
-                    ColorUtils.getPrimaryColor(itemView.getContext(), ColorUtils.ColorType.PRIMARY));
-            int icon;
-            if (programModel.icon() != null) {
-                Resources resources = itemView.getContext().getResources();
-                String iconName = programModel.icon().startsWith("ic_") ? programModel.icon() : "ic_" + programModel.icon();
-                icon = resources.getIdentifier(iconName, "drawable", itemView.getContext().getPackageName());
-            } else {
-                icon = R.drawable.ic_program_default;
-            }
-
-            Drawable iconImage = ContextCompat.getDrawable(itemView.getContext(), icon);
-
-            programImage.setImageDrawable(ColorUtils.tintDrawableReosurce(iconImage, color));
-
-            Drawable bgImage = ContextCompat.getDrawable(itemView.getContext(), R.drawable.photo_temp_gray);
-            iconBg.setBackground(ColorUtils.tintDrawableWithColor(bgImage, color));
+            bindProgram(programModel);
         }
 
         binding.executePendingBindings();
