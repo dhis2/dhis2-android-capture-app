@@ -4,6 +4,8 @@ import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.android.material.tabs.TabLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -37,6 +39,8 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
     boolean accessDataWrite;
     int rowTotal;
     int columTotal;
+    boolean tableSelectorVisible = false;
+
     @Inject
     DataSetTableContract.Presenter presenter;
     private ActivityDatasetTableBinding binding;
@@ -87,9 +91,29 @@ public class DataSetTableActivity extends ActivityGlobalAbstract implements Data
 
     @Override
     public void setDataElements(Map<String, List<DataElementModel>> dataElements, Map<String, List<List<Pair<CategoryOptionModel, CategoryModel>>>> catOptions) {
-        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID));
+        viewPagerAdapter = new DataSetSectionAdapter(getSupportFragmentManager(), accessDataWrite, getIntent().getStringExtra(Constants.DATA_SET_UID), this);
         binding.viewPager.setAdapter(viewPagerAdapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+        binding.tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                binding.selectorLayout.setVisibility(View.GONE);
+                tableSelectorVisible = false;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if(tableSelectorVisible)
+                    binding.selectorLayout.setVisibility(View.GONE);
+                else
+                    binding.selectorLayout.setVisibility(View.VISIBLE);
+
+                tableSelectorVisible = !tableSelectorVisible;
+            }
+        });
 
         if(dataElements.size()>1)
             dataElements.remove("NO_SECTION");
