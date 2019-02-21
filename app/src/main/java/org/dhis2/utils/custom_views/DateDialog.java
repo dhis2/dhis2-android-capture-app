@@ -61,7 +61,7 @@ public class DateDialog extends DialogFragment {
     }
 
     public DateDialog() {
-
+        // do nothing
     }
 
 

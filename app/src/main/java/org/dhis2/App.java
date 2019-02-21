@@ -29,7 +29,7 @@ import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.sync.SyncComponent;
 import org.dhis2.usescases.sync.SyncModule;
 import org.dhis2.utils.UtilsModule;
-import org.dhis2.utils.timber.DebugTree;
+import org.dhis2.utils.timber.Dhis2DebugTree;
 import org.dhis2.utils.timber.ReleaseTree;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
@@ -89,7 +89,7 @@ public class App extends MultiDexApplication implements Components {
     @Override
     public void onCreate() {
         super.onCreate();
-        Timber.plant(BuildConfig.DEBUG ? new DebugTree() : new ReleaseTree());
+        Timber.plant(BuildConfig.DEBUG ? new Dhis2DebugTree() : new ReleaseTree());
         Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
 

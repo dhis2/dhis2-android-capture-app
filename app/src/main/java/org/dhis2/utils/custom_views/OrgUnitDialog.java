@@ -2,11 +2,7 @@ package org.dhis2.utils.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +18,11 @@ import org.dhis2.utils.OrgUnitUtils;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 /**
  * QUADRAM. Created by ppajuelo on 21/05/2018.
@@ -82,7 +83,7 @@ public class OrgUnitDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -91,8 +92,10 @@ public class OrgUnitDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
         return dialog;
     }
 
@@ -145,7 +148,11 @@ public class OrgUnitDialog extends DialogFragment {
 
     @Override
     public void dismiss() {
-        instace = null;
+        destroyInstance();
         super.dismiss();
+    }
+
+    private static void destroyInstance() {
+        instace = null;
     }
 }

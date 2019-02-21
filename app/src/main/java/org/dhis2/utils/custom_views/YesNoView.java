@@ -1,9 +1,7 @@
 package org.dhis2.utils.custom_views;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -13,7 +11,6 @@ import org.dhis2.BR;
 import org.dhis2.R;
 import org.hisp.dhis.android.core.common.ValueType;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
@@ -27,9 +24,7 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     private ViewDataBinding binding;
 
     private RadioGroup radioGroup;
-    private RadioButton yes;
     private RadioButton no;
-    //    private RadioButton no_value;
     private TextView labelView;
     private View clearButton;
 
@@ -46,10 +41,6 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
     public YesNoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
-    }
-
-    public void init(Context context) {
-        super.init(context);
     }
 
     @Override
@@ -78,7 +69,7 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int i) {
-
+        // do nothing
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
@@ -94,9 +85,7 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
         radioGroup = findViewById(R.id.radiogroup);
         clearButton = findViewById(R.id.clearSelection);
-        yes = findViewById(R.id.yes);
         no = findViewById(R.id.no);
-//        no_value = findViewById(R.id.no_value);
         labelView = findViewById(R.id.label);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -115,12 +104,5 @@ public class YesNoView extends FieldLayout implements RadioGroup.OnCheckedChange
 
     public View getClearButton() {
         return clearButton;
-    }
-
-    @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-
-
     }
 }

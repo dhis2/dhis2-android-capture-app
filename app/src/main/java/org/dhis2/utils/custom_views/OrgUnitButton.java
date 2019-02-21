@@ -20,9 +20,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * QUADRAM. Created by ppajuelo on 18/04/2018.
@@ -31,9 +29,6 @@ import io.reactivex.disposables.CompositeDisposable;
 public class OrgUnitButton extends RelativeLayout {
 
     private LayoutInflater inflater;
-    private boolean isBgTransparent;
-    private CompositeDisposable disposable;
-    private ViewDataBinding binding;
     private Button button;
 
     public OrgUnitButton(Context context) {
@@ -68,18 +63,16 @@ public class OrgUnitButton extends RelativeLayout {
 
     private void init(Context context) {
         inflater = LayoutInflater.from(context);
-        disposable = new CompositeDisposable();
         setLayout();
 
     }
 
     public void setIsBgTransparent(boolean isBgTransparent) {
-        this.isBgTransparent = isBgTransparent;
         setLayout();
     }
 
     private void setLayout() {
-        binding = DataBindingUtil.inflate(inflater, R.layout.form_org_unit, this, true);
+        DataBindingUtil.inflate(inflater, R.layout.form_org_unit, this, true);
         button = findViewById(R.id.button_org_unit);
     }
 
@@ -87,8 +80,7 @@ public class OrgUnitButton extends RelativeLayout {
 
         HashMap<Integer, ArrayList<TreeNode>> subLists = new HashMap<>();
 
-        List<OrganisationUnitModel> allOrgs = new ArrayList<>();
-        allOrgs.addAll(myOrgs);
+        List<OrganisationUnitModel> allOrgs = new ArrayList<>(myOrgs);
         for (OrganisationUnitModel myorg : myOrgs) {
             String[] pathName = myorg.displayNamePath().split("/");
             String[] pathUid = myorg.path().split("/");
@@ -146,17 +138,22 @@ public class OrgUnitButton extends RelativeLayout {
         treeView.expandAll();
 
         treeView.setDefaultNodeClickListener((node, value) -> {
-            if (treeView.getSelected().size() == 1 && !node.isSelected()) {
+            if (!node.isSelected()) {
                 ((OrgUnitHolder) node.getViewHolder()).update();
-                button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
-            } else if (treeView.getSelected().size() > 1) {
-                ((OrgUnitHolder) node.getViewHolder()).update();
-                button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
             }
+            setOrgUnitText(treeView);
         });
 
-        button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+        setOrgUnitText(treeView);
         return treeView;
+    }
+
+    private void setOrgUnitText(AndroidTreeView treeView) {
+        if (treeView.getSelected().size() == 1) {
+            button.setText(String.format("(%s) Org Unit", treeView.getSelected().size()));
+        } else if (treeView.getSelected().size() > 1) {
+            button.setText(String.format("(%s) Org Units", treeView.getSelected().size()));
+        }
     }
 
 }
